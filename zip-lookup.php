@@ -9,7 +9,8 @@
         $map_details = json_decode($map_details_response);
         $location = $map_details->results[0]->formatted_address;
     }
-
-    echo "<Response><Say>Searching in " . $location . "</Say></Response>";
-    
-
+?>
+<Response>
+    <Say>Searching in <?php echo $location?></Say>
+    <Redirect method="GET">yo.php</Redirect>
+</Response>
