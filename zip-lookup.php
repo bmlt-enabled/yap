@@ -12,5 +12,5 @@
 ?>
 <Response>
     <Say>Searching in <?php echo $location?></Say>
-    <Redirect method="GET">yo.php</Redirect>
+    <Redirect method="GET">searching.php</Redirect>
 </Response>
