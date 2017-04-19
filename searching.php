@@ -28,10 +28,10 @@
         echo "<Pause length=\"1\"/>";
         echo "<Say>" . $part_3 . "</Say>";
         
-        $message .= $part_1 . $text_space . $part_2 . $text_space . $part_3;
+        $message = $part_1 . $text_space . $part_2 . $text_space . $part_3;
+        echo "<Sms>" . $message . "</Sms>";
     }
     
-    echo "<Sms>" . $message . "</Sms>";
     echo "<Say>Thank you for calling, goodbye.</Say>"
 ?>
 </Response>
