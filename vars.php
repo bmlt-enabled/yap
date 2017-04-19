@@ -10,3 +10,4 @@
     $bmlt_search_endpoint = $bmlt_root_server . "/client_interface/json/index.php?switcher=GetSearchResults&sort_key=distance_in_miles,start_time&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-10&weekdays[]=" . $day;
 
     $results_count = 3;
+    $text_space "\r\n";
