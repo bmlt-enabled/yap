@@ -13,8 +13,8 @@
     <Say>Meeting information found, listing the top <?php echo $results_count ?> results.</Say>
 <?php
     for ($i = 1; $i <= $results_count; $i++) {
-        echo "<Say>Result number " . $i . "</Say>";
         echo "<Pause length=\"1\"/>";
+        echo "<Say>Result number " . $i . "</Say>";
         echo "<Say>" . $search_results[$i]->meeting_name . "</Say>";
         echo "<Pause length=\"1\"/>";
         echo "<Say>Starts at " . $search_results[$i]->start_time . " hours.</Say>";
