@@ -14,23 +14,21 @@
     <Say>Meeting information found, listing the top <?php echo $results_count ?> results.</Say>
 <?php
     for ($i = 1; $i <= $results_count; $i++) {
-        $part_1 = "Result number " . $i;
-        $part_2 = $search_results[$i]->meeting_name;
-        $part_3 = "Starts at " . $search_results[$i]->start_time . " hours.";
-        $part_4 = "Meets at " . $search_results[$i]->location_street 
+        $part_1 = $search_results[$i]->meeting_name;
+        $part_2 = $search_results[$i]->start_time;
+        $part_3 = $search_results[$i]->location_street 
                 . " in " . $search_results[$i]->location_municipality 
                 . ", " . $search_results[$i]->location_province;
         
         echo "<Pause length=\"1\"/>";
+        echo "<Say>Result number " . $i . "</Say>";
         echo "<Say>" . $part_1 . "</Say>";
-        echo "<Say>" . $part_2 . "</Say>";
+        echo "<Pause length=\"1\"/>";
+        echo "<Say>Starts at " . $part_2 . " hours.</Say>";
         echo "<Pause length=\"1\"/>";
         echo "<Say>" . $part_3 . "</Say>";
-        echo "<Pause length=\"1\"/>";
-        echo "<Say>" . $part_4 . "</Say>";
         
-        $message .= $part_1 . $text_space . $part_2 . $text_space . 
-                $part_3 . $text_space . $part_4 . $text_space . $text_space;
+        $message .= $part_1 . $text_space . $part_2 . $text_space . $part_3;
     }
     
     echo "<Sms>" . $message . "</Sms>";
