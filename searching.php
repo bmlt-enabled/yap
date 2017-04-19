@@ -14,6 +14,14 @@
 <?php
     for ($i = 1; $i <= $results_count; $i++) {
         echo "<Say>Result number " . $i . "</Say>";
+        echo "<Pause length=\"1\"/>";
+        echo "<Say>" . $search_results[$i]->meeting_name . "</Say>";
+        echo "<Pause length=\"1\"/>";
+        echo "<Say>Starts at " . $search_results[$i]->start_time . " hours.</Say>";
+        echo "<Pause length=\"1\"/>";
+        echo "<Say>Meets at " . $search_results[$i]->location_street 
+                . " in " . $search_results[$i]->location_municipality 
+                . ", " . $search_results[$i]->location_province . "</Say>";
     }
 ?>
 </Response>
