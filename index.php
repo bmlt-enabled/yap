@@ -5,7 +5,7 @@
 <Response>
     <Gather numDigits="5" timeout="10000" action="zip-lookup.php" method="GET">
 	<Say>
-		hello, please enter your 5 digit zip code
+            Hello, please enter your 5 digit zip code.
 	</Say>
     </Gather>
 </Response>
