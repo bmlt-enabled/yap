@@ -7,3 +7,12 @@ Unlike it's predecessor bmlt-vox, this doesn't require any special infrastructur
 We are taking advantage of using Twilio which essentially handles all the VOIP parts.  You provision a number, set up an application, and point it your PHP server.
 
 More setup information coming soon.
+
+
+## query types
+
+### by distance
+
+```
+?switcher=GetSearchResults&weekdays[]=5&weekdays[]=4&lat_val=35.541797706205&long_val=-78.64243553608&geo_width=-20
+```
