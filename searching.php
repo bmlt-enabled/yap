@@ -17,7 +17,7 @@
     <!--<Debug><?php echo "<![CDATA[".$search_url."]]>" ?></Debug>-->
     <Say>Meeting information found, listing the top <?php echo $results_count ?> results.</Say>
 <?php
-    for ($i = 0; $i <= $results_count; $i++) {
+    for ($i = 0; $i < $results_count; $i++) {
         $result_day = $search_results[$i]->weekday_tinyint;
         $result_time = strtotime($search_results[$i]->start_time);
         
@@ -29,7 +29,7 @@
                 . ", " . $search_results[$i]->location_province;
 
         echo "<Pause length=\"1\"/>";
-        echo "<Say>Result number " . $i . "</Say>";
+        echo "<Say>Result number " . $i+1 . "</Say>";
         echo "<Say>" . $part_1 . "</Say>";
         echo "<Pause length=\"1\"/>";
         echo "<Say>Starts at " . $part_2 . "</Say>";
