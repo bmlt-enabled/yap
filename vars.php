@@ -10,11 +10,11 @@
     $google_timezone_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key=AIzaSyDA7EYTfk7o3tUrswgD2i6DHajw1Dn7Vho&";
     
     // TODO: Potentially allow different BMLT roots
-    $bmlt_root_server = "http://bmlt-aggregator.archsearch.org/eccbc87e4b5ce2fe28308fd9f2a7baf3/bmltfed/main_server";
-    #$bmlt_option_sort_key=  ["distance_in_miles,start_time", "start_time,distance_in_miles"];
-    $bmlt_search_endpoint = $bmlt_root_server . "/client_interface/json/?switcher=GetSearchResults&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-20&weekdays[]=" . $today . "&weekdays[]=" . $tomorrow;
+    $bmlt_root_server = "http://na-bmlt.org/_/sandwich";
+    $bmlt_option_sort_key = ["distance_in_miles", "start_time"];
+    $bmlt_search_endpoint = $bmlt_root_server . "/client_interface/json/?switcher=GetSearchResults&sort_keys={SORT_KEY}&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-5&weekdays[]=" . $today . "&weekdays[]=" . $tomorrow;
 
-    $results_count = 3;
+    $results_count = 5;
     $text_space = "\r\n";
     
     function isItPastTime($meeting_day, $meeting_time) {

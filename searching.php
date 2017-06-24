@@ -1,7 +1,7 @@
 <?php
     include 'vars.php';
     header("content-type: text/xml");
-    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     
     $latitude = $_REQUEST['Latitude'];
     $longitude = $_REQUEST['Longitude'];
@@ -14,10 +14,10 @@
     $message = "";
 ?>
 <Response>
-    <Debug><?php echo $search_url ?></Debug>
+    <!--<Debug><?php echo "<![CDATA[".$search_url."]]>" ?></Debug>-->
     <Say>Meeting information found, listing the top <?php echo $results_count ?> results.</Say>
 <?php
-    for ($i = 1; $i <= $results_count; $i++) {
+    for ($i = 0; $i <= $results_count; $i++) {
         $result_day = $search_results[$i]->weekday_tinyint;
         $result_time = strtotime($search_results[$i]->start_time);
         
