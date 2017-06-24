@@ -29,7 +29,7 @@
                 . ", " . $search_results[$i]->location_province;
 
         echo "<Pause length=\"1\"/>";
-        echo "<Say>Result number " . $i+1 . "</Say>";
+        echo "<Say>Result number " . ($i + 1) . "</Say>";
         echo "<Say>" . $part_1 . "</Say>";
         echo "<Pause length=\"1\"/>";
         echo "<Say>Starts at " . $part_2 . "</Say>";
