@@ -12,9 +12,10 @@
     $search_results_raw = file_get_contents($search_url);
     $search_results = json_decode($search_results_raw);
     $message = "";
+
+    #echo "<![CDATA[".$search_url."]]>"
 ?>
 <Response>
-    <!--<Debug><?php echo "<![CDATA[".$search_url."]]>" ?></Debug>-->
     <Say>Meeting information found, listing the top <?php echo $results_count ?> results.</Say>
 <?php
     for ($i = 0; $i < $results_count; $i++) {
