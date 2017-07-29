@@ -1,10 +1,10 @@
 <?php
-    include 'vars.php';
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     
     $zip = $_REQUEST['Zip'];
     $search_type = $_REQUEST['Digits'];
+    $google_maps_endpoint = "http://maps.googleapis.com/maps/api/geocode/json?address=";
 	
     if (strlen($zip) > 0) {
         $map_details_response = file_get_contents($google_maps_endpoint . $zip);
