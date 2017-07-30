@@ -42,7 +42,7 @@
         $time_zone_time = new DateTime();
         error_log( "next meeting time: " . $next_meeting_time->format("Y-m-d H:i:s"));
         error_log("time zone time: " . $time_zone_time->format("Y-m-d H:i:s"));
-        return $next_meeting_time <= $server_time;
+        return $next_meeting_time <= $time_zone_time;
     }
     
     function getNextMeetingInstance($meeting_day, $meeting_time) {
@@ -54,11 +54,12 @@
 <Response>
     <Say>Meeting information found, listing the top <?php echo $results_count ?> results.</Say>
 <?php
-    for ($i = 0; $i < $results_count; $i++) {        
+    $results_counter = 0;
+    for ($i = 0; $i < count($search_results); $i++) {  
         $result_day = $search_results[$i]->weekday_tinyint;
         $result_time = $search_results[$i]->start_time;
         
-        isItPastTime($result_day, $result_time);
+        if (isItPastTime($result_day, $result_time)) continue;
         
         $part_1 = $search_results[$i]->meeting_name;
         $part_2 = $days_of_the_week[$result_day]
@@ -77,6 +78,9 @@
         
         $message = $part_1 . $text_space . $part_2 . $text_space . $part_3;
         echo "<Sms>" . $message . "</Sms>";
+        
+        $results_counter++;
+        if ($results_counter == $results_count) break;
     }
     
     echo "<Say>Thank you for calling, goodbye.</Say>"
