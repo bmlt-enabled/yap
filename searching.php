@@ -62,7 +62,7 @@
         
         $part_1 = $search_results[$i]->meeting_name;
         $part_2 = $days_of_the_week[$result_day]
-                . ' ' . date('g:i A', $result_time);
+                . ' ' . (new DateTime($result_time))->format('g:i A');
         $part_3 = $search_results[$i]->location_street 
                 . " in " . $search_results[$i]->location_municipality 
                 . ", " . $search_results[$i]->location_province;
