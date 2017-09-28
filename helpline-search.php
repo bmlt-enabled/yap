@@ -6,6 +6,7 @@
 ?>
 <Response>
     <Dial>
+        <Say>Please stand by... tranferring your call.</Say>
         <Number sendDigits="700">
             336-338-7707
         </Number>
