@@ -74,7 +74,7 @@
         echo "<Pause length=\"1\"/>";
         echo "<Say>Starts at " . $part_2 . "</Say>";
         echo "<Pause length=\"1\"/>";
-        echo "<Say>" . $part3 . "</Say>";
+        echo "<Say>" . $part_3 . "</Say>";
         
         $message = $part_1 . $text_space . $part_2 . $text_space . $part_3;
         echo "<Sms>" . $message . "</Sms>";
