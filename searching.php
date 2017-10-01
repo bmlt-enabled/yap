@@ -61,12 +61,12 @@
         
         if (isItPastTime($result_day, $result_time)) continue;
         
-        $part_1 = $search_results[$i]->meeting_name;
-        $part_2 = $days_of_the_week[$result_day]
-                . ' ' . (new DateTime($result_time))->format('g:i A');
-        $part_3 = $search_results[$i]->location_street 
+        $part_1 = str_replace("&", "&amp;", $search_results[$i]->meeting_name);
+        $part_2 = str_replace("&", "&amp;", $days_of_the_week[$result_day]
+                . ' ' . (new DateTime($result_time))->format('g:i A'));
+        $part_3 = str_replace("&", "&amp;", $search_results[$i]->location_street 
                 . " in " . $search_results[$i]->location_municipality 
-                . ", " . $search_results[$i]->location_province;
+                . ", " . $search_results[$i]->location_province);
 
         echo "<Pause length=\"1\"/>";
         echo "<Say>Result number " . ($results_counter + 1) . "</Say>";
@@ -74,7 +74,7 @@
         echo "<Pause length=\"1\"/>";
         echo "<Say>Starts at " . $part_2 . "</Say>";
         echo "<Pause length=\"1\"/>";
-        echo "<Say>" . $part_3.replace("&", "&amp;") . "</Say>";
+        echo "<Say>" . $part3 . "</Say>";
         
         $message = $part_1 . $text_space . $part_2 . $text_space . $part_3;
         echo "<Sms>" . $message . "</Sms>";
