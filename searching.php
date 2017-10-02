@@ -31,9 +31,9 @@
     function meetingSearch($search_type) {
         global $bmlt_root_server, $today, $tomorrow;
         if ($search_type == 1) {
-            return $bmlt_search_endpoint = $bmlt_root_server . "/client_interface/json/?switcher=GetSearchResults&sort_keys=distance_in_miles&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-5&weekdays[]=" . $today;
+            return $bmlt_search_endpoint = $bmlt_root_server . "/client_interface/json/?switcher=GetSearchResults&sort_keys=distance_in_miles&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-10&weekdays[]=" . $today;
         } else {
-            return $bmlt_search_endpoint = $bmlt_root_server . "/client_interface/json/?switcher=GetSearchResults&sort_keys=start_time&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-5&weekdays[]=" . $today . "&weekdays[]=" . $tomorrow;
+            return $bmlt_search_endpoint = $bmlt_root_server . "/client_interface/json/?switcher=GetSearchResults&sort_keys=start_time&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-10&weekdays[]=" . $today . "&weekdays[]=" . $tomorrow;
         }
     }
     
