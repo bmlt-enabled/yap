@@ -6,21 +6,26 @@
     $google_maps_endpoint = "http://maps.googleapis.com/maps/api/geocode/json?address=";
     $phone_number;
     $extension;
+    $location;
 
     $routes = split("\n", file_get_contents("routes.txt"));
     for ($i = 0; $i <= count($routes); $i++) {
-        $route_item = split(",", $routes[$i]);
-        if ($route_item[0] == $digits) {
-            $phone_number = $route_item[1];
-            $extension = $route_item[2];
-            break;
+        $route_item = split("\|", $routes[$i]);
+        $zipcodes = split(",", $route_item[1]);
+        for ($j = 0; $j <= count($zipcodes); $j++) {
+            if ($zipcodes[$j] == $digits) {
+                $location = $route_item[0];
+                $phone_number = $route_item[2];
+                $extension = $route_item[3];
+                break;
+            }
         }
     }
 ?>
 <Response>
     <?php if ($phone_number != "") { ?>
-        <Say>Please stand by... tranferring your call.</Say>    
-        <Dial>
+        <Say>Please stand by... tranferring your call...</Say>    
+        <Dial targetLocation="<?php echo $location ?>">
             <Number sendDigits="<?php echo $extension ?>">
                 <?php echo $phone_number ?>
             </Number>
