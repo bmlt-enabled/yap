@@ -24,8 +24,8 @@
 ?>
 <Response>
     <?php if ($phone_number != "") { ?>
-        <Say>Please stand by... tranferring your call...</Say>    
-        <Dial targetLocation="<?php echo $location ?>">
+        <Say>Please stand by... relocating your call to <?php echo $location; ?> county.</Say>    
+        <Dial>
             <Number sendDigits="<?php echo $extension ?>">
                 <?php echo $phone_number ?>
             </Number>

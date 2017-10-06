@@ -5,9 +5,9 @@
 <Response>
     <Gather numDigits="1" timeout="10000" action="zip-input.php" method="GET">
 	<Say>
-            Welcome to North Carolina of Narcotics Anonymous 
+            Welcome to the North Carolina of Narcotics Anonymous Helpline.
 	</Say>
-        <Say>Press 1 to find someone to talk to by zip code.</Say>
-        <Say>Press 2 to find a meeting by zip code.</Say>
+        <Say>Press 1 to find someone to talk to.</Say>
+        <Say>Press 2 to find a meeting.</Say>
     </Gather>
 </Response>
