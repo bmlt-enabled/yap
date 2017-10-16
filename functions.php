@@ -33,27 +33,42 @@ function getTimeZoneForCoordinates($latitude, $longitude) {
     return json_decode($time_zone);
 }
 
+function helplineSearch($latitude, $longitude) {
+    $helpline_search_radius = 100; #in miles
+    $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_keys=distance_in_miles&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=30";
+    $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
+    return json_decode(file_get_contents($search_url));
+}
+
 function meetingSearch($latitude, $longitude, $search_type, $today, $tomorrow) {
     if ($search_type == 1) {
         $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_keys=distance_in_miles&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-10&weekdays[]=" . $today;
     } else if ($search_type == 2) {
         $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_keys=start_time&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-10&weekdays[]=" . $today . "&weekdays[]=" . $tomorrow;
-    } else {
-        $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_keys=distance_in_miles&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-10";
-    }
+    } 
     
     $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
-    error_log($search_url);
     return json_decode(file_get_contents($search_url));
 }
 
 function getServiceBodyCoverage($latitude, $longitude) {
-    $service_body_id = meetingSearch($latitude, $longitude, 3, null, null)[0]->service_body_bigint;
+    $search_results = helplineSearch($latitude, $longitude, 3, null, null);
     $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetServiceBodies";
     $service_bodies = json_decode(file_get_contents($bmlt_search_endpoint));
-    for ($i = 0; $i <= count($service_bodies); $i++) {
-        if ($service_bodies[$i]->id == $service_body_id) {
-            return $service_bodies[$i];
+    $already_checked = [];
+    
+    for ($j = 0; $j <= count($search_results); $j++) { 
+        $service_body_id = $search_results[$j]->service_body_bigint;
+        if (in_array($service_body_id, $already_checked)) continue;
+        for ($i = 0; $i <= count($service_bodies); $i++) {
+            if ($service_bodies[$i]->id == $service_body_id) {
+                error_log($service_body_id);
+                if (strlen($service_bodies[$i]->helpline) > 0) {
+                    return $service_bodies[$i];
+                } else {
+                    array_push($already_checked, $service_bodies[$i]->id);
+                }
+            }
         }
     }
 }
