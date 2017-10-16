@@ -12,7 +12,7 @@
     $phone_number = split("\|", $service_body->helpline)[0];
     $extension = split("\|", $service_body->helpline)[1] ?: "w";
 ?>
-<Response>
+<Response Location="<?php echo $location; ?>">
     <?php if ($phone_number != "") { ?>
         <Say>Please stand by... relocating your call to <?php echo $location; ?>.</Say>    
         <Dial>
