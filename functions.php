@@ -12,12 +12,12 @@ class Coordinates {
     public $longitude;
 }
 
-function getCoordinatesForAddress($zip) {
+function getCoordinatesForAddress($address) {
     $coordinates = new Coordinates();
     error_log($GLOBALS['google_maps_endpoint']);
 	
-    if (strlen($zip) > 0) {
-        $map_details_response = file_get_contents($GLOBALS['google_maps_endpoint'] . $zip);
+    if (strlen($address) > 0) {
+        $map_details_response = file_get_contents($GLOBALS['google_maps_endpoint'] . $address);
         $map_details = json_decode($map_details_response);
         $coordinates->location = $map_details->results[0]->formatted_address;
         $geometry = $map_details->results[0]->geometry->location;

@@ -3,9 +3,9 @@
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     
-    $zip = $_REQUEST['Zip'];
+    $address = $_REQUEST['Address'];
     $search_type = $_REQUEST['Digits'];
-    $coordinates = getCoordinatesForAddress($zip);
+    $coordinates = getCoordinatesForAddress($address);
 ?>
 <Response>
     <?php if ($search_type == "1") { ?>

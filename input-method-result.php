@@ -7,11 +7,11 @@
 ?>
 <Response>
 <?php
-    if ($inputMethod == "1" || $inputMethod == "2") { // city or county
+    if ($inputMethod == "1") { // city or county
 ?>
     <Redirect method="GET">voice-input.php?SearchType=<?php echo $searchType; ?>&amp;InputMethod=<?php echo $inputMethod; ?></Redirect>
 <?php
-    } else {
+    } else { // zip
 ?>
     <Redirect method="GET">zip-input.php?SearchType=<?php echo $searchType; ?>&amp;InputMethod=<?php echo $inputMethod; ?></Redirect>
 <?php

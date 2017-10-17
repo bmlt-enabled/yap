@@ -3,9 +3,9 @@
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     
-    $zip = $_REQUEST['Digits'];
+    $address = $_REQUEST['Digits'];
 
-    $coordinates = getCoordinatesForAddress($zip);
+    $coordinates = getCoordinatesForAddress($address);
     $service_body = getServiceBodyCoverage($coordinates->latitude, $coordinates->longitude);
     
     $location = $service_body->name;
