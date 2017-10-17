@@ -12,7 +12,7 @@
     }
 ?>
 <Response>
-    <Gather input="speech" speechTimeout="5000" action="<?php echo $action; ?>" method="GET">
+    <Gather input="speech" timeout="5000" action="<?php echo $action; ?>" method="GET">
 <?php 
     if ($inputMethod == "1") {
 ?>
