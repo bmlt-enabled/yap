@@ -12,7 +12,7 @@
     }
 ?>
 <Response>
-    <Gather numDigits="1" timeout="10000" action="input-method-redirect.php?SearchType=<?php echo $searchType ?>" method="GET">
+    <Gather numDigits="1" timeout="10000" action="input-method-result.php?SearchType=<?php echo $searchType ?>" method="GET">
         <Say>Press 1 to search for <?php echo $action ?> by city name.</Say>
         <Say>Press 2 to search for <?php echo $action ?> by county name.</Say>
         <Say>Press 3 to search for <?php echo $action ?> by zip code.</Say>

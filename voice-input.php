@@ -4,15 +4,9 @@
     
     $searchType = $_REQUEST['SearchType'];
     $inputMethod = $_REQUEST['InputMethod'];
-    
-    if ($searchType == "1") {
-        $action = "helpline-search.php";
-    } else {
-        $action = "meeting-searchtype.php";
-    }
 ?>
 <Response>
-    <Gather input="speech" timeout="5000" action="<?php echo $action; ?>" method="GET">
+    <Gather input="speech" timeout="5000" action="voice-input-result.php?SearchType=<?php echo $searchType; ?>" method="GET">
 <?php 
     if ($inputMethod == "1") {
 ?>
