@@ -5,7 +5,7 @@
     
     $zip = $_REQUEST['Zip'];
     $search_type = $_REQUEST['Digits'];
-    $coordinates = getCoordinatesForZipCode($zip);
+    $coordinates = getCoordinatesForAddress($zip);
 ?>
 <Response>
     <?php if ($search_type == "1") { ?>

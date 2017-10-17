@@ -5,7 +5,7 @@
     
     $zip = $_REQUEST['Digits'];
 
-    $coordinates = getCoordinatesForZipCode($zip);
+    $coordinates = getCoordinatesForAddress($zip);
     $service_body = getServiceBodyCoverage($coordinates->latitude, $coordinates->longitude);
     
     $location = $service_body->name;

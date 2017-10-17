@@ -2,9 +2,9 @@
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     
-    $digits = $_REQUEST['Digits'];
+    $searchType = $_REQUEST['SearchType'];
     
-    if ($digits == "1") {
+    if ($searchType == "1") {
         $action = "helpline-search.php";
     } else {
         $action = "meeting-searchtype.php";

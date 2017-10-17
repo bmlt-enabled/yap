@@ -3,7 +3,7 @@
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 ?>
 <Response>
-    <Gather numDigits="1" timeout="10000" action="zip-input.php" method="GET">
+    <Gather numDigits="1" timeout="10000" action="input-method.php" method="GET">
 	<Say>
             Welcome to the North Carolina of Narcotics Anonymous Helpline.
 	</Say>

@@ -12,7 +12,7 @@ class Coordinates {
     public $longitude;
 }
 
-function getCoordinatesForZipCode($zip) {
+function getCoordinatesForAddress($zip) {
     $coordinates = new Coordinates();
     error_log($GLOBALS['google_maps_endpoint']);
 	
