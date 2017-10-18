@@ -13,7 +13,9 @@
     $extension = split("\|", $service_body->helpline)[1] ?: "w";
 ?>
 <Response Location="<?php echo $location; ?>">
-    <?php if ($phone_number != "") { ?>
+    <?php if (strpos($phone_number, 'i') !== false) { ?>
+        <Redirect method="GET">helpline-dial.php?route=<?php echo $phone_number ?></Redirect>
+    <?php } else if ($phone_number != "") { ?>
         <Say>Please stand by... relocating your call to <?php echo $location; ?>.</Say>    
         <Dial>
             <Number sendDigits="<?php echo $extension ?>">
