@@ -11,10 +11,9 @@
     $location = $service_body->name;
     $phone_number = split("\|", $service_body->helpline)[0];
     $extension = split("\|", $service_body->helpline)[1] ?: "w";
+    
+    header("x-yap-location: " . $location);
 ?>
-<![CDATA[
-    <?php echo $location ?>
-]]>
 <Response>
     <?php if (strpos($phone_number, 'i') !== false) { ?>
         <Say>Please wait while we connect your call...</Say>
