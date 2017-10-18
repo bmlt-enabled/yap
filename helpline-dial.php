@@ -4,5 +4,5 @@
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 ?>   
 <Response>
-    <Enqueue/>
+    <Enqueue><?php echo $_REQUEST['queue'] ?></Enqueue>
 </Response>

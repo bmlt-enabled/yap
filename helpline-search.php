@@ -14,7 +14,7 @@
 ?>
 <Response Location="<?php echo $location; ?>">
     <?php if (strpos($phone_number, 'i') !== false) { ?>
-        <Redirect method="GET">helpline-dial.php?route=<?php echo $phone_number ?></Redirect>
+        <Redirect method="GET">helpline-dial.php?queue=<?php echo $phone_number ?></Redirect>
     <?php } else if ($phone_number != "") { ?>
         <Say>Please stand by... relocating your call to <?php echo $location; ?>.</Say>    
         <Dial>
