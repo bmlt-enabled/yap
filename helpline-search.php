@@ -12,10 +12,10 @@
     $phone_number = split("\|", $service_body->helpline)[0];
     $extension = split("\|", $service_body->helpline)[1] ?: "w";
 ?>
+<![CDATA[
+    <?php echo $location ?>
+]]>
 <Response>
-    <![CDATA[
-        <?php echo $location ?>
-    ]]>
     <?php if (strpos($phone_number, 'i') !== false) { ?>
         <Say>Please wait while we connect your call...</Say>
         <Enqueue waitUrl="helpline-enqueue.php?queue=<?php echo $phone_number ?>"><?php echo $phone_number ?></Enqueue>
