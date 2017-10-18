@@ -1,8 +1,8 @@
 # yap
 
-The purposes of yap are 
-    - To be able to take the results of a BMLT root server and play it back through the telephone.  
-    - To be able to set up routing rules for zip codes and helpline numbers with optional extension dialing.
+The purposes of yap are :
+* To be able to take the results of a BMLT root server and play it back through the telephone.  
+* To be able to set up routing rules for zip codes and helpline numbers with optional extension dialing.
 
 Unlike it's predecessor bmlt-vox, this doesn't require any special infrastructure other than a server capable of delivering PHP over HTTP(S).
 
@@ -17,8 +17,8 @@ We are taking advantage of using Twilio which essentially handles all the VOIP p
 3. Try testing that your application actually is functioning properly by opening a browser http://example.com/index.php.  
 
 3. You will need to set up a Twilio account, and do the following:
-    a. Purchase a phone number (typically you would buy one for your locale, tollfree is pretty much unnecessary these days).
-    b. Configure that number to point to a TwiML application.  It would be something like http://example.com/index.php.
+* Purchase a phone number (typically you would buy one for your locale, tollfree is pretty much unnecessary these days).
+* Configure that number to point to a TwiML application.  It would be something like http://example.com/index.php.
 
 4. Make a call to your number and try it out.  If there is a problem the debugger in the Twilio console will let you know why.  Most likely you did not setup your config.php file correctly.
 
@@ -32,4 +32,4 @@ You can also tie this into an existing extension based system, say for example G
 
 ## Skipping Helpine Call Routing
 
-When configuring the TwiML app instead of pointing to index.php point to index.php?override=1
+When configuring the TwiML app instead of pointing to `index.php` point to `index.php?override=1`.
