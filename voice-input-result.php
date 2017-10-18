@@ -13,5 +13,5 @@
     }
 ?>
 <Response>
-    <Redirect method="GET"><?php echo $action; ?>?Digits=<?php echo $speechResult . "," . $state; ?></Redirect>
+    <Redirect method="GET"><?php echo $action; ?>?Digits=<?php echo urlencode($speechResult) . "," . $state; ?></Redirect>
 </Response>
