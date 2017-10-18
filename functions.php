@@ -1,6 +1,5 @@
 <?php
-
-static $bmlt_root_server = "http://na-bmlt.org/_/sandwich";
+include 'config.php';
 static $google_maps_endpoint = "http://maps.googleapis.com/maps/api/geocode/json?address=";
 static $timezone_lookup_endpoint = "https://api.timezonedb.com/v2/get-time-zone?key=M007J6ZZ6OI1&format=json&by=position";
 # BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
@@ -14,7 +13,6 @@ class Coordinates {
 
 function getCoordinatesForAddress($address) {
     $coordinates = new Coordinates();
-    error_log($GLOBALS['google_maps_endpoint']);
 	
     if (strlen($address) > 0) {
         $map_details_response = file_get_contents($GLOBALS['google_maps_endpoint'] . $address);
@@ -62,7 +60,6 @@ function getServiceBodyCoverage($latitude, $longitude) {
         if (in_array($service_body_id, $already_checked)) continue;
         for ($i = 0; $i <= count($service_bodies); $i++) {
             if ($service_bodies[$i]->id == $service_body_id) {
-                error_log($service_body_id);
                 if (strlen($service_bodies[$i]->helpline) > 0) {
                     return $service_bodies[$i];
                 } else {
@@ -76,8 +73,6 @@ function getServiceBodyCoverage($latitude, $longitude) {
 function isItPastTime($meeting_day, $meeting_time) {
     $next_meeting_time = getNextMeetingInstance($meeting_day, $meeting_time);
     $time_zone_time = new DateTime();
-    error_log( "next meeting time: " . $next_meeting_time->format("Y-m-d H:i:s"));
-    error_log("time zone time: " . $time_zone_time->format("Y-m-d H:i:s"));
     return $next_meeting_time <= $time_zone_time;
 }
 
