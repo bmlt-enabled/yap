@@ -2,7 +2,7 @@
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     
-    $state = $_REQUEST['ToState'];
+    $state = $_REQUEST['ToState']; // Retrieved from Twilio metadata
     $speechResult = $_REQUEST['SpeechResult'];
     $searchType = $_REQUEST['SearchType'];
     
