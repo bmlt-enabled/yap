@@ -32,4 +32,4 @@ You can also tie this into an existing extension based system, say for example G
 
 ## Skipping Helpine Call Routing
 
-When configuring the TwiML app instead of pointing to `index.php` point to `index.php?override=1`.
+When configuring the TwiML app instead of pointing to `index.php` point to `input-method.php?Digits=2`.
