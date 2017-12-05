@@ -6,6 +6,7 @@
     $address = $_REQUEST['Address'];
     $search_type = $_REQUEST['Digits'];
     $coordinates = getCoordinatesForAddress($address);
+    $day = "today";
 ?>
 <Response>
     <?php if ($search_type == "1") { ?>
