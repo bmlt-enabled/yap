@@ -1,4 +1,5 @@
 <?php
+    include 'config.php';
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     
@@ -7,6 +8,6 @@
 ?>
 <Response>
     <Gather input="speech" timeout="5000" speechTimeout="auto" action="voice-input-result.php?SearchType=<?php echo $searchType; ?>" method="GET">
-        <Say>Please say the name of the city or county.</Say>     
+        <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">Please say the name of the city or county.</Say>     
     </Gather>
 </Response>
