@@ -26,7 +26,7 @@
             </Number>
         </Dial>
     <?php } else { ?>
-        <Say>The zip code you entered is not found.</Say>
+        <Say>The location you entered is not found.</Say>
         <Redirect method="GET">zip-input.php?Digits=1</Redirect>
     <?php } ?>
 </Response>
