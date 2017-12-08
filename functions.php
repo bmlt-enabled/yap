@@ -1,6 +1,6 @@
 <?php
 include 'config.php';
-$google_maps_endpoint = "http://maps.googleapis.com/maps/api/geocode/json?key=" . $google_maps_api_key . "&address=";
+$google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . $google_maps_api_key . "&address=";
 static $timezone_lookup_endpoint = "https://api.timezonedb.com/v2/get-time-zone?key=M007J6ZZ6OI1&format=json&by=position";
 # BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
 static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]; 
