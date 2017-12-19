@@ -7,7 +7,7 @@
     $inputMethod = $_REQUEST['InputMethod'];
     
     if ($province_lookup) {
-        $province = $_REQUEST['SpeechResult']
+        $province = $_REQUEST['SpeechResult'];
     }
 ?>
 <Response>
