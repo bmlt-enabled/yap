@@ -10,7 +10,7 @@
     }
 ?>
 <Response>
-    <Gather input="speech" timeout="5000" speechTimeout="auto" action="voice-input-result.php?SearchType=<?php echo $searchType; ?>&Province=<?php echo $province?>" method="GET">
+    <Gather input="speech" timeout="5000" speechTimeout="auto" action="voice-input-result.php?SearchType=<?php echo $searchType; ?>&Province=<?php echo urlencode($province)?>" method="GET">
         <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">Please say the name of the city or county.</Say>     
     </Gather>
 </Response>
