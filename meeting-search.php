@@ -1,4 +1,5 @@
 <?php
+    include 'config.php';
     include 'functions.php';
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
@@ -22,10 +23,10 @@
 <Response>
 <?php 
     if (count($search_results) == 0) {
-        echo "<Say>There are no other meetings for today.  Thank you for calling, goodbye.</Say>";
+        echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">There are no other meetings for today.  Thank you for calling, goodbye.</Say>";
     } else {
 ?>
-    <Say>Meeting information found, listing the top <?php echo $results_count ?> results.</Say>
+    <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">Meeting information found, listing the top <?php echo $results_count ?> results.</Say>
 <?php
         $results_counter = 0;
         for ($i = 0; $i < count($search_results); $i++) {  
@@ -42,12 +43,12 @@
                     . ", " . $search_results[$i]->location_province);
 
             echo "<Pause length=\"1\"/>";
-            echo "<Say>Result number " . ($results_counter + 1) . "</Say>";
-            echo "<Say>" . $part_1 . "</Say>";
+            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Result number " . ($results_counter + 1) . "</Say>";
+            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . $part_1 . "</Say>";
             echo "<Pause length=\"1\"/>";
-            echo "<Say>Starts at " . $part_2 . "</Say>";
+            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Starts at " . $part_2 . "</Say>";
             echo "<Pause length=\"1\"/>";
-            echo "<Say>" . $part_3 . "</Say>";
+            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . $part_3 . "</Say>";
             
             $message = $part_1 . $text_space . $part_2 . $text_space . $part_3;
             echo "<Sms>" . $message . "</Sms>";
@@ -56,7 +57,7 @@
             if ($results_counter == $results_count) break;
         }
         
-        echo "<Say>Thank you for calling, goodbye.</Say>";
+        echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Thank you for calling, goodbye.</Say>";
     }
 ?>
 </Response>

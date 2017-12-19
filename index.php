@@ -6,10 +6,10 @@
 ?>
 <Response>
     <Gather numDigits="1" timeout="10000" action="input-method.php" method="GET">
-	<Say>
+	<Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
             <?php echo $GLOBALS['title'] ?>
 	</Say>
-        <Say>Press 1 to find someone to talk to.</Say>
-        <Say>Press 2 to find a meeting.</Say>
+        <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">Press 1 to find someone to talk to.</Say>
+        <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">Press 2 to find a meeting.</Say>
     </Gather>
 </Response>

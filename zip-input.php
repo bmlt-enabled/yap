@@ -1,4 +1,5 @@
 <?php
+    include 'config.php';
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     
@@ -12,7 +13,7 @@
 ?>
 <Response>
     <Gather numDigits="5" timeout="10000" action="<?php echo $action; ?>" method="GET">
-	<Say>
+	<Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
             Hello, please enter your 5 digit zip code.
 	</Say>
     </Gather>
