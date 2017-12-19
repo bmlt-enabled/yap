@@ -2,7 +2,7 @@
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     
-    if ($provice_lookup) {
+    if ($province_lookup) {
         $province = $_REQUEST['Province'];
     } else {
         $province = $_REQUEST['ToState']; // Retrieved from Twilio metadata
