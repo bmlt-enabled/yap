@@ -4,7 +4,6 @@
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     
     $searchType = $_REQUEST['SearchType'];
-    $inputMethod = $_REQUEST['InputMethod'];
     
     if ($province_lookup) {
         $province = $_REQUEST['SpeechResult'];
