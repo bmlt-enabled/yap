@@ -34,3 +34,7 @@ You can also tie this into an existing extension based system, say for example G
 ## Skipping Helpline Call Routing
 
 When configuring the TwiML app instead of pointing to `index.php` point to `input-method.php?Digits=2`.
+
+## Call Flow
+
+![alt text](resources/yap-flow.png)
