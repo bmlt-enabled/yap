@@ -7,13 +7,11 @@
     $address = $_REQUEST['Digits'];
 
     $coordinates = getCoordinatesForAddress($address);
-    $service_body = getServiceBodyCoverage($coordinates->latitude, $coordinates->longitude);
+    $service_body = getServiceBodyCoverage($coordinates->latitude, $coordinates->longitude);  
     
     $location = $service_body->name;
-    $phone_number = split("\|", $service_body->helpline)[0];
-    $extension = split("\|", $service_body->helpline)[1] ?: "w";
-    
-    header("x-yap-location: " . $location);
+    $phone_number = explode("\|", $service_body->helpline)[0];
+    $extension = explode("\|", $service_body->helpline)[1] ?: "w";
 ?>
 <Response>
     <?php if (strpos($phone_number, 'i') !== false) { ?>
@@ -22,9 +20,7 @@
     <?php } else if ($phone_number != "") { ?>
         <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">Please stand by... relocating your call to <?php echo $location; ?>.</Say>    
         <Dial>
-            <Number sendDigits="<?php echo $extension ?>">
-                <?php echo $phone_number ?>
-            </Number>
+            <Number sendDigits="<?php echo $extension ?>"><?php echo $phone_number ?></Number>
         </Dial>
     <?php } else { ?>
         <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">The location you entered is not found.</Say>
