@@ -35,7 +35,7 @@ function helplineSearch($latitude, $longitude) {
     if ($GLOBALS['helpline_search_radius'] == null) {
         $GLOBALS['helpline_search_radius'] = 30;
     }
-    $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $GLOBALS['helpline_search_radius'];
+    $bmlt_search_endpoint = getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $GLOBALS['helpline_search_radius'];
     $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
 
     if (isset($GLOBALS['helpline_search_unpublished']) && $GLOBALS['helpline_search_unpublished']) {
@@ -61,7 +61,7 @@ function meetingSearch($latitude, $longitude, $search_type, $today, $tomorrow) {
 
 function getServiceBodyCoverage($latitude, $longitude) {
     $search_results = helplineSearch($latitude, $longitude);
-    $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetServiceBodies";
+    $bmlt_search_endpoint = getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetServiceBodies";
     $service_bodies = json_decode(get($bmlt_search_endpoint));
     $already_checked = [];
     
@@ -92,9 +92,13 @@ function getNextMeetingInstance($meeting_day, $meeting_time) {
     return $mod_meeting_datetime;
 }
 
+function getHelplineBMLTRootServer() {
+    return isset($GLOBALS['helpline_bmlt_root_server']) ? $GLOBALS['helpline_bmlt_root_server'] : $GLOBALS['bmlt_root_server'];
+}
+
 function auth_bmlt($username, $password) {
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $GLOBALS['bmlt_root_server'] . '/local_server/server_admin/xml.php');
+    curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php');
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, "admin_action=login&c_comdef_admin_login=".$username."&c_comdef_admin_password=".$password);
     curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');

@@ -53,6 +53,14 @@ You will need to also ensure that PHP has writes to write to this folder, in ord
 
 **NOTE: This will not work for a sandwich server, because there is currently no concept of authentication.**
 
+## Using as a separate BMLT server for call routing
+
+In order to specify a different BMLT root server for call routing but not for meeting list lookups, set the following variable in config.php.
+
+```php
+static $helpline_bmlt_root_server = "";
+```
+
 ## Call Flow
 
 ![alt text](resources/yap-flow.png)
