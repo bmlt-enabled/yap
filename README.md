@@ -65,6 +65,14 @@ static $helpline_bmlt_root_server = "";
 
 You will need `make`.  Once you have that, run `make upgrade`.
 
+## Checking the call routing
+
+There is a very simple way to check where a could would be routed to.
+
+```shell
+curl https://example.com/yap/helpline-search.php?Digits=Turkey,NC
+```
+
 ## Call Flow
 
 ![alt text](resources/yap-flow.png)
