@@ -3,7 +3,7 @@ include 'config.php';
 $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . $google_maps_api_key . "&address=";
 static $timezone_lookup_endpoint = "https://api.timezonedb.com/v2/get-time-zone?key=M007J6ZZ6OI1&format=json&by=position";
 # BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
-static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]; 
+static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 class Coordinates {
     public $location;
@@ -12,12 +12,10 @@ class Coordinates {
 }
 
 function getCoordinatesForAddress($address) {
-    error_log("address " . $address);
     $coordinates = new Coordinates();
 	
     if (strlen($address) > 0) {
-        $map_details_response = file_get_contents($GLOBALS['google_maps_endpoint'] . urlencode($address));
-        error_log("google_maps_endpoint_response " . $map_details_response);
+        $map_details_response = get($GLOBALS['google_maps_endpoint'] . urlencode($address));
         $map_details = json_decode($map_details_response);
         $coordinates->location = $map_details->results[0]->formatted_address;
         $geometry = $map_details->results[0]->geometry->location;
@@ -29,15 +27,25 @@ function getCoordinatesForAddress($address) {
 }
 
 function getTimeZoneForCoordinates($latitude, $longitude) {
-    $time_zone = file_get_contents($GLOBALS['timezone_lookup_endpoint'] . "&lat=" . $latitude . "&lng=" . $longitude);
+    $time_zone = get($GLOBALS['timezone_lookup_endpoint'] . "&lat=" . $latitude . "&lng=" . $longitude);
     return json_decode($time_zone);
 }
 
 function helplineSearch($latitude, $longitude) {
-    $helpline_search_radius = 100; #in miles
-    $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=30";
+    if ($GLOBALS['helpline_search_radius'] == null) {
+        $GLOBALS['helpline_search_radius'] = 30;
+    }
+    $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $GLOBALS['helpline_search_radius'];
     $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
-    return json_decode(file_get_contents($search_url));
+
+    if (isset($GLOBALS['helpline_search_unpublished']) && $GLOBALS['helpline_search_unpublished']) {
+        $search_url = $search_url . "&advanced_published=-1";
+        if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
+            auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password']);
+        }
+    }
+
+    return json_decode(get($search_url));
 }
 
 function meetingSearch($latitude, $longitude, $search_type, $today, $tomorrow) {
@@ -48,14 +56,13 @@ function meetingSearch($latitude, $longitude, $search_type, $today, $tomorrow) {
     } 
     
     $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
-    error_log($search_url);
-    return json_decode(file_get_contents($search_url));
+    return json_decode(get($search_url));
 }
 
 function getServiceBodyCoverage($latitude, $longitude) {
-    $search_results = helplineSearch($latitude, $longitude, 3, null, null);
+    $search_results = helplineSearch($latitude, $longitude);
     $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetServiceBodies";
-    $service_bodies = json_decode(file_get_contents($bmlt_search_endpoint));
+    $service_bodies = json_decode(get($bmlt_search_endpoint));
     $already_checked = [];
     
     for ($j = 0; $j <= count($search_results); $j++) { 
@@ -83,4 +90,26 @@ function getNextMeetingInstance($meeting_day, $meeting_time) {
     $mod_meeting_day = (new DateTime($GLOBALS['days_of_the_week'][$meeting_day]))->format("Y-m-d");
     $mod_meeting_datetime = new DateTime($mod_meeting_day . " " . $meeting_time);
     return $mod_meeting_datetime;
+}
+
+function auth_bmlt($username, $password) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $GLOBALS['bmlt_root_server'] . '/local_server/server_admin/xml.php');
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "admin_action=login&c_comdef_admin_login=".$username."&c_comdef_admin_password=".$password);
+    curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_exec($ch);
+    curl_close ($ch);
+}
+
+function get($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookie.txt');
+    curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $data = curl_exec($ch);
+    curl_close ($ch);
+    return $data;
 }

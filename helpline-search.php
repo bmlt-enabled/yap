@@ -10,8 +10,9 @@
     $service_body = getServiceBodyCoverage($coordinates->latitude, $coordinates->longitude);  
     
     $location = $service_body->name;
-    $phone_number = explode("\|", $service_body->helpline)[0];
-    $extension = explode("\|", $service_body->helpline)[1] ?: "w";
+    $exploded_result = explode("\|", $service_body->helpline);
+    $phone_number = isset($exploded_result[0]) ? $exploded_result[0] : "";
+    $extension = isset($exploded_result[1]) ? $exploded_result[1] : "w";
 ?>
 <Response>
     <?php if (strpos($phone_number, 'i') !== false) { ?>

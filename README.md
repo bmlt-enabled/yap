@@ -35,6 +35,20 @@ You can also tie this into an existing extension based system, say for example G
 
 When configuring the TwiML app instead of pointing to `index.php` point to `input-method.php?Digits=2`.
 
+## Using hidden service bodies
+
+It is possible to create a service body with an unpublished group in order create additional routing for service bodies that may not exist in a given root server.  
+
+Once those service bodies have been populated and the unpublished meetings are added, you can make use of the helpline field to route calls.
+
+You will also need to add to the config.php three additional variables.  This allows yap to authenticate to the root server and retrieve the unpublished meetings.  This is required as a BMLT root server by design will not return unpublished meetings in the semantic interface.
+
+```php
+static $helpline_search_unpublished = true;
+static $bmlt_username = "";
+static $bmlt_password = "";
+```
+
 ## Call Flow
 
 ![alt text](resources/yap-flow.png)
