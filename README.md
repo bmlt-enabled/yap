@@ -61,6 +61,10 @@ In order to specify a different BMLT root server for call routing but not for me
 static $helpline_bmlt_root_server = "";
 ```
 
+## To upgrade easy ##
+
+You will need `make`.  Once you have that, run `make upgrade`.
+
 ## Call Flow
 
 ![alt text](resources/yap-flow.png)
