@@ -6,7 +6,7 @@
     if ($province_lookup) {
         $province = $_REQUEST['Province'];
     } else {
-        if (len($_REQUEST['ToState']) > 0) {
+        if ($_REQUEST['ToState'] != null && len($_REQUEST['ToState']) > 0) {
             $province = $_REQUEST['ToState']; // Retrieved from Twilio metadata
         } elseif ($toll_free_province_bias != null) {
             $province = $toll_free_province_bias; // Override for Tollfree
