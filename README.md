@@ -41,7 +41,11 @@ It may be that your yap instance needs to search multiple states.  By default ya
 
 ## Tollfree bias
 
-Tollfree is independent of any state/province bias.  To enable a specific bias, add `$toll_free_province_bias` to your `config.php`, and set to the two letter state bias.  Example `$toll_free_province_bias = "TX"`, will bias to Texas.
+Tollfree is independent of any state/province bias.  
+
+To enable a specific bias, add `$toll_free_province_bias` to your `config.php`, and set to the two letter state bias.  
+
+Example `$toll_free_province_bias = "TX"`, will bias to Texas.
 
 ## Using hidden service bodies
 
