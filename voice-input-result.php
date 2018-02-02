@@ -6,7 +6,13 @@
     if ($province_lookup) {
         $province = $_REQUEST['Province'];
     } else {
-        $province = $_REQUEST['ToState'] || $toll_free_province_bias; // Retrieved from Twilio metadata
+        if (len($_REQUEST['ToState']) > 0) {
+            $province = $_REQUEST['ToState']; // Retrieved from Twilio metadata
+        } elseif ($toll_free_province_bias != null) {
+            $province = $toll_free_province_bias; // Override for Tollfree
+        } else {
+            $province = "";
+        }
     }
     $speechResult = $_REQUEST['SpeechResult'];
     $searchType = $_REQUEST['SearchType'];
