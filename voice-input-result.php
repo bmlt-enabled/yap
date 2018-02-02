@@ -6,7 +6,7 @@
     if ($province_lookup) {
         $province = $_REQUEST['Province'];
     } else {
-        $province = $_REQUEST['ToState']; // Retrieved from Twilio metadata
+        $province = $_REQUEST['ToState'] || $toll_free_province_bias; // Retrieved from Twilio metadata
     }
     $speechResult = $_REQUEST['SpeechResult'];
     $searchType = $_REQUEST['SearchType'];

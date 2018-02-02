@@ -35,6 +35,14 @@ You can also tie this into an existing extension based system, say for example G
 
 When configuring the TwiML app instead of pointing to `index.php` point to `input-method.php?Digits=2`.
 
+## Including province prior to lookup
+
+It may be that your yap instance needs to search multiple states.  By default yap will be biased towards the local number state (unless it's tollfree).  To enable province lookup set the `$province_lookup`, variable to `true` in the `config.php` file.  
+
+## Tollfree bias
+
+Tollfree is independent of any state/province bias.  To enable a specific bias, add `$toll_free_province_bias` to your `config.php`, and set to the two letter state bias.  Example `$toll_free_province_bias = "TX"`, will bias to Texas.
+
 ## Using hidden service bodies
 
 It is possible to create a service body with an unpublished group in order create additional routing for service bodies that may not exist in a given root server.  
