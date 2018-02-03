@@ -21,26 +21,33 @@
     $message = "";
 ?>
 <Response>
-<?php 
+<?php
+    $filtered_list = [];
+    for ($i = 0; $i < count($search_results); $i++) {
+        if (!isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time)) {
+            array_push($filtered_list, $search_results[$i]);
+        }
+    }
+
     if (count($search_results) == 0) {
+        echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">No results found, you probably have an invalid entry.  Try again.</Say><Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
+    } elseif (count($filtered_list) == 0) {
         echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">There are no other meetings for today.  Thank you for calling, goodbye.</Say>";
     } else {
 ?>
     <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">Meeting information found, listing the top <?php echo $results_count ?> results.</Say>
 <?php
         $results_counter = 0;
-        for ($i = 0; $i < count($search_results); $i++) {  
-            $result_day = $search_results[$i]->weekday_tinyint;
-            $result_time = $search_results[$i]->start_time;
+        for ($i = 0; $i < count($filtered_list); $i++) {
+            $result_day = $filtered_list[$i]->weekday_tinyint;
+            $result_time = $filtered_list[$i]->start_time;
             
-            if (isItPastTime($result_day, $result_time)) continue;
-            
-            $part_1 = str_replace("&", "&amp;", $search_results[$i]->meeting_name);
+            $part_1 = str_replace("&", "&amp;", $filtered_list[$i]->meeting_name);
             $part_2 = str_replace("&", "&amp;", $GLOBALS['days_of_the_week'][$result_day]
                     . ' ' . (new DateTime($result_time))->format('g:i A'));
-            $part_3 = str_replace("&", "&amp;", $search_results[$i]->location_street 
-                    . " in " . $search_results[$i]->location_municipality 
-                    . ", " . $search_results[$i]->location_province);
+            $part_3 = str_replace("&", "&amp;", $filtered_list[$i]->location_street
+                    . " in " . $filtered_list[$i]->location_municipality
+                    . ", " . $filtered_list[$i]->location_province);
 
             echo "<Pause length=\"1\"/>";
             echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Result number " . ($results_counter + 1) . "</Say>";
