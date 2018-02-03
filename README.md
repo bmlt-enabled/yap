@@ -85,6 +85,12 @@ There is a very simple way to check where a could would be routed to.
 curl https://example.com/yap/helpline-search.php?Digits=Turkey,NC
 ```
 
+## SMS Gateway
+
+In order to use SMS to get a list of meetings you will configure Messaging to point to Webook sms-gateway.php.  Ensure that it's using HTTP GET.
+
+Then you can send a zip code, county or city to your phone number and get back a response.
+
 ## Call Flow
 
 ![alt text](resources/yap-flow.png)
