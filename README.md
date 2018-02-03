@@ -91,6 +91,12 @@ In order to use SMS to get a list of meetings you will configure Messaging to po
 
 Then you can send a zip code, county or city to your phone number and get back a response.
 
+## Contribute
+
+Fork this repo and send a pull request.  For testing locally, run the yap server and then use `ngrok`.  Grab the ngrok hostname that is generated and then use that in your Twilio settings.
+
+You get an instant proxy to your local services to step through and debug.
+
 ## Call Flow
 
 ![alt text](resources/yap-flow.png)
