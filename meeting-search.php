@@ -49,13 +49,15 @@
                     . " in " . $filtered_list[$i]->location_municipality
                     . ", " . $filtered_list[$i]->location_province);
 
-            echo "<Pause length=\"1\"/>";
-            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Result number " . ($results_counter + 1) . "</Say>";
-            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . $part_1 . "</Say>";
-            echo "<Pause length=\"1\"/>";
-            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Starts at " . $part_2 . "</Say>";
-            echo "<Pause length=\"1\"/>";
-            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . $part_3 . "</Say>";
+            if (!isset($_REQUEST["SmsSid"])) {
+                echo "<Pause length=\"1\"/>";
+                echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Result number " . ($results_counter + 1) . "</Say>";
+                echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . $part_1 . "</Say>";
+                echo "<Pause length=\"1\"/>";
+                echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Starts at " . $part_2 . "</Say>";
+                echo "<Pause length=\"1\"/>";
+                echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . $part_3 . "</Say>";
+            }
             
             $message = $part_1 . $text_space . $part_2 . $text_space . $part_3;
             echo "<Sms>" . $message . "</Sms>";

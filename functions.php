@@ -31,6 +31,16 @@ function getTimeZoneForCoordinates($latitude, $longitude) {
     return json_decode($time_zone);
 }
 
+function getProvince() {
+    if (isset($_REQUEST['ToState'])) {
+        return $_REQUEST['ToState']; // Retrieved from Twilio metadata
+    } elseif ($GLOBALS['toll_free_province_bias'] != null) {
+        return $GLOBALS['toll_free_province_bias']; // Override for Tollfree
+    } else {
+        return "";
+    }
+}
+
 function helplineSearch($latitude, $longitude) {
     if ($GLOBALS['helpline_search_radius'] == null) {
         $GLOBALS['helpline_search_radius'] = 30;
@@ -48,7 +58,7 @@ function helplineSearch($latitude, $longitude) {
 
 function meetingSearch($latitude, $longitude, $search_type, $today, $tomorrow) {
     if ($search_type == 1) {
-        $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-10&weekdays[]=" . $today;
+        $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-10&weekdays[]=" . $today . "&weekdays[]=" . $tomorrow;
     } else if ($search_type == 2) {
         $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_keys=start_time&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-10&weekdays[]=" . $today . "&weekdays[]=" . $tomorrow;
     }

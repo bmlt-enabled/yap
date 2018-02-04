@@ -3,17 +3,7 @@
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     
-    if ($province_lookup) {
-        $province = $_REQUEST['Province'];
-    } else {
-        if ($_REQUEST['ToState'] != null && len($_REQUEST['ToState']) > 0) {
-            $province = $_REQUEST['ToState']; // Retrieved from Twilio metadata
-        } elseif ($toll_free_province_bias != null) {
-            $province = $toll_free_province_bias; // Override for Tollfree
-        } else {
-            $province = "";
-        }
-    }
+    $province = $province_lookup ? $_REQUEST['Province'] : getProvince();
     $speechResult = $_REQUEST['SpeechResult'];
     $searchType = $_REQUEST['SearchType'];
     
