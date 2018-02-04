@@ -15,9 +15,9 @@
     $extension = isset($exploded_result[1]) ? $exploded_result[1] : "w";
 ?>
 <Response>
-    <?php if (strpos($phone_number, 'i') !== false) { ?>
+    <?php if (strpos($phone_number, 'yap') !== false) { ?>
         <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">Please wait while we connect your call...</Say>
-        <Enqueue waitUrl="helpline-enqueue.php?queue=<?php echo $phone_number ?>"><?php echo $phone_number ?></Enqueue>
+        <Redirect method="GET">helpline-dialer.php?service_body_id=<?php echo $service_body->id ?></Redirect>
     <?php } else if ($phone_number != "") { ?>
         <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">Please stand by... relocating your call to <?php echo $location; ?>.</Say>    
         <Dial>

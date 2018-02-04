@@ -91,6 +91,24 @@ In order to use SMS to get a list of meetings you will configure Messaging to po
 
 Then you can send a zip code, county or city to your phone number and get back a response.
 
+## Volunteer Dialer (Beta)
+
+You can also supply a list of volunteers in a BMLT server.  
+
+1) Create a new format called "HV"
+2) In the service body under the helpline specify "yap".
+3) Make a new meeting (do not publish it).
+4) For the meeting name use the volunteer's name.
+5) Select the appropriate service body in the dropdown.  (Note: this service body must be set to "yap" as the helpline in Step #2)
+6) Select "HV" as the format.
+7) Under the phone 1 field, enter this persons phone number.
+8) Since this will be querying unpublished values you must set in `config.php` the BMLT server credentials.
+   
+```   
+   static $bmlt_username = "";
+   static $bmlt_password = "";
+```
+
 ## Contribute
 
 Fork this repo and send a pull request.  For testing locally, run the yap server and then use `ngrok`.  Grab the ngrok hostname that is generated and then use that in your Twilio settings.
