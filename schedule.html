@@ -1,0 +1,21 @@
+<html>
+<head>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.6.0/fullcalendar.css' />
+    <script src='http://code.jquery.com/jquery-1.11.3.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.1/moment.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.6.0/fullcalendar.min.js'></script>
+</head>
+<body>
+    <div id='calendar'></div>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#calendar').fullCalendar({
+                allDaySlot: false,
+                defaultView: 'agendaWeek',
+                events : "/helpline-schedule.php?service_body_id=2"
+            });
+        });
+    </script>
+</body>
+</html>
+

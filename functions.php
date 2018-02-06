@@ -11,6 +11,16 @@ class Coordinates {
     public $longitude;
 }
 
+class DurationInterval {
+    public $hours;
+    public $minutes;
+    public $seconds;
+
+    public function getDurationFormat() {
+        return $this->hours . " hours " . $this->minutes . " minutes " . $this->seconds . " seconds";
+    }
+}
+
 function getCoordinatesForAddress($address) {
     $coordinates = new Coordinates();
 
@@ -121,6 +131,33 @@ function getHelplineVolunteer($service_body_int, $format_id, $tracker) {
     return explode("#@-@#", $volunteers[$tracker]->contact_phone_1)[2];
 }
 
+function getHelplineSchedule($service_body_int) {
+    $response = [];
+    auth_bmlt();
+    $bmlt_search_endpoint = getHelplineBMLTRootServer() . '/client_interface/json/?switcher=GetSearchResults&services='.$service_body_int.'&formats='.getFormat('HV').'&advanced_published=0';
+    $volunteers = json_decode(get($bmlt_search_endpoint));
+    for ($v = 0; $v < count($volunteers); $v++) {
+        $volunteer_info = new StdClass();
+        $volunteer_info->title = $volunteers[$v]->meeting_name;
+        $volunteer_info->start = $volunteers[$v]->start_time;
+        $durationInterval = getDurationInterval($volunteers[$v]->duration_time);
+        $volunteer_info->end = date("H:i:s", strtotime($durationInterval->getDurationFormat(), strtotime($volunteers[$v]->start_time)));
+        //$volunteer_info->day_of_the_week = $volunteers[$v]->weekday_tinyint;
+        array_push($response, $volunteer_info);
+    }
+
+    return json_encode($response);
+}
+
+function getDurationInterval($duration_time) {
+    $durationArray = explode(":", $duration_time);
+    $durationInterval = new DurationInterval();
+    $durationInterval->hours = $durationArray[0];
+    $durationInterval->minutes = $durationArray[1];
+    $durationInterval->seconds = $durationArray[2];
+    return $durationInterval;
+}
+
 function getHelplineBMLTRootServer() {
     return isset($GLOBALS['helpline_bmlt_root_server']) ? $GLOBALS['helpline_bmlt_root_server'] : $GLOBALS['bmlt_root_server'];
 }
@@ -139,6 +176,7 @@ function auth_bmlt() {
 }
 
 function get($url) {
+    error_log($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookie.txt');
