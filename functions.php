@@ -32,7 +32,7 @@ function getTimeZoneForCoordinates($latitude, $longitude) {
 }
 
 function getProvince() {
-    if (isset($_REQUEST['ToState'])) {
+    if (isset($_REQUEST['ToState']) && strlen($_REQUEST['ToState']) > 0) {
         return $_REQUEST['ToState']; // Retrieved from Twilio metadata
     } elseif ($GLOBALS['toll_free_province_bias'] != null) {
         return $GLOBALS['toll_free_province_bias']; // Override for Tollfree
