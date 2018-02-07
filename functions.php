@@ -139,10 +139,10 @@ function getHelplineSchedule($service_body_int) {
     for ($v = 0; $v < count($volunteers); $v++) {
         $volunteer_info = new StdClass();
         $volunteer_info->title = $volunteers[$v]->meeting_name;
-        $volunteer_info->start = $volunteers[$v]->start_time;
+        $volunteer_info->start = getNextMeetingInstance($volunteers[$v]->weekday_tinyint, $volunteers[$v]->start_time)->format("Y-m-d H:i:s");
         $durationInterval = getDurationInterval($volunteers[$v]->duration_time);
-        $volunteer_info->end = date("H:i:s", strtotime($durationInterval->getDurationFormat(), strtotime($volunteers[$v]->start_time)));
-        //$volunteer_info->day_of_the_week = $volunteers[$v]->weekday_tinyint;
+        $volunteer_info->end = date_add(new DateTime($volunteer_info->start), date_interval_create_from_date_string($durationInterval->getDurationFormat()))->format("Y-m-d H:i:s");
+        $volunteer_info->day_of_the_week = $volunteers[$v]->weekday_tinyint;
         array_push($response, $volunteer_info);
     }
 
