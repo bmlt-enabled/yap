@@ -5,6 +5,16 @@ static $timezone_lookup_endpoint = "https://api.timezonedb.com/v2/get-time-zone?
 # BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
 static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
+class VolunteerInfo {
+    public $title;
+    public $start;
+    public $end;
+    public $weekday_id;
+    public $weekday;
+    public $origin_duration;
+    public $origin_start_time;
+}
+
 class Coordinates {
     public $location;
     public $latitude;
@@ -132,21 +142,64 @@ function getHelplineVolunteer($service_body_int, $format_id, $tracker) {
 }
 
 function getHelplineSchedule($service_body_int) {
-    $response = [];
+    $finalSchedule = [];
+    $volunteerNames = [];
     auth_bmlt();
     $bmlt_search_endpoint = getHelplineBMLTRootServer() . '/client_interface/json/?switcher=GetSearchResults&services='.$service_body_int.'&formats='.getFormat('HV').'&advanced_published=0';
     $volunteers = json_decode(get($bmlt_search_endpoint));
     for ($v = 0; $v < count($volunteers); $v++) {
-        $volunteer_info = new StdClass();
-        $volunteer_info->title = $volunteers[$v]->meeting_name;
-        $volunteer_info->start = getNextMeetingInstance($volunteers[$v]->weekday_tinyint, $volunteers[$v]->start_time)->format("Y-m-d H:i:s");
-        $durationInterval = getDurationInterval($volunteers[$v]->duration_time);
-        $volunteer_info->end = date_add(new DateTime($volunteer_info->start), date_interval_create_from_date_string($durationInterval->getDurationFormat()))->format("Y-m-d H:i:s");
-        $volunteer_info->day_of_the_week = $volunteers[$v]->weekday_tinyint;
-        array_push($response, $volunteer_info);
+        $volunteerInfo = new VolunteerInfo();
+        $volunteerInfo->title = $volunteers[$v]->meeting_name;
+        $volunteerInfo->start = getNextMeetingInstance($volunteers[$v]->weekday_tinyint, $volunteers[$v]->start_time)->format("Y-m-d H:i:s");
+        $volunteerInfo->origin_duration = getDurationInterval($volunteers[$v]->duration_time);
+        $volunteerInfo->end = date_add(new DateTime($volunteerInfo->start), date_interval_create_from_date_string($volunteerInfo->origin_duration->getDurationFormat()))->format("Y-m-d H:i:s");
+        $volunteerInfo->weekday_id = intval($volunteers[$v]->weekday_tinyint);
+        $volunteerInfo->weekday = $GLOBALS['days_of_the_week'][$volunteers[$v]->weekday_tinyint];
+        $volunteerInfo->origin_start_time = $volunteers[$v]->start_time;
+        array_push($volunteerNames, $volunteers[$v]->meeting_name);
+        array_push($finalSchedule, $volunteerInfo);
     }
 
-    return json_encode($response);
+    $volunteerShiftCounts = array_count_values($volunteerNames);
+
+    // Get the volunteer names
+    foreach (array_keys($volunteerShiftCounts) as $volunteerName) {
+        // Ensure that they are only listed once
+        if ($volunteerShiftCounts[$volunteerName] == 1) {
+            // Get the information for their shift
+            foreach ($finalSchedule as $volunteerInfoItem) {
+                if ($volunteerName == $volunteerInfoItem->title) {
+                    // Figure out what day is represented already
+                    $dayRepresented = $volunteerInfoItem->weekday_id;
+
+                    for ($d = 1; $d <= 7; $d++) {
+                        // Loop through days, don't read the day that is already represented
+                        if ($dayRepresented !== $d) {
+                            $volunteerClone = clone $volunteerInfoItem;
+                            $volunteerClone->start = getNextMeetingInstance($d, $volunteerInfoItem->origin_start_time)->format("Y-m-d H:i:s");
+                            $volunteerClone->end = date_add(new DateTime($volunteerClone->start), date_interval_create_from_date_string($volunteerClone->origin_duration->getDurationFormat()))->format("Y-m-d H:i:s");
+                            $volunteerClone->weekday = $GLOBALS['days_of_the_week'][$d];
+                            $volunteerClone->weekday_id = $d;
+                            array_push($finalSchedule, $volunteerClone);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return json_encode($finalSchedule);
+}
+
+function countOccurences($initialSchedule, $volunteerName) {
+    $occurences = 0;
+    for ($v = 0; $v <= count($initialSchedule); $v++) {
+        if ($initialSchedule[$v]["title"] == $volunteerName) {
+            $occurences++;
+        }
+    }
+
+    return $occurences > 1;
 }
 
 function getDurationInterval($duration_time) {
