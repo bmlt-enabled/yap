@@ -14,19 +14,37 @@
             if (!results[2]) return '';
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
+
+        function getYapHelplines() {
+            $.getJSON("helpline-yap-based.php", function(data) {
+                for (var x = 0; x < data.length; x++) {
+                    $("select#servicebodies").append("<option value=\"" + data[x].id + "\">" + data[x].name + "</option>")
+                }
+            });
+        }
+
+        $(function() {
+            getYapHelplines();
+            $('#calendar').fullCalendar({
+                allDaySlot: false,
+                defaultView: 'agendaWeek'
+            });
+
+            $('select#servicebodies').change(function() {
+                if (parseInt($('select#servicebodies').val()) > 0) {
+                    $('#calendar').fullCalendar('removeEventSources');
+                    $("#calendar").fullCalendar('removeEvents');
+                    $('#calendar').fullCalendar('addEventSource', 'helpline-schedule.php?service_body_id=' + $('select#servicebodies').val());
+                }
+            })
+        })
     </script>
 </head>
 <body>
+    <div>
+        <select name="servicebodies" id="servicebodies"><option value="0">-= Select A Service Body =-</option></select>
+    </div>
     <div id='calendar'></div>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#calendar').fullCalendar({
-                allDaySlot: false,
-                defaultView: 'agendaWeek',
-                events : "helpline-schedule.php?service_body_id=" + parseInt(getParameterByName("service_body_id"))
-            });
-        });
-    </script>
 </body>
 </html>
 
