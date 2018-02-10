@@ -109,6 +109,11 @@ You can also supply a list of volunteers in a BMLT server.
    static $bmlt_password = "";
 ```
 
+Some additional details on this:
+
+- If you specify only one day of a volunteer shift, it will be assumed re-occuring
+- You can visualize the shift schedule by going to http://example.com/yap/schedule.html (for example)
+
 ## Contribute
 
 Fork this repo and send a pull request.  For testing locally, run the yap server and then use `ngrok`.  Grab the ngrok hostname that is generated and then use that in your Twilio settings.
