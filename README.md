@@ -61,7 +61,7 @@ static $bmlt_username = "";
 static $bmlt_password = "";
 ```
 
-You will need to also ensure that PHP has writes to write to this folder, in order to store the authentication cookie from the BMLT root server.
+You will need to also ensure that PHP has write access to write to this folder, in order to store the authentication cookie from the BMLT root server.
 
 **NOTE: This will not work for a sandwich server, because there is currently no concept of authentication.**
 
