@@ -89,8 +89,7 @@ function meetingSearch($latitude, $longitude, $search_type, $today, $tomorrow) {
 
 function getServiceBodyCoverage($latitude, $longitude) {
     $search_results = helplineSearch($latitude, $longitude);
-    $bmlt_search_endpoint = getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetServiceBodies";
-    $service_bodies = json_decode(get($bmlt_search_endpoint));
+    $service_bodies = getServiceBodies();
     $already_checked = [];
 
     for ($j = 0; $j <= count($search_results); $j++) {
@@ -106,6 +105,23 @@ function getServiceBodyCoverage($latitude, $longitude) {
             }
         }
     }
+}
+
+function getServiceBodies() {
+    $bmlt_search_endpoint = getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetServiceBodies";
+    return json_decode(get($bmlt_search_endpoint));
+}
+
+function getYapBasedHelplines() {
+    $service_bodies = getServiceBodies();
+    $yapHelplines = [];
+    foreach ($service_bodies as $service_body) {
+        if (isset($service_body->helpline) && $service_body->helpline == "yap") {
+            array_push($yapHelplines, $service_body);
+        }
+    }
+
+    return json_encode($yapHelplines);
 }
 
 function isItPastTime($meeting_day, $meeting_time) {
