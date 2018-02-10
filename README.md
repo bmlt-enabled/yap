@@ -112,7 +112,7 @@ You can also supply a list of volunteers in a BMLT server.
 Some additional details on this:
 
 - If you specify only one day of a volunteer shift, it will be assumed re-occuring
-- You can visualize the shift schedule by going to http://example.com/yap/schedule.html (for example)
+- You can visualize the shift schedule by going to http://example.com/yap/schedule.html?service_body_id= (pass in the service body id)
 
 ## Contribute
 
