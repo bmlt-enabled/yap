@@ -147,7 +147,7 @@ function getHelplineSchedule($service_body_int) {
     auth_bmlt();
     $bmlt_search_endpoint = getHelplineBMLTRootServer() . '/client_interface/json/?switcher=GetSearchResults&services='.$service_body_int.'&formats='.getFormat('HV').'&advanced_published=0';
     $volunteers = json_decode(get($bmlt_search_endpoint));
-    error_log($volunteers);
+    var_dump($volunteers);
     for ($v = 0; $v < count($volunteers); $v++) {
         $volunteerInfo = new VolunteerInfo();
         $volunteerInfo->title = $volunteers[$v]->meeting_name;
