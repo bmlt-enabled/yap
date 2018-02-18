@@ -205,7 +205,7 @@ function spreadSchedule($finalSchedule, $dayRepresented, $volunteerInfoItem) {
     return $finalSchedule;
 }
 
-function getVolunteerInfo($volunteers): array {
+function getVolunteerInfo($volunteers) {
     $finalSchedule = [];
     $volunteerNames = [];
 
