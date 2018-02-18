@@ -158,11 +158,57 @@ function getHelplineVolunteer($service_body_int, $format_id, $tracker) {
 }
 
 function getHelplineSchedule($service_body_int) {
-    $finalSchedule = [];
-    $volunteerNames = [];
     auth_bmlt();
     $bmlt_search_endpoint = getHelplineBMLTRootServer() . '/client_interface/json/?switcher=GetSearchResults&services='.$service_body_int.'&formats='.getFormat('HV').'&advanced_published=0';
     $volunteers = json_decode(get($bmlt_search_endpoint));
+    list($volunteerNames, $finalSchedule) = getVolunteerInfo($volunteers);
+    $volunteerShiftCounts = array_count_values($volunteerNames);
+    $finalSchedule = flattenSchedule($volunteerShiftCounts, $finalSchedule);
+
+    return json_encode($finalSchedule);
+}
+
+function flattenSchedule($volunteerShiftCounts, $finalSchedule) {
+    foreach (array_keys($volunteerShiftCounts) as $volunteerName) {
+        // Ensure that they are only listed once
+        if ($volunteerShiftCounts[$volunteerName] == 1) {
+            // Get the information for their shift
+            $finalSchedule = walkShifts($finalSchedule, $volunteerName);
+        }
+    }
+    return $finalSchedule;
+}
+
+function walkShifts($finalSchedule, $volunteerName) {
+    foreach ($finalSchedule as $volunteerInfoItem) {
+        if ($volunteerName == $volunteerInfoItem->title) {
+            // Figure out what day is represented already
+            $dayRepresented = $volunteerInfoItem->weekday_id;
+            $finalSchedule = spreadSchedule($finalSchedule, $dayRepresented, $volunteerInfoItem);
+        }
+    }
+    return $finalSchedule;
+}
+
+function spreadSchedule($finalSchedule, $dayRepresented, $volunteerInfoItem) {
+    for ($d = 1; $d <= 7; $d++) {
+        // Loop through days, don't read the day that is already represented
+        if ($dayRepresented !== $d) {
+            $volunteerClone = clone $volunteerInfoItem;
+            $volunteerClone->start = getNextMeetingInstance($d, $volunteerInfoItem->origin_start_time)->format("Y-m-d H:i:s");
+            $volunteerClone->end = date_add(new DateTime($volunteerClone->start), date_interval_create_from_date_string($volunteerClone->origin_duration->getDurationFormat()))->format("Y-m-d H:i:s");
+            $volunteerClone->weekday = $GLOBALS['days_of_the_week'][$d];
+            $volunteerClone->weekday_id = $d;
+            array_push($finalSchedule, $volunteerClone);
+        }
+    }
+    return $finalSchedule;
+}
+
+function getVolunteerInfo($volunteers): array {
+    $finalSchedule = [];
+    $volunteerNames = [];
+
     for ($v = 0; $v < count($volunteers); $v++) {
         $volunteerInfo = new VolunteerInfo();
         $volunteerInfo->title = $volunteers[$v]->meeting_name;
@@ -175,36 +221,7 @@ function getHelplineSchedule($service_body_int) {
         array_push($volunteerNames, $volunteers[$v]->meeting_name);
         array_push($finalSchedule, $volunteerInfo);
     }
-
-    $volunteerShiftCounts = array_count_values($volunteerNames);
-
-    // Get the volunteer names
-    foreach (array_keys($volunteerShiftCounts) as $volunteerName) {
-        // Ensure that they are only listed once
-        if ($volunteerShiftCounts[$volunteerName] == 1) {
-            // Get the information for their shift
-            foreach ($finalSchedule as $volunteerInfoItem) {
-                if ($volunteerName == $volunteerInfoItem->title) {
-                    // Figure out what day is represented already
-                    $dayRepresented = $volunteerInfoItem->weekday_id;
-
-                    for ($d = 1; $d <= 7; $d++) {
-                        // Loop through days, don't read the day that is already represented
-                        if ($dayRepresented !== $d) {
-                            $volunteerClone = clone $volunteerInfoItem;
-                            $volunteerClone->start = getNextMeetingInstance($d, $volunteerInfoItem->origin_start_time)->format("Y-m-d H:i:s");
-                            $volunteerClone->end = date_add(new DateTime($volunteerClone->start), date_interval_create_from_date_string($volunteerClone->origin_duration->getDurationFormat()))->format("Y-m-d H:i:s");
-                            $volunteerClone->weekday = $GLOBALS['days_of_the_week'][$d];
-                            $volunteerClone->weekday_id = $d;
-                            array_push($finalSchedule, $volunteerClone);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    return json_encode($finalSchedule);
+    return array($volunteerNames, $finalSchedule);
 }
 
 function countOccurences($initialSchedule, $volunteerName) {
