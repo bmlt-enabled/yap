@@ -13,6 +13,7 @@
 <?php
     if ($call_status != "completed") { ?>
         <Dial method="GET"
+              callerId="<?php echo isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000" ?>"
               action="helpline-dialer.php?service_body_id=<?php echo $service_body_id; ?>&amp;format_id=<?php echo $format_id; ?>&amp;tracker=<?php echo $tracker; ?>">
             <Number>
                 <?php echo $phone_number; ?>
