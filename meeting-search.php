@@ -31,7 +31,7 @@
 
     if (!isset($_REQUEST["SmsSid"])) {
         if (count($search_results) == 0) {
-            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">No results found, you probably have an invalid entry.  Try again.</Say><Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
+            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">No results found, you might have an invalid entry.  Try again.</Say><Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
         } elseif (count($filtered_list) == 0) {
             echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">There are no other meetings for today.  Thank you for calling, goodbye.</Say>";
         } else {
@@ -39,7 +39,7 @@
         }
     } else {
         if (count($search_results) == 0) {
-            echo "<Sms>No results found, you probably have an invalid entry.  Try again.</Sms>";
+            echo "<Sms>No results found, you might have an invalid entry.  Try again.</Sms>";
         } elseif (count($filtered_list) == 0) {
             echo "<Sms>There are no other meetings for today.</Sms>";
         }
@@ -74,7 +74,7 @@
         if ($results_counter == $results_count) break;
     }
 
-    if (!isset($_REQUEST["SmsSid"])) {
+    if (!isset($_REQUEST["SmsSid"]) && count($search_results) > 0) {
         echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Thank you for calling, goodbye.</Say>";
     }
 ?>
