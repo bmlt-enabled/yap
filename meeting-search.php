@@ -15,6 +15,11 @@
     $tomorrow = (new DateTime('tomorrow'))->format("w") + $future;
     
     $search_results = meetingSearch($latitude, $longitude, $search_type, $today, $tomorrow);
+    if ($search_type == 1 && count($search_results->filteredList) == 0) {
+        $search_results = meetingSearch($latitude, $longitude, $search_type, $tomorrow, null);
+    }
+
+    $filtered_list = $search_results->filteredList;
 
     $results_count = 5;
     $text_space = "\r\n";
@@ -22,15 +27,8 @@
 ?>
 <Response>
 <?php
-    $filtered_list = [];
-    for ($i = 0; $i < count($search_results); $i++) {
-        if (!isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time)) {
-            array_push($filtered_list, $search_results[$i]);
-        }
-    }
-
     if (!isset($_REQUEST["SmsSid"])) {
-        if (count($search_results) == 0) {
+        if ($search_results->originalListCount == 0) {
             echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">No results found, you might have an invalid entry.  Try again.</Say><Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
         } elseif (count($filtered_list) == 0) {
             echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">There are no other meetings for today.  Thank you for calling, goodbye.</Say>";
@@ -38,13 +36,13 @@
             echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Meeting information found, listing the top " . $results_count . " results.</Say>";
         }
     } else {
-        if (count($search_results) == 0) {
+        if ($search_results->originalListCount == 0) {
             echo "<Sms>No results found, you might have an invalid entry.  Try again.</Sms>";
         } elseif (count($filtered_list) == 0) {
             echo "<Sms>There are no other meetings for today.</Sms>";
         }
     }
-
+    
     $results_counter = 0;
     for ($i = 0; $i < count($filtered_list); $i++) {
         $result_day = $filtered_list[$i]->weekday_tinyint;
@@ -74,7 +72,7 @@
         if ($results_counter == $results_count) break;
     }
 
-    if (!isset($_REQUEST["SmsSid"]) && count($search_results) > 0) {
+    if (!isset($_REQUEST["SmsSid"]) && count($filtered_list) > 0) {
         echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Thank you for calling, goodbye.</Say>";
     }
 ?>
