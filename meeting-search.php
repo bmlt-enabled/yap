@@ -14,9 +14,9 @@
     $today = date("w") + $future;
     $tomorrow = (new DateTime('tomorrow'))->format("w") + $future;
     
-    $search_results = meetingSearch($latitude, $longitude, $search_type, $today, $tomorrow);
-    if ($search_type == 1 && count($search_results->filteredList) == 0) {
-        $search_results = meetingSearch($latitude, $longitude, $search_type, $tomorrow, null);
+    $search_results = meetingSearch($latitude, $longitude, $search_type, $today);
+    if (count($search_results->filteredList) == 0) {
+        $search_results = meetingSearch($latitude, $longitude, $search_type, $tomorrow);
     }
 
     $filtered_list = $search_results->filteredList;
@@ -42,7 +42,7 @@
             echo "<Sms>There are no other meetings for today.</Sms>";
         }
     }
-    
+
     $results_counter = 0;
     for ($i = 0; $i < count($filtered_list); $i++) {
         $result_day = $filtered_list[$i]->weekday_tinyint;
