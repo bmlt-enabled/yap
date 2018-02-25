@@ -27,7 +27,7 @@
     $filtered_list = $search_results->filteredList;
     $sms_messages = [];
 
-    $results_count = 5;
+    $results_count = isset($GLOBALS['result_count_number']) ? $GLOBALS['result_count_number'] : 5;
     $text_space = "\r\n";
     $message = "";
 ?>
