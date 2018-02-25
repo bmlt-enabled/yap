@@ -7,6 +7,8 @@
     
     if ($province_lookup) {
         $province = $_REQUEST['SpeechResult'];
+    } else {
+        $province = "";
     }
 ?>
 <Response>

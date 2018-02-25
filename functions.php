@@ -91,7 +91,17 @@ function meetingSearch($latitude, $longitude, $search_type, $day) {
     $meetingResults = new MeetingResults();
 
     $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
-    $search_results = json_decode(get($search_url));
+    try {
+        $search_response = get($search_url);
+    } catch (Exception $e) {
+        if ($e->getMessage() == "Couldn't resolve host name") {
+            throw $e;
+        } else {
+            $search_response = "[]";
+        }
+    }
+
+    $search_results = json_decode($search_response);
     $meetingResults->originalListCount = count($search_results);
 
     $filteredList = [];
@@ -280,12 +290,18 @@ function auth_bmlt() {
 }
 
 function get($url) {
+    error_log($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookie.txt');
     curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $data = curl_exec($ch);
-    curl_close ($ch);
+    $errorno = curl_errno($ch);
+    curl_close($ch);
+    if ($errorno > 0) {
+        throw new Exception(curl_strerror($errorno));
+    }
+
     return $data;
 }

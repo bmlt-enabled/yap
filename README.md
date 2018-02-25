@@ -101,6 +101,14 @@ In order to use SMS to get a list of meetings you will configure Messaging to po
 
 Then you can send a zip code, county or city to your phone number and get back a response.
 
+## Fallback
+
+There may be times when a root server is down, it's possible to redirect a call to another if this happens.  In your `config.php`, specify the following.
+
+```php
+$helpline_fallback = "1919555555";
+```
+
 ## Volunteer Dialer (Beta)
 
 You can also supply a list of volunteers in a BMLT server.  

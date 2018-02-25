@@ -13,10 +13,15 @@
     date_default_timezone_set($time_zone_results->zoneName);
     $today = date("w") + $future;
     $tomorrow = (new DateTime('tomorrow'))->format("w") + $future;
-    
-    $search_results = meetingSearch($latitude, $longitude, $search_type, $today);
-    if (count($search_results->filteredList) == 0) {
-        $search_results = meetingSearch($latitude, $longitude, $search_type, $tomorrow);
+
+    try {
+        $search_results = meetingSearch($latitude, $longitude, $search_type, $today);
+        if (count($search_results->filteredList) == 0) {
+            $search_results = meetingSearch($latitude, $longitude, $search_type, $tomorrow);
+        }
+    } catch (Exception $e) {
+        header("Location: fallback.php");
+        exit;
     }
 
     $filtered_list = $search_results->filteredList;
