@@ -20,6 +20,7 @@
     }
 
     $filtered_list = $search_results->filteredList;
+    $sms_messages = [];
 
     $results_count = 5;
     $text_space = "\r\n";
@@ -65,14 +66,23 @@
             echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . $part_3 . "</Say>";
         }
 
-        $message = $part_1 . $text_space . $part_2 . $text_space . $part_3;
-        echo "<Sms>" . $message . "</Sms>";
+        $message = "<Sms>" . $part_1 . $text_space . $part_2 . $text_space . $part_3 . "</Sms>";
+        if (isset($GLOBALS["sms_ask"]) && $GLOBALS["sms_ask"]) {
+            array_push($sms_messages, $message);
+        } else {
+            echo $message;
+        }
             
         $results_counter++;
         if ($results_counter == $results_count) break;
     }
 
     if (!isset($_REQUEST["SmsSid"]) && count($filtered_list) > 0) {
+        if (count($sms_messages) > 0) {
+            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">If you would like these results to be texted... press any key now.</Say>";
+            echo "<Gather numDigits=\"1\" timeout=\"10\" action=\"sms-ask.php?Payload=" . urlencode(json_encode($sms_messages)) . "\" method=\"GET\"/>";
+        }
+
         echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Thank you for calling, goodbye.</Say>";
     }
 ?>

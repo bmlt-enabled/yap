@@ -6,7 +6,7 @@
     $searchType = $_REQUEST['SearchType'];
 ?>
 <Response>
-    <Gather input="speech" timeout="5000" speechTimeout="auto" action="city-or-county-voice-input.php?SearchType=<?php echo $searchType; ?>" method="GET">
-        <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">Please say the name of the state or province.</Say>     
+    <Gather input="speech" timeout="5" speechTimeout="auto" action="city-or-county-voice-input.php?SearchType=<?php echo $searchType; ?>" method="GET">
+        <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">Please say the name of the state or province.</Say>
     </Gather>
 </Response>

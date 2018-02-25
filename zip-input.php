@@ -12,9 +12,9 @@
     }
 ?>
 <Response>
-    <Gather numDigits="5" timeout="10000" action="<?php echo $action; ?>" method="GET">
+    <Gather numDigits="5" timeout="10" action="<?php echo $action; ?>" method="GET">
 	<Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
-            Hello, please enter your 5 digit zip code.
+            Please enter your 5 digit zip code.
 	</Say>
     </Gather>
 </Response>

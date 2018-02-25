@@ -85,6 +85,16 @@ There is a very simple way to check where a could would be routed to.
 curl https://example.com/yap/helpline-search.php?Digits=Turkey,NC
 ```
 
+## Making SMS results for voice calls optional
+
+The default of the system is to send an SMS after each voice meeting result.  As an option to you audience you can add the following parameter to your `config.php` file.
+
+```php
+$sms_ask = true;
+```
+
+By setting this, a prompt will be played at the end of the results, asking if they would like the results texted to them.  If they do not respond the call will automatically hang up in 10 seconds. 
+
 ## SMS Gateway
 
 In order to use SMS to get a list of meetings you will configure Messaging to point to Webook sms-gateway.php.  Ensure that it's using HTTP GET.
