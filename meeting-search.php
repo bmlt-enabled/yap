@@ -72,7 +72,7 @@
         }
 
         $message = "<Sms>" . $part_1 . $text_space . $part_2 . $text_space . $part_3 . "</Sms>";
-        if (isset($GLOBALS["sms_ask"]) && $GLOBALS["sms_ask"]) {
+        if (isset($GLOBALS["sms_ask"]) && $GLOBALS["sms_ask"] && !isset($_REQUEST["SmsSid"])) {
             array_push($sms_messages, $message);
         } else {
             echo $message;
