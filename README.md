@@ -43,6 +43,8 @@ You can also tie this into an existing extension based system, say for example G
 
 When configuring the TwiML app instead of pointing to `index.php` point to `input-method.php?Digits=2`.
 
+If you still want the title to display also point to `input-method.php?Digits=2&PlayTitle=1`.
+
 ## Including province prior to lookup
 
 It may be that your yap instance needs to search multiple states.  By default yap will be biased towards the local number state (unless it's tollfree).  To enable province lookup set the `$province_lookup`, variable to `true` in the `config.php` file.  
