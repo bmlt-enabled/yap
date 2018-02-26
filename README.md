@@ -23,13 +23,15 @@ We are taking advantage of using Twilio which essentially handles all the VOIP p
 
 4. Make a call to your number and try it out.  If there is a problem the debugger in the Twilio console will let you know why.  Most likely you did not setup your config.php file correctly.
 
-## Results counts ##
+## Results Counts Maximums ##
 
 The default number of meeting results is 5.  You can change this in your `config.php` with the following:
 
 ```php
 static $result_count_number = 10;
 ```
+
+This would set to a maximum of ten (10) results.
 
 ## Helpline Call Routing
 

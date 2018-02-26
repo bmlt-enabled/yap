@@ -32,8 +32,8 @@ class DurationInterval {
 }
 
 class MeetingResults {
-    public $originalListCount;
-    public $filteredList;
+    public $originalListCount = 0;
+    public $filteredList = [];
 }
 
 function getCoordinatesForAddress($address) {
@@ -81,14 +81,12 @@ function helplineSearch($latitude, $longitude) {
     return json_decode(get($search_url));
 }
 
-function meetingSearch($latitude, $longitude, $search_type, $day) {
+function meetingSearch($meeting_results, $latitude, $longitude, $search_type, $day) {
     if ($search_type == 1) { // Close to you
-        $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-20&weekdays=" . $day;
+        $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-50&weekdays=" . $day;
     } else if ($search_type == 2) { // Upcoming
-        $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_keys=start_time&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-20&weekdays=" . $day;
+        $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_keys=start_time&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=-50&weekdays=" . $day;
     }
-
-    $meetingResults = new MeetingResults();
 
     $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
     try {
@@ -102,17 +100,21 @@ function meetingSearch($latitude, $longitude, $search_type, $day) {
     }
 
     $search_results = json_decode($search_response);
-    $meetingResults->originalListCount = count($search_results);
+    $meeting_results->originalListCount += count($search_results);
 
-    $filteredList = [];
-    for ($i = 0; $i < count($search_results); $i++) {
-        if (!isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time)) {
-            array_push($filteredList, $search_results[$i]);
+    $filteredList = $meeting_results->filteredList;
+    if ($search_response !== "{}") {
+        for ($i = 0; $i < count($search_results); $i++) {
+            if (!isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time)) {
+                array_push($filteredList, $search_results[$i]);
+            }
         }
+    } else {
+        $meeting_results->originalListCount += 0;
     }
 
-    $meetingResults->filteredList = $filteredList;
-    return $meetingResults;
+    $meeting_results->filteredList = $filteredList;
+    return $meeting_results;
 }
 
 function getServiceBodyCoverage($latitude, $longitude) {

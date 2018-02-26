@@ -13,28 +13,30 @@
     date_default_timezone_set($time_zone_results->zoneName);
     $today = date("w") + $future;
     $tomorrow = (new DateTime('tomorrow'))->format("w") + $future;
+    $results_count = isset($GLOBALS['result_count_number']) ? $GLOBALS['result_count_number'] : 5;
+
+    $meeting_results = new MeetingResults();
 
     try {
-        $search_results = meetingSearch($latitude, $longitude, $search_type, $today);
-        if (count($search_results->filteredList) == 0) {
-            $search_results = meetingSearch($latitude, $longitude, $search_type, $tomorrow);
+        $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $search_type, $today);
+        if (count($meeting_results->filteredList) < $results_count) {
+            $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $search_type, $tomorrow);
         }
     } catch (Exception $e) {
         header("Location: fallback.php");
         exit;
     }
 
-    $filtered_list = $search_results->filteredList;
+    $filtered_list = $meeting_results->filteredList;
     $sms_messages = [];
 
-    $results_count = isset($GLOBALS['result_count_number']) ? $GLOBALS['result_count_number'] : 5;
     $text_space = "\r\n";
     $message = "";
 ?>
 <Response>
 <?php
     if (!isset($_REQUEST["SmsSid"])) {
-        if ($search_results->originalListCount == 0) {
+        if ($meeting_results->originalListCount == 0) {
             echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">No results found, you might have an invalid entry.  Try again.</Say><Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
         } elseif (count($filtered_list) == 0) {
             echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">There are no other meetings for today.  Thank you for calling, goodbye.</Say>";
@@ -42,7 +44,7 @@
             echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Meeting information found, listing the top " . $results_count . " results.</Say>";
         }
     } else {
-        if ($search_results->originalListCount == 0) {
+        if ($meeting_results->originalListCount == 0) {
             echo "<Sms>No results found, you might have an invalid entry.  Try again.</Sms>";
         } elseif (count($filtered_list) == 0) {
             echo "<Sms>There are no other meetings for today.</Sms>";
