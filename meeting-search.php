@@ -13,7 +13,7 @@
     date_default_timezone_set($time_zone_results->zoneName);
     $today = date("w") + $future;
     $tomorrow = (new DateTime('tomorrow'))->format("w") + $future;
-    $results_count = isset($GLOBALS['result_count_number']) ? $GLOBALS['result_count_number'] : 5;
+    $results_count = isset($GLOBALS['result_count_max']) ? $GLOBALS['result_count_max'] : 5;
 
     $meeting_results = new MeetingResults();
 
