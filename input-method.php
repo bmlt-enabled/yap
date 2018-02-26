@@ -18,10 +18,10 @@
     
     	<?php 
 			if ($playTitle == "1") {
-			echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . $GLOBALS['title'] . "</Say>";
+				echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . $GLOBALS['title'] . "</Say>";
 			}
 		?>
-        
+       
         <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">Press 1 to search for <?php echo $searchDescription ?> by city or county name.</Say>
         <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">Press 2 to search for <?php echo $searchDescription ?> by zip code.</Say>
     </Gather>
