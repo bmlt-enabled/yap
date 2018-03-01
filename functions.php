@@ -13,6 +13,7 @@ class VolunteerInfo {
     public $weekday;
     public $origin_duration;
     public $origin_start_time;
+    public $time_zone;
 }
 
 class Coordinates {
@@ -166,6 +167,11 @@ function getNextMeetingInstance($meeting_day, $meeting_time) {
     return $mod_meeting_datetime;
 }
 
+function getNextShiftInstance($shift_day, $shift_time, $shift_tz) {
+    date_default_timezone_set($shift_tz->zoneName);
+    return getNextMeetingInstance($shift_day, $shift_time);
+}
+
 function getFormat($type) {
     $bmlt_search_endpoint = getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetFormats";
     $formats = json_decode(get($bmlt_search_endpoint));
@@ -225,7 +231,7 @@ function spreadSchedule($finalSchedule, $dayRepresented, $volunteerInfoItem) {
         // Loop through days, don't read the day that is already represented
         if ($dayRepresented !== $d) {
             $volunteerClone = clone $volunteerInfoItem;
-            $volunteerClone->start = getNextMeetingInstance($d, $volunteerInfoItem->origin_start_time)->format("Y-m-d H:i:s");
+            $volunteerClone->start = getNextShiftInstance($d, $volunteerInfoItem->origin_start_time, $volunteerClone->time_zone)->format("Y-m-d H:i:s");
             $volunteerClone->end = date_add(new DateTime($volunteerClone->start), date_interval_create_from_date_string($volunteerClone->origin_duration->getDurationFormat()))->format("Y-m-d H:i:s");
             $volunteerClone->weekday = $GLOBALS['days_of_the_week'][$d];
             $volunteerClone->weekday_id = $d;
@@ -242,7 +248,8 @@ function getVolunteerInfo($volunteers) {
     for ($v = 0; $v < count($volunteers); $v++) {
         $volunteerInfo = new VolunteerInfo();
         $volunteerInfo->title = $volunteers[$v]->meeting_name;
-        $volunteerInfo->start = getNextMeetingInstance($volunteers[$v]->weekday_tinyint, $volunteers[$v]->start_time)->format("Y-m-d H:i:s");
+        $volunteerInfo->time_zone = getTimeZoneForCoordinates($volunteers[$v]->latitude, $volunteers[$v]->longitude);
+        $volunteerInfo->start = getNextShiftInstance($volunteers[$v]->weekday_tinyint, $volunteers[$v]->start_time, $volunteerInfo->time_zone)->format("Y-m-d H:i:s");
         $volunteerInfo->origin_duration = getDurationInterval($volunteers[$v]->duration_time);
         $volunteerInfo->end = date_add(new DateTime($volunteerInfo->start), date_interval_create_from_date_string($volunteerInfo->origin_duration->getDurationFormat()))->format("Y-m-d H:i:s");
         $volunteerInfo->weekday_id = intval($volunteers[$v]->weekday_tinyint);
@@ -254,15 +261,15 @@ function getVolunteerInfo($volunteers) {
     return array($volunteerNames, $finalSchedule);
 }
 
-function countOccurences($initialSchedule, $volunteerName) {
-    $occurences = 0;
+function countOccurrences($initialSchedule, $volunteerName) {
+    $occurrences = 0;
     for ($v = 0; $v <= count($initialSchedule); $v++) {
         if ($initialSchedule[$v]["title"] == $volunteerName) {
-            $occurences++;
+            $occurrences++;
         }
     }
 
-    return $occurences > 1;
+    return $occurrences > 1;
 }
 
 function getDurationInterval($duration_time) {
