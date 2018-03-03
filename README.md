@@ -130,9 +130,11 @@ You can also supply a list of volunteers in a BMLT server.
 3) Make a new meeting (do not publish it).
 4) For the meeting name use the volunteer's name.
 5) Select the appropriate service body in the dropdown.  (Note: this service body must be set to "yap" as the helpline in Step #2)
-6) Select "HV" as the format.
-7) Under the phone 1 field, enter this persons phone number.
-8) Since this will be querying unpublished values you must set in `config.php` the BMLT server credentials.
+6) Set the Start Time and Duration which will determine the length of the shift (this will recur every day unless you create additional volunteer entries that match the name)
+7) Set the Location, this is currently used to specify what timezone the volunteer is in (in the future it may help with more succinct locating).
+8) Select "HV" as the format.
+9) Under the phone 1 field, enter this persons phone number.
+10) Since this will be querying unpublished values you must set in `config.php` the BMLT server credentials.
    
 ```   
    static $bmlt_username = "";
@@ -141,7 +143,6 @@ You can also supply a list of volunteers in a BMLT server.
 
 Some additional details on this:
 
-- If you specify only one day of a volunteer shift, it will be assumed re-occuring
 - You can visualize the shift schedule by going to http://example.com/yap/schedule.html and selecting from the dropdown.
 
 ## Contribute

@@ -14,6 +14,7 @@ class VolunteerInfo {
     public $origin_duration;
     public $origin_start_time;
     public $time_zone;
+    public $contact;
 }
 
 class Coordinates {
@@ -182,15 +183,31 @@ function getFormat($type) {
     }
 }
 
-function getHelplineVolunteer($service_body_int, $format_id, $tracker) {
-    auth_bmlt();
-    $bmlt_search_endpoint = getHelplineBMLTRootServer() . '/client_interface/json/?switcher=GetSearchResults&services='.$service_body_int.'&formats='.$format_id.'&advanced_published=0';
-    $volunteers = json_decode(get($bmlt_search_endpoint));
-    if ($tracker > count($volunteers) - 1) {
-        $tracker = count($volunteers) - 1;
+function getHelplineVolunteersActiveNow($service_body_int) {
+    $volunteers = json_decode(getHelplineSchedule($service_body_int));
+    $activeNow = [];
+    for ($v = 0; $v < count($volunteers); $v++) {
+        date_default_timezone_set($volunteers[$v]->time_zone->zoneName);
+        $current_time = new DateTime();
+        if ($current_time >= (new DateTime($volunteers[$v]->start)) && $current_time <= (new DateTime($volunteers[$v]->end))) {
+            array_push($activeNow, $volunteers[$v]);
+        }
     }
 
-    return explode("#@-@#", $volunteers[$tracker]->contact_phone_1)[2];
+    return $activeNow;
+}
+
+function getHelplineVolunteer($service_body_int, $tracker) {
+    $volunteers = getHelplineVolunteersActiveNow($service_body_int);
+    if (count($volunteers) > 0) {
+        if ($tracker > count($volunteers) - 1) {
+            $tracker = count($volunteers) - 1;
+        }
+
+        return explode("#@-@#", $volunteers[$tracker]->contact)[2];
+    } else {
+        return "000000000";
+    }
 }
 
 function getHelplineSchedule($service_body_int) {
@@ -202,6 +219,15 @@ function getHelplineSchedule($service_body_int) {
     $finalSchedule = flattenSchedule($volunteerShiftCounts, $finalSchedule);
 
     return json_encode($finalSchedule);
+}
+
+function filterOut($volunteers) {
+    $volunteers_array = json_decode($volunteers);
+    for ($v = 0; $v < count($volunteers_array); $v++) {
+        unset($volunteers_array[$v]->contact);
+    }
+
+    return json_encode($volunteers_array);
 }
 
 function flattenSchedule($volunteerShiftCounts, $finalSchedule) {
@@ -255,6 +281,7 @@ function getVolunteerInfo($volunteers) {
         $volunteerInfo->weekday_id = intval($volunteers[$v]->weekday_tinyint);
         $volunteerInfo->weekday = $GLOBALS['days_of_the_week'][$volunteers[$v]->weekday_tinyint];
         $volunteerInfo->origin_start_time = $volunteers[$v]->start_time;
+        $volunteerInfo->contact = $volunteers[$v]->contact_phone_1;
         array_push($volunteerNames, $volunteers[$v]->meeting_name);
         array_push($finalSchedule, $volunteerInfo);
     }
