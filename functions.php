@@ -84,13 +84,11 @@ function helplineSearch($latitude, $longitude) {
 }
 
 function meetingSearch($meeting_results, $latitude, $longitude, $search_type, $day) {
-    if ($GLOBALS['meeting_search_radius'] == null) {
-        $GLOBALS['meeting_search_radius'] = -50;
-    }
+	$meetingsearch = isset($GLOBALS['meeting_search_radius']) ? $GLOBALS['meeting_search_radius'] : -50;
     if ($search_type == 1) { // Close to you
-        $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $GLOBALS['meeting_search_radius'] . "&weekdays=" . $day;
+        $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $meetingsearch . "&weekdays=" . $day;
     } else if ($search_type == 2) { // Upcoming
-        $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_keys=start_time&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $GLOBALS['meeting_search_radius'] . "&weekdays=" . $day;
+        $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_keys=start_time&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $meetingsearch . "&weekdays=" . $day;
     }
 
     $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
