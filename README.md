@@ -33,6 +33,21 @@ static $result_count_max = 10;
 
 This would set to a maximum of ten (10) results.
 
+## Meeting Search Radius ##
+
+Change the default meeting search radius, this can be in miles or a negative number which would set the radius at the first n results. You can change this in your `config.php` with the following:
+
+```php
+static $meeting_search_radius = 30;
+```
+This would set the radius to a maximum of 30 miles.
+
+```php
+static $meeting_search_radius = -50;
+```
+This would set the radius at the first 50 results and is the default.
+
+
 ## Helpline Call Routing
 
 The helpline router utilizes a BMLT server (2.9.0 or later), that has helpline numbers properly configured in the "Service Body Administration" section.  
