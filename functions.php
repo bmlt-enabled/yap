@@ -176,7 +176,7 @@ function getNextShiftInstance($shift_day, $shift_time, $shift_tz) {
 function getFormat($type) {
     $bmlt_search_endpoint = getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetFormats";
     $formats = json_decode(get($bmlt_search_endpoint));
-    for ($f = 0; $f <= count($formats); $f++) {
+    for ($f = 0; $f < count($formats); $f++) {
         if ($formats[$f]->key_string == $type) {
             return $formats[$f]->id;
         }
@@ -210,13 +210,16 @@ function getHelplineVolunteer($service_body_int, $tracker) {
     }
 }
 
-function getHelplineSchedule($service_body_int) {
+function getFormatResults($service_body_int, $format_code) {
     auth_bmlt();
-    $bmlt_search_endpoint = getHelplineBMLTRootServer() . '/client_interface/json/?switcher=GetSearchResults&services='.$service_body_int.'&formats='.getFormat('HV').'&advanced_published=0';
-    $volunteers = json_decode(get($bmlt_search_endpoint));
+    $bmlt_search_endpoint = getHelplineBMLTRootServer() . '/client_interface/json/?switcher=GetSearchResults&services='.$service_body_int.'&formats='.getFormat($format_code).'&advanced_published=0';
+    return get($bmlt_search_endpoint);
+}
+
+function getHelplineSchedule($service_body_int) {
+    $volunteers = json_decode(getFormatResults($service_body_int, 'HV'));
     list($volunteerNames, $finalSchedule) = getVolunteerInfo($volunteers);
-    $volunteerShiftCounts = array_count_values($volunteerNames);
-    $finalSchedule = flattenSchedule($volunteerShiftCounts, $finalSchedule);
+    $finalSchedule = flattenSchedule(array_count_values($volunteerNames), $finalSchedule);
 
     return json_encode($finalSchedule);
 }
