@@ -62,6 +62,15 @@ When configuring the TwiML app instead of pointing to `index.php` point to `inpu
 
 If you still want the title to display also point to `input-method.php?Digits=2&PlayTitle=1`.
 
+## Helpline Search Radius ##
+
+Change the default helpline search radius, this is in miles. You can change this in your `config.php` with the following:
+
+```php
+static $helpline_search_radius = 30;
+```
+This would set the radius to a maximum of 30 miles and is the default.
+
 ## Including province prior to lookup
 
 It may be that your yap instance needs to search multiple states.  By default yap will be biased towards the local number state (unless it's tollfree).  To enable province lookup set the `$province_lookup`, variable to `true` in the `config.php` file.  
