@@ -168,6 +168,8 @@ You can also supply a list of volunteers in a BMLT server.
 Some additional details on this:
 
 - You can visualize the shift schedule by going to http://example.com/yap/schedule.html and selecting from the dropdown.
+- If you want to have a volunteer that always is on, then set the start time to "Midnight" and the Duration "Open-Ended"
+- You can also control the sequence by specifying "Location Info".  This will be sorted numerically ascending.  (for example 0 is the highest, 99 is the lowest)
 
 ## Contribute
 
