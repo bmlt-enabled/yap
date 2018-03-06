@@ -204,10 +204,12 @@ function getHelplineVolunteer($service_body_int, $tracker) {
             $tracker = count($volunteers) - 1;
         }
 
-        return explode("#@-@#", $volunteers[$tracker]->contact)[2];
-    } else {
-        return "000000000";
+        if (isset($volunteers[$tracker]->contact) && $volunteers[$tracker]->contact != "") {
+            return explode("#@-@#", $volunteers[$tracker]->contact)[2];
+        }
     }
+
+    return "000000000";
 }
 
 function getFormatResults($service_body_int, $format_code) {
@@ -220,6 +222,10 @@ function getHelplineSchedule($service_body_int) {
     $volunteers = json_decode(getFormatResults($service_body_int, 'HV'));
     list($volunteerNames, $finalSchedule) = getVolunteerInfo($volunteers);
     $finalSchedule = flattenSchedule(array_count_values($volunteerNames), $finalSchedule);
+
+    usort($finalSchedule, function($a, $b) {
+        return $a->sequence > $b->sequence;
+    });
 
     return json_encode($finalSchedule);
 }
