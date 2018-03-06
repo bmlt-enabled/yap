@@ -1,7 +1,7 @@
 <?php
 include 'config.php';
 $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . $google_maps_api_key . "&address=";
-static $timezone_lookup_endpoint = "https://api.timezonedb.com/v2/get-time-zone?key=M007J6ZZ6OI1&format=json&by=position";
+$timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key" . $google_maps_api_key;
 # BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
 static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -11,6 +11,7 @@ class VolunteerInfo {
     public $end;
     public $weekday_id;
     public $weekday;
+    public $sequence;
     public $origin_duration;
     public $origin_start_time;
     public $time_zone;
@@ -54,7 +55,7 @@ function getCoordinatesForAddress($address) {
 }
 
 function getTimeZoneForCoordinates($latitude, $longitude) {
-    $time_zone = get($GLOBALS['timezone_lookup_endpoint'] . "&lat=" . $latitude . "&lng=" . $longitude);
+    $time_zone = get($GLOBALS['timezone_lookup_endpoint'] . "&location=" . $latitude . "," . $longitude . "&timestamp=" . time());
     return json_decode($time_zone);
 }
 
@@ -168,7 +169,7 @@ function getNextMeetingInstance($meeting_day, $meeting_time) {
 }
 
 function getNextShiftInstance($shift_day, $shift_time, $shift_tz) {
-    date_default_timezone_set($shift_tz->zoneName);
+    date_default_timezone_set($shift_tz->timeZoneId);
     return getNextMeetingInstance($shift_day, $shift_time);
 }
 
@@ -186,7 +187,7 @@ function getHelplineVolunteersActiveNow($service_body_int) {
     $volunteers = json_decode(getHelplineSchedule($service_body_int));
     $activeNow = [];
     for ($v = 0; $v < count($volunteers); $v++) {
-        date_default_timezone_set($volunteers[$v]->time_zone->zoneName);
+        date_default_timezone_set($volunteers[$v]->time_zone->timeZoneId);
         $current_time = new DateTime();
         if ($current_time >= (new DateTime($volunteers[$v]->start)) && $current_time <= (new DateTime($volunteers[$v]->end))) {
             array_push($activeNow, $volunteers[$v]);
@@ -282,6 +283,7 @@ function getVolunteerInfo($volunteers) {
         $volunteerInfo->end = date_add(new DateTime($volunteerInfo->start), date_interval_create_from_date_string($volunteerInfo->origin_duration->getDurationFormat()))->format("Y-m-d H:i:s");
         $volunteerInfo->weekday_id = intval($volunteers[$v]->weekday_tinyint);
         $volunteerInfo->weekday = $GLOBALS['days_of_the_week'][$volunteers[$v]->weekday_tinyint];
+        $volunteerInfo->sequence = $volunteers[$v]->location_info != null ? intval($volunteers[$v]->location_info) : 0;
         $volunteerInfo->origin_start_time = $volunteers[$v]->start_time;
         $volunteerInfo->contact = $volunteers[$v]->contact_phone_1;
         array_push($volunteerNames, $volunteers[$v]->meeting_name);

@@ -10,7 +10,7 @@
     $future = isset($_REQUEST['Future']) ? $_REQUEST['Future'] : 1;
     $time_zone_results = getTimeZoneForCoordinates($latitude, $longitude);
     # Could be wired up to use multiple roots in the future by using a parameter to select
-    date_default_timezone_set($time_zone_results->zoneName);
+    date_default_timezone_set($time_zone_results->timeZoneId);
     $today = date("w") + $future;
     $tomorrow = (new DateTime('tomorrow'))->format("w") + $future;
     $results_count = isset($GLOBALS['result_count_max']) ? $GLOBALS['result_count_max'] : 5;
