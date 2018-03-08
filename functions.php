@@ -139,6 +139,23 @@ function getServiceBodyCoverage($latitude, $longitude) {
     }
 }
 
+function getMeetings($latitude, $longitude, $search_type)
+{
+    $time_zone_results = getTimeZoneForCoordinates($latitude, $longitude);
+    # Could be wired up to use multiple roots in the future by using a parameter to select
+    date_default_timezone_set($time_zone_results->timeZoneId);
+    $today = date("w") + 1;
+    $tomorrow = (new DateTime('tomorrow'))->format("w") + 1;
+    $results_count = isset($GLOBALS['result_count_max']) ? $GLOBALS['result_count_max'] : 5;
+
+    $meeting_results = new MeetingResults();
+    $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $search_type, $today);
+    if (count($meeting_results->filteredList) < $results_count) {
+        $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $search_type, $tomorrow);
+    }
+    return $meeting_results;
+}
+
 function getServiceBodies() {
     $bmlt_search_endpoint = getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetServiceBodies";
     return json_decode(get($bmlt_search_endpoint));
@@ -342,6 +359,22 @@ function get($url) {
     curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookie.txt');
     curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $data = curl_exec($ch);
+    $errorno = curl_errno($ch);
+    curl_close($ch);
+    if ($errorno > 0) {
+        throw new Exception(curl_strerror($errorno));
+    }
+
+    return $data;
+}
+
+function post($url, $payload) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
     $data = curl_exec($ch);
     $errorno = curl_errno($ch);
     curl_close($ch);

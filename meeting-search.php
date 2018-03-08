@@ -7,27 +7,16 @@
     $latitude = $_REQUEST['Latitude'];
     $longitude = $_REQUEST['Longitude'];
     $search_type = $_REQUEST['SearchType'];
-    $future = isset($_REQUEST['Future']) ? $_REQUEST['Future'] : 1;
-    $time_zone_results = getTimeZoneForCoordinates($latitude, $longitude);
-    # Could be wired up to use multiple roots in the future by using a parameter to select
-    date_default_timezone_set($time_zone_results->timeZoneId);
-    $today = date("w") + $future;
-    $tomorrow = (new DateTime('tomorrow'))->format("w") + $future;
-    $results_count = isset($GLOBALS['result_count_max']) ? $GLOBALS['result_count_max'] : 5;
-
-    $meeting_results = new MeetingResults();
 
     try {
-        $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $search_type, $today);
-        if (count($meeting_results->filteredList) < $results_count) {
-            $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $search_type, $tomorrow);
-        }
+        $meeting_results = getMeetings($latitude, $longitude, $search_type);
     } catch (Exception $e) {
         header("Location: fallback.php");
         exit;
     }
 
     $filtered_list = $meeting_results->filteredList;
+    $results_count = $results_count = isset($GLOBALS['result_count_max']) ? $GLOBALS['result_count_max'] : 5;
     $sms_messages = [];
 
     $text_space = "\r\n";
