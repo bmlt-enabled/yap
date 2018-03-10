@@ -339,6 +339,15 @@ function getHelplineBMLTRootServer() {
     return isset($GLOBALS['helpline_bmlt_root_server']) ? $GLOBALS['helpline_bmlt_root_server'] : $GLOBALS['bmlt_root_server'];
 }
 
+function setFacebookMessengerOptions() {
+    $payload = [
+        'get_started' => ['payload' => 'FUTURE_USE'],
+        'greeting' => array(['locale' => 'default', 'text' => 'Hello {{user_first_name}}, ' . $GLOBALS['title']])
+    ];
+
+    post("https://graph.facebook.com/v2.6/me/messenger_profile?access_token=" . $GLOBALS['fbmessenger_accesstoken'], $payload);
+}
+
 function auth_bmlt() {
     if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
         $ch = curl_init();
@@ -370,6 +379,7 @@ function get($url) {
 }
 
 function post($url, $payload) {
+    error_log($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_POST, 1);

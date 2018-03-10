@@ -184,17 +184,19 @@ Some additional details on this:
 static $fbmessenger_accesstoken = '';
 ```
 
-5) Add a new webhook.
-6) The callback URL will be your Yap server pointing to the file `fbmessenger-gateway.php`.
-7) The verify token is an arbitrary secret which you use to verify that the request is coming from Facebook.  It prevents someone from hijacking your endpoint and flooding with messages.  Set the value you pick to the value in config.php:
+5) The verify token is an arbitrary secret which you use to verify that the request is coming from Facebook.  It prevents someone from hijacking your endpoint and flooding with messages.  Set the value you pick to the value in config.php:
 
 ```php
 static $fbmessenger_verifytoken = '';
 ```
 
-8) Select "messages" under subscription fields.
+6) Add a new webhook.
+7) The callback URL will be your Yap server pointing to the file `fbmessenger-gateway.php`.
+8) Select "messages" and "messaging_postbacks" under subscription fields.
 9) Once you've created your webhook, assign it to the page you created.
 10) By default you will be in development mode and you should be able to search for the bot under your messenger on your personal account.  Once you are satisfied you can turn on the bot, which will allow other people to find it.
+
+Note: If you decide to change the `$title` in your config.php, you will have to force a refresh on your Facebook Messenger settings by calling `http://your-yap-server/fbmessenger-reboot.php`.  After this is done, it may take some time for Facebook to show these changes.
 
 ## Contribute
 
