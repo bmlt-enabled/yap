@@ -3,15 +3,7 @@ include 'config.php';
 include 'functions.php';
 
 if (isset($_REQUEST['hub_verify_token']) && $_REQUEST['hub_verify_token'] === $GLOBALS['fbmessenger_verifytoken']) {
-    ignore_user_abort(true);
-    set_time_limit(0);
-    ob_start();
     echo $_REQUEST['hub_challenge'];
-    header('Connection: close');
-    header('Content-Length: '.ob_get_length());
-    ob_end_flush();
-    ob_flush();
-    setFacebookMessengerOptions();
     exit;
 }
 
