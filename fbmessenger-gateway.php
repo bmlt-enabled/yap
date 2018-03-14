@@ -7,16 +7,24 @@ if (isset($_REQUEST['hub_verify_token']) && $_REQUEST['hub_verify_token'] === $G
     exit;
 }
 
-$input = json_decode(file_get_contents('php://input'), true);
-$senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
-$messageText = $input['entry'][0]['messaging'][0]['message']['text'];
-$payload = null;
+$input     = json_decode(file_get_contents('php://input'), true);
+$messaging = $input['entry'][0]['messaging'][0];
+$messaging_attachment_payload = $input['entry'][0]['messaging'][0]['message']['attachments'][0]['payload'];
+$senderId  = $messaging['sender']['id'];
+if ($messaging['message']['text'] !== null) {
+	$messageText = $messaging['message']['text'];
+	$coordinates = getCoordinatesForAddress($messageText);
+} elseif ($messaging_attachment_payload !== null) {
+	$coordinates = new Coordinates();
+	$coordinates->latitude = $messaging_attachment_payload['coordinates']['lat'];
+	$coordinates->longitude = $messaging_attachment_payload['coordinates']['long'];
+}
+ $payload = null;
 $answer = "";
 
 if (isset($input['entry'][0]['messaging'][0]['postback']['title']) && $input['entry'][0]['messaging'][0]['postback']['title'] == "Get Started") {
     sendMessage($GLOBALS['title'] .  ".  You can search for meetings by entering a City, County or Zip Code.");
 } else {
-    $coordinates = getCoordinatesForAddress($messageText);
     if ($coordinates->latitude !== null && $coordinates->longitude !== null) {
         try {
             $meeting_results = getMeetings($coordinates->latitude, $coordinates->longitude, 1);
