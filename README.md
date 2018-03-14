@@ -16,12 +16,12 @@ We are taking advantage of using Twilio which essentially handles all the VOIP p
 
 3. Try testing that your application actually is functioning properly by opening a browser http://example.com/index.php.  
 
-3. You will need to set up a Twilio account, and do the following:
+4. You will need to set up a Twilio account, and do the following:
 * Purchase a phone number (typically you would buy one for your locale, tollfree is pretty much unnecessary these days).
 * Configure that number to point to a Webook.  It would be something like http://example.com/index.php.
 * Ensure that you are using HTTP GET and not HTTP POST.
 
-4. Make a call to your number and try it out.  If there is a problem the debugger in the Twilio console will let you know why.  Most likely you did not setup your config.php file correctly.
+5. Make a call to your number and try it out.  If there is a problem the debugger in the Twilio console will let you know why.  Most likely you did not setup your config.php file correctly.
 
 ## Results Counts Maximums ##
 
