@@ -7,13 +7,15 @@
     $service_body_id = $_REQUEST["service_body_id"];
     $phone_number = getHelplineVolunteer($service_body_id, $tracker);
     $call_status = isset($_REQUEST["DialCallStatus"]) ? $_REQUEST["DialCallStatus"] : "starting";
+    $call_timeout = isset($GLOBALS["call_timeout"]) ? $GLOBALS["call_timeout"] : 20;
 ?>
 <Response>
 <?php
     if ($call_status != "completed") { ?>
         <Dial method="GET"
-              callerId="<?php echo isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000" ?>"
-              action="helpline-dialer.php?service_body_id=<?php echo $service_body_id; ?>&amp;tracker=<?php echo $tracker; ?>&amp;Called=<?php echo urlencode(isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000") ?>">
+          timeout="<?php echo $call_timeout?>"
+          callerId="<?php echo isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000" ?>"
+          action="helpline-dialer.php?service_body_id=<?php echo $service_body_id; ?>&amp;tracker=<?php echo $tracker; ?>&amp;Called=<?php echo urlencode(isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000") ?>">
             <Number>
                 <?php echo $phone_number; ?>
             </Number>
