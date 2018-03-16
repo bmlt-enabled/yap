@@ -187,6 +187,9 @@ function getNextMeetingInstance($meeting_day, $meeting_time) {
 
 function getNextShiftInstance($shift_day, $shift_time, $shift_tz) {
     date_default_timezone_set($shift_tz->timeZoneId);
+    if ($shift_time == "23:59:00") {
+    	$shift_time = "00:00:00";
+    }
     return getNextMeetingInstance($shift_day, $shift_time);
 }
 
