@@ -19,11 +19,12 @@ if ($messaging['message']['text'] !== null) {
 	$coordinates->latitude = $messaging_attachment_payload['coordinates']['lat'];
 	$coordinates->longitude = $messaging_attachment_payload['coordinates']['long'];
 }
- $payload = null;
+
+$payload = null;
 $answer = "";
 
 if (isset($input['entry'][0]['messaging'][0]['postback']['title']) && $input['entry'][0]['messaging'][0]['postback']['title'] == "Get Started") {
-    sendMessage($GLOBALS['title'] .  ".  You can search for meetings by entering a City, County or Postal Code.");
+    sendMessage($GLOBALS['title'] .  ".  You can search for meetings by entering a City, County or Postal Code.  You can also send your location, using the button below.");
 } else {
     if ($coordinates->latitude !== null && $coordinates->longitude !== null) {
         try {
@@ -56,10 +57,15 @@ if (isset($input['entry'][0]['messaging'][0]['postback']['title']) && $input['en
 }
 
 function sendMessage($message) {
-    $payload = [
+    sendBotResponse([
         'recipient' => ['id' => $GLOBALS['senderId']],
-        'message' => ['text' => $message]
-    ];
+        'message' => [
+            'text' => $message,
+            'quick_replies' => array(['content_type' => 'location'])
+        ]
+    ]);
+}
 
+function sendBotResponse($payload) {
     post('https://graph.facebook.com/v2.6/me/messages?access_token=' . $GLOBALS['fbmessenger_accesstoken'], $payload);
 }
