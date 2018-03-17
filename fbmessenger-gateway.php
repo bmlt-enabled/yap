@@ -23,7 +23,7 @@ if ($messaging['message']['text'] !== null) {
 $answer = "";
 
 if (isset($input['entry'][0]['messaging'][0]['postback']['title']) && $input['entry'][0]['messaging'][0]['postback']['title'] == "Get Started") {
-    sendMessage($GLOBALS['title'] .  ".  You can search for meetings by entering a City, County or Zip Code.");
+    sendMessage($GLOBALS['title'] .  ".  You can search for meetings by entering a City, County or Postal Code.");
 } else {
     if ($coordinates->latitude !== null && $coordinates->longitude !== null) {
         try {
