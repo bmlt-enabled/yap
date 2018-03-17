@@ -51,7 +51,7 @@ if (isset($input['entry'][0]['messaging'][0]['postback']['title']) && $input['en
             sendMessage($message);
         }
     } else {
-        sendMessage("Location not recognized.  I only recognize City, County or Zip Code.");
+        sendMessage("Location not recognized.  I only recognize City, County or Postal Code.");
     }
 }
 
