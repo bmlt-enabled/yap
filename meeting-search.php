@@ -6,11 +6,10 @@
     
     $latitude = $_REQUEST['Latitude'];
     $longitude = $_REQUEST['Longitude'];
-    $search_type = $_REQUEST['SearchType'];
 
     try {
         $results_count = $results_count = isset($GLOBALS['result_count_max']) ? $GLOBALS['result_count_max'] : 5;
-        $meeting_results = getMeetings($latitude, $longitude, $search_type, $results_count);
+        $meeting_results = getMeetings($latitude, $longitude, $results_count);
     } catch (Exception $e) {
         header("Location: fallback.php");
         exit;

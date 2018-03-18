@@ -8,7 +8,7 @@
     if ($searchType == "1") {
         $action = "helpline-search.php";
     } else {
-        $action = "meeting-searchtype.php";
+        $action = "address-lookup.php";
     }
 ?>
 <Response>

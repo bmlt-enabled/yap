@@ -60,7 +60,9 @@ function getTimeZoneForCoordinates($latitude, $longitude) {
 }
 
 function getProvince() {
-    if (isset($_REQUEST['ToState']) && strlen($_REQUEST['ToState']) > 0) {
+    if (isset($GLOBALS['sms_bias_bypass']) && $GLOBALS['sms_bias_bypass']) {
+        return "";
+    } elseif (isset($_REQUEST['ToState']) && strlen($_REQUEST['ToState']) > 0) {
         return $_REQUEST['ToState']; // Retrieved from Twilio metadata
     } elseif ($GLOBALS['toll_free_province_bias'] != null) {
         return $GLOBALS['toll_free_province_bias']; // Override for Tollfree
@@ -82,13 +84,9 @@ function helplineSearch($latitude, $longitude) {
     return json_decode(get($search_url));
 }
 
-function meetingSearch($meeting_results, $latitude, $longitude, $search_type, $day) {
+function meetingSearch($meeting_results, $latitude, $longitude, $day) {
 	$meeting_search_radius = isset($GLOBALS['meeting_search_radius']) ? $GLOBALS['meeting_search_radius'] : -50;
-    if ($search_type == 1) { // Close to you
-        $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $meeting_search_radius . "&weekdays=" . $day;
-    } else if ($search_type == 2) { // Upcoming
-        $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_keys=start_time&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $meeting_search_radius . "&weekdays=" . $day;
-    }
+    $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $meeting_search_radius . "&weekdays=" . $day;
 
     $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
     try {
@@ -150,7 +148,7 @@ function getServiceBodyCoverage($latitude, $longitude) {
     }
 }
 
-function getMeetings($latitude, $longitude, $search_type, $results_count)
+function getMeetings($latitude, $longitude, $results_count)
 {
     $time_zone_results = getTimeZoneForCoordinates($latitude, $longitude);
     # Could be wired up to use multiple roots in the future by using a parameter to select
@@ -159,9 +157,9 @@ function getMeetings($latitude, $longitude, $search_type, $results_count)
     $tomorrow = (new DateTime('tomorrow'))->format("w") + 1;
 
     $meeting_results = new MeetingResults();
-    $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $search_type, $today);
+    $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $today);
     if (count($meeting_results->filteredList) < $results_count) {
-        $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $search_type, $tomorrow);
+        $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $tomorrow);
     }
     return $meeting_results;
 }
