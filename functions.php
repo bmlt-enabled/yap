@@ -183,7 +183,7 @@ function getYapBasedHelplines() {
 
 function isItPastTime($meeting_day, $meeting_time) {
     $next_meeting_time = getNextMeetingInstance($meeting_day, $meeting_time);
-    $time_zone_time = new DateTime("2018-03-17 09:30 PM EDT"); //new DateTime();
+    $time_zone_time = new DateTime();
     return $next_meeting_time <= $time_zone_time;
 }
 
