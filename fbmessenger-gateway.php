@@ -26,7 +26,9 @@ $payload = null;
 $answer = "";
 
 if (isset($input['entry'][0]['messaging'][0]['postback']['title']) && $input['entry'][0]['messaging'][0]['postback']['title'] == "Get Started") {
-    sendMessage($GLOBALS['title'] .  ".  You can search for meetings by entering a City, County or Postal Code.  You can also send your location, using the button below.");
+    sendMessage($GLOBALS['title'] . ".  You can search for meetings by entering a City, County or Postal Code.  You can also send your location, using the button below.");
+} elseif (isset($messageText) && strtoupper($messageText) == "THANK YOU") {
+    sendMessage( ":)" );
 } else {
     if ($coordinates->latitude !== null && $coordinates->longitude !== null) {
         try {
