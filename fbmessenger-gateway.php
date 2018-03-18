@@ -9,12 +9,14 @@ if (isset($_REQUEST['hub_verify_token']) && $_REQUEST['hub_verify_token'] === $G
 
 $input     = json_decode(file_get_contents('php://input'), true);
 $messaging = $input['entry'][0]['messaging'][0];
-$messaging_attachment_payload = $input['entry'][0]['messaging'][0]['message']['attachments'][0]['payload'];
+if (isset($input['entry'][0]['messaging'][0]['message']['attachments'])) {
+    $messaging_attachment_payload = $input['entry'][0]['messaging'][0]['message']['attachments'][0]['payload'];
+}
 $senderId  = $messaging['sender']['id'];
-if ($messaging['message']['text'] !== null) {
+if (isset($messaging['message']['text']) && $messaging['message']['text'] !== null) {
 	$messageText = $messaging['message']['text'];
 	$coordinates = getCoordinatesForAddress($messageText);
-} elseif ($messaging_attachment_payload !== null) {
+} elseif (isset($messaging_attachment_payload) && $messaging_attachment_payload !== null) {
 	$coordinates = new Coordinates();
 	$coordinates->latitude = $messaging_attachment_payload['coordinates']['lat'];
 	$coordinates->longitude = $messaging_attachment_payload['coordinates']['long'];
@@ -38,17 +40,9 @@ if (isset($input['entry'][0]['messaging'][0]['postback']['title']) && $input['en
         $filtered_list = $meeting_results->filteredList;
 
         for ($i = 0; $i < $results_count; $i++) {
-            $result_day = $filtered_list[$i]->weekday_tinyint;
-            $result_time = $filtered_list[$i]->start_time;
+            $results = getResultsString($filtered_list[$i]);
 
-            $part_1 = str_replace("&", "&amp;", $filtered_list[$i]->meeting_name);
-            $part_2 = str_replace("&", "&amp;", $GLOBALS['days_of_the_week'][$result_day]
-                . ' ' . (new DateTime($result_time))->format('g:i A'));
-            $part_3 = str_replace("&", "&amp;", $filtered_list[$i]->location_street
-                . " in " . $filtered_list[$i]->location_municipality
-                . ", " . $filtered_list[$i]->location_province);
-
-            $message = $part_1 . " " . $part_2 . " " . $part_3;
+            $message = $results[0] . " " . $results[1] . " " . $results[2];
             sendMessage($message);
         }
     } else {

@@ -119,6 +119,17 @@ function meetingSearch($meeting_results, $latitude, $longitude, $search_type, $d
     return $meeting_results;
 }
 
+function getResultsString($filtered_list) {
+    return array(
+        str_replace("&", "&amp;", $filtered_list->meeting_name),
+        str_replace("&", "&amp;", $GLOBALS['days_of_the_week'][$filtered_list->weekday_tinyint]
+                                        . ' ' . (new DateTime($filtered_list->start_time))->format('g:i A')),
+        str_replace("&", "&amp;", $filtered_list->location_street
+                                        . ($filtered_list->location_municipality !== "" ? " in " . $filtered_list->location_municipality : "")
+                                        . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")));
+
+}
+
 function getServiceBodyCoverage($latitude, $longitude) {
     $search_results = helplineSearch($latitude, $longitude);
     $service_bodies = getServiceBodies();
