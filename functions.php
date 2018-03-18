@@ -139,14 +139,13 @@ function getServiceBodyCoverage($latitude, $longitude) {
     }
 }
 
-function getMeetings($latitude, $longitude, $search_type)
+function getMeetings($latitude, $longitude, $search_type, $results_count)
 {
     $time_zone_results = getTimeZoneForCoordinates($latitude, $longitude);
     # Could be wired up to use multiple roots in the future by using a parameter to select
     date_default_timezone_set($time_zone_results->timeZoneId);
     $today = date("w") + 1;
     $tomorrow = (new DateTime('tomorrow'))->format("w") + 1;
-    $results_count = isset($GLOBALS['result_count_max']) ? $GLOBALS['result_count_max'] : 5;
 
     $meeting_results = new MeetingResults();
     $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $search_type, $today);
@@ -175,7 +174,7 @@ function getYapBasedHelplines() {
 
 function isItPastTime($meeting_day, $meeting_time) {
     $next_meeting_time = getNextMeetingInstance($meeting_day, $meeting_time);
-    $time_zone_time = new DateTime();
+    $time_zone_time = new DateTime("2018-03-17 09:30 PM EDT"); //new DateTime();
     return $next_meeting_time <= $time_zone_time;
 }
 

@@ -28,14 +28,14 @@ if (isset($input['entry'][0]['messaging'][0]['postback']['title']) && $input['en
 } else {
     if ($coordinates->latitude !== null && $coordinates->longitude !== null) {
         try {
-            $meeting_results = getMeetings($coordinates->latitude, $coordinates->longitude, 1);
+            $results_count = isset($GLOBALS['result_count_max']) ? $GLOBALS['result_count_max'] : 10;
+            $meeting_results = getMeetings($coordinates->latitude, $coordinates->longitude, 1, $results_count);
         } catch (Exception $e) {
             error_log($e);
             exit;
         }
 
         $filtered_list = $meeting_results->filteredList;
-        $results_count = isset($GLOBALS['result_count_max']) ? $GLOBALS['result_count_max'] : 10;
 
         for ($i = 0; $i < $results_count; $i++) {
             $result_day = $filtered_list[$i]->weekday_tinyint;

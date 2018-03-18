@@ -9,14 +9,14 @@
     $search_type = $_REQUEST['SearchType'];
 
     try {
-        $meeting_results = getMeetings($latitude, $longitude, $search_type);
+        $results_count = $results_count = isset($GLOBALS['result_count_max']) ? $GLOBALS['result_count_max'] : 5;
+        $meeting_results = getMeetings($latitude, $longitude, $search_type, $results_count);
     } catch (Exception $e) {
         header("Location: fallback.php");
         exit;
     }
 
     $filtered_list = $meeting_results->filteredList;
-    $results_count = $results_count = isset($GLOBALS['result_count_max']) ? $GLOBALS['result_count_max'] : 5;
     $sms_messages = [];
 
     $text_space = "\r\n";
