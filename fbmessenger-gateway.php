@@ -33,7 +33,7 @@ if (isset($input['entry'][0]['messaging'][0]['postback']['title']) && $input['en
     if ($coordinates->latitude !== null && $coordinates->longitude !== null) {
         try {
             $results_count = isset($GLOBALS['result_count_max']) ? $GLOBALS['result_count_max'] : 10;
-            $meeting_results = getMeetings($coordinates->latitude, $coordinates->longitude, 1, $results_count);
+            $meeting_results = getMeetings($coordinates->latitude, $coordinates->longitude, $results_count);
         } catch (Exception $e) {
             error_log($e);
             exit;
