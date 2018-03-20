@@ -26,7 +26,7 @@ $payload = null;
 $answer = "";
 
 if (isset($input['entry'][0]['messaging'][0]['postback']['title']) && $input['entry'][0]['messaging'][0]['postback']['title'] == "Get Started") {
-    sendMessage($GLOBALS['title'] . ".  You can search for meetings by entering a City, County or Postal Code.  You can also send your location, using the button below.");
+    sendMessage($GLOBALS['title'] . ".  You can search for meetings by entering a City, County or Postal Code, or even a Full Address.  You can also send your location, using the button below.  (Note: Distances, unless a precise location, will be estimates.");
 } elseif (isset($messageText) && strtoupper($messageText) == "THANK YOU") {
     sendMessage( ":)" );
 } else {
@@ -43,8 +43,9 @@ if (isset($input['entry'][0]['messaging'][0]['postback']['title']) && $input['en
 
         for ($i = 0; $i < $results_count; $i++) {
             $results = getResultsString($filtered_list[$i]);
+            $distance_string = "(" . round($filtered_list[$i]->distance_in_miles) . " mi / " . round($filtered_list[$i]->distance_in_km) . " km)";
 
-            $message = $results[0] . " " . $results[1] . " " . $results[2];
+            $message = $results[0] . " " . $results[1] . " " . $results[2] . " " . $distance_string;
             sendMessage($message);
         }
     } else {
