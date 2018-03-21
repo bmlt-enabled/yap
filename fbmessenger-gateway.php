@@ -50,10 +50,17 @@ function sendMeetingResults($coordinates, $results_start = 0) {
         $filtered_list = $meeting_results->filteredList;
 
         for ($i = $results_start; $i < $results_count; $i++) {
+            // Growth hacking
+            if ($i == 0) {
+                if (round($filtered_list[$i]->distance_in_miles) >= 100) {
+                    sendMessage("Greetings.  It's possible that your community is not covered by a BMLT root server yet.  Visit the BMLT community page, and publish post asking for help.  https://www.facebook.com/BMLT-656690394722060/");
+                }
+            }
+
             $results = getResultsString($filtered_list[$i]);
             $distance_string = "(" . round($filtered_list[$i]->distance_in_miles) . " mi / " . round($filtered_list[$i]->distance_in_km) . " km)";
 
-            $message = $results[0] . " " . $results[1] . " " . $results[2] . " " . $distance_string;
+            $message = $results[0] . "\n" . $results[1] . "\n" . $results[2] . "\n" . $distance_string;
             sendMessage($message, $coordinates, $results_count);
         }
     } else {
