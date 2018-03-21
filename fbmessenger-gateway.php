@@ -53,10 +53,12 @@ function sendMeetingResults($coordinates, $results_start = 0) {
             // Growth hacking
             if ($i == 0) {
                 if (round($filtered_list[$i]->distance_in_miles) >= 100) {
-                    sendHackMessage("Info",
+                    /*sendHackMessage("Info",
                         "Your community may not be covered by the BMLT yet.  Visit for and post help.",
                         "BMLT Community Page",
-                        "https://www.facebook.com/BMLT-656690394722060/");
+                        "https://www.facebook.com/BMLT-656690394722060/");*/
+
+                    sendMessage("Your community may not be covered by the BMLT yet.  Visit for and post help. https://www.facebook.com/BMLT-656690394722060/");
                 }
             }
 
