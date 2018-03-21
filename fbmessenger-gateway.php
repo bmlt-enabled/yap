@@ -53,11 +53,6 @@ function sendMeetingResults($coordinates, $results_start = 0) {
             // Growth hacking
             if ($i == 0) {
                 if (round($filtered_list[$i]->distance_in_miles) >= 100) {
-                    /*sendHackMessage("Info",
-                        "Your community may not be covered by the BMLT yet.  Visit for and post help.",
-                        "BMLT Community Page",
-                        "https://www.facebook.com/BMLT-656690394722060/");*/
-
                     sendMessage("Your community may not be covered by the BMLT yet.  Visit for and post help. https://www.facebook.com/BMLT-656690394722060/");
                 }
             }
@@ -90,29 +85,6 @@ function sendMessage($message, $coordinates = null, $results_count = 0) {
         'message' => [
             'text' => $message,
             'quick_replies' => $quick_replies_payload
-        ]
-    ]);
-}
-
-function sendHackMessage($title, $message, $button_name, $button_url) {
-    sendBotResponse([
-        'recipient' => ['id' => $GLOBALS['senderId']],
-        'message' => [
-            'attachment' => [
-                'type' => 'template',
-                'payload' => [
-                    'template_type' => 'generic',
-                    'elements' => array([
-                        'title' => $title,
-                        'subtitle' => $message,
-                        'buttons' => array([
-                            'type' => 'web_url',
-                            'url' => $button_url,
-                            'title' => $button_name
-                        ])
-                    ])
-                ]
-            ]
         ]
     ]);
 }
