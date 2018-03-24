@@ -39,6 +39,11 @@ class MeetingResults {
     public $filteredList = [];
 }
 
+class GatherMods {
+    public $language;
+    public $hints;
+}
+
 function getCoordinatesForAddress($address) {
     $coordinates = new Coordinates();
 
@@ -69,6 +74,14 @@ function getProvince() {
     } else {
         return "";
     }
+}
+
+function getGatherLanguage() {
+    return isset($GLOBALS["gather_language"]) ? $GLOBALS["gather_language"] : "en-US";
+}
+
+function getGatherHints() {
+    return isset($GLOBALS["gather_hints"]) ? $GLOBALS["gather_hints"] : "";
 }
 
 function helplineSearch($latitude, $longitude) {
