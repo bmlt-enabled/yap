@@ -1,4 +1,5 @@
 <?php
+require_once 'vendor/autoload.php';
 include 'config.php';
 include 'functions.php';
 
@@ -7,11 +8,11 @@ if (isset($_REQUEST['hub_verify_token']) && $_REQUEST['hub_verify_token'] === $G
     exit;
 }
 
-$input     = json_decode(file_get_contents('php://input'), true);
+$input = json_decode(file_get_contents('php://input'), true);
 error_log(json_encode($input));
 $messaging = $input['entry'][0]['messaging'][0];
-if (isset($input['entry'][0]['messaging'][0]['message']['attachments'])) {
-    $messaging_attachment_payload = $input['entry'][0]['messaging'][0]['message']['attachments'][0]['payload'];
+if (isset($messaging['message']['attachments'])) {
+    $messaging_attachment_payload = $messaging['message']['attachments'][0]['payload'];
 }
 $senderId  = $messaging['sender']['id'];
 if (isset($messaging['message']['text']) && $messaging['message']['text'] !== null) {
@@ -26,22 +27,44 @@ if (isset($messaging['message']['text']) && $messaging['message']['text'] !== nu
 $payload = null;
 $answer = "";
 
-if (isset($input['entry'][0]['messaging'][0]['postback']['title']) && $input['entry'][0]['messaging'][0]['postback']['title'] == "Get Started") {
+if (isset($messaging['postback']['title'])
+    && $messaging['postback']['title'] == "Get Started") {
     sendMessage($GLOBALS['title'] . ".  You can search for meetings by entering a City, County or Postal Code, or even a Full Address.  You can also send your location, using the button below.  (Note: Distances, unless a precise location, will be estimates.)");
-} elseif (isset($messageText) && strtoupper($messageText) == "MORE RESULTS") {
-    $payload = json_decode($input['entry'][0]['messaging'][0]['message']['quick_reply']['payload']);
-    sendMeetingResults($payload->coordinates, $payload->results_start);
-} elseif (isset($messageText) && strtoupper($messageText) == "THANK YOU") {
+} elseif (isset($messageText)
+          && strtoupper($messageText) == "MORE RESULTS") {
+    $payload = json_decode( $messaging['message']['quick_reply']['payload'] );
+    sendMeetingResults( $payload->coordinates, $payload->results_start, $messaging['sender']['id'] );
+} elseif (isset($messaging['postback']['payload'])) {
+    $expiry_minutes = 5;
+    $payload = json_decode($messaging['postback']['payload']);
+    $client = new Predis\Client();
+    $client->setex('messenger_user_' . $messaging['sender']['id'], ($expiry_minutes * 60), json_encode($payload));
+    sendMessage('The day has been set to ' . $payload->set_day . ".  This setting will reset to lookup Today's meetings in 5 minutes.");
+} elseif (isset($messageText)
+          && strtoupper($messageText) == "THANK YOU") {
     sendMessage( ":)" );
 } else {
-    sendMeetingResults($coordinates);
+    sendMeetingResults($coordinates, $messaging['sender']['id']);
 }
 
-function sendMeetingResults($coordinates, $results_start = 0) {
+function getPostback($postback_title) {
+
+}
+
+function sendMeetingResults($coordinates, $sender_id, $results_start = 0) {
     if ($coordinates->latitude !== null && $coordinates->longitude !== null) {
         try {
             $results_count = (isset($GLOBALS['result_count_max']) ? $GLOBALS['result_count_max'] : 10) + $results_start;
-            $meeting_results = getMeetings($coordinates->latitude, $coordinates->longitude, $results_count);
+            $client = new Predis\Client();
+            $settings = json_decode($client->get('messenger_user_' . $sender_id));
+            $today = null;
+            $tomorrow = null;
+            if ($settings != null) {
+                if ($today == null) $today = (new DateTime($settings->set_day))->format('w') + 1;
+                if ($tomorrow == null) $tomorrow = (new DateTime($settings->set_day))->modify('+1 day')->format('w') + 1;
+            }
+
+            $meeting_results = getMeetings($coordinates->latitude, $coordinates->longitude, $results_count, $today, $tomorrow);
         } catch (Exception $e) {
             error_log($e);
             exit;
@@ -82,6 +105,7 @@ function sendMessage($message, $coordinates = null, $results_count = 0) {
 
     sendBotResponse([
         'recipient' => ['id' => $GLOBALS['senderId']],
+        'messaging_type' => 'RESPONSE',
         'message' => [
             'text' => $message,
             'quick_replies' => $quick_replies_payload
