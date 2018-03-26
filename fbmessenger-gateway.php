@@ -27,8 +27,8 @@ if (isset($messaging['message']['text']) && $messaging['message']['text'] !== nu
 $payload = null;
 $answer = "";
 
-if (isset($messaging['postback']['title'])
-    && $messaging['postback']['title'] == "Get Started") {
+if (isset($messaging['postback']['payload'])
+    && $messaging['postback']['payload'] == "get_started") {
     sendMessage($GLOBALS['title'] . ".  You can search for meetings by entering a City, County or Postal Code, or even a Full Address.  You can also send your location, using the button below.  (Note: Distances, unless a precise location, will be estimates.)");
     sendMessage("By default, results for today will show up.  You can adjust this setting using the menu below.");
 } elseif (isset($messageText)

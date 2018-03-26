@@ -373,7 +373,7 @@ function setFacebookMessengerOptions() {
     }
 
     $payload = [
-        'get_started' => ['payload' => 'FUTURE_USE'],
+        'get_started' => ['payload' => 'get_started'],
         'greeting' => array(
             ['locale' => $locale,
              'text' => 'Hello {{user_first_name}}, ' . $GLOBALS['title']]
