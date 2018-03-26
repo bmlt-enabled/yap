@@ -30,6 +30,7 @@ $answer = "";
 if (isset($messaging['postback']['title'])
     && $messaging['postback']['title'] == "Get Started") {
     sendMessage($GLOBALS['title'] . ".  You can search for meetings by entering a City, County or Postal Code, or even a Full Address.  You can also send your location, using the button below.  (Note: Distances, unless a precise location, will be estimates.)");
+    sendMessage("By default, results for today will show up.  You can adjust this setting using the menu below.");
 } elseif (isset($messageText)
           && strtoupper($messageText) == "MORE RESULTS") {
     $payload = json_decode( $messaging['message']['quick_reply']['payload'] );
@@ -39,7 +40,7 @@ if (isset($messaging['postback']['title'])
     $payload = json_decode($messaging['postback']['payload']);
     $client = new Predis\Client();
     $client->setex('messenger_user_' . $messaging['sender']['id'], ($expiry_minutes * 60), json_encode($payload));
-    sendMessage('The day has been set to ' . $payload->set_day . ".  This setting will reset to lookup Today's meetings in 5 minutes.");
+    sendMessage('The day has been set to ' . $payload->set_day . ".  This setting will reset to lookup Today's meetings in 5 minutes.  You can now search.");
 } elseif (isset($messageText)
           && strtoupper($messageText) == "THANK YOU") {
     sendMessage( ":)" );

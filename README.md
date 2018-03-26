@@ -200,7 +200,7 @@ Some additional details on this:
 
 ## Facebook Messenger Gateway (Meetings Lookup)
 
-* Your Yap server will have to have HTTPS/SSL enabled *
+**Your Yap server will have to have HTTPS/SSL enabled.  You will also need redis running locally.**
 
 1) Create a new app under your Facebook developer account https://developers.facebook.com/apps/.  Whatever you name it will be the name of your bot.  (Example: North Carolina Region of NA)
 2) Select "Messenger" as application product
