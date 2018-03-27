@@ -34,7 +34,7 @@ if (isset($messaging['postback']['payload'])
 } elseif (isset($messageText)
           && strtoupper($messageText) == "MORE RESULTS") {
     $payload = json_decode( $messaging['message']['quick_reply']['payload'] );
-    sendMeetingResults( $payload->coordinates, $payload->results_start, $messaging['sender']['id'] );
+    sendMeetingResults( $payload->coordinates, $messaging['sender']['id'], $payload->results_start);
 } elseif (isset($messaging['postback']['payload'])) {
     $expiry_minutes = 5;
     $payload = json_decode($messaging['postback']['payload']);
