@@ -18,7 +18,7 @@
     $filtered_list = $meeting_results->filteredList;
     $sms_messages = [];
 
-    $text_space = "\r\n";
+    $text_space = " ";
     $message = "";
 ?>
 <Response>
@@ -53,7 +53,9 @@
             echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . $results[2] . "</Say>";
         }
 
+        if (isset($GLOBALS['include_map_link']) && $GLOBALS['include_map_link']) $results[2] .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude;
         $message = "<Sms>" . $results[0] . $text_space . $results[1] . $text_space . $results[2] . "</Sms>";
+        error_log($message);
         if (isset($GLOBALS["sms_ask"]) && $GLOBALS["sms_ask"] && !isset($_REQUEST["SmsSid"])) {
             array_push($sms_messages, $message);
         } else {

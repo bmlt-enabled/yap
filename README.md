@@ -161,6 +161,14 @@ In order to use SMS to get a list of meetings you will configure Messaging to po
 
 Then you can send a zip code, county or city to your phone number and get back a response.
 
+## Adding Map Links
+
+Some older handsets are not capable of rendering maps links.  If you want to enable this feature add the following to your `config.php` file.
+
+```php
+$include_map_link = true;
+```
+
 ## Fallback
 
 There may be times when a root server is down, it's possible to redirect a call to another if this happens.  In your `config.php`, specify the following.
