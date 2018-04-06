@@ -44,6 +44,9 @@ if (isset($messaging['postback']['payload'])
 } elseif (isset($messageText)
           && strtoupper($messageText) == "THANK YOU") {
     sendMessage( ":)" );
+} elseif (isset($messageText)
+          && strtoupper($messageText) == "HELP") {
+    sendMessage( "To find more information on this messenger app visit https://github.com/radius314/yap" );
 } else {
     sendMeetingResults($coordinates, $messaging['sender']['id']);
 }
