@@ -479,7 +479,7 @@ function auth_bmlt() {
     if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/index.php');
-        curl_setopt($ch, CURLOPT_NOBODY, TRUE);
+        curl_setopt($ch, CURLOPT_NOBODY, true);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, "admin_action=login&c_comdef_admin_login=".$GLOBALS['bmlt_username']."&c_comdef_admin_password=".$GLOBALS['bmlt_password']);
         curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
