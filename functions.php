@@ -45,10 +45,12 @@ function getCoordinatesForAddress($address) {
     if (strlen($address) > 0) {
         $map_details_response = get($GLOBALS['google_maps_endpoint'] . urlencode($address));
         $map_details = json_decode($map_details_response);
-        $coordinates->location = $map_details->results[0]->formatted_address;
-        $geometry = $map_details->results[0]->geometry->location;
-        $coordinates->latitude = $geometry->lat;
-        $coordinates->longitude = $geometry->lng;
+        if (count($map_details->results) > 0) {
+            $coordinates->location  = $map_details->results[0]->formatted_address;
+            $geometry               = $map_details->results[0]->geometry->location;
+            $coordinates->latitude  = $geometry->lat;
+            $coordinates->longitude = $geometry->lng;
+        }
     }
 
     return $coordinates;

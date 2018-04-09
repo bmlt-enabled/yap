@@ -66,10 +66,19 @@
         if ($results_counter == $results_count) break;
     }
 
+    echo "<Pause length=\"2\"/>";
+
+    // Do not handle for the SMS gateway
     if (!isset($_REQUEST["SmsSid"]) && count($filtered_list) > 0) {
         if (count($sms_messages) > 0) {
-            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">If you would like these results to be texted... press any key now.</Say>";
-            echo "<Gather numDigits=\"1\" timeout=\"10\" action=\"sms-ask.php?Payload=" . urlencode(json_encode($sms_messages)) . "\" method=\"GET\"/>";
+            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Press 1 If you would like these results to be texted to you.</Say>";
+            if (isset($GLOBALS['infinite_searching']) && $GLOBALS['infinite_searching']) {
+                echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Press 2 if you would like to search again.  Press 3 if you would like to do both.</Say>";
+            }
+            echo "<Gather numDigits=\"1\" timeout=\"10\" action=\"post-call-action.php?Payload=" . urlencode(json_encode($sms_messages)) . "\" method=\"GET\"/>";
+        } elseif (isset($GLOBALS['infinite_searching']) && $GLOBALS['infinite_searching']) {
+            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Press 2 if you would like to search again.</Say>";
+            echo "<Gather numDigits=\"1\" timeout=\"10\" action=\"post-call-action.php\" method=\"GET\"/>";
         }
 
         echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Thank you for calling, goodbye.</Say>";
