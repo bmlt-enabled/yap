@@ -1,6 +1,7 @@
 [![Waffle.io - Columns and their card count](https://badge.waffle.io/radius314/yap.png?columns=all)](https://waffle.io/radius314/yap?utm_source=badge)
-# yap
+# yap-unstable
 
+## Warning this is breaking change and features are very unstable and rapidly changin.
 Requires a minimum of PHP 5.3.9 to use.
 
 The purposes of yap are :
@@ -15,7 +16,7 @@ We are taking advantage of using Twilio which essentially handles all the VOIP p
 
 **This will require that you have an SSL certificate installed on your webserver to transit a secure connection.  This is required by Twilio.**
 
-1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: https://github.com/radius314/yap/archive/1.0.0.zip.
+1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: https://github.com/radius314/yap/archive/unstable.zip.
 
 2. Once the application is configured you will need to customize the config.php file.  There are several settings there that are documented in that file.  There are a number of different ways to utilize the yap platform.  
 
