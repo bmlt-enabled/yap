@@ -1,6 +1,8 @@
 [![Waffle.io - Columns and their card count](https://badge.waffle.io/radius314/yap.png?columns=all)](https://waffle.io/radius314/yap?utm_source=badge)
 # yap
 
+Requires a minimum of PHP 5.3.9 to use.
+
 The purposes of yap are :
 * To be able to take the results of a BMLT root server and play it back through the telephone.  
 * To be able to set up routing rules for zip codes and helpline numbers with optional extension dialing.

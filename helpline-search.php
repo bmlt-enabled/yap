@@ -17,7 +17,16 @@
 <Response>
     <?php if (strpos($phone_number, 'yap') !== false) { ?>
         <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">Please wait while we connect your call...</Say>
-        <Redirect method="GET">helpline-dialer.php?service_body_id=<?php echo $service_body->id ?></Redirect>
+        <Dial>
+            <Conference startConferenceOnEnter="false"
+                        endConferenceOnExit="true"
+                        statusCallbackMethod="GET"
+                        statusCallback="brokers/outdial.php?service_body_id=<?php echo $service_body->id ?>&amp;called_number=<?php echo $_REQUEST['Called'] ?>"
+                        statusCallbackEvent="join"
+                        beep="false">
+                <?php echo getConferenceName($service_body->id); ?>
+            </Conference>
+        </Dial>
     <?php } else if ($phone_number != "") { ?>
         <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">Please stand by... relocating your call to <?php echo $location; ?>.</Say>    
         <Dial>

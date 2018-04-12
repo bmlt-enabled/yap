@@ -39,6 +39,10 @@ class MeetingResults {
     public $filteredList = [];
 }
 
+function getConferenceName($service_body_id) {
+    return $service_body_id . "_" . rand(1000000, 9999999) . "_" . time();
+}
+
 function getCoordinatesForAddress($address) {
     $coordinates = new Coordinates();
 
