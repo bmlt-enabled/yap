@@ -1,9 +1,23 @@
 <?php
 static $title = "";
 static $bmlt_root_server = "";
+//static $helpline_bmlt_root_server = "";
 static $voice = "woman";
 static $language = "en";
 static $google_maps_api_key = "";
 static $province_lookup = false;
 static $helpline_search_radius = 30; #in miles
 static $helpline_search_unpublished = false;
+static $twilio_account_sid = "";
+static $twilio_auth_token = "";
+static $gather_language = "en-US";
+static $sms_ask = false;
+static $call_timeout = 20;
+//static $bmlt_username = "";
+//static $bmlt_password = "";
+//static $toll_free_province_bias = "";
+//static $helpline_fallback = "";
+//static $fbmessenger_verifytoken = "";
+//static $fbmessenger_accesstoken = "";
+//static $sms_bias_bypass = true;
+//static $gather_hints = "";
