@@ -68,6 +68,10 @@ Each hint may not be more than 100 characters (including spaces).  You can use u
 $gather_hints = "";
 ```
 
+### Grace Period
+
+By default a 15 minute grace period will be applied.  This can be adjust by setting `$grace_minutes` in your `config.php`.
+
 ## Helpline Call Routing
 
 The helpline router utilizes a BMLT server (2.9.0 or later), that has helpline numbers properly configured in the "Service Body Administration" section.  
