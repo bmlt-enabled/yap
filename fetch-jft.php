@@ -19,4 +19,5 @@ $final_array = explode("\n", $without_tabs);
             }
         }
     ?>
+    <Hangup />
 </Response>
