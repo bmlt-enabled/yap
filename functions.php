@@ -192,10 +192,10 @@ function getYapBasedHelplines() {
     return json_encode($yapHelplines);
 }
 
-function isItPastTime($meeting_day, $meeting_time) {
+function isItPastTime($meeting_day, $meeting_time, $grace_period = 15) {
     $next_meeting_time = getNextMeetingInstance($meeting_day, $meeting_time);
     $time_zone_time = new DateTime();
-    return $next_meeting_time <= $time_zone_time;
+    return $next_meeting_time <= $time_zone_time + $grace_period;
 }
 
 function getNextMeetingInstance($meeting_day, $meeting_time) {
