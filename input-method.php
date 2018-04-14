@@ -9,8 +9,11 @@
     
     if ($searchType == "1") {
         $searchDescription = "someone to talk to";
-    } else {
+    } else if ($searchType == "2") {
         $searchDescription = "meetings";
+    } else {
+        header('Location: fetch-jft.php');
+        exit();
     }
 ?>
 <Response>
