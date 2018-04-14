@@ -70,7 +70,7 @@ $gather_hints = "";
 
 ### Grace Period
 
-By default a 15 minute grace period will be applied.  This can be adjust by setting `$grace_minutes` in your `config.php`.
+By default a 15 minute grace period will be applied.  This can be adjusted by setting `$grace_minutes` in your `config.php`.
 
 ## Helpline Call Routing
 
