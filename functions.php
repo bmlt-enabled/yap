@@ -158,15 +158,21 @@ function getServiceBodyCoverage($latitude, $longitude) {
     }
 }
 
-function getMeetings($latitude, $longitude, $results_count, $today = null, $tomorrow = null, $grace_minutes = 15) {
+function getGraceMinutes() {
+    return isset($GLOBALS['grace_minutes']) ? $GLOBALS['grace_minutes'] : 15;
+}
+
+function getMeetings($latitude, $longitude, $results_count, $today = null, $tomorrow = null) {
     $time_zone_results = getTimeZoneForCoordinates($latitude, $longitude);
     # Could be wired up to use multiple roots in the future by using a parameter to select
     date_default_timezone_set($time_zone_results->timeZoneId);
 
     if ($today == null) $today = (new DateTime())
-                                     ->modify(sprintf("-%s minutes", $grace_minutes) )
+                                     ->modify(sprintf("-%s minutes", getGraceMinutes()) )
                                      ->format( "w" ) + 1;
-    if ($tomorrow == null) $tomorrow = (new DateTime('tomorrow'))->format("w") + 1;
+    if ($tomorrow == null) $tomorrow = (new DateTime('tomorrow'))
+                                           ->modify(sprintf("-%s minutes", getGraceMinutes()) )
+                                           ->format("w") + 1;
 
     $meeting_results = new MeetingResults();
     $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $today);
@@ -174,6 +180,21 @@ function getMeetings($latitude, $longitude, $results_count, $today = null, $tomo
         $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $tomorrow);
     }
     return $meeting_results;
+}
+
+function isItPastTime($meeting_day, $meeting_time) {
+    $next_meeting_time = getNextMeetingInstance($meeting_day, $meeting_time);
+    $time_zone_time = new DateTime();
+    return $next_meeting_time <= $time_zone_time;
+}
+
+function getNextMeetingInstance($meeting_day, $meeting_time) {
+    $mod_meeting_day = (new DateTime())
+        ->modify(sprintf("-%s minutes", getGraceMinutes()))
+        ->modify($GLOBALS['days_of_the_week'][$meeting_day])->format("Y-m-d");
+    $mod_meeting_datetime = (new DateTime($mod_meeting_day . " " . $meeting_time))
+        ->modify(sprintf("+%s minutes", getGraceMinutes()));
+    return $mod_meeting_datetime;
 }
 
 function getServiceBodies() {
@@ -191,18 +212,6 @@ function getYapBasedHelplines() {
     }
 
     return json_encode($yapHelplines);
-}
-
-function isItPastTime($meeting_day, $meeting_time) {
-    $next_meeting_time = getNextMeetingInstance($meeting_day, $meeting_time);
-    $time_zone_time = new DateTime();
-    return $next_meeting_time <= $time_zone_time;
-}
-
-function getNextMeetingInstance($meeting_day, $meeting_time) {
-    $mod_meeting_day = (new DateTime($GLOBALS['days_of_the_week'][$meeting_day]))->format("Y-m-d");
-    $mod_meeting_datetime = new DateTime($mod_meeting_day . " " . $meeting_time);
-    return $mod_meeting_datetime;
 }
 
 function getNextShiftInstance($shift_day, $shift_time, $shift_tz) {

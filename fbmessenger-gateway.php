@@ -63,13 +63,12 @@ function sendMeetingResults($coordinates, $sender_id, $results_start = 0) {
             $settings = json_decode($client->get('messenger_user_' . $sender_id));
             $today = null;
             $tomorrow = null;
-            $grace_minutes = isset($GLOBALS['grace_minutes']) ? $GLOBALS['grace_minutes'] : 15;
             if ($settings != null) {
-                if ($today == null) $today = (new DateTime($settings->set_day))->modify(sprintf("-%s minutes", $grace_minutes) )->format('w') + 1;
+                if ($today == null) $today = (new DateTime($settings->set_day))->format('w') + 1;
                 if ($tomorrow == null) $tomorrow = (new DateTime($settings->set_day))->modify('+1 day')->format('w') + 1;
             }
 
-            $meeting_results = getMeetings($coordinates->latitude, $coordinates->longitude, $results_count, $today, $tomorrow, $grace_minutes);
+            $meeting_results = getMeetings($coordinates->latitude, $coordinates->longitude, $results_count, $today, $tomorrow);
         } catch (Exception $e) {
             error_log($e);
             exit;

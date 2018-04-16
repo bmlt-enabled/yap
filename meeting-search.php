@@ -9,8 +9,7 @@
 
     try {
         $results_count = $results_count = isset($GLOBALS['result_count_max']) ? $GLOBALS['result_count_max'] : 5;
-        $grace_minutes = isset($GLOBALS['grace_minutes']) ? $GLOBALS['grace_minutes'] : 15;
-        $meeting_results = getMeetings($latitude, $longitude, $results_count, null, null, $grace_minutes);
+        $meeting_results = getMeetings($latitude, $longitude, $results_count, null, null);
     } catch (Exception $e) {
         header("Location: fallback.php");
         exit;
