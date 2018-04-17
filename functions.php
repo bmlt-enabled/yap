@@ -167,16 +167,14 @@ function getMeetings($latitude, $longitude, $results_count, $today = null, $tomo
     # Could be wired up to use multiple roots in the future by using a parameter to select
     date_default_timezone_set($time_zone_results->timeZoneId);
 
-    if ($today == null) $today = (new DateTime())
-                                     ->modify(sprintf("-%s minutes", getGraceMinutes()) )
-                                     ->format( "w" ) + 1;
-    if ($tomorrow == null) $tomorrow = (new DateTime('tomorrow'))
-                                           ->modify(sprintf("-%s minutes", getGraceMinutes()) )
-                                           ->format("w") + 1;
+    $graced_date_time = (new DateTime())->modify(sprintf("-%s minutes", getGraceMinutes()));
+    if ($today == null) $today = $graced_date_time ->format( "w" ) + 1;
 
     $meeting_results = new MeetingResults();
     $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $today);
     if (count($meeting_results->filteredList) < $results_count) {
+        if ($tomorrow == null) $tomorrow = $graced_date_time->modify("+24 hours")->format("w") + 1;
+
         $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $tomorrow);
     }
     return $meeting_results;
@@ -262,7 +260,9 @@ function getHelplineVolunteer($service_body_int, $tracker) {
 }
 
 function getFormatResults($service_body_int, $format_code) {
-    auth_bmlt();
+    if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
+        auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password']);
+    }
     $bmlt_search_endpoint = getHelplineBMLTRootServer() . '/client_interface/json/?switcher=GetSearchResults&services='.$service_body_int.'&formats='.getFormat($format_code).'&advanced_published=0';
     return get($bmlt_search_endpoint);
 }
@@ -487,21 +487,20 @@ function setFacebookMessengerOptions() {
     post("https://graph.facebook.com/v2.6/me/messenger_profile?access_token=" . $GLOBALS['fbmessenger_accesstoken'], $payload);
 }
 
-function auth_bmlt() {
-    if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/index.php');
-        curl_setopt($ch, CURLOPT_NOBODY, true);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "admin_action=login&c_comdef_admin_login=".$GLOBALS['bmlt_username']."&c_comdef_admin_password=".$GLOBALS['bmlt_password']);
-        curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
-        curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap" );
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_exec($ch);
-        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-    }
+function auth_bmlt($username, $password) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php');
+    curl_setopt($ch, CURLOPT_NOBODY, true);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "admin_action=login&c_comdef_admin_login=".$username."&c_comdef_admin_password=".$password);
+    curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
+    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap" );
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_HEADER, true);
+    $res = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    return $res;
 }
 
 function get($url) {
