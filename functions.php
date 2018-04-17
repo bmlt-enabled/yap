@@ -261,10 +261,13 @@ function getHelplineVolunteer($service_body_int, $tracker) {
 
 function getFormatResults($service_body_int, $format_code) {
     if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
-        auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password']);
+        if (auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'])) {
+            $bmlt_search_endpoint = getHelplineBMLTRootServer() . '/client_interface/json/?switcher=GetSearchResults&services='.$service_body_int.'&formats='.getFormat($format_code).'&advanced_published=0';
+            return get($bmlt_search_endpoint);
+        }
     }
-    $bmlt_search_endpoint = getHelplineBMLTRootServer() . '/client_interface/json/?switcher=GetSearchResults&services='.$service_body_int.'&formats='.getFormat($format_code).'&advanced_published=0';
-    return get($bmlt_search_endpoint);
+
+    return null;
 }
 
 function getHelplineSchedule($service_body_int) {
@@ -490,17 +493,16 @@ function setFacebookMessengerOptions() {
 function auth_bmlt($username, $password) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php');
-    curl_setopt($ch, CURLOPT_NOBODY, true);
     curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, "admin_action=login&c_comdef_admin_login=".$username."&c_comdef_admin_password=".$password);
     curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
-    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap" );
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
+    curl_setopt($ch, CURLOPT_POSTFIELDS, 'admin_action=login&c_comdef_admin_login='.$username.'&c_comdef_admin_password='.$password);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_HEADER, true);
+    curl_setopt($ch, CURLOPT_HEADER, false);
     $res = curl_exec($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    return $res;
+    return !strpos($res, "NOT AUTHORIZED");
 }
 
 function get($url) {
@@ -509,7 +511,7 @@ function get($url) {
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookie.txt');
     curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
-    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap" );
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $data = curl_exec($ch);
     $errorno = curl_errno($ch);
