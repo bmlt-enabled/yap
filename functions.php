@@ -526,6 +526,22 @@ function check_auth() {
     return !strpos( $res,  "NOT AUTHORIZED" );
 }
 
+function logout_auth() {
+    $ch = curl_init();
+    curl_setopt( $ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=logout' );
+    curl_setopt( $ch, CURLOPT_POST, 1 );
+    curl_setopt( $ch, CURLOPT_COOKIEJAR, 'cookie.txt' );
+    curl_setopt( $ch, CURLOPT_COOKIEFILE, 'cookie.txt' );
+    curl_setopt( $ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
+    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+    curl_setopt( $ch, CURLOPT_HEADER,  false );
+    $res = curl_exec( $ch );
+    $http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+    curl_close( $ch );
+    error_log("logout_auth: " . $res);
+    return strpos( $res,  "BYTE" );
+}
+
 function get($url) {
     error_log($url);
     $ch = curl_init();
