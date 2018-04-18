@@ -8,7 +8,7 @@
 <link href="css/signin.css" rel="stylesheet">
 <div class="container">
 
-    <form class="form-signin" method="POST" action="api/authenticate.php">
+    <form class="form-signin" method="POST" action="auth_login.php">
         <h2 class="form-signin-heading">Yap</h2>
         <div id="no-auth-message"><?php echo isset($_REQUEST["auth"]) ? "Not Authorized" : "" ?></div>
         <label for="inputEmail" class="sr-only">Username</label>

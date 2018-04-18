@@ -502,11 +502,28 @@ function auth_bmlt($username, $password) {
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
     curl_setopt($ch, CURLOPT_POSTFIELDS, 'admin_action=login&c_comdef_admin_login='.$username.'&c_comdef_admin_password='.$password);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_HEADER, false);
+    curl_setopt($ch, CURLOPT_HEADER,  false);
     $res = curl_exec($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    return !strpos($res, "NOT AUTHORIZED");
+    error_log("auth_bmlt: " . $res);
+    return !strpos($res,  "NOT AUTHORIZED");
+}
+
+function check_auth() {
+    $ch = curl_init();
+    curl_setopt( $ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=get_permissions' );
+    curl_setopt( $ch, CURLOPT_POST, 1 );
+    curl_setopt( $ch, CURLOPT_COOKIEJAR, 'cookie.txt' );
+    curl_setopt( $ch, CURLOPT_COOKIEFILE, 'cookie.txt' );
+    curl_setopt( $ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
+    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+    curl_setopt( $ch, CURLOPT_HEADER,  false );
+    $res = curl_exec( $ch );
+    $http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+    curl_close( $ch );
+    error_log("check_auth: " . $res);
+    return !strpos( $res,  "NOT AUTHORIZED" );
 }
 
 function get($url) {
