@@ -14,7 +14,7 @@ include_once 'header.php';
     <div class="collapse navbar-collapse" id="top-navbar">
         <ul class="navbar-nav mr-auto">
             <?php
-                $pages = array("Home", "Settings", "Phone Numbers");
+                $pages = array("Home", "Phone Numbers", "Schedules", "Volunteers");
                 foreach ($pages as $page) {
                     $slug = str_replace(" ", "_", strtolower($page))
                     ?>

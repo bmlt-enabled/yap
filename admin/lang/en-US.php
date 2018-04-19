@@ -10,5 +10,6 @@ $welcome_to_yap = "Welcome to Yap!";
 $introduction = "Yap is a communications tool that lets you leverage BMLT information over various delivery protocols.";
 $documentation = "Documentation";
 $release_notes = "Release Notes";
-$settings = "Settings";
+$volunteers = "Volunteers";
 $phone_numbers = "Phone Numbers";
+$schedules = "Schedules";
