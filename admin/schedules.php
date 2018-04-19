@@ -7,9 +7,8 @@
         </div>
     </div>
 </div>
-
+<?php include_once 'footer.php';?>
 <link rel='stylesheet' href='../assets/fullcalendar/2.6.0/fullcalendar.css' />
-<script src='../assets/jquery/jquery-1.11.3.min.js'></script>
 <script src='../assets/moment.js/2.11.1/moment.min.js'></script>
 <script src='../assets/fullcalendar/2.6.0/fullcalendar.min.js'></script>
 <script type="text/javascript">
@@ -43,9 +42,8 @@
             if (parseInt($('select#servicebodies').val()) > 0) {
                 $('#calendar').fullCalendar('removeEventSources');
                 $("#calendar").fullCalendar('removeEvents');
-                $('#calendar').fullCalendar('addEventSource', '..   /helpline-schedule.php?service_body_id=' + $('select#servicebodies').val());
+                $('#calendar').fullCalendar('addEventSource', '../helpline-schedule.php?service_body_id=' + $('select#servicebodies').val());
             }
         })
     })
 </script>
-<?php include_once 'footer.php';
