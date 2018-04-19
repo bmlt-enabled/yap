@@ -6,12 +6,12 @@ include_once 'header.php';
     <a class="navbar-brand" href="#">Yap</a>
     <button class="navbar-toggler"
             type="button" data-toggle="collapse"
-            data-target="#navbarText"
-            aria-controls="navbarText"
+            data-target="#top-navbar"
+            aria-controls="top-navbar"
             aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarText">
+    <div class="collapse navbar-collapse" id="top-navbar">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
                 <a class="nav-link" href="#"><?php echo $GLOBALS['home_link']?><span class="sr-only">(current)</span></a>
@@ -45,3 +45,4 @@ include_once 'header.php';
         </div>
     </div>
 </div>
+<?php include_once 'footer.php';
