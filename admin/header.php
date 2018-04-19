@@ -1,3 +1,7 @@
+<?php
+    include_once '../config.php';
+    include_once 'lang/'.$GLOBALS['admin_language'].'.php';
+?>
 <!doctype html>
 <html lang="en">
 <head>

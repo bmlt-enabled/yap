@@ -14,7 +14,7 @@ include_once 'header.php';
     <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="#"><?php echo $GLOBALS['home_link']?><span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#"></a>
@@ -25,7 +25,7 @@ include_once 'header.php';
                 <button type="button"
                         class="btn btn-danger"
                         id="log-out-button"
-                        onclick="location.href='logout.php';">Log Out</button>
+                        onclick="location.href='logout.php';"><?php echo $GLOBALS['log_out']?></button>
             </li>
         </ul>
     </span>
@@ -35,12 +35,12 @@ include_once 'header.php';
     <div class="row">
         <div class="col-md">
             <div class="jumbotron">
-                <h1 class="display-4">Welcome</h1>
-                <p class="lead">Welcome to Yap!</p>
+                <h1 class="display-4"><?php echo $GLOBALS['welcome']?></h1>
+                <p class="lead"><?php echo $GLOBALS['welcome_to_yap']?></p>
                 <hr class="my-4">
-                <p>Yap is a communications tool that lets you leverage BMLT information over various delivery protocols.</p>
-                <a target="_blank" class="btn btn-primary btn-md" href="https://github.com/radius314/yap/blob/master/README.md" role="button">Documentation</a>
-                <a target="_blank" class="btn btn-secondary btn-md" href="https://github.com/radius314/yap/blob/master/RELEASENOTES.md" role="button">Release Notes</a>
+                <p><?php echo $GLOBALS['introduction']?></p>
+                <a target="_blank" class="btn btn-primary btn-md" href="https://github.com/radius314/yap/blob/master/README.md" role="button"><?php echo $GLOBALS['documentation']?></a>
+                <a target="_blank" class="btn btn-secondary btn-md" href="https://github.com/radius314/yap/blob/master/RELEASENOTES.md" role="button"><?php echo $GLOBALS['release_notes']?></a>
             </div>
         </div>
     </div>
