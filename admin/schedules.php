@@ -24,7 +24,7 @@
     }
 
     function getYapHelplines() {
-        $.getJSON("/helpline-yap-based.php", function(data) {
+        $.getJSON("../helpline-yap-based.php", function(data) {
             for (var x = 0; x < data.length; x++) {
                 $("select#servicebodies").append("<option value=\"" + data[x].id + "\">" + data[x].name + "</option>")
             }
@@ -43,9 +43,9 @@
             if (parseInt($('select#servicebodies').val()) > 0) {
                 $('#calendar').fullCalendar('removeEventSources');
                 $("#calendar").fullCalendar('removeEvents');
-                $('#calendar').fullCalendar('addEventSource', '/helpline-schedule.php?service_body_id=' + $('select#servicebodies').val());
+                $('#calendar').fullCalendar('addEventSource', '..   /helpline-schedule.php?service_body_id=' + $('select#servicebodies').val());
             }
         })
     })
 </script>
-
+<?php include_once 'footer.php';
