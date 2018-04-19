@@ -37,3 +37,4 @@ $client = new Client( $sid, $token );
         </div>
     </div>
 </div>
+<?php include_once 'footer.php';
