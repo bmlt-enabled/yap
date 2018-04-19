@@ -5,8 +5,7 @@
         header('Location: /admin/', null, 301);
     };
 ?>
-<link href="css/signin.css" rel="stylesheet">
-<div class="container">
+<div id="signin" class="container">
 
     <form class="form-signin" method="POST" action="auth_login.php">
         <h2 class="form-signin-heading">Yap</h2>

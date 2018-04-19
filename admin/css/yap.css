@@ -1,4 +1,5 @@
-body {
+div#signin {
+    margin-top:40px;
     padding-top: 40px;
     padding-bottom: 40px;
     background-color: #eee;
@@ -38,7 +39,12 @@ body {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
+
 #no-auth-message {
     color:red;
     font-size:14px;
+}
+
+.navbar {
+    margin-bottom: 20px;
 }
