@@ -1,6 +1,8 @@
 <?php
     include_once '../config.php';
-    include_once 'lang/'.$GLOBALS['admin_language'].'.php';
+    $admin_language = isset($GLOBALS['admin_language']) ? $GLOBALS['admin_language'] : 'en-US';
+
+    include_once 'lang/'.$admin_language.'.php';
 ?>
 <!doctype html>
 <html lang="en">
