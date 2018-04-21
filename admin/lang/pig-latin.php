@@ -13,3 +13,4 @@ $release_notes = "Eleaseray Otesnay";
 $volunteers = "Olunteersvay";
 $phone_numbers = "Onephay Umbersnay";
 $schedules = "Edulesschay";
+$bugs_requests = "Ugsbay / Equestsray";
