@@ -530,21 +530,25 @@ function check_auth($username) {
     return !preg_match('/NOT AUTHORIZED/', $res);
 }
 
-function logout_auth() {
+function logout_auth($username) {
     session_unset();
-    $ch = curl_init();
-    curl_setopt( $ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=logout' );
-    curl_setopt( $ch, CURLOPT_POST, 1 );
-    curl_setopt( $ch, CURLOPT_COOKIEJAR, 'cookie.txt' );
-    curl_setopt( $ch, CURLOPT_COOKIEFILE, 'cookie.txt' );
-    curl_setopt( $ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
-    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-    curl_setopt( $ch, CURLOPT_HEADER,  false );
-    $res = curl_exec( $ch );
-    $http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-    curl_close( $ch );
-    error_log("logout_auth: " . $res);
-    return strpos( $res,  "BYE" );
+    $cookie_file = $username . '_cookie.txt';
+    if (file_exists($cookie_file)) {
+        $ch = curl_init();
+        curl_setopt( $ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=logout' );
+        curl_setopt( $ch, CURLOPT_POST, 1 );
+        curl_setopt( $ch, CURLOPT_COOKIEJAR, $cookie_file );
+        curl_setopt( $ch, CURLOPT_COOKIEFILE, $cookie_file );
+        curl_setopt( $ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+        curl_setopt( $ch, CURLOPT_HEADER, false );
+        $res = curl_exec( $ch );
+        curl_close( $ch );
+    } else {
+        $res = "BYE;";
+    }
+
+    return !preg_match('/BYE/', $res);
 }
 
 function get($url) {
