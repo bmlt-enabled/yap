@@ -494,11 +494,11 @@ function setFacebookMessengerOptions() {
     post("https://graph.facebook.com/v2.6/me/messenger_profile?access_token=" . $GLOBALS['fbmessenger_accesstoken'], $payload);
 }
 
-function auth_bmlt($username, $password) {
+function auth_bmlt($username, $password, $master = false) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php');
     curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
+    curl_setopt($ch, CURLOPT_COOKIEJAR,  ($master ? 'master' : $username) . '_cookie.txt');
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
     curl_setopt($ch, CURLOPT_POSTFIELDS, 'admin_action=login&c_comdef_admin_login='.$username.'&c_comdef_admin_password='.$password);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -510,23 +510,28 @@ function auth_bmlt($username, $password) {
     return !strpos($res,  "NOT AUTHORIZED");
 }
 
-function check_auth() {
-    $ch = curl_init();
-    curl_setopt( $ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=get_permissions' );
-    curl_setopt( $ch, CURLOPT_POST, 1 );
-    curl_setopt( $ch, CURLOPT_COOKIEJAR, 'cookie.txt' );
-    curl_setopt( $ch, CURLOPT_COOKIEFILE, 'cookie.txt' );
-    curl_setopt( $ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
-    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-    curl_setopt( $ch, CURLOPT_HEADER,  false );
-    $res = curl_exec( $ch );
-    $http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-    curl_close( $ch );
-    error_log("check_auth: " . $res);
-    return !strpos( $res,  "NOT AUTHORIZED" );
+function check_auth($username) {
+    $cookie_file = $username . '_cookie.txt';
+    if (file_exists($cookie_file)) {
+        $ch = curl_init();
+        curl_setopt( $ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=get_permissions' );
+        curl_setopt( $ch, CURLOPT_POST, 1 );
+        curl_setopt( $ch, CURLOPT_COOKIEJAR, $cookie_file );
+        curl_setopt( $ch, CURLOPT_COOKIEFILE, $cookie_file );
+        curl_setopt( $ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+        curl_setopt( $ch, CURLOPT_HEADER, false );
+        $res = curl_exec( $ch );
+        curl_close( $ch );
+    } else {
+        $res = "NOT AUTHORIZED";
+    }
+
+    return !preg_match('/NOT AUTHORIZED/', $res);
 }
 
 function logout_auth() {
+    session_unset();
     $ch = curl_init();
     curl_setopt( $ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=logout' );
     curl_setopt( $ch, CURLOPT_POST, 1 );
@@ -539,15 +544,15 @@ function logout_auth() {
     $http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
     curl_close( $ch );
     error_log("logout_auth: " . $res);
-    return strpos( $res,  "BYTE" );
+    return strpos( $res,  "BYE" );
 }
 
 function get($url) {
     error_log($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookie.txt');
-    curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
+    curl_setopt($ch, CURLOPT_COOKIEFILE, 'master_cookie.txt');
+    curl_setopt($ch, CURLOPT_COOKIEJAR, 'master_cookie.txt');
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $data = curl_exec($ch);
