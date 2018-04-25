@@ -1,6 +1,5 @@
 <?php
 require_once 'vendor/autoload.php';
-include 'config.php';
 include 'functions.php';
 
 if (isset($_REQUEST['hub_verify_token']) && $_REQUEST['hub_verify_token'] === $GLOBALS['fbmessenger_verifytoken']) {

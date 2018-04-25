@@ -1,5 +1,4 @@
 <?php
-    include 'config.php';
     include 'functions.php';
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
@@ -25,17 +24,17 @@
 <?php
     if (!isset($_REQUEST["SmsSid"])) {
         if ($meeting_results->originalListCount == 0) {
-            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">No results found, you might have an invalid entry.  Try again.</Say><Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
+            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . word('no_results_found') . "... " . word('you_might_have_invalid_entry') . "... " . word('try_again') . "</Say><Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
         } elseif (count($filtered_list) == 0) {
-            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">There are no other meetings for today.  Thank you for calling, goodbye.</Say>";
+            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . word('there_are_no_other_meetings_for_today') . ". " . word('thank_you_for_calling_goodbye') . "</Say>";
         } else {
-            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Meeting information found, listing the top " . $results_count . " results.</Say>";
+            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . word('meeting_information_found_listing_the_top') . " " . $results_count . " " . word('results') . "</Say>";
         }
     } else {
         if ($meeting_results->originalListCount == 0) {
-            echo "<Sms>No results found, you might have an invalid entry.  Try again.</Sms>";
+            echo "<Sms>" . word('no_results_found') . "... " . word('you_might_have_invalid_entry') . "..." . word('try_again') . "</Sms>";
         } elseif (count($filtered_list) == 0) {
-            echo "<Sms>There are no other meetings for today.</Sms>";
+            echo "<Sms>" . word('there_are_no_other_meetings_for_today') . "</Sms>";
         }
     }
 
@@ -45,10 +44,10 @@
 
         if (!isset($_REQUEST["SmsSid"])) {
             echo "<Pause length=\"1\"/>";
-            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Result number " . ($results_counter + 1) . "</Say>";
+            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . word('number') . " " . ($results_counter + 1) . "</Say>";
             echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . $results[0] . "</Say>";
             echo "<Pause length=\"1\"/>";
-            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Starts at " . $results[1] . "</Say>";
+            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . word('starts_at') . " " . $results[1] . "</Say>";
             echo "<Pause length=\"1\"/>";
             echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . $results[2] . "</Say>";
         }
@@ -70,18 +69,28 @@
 
     // Do not handle for the SMS gateway
     if (!isset($_REQUEST["SmsSid"]) && count($filtered_list) > 0) {
-        if (count($sms_messages) > 0) {
-            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Press 1 If you would like these results to be texted to you.</Say>";
-            if (isset($GLOBALS['infinite_searching']) && $GLOBALS['infinite_searching']) {
-                echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Press 2 if you would like to search again.  Press 3 if you would like to do both.</Say>";
-            }
-            echo "<Gather numDigits=\"1\" timeout=\"10\" action=\"post-call-action.php?Payload=" . urlencode(json_encode($sms_messages)) . "\" method=\"GET\"/>";
-        } elseif (isset($GLOBALS['infinite_searching']) && $GLOBALS['infinite_searching']) {
-            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Press 2 if you would like to search again.</Say>";
-            echo "<Gather numDigits=\"1\" timeout=\"10\" action=\"post-call-action.php\" method=\"GET\"/>";
-        }
+        if (count($sms_messages) > 0) { ?>
+            <Say voice="<?php echo $voice ?>" language="<?php echo $language ?>">
+                <?php echo word( 'press' ) ?><?php echo word( "one" ) ?> <?php echo word( 'if_you_would_like_these_results_texted_to_you' ) ?>
+            </Say>
+            <?php if ( isset( $GLOBALS['infinite_searching'] ) && $GLOBALS['infinite_searching'] ) { ?>
+                <Say voice="<?php echo $voice ?>" language="<?php echo $language ?>">
+                    <?php echo word( 'press' ) ?> <?php echo word( "two" ) ?> <?php echo word( 'if_you_would_like_to_search_again' ) ?>
+                    . <?php echo word( 'press' ) ?> <?php echo word( "three" ) ?> <?php echo word( 'if_you_would_like_to_do_both' ) ?>
+                </Say>
+                <Gather numDigits="1" timeout="10"
+                        action="post-call-action.php?Payload=<?php echo urlencode( json_encode( $sms_messages ) ) ?>"
+                        method="GET"/>
+            <?php }
+        } elseif (isset($GLOBALS['infinite_searching']) && $GLOBALS['infinite_searching']) { ?>
+            <Say voice="<?php echo $voice ?>" language="<?php echo $language ?>">
+                <?php echo word('press')?> <?php echo word("two")?> <?php echo word('if_you_would_like_to_search_again') ?>.
+            </Say>
+            <Gather numDigits="1" timeout="10" action="post-call-action.php" method="GET"/>
+        <?php } ?>
 
-        echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">Thank you for calling, goodbye.</Say>";
-    }
-?>
+    <Say voice="<?php echo $voice ?>" language="<?php echo $language ?>">
+        <?php echo word('thank_you_for_calling_goodbye')?>
+    </Say>
+    <?php } ?>
 </Response>
