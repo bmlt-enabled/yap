@@ -95,7 +95,9 @@ function helplineSearch($latitude, $longitude) {
 
     if (isset($GLOBALS['helpline_search_unpublished']) && $GLOBALS['helpline_search_unpublished']) {
         $search_url = $search_url . "&advanced_published=0";
-
+        if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
+            auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password']);
+        }
     }
 
     return json_decode(get($search_url));
