@@ -1,5 +1,9 @@
 # Release Notes
 
+###next
+
+* Bug fix for unpublished meeting call routing
+
 ###1.1.0
 
 * New feature: language files with overrides, packaged with English and Pig Latin
