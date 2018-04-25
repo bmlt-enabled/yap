@@ -13,7 +13,7 @@ We are taking advantage of using Twilio which essentially handles all the VOIP p
 
 **This will require that you have an SSL certificate installed on your webserver to transit a secure connection.  This is required by Twilio.**
 
-1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: https://github.com/radius314/yap/archive/1.0.0.zip.
+1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: https://github.com/radius314/yap/archive/1.1.0.zip.
 
 2. Once the application is configured you will need to customize the config.php file.  There are several settings there that are documented in that file.  There are a number of different ways to utilize the yap platform.  
 
@@ -51,6 +51,29 @@ This would set the radius to a maximum of 30 miles.
 static $meeting_search_radius = -50;
 ```
 This would set the radius at the first 50 results and is the default.
+
+## Language Options ##
+
+There is a concept of language resource files.  You will notice them in the `lang/` folder.  Please open a ticket if you would like to contribute to translating to another language.
+
+You can also override any of the language prompts in the `config.php` file. 
+
+For example, say you wanted to still use English, but change the "city or county" prompt to say, "city or suburb".  You would do the following in config.php:
+
+```php
+$override_city_or_county = "city or suburb";
+```
+
+You can see the full listing in the `lang/en-US.php` which always has the full latest listing of the voice prompts.
+
+You can also change the spoken language accent.  There is a wide variety.  See the Twilio documentation for more details: https://www.twilio.com/docs/voice/twiml/say#attributes-language
+
+An example would be using an Australian English Accent.  Set your config.php to:
+
+```php
+$voice = "alice";
+$language = "en-AU";
+``` 
 
 ## Voice Recognition Optimizations ##
 

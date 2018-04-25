@@ -1,5 +1,4 @@
 <?php
-include 'config.php';
 include 'functions.php';
 
 header("content-type: text/xml");

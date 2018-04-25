@@ -1,5 +1,8 @@
 <?php
-include 'config.php';
+include_once 'config.php';
+$word_language = isset($GLOBALS['word_language']) ? $GLOBALS['word_language'] : 'en-US';
+include_once 'lang/'.$word_language.'.php';
+
 $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key) . "&address=";
 $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key" . trim($google_maps_api_key);
 # BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
@@ -37,6 +40,10 @@ class DurationInterval {
 class MeetingResults {
     public $originalListCount = 0;
     public $filteredList = [];
+}
+
+function word($name) {
+    return isset($GLOBALS['override_' . $name]) ? $GLOBALS['override_' . $name] : $GLOBALS[$name];
 }
 
 function getCoordinatesForAddress($address) {
