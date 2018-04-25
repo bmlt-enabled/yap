@@ -1,8 +1,5 @@
 <?php
-    include 'config.php';
-    header("content-type: text/xml");
-    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-    
+    include 'functions.php';
     $inputMethod = $_REQUEST['Digits'];
 
     if ($inputMethod == "3") {
@@ -17,6 +14,9 @@
     } else {
         $action = "city-or-county-voice-input.php";
     }
+
+    header("content-type: text/xml");
+    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 ?>
 <Response>
 <?php

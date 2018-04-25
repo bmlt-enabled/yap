@@ -1,9 +1,5 @@
 <?php
-    include 'config.php';
     include 'functions.php';
-    header("content-type: text/xml");
-    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-    
     $searchType = $_REQUEST['Digits'];
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
     
@@ -15,6 +11,9 @@
         header('Location: fetch-jft.php');
         exit();
     }
+
+    header("content-type: text/xml");
+    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 ?>
 <Response>
     <Gather numDigits="1" timeout="10" action="input-method-result.php?SearchType=<?php echo $searchType ?>" method="GET">
