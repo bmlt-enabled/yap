@@ -52,6 +52,18 @@ static $meeting_search_radius = -50;
 ```
 This would set the radius at the first 50 results and is the default.
 
+## Location Lookup Bias ##
+
+By default location lookups are biased toward the US.  You can create a series of refinements by using the `$location_lookup_bias` in config.php.
+
+For example say you wanted to lookup Bayonne.  By default Bayonne, New Jersey would be interpreted.  If you were intended for France you would set your config as the following:
+
+```php
+$location_lookup_bias = "county:France";
+```
+
+A full listing of available bias options are available here: https://developers.google.com/maps/documentation/geocoding/intro#ComponentFiltering.  You can use as few or as many as you want, by separating each set with pipe "|" character.
+
 ## Language Options ##
 
 There is a concept of language resource files.  You will notice them in the `lang/` folder.  Please open a ticket if you would like to contribute to translating to another language.
@@ -74,6 +86,14 @@ An example would be using an Australian English Accent.  Set your config.php to:
 $voice = "alice";
 $language = "en-AU";
 ``` 
+
+## Postal Code Lengths ##
+
+By default a 5 digit postal code will be asked for.  To override this set the following, for instance a 4 digit postal code:
+
+```php
+$postal_code_length = 4;
+```
 
 ## Voice Recognition Optimizations ##
 
