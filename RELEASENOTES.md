@@ -1,7 +1,11 @@
 # Release Notes
 
-###next
+###1.2.0
 
+* Support for different postal code length expectations
+* Location bias for international lookups
+* Ignore formats option
+* Added link to instructional video thanks @pjaudiomv
 * Bug fix for unpublished meeting call routing
 
 ###1.1.0
