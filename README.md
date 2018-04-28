@@ -59,7 +59,7 @@ By default location lookups are biased toward the US.  You can create a series o
 For example say you wanted to lookup Bayonne.  By default Bayonne, New Jersey would be interpreted.  If you were intended for France you would set your config as the following:
 
 ```php
-$location_lookup_bias = "county:France";
+static $location_lookup_bias = "county:France";
 ```
 
 A full listing of available bias options are available here: https://developers.google.com/maps/documentation/geocoding/intro#ComponentFiltering.  You can use as few or as many as you want, by separating each set with pipe "|" character.
@@ -73,7 +73,7 @@ You can also override any of the language prompts in the `config.php` file.
 For example, say you wanted to still use English, but change the "city or county" prompt to say, "city or suburb".  You would do the following in config.php:
 
 ```php
-$override_city_or_county = "city or suburb";
+static $override_city_or_county = "city or suburb";
 ```
 
 You can see the full listing in the `lang/en-US.php` which always has the full latest listing of the voice prompts.
@@ -83,8 +83,8 @@ You can also change the spoken language accent.  There is a wide variety.  See t
 An example would be using an Australian English Accent.  Set your config.php to:
 
 ```php
-$voice = "alice";
-$language = "en-AU";
+static $voice = "alice";
+static $language = "en-AU";
 ``` 
 
 ## Postal Code Lengths ##
@@ -92,7 +92,15 @@ $language = "en-AU";
 By default a 5 digit postal code will be asked for.  To override this set the following, for instance a 4 digit postal code:
 
 ```php
-$postal_code_length = 4;
+static $postal_code_length = 4;
+```
+
+## Ignoring Certain Formats ##
+
+In some cases you might want to ignore a specific format.  Add the following setting with the formats you want to exclude.  Separate each with a comma.
+
+```php
+static $ignore_formats = "ASM";
 ```
 
 ## Voice Recognition Optimizations ##
@@ -102,7 +110,7 @@ It's possible to set the expected spoken language, for recognition by setting th
 Use the this chart to find the code of your preference https://www.twilio.com/docs/api/twiml/gather#languagetags.
 
 ```php
-$gather_language = "en-US";
+static $gather_language = "en-US";
 ```
 
 You can also set some expected words or hints, to help the voice recognition engine along.  Use the setting by separating words with commas.  You can use phrases as well.  
@@ -110,7 +118,7 @@ You can also set some expected words or hints, to help the voice recognition eng
 Each hint may not be more than 100 characters (including spaces).  You can use up to 500 hints.
 
 ```php
-$gather_hints = "";
+static $gather_hints = "";
 ```
 
 ### Grace Period
@@ -201,7 +209,7 @@ curl https://example.com/yap/helpline-search.php?Digits=Turkey,NC
 The default of the system is to send an SMS after each voice meeting result.  As an option to you audience you can add the following parameter to your `config.php` file.
 
 ```php
-$sms_ask = true;
+static $sms_ask = true;
 ```
 
 By setting this, a prompt will be played at the end of the results, asking if they would like the results texted to them.  If they do not respond the call will automatically hang up in 10 seconds.
@@ -211,7 +219,7 @@ By setting this, a prompt will be played at the end of the results, asking if th
 You can provide an option to allow someone to search again.  Just set:
 
 ```php
-$infinite_searching = true;
+static $infinite_searching = true;
 ``` 
 
 ## SMS Gateway
@@ -225,7 +233,7 @@ Then you can send a zip code, county or city to your phone number and get back a
 Some older handsets are not capable of rendering maps links.  If you want to enable this feature add the following to your `config.php` file.
 
 ```php
-$include_map_link = true;
+static $include_map_link = true;
 ```
 
 ## Fallback
@@ -233,7 +241,7 @@ $include_map_link = true;
 There may be times when a root server is down, it's possible to redirect a call to another if this happens.  In your `config.php`, specify the following.
 
 ```php
-$helpline_fallback = "1919555555";
+static $helpline_fallback = "1919555555";
 ```
 
 ## Volunteer Dialer (Beta)

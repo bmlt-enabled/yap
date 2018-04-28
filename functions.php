@@ -106,9 +106,22 @@ function helplineSearch($latitude, $longitude) {
     return json_decode(get($search_url));
 }
 
+function getFormatString($formats, $ignore = false, $helpline = false) {
+    $formatsArray = getIdsFormats($formats, $helpline);
+    $finalString = "";
+    for ($i = 0; $i < count($formatsArray); $i++) {
+        $finalString .= "&formats[]=" . ($ignore ? "-" : "") . $formatsArray[$i];
+    }
+
+    return $finalString;
+}
+
 function meetingSearch($meeting_results, $latitude, $longitude, $day) {
 	$meeting_search_radius = isset($GLOBALS['meeting_search_radius']) ? $GLOBALS['meeting_search_radius'] : -50;
     $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $meeting_search_radius . "&weekdays=" . $day;
+    if (isset($GLOBALS['ignore_formats'])) {
+        $bmlt_search_endpoint .= getFormatString($GLOBALS['ignore_formats'], true);
+    }
 
     $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
     try {
@@ -232,14 +245,20 @@ function getNextShiftInstance($shift_day, $shift_time, $shift_tz) {
     return getNextMeetingInstance($shift_day, $shift_time);
 }
 
-function getFormat($type) {
-    $bmlt_search_endpoint = getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetFormats";
+function getIdsFormats($types, $helpline = false) {
+    $typesArray = explode(",", $types);
+    $finalFormats = array();
+    $bmlt_search_endpoint = ($helpline ? getHelplineBMLTRootServer() : $GLOBALS['bmlt_root_server']) . "/client_interface/json/?switcher=GetFormats";
     $formats = json_decode(get($bmlt_search_endpoint));
-    for ($f = 0; $f < count($formats); $f++) {
-        if ($formats[$f]->key_string == $type) {
-            return $formats[$f]->id;
+    for ($t = 0; $t < count($typesArray); $t++) {
+        for ( $f = 0; $f < count( $formats ); $f ++ ) {
+            if ( $formats[ $f ]->key_string == $typesArray[$t] ) {
+                array_push($finalFormats, $formats[ $f ]->id);
+            }
         }
     }
+
+    return $finalFormats;
 }
 
 function getHelplineVolunteersActiveNow($service_body_int) {
@@ -271,10 +290,10 @@ function getHelplineVolunteer($service_body_int, $tracker) {
     return "000000000";
 }
 
-function getFormatResults($service_body_int, $format_code) {
+function getFormatResults($service_body_int, $format_codes) {
     if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
         if (auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'])) {
-            $bmlt_search_endpoint = getHelplineBMLTRootServer() . '/client_interface/json/?switcher=GetSearchResults&services='.$service_body_int.'&formats='.getFormat($format_code).'&advanced_published=0';
+            $bmlt_search_endpoint = getHelplineBMLTRootServer() . '/client_interface/json/?switcher=GetSearchResults&services=' . $service_body_int . getFormatString($format_codes, false, true) . '&advanced_published=0';
             return get($bmlt_search_endpoint);
         }
     }
