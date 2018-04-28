@@ -3,7 +3,7 @@ include_once 'config.php';
 $word_language = isset($GLOBALS['word_language']) ? $GLOBALS['word_language'] : 'en-US';
 include_once 'lang/'.$word_language.'.php';
 
-$google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key) . "&address=";
+$google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
 $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key" . trim($google_maps_api_key);
 # BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
 static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -54,7 +54,10 @@ function getCoordinatesForAddress($address) {
     $coordinates = new Coordinates();
 
     if (strlen($address) > 0) {
-        $map_details_response = get($GLOBALS['google_maps_endpoint'] . urlencode($address));
+        $map_details_response = get($GLOBALS['google_maps_endpoint']
+            . "&address="
+            . urlencode($address)
+            . (isset($GLOBALS['location_lookup_bias']) ? "&components=" . urlencode($GLOBALS['location_lookup_bias']) : ""));
         $map_details = json_decode($map_details_response);
         if (count($map_details->results) > 0) {
             $coordinates->location  = $map_details->results[0]->formatted_address;
