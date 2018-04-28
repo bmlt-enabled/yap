@@ -71,7 +71,7 @@
     if (!isset($_REQUEST["SmsSid"]) && count($filtered_list) > 0) {
         if (count($sms_messages) > 0) { ?>
             <Say voice="<?php echo $voice ?>" language="<?php echo $language ?>">
-                <?php echo word( 'press' ) ?><?php echo word( "one" ) ?> <?php echo word( 'if_you_would_like_these_results_texted_to_you' ) ?>
+                <?php echo word( 'press' ) ?> <?php echo word( "one" ) ?> <?php echo word( 'if_you_would_like_these_results_texted_to_you' ) ?>
             </Say>
             <?php if ( isset( $GLOBALS['infinite_searching'] ) && $GLOBALS['infinite_searching'] ) { ?>
                 <Say voice="<?php echo $voice ?>" language="<?php echo $language ?>">
