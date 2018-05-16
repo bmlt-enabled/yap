@@ -76,7 +76,7 @@ function getProvince() {
         return "";
     } elseif (isset($_REQUEST['ToState']) && strlen($_REQUEST['ToState']) > 0) {
         return $_REQUEST['ToState']; // Retrieved from Twilio metadata
-    } elseif ($GLOBALS['toll_free_province_bias'] != null) {
+    } elseif (isset($GLOBALS['toll_free_province_bias'])) {
         return $GLOBALS['toll_free_province_bias']; // Override for Tollfree
     } else {
         return "";
