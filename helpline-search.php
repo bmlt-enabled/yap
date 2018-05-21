@@ -14,11 +14,15 @@
     $extension = isset($exploded_result[1]) ? $exploded_result[1] : "w";
 ?>
 <Response>
-    <?php if (strpos($phone_number, 'yap') !== false) { ?>
+    <?php if (strpos($phone_number, 'yap') !== false) {
+        $yap_service_body_redirect = strpos($phone_number, '->') !== false
+            ? explode('->', $phone_number)[1]
+            : $service_body->id;
+        ?>
         <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
             <?php echo word('please_wait_while_we_connect_your_call') ?>
         </Say>
-        <Redirect method="GET">helpline-dialer.php?service_body_id=<?php echo $service_body->id ?></Redirect>
+        <Redirect method="GET">helpline-dialer.php?service_body_id=<?php echo $yap_service_body_redirect ?></Redirect>
     <?php } else if ($phone_number != "") { ?>
         <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>"><?php echo word('please_stand_by') ?>... <?php echo word('relocating_your_call_to') ?> <?php echo $location; ?>.</Say>
         <Dial>

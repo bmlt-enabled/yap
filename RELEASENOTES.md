@@ -1,5 +1,10 @@
 # Release Notes
 
+###1.2.1
+
+* Helpline to helpline redirection support
+* Minor bug fix for state/province configuration interpretation
+
 ###1.2.0
 
 * Support for different postal code length expectations

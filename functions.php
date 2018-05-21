@@ -229,8 +229,14 @@ function getYapBasedHelplines() {
     $service_bodies = getServiceBodies();
     $yapHelplines = [];
     foreach ($service_bodies as $service_body) {
-        if (isset($service_body->helpline) && $service_body->helpline == "yap") {
-            array_push($yapHelplines, $service_body);
+        if (isset($service_body->helpline) && strpos($service_body->helpline, 'yap') !== false) {
+            $r_service_body = $service_body;
+            if (strpos($service_body->helpline, '->') !== false) {
+                $r_service_body->id = explode('->', $service_body->helpline)[1];
+                $r_service_body->name = $r_service_body->name . " (Redirected To Service Body: " . $r_service_body->id . ")";
+            }
+
+            array_push($yapHelplines, $r_service_body);
         }
     }
 
