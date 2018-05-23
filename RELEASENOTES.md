@@ -4,7 +4,7 @@
 
 * Helpline to helpline redirection support.
 * Added alternative authentication support `$alt_auth_method`, for non-SSL roots.
-* Bug fix for state/province configuration interpretation.
+* Bug fix for tollfree bias configuration interpretation.
 * Bug fix for <Pause> being inserted into SMS-only responses.
 
 ###1.2.0
