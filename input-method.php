@@ -4,10 +4,10 @@
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
     
     if ($searchType == "1") {
-      if (isset($GLOBALS['helpline_direct_location']) && $GLOBALS['helpline_direct_location']) {
-        header("Location: helpline-search.php?Digits=" .$GLOBALS['helpline_direct_location']);
-        exit();
-      }
+    if (isset($GLOBALS['helpline_direct_location']) && $GLOBALS['helpline_direct_location']) {
+      header("Location: helpline-search.php?Digits=" .$GLOBALS['helpline_direct_location']);
+      exit();
+    }
       $searchDescription = word('someone_to_talk_to');
     } else if ($searchType == "2") {
         $searchDescription = word('meetings');
