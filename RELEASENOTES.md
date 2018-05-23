@@ -1,7 +1,7 @@
 # Release Notes
 
 ### Next Version
-* added option to skip location gathering for helpline redirect.
+* Added option to skip location gathering for helpline redirect.
 
 ###1.2.1
 
