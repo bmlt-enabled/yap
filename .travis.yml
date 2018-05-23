@@ -1,5 +1,2 @@
 language: php
-include:
-    # Lint code with PHP 7.0
-    - php: 7.0
-      script: find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l
+script: find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l
