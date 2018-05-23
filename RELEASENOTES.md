@@ -4,6 +4,9 @@
 * Admin portal.
 * Music on hold for helpline call
 
+### Next Version
+* Added option to skip location gathering for helpline redirect.
+
 ###1.2.1
 
 * Helpline to helpline redirection support.

@@ -184,6 +184,14 @@ This could useful for wiring up to a Grasshopper extension.  Typically you set t
 
 For example, if you set this up as extension 1, from within you employee extensions you would instruct the caller to press *1 (star one) for finding meetings.  
 
+## Skipping Location Gathering With Helpline Call Routing
+
+To do this set the `$helpline_direct_location` variable in the `config.php` file to the location you want to direct the helpline to.
+
+```php
+static $helpline_direct_location = "Boston,MA";
+```
+
 ## Helpline Search Radius ##
 
 Change the default helpline search radius, this is in miles. You can change this in your `config.php` with the following:
