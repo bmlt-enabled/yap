@@ -65,8 +65,6 @@
         if ($results_counter == $results_count) break;
     }
 
-    
-
     // Do not handle for the SMS gateway
     if (!isset($_REQUEST["SmsSid"]) && count($filtered_list) > 0) {
         echo "<Pause length=\"2\"/>";
