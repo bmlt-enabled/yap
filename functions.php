@@ -233,8 +233,14 @@ function getYapBasedHelplines() {
     $service_bodies = getServiceBodies();
     $yapHelplines = [];
     foreach ($service_bodies as $service_body) {
-        if (isset($service_body->helpline) && $service_body->helpline == "yap") {
-            array_push($yapHelplines, $service_body);
+        if (isset($service_body->helpline) && strpos($service_body->helpline, 'yap') !== false) {
+            $r_service_body = $service_body;
+            if (strpos($service_body->helpline, '->') !== false) {
+                $r_service_body->id = explode('->', $service_body->helpline)[1];
+                $r_service_body->name = $r_service_body->name . " (Redirected To Service Body: " . $r_service_body->id . ")";
+            }
+
+            array_push($yapHelplines, $r_service_body);
         }
     }
 
@@ -527,7 +533,8 @@ function setFacebookMessengerOptions() {
 
 function auth_bmlt($username, $password, $master = false) {
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php');
+    $auth_endpoint = (isset($GLOBALS['alt_auth_method']) && $GLOBALS['alt_auth_method'] ? '/index.php' : '/local_server/server_admin/xml.php');
+    curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . $auth_endpoint);
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_COOKIEJAR,  ($master ? 'master' : $username) . '_cookie.txt');
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );

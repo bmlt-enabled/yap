@@ -1,0 +1,2 @@
+language: php
+script: find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l

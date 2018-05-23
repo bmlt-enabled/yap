@@ -4,6 +4,13 @@
 * Admin portal.
 * Music on hold for helpline call
 
+###1.2.1
+
+* Helpline to helpline redirection support.
+* Added alternative authentication support `$alt_auth_method`, for non-SSL roots.
+* Bug fix for tollfree bias configuration interpretation.
+* Bug fix for <Pause> being inserted into SMS-only responses.
+
 ### 1.2.0
 
 * Support for different postal code length expectations

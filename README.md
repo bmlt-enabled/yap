@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/radius314/yap.svg?branch=master)](https://travis-ci.org/radius314/yap)
 [![Waffle.io - Columns and their card count](https://badge.waffle.io/radius314/yap.png?columns=all)](https://waffle.io/radius314/yap?utm_source=badge)
 # yap-unstable
 
@@ -161,6 +162,89 @@ Each hint may not be more than 100 characters (including spaces).  You can use u
 static $gather_hints = "";
 ```
 
+### Grace Period
+
+By default a 15 minute grace period will be applied.  This can be adjusted by setting `$grace_minutes` in your `config.php`.
+
+## Helpline Call Routing
+
+The helpline router utilizes a BMLT server (2.9.0 or later), that has helpline numbers properly configured in the "Service Body Administration" section.  
+
+The yap platform will ask for a piece of location information in turn it will look up latitude and longitude and then send that information to the BMLT root server you have configured.
+
+You can also tie this into an existing extension based system, say for example Grasshopper.  If you want to dial an extension just add something like `555-555-5555|wwww700` for example after the helpline field on the BMLT Service Body Administration.  In this case it's instructing to dial 555-555-5555 and wait 4 seconds and then dial 700. 
+
+## Skipping Helpline Call Routing
+
+When configuring the TwiML app instead of pointing to `index.php` point to `input-method.php?Digits=2`.
+
+If you still want the title to display also point to `input-method.php?Digits=2&PlayTitle=1`.
+
+This could useful for wiring up to a Grasshopper extension.  Typically you set this as Department Extension and have your prompt instruct to press a series of keypresses.  
+
+For example, if you set this up as extension 1, from within you employee extensions you would instruct the caller to press *1 (star one) for finding meetings.  
+
+## Helpline Search Radius ##
+
+Change the default helpline search radius, this is in miles. You can change this in your `config.php` with the following:
+
+```php
+static $helpline_search_radius = 30;
+```
+This would set the radius to a maximum of 30 miles and is the default.
+
+## Including province prior to lookup
+
+It may be that your yap instance needs to search multiple states.  By default yap will be biased towards the local number state (unless it's tollfree).  To enable province lookup set the `$province_lookup`, variable to `true` in the `config.php` file.  
+
+## Tollfree bias
+
+Tollfree is independent of any state/province bias.  
+
+To enable a specific bias, add `static $toll_free_province_bias` to your `config.php`, and set to the two letter state bias.  
+
+Example `$toll_free_province_bias = "TX"`, will bias to Texas.
+
+## Using hidden service bodies
+
+It is possible to create a service body with an unpublished group in order create additional routing for service bodies that may not exist in a given root server.  
+
+Once those service bodies have been populated and the unpublished meetings are added, you can make use of the helpline field to route calls.
+
+You will also need to add to the config.php three additional variables.  This allows yap to authenticate to the root server and retrieve the unpublished meetings.  This is required as a BMLT root server by design will not return unpublished meetings in the semantic interface.
+
+```php
+static $helpline_search_unpublished = true;
+static $bmlt_username = "";
+static $bmlt_password = "";
+```
+
+If for some reason this doesn't work, there is an alternative authentication method that seems to work for non-SSL connections `static $alt_auth_method = true`.
+
+You will need to also ensure that PHP has write access to write to this folder, in order to store the authentication cookie from the BMLT root server.
+
+**NOTE: This will not work for a sandwich server, because there is currently no concept of authentication.**
+
+## Using as a separate BMLT server for call routing
+
+In order to specify a different BMLT root server for call routing but not for meeting list lookups, set the following variable in config.php.
+
+```php
+static $helpline_bmlt_root_server = "";
+```
+
+## To upgrade easy ##
+
+You will need `make`.  Once you have that, run `make upgrade`.
+
+## Checking the call routing
+
+There is a very simple way to check where a could would be routed to.
+
+```shell
+curl https://example.com/yap/helpline-search.php?Digits=Turkey,NC
+```
+
 ## Post Call Options
 
 ### Making SMS results for voice calls optional
@@ -301,6 +385,7 @@ Some additional details on this:
 - You can visualize the shift schedule by going to http://example.com/yap/schedule.html and selecting from the dropdown.
 - If you want to have a volunteer that always is on, then set the start time to "Midnight" and the Duration "Open-Ended"
 - You can control the sequence by specifying "Location".  This will be sorted numerically ascending.  (for example 0 is the highest, 99 is the lowest)
+- You can do a helpline to helpline redirect if you want to redirect one service body helpline to another..  You do this by setting the helpline number in your bmlt for your service body that you want redirected to yap->## where ## is the service body id that you want to redirect to.
 - You can control the timeout between calls, which is defaulted at 20 seconds.  You do this by setting in config.php the following parameter.
 
 ```php

@@ -14,17 +14,21 @@
     $extension = isset($exploded_result[1]) ? $exploded_result[1] : "w";
 ?>
 <Response>
-    <?php if (strpos($phone_number, 'yap') !== false) { ?>
+    <?php if (strpos($phone_number, 'yap') !== false) {
+        $yap_service_body_redirect = strpos($phone_number, '->') !== false
+            ? explode('->', $phone_number)[1]
+            : $service_body->id;
+        ?>
         <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
             <?php echo word('please_wait_while_we_connect_your_call') ?>
         </Say>
             <Conference startConferenceOnEnter="false"
                         endConferenceOnExit="true"
                         statusCallbackMethod="GET"
-                        statusCallback="brokers/outdial.php?service_body_id=<?php echo $service_body->id ?>&amp;called_number=<?php echo $_REQUEST['Called'] ?>"
+        <Redirect method="GET">helpline-dialer.php?service_body_id=<?php echo $yap_service_body_redirect ?></Redirect>
                         statusCallbackEvent="join"
                         beep="false">
-                <?php echo getConferenceName($service_body->id); ?>
+                <?php echo getConferenceName($yap_service_body_redirect); ?>
             </Conference>
         </Dial>
     <?php } else if ($phone_number != "") { ?>
