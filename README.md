@@ -438,6 +438,13 @@ Note: If you decide to change the `$title` in your config.php, you will have to 
 
 You will need `make`.  Once you have that, run `make upgrade`.
 
+## Play the Just For Today
+this will add a 3rd option on the main menu to press 3 to liste to the just for today.
+
+```php
+static $jft_option = 'true';
+```
+
 ## Contribute
 
 Fork this repo and send a pull request.  For testing locally, run the yap server and then use `ngrok`.  Grab the ngrok hostname that is generated and then use that in your Twilio settings.
