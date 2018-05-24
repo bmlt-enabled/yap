@@ -192,6 +192,12 @@ To do this set the `$helpline_direct_location` variable in the `config.php` file
 static $helpline_direct_location = "Boston,MA";
 ```
 
+If your option has a space in it, use the `+` symbol.  Example:
+
+```php
+static $helpline_direct_location = "Willow+Spring,NC";
+```
+
 ## Helpline Search Radius ##
 
 Change the default helpline search radius, this is in miles. You can change this in your `config.php` with the following:
@@ -438,11 +444,11 @@ Note: If you decide to change the `$title` in your config.php, you will have to 
 
 You will need `make`.  Once you have that, run `make upgrade`.
 
-## Play the Just For Today
-this will add a 3rd option on the main menu to press 3 to liste to the just for today.
+## Playback for the Just For Today Meditation
+This will add an option on the main menu to press 3 to playback the Just For Today meditation.
 
 ```php
-static $jft_option = 'true';
+static $jft_option = true;
 ```
 
 ## Contribute
