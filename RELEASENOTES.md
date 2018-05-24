@@ -2,6 +2,7 @@
 
 ### Next Version
 * Added option to skip location gathering for helpline redirect.
+* Added play just for today option to main menu
 
 ###1.2.1
 
