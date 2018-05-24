@@ -173,7 +173,7 @@ This would set the radius to a maximum of 30 miles and is the default.
 
 You might want to force a particular Twilio number to just call another number.  Just use the following webhook.
 
-`/helpline-search.php?ForceNumber=8885551212` or for extension dialing `/helpline-search.php?ForceNumber=8885551212|wwww700`.  Each `w` is a 1 second pause.
+`/helpline-search.php?ForceNumber=8885551212` or for extension dialing `/helpline-search.php?ForceNumber=8885551212%7Cwwww700`.  Each `w` is a 1 second pause.
 
 ## Including province prior to lookup
 
