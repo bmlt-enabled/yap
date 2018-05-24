@@ -3,6 +3,7 @@
 ###1.3.0
 * Added option to skip location gathering for helpline routing.
 * Playback of the Just For Today as a configurable option with a prompt.
+* Added force dialing feature for wiring a Twilio number to just route somewhere else.
 
 ###1.2.1
 

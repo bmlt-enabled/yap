@@ -169,6 +169,12 @@ static $helpline_search_radius = 30;
 ```
 This would set the radius to a maximum of 30 miles and is the default.
 
+## Helpline Force Dialing
+
+You might want to force a particular Twilio number to just call another number.  Just use the following webhook.
+
+`/helpline-search.php?ForceNumber=8885551212` or for extension dialing `/helpline-search.php?ForceNumber=8885551212|wwww700`.  Each `w` is a 1 second pause.
+
 ## Including province prior to lookup
 
 It may be that your yap instance needs to search multiple states.  By default yap will be biased towards the local number state (unless it's tollfree).  To enable province lookup set the `$province_lookup`, variable to `true` in the `config.php` file.  
