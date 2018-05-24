@@ -154,6 +154,12 @@ To do this set the `$helpline_direct_location` variable in the `config.php` file
 static $helpline_direct_location = "Boston,MA";
 ```
 
+If your option has a space in it, use the `+` symbol.  Example:
+
+```php
+static $helpline_direct_location = "Willow+Spring,NC";
+```
+
 ## Helpline Search Radius ##
 
 Change the default helpline search radius, this is in miles. You can change this in your `config.php` with the following:

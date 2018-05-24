@@ -2,7 +2,7 @@
 
 ###1.3.0
 * Added option to skip location gathering for helpline routing.
-* Playback the Just For Today as a configurable option with a prompt.
+* Playback of the Just For Today as a configurable option with a prompt.
 
 ###1.2.1
 
