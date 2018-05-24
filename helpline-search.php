@@ -2,14 +2,21 @@
     include 'functions.php';
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-    
-    $address = $_REQUEST['Digits'];
 
-    $coordinates = getCoordinatesForAddress($address);
-    $service_body = getServiceBodyCoverage($coordinates->latitude, $coordinates->longitude);  
-    
-    $location = $service_body->name;
-    $exploded_result = explode("\|", $service_body->helpline);
+    $dial_string = "";
+    if (!isset($_REQUEST['ForceNumber'])) {
+        $address = $_REQUEST['Digits'];
+
+        $coordinates  = getCoordinatesForAddress( $address );
+        $service_body = getServiceBodyCoverage( $coordinates->latitude, $coordinates->longitude );
+
+        $location    = $service_body->name;
+        $dial_string = $service_body->helpline;
+    } else {
+        $dial_string = $_REQUEST['ForceNumber'];
+    }
+
+    $exploded_result = explode("|", $dial_string);
     $phone_number = isset($exploded_result[0]) ? $exploded_result[0] : "";
     $extension = isset($exploded_result[1]) ? $exploded_result[1] : "w";
 ?>
@@ -31,8 +38,10 @@
                 <?php echo getConferenceName($yap_service_body_redirect); ?>
             </Conference>
         </Dial>
-    <?php } else if ($phone_number != "") { ?>
+    <?php } else if ($phone_number != "") {
+        if (!isset($_REQUEST["ForceNumber"])) { ?>
         <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>"><?php echo word('please_stand_by') ?>... <?php echo word('relocating_your_call_to') ?> <?php echo $location; ?>.</Say>
+        <?php } ?>
         <Dial>
             <Number sendDigits="<?php echo $extension ?>"><?php echo $phone_number ?></Number>
         </Dial>
