@@ -31,4 +31,4 @@ $starts_at = "starts at";
 $if_you_would_like_these_results_texted_to_you = "if you would like these results to be texted to you.";
 $if_you_would_like_to_search_again = "if you would like to search again";
 $if_you_would_like_to_do_both = "if you would like to do both";
-$to_hear_the_just_for_today = "to hear the just for today";
+$to_listen_to_the_just_for_today = "to listen to the just for today";

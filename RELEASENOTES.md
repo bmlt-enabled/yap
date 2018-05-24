@@ -1,8 +1,8 @@
 # Release Notes
 
-### Next Version
-* Added option to skip location gathering for helpline redirect.
-* Added play just for today option to main menu
+###1.3.0
+* Added option to skip location gathering for helpline routing.
+* Playback the Just For Today as a configurable option with a prompt.
 
 ###1.2.1
 
