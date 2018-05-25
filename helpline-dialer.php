@@ -8,18 +8,16 @@
     $phone_number = getHelplineVolunteer($service_body_id, $tracker);
     $call_status = isset($_REQUEST["DialCallStatus"]) ? $_REQUEST["DialCallStatus"] : "starting";
     $call_timeout = isset($GLOBALS["call_timeout"]) ? $GLOBALS["call_timeout"] : 20;
-
-    if (isset($GLOBALS['forced_callerid']) && $GLOBALS['forced_callerid']) { 
-      $caller_id = $GLOBALS["forced_callerid"];
-    } else { 
-      $caller_id = isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000";
-    } 
-
 ?>
 <Response>
 <?php
-    if ($call_status != "completed") { ?>
-        <Dial method="GET"
+    if ($call_status != "completed") {
+        if (isset($GLOBALS['forced_callerid']) && $GLOBALS['forced_callerid']) { 
+          $caller_id = $GLOBALS["forced_callerid"];
+        } else { 
+          $caller_id = isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000";
+        }?>
+    <Dial method="GET"
           timeout="<?php echo $call_timeout; ?>"
           callerId="<?php echo $caller_id; ?>"
           action="helpline-dialer.php?service_body_id=<?php echo $service_body_id; ?>&amp;tracker=<?php echo $tracker; ?>&amp;Called=<?php echo urlencode(isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000") ?>">
