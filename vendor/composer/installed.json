@@ -53,17 +53,17 @@
     },
     {
         "name": "twilio/sdk",
-        "version": "5.16.7",
-        "version_normalized": "5.16.7.0",
+        "version": "5.19.1",
+        "version_normalized": "5.19.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/twilio/twilio-php.git",
-            "reference": "41f96d9839afb584737f26103cfecded2d9fee50"
+            "reference": "61d9cb7223ee1364b752d7e36298dfb60697120d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/twilio/twilio-php/zipball/41f96d9839afb584737f26103cfecded2d9fee50",
-            "reference": "41f96d9839afb584737f26103cfecded2d9fee50",
+            "url": "https://api.github.com/repos/twilio/twilio-php/zipball/61d9cb7223ee1364b752d7e36298dfb60697120d",
+            "reference": "61d9cb7223ee1364b752d7e36298dfb60697120d",
             "shasum": ""
         },
         "require": {
@@ -73,7 +73,7 @@
             "apigen/apigen": "^4.1",
             "phpunit/phpunit": "4.5.*"
         },
-        "time": "2018-03-22T23:41:51+00:00",
+        "time": "2018-05-18T18:34:51+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

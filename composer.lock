@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2a2230986fa1f68c2920879041c70b9d",
+    "content-hash": "f0bf8755fc0aacbbdd01c2cfa9ba7a7c",
     "packages": [
         {
             "name": "predis/predis",
@@ -58,16 +58,16 @@
         },
         {
             "name": "twilio/sdk",
-            "version": "5.16.7",
+            "version": "5.19.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twilio/twilio-php.git",
-                "reference": "41f96d9839afb584737f26103cfecded2d9fee50"
+                "reference": "61d9cb7223ee1364b752d7e36298dfb60697120d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/41f96d9839afb584737f26103cfecded2d9fee50",
-                "reference": "41f96d9839afb584737f26103cfecded2d9fee50",
+                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/61d9cb7223ee1364b752d7e36298dfb60697120d",
+                "reference": "61d9cb7223ee1364b752d7e36298dfb60697120d",
                 "shasum": ""
             },
             "require": {
@@ -100,7 +100,7 @@
                 "sms",
                 "twilio"
             ],
-            "time": "2018-03-22T23:41:51+00:00"
+            "time": "2018-05-18T18:34:51+00:00"
         }
     ],
     "packages-dev": [],

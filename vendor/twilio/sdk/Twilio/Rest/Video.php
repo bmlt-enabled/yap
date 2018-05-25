@@ -15,11 +15,11 @@ use Twilio\Rest\Video\V1;
 
 /**
  * @property \Twilio\Rest\Video\V1 v1
- * @property \Twilio\Rest\Video\V1\CompositionList compositions
  * @property \Twilio\Rest\Video\V1\RecordingList recordings
+ * @property \Twilio\Rest\Video\V1\CompositionList compositions
  * @property \Twilio\Rest\Video\V1\RoomList rooms
- * @method \Twilio\Rest\Video\V1\CompositionContext compositions(string $sid)
  * @method \Twilio\Rest\Video\V1\RecordingContext recordings(string $sid)
+ * @method \Twilio\Rest\Video\V1\CompositionContext compositions(string $sid)
  * @method \Twilio\Rest\Video\V1\RoomContext rooms(string $sid)
  */
 class Video extends Domain {
@@ -82,21 +82,6 @@ class Video extends Domain {
     }
 
     /**
-     * @return \Twilio\Rest\Video\V1\CompositionList 
-     */
-    protected function getCompositions() {
-        return $this->v1->compositions;
-    }
-
-    /**
-     * @param string $sid The sid
-     * @return \Twilio\Rest\Video\V1\CompositionContext 
-     */
-    protected function contextCompositions($sid) {
-        return $this->v1->compositions($sid);
-    }
-
-    /**
      * @return \Twilio\Rest\Video\V1\RecordingList 
      */
     protected function getRecordings() {
@@ -104,11 +89,28 @@ class Video extends Domain {
     }
 
     /**
-     * @param string $sid The sid
+     * @param string $sid The Recording Sid that uniquely identifies the Recording
+     *                    to fetch.
      * @return \Twilio\Rest\Video\V1\RecordingContext 
      */
     protected function contextRecordings($sid) {
         return $this->v1->recordings($sid);
+    }
+
+    /**
+     * @return \Twilio\Rest\Video\V1\CompositionList 
+     */
+    protected function getCompositions() {
+        return $this->v1->compositions;
+    }
+
+    /**
+     * @param string $sid The Composition Sid that uniquely identifies the
+     *                    Composition to fetch.
+     * @return \Twilio\Rest\Video\V1\CompositionContext 
+     */
+    protected function contextCompositions($sid) {
+        return $this->v1->compositions($sid);
     }
 
     /**
