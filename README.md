@@ -303,7 +303,7 @@ Some additional details on this:
 
 - You can change the outbound caller id to a different verified twilio number by setting the phone number in config.php
 ```php
-    static $outbound_callerid = '###-###-####';
+    static $forced_callerid = '###-###-####';
 ```
 
 ## Facebook Messenger Gateway (Meetings Lookup)
