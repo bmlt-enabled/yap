@@ -229,6 +229,11 @@ function getServiceBodies() {
     return json_decode(get($bmlt_search_endpoint));
 }
 
+function admin_GetServiceBodiesForUser() {
+    $bmlt_search_endpoint = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_permissions";
+    return json_decode(get($bmlt_search_endpoint, $_SESSION['username']));
+}
+
 function getYapBasedHelplines() {
     $service_bodies = getServiceBodies();
     $yapHelplines = [];
@@ -589,12 +594,12 @@ function logout_auth($username) {
     return !preg_match('/BYE/', $res);
 }
 
-function get($url) {
+function get($url, $username = 'master') {
     error_log($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_COOKIEFILE, 'master_cookie.txt');
-    curl_setopt($ch, CURLOPT_COOKIEJAR, 'master_cookie.txt');
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $username . '_cookie.txt');
+    curl_setopt($ch, CURLOPT_COOKIEJAR, $username . '_cookie.txt');
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $data = curl_exec($ch);

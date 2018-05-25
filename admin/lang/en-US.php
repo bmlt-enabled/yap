@@ -14,3 +14,4 @@ $volunteers = "Volunteers";
 $phone_numbers = "Phone Numbers";
 $schedules = "Schedules";
 $bugs_requests = "Bugs / Requests";
+$service_bodies = "Service Bodies";
