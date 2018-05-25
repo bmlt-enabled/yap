@@ -3,7 +3,7 @@
     <div class="row">
         <div class="col-md">
             <div class="jumbotron">
-                <h1 class="display-4"><?php echo $GLOBALS['welcome']?></h1>
+                <h1 class="display-4"><?php echo $GLOBALS['welcome']?>, <?php echo $_SESSION['username']?>...</h1>
                 <p class="lead"><?php echo $GLOBALS['welcome_to_yap']?></p>
                 <hr class="my-4">
                 <p><?php echo $GLOBALS['introduction']?></p>
