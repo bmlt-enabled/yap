@@ -12,7 +12,7 @@
     if (isset($GLOBALS['forced_callerid']) && $GLOBALS['forced_callerid']) { 
       $caller_id = $GLOBALS["forced_callerid"];
     } else { 
-      $caller_id = $_REQUEST["Called"];
+      $caller_id = $_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000";
     } 
 
 ?>
