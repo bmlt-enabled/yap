@@ -14,7 +14,12 @@
     if ($call_status != "completed") { ?>
         <Dial method="GET"
           timeout="<?php echo $call_timeout?>"
-          callerId="<?php if (isset($GLOBALS['outbound_callerid']) && $GLOBALS['outbound_callerid']) { echo isset($GLOBALS["outbound_callerid"]) ? $GLOBALS["outbound_callerid"] : "0000000000"; } else { echo isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000";  } ?>"
+          callerId="<?php
+          if (isset($GLOBALS['outbound_callerid']) && $GLOBALS['outbound_callerid']) { 
+            echo isset($GLOBALS["outbound_callerid"]) ? $GLOBALS["outbound_callerid"] : "0000000000"; 
+          } else { 
+              echo isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000";  
+          } ?>"
           action="helpline-dialer.php?service_body_id=<?php echo $service_body_id; ?>&amp;tracker=<?php echo $tracker; ?>&amp;Called=<?php echo urlencode(isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000") ?>">
             <Number>
                 <?php echo $phone_number; ?>
