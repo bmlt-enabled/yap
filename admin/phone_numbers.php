@@ -10,28 +10,24 @@ $client = new Client( $sid, $token );
 <div class="container">
     <div class="row">
         <div class="col-md">
-            <table class="table table-striped">
+            <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th scope="col">#</th>
+                        <th scope="col">Phone Number</th>
                         <th scope="col">Name</th>
                         <th scope="col">Voice Url</th>
                         <th scope="col">SMS Url</th>
                     </tr>
                 </thead>
                 <tbody>
-                <?php
-                    foreach ($client->incomingPhoneNumbers->read() as $number) {
-                ?>
+                <?php foreach ($client->incomingPhoneNumbers->read() as $number) { ?>
                     <tr>
                         <td><?php echo $number->phoneNumber ?></td>
                         <td><?php echo $number->friendlyName ?></td>
                         <td><?php echo $number->voiceUrl ?></td>
                         <td><?php echo $number->smsUrl ?></td>
                     </tr>
-                <?php
-                    }
-                ?>
+                <?php } ?>
                 </tbody>
             </table>
         </div>

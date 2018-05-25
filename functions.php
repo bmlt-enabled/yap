@@ -229,9 +229,24 @@ function getServiceBodies() {
     return json_decode(get($bmlt_search_endpoint));
 }
 
+function getServiceBodyDetailForUser() {
+    $service_bodies = admin_GetServiceBodiesForUser();
+    $service_body_detail = getServiceBodies();
+    $user_service_bodies = [];
+    foreach ($service_bodies as $service_body) {
+        foreach ($service_body_detail as $service_body_detail_item) {
+            if ($service_body->id == $service_body_detail_item->id) {
+                array_push($user_service_bodies, $service_body_detail_item);
+            }
+        }
+    }
+
+    return $user_service_bodies;
+}
+
 function admin_GetServiceBodiesForUser() {
     $bmlt_search_endpoint = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_permissions";
-    return json_decode(get($bmlt_search_endpoint, $_SESSION['username']));
+    return json_decode(get($bmlt_search_endpoint, $_SESSION['username']))->service_body;
 }
 
 function getYapBasedHelplines() {

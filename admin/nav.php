@@ -25,12 +25,16 @@ include_once 'header.php';
         </ul>
         <ul class="nav justify-content-end">
             <li class="nav-item">
+                <span class="navbar-text">
+                    Welcome, <?php echo $_SESSION['username']?>...
+                </span>
+            </li>
+            <li class="nav-item">
                 <button type="button"
                         class="btn btn-danger"
                         id="log-out-button"
                         onclick="location.href='logout.php';"><?php echo $GLOBALS['log_out']?></button>
             </li>
         </ul>
-        </span>
     </div>
 </nav>
