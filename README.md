@@ -301,6 +301,11 @@ Some additional details on this:
     static $call_timeout = 20;
 ```
 
+- You can change the outbound caller id to a different verified twilio number by setting the phone number in config.php
+```php
+    static $outbound_callerid = '###-###-####';
+```
+
 ## Facebook Messenger Gateway (Meetings Lookup)
 
 **Your Yap server will have to have HTTPS/SSL enabled.  You will also need redis running locally.**
