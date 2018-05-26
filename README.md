@@ -412,9 +412,12 @@ Some additional details on this:
     static $call_timeout = 20;
 ```
 
+- You can change the outbound caller id to a different verified twilio number by setting the phone number in config.php
+```php
+    static $forced_callerid = '###-###-####';
+```
+
 ## Music On Hold
-
-
 
 ## Facebook Messenger Gateway (Meetings Lookup)
 

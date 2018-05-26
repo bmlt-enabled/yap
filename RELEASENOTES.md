@@ -4,6 +4,9 @@
 * Admin portal.
 * Music on hold for helpline call
 
+###Future Release
+* Added the ability to change the outbound caller id to another verified twilio number.
+
 ###1.3.0
 * Added option to skip location gathering for helpline routing.
 * Playback of the Just For Today as a configurable option with a prompt.

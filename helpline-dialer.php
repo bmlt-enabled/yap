@@ -11,10 +11,15 @@
 ?>
 <Response>
 <?php
-    if ($call_status != "completed") { ?>
-        <Dial method="GET"
-          timeout="<?php echo $call_timeout?>"
-          callerId="<?php echo isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000" ?>"
+    if ($call_status != "completed") {
+        if (isset($GLOBALS['forced_callerid']) && $GLOBALS['forced_callerid']) { 
+          $caller_id = $GLOBALS["forced_callerid"];
+        } else { 
+          $caller_id = isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000";
+        }?>
+    <Dial method="GET"
+          timeout="<?php echo $call_timeout; ?>"
+          callerId="<?php echo $caller_id; ?>"
           action="helpline-dialer.php?service_body_id=<?php echo $service_body_id; ?>&amp;tracker=<?php echo $tracker; ?>&amp;Called=<?php echo urlencode(isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000") ?>">
             <Number>
                 <?php echo $phone_number; ?>
