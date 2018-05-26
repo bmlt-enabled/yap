@@ -15,3 +15,7 @@ $phone_numbers = "Phone Numbers";
 $schedules = "Schedules";
 $bugs_requests = "Bugs / Requests";
 $service_bodies = "Service Bodies";
+$add_volunteer = "Add Volunteer";
+$add_add_new_volunteer = "Add A New Volunteer";
+$volunteer_name = "Volunteer Name";
+$save_volunteers = "Save Volunteers";
