@@ -1,9 +1,20 @@
 $(function() {
     $("#add-volunteer").click(function() {
-        var volunteerCardTemplate = $(".volunteerCardTemplate");
+        var volunteerCardTemplate = $("#volunteerCardTemplate").clone();
+        volunteerCardTemplate.attr("id", "volunteerCard");
         volunteerCardTemplate.show();
-        volunteerCardTemplate.find(".card-title").html($("#volunteerName").val());
+        volunteerCardTemplate.find("#volunteer_name").val($("#new_volunteer_name").val());
         volunteerCardTemplate.appendTo("#volunteerCards");
-        $("#volunteerName").val("");
+        $("#new_volunteer_name").val("");
     });
+
+    $("#save-volunteers").click(function() {
+        $.ajax({
+            type: "POST",
+            url: "/admin/save_volunteers.php",
+            data: JSON.stringify({"data" : $("#volunteersForm").serializeArray()}),
+            dataType: "json",
+            contentType: "application/json"
+        });
+    })
 });

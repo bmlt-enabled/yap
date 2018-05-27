@@ -245,8 +245,19 @@ function getServiceBodyDetailForUser() {
 }
 
 function admin_GetServiceBodiesForUser() {
-    $bmlt_search_endpoint = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_permissions";
-    return json_decode(get($bmlt_search_endpoint, $_SESSION['username']))->service_body;
+    $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_permissions";
+    return json_decode(get($url, $_SESSION['username']))->service_body;
+}
+
+function admin_PersistHelplineData($helpline_data_id = 0, $data) {
+    $data_bmlt_encoded = "admin_action=add_meeting&service_body_id=43&meeting_field[]=comments," . str_replace(",", ";", $data) . "&meeting_field[]=meeting_name,_YAP_DATA_";
+    if ($helpline_data_id == 0) {
+        $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php";
+    } else {
+
+    }
+
+    return post($url, $data_bmlt_encoded, false, $_SESSION['username']);
 }
 
 function getYapBasedHelplines() {
@@ -548,7 +559,7 @@ function setFacebookMessengerOptions() {
         ])
     ];
 
-    post("https://graph.facebook.com/v2.6/me/messenger_profile?access_token=" . $GLOBALS['fbmessenger_accesstoken'], $payload);
+    post("https://graph.facebook.com/v2.6/me/messenger_profile?access_token=" . $GLOBALS['fbmessenger_accesstoken'], $payload, true);
 }
 
 function auth_bmlt($username, $password, $master = false) {
@@ -627,13 +638,18 @@ function get($url, $username = 'master') {
     return $data;
 }
 
-function post($url, $payload) {
+function post($url, $payload, $is_json = true, $username = 'master') {
     error_log($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $username . '_cookie.txt');
+    curl_setopt($ch, CURLOPT_COOKIEJAR, $username . '_cookie.txt');
+    $post_field_count = $is_json ? 1 : substr_count($payload, '=');
+    curl_setopt($ch, CURLOPT_POST, $post_field_count);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $is_json ? json_encode($payload) : $payload);
+    if ($is_json) {
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    }
     curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap" );
     $data = curl_exec($ch);
     $errorno = curl_errno($ch);
