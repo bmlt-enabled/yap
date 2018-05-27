@@ -11,7 +11,7 @@ $(function() {
     $("#save-volunteers").click(function() {
         $.ajax({
             type: "POST",
-            url: "/admin/save_volunteers.php",
+            url: "/admin/save_volunteers.php?service_body_id=" + $("#service_body_id").val(),
             data: JSON.stringify({"data" : $("#volunteersForm").serializeArray()}),
             dataType: "json",
             contentType: "application/json"

@@ -10,10 +10,10 @@
                 </div>
             </div>
         </div>
+        <select name="service_body_id" id="service_body_id">
+            <option value="43">North Carolina Region</option>
+        </select>
         <form id="volunteersForm">
-            <select name="service_body_id" id="service_body_id">
-                <option id="43">North Carolina Region</option>
-            </select>
             <div id="volunteerCards" class="list-group-flush" class="row"></div>
         </form>
     </div>

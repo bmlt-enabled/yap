@@ -249,8 +249,8 @@ function admin_GetServiceBodiesForUser() {
     return json_decode(get($url, $_SESSION['username']))->service_body;
 }
 
-function admin_PersistHelplineData($helpline_data_id = 0, $data) {
-    $data_bmlt_encoded = "admin_action=add_meeting&service_body_id=43&meeting_field[]=comments," . str_replace(",", ";", $data) . "&meeting_field[]=meeting_name,_YAP_DATA_";
+function admin_PersistHelplineData($helpline_data_id = 0, $service_body_id, $data) {
+    $data_bmlt_encoded = "admin_action=add_meeting&service_body_id=" . $service_body_id . "&meeting_field[]=comments," . str_replace(",", ";", $data) . "&meeting_field[]=meeting_name,_YAP_DATA_";
     if ($helpline_data_id == 0) {
         $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php";
     } else {
