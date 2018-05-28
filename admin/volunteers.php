@@ -1,7 +1,13 @@
 <?php include_once 'nav.php'; ?>
     <div id="volunteers" class="container">
+        <input type="hidden" name="helpline_data_id" id="helpline_data_id" value="0" />
+        <label for="service_body_id">Service Body</label>
+        <select class="form-control" id="service_body_id">
+            <option value="0">-= Select a Service Body=-</option>
+            <option value="43">North Carolina Region</option>
+        </select>
         <div class="row">
-            <div class="col-sm">
+            <div id="newVolunteerDialog" class="col-sm" style="display:none;">
                 <div class="alert alert-success" role="alert" style="display:none;" id="volunteer_saved_alert">
                     Saved.
                 </div>
@@ -13,12 +19,17 @@
                 </div>
             </div>
         </div>
-        <input type="hidden" name="helpline_data_id" id="helpline_data_id" value="0" />
-        <label for="service_body_id">Service Body</label>
-        <select class="form-control" id="service_body_id">
-            <option value="0">-= Select a Service Body=-</option>
-            <option value="43">North Carolina Region</option>
-        </select>
+        <div class="modal fade" id="spinnerDialog" tabindex="-1" role="dialog" aria-labelledby="spinnerDialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div>
+                            Contacting BMLT server...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="volunteerCards" class="list-group-flush" class="row"></div>
     </div>
 <?php include_once 'footer.php';?>

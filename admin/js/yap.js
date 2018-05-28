@@ -40,16 +40,36 @@ $(function() {
     });
 
     $("#service_body_id").on("change", function() {
-        loadVolunteers($(this).val())
+        $("#spinnerDialog").modal('show');
+        addNewVolunteerDialog($(this).val() > 0);
+        clearVolunteerCards();
+        loadVolunteers($(this).val(), function() {
+            setTimeout(function() {
+                $("#spinnerDialog").modal('hide');
+            }, 500);
+        })
     })
 });
 
-function loadVolunteers(serviceBodyId) {
+function addNewVolunteerDialog(isVisible) {
+    isVisible ? $("#newVolunteerDialog").show() : $("#newVolunteerDialog").hide();
+}
+
+function clearVolunteerCards() {
+    $("#volunteerCards").children().remove()
+}
+
+function loadVolunteers(serviceBodyId, callback) {
     $.getJSON("/admin/api.php?service_body_id=" + serviceBodyId, function(data) {
-        $("#helpline_data_id").val(data["id"]);
-        for (item of data["data"]) {
-            addVolunteer(item)
+        var helpline_data_id = 0;
+        if (!$.isEmptyObject(data)) {
+            helpline_data_id = data["id"];
+            for (item of data["data"]) {
+                addVolunteer(item)
+            }
         }
+        $("#helpline_data_id").val(helpline_data_id);
+        callback();
     })
 }
 
