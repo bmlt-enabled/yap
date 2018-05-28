@@ -1,4 +1,4 @@
-<?php include_once 'nav.php' ?>
+<?php include_once 'nav.php'; ?>
     <div id="volunteers" class="container">
         <div class="row">
             <div class="col-sm">
@@ -10,7 +10,10 @@
                 </div>
             </div>
         </div>
-        <select name="service_body_id" id="service_body_id">
+        <input type="hidden" name="helpline_data_id" id="helpline_data_id" value="0" />
+        <label for="service_body_id">Service Body</label>
+        <select class="form-control" id="service_body_id">
+            <option value="0">-= Select a Service Body=-</option>
             <option value="43">North Carolina Region</option>
         </select>
         <form id="volunteersForm">

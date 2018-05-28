@@ -103,7 +103,7 @@ function helplineSearch($latitude, $longitude) {
     if (isset($GLOBALS['helpline_search_unpublished']) && $GLOBALS['helpline_search_unpublished']) {
         $search_url = $search_url . "&advanced_published=0";
         if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
-            auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password']);
+            auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
         }
     }
 
@@ -250,14 +250,32 @@ function admin_GetServiceBodiesForUser() {
 }
 
 function admin_PersistHelplineData($helpline_data_id = 0, $service_body_id, $data) {
-    $data_bmlt_encoded = "admin_action=add_meeting&service_body_id=" . $service_body_id . "&meeting_field[]=comments," . str_replace(",", ";", $data) . "&meeting_field[]=meeting_name,_YAP_DATA_";
+    $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php";
     if ($helpline_data_id == 0) {
-        $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php";
+        $data_bmlt_encoded = "admin_action=add_meeting&service_body_id=" . $service_body_id . "&meeting_field[]=meeting_name,_YAP_DATA_";
     } else {
-
+        $data_bmlt_encoded = "admin_action=modify_meeting&meeting_id=" . $helpline_data_id;
     }
 
+    $data_bmlt_encoded .= "&meeting_field[]=comments," . str_replace(",", ";", $data);
+
     return post($url, $data_bmlt_encoded, false, $_SESSION['username']);
+}
+
+function getHelplineData($service_body_id) {
+    auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
+    $helpline_data = json_decode(get(getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetSearchResults"
+                                     . "&services=" . $service_body_id . "&advanced_published=0"));
+
+    foreach ($helpline_data as $item) {
+        if (substr_count($item->meeting_name, 'YAP_DATA') > 0) {
+            return [
+                'id' => intval($item->id_bigint),
+                'data' => json_decode(str_replace(';', ',', html_entity_decode(explode('#@-@#', $item->comments)[2])))->data,
+                'service_body_id' => intval($service_body_id)
+            ];
+        }
+    }
 }
 
 function getYapBasedHelplines() {
@@ -331,6 +349,7 @@ function getHelplineVolunteer($service_body_int, $tracker) {
     return "000000000";
 }
 
+// TODO: This will be retired
 function getFormatResults($service_body_int, $format_codes) {
     if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
         if (auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'])) {
@@ -575,7 +594,6 @@ function auth_bmlt($username, $password, $master = false) {
     $res = curl_exec($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    error_log("auth_bmlt: " . $res);
     return !strpos($res,  "NOT AUTHORIZED");
 }
 
