@@ -12,13 +12,20 @@ $(function() {
         var data = $("#volunteersForm").serializeArray();
 
         $.ajax({
+            async: true,
             type: "POST",
             url: "/admin/api.php?action=save&helpline_data_id=" + $("#helpline_data_id").val()
-                + "&service_body_id=" + $("#service_body_id").val(),
-            data: JSON.stringify({"data" : data}),
+            + "&service_body_id=" + $("#service_body_id").val(),
+            data: JSON.stringify({"data": data}),
             dataType: "json",
-            contentType: "application/json"
+            contentType: "application/json",
+            success: function () {
+
+            }
         });
+
+        $("#volunteer_saved_alert").show();
+        $("#volunteer_saved_alert").fadeOut(3000);
     });
 
     $("#service_body_id").on("change", function() {

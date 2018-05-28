@@ -2,6 +2,9 @@
     <div id="volunteers" class="container">
         <div class="row">
             <div class="col-sm">
+                <div class="alert alert-success" role="alert" style="display:none;" id="volunteer_saved_alert">
+                    Saved.
+                </div>
                 <div class="form-group">
                     <label for="new_volunteer_name"><?php echo $GLOBALS['add_add_new_volunteer']?></label>
                     <input type="text" name="new_volunteer_name" class="form-control" id="new_volunteer_name" aria-describedby="volunteerNameHelp" placeholder="<?php echo $GLOBALS['volunteer_name']?>">
