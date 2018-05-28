@@ -38,3 +38,7 @@ function addVolunteer(volunteerData) {
     volunteerCardTemplate.find("#volunteer_name").val(volunteerData["value"]);
     volunteerCardTemplate.appendTo("#volunteerCards");
 }
+
+function removeVolunteer(e) {
+    $(e).closest("#volunteerCard").remove();
+}

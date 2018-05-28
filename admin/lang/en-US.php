@@ -19,3 +19,4 @@ $add_volunteer = "Add Volunteer";
 $add_add_new_volunteer = "Add A New Volunteer";
 $volunteer_name = "Volunteer Name";
 $save_volunteers = "Save Volunteers";
+$remove = "Remove";

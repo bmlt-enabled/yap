@@ -5,8 +5,8 @@
                 <div class="form-group">
                     <label for="new_volunteer_name"><?php echo $GLOBALS['add_add_new_volunteer']?></label>
                     <input type="text" name="new_volunteer_name" class="form-control" id="new_volunteer_name" aria-describedby="volunteerNameHelp" placeholder="<?php echo $GLOBALS['volunteer_name']?>">
-                    <button id="add-volunteer" class="btn btn-lg btn-primary" type="button"><?php echo $GLOBALS['add_volunteer']?></button>
-                    <button id="save-volunteers" class="btn btn-lg btn-primary" type="button"><?php echo $GLOBALS['save_volunteers']?></button>
+                    <button id="add-volunteer" class="btn btn-sm btn-primary" type="button"><?php echo $GLOBALS['add_volunteer']?></button>
+                    <button id="save-volunteers" class="btn btn-sm btn-success" type="button"><?php echo $GLOBALS['save_volunteers']?></button>
                 </div>
             </div>
         </div>
@@ -22,7 +22,11 @@
     </div>
 <?php include_once 'footer.php';?>
 <div class="card volunteerCard" id="volunteerCardTemplate" style="display:none;">
+    <div class="card-header">Volunteer Name: <input type="text" id="volunteer_name" name="volunteer_name"></div>
     <div class="card-body">
-        <h5 class="card-title"><input type="text" id="volunteer_name" name="volunteer_name"></h5>
+
+    </div>
+    <div class="card-footer bg-transparent">
+        <button class="btn btn-sm btn-danger" type="button" onclick="removeVolunteer(this)"><?php echo $GLOBALS['remove']?></button>
     </div>
 </div>
