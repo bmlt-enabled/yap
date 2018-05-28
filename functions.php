@@ -278,6 +278,8 @@ function getHelplineData($service_body_id) {
             ];
         }
     }
+
+    return new stdClass();
 }
 
 function getYapBasedHelplines() {
