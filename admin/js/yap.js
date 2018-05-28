@@ -20,8 +20,6 @@ $(function() {
             data.push(dataObj);
         }
 
-        console.log(data);
-
         $.ajax({
             async: true,
             type: "POST",
@@ -48,7 +46,7 @@ $(function() {
                 $("#spinnerDialog").modal('hide');
             }, 500);
         })
-    })
+    });
 });
 
 function addNewVolunteerDialog(isVisible) {
@@ -79,6 +77,10 @@ function addVolunteer(volunteerData) {
     volunteerCardTemplate.attr("id", "volunteerCard_" + (++getLastVolunteerCard));
     volunteerCardTemplate.show();
     for (var key in volunteerData) {
+        if (volunteerData[key] == "true") {
+            volunteerCardTemplate.find("#" + key).prop('checked', true);
+        }
+
         volunteerCardTemplate.find("#" + key).val(volunteerData[key]);
     }
     volunteerCardTemplate.appendTo("#volunteerCards");
@@ -86,4 +88,8 @@ function addVolunteer(volunteerData) {
 
 function removeVolunteer(e) {
     $(e).closest(".volunteerCard").remove();
+}
+
+function volunteerStatusToggle(e) {
+    $(e).val(e.checked);
 }

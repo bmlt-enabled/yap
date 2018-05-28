@@ -1,16 +1,16 @@
 <?php include_once 'nav.php'; ?>
     <div id="volunteers" class="container">
         <input type="hidden" name="helpline_data_id" id="helpline_data_id" value="0" />
+        <div class="alert alert-success" role="alert" style="display:none;" id="volunteer_saved_alert">
+            Saved.
+        </div>
         <label for="service_body_id">Service Body</label>
-        <select class="form-control" id="service_body_id">
+        <select class="form-control form-control-sm" id="service_body_id">
             <option value="0">-= Select a Service Body=-</option>
             <option value="43">North Carolina Region</option>
         </select>
         <div class="row">
             <div id="newVolunteerDialog" class="col-sm" style="display:none;">
-                <div class="alert alert-success" role="alert" style="display:none;" id="volunteer_saved_alert">
-                    Saved.
-                </div>
                 <div class="form-group">
                     <label for="new_volunteer_name"><?php echo $GLOBALS['add_add_new_volunteer']?></label>
                     <input type="text" name="new_volunteer_name" class="form-control" id="new_volunteer_name" aria-describedby="volunteerNameHelp" placeholder="<?php echo $GLOBALS['volunteer_name']?>">
@@ -24,7 +24,7 @@
                 <div class="modal-content">
                     <div class="modal-body">
                         <div>
-                            Contacting BMLT server...
+                            Retrieving data...
                         </div>
                     </div>
                 </div>
@@ -41,6 +41,10 @@
         </div>
         <div class="card-footer bg-transparent">
             <button class="btn btn-sm btn-danger" type="button" onclick="removeVolunteer(this)"><?php echo $GLOBALS['remove']?></button>
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" name="volunteer_enabled" id="volunteer_enabled" value="false" onclick="volunteerStatusToggle(this)">
+                <label class="form-check-label" for="volunteer_enabled">Enabled</label>
+            </div>
         </div>
     </form>
 </div>
