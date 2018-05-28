@@ -1,8 +1,6 @@
 <?php
     include_once '../config.php';
-    $admin_language = isset($GLOBALS['admin_language']) ? $GLOBALS['admin_language'] : 'en-US';
-
-    include_once 'lang/'.$admin_language.'.php';
+    include_once '../lang/'.$GLOBALS['word_language'].'.php';
 ?>
 <!doctype html>
 <html lang="en">
@@ -14,6 +12,10 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap-4.1.0.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <link rel="stylesheet" href="css/yap.css">
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/jquery-ui-1.12.1.min.js"></script>
+    <script src="js/bootstrap-4.1.0.min.js"></script>
+    <script src="js/yap.js"></script>
     <title>Yap Admin</title>
 </head>
 <body>

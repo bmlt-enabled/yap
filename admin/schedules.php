@@ -35,7 +35,8 @@
         $('#calendar').fullCalendar({
             allDaySlot: false,
             defaultView: 'agendaWeek',
-            nowIndicator: true
+            nowIndicator: true,
+            firstDay: (new Date()).getDay()
         });
 
         $('select#servicebodies').change(function() {

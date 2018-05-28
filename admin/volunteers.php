@@ -32,7 +32,7 @@
         <div id="volunteerCards" class="list-group-flush" class="row"></div>
     </div>
 <?php include_once 'footer.php';?>
-<div class="card volunteerCard" id="volunteerCardTemplate" style="display:none;">
+<div class="card volunteerCard border-dark" id="volunteerCardTemplate" style="display:none;">
     <form id="volunteersForm">
         <div class="card-header">
             Volunteer Name: <input type="text" id="volunteer_name" name="volunteer_name">
@@ -40,6 +40,30 @@
         </div>
         <div class="card-body">
             Phone Number: <input type="text" id="volunteer_phone_number" name="volunteer_phone_number">
+            <table id="volunteer_schedule" class="table table-striped table-bordered"
+                <thead>
+                    <tr>
+                        <th scope="col">Sun</th>
+                        <th scope="col">Mon</th>
+                        <th scope="col">Tue</th>
+                        <th scope="col">Wed</th>
+                        <th scope="col">Thu</th>
+                        <th scope="col">Fri</th>
+                        <th scope="col">Sat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" id="day_1" name="day_1" /></td>
+                        <td><input type="text" id="day_2" name="day_2" /></td>
+                        <td><input type="text" id="day_3" name="day_3" /></td>
+                        <td><input type="text" id="day_4" name="day_4" /></td>
+                        <td><input type="text" id="day_5" name="day_5" /></td>
+                        <td><input type="text" id="day_6" name="day_6" /></td>
+                        <td><input type="text" id="day_7" name="day_7" /></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <div class="card-footer bg-transparent">
             <div id="volunteerCardFooter" class="float-right">
