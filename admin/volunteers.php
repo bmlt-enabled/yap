@@ -19,17 +19,17 @@
             <option value="0">-= Select a Service Body=-</option>
             <option value="43">North Carolina Region</option>
         </select>
-        <form id="volunteersForm">
-            <div id="volunteerCards" class="list-group-flush" class="row"></div>
-        </form>
+        <div id="volunteerCards" class="list-group-flush" class="row"></div>
     </div>
 <?php include_once 'footer.php';?>
 <div class="card volunteerCard" id="volunteerCardTemplate" style="display:none;">
-    <div class="card-header">Volunteer Name: <input type="text" id="volunteer_name" name="volunteer_name"></div>
-    <div class="card-body">
-
-    </div>
-    <div class="card-footer bg-transparent">
-        <button class="btn btn-sm btn-danger" type="button" onclick="removeVolunteer(this)"><?php echo $GLOBALS['remove']?></button>
-    </div>
+    <form id="volunteersForm">
+        <div class="card-header">Volunteer Name: <input type="text" id="volunteer_name" name="volunteer_name"></div>
+        <div class="card-body">
+            Phone Number: <input type="text" id="volunteer_phone_number" name="volunteer_phone_number">
+        </div>
+        <div class="card-footer bg-transparent">
+            <button class="btn btn-sm btn-danger" type="button" onclick="removeVolunteer(this)"><?php echo $GLOBALS['remove']?></button>
+        </div>
+    </form>
 </div>

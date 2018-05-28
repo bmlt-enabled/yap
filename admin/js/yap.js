@@ -1,15 +1,26 @@
 $(function() {
     $("#add-volunteer").click(function() {
         addVolunteer({
-            "name": "volunteerName",
-            "value": $("#new_volunteer_name").val()
+            "volunteer_name": $("#new_volunteer_name").val()
         });
 
         $("#new_volunteer_name").val("");
     });
 
     $("#save-volunteers").click(function() {
-        var data = $("#volunteersForm").serializeArray();
+        var volunteerCards = $("#volunteerCards").children();
+        var data = [];
+        for (var volunteerCard of volunteerCards) {
+            var formData = $(volunteerCard).find("#volunteersForm").serializeArray();
+            var dataObj = {};
+            for (var formItem of formData) {
+                dataObj[formItem["name"]] = formItem["value"]
+            }
+
+            data.push(dataObj);
+        }
+
+        console.log(data);
 
         $.ajax({
             async: true,
@@ -29,23 +40,30 @@ $(function() {
     });
 
     $("#service_body_id").on("change", function() {
-        $.getJSON("/admin/api.php?service_body_id=" + $(this).val(), function(data) {
-            $("#helpline_data_id").val(data["id"]);
-            for (item of data["data"]) {
-                addVolunteer(item)
-            }
-        })
+        loadVolunteers($(this).val())
     })
 });
 
+function loadVolunteers(serviceBodyId) {
+    $.getJSON("/admin/api.php?service_body_id=" + serviceBodyId, function(data) {
+        $("#helpline_data_id").val(data["id"]);
+        for (item of data["data"]) {
+            addVolunteer(item)
+        }
+    })
+}
+
 function addVolunteer(volunteerData) {
+    var getLastVolunteerCard = parseInt($("#volunteerCards").children().length);
     var volunteerCardTemplate = $("#volunteerCardTemplate").clone();
-    volunteerCardTemplate.attr("id", "volunteerCard");
+    volunteerCardTemplate.attr("id", "volunteerCard_" + (++getLastVolunteerCard));
     volunteerCardTemplate.show();
-    volunteerCardTemplate.find("#volunteer_name").val(volunteerData["value"]);
+    for (var key in volunteerData) {
+        volunteerCardTemplate.find("#" + key).val(volunteerData[key]);
+    }
     volunteerCardTemplate.appendTo("#volunteerCards");
 }
 
 function removeVolunteer(e) {
-    $(e).closest("#volunteerCard").remove();
+    $(e).closest(".volunteerCard").remove();
 }

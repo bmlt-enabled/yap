@@ -259,7 +259,7 @@ function admin_PersistHelplineData($helpline_data_id = 0, $service_body_id, $dat
 
     $helpline_data = str_replace(",", ";", $data);
     error_log("helpline_data_length:" . strlen($helpline_data));
-    $data_bmlt_encoded .= "&meeting_field[]=comments," . str_replace(",", ";", $data);
+    $data_bmlt_encoded .= "&meeting_field[]=comments," . $helpline_data;
 
     return post($url, $data_bmlt_encoded, false, $_SESSION['username']);
 }
