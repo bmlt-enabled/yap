@@ -12,8 +12,7 @@
         <div class="row">
             <div id="newVolunteerDialog" class="col-sm" style="display:none;">
                 <div class="form-group">
-                    <label for="new_volunteer_name"><?php echo $GLOBALS['add_add_new_volunteer']?></label>
-                    <input type="text" name="new_volunteer_name" class="form-control" id="new_volunteer_name" aria-describedby="volunteerNameHelp" placeholder="<?php echo $GLOBALS['volunteer_name']?>">
+                    <input type="text" name="new_volunteer_name" class="form-control" id="new_volunteer_name" aria-describedby="volunteerNameHelp" placeholder="<?php echo $GLOBALS['add_add_new_volunteer']?>">
                     <button id="add-volunteer" class="btn btn-sm btn-primary" type="button"><?php echo $GLOBALS['add_volunteer']?></button>
                     <button id="save-volunteers" class="btn btn-sm btn-success" type="button"><?php echo $GLOBALS['save_volunteers']?></button>
                 </div>
@@ -35,15 +34,20 @@
 <?php include_once 'footer.php';?>
 <div class="card volunteerCard" id="volunteerCardTemplate" style="display:none;">
     <form id="volunteersForm">
-        <div class="card-header">Volunteer Name: <input type="text" id="volunteer_name" name="volunteer_name"></div>
+        <div class="card-header">
+            Volunteer Name: <input type="text" id="volunteer_name" name="volunteer_name">
+            <span id="volunteerSequence" class="float-right"></span>
+        </div>
         <div class="card-body">
             Phone Number: <input type="text" id="volunteer_phone_number" name="volunteer_phone_number">
         </div>
         <div class="card-footer bg-transparent">
-            <button class="btn btn-sm btn-danger" type="button" onclick="removeVolunteer(this)"><?php echo $GLOBALS['remove']?></button>
-            <div class="form-check form-check-inline">
-                <input type="checkbox" class="form-check-input" name="volunteer_enabled" id="volunteer_enabled" value="false" onclick="volunteerStatusToggle(this)">
-                <label class="form-check-label" for="volunteer_enabled">Enabled</label>
+            <div id="volunteerCardFooter" class="float-right">
+                <div class="form-check form-check-inline">
+                    <input type="checkbox" class="form-check-input" name="volunteer_enabled" id="volunteer_enabled" value="false" onclick="volunteerStatusToggle(this)">
+                    <label class="form-check-label" for="volunteer_enabled">Enabled</label>
+                </div>
+                <button class="btn btn-sm btn-danger" type="button" onclick="removeVolunteer(this)"><?php echo $GLOBALS['remove']?></button>
             </div>
         </div>
     </form>

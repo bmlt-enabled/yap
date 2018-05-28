@@ -60,3 +60,11 @@ div#signin {
 .volunteerCard {
     margin-top:10px;
 }
+
+#newVolunteerDialog {
+    margin-top:10px;
+}
+
+#volunteerCardFooter {
+    margin-bottom:10px;
+}

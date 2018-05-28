@@ -47,6 +47,8 @@ $(function() {
             }, 500);
         })
     });
+
+    $("#volunteerCards").sortable();
 });
 
 function addNewVolunteerDialog(isVisible) {
@@ -75,9 +77,11 @@ function addVolunteer(volunteerData) {
     var getLastVolunteerCard = parseInt($("#volunteerCards").children().length);
     var volunteerCardTemplate = $("#volunteerCardTemplate").clone();
     volunteerCardTemplate.attr("id", "volunteerCard_" + (++getLastVolunteerCard));
+    volunteerCardTemplate.find("#volunteerSequence").html(getLastVolunteerCard);
     volunteerCardTemplate.show();
     for (var key in volunteerData) {
-        if (volunteerData[key] == "true") {
+        // Handle checkbox fields
+        if (volunteerData[key]) {
             volunteerCardTemplate.find("#" + key).prop('checked', true);
         }
 
