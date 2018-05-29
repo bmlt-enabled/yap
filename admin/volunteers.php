@@ -29,6 +29,42 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="selectShiftDialog" tabindex="-1" role="dialog" aria-labelledby="selectShiftDialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Select Shift for <span id="shiftDayTitle"></span></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group form-row form-inline">
+                            Start Time:
+                            <select class="form-control form-control-sm hours_field" id="start_time_hour"></select> :
+                            <select class="form-control form-control-sm minutes_field" id="start_time_minute"></select>
+                            <select class="form-control form-control-sm division_field" id="start_time_division">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
+                        <div class="form-group form-row form-inline">
+                            End Time:
+                            <select class="form-control form-control-sm hours_field" id="end_time_hour"></select> :
+                            <select class="form-control form-control-sm minutes_field" id="end_time_minute"></select>
+                            <select class="form-control form-control-sm division_field" id="end_time_division">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="saveShift(this)">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="volunteerCards" class="list-group-flush" class="row"></div>
     </div>
 <?php include_once 'footer.php';?>
@@ -40,29 +76,16 @@
         </div>
         <div class="card-body">
             Phone Number: <input type="text" id="volunteer_phone_number" name="volunteer_phone_number">
-            <table id="volunteer_schedule" class="table table-striped table-bordered"
-                <thead>
-                    <tr>
-                        <th scope="col">Sun</th>
-                        <th scope="col">Mon</th>
-                        <th scope="col">Tue</th>
-                        <th scope="col">Wed</th>
-                        <th scope="col">Thu</th>
-                        <th scope="col">Fri</th>
-                        <th scope="col">Sat</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><input type="text" id="day_1" name="day_1" /></td>
-                        <td><input type="text" id="day_2" name="day_2" /></td>
-                        <td><input type="text" id="day_3" name="day_3" /></td>
-                        <td><input type="text" id="day_4" name="day_4" /></td>
-                        <td><input type="text" id="day_5" name="day_5" /></td>
-                        <td><input type="text" id="day_6" name="day_6" /></td>
-                        <td><input type="text" id="day_7" name="day_7" /></td>
-                    </tr>
-                </tbody>
+            <table id="volunteer_schedule" class="table table-striped table-bordered">
+            <?php
+            $x = 0;
+            foreach($GLOBALS['days_of_the_week'] as $day) {
+                $x++; ?>
+                <tr>
+                    <th scope="col"><?php echo $day ?></th>
+                    <td scope="col"><input type="text" name="day_<?php echo $x?>" id="day_<?php echo $x?>" onclick="selectShift(this, '<?php echo $day ?>')"></td>
+                </tr>
+            <?php } ?>
             </table>
         </div>
         <div class="card-footer bg-transparent">

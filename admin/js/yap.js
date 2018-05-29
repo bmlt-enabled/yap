@@ -49,6 +49,17 @@ $(function() {
     });
 
     $("#volunteerCards").sortable();
+
+
+    for (var hr = 1; hr <= 12; hr++) {
+        var hr_value = hr < 10 ? "0" + hr : hr.toString();
+        $(".hours_field").append(new Option(hr_value, hr_value));
+    }
+
+    for (var min = 0; min <= 59; min++) {
+        var min_value = min < 10 ? "0" + min : min.toString();
+        $(".minutes_field").append(new Option(min_value, min_value));
+    }
 });
 
 function addNewVolunteerDialog(isVisible) {
@@ -96,4 +107,13 @@ function removeVolunteer(e) {
 
 function volunteerStatusToggle(e) {
     $(e).val(e.checked);
+}
+
+function selectShift(e, day) {
+    $("#shiftDayTitle").html(day);
+    $("#selectShiftDialog").modal("show");
+}
+
+function saveShift(e) {
+    console.log(e)
 }
