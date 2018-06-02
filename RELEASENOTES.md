@@ -9,7 +9,7 @@
 * Playback of the Just For Today as a configurable option with a prompt.
 * Added force dialing feature for wiring a Twilio number to just route somewhere else.
 
-###1 .2.1
+### 1.2.1
 
 * Helpline to helpline redirection support.
 * Added alternative authentication support `$alt_auth_method`, for non-SSL roots.
