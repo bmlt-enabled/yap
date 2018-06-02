@@ -213,6 +213,14 @@ You might want to force a particular Twilio number to just call another number. 
 
 `/helpline-search.php?ForceNumber=8885551212` or for extension dialing `/helpline-search.php?ForceNumber=8885551212%7Cwwww700`.  Each `w` is a 1 second pause.
 
+In some cases, when using 1 second pauses you may want to indicate that there is something happening to the end user as there will be a delay.
+
+You can enable a simple message by setting the following:
+
+```php
+static force_dialing_notice = true;
+```
+
 ## Including province prior to lookup
 
 It may be that your yap instance needs to search multiple states.  By default yap will be biased towards the local number state (unless it's tollfree).  To enable province lookup set the `$province_lookup`, variable to `true` in the `config.php` file.  

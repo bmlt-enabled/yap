@@ -4,15 +4,16 @@
 * Admin portal.
 * Music on hold for helpline call
 
-###Future Release
-* Added the ability to change the outbound caller id to another verified twilio number.
+### 1.3.1
+* Added the ability to change the outbound caller id to another verified Twilio number.
+* Optional setting for force dialing message to indicate that the call was received and being processed.  (Useful for extension dialing with pausing) 
 
-###1.3.0
+### 1.3.0
 * Added option to skip location gathering for helpline routing.
 * Playback of the Just For Today as a configurable option with a prompt.
 * Added force dialing feature for wiring a Twilio number to just route somewhere else.
 
-###1.2.1
+### 1.2.1
 
 * Helpline to helpline redirection support.
 * Added alternative authentication support `$alt_auth_method`, for non-SSL roots.
