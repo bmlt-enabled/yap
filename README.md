@@ -16,7 +16,7 @@ Here is an instructional video that might assist you: https://www.dropbox.com/s/
 
 **This will require that you have an SSL certificate installed on your webserver to transit a secure connection.  This is required by Twilio.**
 
-1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: https://github.com/radius314/yap/archive/1.3.0.zip.
+1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: https://github.com/radius314/yap/archive/1.3.1.zip.
 
 2. Once the application is configured you will need to customize the config.php file.  There are several settings there that are documented in that file.  There are a number of different ways to utilize the yap platform.  
 
@@ -174,6 +174,14 @@ This would set the radius to a maximum of 30 miles and is the default.
 You might want to force a particular Twilio number to just call another number.  Just use the following webhook.
 
 `/helpline-search.php?ForceNumber=8885551212` or for extension dialing `/helpline-search.php?ForceNumber=8885551212%7Cwwww700`.  Each `w` is a 1 second pause.
+
+In some cases, when using 1 second pauses you may want to indicate that there is something happening to the end user as there will be a delay.
+
+You can enable a simple message by setting the following:
+
+```php
+static force_dialing_notice = true;
+```
 
 ## Including province prior to lookup
 
