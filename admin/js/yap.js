@@ -111,9 +111,26 @@ function volunteerStatusToggle(e) {
 
 function selectShift(e, day) {
     $("#shiftDayTitle").html(day);
+    $("#selectShiftDialog").attr({
+        "volunteer_id": $(e).closest(".volunteerCard").attr("id"),
+        "day_id": $(e).attr("id")
+    });
     $("#selectShiftDialog").modal("show");
 }
 
 function saveShift(e) {
-    console.log(e)
+    var volunteer_id = $("#selectShiftDialog").attr("volunteer_id");
+    var day_id = $("#selectShiftDialog").attr("day_id");
+    $("#" + volunteer_id).find("#" + day_id).val(
+        JSON.stringify({
+            "start_time" : $("#start_time_hour").val()
+            + ":" + $("#start_time_minute").val()
+            + " " + $("#start_time_division").val(),
+            "end_time" : $("#end_time_hour").val()
+            + ":" + $("#end_time_minute").val()
+            + " " + $("#end_time_division").val()
+        })
+    );
+
+    $("#selectShiftDialog").modal("hide");
 }
