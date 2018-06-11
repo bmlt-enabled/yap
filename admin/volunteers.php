@@ -83,7 +83,10 @@
                 $x++; ?>
                 <tr>
                     <th scope="col"><?php echo $day ?></th>
-                    <td scope="col"><input type="text" name="day_<?php echo $x?>" id="day_<?php echo $x?>" onclick="selectShift(this, '<?php echo $day ?>')"></td>
+                    <td scope="col">
+                        <input type="button" value="<?php echo $GLOBALS['add_shift']?>" onclick="selectShift(this, '<?php echo $day ?>')" shiftid="day_<?php echo $x?>"/>
+                        <input class="day_of_the_week_field" type="text" name="day_<?php echo $x?>" id="day_<?php echo $x?>"/>
+                    </td>
                 </tr>
             <?php } ?>
             </table>
@@ -94,7 +97,7 @@
                     <input type="checkbox" class="form-check-input" name="volunteer_enabled" id="volunteer_enabled" value="false" onclick="volunteerStatusToggle(this)">
                     <label class="form-check-label" for="volunteer_enabled">Enabled</label>
                 </div>
-                <button class="btn btn-sm btn-danger" type="button" onclick="removeVolunteer(this)"><?php echo $GLOBALS['remove']?></button>
+                <button class="btn btn-sm btn-danger" type="button" onclick="removeVolunteer(this)"></button>
             </div>
         </div>
     </form>

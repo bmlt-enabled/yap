@@ -54,3 +54,4 @@ $volunteer_name = "Volunteer Name";
 $save_volunteers = "Save Volunteers";
 $remove = "Remove";
 $settings = "Settings";
+$add_shift = "Add Shift";

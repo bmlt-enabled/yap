@@ -72,3 +72,7 @@ div#signin {
 #volunteer_schedule {
     margin-top:20px;
 }
+
+.day_of_the_week_field {
+    visibility: hidden;
+}
