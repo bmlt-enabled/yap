@@ -121,16 +121,11 @@ function selectShift(e, day) {
 function saveShift(e) {
     var volunteer_id = $("#selectShiftDialog").attr("volunteer_id");
     var day_id = $("#selectShiftDialog").attr("day_id");
-    $("#" + volunteer_id).find("#" + day_id).val(
-        JSON.stringify({
-            "start_time" : $("#start_time_hour").val()
-            + ":" + $("#start_time_minute").val()
-            + " " + $("#start_time_division").val(),
-            "end_time" : $("#end_time_hour").val()
-            + ":" + $("#end_time_minute").val()
-            + " " + $("#end_time_division").val()
-        })
-    );
+    var start_time = $("#start_time_hour").val() + ":" + $("#start_time_minute").val() + " " + $("#start_time_division").val();
+    var end_time = $("#end_time_hour").val() + ":" + $("#end_time_minute").val() + " " + $("#end_time_division").val();
 
+    $("#" + volunteer_id).find("#" + day_id).val(
+        "|start_time:" + start_time + ",end_time:" + end_time + "|"
+    );
     $("#selectShiftDialog").modal("hide");
 }

@@ -269,13 +269,16 @@ function getHelplineData($service_body_id) {
     $helpline_data = json_decode(get(getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetSearchResults"
                                      . "&services=" . $service_body_id . "&advanced_published=0"));
 
-    foreach ($helpline_data as $item) {
-        if (substr_count($item->meeting_name, 'YAP_DATA') > 0) {
-            return [
-                'id' => intval($item->id_bigint),
-                'data' => json_decode(str_replace(';', ',', html_entity_decode(explode('#@-@#', $item->comments)[2])))->data,
-                'service_body_id' => intval($service_body_id)
-            ];
+    if ($helpline_data != null) {
+        foreach ( $helpline_data as $item ) {
+            if ( substr_count( $item->meeting_name, 'YAP_DATA' ) > 0 ) {
+                $json_string = str_replace( ';', ',', html_entity_decode( explode( '#@-@#', $item->comments )[2] ) );
+                return [
+                    'id'              => intval( $item->id_bigint ),
+                    'data'            => json_decode( $json_string )->data,
+                    'service_body_id' => intval( $service_body_id )
+                ];
+            }
         }
     }
 
@@ -366,7 +369,7 @@ function getFormatResults($service_body_int, $format_codes) {
 }
 
 function getHelplineSchedule($service_body_int) {
-    $volunteers = json_decode(getFormatResults($service_body_int, 'HV'));
+    $volunteers = getHelplineData($service_body_int);
     list($volunteerNames, $finalSchedule) = getVolunteerInfo($volunteers);
     $finalSchedule = flattenSchedule(array_count_values($volunteerNames), $finalSchedule);
 
@@ -427,20 +430,26 @@ function getVolunteerInfo($volunteers) {
     $finalSchedule = [];
     $volunteerNames = [];
 
-    for ($v = 0; $v < count($volunteers); $v++) {
-        $volunteerInfo = new VolunteerInfo();
-        $volunteerInfo->title = $volunteers[$v]->meeting_name;
-        $volunteerInfo->time_zone = getTimeZoneForCoordinates($volunteers[$v]->latitude, $volunteers[$v]->longitude);
-        $volunteerInfo->start = getNextShiftInstance($volunteers[$v]->weekday_tinyint, $volunteers[$v]->start_time, $volunteerInfo->time_zone)->format("Y-m-d H:i:s");
-        $volunteerInfo->origin_duration = getDurationInterval($volunteers[$v]->duration_time);
-        $volunteerInfo->end = date_add(new DateTime($volunteerInfo->start), date_interval_create_from_date_string($volunteerInfo->origin_duration->getDurationFormat()))->format("Y-m-d H:i:s");
-        $volunteerInfo->weekday_id = intval($volunteers[$v]->weekday_tinyint);
-        $volunteerInfo->weekday = $GLOBALS['days_of_the_week'][$volunteers[$v]->weekday_tinyint];
-        $volunteerInfo->sequence = $volunteers[$v]->location_info != null ? intval($volunteers[$v]->location_info) : 0;
-        $volunteerInfo->origin_start_time = $volunteers[$v]->start_time;
-        $volunteerInfo->contact = $volunteers[$v]->contact_phone_1;
-        array_push($volunteerNames, $volunteers[$v]->meeting_name);
-        array_push($finalSchedule, $volunteerInfo);
+    for ($v = 0; $v < count($volunteers['data']); $v++) {
+        $volunteer = $volunteers['data'][$v];
+        if ($volunteer->volunteer_enabled) {
+            for ($day = 1; $day <= 7; $day++) {
+                if ($volunteer->{"day_" . $day} != "") {
+                    $volunteerInfo             = new VolunteerInfo();
+                    $volunteerShiftDayData     = json_decode($volunteer->{"day_" . $day});
+                    $volunteerInfo->title      = $volunteer->volunteer_name;
+                    $volunteerInfo->time_zone  = getTimeZoneForCoordinates( $volunteer->latitude, $volunteer->longitude );
+                    $volunteerInfo->start      = getNextShiftInstance( $day, $volunteerShiftDayData->start_time, $volunteerInfo->time_zone )->format( "Y-m-d H:i:s" );
+                    $volunteerInfo->end        = getNextShiftInstance( $day, $volunteerShiftDayData->end_time, $volunteerInfo->time_zone )->format( "Y-m-d H:i:s" );
+                    $volunteerInfo->weekday_id = $day;
+                    $volunteerInfo->weekday    = $GLOBALS['days_of_the_week'][ $day ];
+                    $volunteerInfo->sequence   = $v;
+                    $volunteerInfo->contact    = $volunteer->volunteer_phone_number;
+                    array_push( $volunteerNames, $volunteerInfo->title );
+                    array_push( $finalSchedule, $volunteerInfo );
+                }
+            }
+        }
     }
     return array($volunteerNames, $finalSchedule);
 }
