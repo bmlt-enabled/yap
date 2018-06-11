@@ -113,7 +113,7 @@ function selectShift(e, day) {
     $("#shiftDayTitle").html(day);
     $("#selectShiftDialog").attr({
         "volunteer_id": $(e).closest(".volunteerCard").attr("id"),
-        "day_id": $(e).attr("shiftid")
+        "day_id": $(e).attr("data-shiftid")
     });
     $("#selectShiftDialog").modal("show");
 }
