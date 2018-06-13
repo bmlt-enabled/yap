@@ -76,3 +76,12 @@ div#signin {
 .day_of_the_week_field {
     visibility: hidden;
 }
+
+.removeShiftLink {
+    color: white;
+}
+
+.removeShiftLink:hover {
+    text-decoration: none;
+    color: white;
+}

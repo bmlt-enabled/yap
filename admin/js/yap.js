@@ -85,9 +85,11 @@ function loadVolunteers(serviceBodyId, callback) {
 }
 
 function addVolunteer(volunteerData) {
+    var shiftRenderQueue = [];
     var getLastVolunteerCard = parseInt($("#volunteerCards").children().length);
     var volunteerCardTemplate = $("#volunteerCardTemplate").clone();
-    volunteerCardTemplate.attr("id", "volunteerCard_" + (++getLastVolunteerCard));
+    var volunteerId = "volunteerCard_" + (++getLastVolunteerCard);
+    volunteerCardTemplate.attr("id", volunteerId);
     volunteerCardTemplate.find("#volunteerSequence").html(getLastVolunteerCard);
     volunteerCardTemplate.show();
     for (var key in volunteerData) {
@@ -97,8 +99,18 @@ function addVolunteer(volunteerData) {
         }
 
         volunteerCardTemplate.find("#" + key).val(volunteerData[key]);
+
+        if (key.indexOf("day_") > -1) {
+            shiftRenderQueue.push(
+                wrapFunction(renderShift, this, [volunteerId, key, volunteerData[key]])
+            );
+        }
     }
+
     volunteerCardTemplate.appendTo("#volunteerCards");
+    while (shiftRenderQueue.length > 0) {
+        (shiftRenderQueue.shift())();
+    }
 }
 
 function removeVolunteer(e) {
@@ -107,6 +119,22 @@ function removeVolunteer(e) {
 
 function volunteerStatusToggle(e) {
     $(e).val(e.checked);
+}
+
+function renderShift(volunteerId, dayId, shiftInfo) {
+    if (shiftInfo != "") {
+        var shiftCardTemplate = $("#shiftCardTemplate").clone();
+        var shiftInfoObj = JSON.parse(atob(shiftInfo));
+        shiftCardTemplate.find("#shiftInfo").html(shiftInfoObj["start_time"] + "-" + shiftInfoObj["end_time"]);
+        shiftCardTemplate.show();
+        shiftCardTemplate.appendTo($("#" + volunteerId).find("#shifts_" + dayId))
+    }
+}
+
+var wrapFunction = function(fn, context, params) {
+    return function() {
+        fn.apply(context, params);
+    };
 }
 
 function selectShift(e, day) {
@@ -124,8 +152,19 @@ function saveShift(e) {
     var start_time = $("#start_time_hour").val() + ":" + $("#start_time_minute").val() + " " + $("#start_time_division").val();
     var end_time = $("#end_time_hour").val() + ":" + $("#end_time_minute").val() + " " + $("#end_time_division").val();
 
-    $("#" + volunteer_id).find("#" + day_id).val(
-        "|start_time:" + start_time + ",end_time:" + end_time + "|"
+    var shiftInfo = btoa(
+        JSON.stringify({
+            "start_time": start_time,
+            "end_time": end_time
+        })
     );
+
+    renderShift(volunteer_id, day_id, shiftInfo);
+    $("#" + volunteer_id).find("#" + day_id).val(shiftInfo);
     $("#selectShiftDialog").modal("hide");
+}
+
+function removeShift(e) {
+    $(e).closest(".shiftBody").find(".day_of_the_week_field").val("")
+    $(e).closest(".shiftCard").remove();
 }

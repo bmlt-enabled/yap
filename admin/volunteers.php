@@ -82,10 +82,17 @@
             foreach($GLOBALS['days_of_the_week'] as $day) {
                 $x++; ?>
                 <tr>
-                    <th scope="col"><?php echo $day ?></th>
+                    <th scope="col">
+                        <div class="shiftHeader">
+                            <?php echo $day ?>
+                        </div>
+                    </th>
                     <td scope="col">
-                        <button class="btn btn-sm btn-info" data-shiftid="day_<?php echo $x?>" onclick="selectShift(this, '<?php echo $day ?>');return false;"><?php echo $GLOBALS['add_shift']?></button>
-                        <input class="day_of_the_week_field" type="text" name="day_<?php echo $x?>" id="day_<?php echo $x?>"/>
+                        <div class="shiftBody">
+                            <div id="shifts_day_<?php echo $x?>"></div>
+                            <button class="btn btn-sm btn-info" data-shiftid="day_<?php echo $x?>" onclick="selectShift(this, '<?php echo $day ?>');return false;"><?php echo $GLOBALS['add_shift']?></button>
+                            <input class="day_of_the_week_field" type="text" name="day_<?php echo $x?>" id="day_<?php echo $x?>"/>
+                        </div>
                     </td>
                 </tr>
             <?php } ?>
@@ -101,4 +108,12 @@
             </div>
         </div>
     </form>
+</div>
+<div class="card text-white bg-secondary mb-3 shiftCard" id="shiftCardTemplate" style="max-width: 15rem; display:none;">
+    <div class="card-header">
+        <div class="text-right"><a class="removeShiftLink" href="#" onclick="removeShift(this);return false;">X</a></div>
+    </div>
+    <div class="card-body">
+        <div class="card-text-sm" id="shiftInfo"></div>
+    </div>
 </div>
