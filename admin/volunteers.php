@@ -92,7 +92,7 @@
                 <tr><th>Shifts <button class="btn btn-sm btn-info" onclick="selectShift(this);return false;"><?php echo $GLOBALS['add_shift']?></button></th></tr>
                 <tr>
                     <td>
-                        <div id="shiftsCards"></div>
+                        <div class="card-deck" id="shiftsCards"></div>
                     </td>
                 </tr>
             </table>
