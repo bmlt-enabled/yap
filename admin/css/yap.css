@@ -85,3 +85,7 @@ div#signin {
     text-decoration: none;
     color: white;
 }
+
+#shiftDay {
+    display: inline;
+}

@@ -40,6 +40,18 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group form-row form-inline">
+                            Day:
+                            <select class="form-control form-control-sm day_of_the_week" id="day_of_the_week">
+                                <option value="1">Sunday</option>
+                                <option value="2">Monday</option>
+                                <option value="3">Tuesday</option>
+                                <option value="4">Wednesday</option>
+                                <option value="5">Thursday</option>
+                                <option value="6">Friday</option>
+                                <option value="7">Saturday</option>
+                            </select>
+                        </div>
+                        <div class="form-group form-row form-inline">
                             Start Time:
                             <select class="form-control form-control-sm hours_field" id="start_time_hour"></select> :
                             <select class="form-control form-control-sm minutes_field" id="start_time_minute"></select>
@@ -77,26 +89,14 @@
         <div class="card-body">
             Phone Number: <input type="text" id="volunteer_phone_number" name="volunteer_phone_number">
             <table id="volunteer_schedule" class="table table-striped table-bordered">
-            <?php
-            $x = 0;
-            foreach($GLOBALS['days_of_the_week'] as $day) {
-                $x++; ?>
+                <tr><th>Shifts <button class="btn btn-sm btn-info" onclick="selectShift(this);return false;"><?php echo $GLOBALS['add_shift']?></button></th></tr>
                 <tr>
-                    <th scope="col">
-                        <div class="shiftHeader">
-                            <?php echo $day ?>
-                        </div>
-                    </th>
-                    <td scope="col">
-                        <div class="shiftBody">
-                            <div id="shifts_day_<?php echo $x?>"></div>
-                            <button class="btn btn-sm btn-info" data-shiftid="day_<?php echo $x?>" onclick="selectShift(this, '<?php echo $day ?>');return false;"><?php echo $GLOBALS['add_shift']?></button>
-                            <input class="day_of_the_week_field" type="text" name="day_<?php echo $x?>" id="day_<?php echo $x?>"/>
-                        </div>
+                    <td>
+                        <div id="shiftsCards"></div>
                     </td>
                 </tr>
-            <?php } ?>
             </table>
+            <input class="day_of_the_week_field" type="text" name="shiftSchedule" id="shiftSchedule" size="1"/>
         </div>
         <div class="card-footer bg-transparent">
             <div id="volunteerCardFooter" class="float-right">
@@ -111,9 +111,13 @@
 </div>
 <div class="card text-white bg-secondary mb-3 shiftCard" id="shiftCardTemplate" style="max-width: 15rem; display:none;">
     <div class="card-header">
-        <div class="text-right"><a class="removeShiftLink" href="#" onclick="removeShift(this);return false;">X</a></div>
+        <div id="shiftDay"></div>
     </div>
     <div class="card-body">
         <div class="card-text-sm" id="shiftInfo"></div>
     </div>
+    <div class="card-footer">
+        <div id="shiftRemove" class="float-right"><button class="btn btn-sm btn-danger" type="button" onclick="removeShift(this);return false;"><?php echo $GLOBALS['remove']?></button></div>
+    </div>
 </div>
+<script type="text/javascript">$(function(){volunteerPage()})</script>

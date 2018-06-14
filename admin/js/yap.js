@@ -1,4 +1,6 @@
-$(function() {
+dayOfTheWeek = {1:"Sunday",2:"Monday",3:"Tuesday",4:"Wednesday",5:"Thursday",6:"Friday",7:"Saturday"};
+
+function volunteerPage() {
     $("#add-volunteer").click(function() {
         addVolunteer({
             "volunteer_name": $("#new_volunteer_name").val()
@@ -60,7 +62,7 @@ $(function() {
         var min_value = min < 10 ? "0" + min : min.toString();
         $(".minutes_field").append(new Option(min_value, min_value));
     }
-});
+}
 
 function addNewVolunteerDialog(isVisible) {
     isVisible ? $("#newVolunteerDialog").show() : $("#newVolunteerDialog").hide();
@@ -100,10 +102,13 @@ function addVolunteer(volunteerData) {
 
         volunteerCardTemplate.find("#" + key).val(volunteerData[key]);
 
-        if (key.indexOf("day_") > -1) {
-            shiftRenderQueue.push(
-                wrapFunction(renderShift, this, [volunteerId, key, volunteerData[key]])
-            );
+        if (key.indexOf("shiftSchedule") > -1) {
+            var shiftInfoObj = dataDecoder(volunteerData[key]);
+            for (var shiftInfoItem of shiftInfoObj) {
+                shiftRenderQueue.push(
+                    wrapFunction(renderShift, this, [volunteerId, shiftInfoItem])
+                );
+            }
         }
     }
 
@@ -121,13 +126,13 @@ function volunteerStatusToggle(e) {
     $(e).val(e.checked);
 }
 
-function renderShift(volunteerId, dayId, shiftInfo) {
-    if (shiftInfo != "") {
+function renderShift(volunteerId, shiftInfoObj) {
+    if (shiftInfoObj !== null) {
         var shiftCardTemplate = $("#shiftCardTemplate").clone();
-        var shiftInfoObj = JSON.parse(atob(shiftInfo));
+        shiftCardTemplate.find("#shiftDay").html(dayOfTheWeek[shiftInfoObj["day"]]);
         shiftCardTemplate.find("#shiftInfo").html(shiftInfoObj["start_time"] + "-" + shiftInfoObj["end_time"]);
         shiftCardTemplate.show();
-        shiftCardTemplate.appendTo($("#" + volunteerId).find("#shifts_" + dayId))
+        shiftCardTemplate.appendTo($("#" + volunteerId).find("#shiftsCards"))
     }
 }
 
@@ -135,7 +140,7 @@ var wrapFunction = function(fn, context, params) {
     return function() {
         fn.apply(context, params);
     };
-}
+};
 
 function selectShift(e, day) {
     $("#shiftDayTitle").html(day);
@@ -148,23 +153,41 @@ function selectShift(e, day) {
 
 function saveShift(e) {
     var volunteer_id = $("#selectShiftDialog").attr("volunteer_id");
-    var day_id = $("#selectShiftDialog").attr("day_id");
+    var day_id = $("#day_of_the_week").val();
     var start_time = $("#start_time_hour").val() + ":" + $("#start_time_minute").val() + " " + $("#start_time_division").val();
     var end_time = $("#end_time_hour").val() + ":" + $("#end_time_minute").val() + " " + $("#end_time_division").val();
+    var shiftInfoObj = {
+        "day": day_id,
+        "start_time": start_time,
+        "end_time": end_time
+    };
 
-    var shiftInfo = btoa(
-        JSON.stringify({
-            "start_time": start_time,
-            "end_time": end_time
-        })
-    );
-
-    renderShift(volunteer_id, day_id, shiftInfo);
-    $("#" + volunteer_id).find("#" + day_id).val(shiftInfo);
+    renderShift(volunteer_id, shiftInfoObj);
+    addToShiftSchedule($("#" + volunteer_id).find("#shiftSchedule"), shiftInfoObj);
     $("#selectShiftDialog").modal("hide");
 }
 
 function removeShift(e) {
-    $(e).closest(".shiftBody").find(".day_of_the_week_field").val("")
+    $(e).closest(".shiftBody").find(".day_of_the_week_field").val("");
     $(e).closest(".shiftCard").remove();
+}
+
+function dataEncoder(dataObject) {
+    return btoa(JSON.stringify(dataObject));
+}
+
+function dataDecoder(dataString) {
+    return JSON.parse(atob(dataString));
+}
+
+function addToShiftSchedule(obj, shiftInfoObj) {
+    var currentVal = (obj.val().length > 0) ? dataDecoder(obj.val()) : [];
+    currentVal.push(shiftInfoObj);
+    obj.val(dataEncoder(currentVal));
+}
+
+function removeFromShiftSchedule(obj, idxToRemove) {
+    var currentVal = dataDecoder(obj.val());
+    currentVal.splice(idxToRemove, 1);
+    obj.val(dataDecoder(currentVal));
 }
