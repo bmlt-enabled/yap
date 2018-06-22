@@ -130,7 +130,7 @@ function renderShift(volunteerId, shiftInfoObj) {
     if (shiftInfoObj !== null) {
         var shiftCardTemplate = $("#shiftCardTemplate").clone();
         shiftCardTemplate.find("#shiftDay").html(dayOfTheWeek[shiftInfoObj["day"]]);
-        shiftCardTemplate.find("#shiftInfo").html(shiftInfoObj["start_time"] + "-" + shiftInfoObj["end_time"]);
+        shiftCardTemplate.find("#shiftInfo").html(shiftInfoObj["start_time"] + "-" + shiftInfoObj["end_time"] + " " + shiftInfoObj["tz"]);
         shiftCardTemplate.show();
         shiftCardTemplate.appendTo($("#" + volunteerId).find("#shiftsCards"))
     }
@@ -142,8 +142,9 @@ var wrapFunction = function(fn, context, params) {
     };
 };
 
-function selectShift(e, day) {
-    $("#shiftDayTitle").html(day);
+function addShift(e) {
+    $("#time_zone").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    $("#shiftVolunteerName").html("%person%");
     $("#selectShiftDialog").attr({
         "volunteer_id": $(e).closest(".volunteerCard").attr("id"),
         "day_id": $(e).attr("data-shiftid")
@@ -154,10 +155,12 @@ function selectShift(e, day) {
 function saveShift(e) {
     var volunteer_id = $("#selectShiftDialog").attr("volunteer_id");
     var day_id = $("#day_of_the_week").val();
+    var time_zone_id = $("#time_zone").val();
     var start_time = $("#start_time_hour").val() + ":" + $("#start_time_minute").val() + " " + $("#start_time_division").val();
     var end_time = $("#end_time_hour").val() + ":" + $("#end_time_minute").val() + " " + $("#end_time_division").val();
     var shiftInfoObj = {
         "day": day_id,
+        "tz": time_zone_id,
         "start_time": start_time,
         "end_time": end_time
     };

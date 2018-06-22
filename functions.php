@@ -191,6 +191,10 @@ function getGraceMinutes() {
     return isset($GLOBALS['grace_minutes']) ? $GLOBALS['grace_minutes'] : 15;
 }
 
+function getTimezoneList() {
+    return DateTimeZone::listIdentifiers(DateTimeZone::ALL);
+}
+
 function getMeetings($latitude, $longitude, $results_count, $today = null, $tomorrow = null) {
     $time_zone_results = getTimeZoneForCoordinates($latitude, $longitude);
     # Could be wired up to use multiple roots in the future by using a parameter to select

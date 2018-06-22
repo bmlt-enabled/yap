@@ -33,7 +33,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Select Shift for <span id="shiftDayTitle"></span></h5>
+                        <h5 class="modal-title">Add Shift <span id="shiftVolunteerName"></span></h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -49,6 +49,15 @@
                                 <option value="5">Thursday</option>
                                 <option value="6">Friday</option>
                                 <option value="7">Saturday</option>
+                            </select>
+                        </div>
+                        <div class="form-group form-row form-inline">
+                            Time Zone:
+                            <select class="form-control form-control-sm time_zone_selector" id="time_zone">
+                                <?php
+                                foreach (getTimezoneList() as $tzItem) { ?>
+                                    <option value="<?php echo $tzItem?>"><?php echo $tzItem; ?></option>
+                                <?php } ?>
                             </select>
                         </div>
                         <div class="form-group form-row form-inline">
@@ -89,7 +98,7 @@
         <div class="card-body">
             Phone Number: <input type="text" id="volunteer_phone_number" name="volunteer_phone_number">
             <table id="volunteer_schedule" class="table table-striped table-bordered">
-                <tr><th>Shifts <button class="btn btn-sm btn-info" onclick="selectShift(this);return false;"><?php echo $GLOBALS['add_shift']?></button></th></tr>
+                <tr><th>Shifts <button class="btn btn-sm btn-info" onclick="addShift(this);return false;"><?php echo $GLOBALS['add_shift']?></button></th></tr>
                 <tr>
                     <td>
                         <div class="card-deck" id="shiftsCards"></div>
@@ -117,7 +126,9 @@
         <div class="card-text-sm" id="shiftInfo"></div>
     </div>
     <div class="card-footer">
-        <div id="shiftRemove" class="float-right"><button class="btn btn-sm btn-danger" type="button" onclick="removeShift(this);return false;"><?php echo $GLOBALS['remove']?></button></div>
+        <div id="shiftRemove" class="float-right">
+            <button class="btn btn-sm btn-danger" type="button" onclick="removeShift(this);return false;"><?php echo $GLOBALS['remove']?></button>
+        </div>
     </div>
 </div>
 <script type="text/javascript">$(function(){volunteerPage()})</script>
