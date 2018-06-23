@@ -370,7 +370,7 @@ function getFormatResults($service_body_int, $format_codes) {
 
 function getHelplineSchedule($service_body_int) {
     $volunteers = getHelplineData($service_body_int);
-    list($volunteerNames, $finalSchedule) = getVolunteerInfo($volunteers);
+    $finalSchedule = getVolunteerInfo($volunteers);
 
     usort($finalSchedule, function($a, $b) {
         return $a->sequence > $b->sequence;
@@ -390,7 +390,6 @@ function filterOut($volunteers) {
 
 function getVolunteerInfo($volunteers) {
     $finalSchedule = [];
-    $volunteerNames = [];
 
     for ($v = 0; $v < count($volunteers['data']); $v++) {
         $volunteer = $volunteers['data'][$v];
@@ -406,12 +405,12 @@ function getVolunteerInfo($volunteers) {
                 $volunteerInfo->weekday    = $GLOBALS['days_of_the_week'][ $vsi->day ];
                 $volunteerInfo->sequence   = $v;
                 $volunteerInfo->contact    = $volunteer->volunteer_phone_number;
-                array_push( $volunteerNames, $volunteerInfo->title );
                 array_push( $finalSchedule, $volunteerInfo );
             }
         }
     }
-    return array($volunteerNames, $finalSchedule);
+
+    return $finalSchedule;
 }
 
 function dataEncoder($dataObject) {
