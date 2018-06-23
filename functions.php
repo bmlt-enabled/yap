@@ -307,9 +307,6 @@ function getYapBasedHelplines() {
 
 function getNextShiftInstance($shift_day, $shift_time, $shift_tz) {
     date_default_timezone_set($shift_tz);
-    if ($shift_time == "23:59:00") {
-    	$shift_time = "00:00:00";
-    }
 
     $mod_meeting_day = (new DateTime())
         ->modify($GLOBALS['days_of_the_week'][$shift_day])->format("Y-m-d");
