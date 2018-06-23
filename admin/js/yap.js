@@ -19,7 +19,7 @@ function volunteerPage() {
                 cardData.push(JSON.parse($(card).attr("data")));
             }
 
-            $(volunteerCard).find("#shiftSchedule").val(dataEncoder(cardData));
+            $(volunteerCard).find("#volunteer_shift_schedule").val(dataEncoder(cardData));
 
             var formData = $(volunteerCard).find("#volunteersForm").serializeArray();
             var dataObj = {};
@@ -110,7 +110,7 @@ function addVolunteer(volunteerData) {
 
         volunteerCardTemplate.find("#" + key).val(volunteerData[key]);
 
-        if (key.indexOf("shiftSchedule") > -1) {
+        if (key.indexOf("volunteer_shift_schedule") > -1) {
             var shiftInfoObj = dataDecoder(volunteerData[key]);
             for (var shiftInfoItem of shiftInfoObj) {
                 shiftRenderQueue.push(

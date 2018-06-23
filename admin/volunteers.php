@@ -105,7 +105,7 @@
                     </td>
                 </tr>
             </table>
-            <input class="day_of_the_week_field" type="text" name="shiftSchedule" id="shiftSchedule" size="1"/>
+            <input class="day_of_the_week_field" type="text" name="volunteer_shift_schedule" id="volunteer_shift_schedule" size="1"/>
         </div>
         <div class="card-footer bg-transparent">
             <div id="volunteerCardFooter" class="float-right">
