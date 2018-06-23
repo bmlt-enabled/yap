@@ -15,8 +15,6 @@ class VolunteerInfo {
     public $weekday_id;
     public $weekday;
     public $sequence;
-    public $origin_duration;
-    public $origin_start_time;
     public $time_zone;
     public $contact;
 }
@@ -308,7 +306,7 @@ function getYapBasedHelplines() {
 }
 
 function getNextShiftInstance($shift_day, $shift_time, $shift_tz) {
-    date_default_timezone_set($shift_tz->timeZoneId);
+    date_default_timezone_set($shift_tz);
     if ($shift_time == "23:59:00") {
     	$shift_time = "00:00:00";
     }
@@ -375,7 +373,6 @@ function getFormatResults($service_body_int, $format_codes) {
 function getHelplineSchedule($service_body_int) {
     $volunteers = getHelplineData($service_body_int);
     list($volunteerNames, $finalSchedule) = getVolunteerInfo($volunteers);
-    $finalSchedule = flattenSchedule(array_count_values($volunteerNames), $finalSchedule);
 
     usort($finalSchedule, function($a, $b) {
         return $a->sequence > $b->sequence;
@@ -393,69 +390,38 @@ function filterOut($volunteers) {
     return json_encode($volunteers_array);
 }
 
-function flattenSchedule($volunteerShiftCounts, $finalSchedule) {
-    foreach (array_keys($volunteerShiftCounts) as $volunteerName) {
-        // Ensure that they are only listed once
-        if ($volunteerShiftCounts[$volunteerName] == 1) {
-            // Get the information for their shift
-            $finalSchedule = walkShifts($finalSchedule, $volunteerName);
-        }
-    }
-    return $finalSchedule;
-}
-
-function walkShifts($finalSchedule, $volunteerName) {
-    foreach ($finalSchedule as $volunteerInfoItem) {
-        if ($volunteerName == $volunteerInfoItem->title) {
-            // Figure out what day is represented already
-            $dayRepresented = $volunteerInfoItem->weekday_id;
-            $finalSchedule = spreadSchedule($finalSchedule, $dayRepresented, $volunteerInfoItem);
-        }
-    }
-    return $finalSchedule;
-}
-
-function spreadSchedule($finalSchedule, $dayRepresented, $volunteerInfoItem) {
-    for ($d = 1; $d <= 7; $d++) {
-        // Loop through days, don't read the day that is already represented
-        if ($dayRepresented !== $d) {
-            $volunteerClone = clone $volunteerInfoItem;
-            $volunteerClone->start = getNextShiftInstance($d, $volunteerInfoItem->origin_start_time, $volunteerClone->time_zone)->format("Y-m-d H:i:s");
-            $volunteerClone->end = date_add(new DateTime($volunteerClone->start), date_interval_create_from_date_string($volunteerClone->origin_duration->getDurationFormat()))->format("Y-m-d H:i:s");
-            $volunteerClone->weekday = $GLOBALS['days_of_the_week'][$d];
-            $volunteerClone->weekday_id = $d;
-            array_push($finalSchedule, $volunteerClone);
-        }
-    }
-    return $finalSchedule;
-}
-
 function getVolunteerInfo($volunteers) {
     $finalSchedule = [];
     $volunteerNames = [];
 
     for ($v = 0; $v < count($volunteers['data']); $v++) {
         $volunteer = $volunteers['data'][$v];
-        if ($volunteer->volunteer_enabled) {
-            for ($day = 1; $day <= 7; $day++) {
-                if ($volunteer->{"day_" . $day} != "") {
-                    $volunteerInfo             = new VolunteerInfo();
-                    $volunteerShiftDayData     = json_decode($volunteer->{"day_" . $day});
-                    $volunteerInfo->title      = $volunteer->volunteer_name;
-                    $volunteerInfo->time_zone  = getTimeZoneForCoordinates( $volunteer->latitude, $volunteer->longitude );
-                    $volunteerInfo->start      = getNextShiftInstance( $day, $volunteerShiftDayData->start_time, $volunteerInfo->time_zone )->format( "Y-m-d H:i:s" );
-                    $volunteerInfo->end        = getNextShiftInstance( $day, $volunteerShiftDayData->end_time, $volunteerInfo->time_zone )->format( "Y-m-d H:i:s" );
-                    $volunteerInfo->weekday_id = $day;
-                    $volunteerInfo->weekday    = $GLOBALS['days_of_the_week'][ $day ];
-                    $volunteerInfo->sequence   = $v;
-                    $volunteerInfo->contact    = $volunteer->volunteer_phone_number;
-                    array_push( $volunteerNames, $volunteerInfo->title );
-                    array_push( $finalSchedule, $volunteerInfo );
-                }
+        if (isset($volunteer->volunteer_enabled) && $volunteer->volunteer_enabled) {
+            $volunteerShiftSchedule = dataDecoder($volunteer->volunteer_shift_schedule);
+            foreach ($volunteerShiftSchedule as $vsi) {
+                $volunteerInfo             = new VolunteerInfo();
+                $volunteerInfo->title      = $volunteer->volunteer_name;
+                $volunteerInfo->time_zone  = $vsi->tz;
+                $volunteerInfo->start      = getNextShiftInstance( $vsi->day, $vsi->start_time, $volunteerInfo->time_zone )->format( "Y-m-d H:i:s" );
+                $volunteerInfo->end        = getNextShiftInstance( $vsi->day, $vsi->end_time, $volunteerInfo->time_zone )->format( "Y-m-d H:i:s" );
+                $volunteerInfo->weekday_id = $vsi->day;
+                $volunteerInfo->weekday    = $GLOBALS['days_of_the_week'][ $vsi->day ];
+                $volunteerInfo->sequence   = $v;
+                $volunteerInfo->contact    = $volunteer->volunteer_phone_number;
+                array_push( $volunteerNames, $volunteerInfo->title );
+                array_push( $finalSchedule, $volunteerInfo );
             }
         }
     }
     return array($volunteerNames, $finalSchedule);
+}
+
+function dataEncoder($dataObject) {
+    return base64_encode(json_encode($dataObject));
+}
+
+function dataDecoder($dataString) {
+    return json_decode(base64_decode($dataString));
 }
 
 function countOccurrences($initialSchedule, $volunteerName) {
