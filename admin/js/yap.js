@@ -13,6 +13,14 @@ function volunteerPage() {
         var volunteerCards = $("#volunteerCards").children();
         var data = [];
         for (var volunteerCard of volunteerCards) {
+            var cards = $(volunteerCard).find(".shiftCard");
+            var cardData = [];
+            for (var card of cards) {
+                cardData.push(JSON.parse($(card).attr("data")));
+            }
+
+            $(volunteerCard).find("#shiftSchedule").val(dataEncoder(cardData));
+
             var formData = $(volunteerCard).find("#volunteersForm").serializeArray();
             var dataObj = {};
             for (var formItem of formData) {
@@ -130,6 +138,7 @@ function renderShift(volunteerId, shiftInfoObj) {
     if (shiftInfoObj !== null) {
         var shiftCardTemplate = $("#shiftCardTemplate").clone();
         shiftCardTemplate.find("#shiftDay").html(dayOfTheWeek[shiftInfoObj["day"]]);
+        shiftCardTemplate.attr("data", JSON.stringify(shiftInfoObj));
         shiftCardTemplate.find("#shiftInfo").html(shiftInfoObj["start_time"] + "-" + shiftInfoObj["end_time"] + " " + shiftInfoObj["tz"]);
         shiftCardTemplate.show();
         shiftCardTemplate.appendTo($("#" + volunteerId).find("#shiftsCards"))
@@ -166,12 +175,10 @@ function saveShift(e) {
     };
 
     renderShift(volunteer_id, shiftInfoObj);
-    addToShiftSchedule($("#" + volunteer_id).find("#shiftSchedule"), shiftInfoObj);
     $("#selectShiftDialog").modal("hide");
 }
 
 function removeShift(e) {
-    $(e).closest(".shiftBody").find(".day_of_the_week_field").val("");
     $(e).closest(".shiftCard").remove();
 }
 
@@ -181,16 +188,4 @@ function dataEncoder(dataObject) {
 
 function dataDecoder(dataString) {
     return JSON.parse(atob(dataString));
-}
-
-function addToShiftSchedule(obj, shiftInfoObj) {
-    var currentVal = (obj.val().length > 0) ? dataDecoder(obj.val()) : [];
-    currentVal.push(shiftInfoObj);
-    obj.val(dataEncoder(currentVal));
-}
-
-function removeFromShiftSchedule(obj, idxToRemove) {
-    var currentVal = dataDecoder(obj.val());
-    currentVal.splice(idxToRemove, 1);
-    obj.val(dataDecoder(currentVal));
 }
