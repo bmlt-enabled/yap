@@ -333,7 +333,7 @@ function getHelplineVolunteersActiveNow($service_body_int) {
     $volunteers = json_decode(getHelplineSchedule($service_body_int));
     $activeNow = [];
     for ($v = 0; $v < count($volunteers); $v++) {
-        date_default_timezone_set($volunteers[$v]->time_zone->timeZoneId);
+        date_default_timezone_set($volunteers[$v]->time_zone);
         $current_time = new DateTime();
         if ($current_time >= (new DateTime($volunteers[$v]->start)) && $current_time <= (new DateTime($volunteers[$v]->end))) {
             array_push($activeNow, $volunteers[$v]);
@@ -350,9 +350,7 @@ function getHelplineVolunteer($service_body_int, $tracker) {
             $tracker = count($volunteers) - 1;
         }
 
-        if (isset($volunteers[$tracker]->contact) && $volunteers[$tracker]->contact != "") {
-            return explode("#@-@#", $volunteers[$tracker]->contact)[2];
-        }
+        return $volunteers[$tracker]->contact;
     }
 
     return "000000000";
