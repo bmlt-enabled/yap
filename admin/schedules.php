@@ -8,9 +8,9 @@
     </div>
 </div>
 <?php include_once 'footer.php';?>
-<link rel='stylesheet' href='../assets/fullcalendar/2.6.0/fullcalendar.css' />
-<script src='../assets/moment.js/2.11.1/moment.min.js'></script>
-<script src='../assets/fullcalendar/2.6.0/fullcalendar.min.js'></script>
+<link rel='stylesheet' href='css/fullcalendar-3.9.0.min.css' />
+<script src='js/moment-2.11.1.min.js'></script>
+<script src='js/fullcalendar-3.9.0.min.js'></script>
 <script type="text/javascript">
     function getParameterByName(name, url) {
         if (!url) url = window.location.href;
@@ -46,5 +46,11 @@
                 $('#calendar').fullCalendar('addEventSource', '../helpline-schedule.php?service_body_id=' + $('select#servicebodies').val());
             }
         })
+
+        if (getParameterByName("service_body_id") != null) {
+            $('#calendar').fullCalendar('removeEventSources');
+            $("#calendar").fullCalendar('removeEvents');
+            $('#calendar').fullCalendar('addEventSource', '../helpline-schedule.php?service_body_id=' + getParameterByName("service_body_id"));
+        }
     })
 </script>
