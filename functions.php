@@ -310,7 +310,11 @@ function getNextShiftInstance($shift_day, $shift_time, $shift_tz) {
     if ($shift_time == "23:59:00") {
     	$shift_time = "00:00:00";
     }
-    return getNextMeetingInstance($shift_day, $shift_time);
+
+    $mod_meeting_day = (new DateTime())
+        ->modify($GLOBALS['days_of_the_week'][$shift_day])->format("Y-m-d");
+    $mod_meeting_datetime = (new DateTime($mod_meeting_day . " " . $shift_time));
+    return $mod_meeting_datetime;
 }
 
 function getIdsFormats($types, $helpline = false) {
