@@ -36,7 +36,8 @@
             allDaySlot: false,
             defaultView: 'agendaWeek',
             nowIndicator: true,
-            firstDay: (new Date()).getDay()
+            firstDay: (new Date()).getDay(),
+            themeSystem: 'bootstrap4'
         });
 
         $('select#servicebodies').change(function() {
