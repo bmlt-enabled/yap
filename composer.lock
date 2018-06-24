@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f0bf8755fc0aacbbdd01c2cfa9ba7a7c",
+    "content-hash": "371e2589eb01819bafc80650391168df",
     "packages": [
         {
             "name": "predis/predis",
@@ -58,20 +58,20 @@
         },
         {
             "name": "twilio/sdk",
-            "version": "5.19.1",
+            "version": "5.19.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twilio/twilio-php.git",
-                "reference": "61d9cb7223ee1364b752d7e36298dfb60697120d"
+                "reference": "165cecbe4f7ac910f016a3e42e5d324765913486"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/61d9cb7223ee1364b752d7e36298dfb60697120d",
-                "reference": "61d9cb7223ee1364b752d7e36298dfb60697120d",
+                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/165cecbe4f7ac910f016a3e42e5d324765913486",
+                "reference": "165cecbe4f7ac910f016a3e42e5d324765913486",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=5.5.0"
             },
             "require-dev": {
                 "apigen/apigen": "^4.1",
@@ -100,7 +100,7 @@
                 "sms",
                 "twilio"
             ],
-            "time": "2018-05-18T18:34:51+00:00"
+            "time": "2018-06-22T00:21:39+00:00"
         }
     ],
     "packages-dev": [],

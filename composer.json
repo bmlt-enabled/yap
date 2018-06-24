@@ -1,6 +1,6 @@
 {
     "require": {
         "predis/predis": "^1.1",
-        "twilio/sdk": "5.19.1"
+        "twilio/sdk": "5.19.5"
     }
 }
