@@ -24,7 +24,7 @@ if ((isset($_REQUEST['SequenceNumber']) && intval($_REQUEST['SequenceNumber']) =
         $phone_number,
         $_REQUEST['Caller'],
         array(
-            'url'                  => $webhook_url . '/helpline-outdial-response.php?conference-name=' . $_REQUEST['FriendlyName'],
+            'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'],
             'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $service_body_id . '&tracker=' . $tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'],
             'statusCallbackMethod' => 'GET',
             'timeout'              => 10
