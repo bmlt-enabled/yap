@@ -26,16 +26,15 @@
             ? explode('->', $phone_number)[1]
             : $service_body->id;
         ?>
-        <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
-            <?php echo word('please_wait_while_we_connect_your_call') ?>
-        </Say>
-            <Conference startConferenceOnEnter="false"
+        <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>"><?php echo word('please_wait_while_we_connect_your_call') ?></Say>
+        <Dial>
+            <Conference statusCallback="helpline-dialer.php?service_body_id=<?php echo $service_body->id ?>&amp;Caller=<?php echo $_REQUEST['Called'] ?>"
+                        startConferenceOnEnter="false"
                         endConferenceOnExit="true"
                         statusCallbackMethod="GET"
-        <Redirect method="GET">helpline-dialer.php?service_body_id=<?php echo $yap_service_body_redirect ?></Redirect>
                         statusCallbackEvent="join"
                         beep="false">
-                <?php echo getConferenceName($yap_service_body_redirect); ?>
+                <?php echo getConferenceName($service_body->id); ?>
             </Conference>
         </Dial>
     <?php } else if ($phone_number != "") {

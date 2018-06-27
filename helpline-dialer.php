@@ -1,33 +1,44 @@
 <?php
-    include 'functions.php';
-    header("content-type: text/xml");
-    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+include 'config.php';
+include 'functions.php';
+require_once 'vendor/autoload.php';
+use Twilio\Rest\Client;
 
-    $tracker = isset($_REQUEST["tracker"]) ? intval($_REQUEST["tracker"]) + 1 : 0;
-    $service_body_id = $_REQUEST["service_body_id"];
-    $phone_number = getHelplineVolunteer($service_body_id, $tracker);
-    $call_status = isset($_REQUEST["DialCallStatus"]) ? $_REQUEST["DialCallStatus"] : "starting";
-    $call_timeout = isset($GLOBALS["call_timeout"]) ? $GLOBALS["call_timeout"] : 20;
-?>
-<Response>
-<?php
-    if ($call_status != "completed") {
-        if (isset($GLOBALS['forced_callerid']) && $GLOBALS['forced_callerid']) { 
-          $caller_id = $GLOBALS["forced_callerid"];
-        } else { 
-          $caller_id = isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000";
-        }?>
-    <Dial method="GET"
-          timeout="<?php echo $call_timeout; ?>"
-          callerId="<?php echo $caller_id; ?>"
-          action="helpline-dialer.php?service_body_id=<?php echo $service_body_id; ?>&amp;tracker=<?php echo $tracker; ?>&amp;Called=<?php echo urlencode(isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000") ?>">
-            <Number>
-                <?php echo $phone_number; ?>
-            </Number>
-        </Dial>
-<?php
-    } else {
-        echo "<Hangup />";
+$sid                 = $GLOBALS['twilio_account_sid'];
+$token               = $GLOBALS['twilio_auth_token'];
+$client              = new Client( $sid, $token );
+$tracker             = isset( $_REQUEST["tracker"] ) ? intval( $_REQUEST["tracker"] ) + 1 : 0;
+$service_body_id     = $_REQUEST['service_body_id'];
+$phone_number        = getHelplineVolunteer( $service_body_id, $tracker );
+
+$numbers = $client->incomingPhoneNumbers->read(
+    array( "phoneNumber" => $_REQUEST['Caller'] ) );
+
+$voice_url   = $numbers[0]->voiceUrl;
+$webhook_url = substr( $voice_url, 0, strrpos( $voice_url, "/" ) );
+
+// Make timeout configurable per volunteer
+if ((isset($_REQUEST['SequenceNumber']) && intval($_REQUEST['SequenceNumber']) == 1) ||
+    (isset($_REQUEST['CallStatus']) && $_REQUEST['CallStatus'] == 'no-answer')) {
+    $client->calls->create(
+        $phone_number,
+        $_REQUEST['Caller'],
+        array(
+            'url'                  => $webhook_url . '/helpline-outdial-response.php?conference-name=' . $_REQUEST['FriendlyName'],
+            'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $service_body_id . '&tracker=' . $tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'],
+            'statusCallbackMethod' => 'GET',
+            'timeout'              => 10
+        )
+    );
+} elseif (isset($_REQUEST['CallStatus']) && $_REQUEST['CallStatus'] == 'completed') {
+    $conferences = $client->conferences->read(
+        array ("friendlyName" => $_REQUEST['FriendlyName'] ) );
+    $conference_sid = $conferences[0]->sid;
+    $conference_participants = $client->conferences($conference_sid)->participants;
+    foreach ($conference_participants as $participant) {
+        $client->calls($participant->callSid)->update(array($status => 'completed'));
     }
-    ?>
-</Response>
+}
+
+error_log("Dialing " . $phone_number);
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";

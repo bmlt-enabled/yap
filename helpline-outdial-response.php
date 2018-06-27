@@ -7,7 +7,9 @@ $conference_name = $_REQUEST['conference-name'];
 ?>
 <Response>
     <Dial>
-        <Conference>
+        <Conference
+            endConferenceOnExit="true"
+            beep="false">
             <?php echo $conference_name ?>
         </Conference>
     </Dial>
