@@ -6,7 +6,11 @@ use Twilio\Rest\Client;
 
 $sid                 = $GLOBALS['twilio_account_sid'];
 $token               = $GLOBALS['twilio_auth_token'];
-$client              = new Client( $sid, $token );
+try {
+    $client = new Client( $sid, $token );
+} catch ( \Twilio\Exceptions\ConfigurationException $e ) {
+    error_log("Missing Twilio Credentials");
+}
 $tracker             = isset( $_REQUEST["tracker"] ) ? intval( $_REQUEST["tracker"] ) + 1 : 0;
 $service_body_id     = $_REQUEST['service_body_id'];
 $phone_number        = getHelplineVolunteer( $service_body_id, $tracker );
@@ -24,22 +28,30 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     if ( ( isset( $_REQUEST['SequenceNumber'] ) && intval( $_REQUEST['SequenceNumber'] ) == 1 ) ||
          ( isset( $_REQUEST['CallStatus'] ) && ( $_REQUEST['CallStatus'] == 'no-answer' || $_REQUEST['CallStatus'] == 'completed' ) ) ) {
         error_log( "Dialing " . $phone_number );
-        $client->calls->create(
-            $phone_number,
-            $_REQUEST['Caller'],
-            array(
-                'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'],
-                'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $service_body_id . '&tracker=' . $tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'],
-                'statusCallbackEvent'  => 'completed',
-                'statusCallbackMethod' => 'GET',
-                'timeout'              => 10
-            )
-        );
+        try {
+            $client->calls->create(
+                $phone_number,
+                $_REQUEST['Caller'],
+                array(
+                    'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'],
+                    'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $service_body_id . '&tracker=' . $tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'],
+                    'statusCallbackEvent'  => 'completed',
+                    'statusCallbackMethod' => 'GET',
+                    'timeout'              => 10
+                )
+            );
+        } catch ( \Twilio\Exceptions\TwilioException $e ) {
+            error_log($e);
+        }
     } elseif ( isset( $_REQUEST['StatusCallbackEvent'] ) && $_REQUEST['StatusCallbackEvent'] == 'participant-leave' ) {
         $conference_sid          = $conferences[0]->sid;
         $conference_participants = $client->conferences( $conference_sid )->participants;
         foreach ( $conference_participants as $participant ) {
-            $client->calls( $participant->callSid )->update( array( $status => 'completed' ) );
+            try {
+                $client->calls( $participant->callSid )->update( array( $status => 'completed' ) );
+            } catch ( \Twilio\Exceptions\TwilioException $e ) {
+                error_log($e);
+            }
         }
     }
 }
