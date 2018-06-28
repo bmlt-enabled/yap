@@ -32,7 +32,7 @@
                         startConferenceOnEnter="false"
                         endConferenceOnExit="true"
                         statusCallbackMethod="GET"
-                        statusCallbackEvent="join"
+                        statusCallbackEvent="start join end leave"
                         beep="false">
                 <?php echo getConferenceName($service_body->id); ?>
             </Conference>

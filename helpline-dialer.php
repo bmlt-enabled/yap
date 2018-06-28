@@ -16,29 +16,32 @@ $numbers = $client->incomingPhoneNumbers->read(
 
 $voice_url   = $numbers[0]->voiceUrl;
 $webhook_url = substr( $voice_url, 0, strrpos( $voice_url, "/" ) );
+$conferences = $client->conferences->read(
+    array ("friendlyName" => $_REQUEST['FriendlyName'] ) );
 
-// Make timeout configurable per volunteer
-if ((isset($_REQUEST['SequenceNumber']) && intval($_REQUEST['SequenceNumber']) == 1) ||
-    (isset($_REQUEST['CallStatus']) && $_REQUEST['CallStatus'] == 'no-answer')) {
-    $client->calls->create(
-        $phone_number,
-        $_REQUEST['Caller'],
-        array(
-            'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'],
-            'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $service_body_id . '&tracker=' . $tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'],
-            'statusCallbackMethod' => 'GET',
-            'timeout'              => 10
-        )
-    );
-} elseif (isset($_REQUEST['CallStatus']) && $_REQUEST['CallStatus'] == 'completed') {
-    $conferences = $client->conferences->read(
-        array ("friendlyName" => $_REQUEST['FriendlyName'] ) );
-    $conference_sid = $conferences[0]->sid;
-    $conference_participants = $client->conferences($conference_sid)->participants;
-    foreach ($conference_participants as $participant) {
-        $client->calls($participant->callSid)->update(array($status => 'completed'));
+if (count($conferences) > 0 && $conferences[0]->status != "completed") {
+    // Make timeout configurable per volunteer
+    if ( ( isset( $_REQUEST['SequenceNumber'] ) && intval( $_REQUEST['SequenceNumber'] ) == 1 ) ||
+         ( isset( $_REQUEST['CallStatus'] ) && ( $_REQUEST['CallStatus'] == 'no-answer' || $_REQUEST['CallStatus'] == 'completed' ) ) ) {
+        error_log( "Dialing " . $phone_number );
+        $client->calls->create(
+            $phone_number,
+            $_REQUEST['Caller'],
+            array(
+                'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'],
+                'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $service_body_id . '&tracker=' . $tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'],
+                'statusCallbackEvent'  => 'completed',
+                'statusCallbackMethod' => 'GET',
+                'timeout'              => 10
+            )
+        );
+    } elseif ( isset( $_REQUEST['StatusCallbackEvent'] ) && $_REQUEST['StatusCallbackEvent'] == 'participant-leave' ) {
+        $conference_sid          = $conferences[0]->sid;
+        $conference_participants = $client->conferences( $conference_sid )->participants;
+        foreach ( $conference_participants as $participant ) {
+            $client->calls( $participant->callSid )->update( array( $status => 'completed' ) );
+        }
     }
 }
 
-error_log("Dialing " . $phone_number);
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
