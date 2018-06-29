@@ -473,8 +473,16 @@ function _post_sync($url, $payload) {
 
 function _post_async($url, $payload)  {
     $parts = parse_url($url);
-    $fp = fsockopen($parts['host'],
-        isset($parts['port'])?$parts['port']:80,
+
+    if (isset($parts['port'])) {
+        $port = $parts['port'];
+    } else if ($parts['scheme'] == 'https') {
+        $port = 443;
+    } else {
+        $port = 80;
+    }
+
+    $fp = fsockopen($parts['host'], $port,
         $errno, $errstr, 30);
 
     assert(($fp!=0), "Couldn’t open a socket to ".$url." (".$errstr.")");
