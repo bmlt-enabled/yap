@@ -482,8 +482,11 @@ function _post_async($url, $payload)  {
         $port = 80;
     }
 
-    $fp = fsockopen($parts['host'], $port,
-        $errno, $errstr, 30);
+    $host = ($parts['scheme'] == 'https') ? "ssl://" : "" . $parts['host'];
+
+    error_log("port".$port);
+
+    $fp = fsockopen($host, $port, $errno, $errstr, 30);
 
     assert(($fp!=0), "Couldn’t open a socket to ".$url." (".$errstr.")");
     $post_data = json_encode($payload);
