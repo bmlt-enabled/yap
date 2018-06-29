@@ -445,14 +445,6 @@ function get($url) {
     return $data;
 }
 
-function post($url, $payload, $async = false) {
-    if ($async) {
-        return _post_async($url, $payload);
-    } else {
-        return _post_sync($url, $payload);
-    }
-}
-
 function _post_sync($url, $payload) {
     error_log($url);
     $ch = curl_init();
@@ -471,7 +463,7 @@ function _post_sync($url, $payload) {
     return $data;
 }
 
-function _post_async($url, $payload)  {
+function async_post($url, $payload)  {
     $parts = parse_url($url);
 
     if (isset($parts['port'])) {
