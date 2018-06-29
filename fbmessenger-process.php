@@ -140,4 +140,3 @@ function sendMessage($message, $coordinates = null, $results_count = 0) {
 function sendBotResponse($payload) {
     post('https://graph.facebook.com/v2.6/me/messages?access_token=' . $GLOBALS['fbmessenger_accesstoken'], $payload);
 }
-

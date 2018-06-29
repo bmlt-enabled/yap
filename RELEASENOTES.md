@@ -1,5 +1,11 @@
 # Release Notes
 
+### 1.3.2
+* Facebook Messenger bot responsiveness fix (avoids repeat message bug when response times out, long standing issue).
+* Facebook Messenger bot remembers last searched location for day swaps.
+* Facebook Messenger bot now returns helpline number if you type "talk".
+* Minor change to CI workflow, not sending emails, slack only.
+
 ### 1.3.1
 * Added the ability to change the outbound caller id to another verified Twilio number.
 * Optional setting for force dialing message to indicate that the call was received and being processed.  (Useful for extension dialing with pausing) 
