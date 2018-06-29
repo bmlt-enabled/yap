@@ -1,6 +1,8 @@
 <?php
 require_once 'vendor/autoload.php';
 include 'functions.php';
+$client = new Predis\Client();
+$expiry_minutes = 5;
 
 if (isset($_REQUEST['hub_verify_token']) && $_REQUEST['hub_verify_token'] === $GLOBALS['fbmessenger_verifytoken']) {
     echo $_REQUEST['hub_challenge'];
@@ -35,31 +37,54 @@ if (isset($messaging['postback']['payload'])
     $payload = json_decode( $messaging['message']['quick_reply']['payload'] );
     sendMeetingResults( $payload->coordinates, $messaging['sender']['id'], $payload->results_start);
 } elseif (isset($messaging['postback']['payload'])) {
-    $expiry_minutes = 5;
     $payload = json_decode($messaging['postback']['payload']);
-    $client = new Predis\Client();
-    $client->setex('messenger_user_' . $messaging['sender']['id'], ($expiry_minutes * 60), json_encode($payload));
-    sendMessage('The day has been set to ' . $payload->set_day . ".  This setting will reset to lookup Today's meetings in 5 minutes.  You can now search.");
-} elseif (isset($messageText)
-          && strtoupper($messageText) == "THANK YOU") {
+    $client->setex('messenger_user_day_' . $messaging['sender']['id'], ($expiry_minutes * 60), json_encode($payload));
+
+    $coordinates = getSavedCoordinates($messaging['sender']['id']);
+    if ($coordinates != null) {
+        sendMeetingResults($coordinates, $messaging['sender']['id']);
+    } else {
+        sendMessage('The day has been set to ' . $payload->set_day . ".  This setting will reset to lookup Today's meetings in 5 minutes.  Enter a City, County or Zip Code.");
+    }
+} elseif (isset($messageText) && strtoupper($messageText) == "THANK YOU") {
     sendMessage( ":)" );
-} elseif (isset($messageText)
-          && strtoupper($messageText) == "HELP") {
-    sendMessage("To find more information on this messenger app visit https://github.com/radius314/yap");
+} elseif (isset($messageText) && strtoupper($messageText) == "HELP") {
+    sendMessage( "To find more information on this messenger app visit https://github.com/radius314/yap.");
+} elseif (isset($messageText) && strtoupper($messageText) == "TALK") {
+    $coordinates = getSavedCoordinates($messaging['sender']['id']);
+    if ($coordinates != null) {
+        sendServiceBodyCoverage($coordinates);
+    } else {
+        sendMessage("Enter a location, end then resubmit your request.");
+    }
 } else {
+    $client->setex('messenger_user_location_' . $messaging['sender']['id'], ($expiry_minutes * 60), json_encode($coordinates));
     sendMeetingResults($coordinates, $messaging['sender']['id']);
+    sendServiceBodyCoverage($coordinates);
 }
 
-function getPostback($postback_title) {
+function sendServiceBodyCoverage($coordinates) {
+    $service_body = getServiceBodyCoverage($coordinates->latitude, $coordinates->longitude);
+    if ($service_body != null) {
+        sendMessage("Covered by: " . $service_body->name . ", their phone number is: " . $service_body->helpline);
+    } else {
+        sendMessage("Cannot find coverage.");
+    }
+}
 
+function getSavedCoordinates($sender_id) {
+    if ($GLOBALS['client']->get('messenger_user_location_' . $sender_id) != null) {
+        return json_decode($GLOBALS['client']->get('messenger_user_location_' . $sender_id));
+    } else {
+        return null;
+    }
 }
 
 function sendMeetingResults($coordinates, $sender_id, $results_start = 0) {
     if ($coordinates->latitude !== null && $coordinates->longitude !== null) {
         try {
             $results_count = (isset($GLOBALS['result_count_max']) ? $GLOBALS['result_count_max'] : 10) + $results_start;
-            $client = new Predis\Client();
-            $settings = json_decode($client->get('messenger_user_' . $sender_id));
+            $settings = json_decode($GLOBALS['client']->get('messenger_user_day_' . $sender_id));
             $today = null;
             $tomorrow = null;
             if ($settings != null) {
