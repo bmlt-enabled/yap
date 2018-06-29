@@ -445,7 +445,15 @@ function get($url) {
     return $data;
 }
 
-function post($url, $payload) {
+function post($url, $payload, $async = false) {
+    if ($async) {
+        return _post_async($url, $payload);
+    } else {
+        return _post_sync($url, $payload);
+    }
+}
+
+function _post_sync($url, $payload) {
     error_log($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -461,4 +469,25 @@ function post($url, $payload) {
     }
 
     return $data;
+}
+
+function _post_async($url, $payload)  {
+    $parts = parse_url($url);
+    $fp = fsockopen($parts['host'],
+        isset($parts['port'])?$parts['port']:80,
+        $errno, $errstr, 30);
+
+    assert(($fp!=0), "Couldn’t open a socket to ".$url." (".$errstr.")");
+    $post_data = json_encode($payload);
+
+    $out = "POST ".$parts['path']." HTTP/1.1\r\n";
+    $out.= "Host: ".$parts['host']."\r\n";
+    $out.= "User-Agent: Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap\r\n";
+    $out.= "Content-Type: application/json\r\n";
+    $out.= "Content-Length: ".strlen($post_data)."\r\n";
+    $out.= "Connection: Close\r\n\r\n";
+    if (isset($post_data)) $out.= $post_data;
+
+    fwrite($fp, $out);
+    fclose($fp);
 }
