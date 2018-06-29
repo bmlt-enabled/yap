@@ -1,4 +1,5 @@
 /nbproject/private/
 cookie.txt
 .idea
-*cookie.txt
+*_cookie.txt
+config.php.me

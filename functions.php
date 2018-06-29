@@ -170,10 +170,10 @@ function getServiceBodyCoverage($latitude, $longitude) {
     $service_bodies = getServiceBodies();
     $already_checked = [];
 
-    for ($j = 0; $j <= count($search_results); $j++) {
+    for ($j = 0; $j < count($search_results); $j++) {
         $service_body_id = $search_results[$j]->service_body_bigint;
         if (in_array($service_body_id, $already_checked)) continue;
-        for ($i = 0; $i <= count($service_bodies); $i++) {
+        for ($i = 0; $i < count($service_bodies); $i++) {
             if ($service_bodies[$i]->id == $service_body_id) {
                 if (strlen($service_bodies[$i]->helpline) > 0) {
                     return $service_bodies[$i];
@@ -446,122 +446,6 @@ function getHelplineBMLTRootServer() {
     return isset($GLOBALS['helpline_bmlt_root_server']) ? $GLOBALS['helpline_bmlt_root_server'] : $GLOBALS['bmlt_root_server'];
 }
 
-function setFacebookMessengerOptions() {
-    $locale = 'default';
-    $days_submenu = array();
-    foreach ($GLOBALS['days_of_the_week'] as $day) {
-        array_push($days_submenu, [
-            'title' => $day,
-            'type' => 'postback',
-            'payload' => [
-                'set_day' => $day
-            ]
-        ]);
-    }
-
-    $payload = [
-        'get_started' => ['payload' => 'get_started'],
-        'greeting' => array(
-            ['locale' => $locale,
-             'text' => 'Hello {{user_first_name}}, ' . $GLOBALS['title']]
-        ),
-        'persistent_menu' => array([
-            'locale' => $locale,
-            'composer_input_disabled' => false,
-            'call_to_actions' => array(
-                [
-                'title' => 'Set Day',
-                'type' => 'nested',
-                'call_to_actions' => array(
-                    [
-                        'title' => 'Weekdays',
-                        'type' => 'nested',
-                        'call_to_actions' => array(
-                            [
-                                'title' => 'Monday',
-                                'type' => 'postback',
-                                'payload' => json_encode([
-                                    'set_day' => 'Monday'
-                                ])
-                            ],
-                            [
-                                'title' => 'Tuesday',
-                                'type' => 'postback',
-                                'payload' => json_encode([
-                                    'set_day' => 'Tuesday'
-                                ])
-                            ],
-                            [
-                                'title' => 'Wednesday',
-                                'type' => 'postback',
-                                'payload' => json_encode([
-                                    'set_day' => 'Wednesday'
-                                ])
-                            ],
-                            [
-                                'title' => 'Thursday',
-                                'type' => 'postback',
-                                'payload' => json_encode([
-                                    'set_day' => 'Thursday'
-                                ])
-                            ],
-                            [
-                                'title' => 'Friday',
-                                'type' => 'postback',
-                                'payload' => json_encode([
-                                    'set_day' => 'Friday'
-                                ])
-                            ]
-                        )
-                    ],
-                    [
-                        'title' => 'Weekends',
-                        'type' => 'nested',
-                        'call_to_actions' => array(
-                            [
-                                'title' => 'Saturday',
-                                'type' => 'postback',
-                                'payload' => json_encode([
-                                    'set_day' => 'Saturday'
-                                ])
-                            ],
-                            [
-                                'title' => 'Sunday',
-                                'type' => 'postback',
-                                'payload' => json_encode([
-                                    'set_day' => 'Sunday'
-                                ])
-                            ]
-                        )
-                    ],
-                    [
-                        'title' => 'Today',
-                        'type' => 'postback',
-                        'payload' => json_encode([
-                            'set_day' => 'Today'
-                        ])
-                    ],
-                    [
-                        'title' => 'Tomorrow',
-                        'type' => 'postback',
-                        'payload' => json_encode([
-                            'set_day' => 'Tomorrow'
-                        ])
-                    ]
-                )
-            ],
-            [
-                'title' => 'Feature Request/Report Bug',
-                'type' => 'web_url',
-                'url' => 'https://www.facebook.com/BMLT-656690394722060/',
-                'webview_height_ratio' => 'full'
-            ])
-        ])
-    ];
-
-    post("https://graph.facebook.com/v2.6/me/messenger_profile?access_token=" . $GLOBALS['fbmessenger_accesstoken'], $payload, true);
-}
-
 function auth_bmlt($username, $password, $master = false) {
     $ch = curl_init();
     $auth_endpoint = (isset($GLOBALS['alt_auth_method']) && $GLOBALS['alt_auth_method'] ? '/index.php' : '/local_server/server_admin/xml.php');
@@ -637,7 +521,15 @@ function get($url, $username = 'master') {
     return $data;
 }
 
-function post($url, $payload, $is_json = true, $username = 'master') {
+function post($url, $payload, $async = false) {
+    if ($async) {
+        return _post_async($url, $payload);
+    } else {
+        return _post_sync($url, $payload);
+    }
+}
+
+function _post_sync($url, $payload) {
     error_log($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -658,4 +550,36 @@ function post($url, $payload, $is_json = true, $username = 'master') {
     }
 
     return $data;
+}
+
+function _post_async($url, $payload)  {
+    $parts = parse_url($url);
+
+    if (isset($parts['port'])) {
+        $port = $parts['port'];
+    } else if ($parts['scheme'] == 'https') {
+        $port = 443;
+    } else {
+        $port = 80;
+    }
+
+    $host = ($parts['scheme'] == 'https' ? "ssl://" : "") . $parts['host'];
+
+    error_log("port".$port);
+
+    $fp = fsockopen($host, $port, $errno, $errstr, 30);
+
+    assert(($fp!=0), "Couldn’t open a socket to ".$url." (".$errstr.")");
+    $post_data = json_encode($payload);
+
+    $out = "POST ".$parts['path']." HTTP/1.1\r\n";
+    $out.= "Host: ".$parts['host']."\r\n";
+    $out.= "User-Agent: Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap\r\n";
+    $out.= "Content-Type: application/json\r\n";
+    $out.= "Content-Length: ".strlen($post_data)."\r\n";
+    $out.= "Connection: Close\r\n\r\n";
+    if (isset($post_data)) $out.= $post_data;
+
+    fwrite($fp, $out);
+    fclose($fp);
 }
