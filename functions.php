@@ -482,7 +482,7 @@ function _post_async($url, $payload)  {
         $port = 80;
     }
 
-    $host = ($parts['scheme'] == 'https') ? "ssl://" : "" . $parts['host'];
+    $host = ($parts['scheme'] == 'https' ? "ssl://" : "") . $parts['host'];
 
     error_log("port".$port);
 
