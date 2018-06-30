@@ -32,6 +32,7 @@ $if_you_would_like_these_results_texted_to_you = "if you would like these result
 $if_you_would_like_to_search_again = "if you would like to search again";
 $if_you_would_like_to_do_both = "if you would like to do both";
 $to_listen_to_the_just_for_today = "to listen to the just for today";
+$press_any_key_to_continue = "press any key to continue";
 $log_out = "Log Out";
 $home = "Home";
 $username = "Username";

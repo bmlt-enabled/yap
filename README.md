@@ -93,6 +93,8 @@ static $meeting_search_radius = -50;
 ```
 This would set the radius at the first 50 results and is the default.
 
+More information on how the BMLT uses search radius is here: https://bmlt.magshare.net/how-auto-radius-works/
+
 ## Location Lookup Bias ##
 
 By default location lookups are biased toward the US.  You can create a series of refinements by using the `$location_lookup_bias` in config.php.
@@ -215,11 +217,15 @@ You might want to force a particular Twilio number to just call another number. 
 
 In some cases, when using 1 second pauses you may want to indicate that there is something happening to the end user as there will be a delay.
 
-You can enable a simple message by setting the following:
+If you would like there to be a CAPTCHA to prevent robocalls + fax machines, you can add this to your query.
 
-```php
-static force_dialing_notice = true;
-```
+`&Captcha=1`
+
+And/or, if you would like to have a basic waiting message, but no CAPTCHA use.
+
+`&WaitingMessage=1`
+
+These options can be combined.
 
 ## Including province prior to lookup
 

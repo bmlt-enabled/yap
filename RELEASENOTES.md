@@ -4,6 +4,10 @@
 * Admin portal.
 * Music on hold for helpline call
 
+### next
+* Added CAPTCHA to force dialing + made configuration options a little more flexible, this should prevent robocalls and fax dialers (ala Grasshopper)
+* Improved setup documentation for Google API Keys + Search Radius on the BMLT.
+
 ### 1.3.2
 * Facebook Messenger bot responsiveness fix (avoids repeat message bug when response times out, long standing issue).
 * Facebook Messenger bot remembers last searched location for day swaps.
