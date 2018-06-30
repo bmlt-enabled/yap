@@ -20,7 +20,7 @@ Here is an instructional video that might assist you: https://www.dropbox.com/s/
 
 2. Once the application is configured you will need to customize the config.php file.  There are several settings there that are documented in that file.  There are a number of different ways to utilize the yap platform.  
 
-3. Be sure to get a Google Maps API key.  Specify this in config.php as the value for `$google_maps_api_key`.  Make sure you have "Google Maps Geocoding API" enabled on your credentials.  If you have one already for your BMLT, you can use that as well (you don't need a separate one).  This article may be useful https://bmlt.magshare.net/google-maps-api-keys-and-geolocation-issues/.
+3. Be sure to get a Google Maps API key.  Specify this in config.php as the value for `$google_maps_api_key`.  Make sure you have "Google Maps Geocoding API" enabled on your credentials.  If you have a referrer restriction on the same key as your BMLT one, you will need to create a separate key for Yap.  Yap will not be able to work with an API key that has a referrer restriction, however you are able to set up an IP Address restriction if you choose to.  You would specify the IPs of your Yap instance that will be making the request to the Google Maps API.  In addition this, article may be useful https://bmlt.magshare.net/google-maps-api-keys-and-geolocation-issues/.
 
 4. Try testing that your application actually is functioning properly by opening a browser http://example.com/index.php.  
 
