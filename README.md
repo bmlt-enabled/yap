@@ -55,6 +55,8 @@ static $meeting_search_radius = -50;
 ```
 This would set the radius at the first 50 results and is the default.
 
+More information on how the BMLT uses search radius is here: https://bmlt.magshare.net/how-auto-radius-works/
+
 ## Location Lookup Bias ##
 
 By default location lookups are biased toward the US.  You can create a series of refinements by using the `$location_lookup_bias` in config.php.
