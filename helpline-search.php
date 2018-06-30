@@ -38,7 +38,7 @@
                 <Gather language="<?php echo getGatherLanguage(); ?>"
                         hints="<?php echo getGatherHints();?>"
                         input="dtmf"
-                        timeout="5"
+                        timeout="15"
                         numDigits="1"
                         action="helpline-search.php?ForceNumber=<?php echo urlencode($_REQUEST['ForceNumber'])?>">
                     <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
