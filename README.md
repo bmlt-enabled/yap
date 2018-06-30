@@ -181,11 +181,11 @@ If you would like there to be a CAPTCHA to prevent robocalls + fax machines, you
 
 `&Captcha=1`
 
-Or, if you would like to have a basic waiting message, but no CAPTCHA use.
+And/or, if you would like to have a basic waiting message, but no CAPTCHA use.
 
 `&WaitingMessage=1`
 
-These options cannot be combined.  
+These options can be combined.
 
 ## Including province prior to lookup
 

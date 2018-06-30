@@ -18,6 +18,7 @@
         $dial_string = $_REQUEST['ForceNumber'];
         $waiting_message = isset($GLOBALS['force_dialing_notice']) || isset($_REQUEST['WaitingMessage']);
         $captcha = isset($_REQUEST['Captcha']);
+        $captcha_verified = isset($_REQUEST['CaptchaVerified']);
     }
 
     $exploded_result = explode("|", $dial_string);
@@ -44,7 +45,7 @@
                         input="dtmf"
                         timeout="15"
                         numDigits="1"
-                        action="helpline-search.php?ForceNumber=<?php echo urlencode($_REQUEST['ForceNumber'])?>">
+                        action="helpline-search.php?CaptchaVerified=1&amp;ForceNumber=<?php echo urlencode($_REQUEST['ForceNumber'])?>">
                     <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
                         <?php echo $GLOBALS['title'] ?>... <?php echo word( 'press_any_key_to_continue' ) ?>
                     </Say>
@@ -52,7 +53,7 @@
                 <Hangup/>
         <?php } else if ($waiting_message) { ?>
                 <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
-                    <?php echo $GLOBALS['title'] ?> <?php echo word( 'please_wait_while_we_connect_your_call' ) ?>
+                    <?php echo !$captcha_verified ? $GLOBALS['title'] : "" ?> <?php echo word( 'please_wait_while_we_connect_your_call' ) ?>
                 </Say>
             <?php }
         }?>
