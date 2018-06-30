@@ -33,11 +33,25 @@
     <?php } else if ($phone_number != "") {
         if (!isset($_REQUEST["ForceNumber"])) { ?>
             <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>"><?php echo word('please_stand_by') ?>... <?php echo word('relocating_your_call_to') ?> <?php echo $location; ?>.</Say>
-        <?php } elseif (isset($_REQUEST["ForceNumber"]) && isset($GLOBALS['force_dialing_notice'])) {?>
-            <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
-                <?php echo word('please_wait_while_we_connect_your_call') ?>
-            </Say>
-        <?php } ?>
+        <?php } elseif (isset($_REQUEST["ForceNumber"]) && isset($GLOBALS['force_dialing_notice'])) {
+            if ( isset( $_REQUEST["Captcha"] ) ) { ?>
+                <Gather language="<?php echo getGatherLanguage(); ?>"
+                        hints="<?php echo getGatherHints();?>"
+                        input="dtmf"
+                        timeout="5"
+                        numDigits="1"
+                        action="helpline-search.php?ForceNumber=<?php echo urlencode($_REQUEST['ForceNumber'])?>">
+                    <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
+                        <?php echo word( 'press_any_key_to_continue' ) ?>
+                    </Say>
+                </Gather>
+                <Hangup/>
+            <?php } else { ?>
+                <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
+                    <?php echo word( 'please_wait_while_we_connect_your_call' ) ?>
+                </Say>
+            <?php }
+        }?>
         <Dial>
             <Number sendDigits="<?php echo $extension ?>"><?php echo $phone_number ?></Number>
         </Dial>
