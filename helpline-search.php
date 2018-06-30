@@ -12,8 +12,12 @@
 
         $location    = $service_body->name;
         $dial_string = $service_body->helpline;
+        $waiting_message = true;
+        $captcha = false;
     } else {
         $dial_string = $_REQUEST['ForceNumber'];
+        $waiting_message = isset($GLOBALS['force_dialing_notice']) || isset($_REQUEST['WaitingMessage']);
+        $captcha = isset($_REQUEST['Captcha']);
     }
 
     $exploded_result = explode("|", $dial_string);
@@ -33,8 +37,8 @@
     <?php } else if ($phone_number != "") {
         if (!isset($_REQUEST["ForceNumber"])) { ?>
             <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>"><?php echo word('please_stand_by') ?>... <?php echo word('relocating_your_call_to') ?> <?php echo $location; ?>.</Say>
-        <?php } elseif (isset($_REQUEST["ForceNumber"]) && isset($GLOBALS['force_dialing_notice'])) {
-            if ( isset( $_REQUEST["Captcha"] ) ) { ?>
+        <?php } elseif (isset($_REQUEST["ForceNumber"])) {
+            if ($captcha) { ?>
                 <Gather language="<?php echo getGatherLanguage(); ?>"
                         hints="<?php echo getGatherHints();?>"
                         input="dtmf"
@@ -42,13 +46,13 @@
                         numDigits="1"
                         action="helpline-search.php?ForceNumber=<?php echo urlencode($_REQUEST['ForceNumber'])?>">
                     <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
-                        <?php echo word( 'press_any_key_to_continue' ) ?>
+                        <?php echo $GLOBALS['title'] ?>... <?php echo word( 'press_any_key_to_continue' ) ?>
                     </Say>
                 </Gather>
                 <Hangup/>
-            <?php } else { ?>
+        <?php } else if ($waiting_message) { ?>
                 <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
-                    <?php echo word( 'please_wait_while_we_connect_your_call' ) ?>
+                    <?php echo $GLOBALS['title'] ?> <?php echo word( 'please_wait_while_we_connect_your_call' ) ?>
                 </Say>
             <?php }
         }?>

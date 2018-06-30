@@ -177,11 +177,15 @@ You might want to force a particular Twilio number to just call another number. 
 
 In some cases, when using 1 second pauses you may want to indicate that there is something happening to the end user as there will be a delay.
 
-You can enable a simple message by setting the following:
+If you would like there to be a CAPTCHA to prevent robocalls + fax machines, you can add this to your query.
 
-```php
-static force_dialing_notice = true;
-```
+`&Captcha=1`
+
+Or, if you would like to have a basic waiting message, but no CAPTCHA use.
+
+`&WaitingMessage=1`
+
+These options cannot be combined.  
 
 ## Including province prior to lookup
 
