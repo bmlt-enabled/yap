@@ -45,7 +45,7 @@
                         input="dtmf"
                         timeout="15"
                         numDigits="1"
-                        action="helpline-search.php?CaptchaVerified=1&amp;ForceNumber=<?php echo urlencode($_REQUEST['ForceNumber'])?>">
+                        action="helpline-search.php?CaptchaVerified=1&amp;ForceNumber=<?php echo urlencode($_REQUEST['ForceNumber'])?><?php echo $waiting_message ? "&amp;WaitingMessage=1" : "" ?>">
                     <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
                         <?php echo $GLOBALS['title'] ?>... <?php echo word( 'press_any_key_to_continue' ) ?>
                     </Say>
