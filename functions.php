@@ -293,6 +293,7 @@ function getHelplineData($service_body_id) {
     return new stdClass();
 }
 
+// TODO: Needs to change to look at _YAP_CONFIG named meetings and then pull the service body (helpline field should only be used for numbers)
 function getYapBasedHelplines() {
     $service_bodies = getServiceBodies();
     $yapHelplines = [];
@@ -369,18 +370,6 @@ function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = Cy
     }
 
     return "000000000";
-}
-
-// TODO: This will be retired
-function getFormatResults($service_body_int, $format_codes) {
-    if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
-        if (auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'])) {
-            $bmlt_search_endpoint = getHelplineBMLTRootServer() . '/client_interface/json/?switcher=GetSearchResults&services=' . $service_body_int . getFormatString($format_codes, false, true) . '&advanced_published=0';
-            return get($bmlt_search_endpoint);
-        }
-    }
-
-    return null;
 }
 
 function getHelplineSchedule($service_body_int) {
