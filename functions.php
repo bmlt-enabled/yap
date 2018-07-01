@@ -464,6 +464,7 @@ function post($url, $payload) {
 }
 
 function async_post($url, $payload)  {
+    error_log($url);
     $parts = parse_url($url);
 
     if (isset($parts['port'])) {
