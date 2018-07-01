@@ -355,13 +355,16 @@ function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = Cy
     if ( isset($volunteers) && count( $volunteers ) > 0 ) {
         if ($cycle_algorithm == CycleAlgorithm::CYCLE_AND_FAILOVER) {
             if ( $tracker > count( $volunteers ) - 1 ) {
-                $tracker = count( $volunteers ) - 1;
+                // TODO: Put failover number here, voicemail?
+                return "000000000";
             }
 
             return $volunteers[ $tracker ]->contact;
         }
         else if ($cycle_algorithm == CycleAlgorithm::LOOP_FOREVER) {
             return $volunteers[$tracker % count( $volunteers )]->contact;
+        } else if ($cycle_algorithm == CycleAlgorithm::RANDOMIZER) {
+            return $volunteers[rand(0, count( $volunteers ) - 1)]->contact;
         }
     }
 

@@ -6,7 +6,7 @@ use Twilio\Rest\Client;
 header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
-$tracker             = isset( $_REQUEST["tracker"] ) ? intval( $_REQUEST["tracker"] ) + 1 : 0;
+$tracker             = !isset( $_REQUEST["tracker"] ) ? 0 : $_REQUEST["tracker"];
 $service_body_id     = $_REQUEST['service_body_id'];
 // TODO: Can specify algorithm by service body.
 $phone_number        = getHelplineVolunteer( $service_body_id, $tracker, CycleAlgorithm::LOOP_FOREVER );
@@ -40,7 +40,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                 $_REQUEST['Caller'],
                 array(
                     'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'],
-                    'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $service_body_id . '&tracker=' . $tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'],
+                    'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $service_body_id . '&tracker=' . ++$tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'],
                     'statusCallbackEvent'  => 'completed',
                     'statusCallbackMethod' => 'GET',
                     'timeout'              => 10
