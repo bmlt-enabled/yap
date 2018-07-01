@@ -558,6 +558,7 @@ function post($url, $payload, $is_json = true, $username = 'master') {
 }
 
 function async_post($url, $payload)  {
+    error_log($url);
     $parts = parse_url($url);
 
     if (isset($parts['port'])) {
@@ -569,11 +570,7 @@ function async_post($url, $payload)  {
     }
 
     $host = ($parts['scheme'] == 'https' ? "ssl://" : "") . $parts['host'];
-
-    error_log("port".$port);
-
     $fp = fsockopen($host, $port, $errno, $errstr, 30);
-
     assert(($fp!=0), "Couldn’t open a socket to ".$url." (".$errstr.")");
     $post_data = json_encode($payload);
 

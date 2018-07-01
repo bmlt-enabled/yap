@@ -46,15 +46,14 @@ if (isset($messaging['postback']['payload'])
     sendMessage( ":)" );
 } elseif (isset($messageText) && strtoupper($messageText) == "HELP") {
     sendMessage( "To find more information on this messenger app visit https://github.com/radius314/yap.");
-} elseif (isset($messageText) && strtoupper($messageText) == "TALK") {
-    $coordinates = getSavedCoordinates($messaging['sender']['id']);
+} elseif (isset($messageText) && strtoupper($messageText) == "📞 HELPLINE") {
+    $coordinates = json_decode( $messaging['message']['quick_reply']['payload'] )->coordinates;
     if ($coordinates != null) {
         sendServiceBodyCoverage($coordinates);
     } else {
-        sendMessage("Enter a location, end then resubmit your request.");
+        sendMessage("Enter a location, and then resubmit your request.", $coordinates);
     }
 } else {
-    //sendServiceBodyCoverage($coordinates);
     sendMeetingResults($coordinates, $messaging['sender']['id']);
     $client->setex('messenger_user_location_' . $messaging['sender']['id'], ($expiry_minutes * 60), json_encode($coordinates));
 }
@@ -62,9 +61,9 @@ if (isset($messaging['postback']['payload'])
 function sendServiceBodyCoverage($coordinates) {
     $service_body = getServiceBodyCoverage($coordinates->latitude, $coordinates->longitude);
     if ($service_body != null) {
-        sendMessage("Covered by: " . $service_body->name . ", their phone number is: " . $service_body->helpline);
+        sendMessage("Covered by: " . $service_body->name . ", their phone number is: " . $service_body->helpline, $coordinates);
     } else {
-        sendMessage("Cannot find coverage.");
+        sendMessage("Cannot find Helpline coverage in the BMLT.  Join the BMLT Facebook Group and ask how to get this working.  https://www.facebook.com/BMLT-656690394722060/", $coordinates);
     }
 }
 
@@ -108,15 +107,27 @@ function sendMeetingResults($coordinates, $sender_id, $results_start = 0) {
             $distance_string = "(" . round($filtered_list[$i]->distance_in_miles) . " mi / " . round($filtered_list[$i]->distance_in_km) . " km)";
 
             $message = $results[0] . "\n" . $results[1] . "\n" . $results[2] . "\n" . $distance_string;
-            sendMessage($message, $coordinates, $results_count);
+            sendMessage($message,
+                $coordinates,
+                $results_count);
         }
     } else {
         sendMessage("Location not recognized.  I only recognize City, County or Postal Code.");
     }
 }
 
-function sendMessage($message, $coordinates = null, $results_count = 0) {
-    $quick_replies_payload = array(['content_type' => 'location']);
+function sendMessage($message, $coordinates = null, $results_count = 0  ) {
+    $quick_replies_payload = array( ['content_type' => 'location']);
+
+    if (isset($coordinates)) {
+        array_push($quick_replies_payload,
+            ['content_type' => 'text',
+             'title' => '📞 Helpline',
+             'payload' => json_encode([
+                 'coordinates' => $coordinates
+             ])]);
+    }
+
     if ($results_count > 0) {
         array_push($quick_replies_payload,
             ['content_type' => 'text',
@@ -138,5 +149,5 @@ function sendMessage($message, $coordinates = null, $results_count = 0) {
 }
 
 function sendBotResponse($payload) {
-    post('https://graph.facebook.com/v2.6/me/messages?access_token=' . $GLOBALS['fbmessenger_accesstoken'], $payload);
+    post('https://graph.facebook.com/v3.0/me/messages?access_token=' . $GLOBALS['fbmessenger_accesstoken'], $payload);
 }
