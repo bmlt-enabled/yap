@@ -47,11 +47,11 @@ if (isset($messaging['postback']['payload'])
 } elseif (isset($messageText) && strtoupper($messageText) == "HELP") {
     sendMessage( "To find more information on this messenger app visit https://github.com/radius314/yap.");
 } elseif (isset($messageText) && strtoupper($messageText) == "📞 HELPLINE") {
-    $coordinates = getSavedCoordinates($messaging['sender']['id']);
+    $coordinates = json_decode( $messaging['message']['quick_reply']['payload'] )->coordinates;
     if ($coordinates != null) {
         sendServiceBodyCoverage($coordinates);
     } else {
-        sendMessage("Enter a location, end then resubmit your request.", $coordinates);
+        sendMessage("Enter a location, and then resubmit your request.", $coordinates);
     }
 } else {
     sendMeetingResults($coordinates, $messaging['sender']['id']);
