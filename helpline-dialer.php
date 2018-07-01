@@ -3,6 +3,18 @@ include 'config.php';
 include 'functions.php';
 require_once 'vendor/autoload.php';
 use Twilio\Rest\Client;
+header("content-type: text/xml");
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+
+$tracker             = isset( $_REQUEST["tracker"] ) ? intval( $_REQUEST["tracker"] ) + 1 : 0;
+$service_body_id     = $_REQUEST['service_body_id'];
+// TODO: Can specify algorithm by service body.
+$phone_number        = getHelplineVolunteer( $service_body_id, $tracker, CycleAlgorithm::LOOP_FOREVER );
+
+if (isset($_REQUEST["Debug"]) && $_REQUEST["Debug"]) {
+    echo "<Response><Dial><Number>" . $phone_number ."</Number></Dial></Response>";
+    exit();
+}
 
 $sid                 = $GLOBALS['twilio_account_sid'];
 $token               = $GLOBALS['twilio_auth_token'];
@@ -11,17 +23,11 @@ try {
 } catch ( \Twilio\Exceptions\ConfigurationException $e ) {
     error_log("Missing Twilio Credentials");
 }
-$tracker             = isset( $_REQUEST["tracker"] ) ? intval( $_REQUEST["tracker"] ) + 1 : 0;
-$service_body_id     = $_REQUEST['service_body_id'];
-$phone_number        = getHelplineVolunteer( $service_body_id, $tracker );
 
-$numbers = $client->incomingPhoneNumbers->read(
-    array( "phoneNumber" => $_REQUEST['Caller'] ) );
-
+$numbers = $client->incomingPhoneNumbers->read( array( "phoneNumber" => $_REQUEST['Caller'] ) );
 $voice_url   = $numbers[0]->voiceUrl;
 $webhook_url = substr( $voice_url, 0, strrpos( $voice_url, "/" ) );
-$conferences = $client->conferences->read(
-    array ("friendlyName" => $_REQUEST['FriendlyName'] ) );
+$conferences = $client->conferences->read( array ("friendlyName" => $_REQUEST['FriendlyName'] ) );
 
 if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     // Make timeout configurable per volunteer
@@ -55,5 +61,3 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
         }
     }
 }
-
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";

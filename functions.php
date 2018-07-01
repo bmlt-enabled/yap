@@ -40,6 +40,12 @@ class MeetingResults {
     public $filteredList = [];
 }
 
+class CycleAlgorithm {
+    const CYCLE_AND_FAILOVER = 0;
+    const LOOP_FOREVER = 1;
+    const RANDOMIZER = 2;
+}
+
 function word($name) {
     return isset($GLOBALS['override_' . $name]) ? $GLOBALS['override_' . $name] : $GLOBALS[$name];
 }
@@ -344,14 +350,19 @@ function getHelplineVolunteersActiveNow($service_body_int) {
     return $activeNow;
 }
 
-function getHelplineVolunteer($service_body_int, $tracker) {
+function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = CycleAlgorithm::CYCLE_AND_FAILOVER) {
     $volunteers = getHelplineVolunteersActiveNow($service_body_int);
-    if (count($volunteers) > 0) {
-        if ($tracker > count($volunteers) - 1) {
-            $tracker = count($volunteers) - 1;
-        }
+    if ( isset($volunteers) && count( $volunteers ) > 0 ) {
+        if ($cycle_algorithm == CycleAlgorithm::CYCLE_AND_FAILOVER) {
+            if ( $tracker > count( $volunteers ) - 1 ) {
+                $tracker = count( $volunteers ) - 1;
+            }
 
-        return $volunteers[$tracker]->contact;
+            return $volunteers[ $tracker ]->contact;
+        }
+        else if ($cycle_algorithm == CycleAlgorithm::LOOP_FOREVER) {
+            return $volunteers[$tracker % count( $volunteers )]->contact;
+        }
     }
 
     return "000000000";
