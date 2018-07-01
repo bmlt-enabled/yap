@@ -445,7 +445,7 @@ function get($url) {
     return $data;
 }
 
-function _post_sync($url, $payload) {
+function post($url, $payload) {
     error_log($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -475,11 +475,7 @@ function async_post($url, $payload)  {
     }
 
     $host = ($parts['scheme'] == 'https' ? "ssl://" : "") . $parts['host'];
-
-    error_log("port".$port);
-
     $fp = fsockopen($host, $port, $errno, $errstr, 30);
-
     assert(($fp!=0), "Couldn’t open a socket to ".$url." (".$errstr.")");
     $post_data = json_encode($payload);
 

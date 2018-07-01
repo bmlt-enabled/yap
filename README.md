@@ -343,7 +343,7 @@ static $fbmessenger_verifytoken = '';
 7) The callback URL will be your Yap server pointing to the file `fbmessenger-gateway.php`.
 8) Select "messages" and "messaging_postbacks" under subscription fields.
 9) Once you've created your webhook, assign it to the page you created.
-10) Call `http://your-yap-server/fbmessenger-activate.php` to activate yap connection to Facebook.
+10) Call `https://your-yap-server/fbmessenger-activate.php` to activate yap connection to Facebook.
 11) By default you will be in development mode and you should be able to search for the bot under your messenger on your personal account.  Once you are satisfied you can turn on the bot, which will allow other people to find it.
 12) When are ready to go out of development mode, you will need to set a Privacy Policy under Basic Settings.  You will also have to set a Category.
 13) You will need to submit your app to Facebook for review.  This requires setting a logo, as well as some same submissions that they the Facebook team can test with.  It may take up to 5 days for the review to pass.

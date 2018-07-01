@@ -1,8 +1,11 @@
 # Release Notes
 
 ### next
-* Added CAPTCHA to force dialing + made configuration options a little more flexible, this should prevent robocalls and fax dialers (ala Grasshopper)
+* Added CAPTCHA to force dialing + made configuration options a little more flexible, this should prevent robocalls and fax dialers (ala Grasshopper).
 * Improved setup documentation for Google API Keys + Search Radius on the BMLT.
+* Making Helpline calls a prominent button on Facebook Messenger bot.
+* Upgrading to Facebook Messenger API v3.0.
+* Auto-pull hostname for host header async call for Facebook Messenger bot.
 
 ### 1.3.2
 * Facebook Messenger bot responsiveness fix (avoids repeat message bug when response times out, long standing issue).
