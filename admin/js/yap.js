@@ -58,7 +58,7 @@ function saveVolunteers() {
         $("#service_body_id").val(),
         $("#helpline_data_id").val(),
         data,
-        "_YAP_DATA"
+        "_YAP_DATA_"
     );
 
     // TODO: it's not actually do a callback (got stuck earlier on the process)
