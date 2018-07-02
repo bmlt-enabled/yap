@@ -46,6 +46,11 @@ class CycleAlgorithm {
     const RANDOMIZER = 2;
 }
 
+class DataType {
+    const YAP_CONFIG = "_YAP_CONFIG_";
+    const YAP_DATA = "_YAP_DATA_";
+}
+
 function word($name) {
     return isset($GLOBALS['override_' . $name]) ? $GLOBALS['override_' . $name] : $GLOBALS[$name];
 }
@@ -257,10 +262,10 @@ function admin_GetServiceBodiesForUser() {
     return json_decode(get($url, $_SESSION['username']))->service_body;
 }
 
-function admin_PersistHelplineData($helpline_data_id = 0, $service_body_id, $data) {
+function admin_PersistHelplineData($helpline_data_id = 0, $service_body_id, $data, $data_type = DataType::YAP_DATA) {
     $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php";
     if ($helpline_data_id == 0) {
-        $data_bmlt_encoded = "admin_action=add_meeting&service_body_id=" . $service_body_id . "&meeting_field[]=meeting_name,_YAP_DATA_";
+        $data_bmlt_encoded = "admin_action=add_meeting&service_body_id=" . $service_body_id . "&meeting_field[]=meeting_name,".$data_type;
     } else {
         $data_bmlt_encoded = "admin_action=modify_meeting&meeting_id=" . $helpline_data_id;
     }
@@ -272,14 +277,18 @@ function admin_PersistHelplineData($helpline_data_id = 0, $service_body_id, $dat
     return post($url, $data_bmlt_encoded, false, $_SESSION['username']);
 }
 
-function getHelplineData($service_body_id) {
+function getAllHelplineData($data_type) {
+    return getHelplineData(0, $data_type);
+}
+
+function getHelplineData($service_body_id, $data_type = DataType::YAP_DATA) {
     auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
     $helpline_data = json_decode(get(getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetSearchResults"
-                                     . "&services=" . $service_body_id . "&advanced_published=0"));
+             . (($service_body_id > 0) ? "&services=" . $service_body_id : "") . "&advanced_published=0"));
 
     if ($helpline_data != null) {
         foreach ( $helpline_data as $item ) {
-            if ( substr_count( $item->meeting_name, 'YAP_DATA' ) > 0 ) {
+            if ( substr_count( $item->meeting_name, $data_type ) > 0 ) {
                 $json_string = str_replace( ';', ',', html_entity_decode( explode( '#@-@#', $item->comments )[2] ) );
                 return [
                     'id'              => intval( $item->id_bigint ),
@@ -314,7 +323,6 @@ function getYapBasedHelplines() {
 
 function getNextShiftInstance($shift_day, $shift_time, $shift_tz) {
     date_default_timezone_set($shift_tz);
-
     $mod_meeting_day = (new DateTime())
         ->modify($GLOBALS['days_of_the_week'][$shift_day])->format("Y-m-d");
     $mod_meeting_datetime = (new DateTime($mod_meeting_day . " " . $shift_time));
@@ -423,6 +431,13 @@ function dataEncoder($dataObject) {
 
 function dataDecoder($dataString) {
     return json_decode(base64_decode($dataString));
+}
+
+function sort_on_field(&$objects, $on, $order = 'ASC') {
+    $comparer = ($order === 'DESC')
+        ? "return -strcmp(\$a->{$on},\$b->{$on});"
+        : "return strcmp(\$a->{$on},\$b->{$on});";
+    usort($objects, create_function('$a,$b', $comparer));
 }
 
 function countOccurrences($initialSchedule, $volunteerName) {

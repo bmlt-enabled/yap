@@ -13,8 +13,8 @@
             <div id="newVolunteerDialog" class="col-sm" style="display:none;">
                 <div class="form-group">
                     <input type="text" name="new_volunteer_name" class="form-control" id="new_volunteer_name" aria-describedby="volunteerNameHelp" placeholder="<?php echo $GLOBALS['add_add_new_volunteer']?>">
-                    <button id="add-volunteer" class="btn btn-sm btn-primary" type="button"><?php echo $GLOBALS['add_volunteer']?></button>
-                    <button id="save-volunteers" class="btn btn-sm btn-success" type="button"><?php echo $GLOBALS['save_volunteers']?></button>
+                    <button id="add-volunteer" class="btn btn-sm btn-primary" type="button" onclick="addVolunteers();""><?php echo $GLOBALS['add_volunteer']?></button>
+                    <button id="save-volunteers" class="btn btn-sm btn-success" type="button" onclick="saveVolunteers();"><?php echo $GLOBALS['save_volunteers']?></button>
                 </div>
             </div>
         </div>
@@ -111,7 +111,7 @@
         <div class="card-footer bg-transparent">
             <div id="volunteerCardFooter" class="float-right">
                 <div class="form-check form-check-inline">
-                    <input type="checkbox" class="form-check-input" name="volunteer_enabled" id="volunteer_enabled" value="false" onclick="volunteerStatusToggle(this)">
+                    <input type="checkbox" class="form-check-input" name="volunteer_enabled" id="volunteer_enabled" value="false" onclick="checkboxStatusToggle(this)">
                     <label class="form-check-label" for="volunteer_enabled">Enabled</label>
                 </div>
                 <button class="btn btn-sm btn-danger" type="button" onclick="removeVolunteer(this);return false;"><?php echo $GLOBALS['remove']?></button>

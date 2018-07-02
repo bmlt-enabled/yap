@@ -1,52 +1,6 @@
 dayOfTheWeek = {1:"Sunday",2:"Monday",3:"Tuesday",4:"Wednesday",5:"Thursday",6:"Friday",7:"Saturday"};
 
 function volunteerPage() {
-    $("#add-volunteer").click(function() {
-        addVolunteer({
-            "volunteer_name": $("#new_volunteer_name").val()
-        });
-
-        $("#new_volunteer_name").val("");
-    });
-
-    $("#save-volunteers").click(function() {
-        var volunteerCards = $("#volunteerCards").children();
-        var data = [];
-        for (var volunteerCard of volunteerCards) {
-            var cards = $(volunteerCard).find(".shiftCard");
-            var cardData = [];
-            for (var card of cards) {
-                cardData.push(JSON.parse($(card).attr("data")));
-            }
-
-            $(volunteerCard).find("#volunteer_shift_schedule").val(dataEncoder(cardData));
-
-            var formData = $(volunteerCard).find("#volunteersForm").serializeArray();
-            var dataObj = {};
-            for (var formItem of formData) {
-                dataObj[formItem["name"]] = formItem["value"]
-            }
-
-            data.push(dataObj);
-        }
-
-        $.ajax({
-            async: true,
-            type: "POST",
-            url: "/admin/api.php?action=save&helpline_data_id=" + $("#helpline_data_id").val()
-            + "&service_body_id=" + $("#service_body_id").val(),
-            data: JSON.stringify({"data": data}),
-            dataType: "json",
-            contentType: "application/json",
-            success: function () {
-
-            }
-        });
-
-        $("#volunteer_saved_alert").show();
-        $("#volunteer_saved_alert").fadeOut(3000);
-    });
-
     $("#service_body_id").on("change", function() {
         $("#spinnerDialog").modal('show');
         addNewVolunteerDialog($(this).val() > 0);
@@ -60,7 +14,6 @@ function volunteerPage() {
 
     $("#volunteerCards").sortable();
 
-
     for (var hr = 1; hr <= 12; hr++) {
         var hr_value = hr < 10 ? "0" + hr : hr.toString();
         $(".hours_field").append(new Option(hr_value, hr_value));
@@ -72,6 +25,99 @@ function volunteerPage() {
     }
 }
 
+function addVolunteers() {
+    addVolunteer({
+        "volunteer_name": $("#new_volunteer_name").val()
+    });
+
+    $("#new_volunteer_name").val("");
+}
+
+function saveVolunteers() {
+    var volunteerCards = $("#volunteerCards").children();
+    var data = [];
+    for (var volunteerCard of volunteerCards) {
+        var cards = $(volunteerCard).find(".shiftCard");
+        var cardData = [];
+        for (var card of cards) {
+            cardData.push(JSON.parse($(card).attr("data")));
+        }
+
+        $(volunteerCard).find("#volunteer_shift_schedule").val(dataEncoder(cardData));
+
+        var formData = $(volunteerCard).find("#volunteersForm").serializeArray();
+        var dataObj = {};
+        for (var formItem of formData) {
+            dataObj[formItem["name"]] = formItem["value"]
+        }
+
+        data.push(dataObj);
+    }
+
+    saveToAdminApi(
+        $("#service_body_id").val(),
+        $("#helpline_data_id").val(),
+        data,
+        "_YAP_DATA"
+    );
+
+    // TODO: it's not actually do a callback (got stuck earlier on the process)
+    $("#volunteer_saved_alert").show();
+    $("#volunteer_saved_alert").fadeOut(3000);
+}
+
+function saveServiceBodyConfig(service_body_id) {
+    var data = [];
+    var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
+    var helpline_data_id = serviceBodyConfiguration.find(".helpline_data_id").val();
+    var formData = serviceBodyConfiguration.find("#serviceBodyConfigurationForm").serializeArray();
+    var dataObj = {};
+    for (var formItem of formData) {
+        dataObj[formItem["name"]] = formItem["value"]
+    }
+
+    data.push(dataObj);
+
+    saveToAdminApi(
+        service_body_id,
+        helpline_data_id,
+        data,
+        '_YAP_CONFIG_'
+    );
+
+    // TODO: it's not actually do a callback (got stuck earlier on the process)
+    $("#service_body_saved_alert").show();
+    $("#service_body_saved_alert").fadeOut(3000);
+    serviceBodyConfiguration.modal('hide');
+}
+
+function loadServiceBodyConfig(serviceBodyId, callback) {
+    loadFromAdminApi(serviceBodyId, '_YAP_CONFIG_', function(data) {
+        callback(data);
+    });
+}
+
+function saveToAdminApi(service_body_id, helpline_data_id, data, data_type) {
+    $.ajax({
+        async: true,
+        type: "POST",
+        url: "/admin/api.php?action=save&helpline_data_id=" + helpline_data_id
+        + "&service_body_id=" + service_body_id + "&data_type=" + data_type,
+        data: JSON.stringify({"data": data}),
+        dataType: "json",
+        contentType: "application/json",
+        success: function () {
+
+        }
+    });
+}
+
+function loadFromAdminApi(service_body_id, data_type, callback) {
+    $.getJSON("/admin/api.php?service_body_id=" + service_body_id + "&data_type=" + data_type, function(data) {
+        callback(data)
+    });
+}
+
 function addNewVolunteerDialog(isVisible) {
     isVisible ? $("#newVolunteerDialog").show() : $("#newVolunteerDialog").hide();
 }
@@ -81,7 +127,7 @@ function clearVolunteerCards() {
 }
 
 function loadVolunteers(serviceBodyId, callback) {
-    $.getJSON("/admin/api.php?service_body_id=" + serviceBodyId, function(data) {
+    loadFromAdminApi(serviceBodyId, '_YAP_DATA_', function(data) {
         var helpline_data_id = 0;
         if (!$.isEmptyObject(data)) {
             helpline_data_id = data["id"];
@@ -91,7 +137,7 @@ function loadVolunteers(serviceBodyId, callback) {
         }
         $("#helpline_data_id").val(helpline_data_id);
         callback();
-    })
+    });
 }
 
 function addVolunteer(volunteerData) {
@@ -130,7 +176,7 @@ function removeVolunteer(e) {
     $(e).closest(".volunteerCard").remove();
 }
 
-function volunteerStatusToggle(e) {
+function checkboxStatusToggle(e) {
     $(e).val(e.checked);
 }
 
@@ -189,8 +235,26 @@ function toggleCardDetails(e) {
     volunteerCard.find(".volunteerCardBody").collapse('toggle');
 }
 
-function serviceBodyConfigure(e) {
+function serviceBodyConfigure(service_body_id) {
+    $("#spinnerDialog").modal('show');
+    var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
+    loadServiceBodyConfig(service_body_id, function(data) {
+        if (!$.isEmptyObject(data)) {
+            serviceBodyConfiguration.find("#helpline_data_id").val(data["id"]);
+            var dataSet = data["data"][0];
+            for (var key in dataSet) {
+                if (dataSet[key]) {
+                    serviceBodyConfiguration.find("#" + key).prop('checked', true);
+                }
+                serviceBodyConfiguration.find("#" + key).val(dataSet[key]);
+            }
+        }
 
+        setTimeout(function() {
+            $("#spinnerDialog").modal('hide');
+            serviceBodyConfiguration.modal("show");
+        }, 500);
+    });
 }
 
 function dataEncoder(dataObject) {
