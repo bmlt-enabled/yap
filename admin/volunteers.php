@@ -6,8 +6,13 @@
         </div>
         <label for="service_body_id">Service Body</label>
         <select class="form-control form-control-sm" id="service_body_id">
-            <option value="0">-= Select a Service Body=-</option>
-            <option value="43">North Carolina Region</option>
+            <option value="0">-= Select A Service Body =-</option>
+            <?php
+                $helplineConfiguration = getVolunteerRoutingEnabledServiceBodies();
+                foreach ($helplineConfiguration as $item) {?>
+                    <option value="<?php echo $item['service_body_id']?>"><?php echo $item['service_body_name']?></option>
+            <?php
+                }?>
         </select>
         <div class="row">
             <div id="newVolunteerDialog" class="col-sm" style="display:none;">

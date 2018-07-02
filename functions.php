@@ -281,44 +281,46 @@ function getAllHelplineData($data_type) {
     return getHelplineData(0, $data_type);
 }
 
+function getVolunteerRoutingEnabledServiceBodies() {
+    $all_helpline_data = getAllHelplineData("_YAP_CONFIG_");
+    $service_bodies = getServiceBodies();
+    $helpline_enabled = [];
+
+    for ($x = 0; $x < count($all_helpline_data); $x++) {
+        if (isset($all_helpline_data[$x]['data'][0]->volunteer_routing_enabled) && boolval($all_helpline_data[$x]['data'][0]->volunteer_routing_enabled)) {
+            for ($y = 0; $y < count($service_bodies); $y++) {
+                if ( $all_helpline_data[ $x ]['service_body_id'] == intval($service_bodies[$y]->id) ) {
+                    $all_helpline_data[ $x ]['service_body_name'] = $service_bodies[$y]->name;
+                    array_push($helpline_enabled, $all_helpline_data[$x]);
+                }
+            }
+        }
+    }
+
+    return $helpline_enabled;
+}
+
 function getHelplineData($service_body_id, $data_type = DataType::YAP_DATA) {
+    $helpline_data_items = [];
     auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
-    $helpline_data = json_decode(get(getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetSearchResults"
-             . (($service_body_id > 0) ? "&services=" . $service_body_id : "") . "&advanced_published=0"));
+    $helpline_data = json_decode(get(getHelplineBMLTRootServer()
+                                     . "/client_interface/json/?switcher=GetSearchResults"
+                                     . (($service_body_id > 0) ? "&services=" . $service_body_id : "")
+                                     . "&meeting_key=meeting_name&meeting_key_value=" . $data_type
+                                     . "&advanced_published=0"));
 
     if ($helpline_data != null) {
         foreach ( $helpline_data as $item ) {
-            if ( substr_count( $item->meeting_name, $data_type ) > 0 ) {
-                $json_string = str_replace( ';', ',', html_entity_decode( explode( '#@-@#', $item->comments )[2] ) );
-                return [
-                    'id'              => intval( $item->id_bigint ),
-                    'data'            => json_decode( $json_string )->data,
-                    'service_body_id' => intval( $service_body_id )
-                ];
-            }
+            $json_string = str_replace( ';', ',', html_entity_decode( explode( '#@-@#', $item->comments )[2] ) );
+            array_push($helpline_data_items, [
+                'id'              => intval( $item->id_bigint ),
+                'data'            => json_decode( $json_string )->data,
+                'service_body_id' => intval( $item->service_body_bigint )
+            ]);
         }
     }
 
-    return new stdClass();
-}
-
-// TODO: Needs to change to look at _YAP_CONFIG named meetings and then pull the service body (helpline field should only be used for numbers)
-function getYapBasedHelplines() {
-    $service_bodies = getServiceBodies();
-    $yapHelplines = [];
-    foreach ($service_bodies as $service_body) {
-        if (isset($service_body->helpline) && strpos($service_body->helpline, 'yap') !== false) {
-            $r_service_body = $service_body;
-            if (strpos($service_body->helpline, '->') !== false) {
-                $r_service_body->id = explode('->', $service_body->helpline)[1];
-                $r_service_body->name = $r_service_body->name . " (Redirected To Service Body: " . $r_service_body->id . ")";
-            }
-
-            array_push($yapHelplines, $r_service_body);
-        }
-    }
-
-    return json_encode($yapHelplines);
+    return $helpline_data_items;
 }
 
 function getNextShiftInstance($shift_day, $shift_time, $shift_tz) {
@@ -381,14 +383,18 @@ function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = Cy
 }
 
 function getHelplineSchedule($service_body_int) {
-    $volunteers = getHelplineData($service_body_int);
-    $finalSchedule = getVolunteerInfo($volunteers);
+    if (count(getHelplineData($service_body_int)) > 0) {
+        $volunteers    = getHelplineData( $service_body_int )[0];
+        $finalSchedule = getVolunteerInfo( $volunteers );
 
-    usort($finalSchedule, function($a, $b) {
-        return $a->sequence > $b->sequence;
-    });
+        usort( $finalSchedule, function ( $a, $b ) {
+            return $a->sequence > $b->sequence;
+        } );
 
-    return json_encode($finalSchedule);
+        return json_encode( $finalSchedule );
+    } else {
+        return new StdClass();
+    }
 }
 
 function filterOut($volunteers) {

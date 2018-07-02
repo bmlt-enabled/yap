@@ -8,4 +8,5 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'save') {
     );
 }
 
-echo json_encode(getHelplineData($_REQUEST['service_body_id'], $_REQUEST['data_type']));
+$data = getHelplineData($_REQUEST['service_body_id'], $_REQUEST['data_type']);
+echo json_encode(count($data) > 0 ? $data[0] : new StdClass());

@@ -2,7 +2,16 @@
 <div class="container">
     <div class="row">
         <div class="col-md">
-            <select name="servicebodies" id="servicebodies"><option value="0">-= Select A Service Body =-</option></select>
+            <label for="service_body_id">Service Body</label>
+            <select class="form-control form-control-sm" id="service_body_id">
+                <option value="0">-= Select A Service Body =-</option>
+                <?php
+                $helplineConfiguration = getVolunteerRoutingEnabledServiceBodies();
+                foreach ($helplineConfiguration as $item) {?>
+                    <option value="<?php echo $item['service_body_id']?>"><?php echo $item['service_body_name']?></option>
+                    <?php
+                }?>
+            </select>
             <div id='calendar'></div>
         </div>
     </div>
@@ -12,46 +21,22 @@
 <script src='js/moment-2.11.1.min.js'></script>
 <script src='js/fullcalendar-3.9.0.min.js'></script>
 <script type="text/javascript">
-    function getParameterByName(name, url) {
-        if (!url) url = window.location.href;
-        name = name.replace(/[\[\]]/g, "\\$&");
-        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-            results = regex.exec(url);
-        if (!results) return null;
-        if (!results[2]) return '';
-        return decodeURIComponent(results[2].replace(/\+/g, " "));
-    }
-
-    function getYapHelplines() {
-        $.getJSON("../helpline-yap-based.php", function(data) {
-            for (var x = 0; x < data.length; x++) {
-                $("select#servicebodies").append("<option value=\"" + data[x].id + "\">" + data[x].name + "</option>")
-            }
-        });
-    }
-
     $(function() {
-        getYapHelplines();
         $('#calendar').fullCalendar({
             allDaySlot: false,
             defaultView: 'agendaWeek',
             nowIndicator: true,
             firstDay: (new Date()).getDay(),
+            navLinks: false,
             themeSystem: 'bootstrap4'
         });
 
-        $('select#servicebodies').change(function() {
-            if (parseInt($('select#servicebodies').val()) > 0) {
+        $('select#service_body_id').change(function() {
+            if (parseInt($('select#service_body_id').val()) > 0) {
                 $('#calendar').fullCalendar('removeEventSources');
                 $("#calendar").fullCalendar('removeEvents');
-                $('#calendar').fullCalendar('addEventSource', '../helpline-schedule.php?service_body_id=' + $('select#servicebodies').val());
+                $('#calendar').fullCalendar('addEventSource', '../helpline-schedule.php?service_body_id=' + $('select#service_body_id').val());
             }
         })
-
-        if (getParameterByName("service_body_id") != null) {
-            $('#calendar').fullCalendar('removeEventSources');
-            $("#calendar").fullCalendar('removeEvents');
-            $('#calendar').fullCalendar('addEventSource', '../helpline-schedule.php?service_body_id=' + getParameterByName("service_body_id"));
-        }
     })
 </script>
