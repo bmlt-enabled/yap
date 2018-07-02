@@ -182,6 +182,17 @@ function removeShift(e) {
     $(e).closest(".shiftCard").remove();
 }
 
+function toggleCardDetails(e) {
+    var volunteerCard = $(e).closest(".volunteerCard")
+    var isCurrentlyShown = volunteerCard.find(".volunteerCardBody").attr("class").indexOf("show") >= 0;
+    volunteerCard.find(".volunteerCardBodyToggleButton").html(isCurrentlyShown ? "+" : "-");
+    volunteerCard.find(".volunteerCardBody").collapse('toggle');
+}
+
+function serviceBodyConfigure(e) {
+
+}
+
 function dataEncoder(dataObject) {
     return btoa(JSON.stringify(dataObject));
 }

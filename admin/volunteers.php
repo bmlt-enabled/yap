@@ -93,9 +93,10 @@
     <form id="volunteersForm">
         <div class="card-header">
             Volunteer Name: <input type="text" id="volunteer_name" name="volunteer_name">
+            <button class="btn btn-sm btn-info volunteerCardBodyToggleButton" type="button" onclick="toggleCardDetails(this);return false;">+</button>
             <span id="volunteerSequence" class="float-right"></span>
         </div>
-        <div class="card-body">
+        <div class="card-body volunteerCardBody collapse">
             Phone Number: <input type="text" id="volunteer_phone_number" name="volunteer_phone_number">
             <table id="volunteer_schedule" class="table table-striped table-bordered">
                 <tr><th>Shifts <button class="btn btn-sm btn-info" onclick="addShift(this);return false;"><?php echo $GLOBALS['add_shift']?></button></th></tr>
