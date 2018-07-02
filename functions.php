@@ -272,7 +272,7 @@ function admin_PersistHelplineData($helpline_data_id = 0, $service_body_id, $dat
 
     $helpline_data = str_replace(",", ";", $data);
     error_log("helpline_data_length:" . strlen($helpline_data));
-    $data_bmlt_encoded .= "&meeting_field[]=comments," . $helpline_data;
+    $data_bmlt_encoded .= "&meeting_field[]=contact_phone_1," . $helpline_data;
 
     return post($url, $data_bmlt_encoded, false, $_SESSION['username']);
 }
@@ -311,7 +311,7 @@ function getHelplineData($service_body_id, $data_type = DataType::YAP_DATA) {
 
     if ($helpline_data != null) {
         foreach ( $helpline_data as $item ) {
-            $json_string = str_replace( ';', ',', html_entity_decode( explode( '#@-@#', $item->comments )[2] ) );
+            $json_string = str_replace( ';', ',', html_entity_decode( explode( '#@-@#', $item->contact_phone_1 )[2] ) );
             array_push($helpline_data_items, [
                 'id'              => intval( $item->id_bigint ),
                 'data'            => json_decode( $json_string )->data,
@@ -383,8 +383,9 @@ function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = Cy
 }
 
 function getHelplineSchedule($service_body_int) {
-    if (count(getHelplineData($service_body_int)) > 0) {
-        $volunteers    = getHelplineData( $service_body_int )[0];
+    $helplineData = getHelplineData($service_body_int);
+    if (count($helplineData) > 0) {
+        $volunteers    = $helplineData[0];
         $finalSchedule = getVolunteerInfo( $volunteers );
 
         usort( $finalSchedule, function ( $a, $b ) {
