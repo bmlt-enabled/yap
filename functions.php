@@ -1,7 +1,7 @@
 <?php
 include_once 'config.php';
-$word_language = isset($GLOBALS['word_language']) ? $GLOBALS['word_language'] : 'en-US';
-include_once 'lang/'.$word_language.'.php';
+$word_language_selected = isset($GLOBALS['word_language']) ? $GLOBALS['word_language'] : 'en-US';
+include_once 'lang/'.$word_language_selected.'.php';
 
 $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
 $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key" . trim($google_maps_api_key);

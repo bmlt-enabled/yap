@@ -101,7 +101,7 @@ function saveToAdminApi(service_body_id, helpline_data_id, data, data_type) {
     $.ajax({
         async: true,
         type: "POST",
-        url: "/admin/api.php?action=save&helpline_data_id=" + helpline_data_id
+        url: "api.php?action=save&helpline_data_id=" + helpline_data_id
         + "&service_body_id=" + service_body_id + "&data_type=" + data_type,
         data: JSON.stringify({"data": data}),
         dataType: "json",
@@ -113,7 +113,7 @@ function saveToAdminApi(service_body_id, helpline_data_id, data, data_type) {
 }
 
 function loadFromAdminApi(service_body_id, data_type, callback) {
-    $.getJSON("/admin/api.php?service_body_id=" + service_body_id + "&data_type=" + data_type, function(data) {
+    $.getJSON("api.php?service_body_id=" + service_body_id + "&data_type=" + data_type, function(data) {
         callback(data)
     });
 }

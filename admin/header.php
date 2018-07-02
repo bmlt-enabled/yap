@@ -1,6 +1,6 @@
 <?php
     include_once '../config.php';
-    include_once '../lang/'.$GLOBALS['word_language'].'.php';
+    include_once '../lang/'.$GLOBALS['word_language_selected'].'.php';
 ?>
 <!doctype html>
 <html lang="en">
