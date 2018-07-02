@@ -1,6 +1,7 @@
 <?php
-    include_once '../config.php';
-    include_once '../lang/'.$GLOBALS['word_language_selected'].'.php';
+    $word_language_selected = isset($GLOBALS['word_language']) ? $GLOBALS['word_language'] : 'en-US';
+    include_once dirname(__DIR__).'/config.php';
+    include_once dirname(__DIR__).'/lang/'.$word_language_selected.'.php';
 ?>
 <!doctype html>
 <html lang="en">
