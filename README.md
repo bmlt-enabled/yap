@@ -64,10 +64,12 @@ Here is an instructional video that might assist you: https://www.dropbox.com/s/
 
 6. You will need to set up a Twilio account, and do the following:
 * Purchase a phone number (typically you would buy one for your locale, tollfree is pretty much unnecessary these days).
-* Configure that number to point to a Webook.  It would be something like http://example.com/index.php.
+* Configure that number to point to a Webook.  It would be something like https://example.com/index.php.
 * Ensure that you are using HTTP GET and not HTTP POST.
 
-7. Make a call to your number and try it out.  If there is a problem the debugger in the Twilio console will let you know why.  Most likely you did not setup your config.php file correctly.
+7. You can test whether or not you are properly configured by going to https://example.com/upgrade-advisor.php.
+
+8. Make a call to your number and try it out.  If there is a problem the debugger in the Twilio console will let you know why.  Most likely you did not setup your config.php file correctly.
 
 ## Results Counts Maximums
 
