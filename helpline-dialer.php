@@ -43,7 +43,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                     'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $service_body_id . '&tracker=' . ++$tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'],
                     'statusCallbackEvent'  => 'completed',
                     'statusCallbackMethod' => 'GET',
-                    'timeout'              => 10
+                    'timeout'              => 20
                 )
             );
         } catch ( \Twilio\Exceptions\TwilioException $e ) {
