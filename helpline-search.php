@@ -24,13 +24,10 @@
     $exploded_result = explode("|", $dial_string);
     $phone_number = isset($exploded_result[0]) ? $exploded_result[0] : "";
     $extension = isset($exploded_result[1]) ? $exploded_result[1] : "w";
+    $service_body_id = isset($service_body) ? $service_body->id : 0;
 ?>
 <Response>
-    <?php if (strpos($phone_number, 'yap') !== false) {
-        $yap_service_body_redirect = strpos($phone_number, '->') !== false
-            ? explode('->', $phone_number)[1]
-            : $service_body->id;
-        ?>
+    <?php if ($service_body_id > 0 && isVolunteerRoutingEnabled($service_body_id)) { ?>
         <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>"><?php echo word('please_wait_while_we_connect_your_call') ?></Say>
         <Dial>
             <Conference statusCallback="helpline-dialer.php?service_body_id=<?php echo $service_body->id ?>&amp;Caller=<?php echo $_REQUEST['Called'] ?>"

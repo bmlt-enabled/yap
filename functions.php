@@ -300,6 +300,15 @@ function getVolunteerRoutingEnabledServiceBodies() {
     return $helpline_enabled;
 }
 
+function isVolunteerRoutingEnabled($service_body_id) {
+    $helplineData = getHelplineData($service_body_id, DataType::YAP_CONFIG);
+    if (isset($helplineData) && count($helplineData) > 0) {
+        return boolval($helplineData[0]['data'][0]->volunteer_routing_enabled);
+    } else {
+        return null;
+    }
+}
+
 function getHelplineData($service_body_id, $data_type = DataType::YAP_DATA) {
     $helpline_data_items = [];
     auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
