@@ -394,33 +394,37 @@ There may be times when a root server is down, it's possible to redirect a call 
 static $helpline_fallback = "1919555555";
 ```
 
-## *BROKEN* Volunteer Dialer (Beta)
+## Volunteer Routing
 
-You can also supply a list of volunteers in a BMLT server.  
+Incompatible with Yap 1.x Volunteer Dialers, you will have reconfigure your setup.  
 
-1) Create a new format called "HV"
-2) In the service body under the helpline specify "yap".
-3) Make a new meeting (do not publish it).
-4) For the meeting name use the volunteer's name.
-5) Select the appropriate service body in the dropdown.  (Note: this service body must be set to "yap" as the helpline in Step #2)
-6) Set the Start Time and Duration which will determine the length of the shift (this will recur every day unless you create additional volunteer entries that match the name)
-7) Set the Location, this is currently used to specify what timezone the volunteer is in (in the future it may help with more succinct locating).
-8) Select "HV" as the format.
-9) Under the phone 1 field, enter this persons phone number.
-10) Since this will be querying unpublished values you must set in `config.php` the BMLT server credentials.
-   
-```php 
-   static $bmlt_username = "";
-   static $bmlt_password = "";
+1) You will need to ensure that the following `config.php` parameters are set.  They should be a service body admin that will be responsible for reading and writing data back to your BMLT.  This will not work with the "Server Administrator" account.
+
+```php
+static $bmlt_username = "sezf_admin";
+static $bmlt_password = "sezf_admin";
 ```
 
-Some additional details on this:
+2) You will need to specify Twilio API parameters.  You can find this on your account dashboard when you login into Twilio.
 
-- You can visualize the shift schedule by going to http://example.com/yap/schedule.html and selecting from the dropdown.
-- If you want to have a volunteer that always is on, then set the start time to "Midnight" and the Duration "Open-Ended"
-- You can control the sequence by specifying "Location".  This will be sorted numerically ascending.  (for example 0 is the highest, 99 is the lowest)
-- You can do a helpline to helpline redirect if you want to redirect one service body helpline to another..  You do this by setting the helpline number in your bmlt for your service body that you want redirected to yap->## where ## is the service body id that you want to redirect to.
-- You can control the timeout between calls, which is defaulted at 20 seconds.  You do this by setting in config.php the following parameter.
+```php
+$twilio_account_sid
+$twilio_auth_token  
+```
+
+3) Head over to your admin login page.  https://your-yap-instance/admin.
+4) Login with any credentials from your BMLT server.   
+5) Go to the Service Bodies tab and click "Configure".  From there you should see a check box to enable Volunteer Routing.  Check it off and save.
+6) Go to Volunteers, and you should see that service body in the dropdown, and select it.
+7) Click Add Volunteer.  Fill out the Name field, and then click the "+" to expand out the rest of the details.  You should be able to start populating the number and shift information.  You will also have to click "Enable" in the bottom right.  Once you are done, click "Save Volunteers".
+8) You can also sort the sequence by dragging and dropping the volunteer cards.
+9) Go to Schedules to preview your changes.  Select your service body from the dropdown, and it should render onto the calendar.  
+10) You can now test to see if things are working.
+ 
+*THESE OPTIONS ARE NOT WORKING RIGHT NOW*
+
+- (This is broken right now) You can do a helpline to helpline redirect if you want to redirect one service body helpline to another..  You do this by setting the helpline number in your bmlt for your service body that you want redirected to yap->## where ## is the service body id that you want to redirect to.
+- (This is broken right now) You can control the timeout between calls, which is defaulted at 20 seconds.  You do this by setting in config.php the following parameter.
 
 ```php
     static $call_timeout = 20;
@@ -432,6 +436,8 @@ Some additional details on this:
 ```
 
 ## Music On Hold
+
+Music on hold will play when doing volunteer routing, but currently not configurable.
 
 ## Facebook Messenger Gateway (Meetings Lookup)
 
