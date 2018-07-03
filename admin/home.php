@@ -7,9 +7,9 @@
                 <p class="lead"><?php echo $GLOBALS['welcome_to_yap']?></p>
                 <hr class="my-4">
                 <p><?php echo $GLOBALS['introduction']?></p>
-                <a target="_blank" class="btn btn-primary btn-md" href="https://github.com/radius314/yap/blob/master/README.md" role="button"><?php echo $GLOBALS['documentation']?></a>
+                <a target="_blank" class="btn btn-primary btn-md" href="https://github.com/radius314/yap/blob/unstable/README.md" role="button"><?php echo $GLOBALS['documentation']?></a>
                 <a target="_blank" class="btn btn-info btn-md" href="https://github.com/radius314/yap/issues" role="button"><?php echo $GLOBALS['bugs_requests']?></a>
-                <a target="_blank" class="btn btn-secondary btn-md" href="https://github.com/radius314/yap/blob/master/RELEASENOTES.md" role="button"><?php echo $GLOBALS['release_notes']?></a>
+                <a target="_blank" class="btn btn-secondary btn-md" href="https://github.com/radius314/yap/blob/unstable/RELEASENOTES.md" role="button"><?php echo $GLOBALS['release_notes']?></a>
             </div>
         </div>
     </div>
