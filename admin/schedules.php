@@ -27,8 +27,13 @@
             defaultView: 'agendaWeek',
             nowIndicator: true,
             firstDay: (new Date()).getDay(),
-            navLinks: false,
-            themeSystem: 'bootstrap4'
+            themeSystem: 'bootstrap4',
+            header: {
+                left: null,
+                center: null,
+                right: null
+            },
+            height: 'auto'
         });
 
         $('select#service_body_id').change(function() {
