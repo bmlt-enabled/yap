@@ -44,7 +44,7 @@ Helpline/Call Routing
 * [Checking Call Routing](#checking-call-routing)
 * [Helpline Call Routing](#helpline-call-routing)
 * [Skipping Helpline Call Routing](#skipping-helpline-call-routing)
-* [Volunteer Dialer (Beta)](#volunteer-dialer-(beta))
+* [Volunteer Routing)](#volunteer-routing)
 * [Music On Hold](#music-on-hold)
 
 ## Setup
