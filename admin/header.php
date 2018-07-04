@@ -16,3 +16,4 @@
     <title>Yap Admin</title>
 </head>
 <body>
+<?php include_once 'spinner_dialog.php';

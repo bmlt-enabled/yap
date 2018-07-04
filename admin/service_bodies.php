@@ -6,17 +6,6 @@ sort_on_field($service_bodies, 'name');
     <div class="alert alert-success" role="alert" style="display:none;" id="service_body_saved_alert">
         Saved.
     </div>
-    <div class="modal fade" id="spinnerDialog" tabindex="-1" role="dialog" aria-labelledby="spinnerDialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div>
-                        Retrieving data...
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="row">
         <div class="col-md">
             <table class="table table-striped table-bordered">
@@ -47,7 +36,7 @@ sort_on_field($service_bodies, 'name');
                                             </button>
                                         </div>
                                         <div class="modal-body serviceBodyConfigurationItems">
-                                            <form id="serviceBodyConfigurationForm">
+                                            <form id="serviceBodyConfigurationForm" class="serviceBodyConfigurationForm">
                                                 <div class="form-check form-check-inline">
                                                     <input type="checkbox" class="form-check-input" name="volunteer_routing_enabled" id="volunteer_routing_enabled" value="false" onclick="checkboxStatusToggle(this)">
                                                     <label class="form-check-label" for="volunteer_routing_enabled">Volunteer Routing</label>

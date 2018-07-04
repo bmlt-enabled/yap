@@ -2,14 +2,14 @@ dayOfTheWeek = {1:"Sunday",2:"Monday",3:"Tuesday",4:"Wednesday",5:"Thursday",6:"
 
 function volunteerPage() {
     $("#service_body_id").on("change", function() {
-        $("#spinnerDialog").modal('show');
         addNewVolunteerDialog($(this).val() > 0);
         clearVolunteerCards();
-        loadVolunteers($(this).val(), function() {
-            setTimeout(function() {
-                $("#spinnerDialog").modal('hide');
-            }, 500);
-        })
+        var helpline_data_id = $(this).val();
+        spinnerDialog(true, "Retrieving Volunteers...", function() {
+            loadVolunteers(helpline_data_id, function() {
+                spinnerDialog(false);
+            })
+        });
     });
 
     $("#volunteerCards").sortable();
@@ -26,69 +26,73 @@ function volunteerPage() {
 }
 
 function addVolunteers() {
-    addVolunteer({
-        "volunteer_name": $("#new_volunteer_name").val()
-    });
-
-    $("#new_volunteer_name").val("");
+    addVolunteer({"volunteer_name": ""});
 }
 
 function saveVolunteers() {
-    var volunteerCards = $("#volunteerCards").children();
-    var data = [];
-    for (var volunteerCard of volunteerCards) {
-        var cards = $(volunteerCard).find(".shiftCard");
-        var cardData = [];
-        for (var card of cards) {
-            cardData.push(JSON.parse($(card).attr("data")));
+    $("#save-volunteers").addClass('disabled');
+    spinnerDialog(true, "Saving Volunteers...", function () {
+        var volunteerCards = $("#volunteerCards").children();
+        var data = [];
+        for (var volunteerCard of volunteerCards) {
+            var cards = $(volunteerCard).find(".shiftCard");
+            var cardData = [];
+            for (var card of cards) {
+                cardData.push(JSON.parse($(card).attr("data")));
+            }
+
+            $(volunteerCard).find("#volunteer_shift_schedule").val(dataEncoder(cardData));
+
+            var formData = $(volunteerCard).find("#volunteersForm").serializeArray();
+            var dataObj = {};
+            for (var formItem of formData) {
+                dataObj[formItem["name"]] = formItem["value"]
+            }
+
+            data.push(dataObj);
         }
 
-        $(volunteerCard).find("#volunteer_shift_schedule").val(dataEncoder(cardData));
+        saveToAdminApi(
+            $("#service_body_id").val(),
+            $("#helpline_data_id").val(),
+            data,
+            "_YAP_DATA_",
+            function (xhr, status) {
+                spinnerDialog(false);
+                $("#volunteer_saved_alert").show();
+                $("#volunteer_saved_alert").fadeOut(3000);
+                $("#save-volunteers").removeClass('disabled');
+            }
+        );
+    });
+}
 
-        var formData = $(volunteerCard).find("#volunteersForm").serializeArray();
+function saveServiceBodyConfig(service_body_id) {
+    var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
+    serviceBodyConfiguration.modal('hide');
+    spinnerDialog(true, "Saving Service Body Configuration...", function () {
+        var data = [];
+        var helpline_data_id = serviceBodyConfiguration.find(".helpline_data_id").val();
+        var formData = serviceBodyConfiguration.find("#serviceBodyConfigurationForm").serializeArray();
         var dataObj = {};
         for (var formItem of formData) {
             dataObj[formItem["name"]] = formItem["value"]
         }
 
         data.push(dataObj);
-    }
 
-    saveToAdminApi(
-        $("#service_body_id").val(),
-        $("#helpline_data_id").val(),
-        data,
-        "_YAP_DATA_"
-    );
-
-    // TODO: it's not actually do a callback (got stuck earlier on the process)
-    $("#volunteer_saved_alert").show();
-    $("#volunteer_saved_alert").fadeOut(3000);
-}
-
-function saveServiceBodyConfig(service_body_id) {
-    var data = [];
-    var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
-    var helpline_data_id = serviceBodyConfiguration.find(".helpline_data_id").val();
-    var formData = serviceBodyConfiguration.find("#serviceBodyConfigurationForm").serializeArray();
-    var dataObj = {};
-    for (var formItem of formData) {
-        dataObj[formItem["name"]] = formItem["value"]
-    }
-
-    data.push(dataObj);
-
-    saveToAdminApi(
-        service_body_id,
-        helpline_data_id,
-        data,
-        '_YAP_CONFIG_'
-    );
-
-    // TODO: it's not actually do a callback (got stuck earlier on the process)
-    $("#service_body_saved_alert").show();
-    $("#service_body_saved_alert").fadeOut(3000);
-    serviceBodyConfiguration.modal('hide');
+        saveToAdminApi(
+            service_body_id,
+            helpline_data_id,
+            data,
+            '_YAP_CONFIG_',
+            function() {
+                $("#service_body_saved_alert").show();
+                $("#service_body_saved_alert").fadeOut(3000);
+                spinnerDialog(false);
+            }
+        );
+    });
 }
 
 function loadServiceBodyConfig(serviceBodyId, callback) {
@@ -97,18 +101,16 @@ function loadServiceBodyConfig(serviceBodyId, callback) {
     });
 }
 
-function saveToAdminApi(service_body_id, helpline_data_id, data, data_type) {
+function saveToAdminApi(service_body_id, helpline_data_id, data, data_type, callback) {
     $.ajax({
-        async: true,
+        async: false,
         type: "POST",
         url: "api.php?action=save&helpline_data_id=" + helpline_data_id
         + "&service_body_id=" + service_body_id + "&data_type=" + data_type,
         data: JSON.stringify({"data": data}),
         dataType: "json",
         contentType: "application/json",
-        success: function () {
-
-        }
+        complete: callback
     });
 }
 
@@ -236,25 +238,45 @@ function toggleCardDetails(e) {
 }
 
 function serviceBodyConfigure(service_body_id) {
-    $("#spinnerDialog").modal('show');
-    var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
-    loadServiceBodyConfig(service_body_id, function(data) {
-        if (!$.isEmptyObject(data)) {
-            serviceBodyConfiguration.find("#helpline_data_id").val(data["id"]);
-            var dataSet = data["data"][0];
-            for (var key in dataSet) {
-                if (dataSet[key]) {
-                    serviceBodyConfiguration.find("#" + key).prop('checked', true);
+    spinnerDialog(true, "Retrieving Service Body Configuration...", function() {
+        var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
+        loadServiceBodyConfig(service_body_id, function(data) {
+            if (!$.isEmptyObject(data)) {
+                serviceBodyConfiguration.find("#helpline_data_id").val(data["id"]);
+                var dataSet = data["data"][0];
+                for (var key in dataSet) {
+                    if (dataSet[key]) {
+                        serviceBodyConfiguration.find("#" + key).prop('checked', true);
+                    }
+                    serviceBodyConfiguration.find("#" + key).val(dataSet[key]);
                 }
-                serviceBodyConfiguration.find("#" + key).val(dataSet[key]);
             }
-        }
 
-        setTimeout(function() {
-            $("#spinnerDialog").modal('hide');
-            serviceBodyConfiguration.modal("show");
-        }, 500);
+            spinnerDialog(false, "", function() {
+                serviceBodyConfiguration.modal("show");
+            });
+        });
     });
+}
+
+function spinnerDialog(show, text, callback) {
+    var d = $("#spinnerDialog");
+    if (show) {
+        d.on('shown.bs.modal', function() {
+            d.off();
+            if (callback != undefined) callback();
+        });
+        d.find("#spinnerDialogText").text(text);
+        d.modal('show');
+    } else {
+        d.on('hidden.bs.modal', function() {
+            d.off();
+            if (callback != undefined) callback();
+        });
+        setTimeout(function() {
+            d.modal('hide');
+        }, 500);
+    }
 }
 
 function dataEncoder(dataObject) {

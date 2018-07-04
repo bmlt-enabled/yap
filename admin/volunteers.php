@@ -17,20 +17,8 @@
         <div class="row">
             <div id="newVolunteerDialog" class="col-sm" style="display:none;">
                 <div class="form-group">
-                    <input type="text" name="new_volunteer_name" class="form-control" id="new_volunteer_name" aria-describedby="volunteerNameHelp" placeholder="<?php echo $GLOBALS['add_add_new_volunteer']?>">
                     <button id="add-volunteer" class="btn btn-sm btn-primary" type="button" onclick="addVolunteers();""><?php echo $GLOBALS['add_volunteer']?></button>
                     <button id="save-volunteers" class="btn btn-sm btn-success" type="button" onclick="saveVolunteers();"><?php echo $GLOBALS['save_volunteers']?></button>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="spinnerDialog" tabindex="-1" role="dialog" aria-labelledby="spinnerDialog" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <div>
-                            Retrieving data...
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
