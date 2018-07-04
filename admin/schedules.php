@@ -4,7 +4,7 @@
         <div class="col-md">
             <label for="service_body_id">Service Body</label>
             <select class="form-control form-control-sm" id="service_body_id">
-                <option value="0">-= Select A Service Body =-</option>
+                <option>-= Select A Service Body =-</option>
                 <?php
                 $helplineConfiguration = getVolunteerRoutingEnabledServiceBodies();
                 foreach ($helplineConfiguration as $item) {?>

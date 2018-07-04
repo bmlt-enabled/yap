@@ -44,7 +44,7 @@ Helpline/Call Routing
 * [Checking Call Routing](#checking-call-routing)
 * [Helpline Call Routing](#helpline-call-routing)
 * [Skipping Helpline Call Routing](#skipping-helpline-call-routing)
-* [Volunteer Routing)](#volunteer-routing)
+* [Volunteer Routing](#volunteer-routing)
 * [Music On Hold](#music-on-hold)
 
 ## Setup
@@ -423,7 +423,8 @@ $twilio_auth_token
 9) Go to Schedules to preview your changes.  Select your service body from the dropdown, and it should render onto the calendar.  
 10) You can now test to see if things are working.
 
-You can do a helpline to helpline redirect if you want to redirect one service body helpline to another.  You do this by setting in the Service Body Configuration the Volunteer Routing mechanism to "Volunteers Redirect" and specifying the respective Service Body Id in the "Volunteers Redirect Id" field. 
+* Volunteer Routing Redirect: You do this by setting in the Service Body Configuration the Volunteer Routing mechanism to "Volunteers Redirect" and specifying the respective Service Body Id in the "Volunteers Redirect Id" field. 
+* Forced Caller Id: This setting changes the outgoing display caller id.
  
 *THESE OPTIONS ARE NOT WORKING RIGHT NOW*
 - (This is broken right now) 
@@ -431,11 +432,6 @@ You can do a helpline to helpline redirect if you want to redirect one service b
 
 ```php
     static $call_timeout = 20;
-```
-
-- You can change the outbound caller id to a different verified twilio number by setting the phone number in config.php
-```php
-    static $forced_callerid = '###-###-####';
 ```
 
 ## Music On Hold

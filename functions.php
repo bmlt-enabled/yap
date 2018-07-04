@@ -42,9 +42,12 @@ class MeetingResults {
 }
 
 class ServiceBodyConfiguration {
-    public $volunteer_routing_enabled;
-    public $volunteer_routing_redirect;
-    public $volunteer_routing_redirect_id;
+    public $service_body_id;
+    public $volunteer_routing_enabled = false;
+    public $volunteer_routing_redirect = false;
+    public $volunteer_routing_redirect_id = 0;
+    public $forced_caller_id_enabled = false;
+    public $forced_caller_id_number = "0000000000";
 }
 
 class CycleAlgorithm {
@@ -310,15 +313,14 @@ function getVolunteerRoutingEnabledServiceBodies() {
 function getServiceBodyConfiguration($service_body_id) {
     $helplineData = getHelplineData($service_body_id, DataType::YAP_CONFIG);
     $config = new ServiceBodyConfiguration();
+    $config->service_body_id = $service_body_id;
     if (isset($helplineData) && count($helplineData) > 0) {
-        $config->volunteer_routing_enabled = strpos($helplineData[0]['data'][0]->volunteer_routing, "volunteers") >= 0;
-        $config->volunteer_routing_redirect = $helplineData[0]['data'][0]->volunteer_routing == "volunteers_redirect";
-        $config->volunteer_routing_redirect_id = isset($helplineData[0]['data'][0]->volunteers_redirect_id)
-            ? $helplineData[0]['data'][0]->volunteers_redirect_id : 0;
-    } else {
-        $config->volunteer_routing_enabled = false;
-        $config->volunteer_routing_redirect = false;
-        $config->volunteer_routing_redirect_id = 0;
+        $data = $helplineData[0]['data'][0];
+        $config->volunteer_routing_enabled = strpos($data->volunteer_routing, "volunteers") >= 0;
+        $config->volunteer_routing_redirect = $data->volunteer_routing == "volunteers_redirect";
+        $config->volunteer_routing_redirect_id = $config->volunteer_routing_redirect ? $data->volunteers_redirect_id : 0;
+        $config->forced_caller_id_enabled = isset($data->forced_caller_id) && strlen($data->forced_caller_id) > 0;
+        $config->forced_caller_id_number = $config->forced_caller_id_enabled ? $data->forced_caller_id : "0000000000";
     }
 
     return $config;
@@ -329,7 +331,7 @@ function getHelplineData($service_body_id, $data_type = DataType::YAP_DATA) {
     auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
     $helpline_data = json_decode(get(getHelplineBMLTRootServer()
                                      . "/client_interface/json/?switcher=GetSearchResults"
-                                     . (($service_body_id > 0) ? "&services=" . $service_body_id : "")
+                                     . (($service_body_id != 0) ? "&services=" . $service_body_id : "")
                                      . "&meeting_key=meeting_name&meeting_key_value=" . $data_type
                                      . "&advanced_published=0"));
 
