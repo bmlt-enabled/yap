@@ -27,16 +27,24 @@
     $service_body_id = isset($service_body) ? $service_body->id : 0;
 ?>
 <Response>
-    <?php if ($service_body_id > 0 && isVolunteerRoutingEnabled($service_body_id)) { ?>
+    <?php
+        $serviceBodyConfiguration = getServiceBodyConfiguration($service_body_id);
+        if ($service_body_id > 0 && $serviceBodyConfiguration->volunteer_routing_enabled) {
+            if ($serviceBodyConfiguration->volunteer_routing_redirect && $serviceBodyConfiguration->volunteer_routing_redirect_id > 0) {
+                $calculated_service_body_id = $serviceBodyConfiguration->volunteer_routing_redirect_id;
+            } else {
+                $calculated_service_body_id = $service_body_id;
+            }
+            ?>
         <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>"><?php echo word('please_wait_while_we_connect_your_call') ?></Say>
         <Dial>
-            <Conference statusCallback="helpline-dialer.php?service_body_id=<?php echo $service_body->id ?>&amp;Caller=<?php echo $_REQUEST['Called'] ?>"
+            <Conference statusCallback="helpline-dialer.php?service_body_id=<?php echo $calculated_service_body_id ?>&amp;Caller=<?php echo $_REQUEST['Called'] ?>"
                         startConferenceOnEnter="false"
                         endConferenceOnExit="true"
                         statusCallbackMethod="GET"
                         statusCallbackEvent="start join end leave"
                         beep="false">
-                <?php echo getConferenceName($service_body->id); ?>
+                <?php echo getConferenceName($calculated_service_body_id); ?>
             </Conference>
         </Dial>
     <?php } else if ($phone_number != "") {

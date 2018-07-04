@@ -43,6 +43,9 @@ sort_on_field($service_bodies, 'name');
                                                     <option value="volunteers">Volunteers</option>
                                                     <option value="volunteers_redirect">Volunteers Redirect</option>
                                                 </select>
+
+                                                Volunteers Redirect Id:
+                                                <input class="form-control form-control-sm" type="text" name="volunteers_redirect_id" id="volunteers_redirect_id">
                                             </form>
                                         </div>
                                         <div class="modal-footer">

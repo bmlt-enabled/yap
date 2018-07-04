@@ -41,6 +41,12 @@ class MeetingResults {
     public $filteredList = [];
 }
 
+class ServiceBodyConfiguration {
+    public $volunteer_routing_enabled;
+    public $volunteer_routing_redirect;
+    public $volunteer_routing_redirect_id;
+}
+
 class CycleAlgorithm {
     const CYCLE_AND_FAILOVER = 0;
     const LOOP_FOREVER = 1;
@@ -301,13 +307,21 @@ function getVolunteerRoutingEnabledServiceBodies() {
     return $helpline_enabled;
 }
 
-function isVolunteerRoutingEnabled($service_body_id) {
+function getServiceBodyConfiguration($service_body_id) {
     $helplineData = getHelplineData($service_body_id, DataType::YAP_CONFIG);
+    $config = new ServiceBodyConfiguration();
     if (isset($helplineData) && count($helplineData) > 0) {
-        return $helplineData[0]['data'][0]->volunteer_routing == "volunteers";
+        $config->volunteer_routing_enabled = strpos($helplineData[0]['data'][0]->volunteer_routing, "volunteers") >= 0;
+        $config->volunteer_routing_redirect = $helplineData[0]['data'][0]->volunteer_routing == "volunteers_redirect";
+        $config->volunteer_routing_redirect_id = isset($helplineData[0]['data'][0]->volunteers_redirect_id)
+            ? $helplineData[0]['data'][0]->volunteers_redirect_id : 0;
     } else {
-        return null;
+        $config->volunteer_routing_enabled = false;
+        $config->volunteer_routing_redirect = false;
+        $config->volunteer_routing_redirect_id = 0;
     }
+
+    return $config;
 }
 
 function getHelplineData($service_body_id, $data_type = DataType::YAP_DATA) {
