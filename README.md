@@ -422,10 +422,11 @@ $twilio_auth_token
 8) You can also sort the sequence by dragging and dropping the volunteer cards.
 9) Go to Schedules to preview your changes.  Select your service body from the dropdown, and it should render onto the calendar.  
 10) You can now test to see if things are working.
+
+You can do a helpline to helpline redirect if you want to redirect one service body helpline to another.  You do this by setting in the Service Body Configuration the Volunteer Routing mechanism to "Volunteers Redirect" and specifying the respective Service Body Id in the "Volunteers Redirect Id" field. 
  
 *THESE OPTIONS ARE NOT WORKING RIGHT NOW*
-
-- (This is broken right now) You can do a helpline to helpline redirect if you want to redirect one service body helpline to another..  You do this by setting the helpline number in your bmlt for your service body that you want redirected to yap->## where ## is the service body id that you want to redirect to.
+- (This is broken right now) 
 - (This is broken right now) You can control the timeout between calls, which is defaulted at 20 seconds.  You do this by setting in config.php the following parameter.
 
 ```php
