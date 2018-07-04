@@ -69,10 +69,10 @@ function saveVolunteers() {
 
 function saveServiceBodyConfig(service_body_id) {
     var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
+    var helpline_data_id = serviceBodyConfiguration.find(".helpline_data_id").val();
     serviceBodyConfiguration.modal('hide');
     spinnerDialog(true, "Saving Service Body Configuration...", function () {
         var data = [];
-        var helpline_data_id = serviceBodyConfiguration.find(".helpline_data_id").val();
         var formData = serviceBodyConfiguration.find("#serviceBodyConfigurationForm").serializeArray();
         var dataObj = {};
         for (var formItem of formData) {

@@ -288,7 +288,7 @@ function getVolunteerRoutingEnabledServiceBodies() {
     $helpline_enabled = [];
 
     for ($x = 0; $x < count($all_helpline_data); $x++) {
-        if (isset($all_helpline_data[$x]['data'][0]->volunteer_routing_enabled) && boolval($all_helpline_data[$x]['data'][0]->volunteer_routing_enabled)) {
+        if (isset($all_helpline_data[$x]['data'][0]->volunteer_routing) && $all_helpline_data[$x]['data'][0]->volunteer_routing == "volunteers") {
             for ($y = 0; $y < count($service_bodies); $y++) {
                 if ( $all_helpline_data[ $x ]['service_body_id'] == intval($service_bodies[$y]->id) ) {
                     $all_helpline_data[ $x ]['service_body_name'] = $service_bodies[$y]->name;
@@ -304,7 +304,7 @@ function getVolunteerRoutingEnabledServiceBodies() {
 function isVolunteerRoutingEnabled($service_body_id) {
     $helplineData = getHelplineData($service_body_id, DataType::YAP_CONFIG);
     if (isset($helplineData) && count($helplineData) > 0) {
-        return boolval($helplineData[0]['data'][0]->volunteer_routing_enabled);
+        return $helplineData[0]['data'][0]->volunteer_routing == "volunteers";
     } else {
         return null;
     }

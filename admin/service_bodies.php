@@ -26,7 +26,7 @@ sort_on_field($service_bodies, 'name');
                         <td>
                             <button class="btn btn-sm btn-info" onclick="serviceBodyConfigure(<?php echo $service_body->id ?>);">Configure</button>
                             <div class="modal fade" id="serviceBodyConfiguration_<?php echo $service_body->id ?>" tabindex="-1" role="dialog" aria-labelledby="configureShiftDialog" aria-hidden="true">
-                                <input type="hidden" name="helpline_data_id" class="helpline_data_id" value="0" />
+                                <input type="hidden" id="helpline_data_id" name="helpline_data_id" class="helpline_data_id" value="0" />
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -37,10 +37,12 @@ sort_on_field($service_bodies, 'name');
                                         </div>
                                         <div class="modal-body serviceBodyConfigurationItems">
                                             <form id="serviceBodyConfigurationForm" class="serviceBodyConfigurationForm">
-                                                <div class="form-check form-check-inline">
-                                                    <input type="checkbox" class="form-check-input" name="volunteer_routing_enabled" id="volunteer_routing_enabled" value="false" onclick="checkboxStatusToggle(this)">
-                                                    <label class="form-check-label" for="volunteer_routing_enabled">Volunteer Routing</label>
-                                                </div>
+                                                Helpling Routing:
+                                                <select class="form-control form-control-sm" name="volunteer_routing" id="volunteer_routing">
+                                                    <option value="helpline_field">Helpline Field Number</option>
+                                                    <option value="volunteers">Volunteers</option>
+                                                    <option value="volunteers_redirect">Volunteers Redirect</option>
+                                                </select>
                                             </form>
                                         </div>
                                         <div class="modal-footer">
