@@ -3,8 +3,8 @@ include_once 'config.php';
 $word_language = isset($GLOBALS['word_language']) ? $GLOBALS['word_language'] : 'en-US';
 include_once 'lang/'.$word_language.'.php';
 
-$google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
-$timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key" . trim($google_maps_api_key);
+$maps_enpoint = "https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1"; 
+$timezone_lookup_endpoint = "https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1"; 
 # BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
 static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -50,16 +50,15 @@ function getCoordinatesForAddress($address) {
     $coordinates = new Coordinates();
 
     if (strlen($address) > 0) {
-        $map_details_response = get($GLOBALS['google_maps_endpoint']
+        $map_details_response = get($GLOBALS['maps_endpoint']
             . "&address="
             . urlencode($address)
-            . (isset($GLOBALS['location_lookup_bias']) ? "&components=" . urlencode($GLOBALS['location_lookup_bias']) : ""));
+            . (isset($GLOBALS['location_lookup_bias']) ? "&country=" . urlencode($GLOBALS['location_lookup_bias']) : ""));
         $map_details = json_decode($map_details_response);
-        if (count($map_details->results) > 0) {
-            $coordinates->location  = $map_details->results[0]->formatted_address;
-            $geometry               = $map_details->results[0]->geometry->location;
-            $coordinates->latitude  = $geometry->lat;
-            $coordinates->longitude = $geometry->lng;
+        if ($map_details[0]->place_id != null) { 
+            $coordinates->location  = $map_details[0]->display_name; 
+            $coordinates->latitude  = $map_details[0]->lat; 
+            $coordinates->longitude = $map_details[0]->lon; 
         }
     }
 
