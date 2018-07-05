@@ -211,6 +211,19 @@ function addShift(e) {
     $("#selectShiftDialog").modal("show");
 }
 
+function add24by7Shifts(e) {
+    for (var x = 1; x <= 7; x++) {
+        var shiftInfoObj = {
+            "day": x,
+            "tz": 'UTC',
+            "start_time": '12:00 AM',
+            "end_time": '11:59 PM'
+        };
+
+        renderShift($(e).closest(".volunteerCard").attr("id"), shiftInfoObj);
+    }
+}
+
 function saveShift(e) {
     var volunteer_id = $("#selectShiftDialog").attr("volunteer_id");
     var day_id = $("#day_of_the_week").val();

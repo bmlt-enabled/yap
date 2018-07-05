@@ -92,7 +92,13 @@
         <div class="card-body volunteerCardBody collapse">
             Phone Number: <input type="text" id="volunteer_phone_number" name="volunteer_phone_number">
             <table id="volunteer_schedule" class="table table-striped table-bordered">
-                <tr><th>Shifts <button class="btn btn-sm btn-info" onclick="addShift(this);return false;"><?php echo $GLOBALS['add_shift']?></button></th></tr>
+                <tr>
+                    <th>
+                        Shifts
+                        <button class="btn btn-sm btn-info" onclick="addShift(this);return false;"><?php echo $GLOBALS['add_shift']?></button>
+                        <button class="btn btn-sm btn-info" onclick="add24by7Shifts(this);return false;"><?php echo $GLOBALS['add_24by7_shifts']?></button>
+                    </th>
+                </tr>
                 <tr>
                     <td>
                         <div class="card-deck" id="shiftsCards"></div>

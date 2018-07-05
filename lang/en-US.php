@@ -56,3 +56,4 @@ $save_volunteers = "Save Volunteers";
 $remove = "Remove";
 $settings = "Settings";
 $add_shift = "Add Shift";
+$add_24by7_shifts = "Add 24/7 Shifts";
