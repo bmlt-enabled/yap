@@ -4,12 +4,14 @@ function volunteerPage() {
     $("#service_body_id").on("change", function() {
         addNewVolunteerDialog($(this).val() > 0);
         clearVolunteerCards();
-        var helpline_data_id = $(this).val();
-        spinnerDialog(true, "Retrieving Volunteers...", function() {
-            loadVolunteers(helpline_data_id, function() {
-                spinnerDialog(false);
-            })
-        });
+        if ($(this).val() > 0) {
+            var helpline_data_id = $(this).val();
+            spinnerDialog(true, "Retrieving Volunteers...", function () {
+                loadVolunteers(helpline_data_id, function () {
+                    spinnerDialog(false);
+                })
+            });
+        }
     });
 
     $("#volunteerCards").sortable();
