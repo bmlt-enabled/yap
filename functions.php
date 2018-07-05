@@ -3,7 +3,7 @@ include_once 'config.php';
 $word_language = isset($GLOBALS['word_language']) ? $GLOBALS['word_language'] : 'en-US';
 include_once 'lang/'.$word_language.'.php';
 
-$maps_enpoint = "https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1"; 
+$maps_endpoint = "https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1"; 
 $timezone_lookup_endpoint = "https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1"; 
 # BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
 static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
