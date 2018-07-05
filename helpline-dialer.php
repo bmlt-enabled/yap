@@ -63,7 +63,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
         try {
             $client->calls->create(
                 $callConfig->phone_number,
-                $_REQUEST['Caller'],
+                $callConfig->options['callerId'],
                 $callConfig->options
             );
         } catch ( \Twilio\Exceptions\TwilioException $e ) {

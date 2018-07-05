@@ -427,7 +427,6 @@ static $twilio_auth_token = "";
 * Forced Caller Id: This setting changes the outgoing display caller id.
  
 *THESE OPTIONS ARE NOT WORKING RIGHT NOW*
-- (This is broken right now) 
 - (This is broken right now) You can control the timeout between calls, which is defaulted at 20 seconds.  You do this by setting in config.php the following parameter.
 
 ```php
