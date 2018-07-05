@@ -51,7 +51,7 @@ function getCoordinatesForAddress($address) {
 
     if (strlen($address) > 0) {
         $map_details_response = get($GLOBALS['maps_endpoint']
-            . "&address="
+            . "&postalcode="
             . urlencode($address)
             . (isset($GLOBALS['location_lookup_bias']) ? "&country=" . urlencode($GLOBALS['location_lookup_bias']) : ""));
         $map_details = json_decode($map_details_response);
