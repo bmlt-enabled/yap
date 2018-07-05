@@ -425,13 +425,7 @@ static $twilio_auth_token = "";
 
 * Volunteer Routing Redirect: You do this by setting in the Service Body Configuration the Volunteer Routing mechanism to "Volunteers Redirect" and specifying the respective Service Body Id in the "Volunteers Redirect Id" field. 
 * Forced Caller Id: This setting changes the outgoing display caller id.
- 
-*THESE OPTIONS ARE NOT WORKING RIGHT NOW*
-- (This is broken right now) You can control the timeout between calls, which is defaulted at 20 seconds.  You do this by setting in config.php the following parameter.
-
-```php
-    static $call_timeout = 20;
-```
+* Call Timeout: This is the number of seconds before trying the next number for volunteer routing.
 
 ## Music On Hold
 

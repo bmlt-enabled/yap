@@ -29,7 +29,7 @@ function getCallConfig($client, $serviceBodyConfiguration) {
         'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&tracker=' . ++ $tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'],
         'statusCallbackEvent'  => 'completed',
         'statusCallbackMethod' => 'GET',
-        'timeout'              => 20,
+        'timeout'              => $serviceBodyConfiguration->call_timeout,
         'callerId'             => $caller_id
     );
 

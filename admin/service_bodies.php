@@ -49,6 +49,9 @@ sort_on_field($service_bodies, 'name');
 
                                                 Forced Caller Id (Must Be A Verified Twilio Number):
                                                 <input class="form-control form-control-sm" type="text" name="forced_caller_id" id="forced_caller_id">
+
+                                                Call Timeout (default: 20 seconds):
+                                                <input class="form-control form-control-sm" type="text" name="call_timeout" id="call_timeout">
                                             </form>
                                         </div>
                                         <div class="modal-footer">

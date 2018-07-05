@@ -48,6 +48,7 @@ class ServiceBodyConfiguration {
     public $volunteer_routing_redirect_id = 0;
     public $forced_caller_id_enabled = false;
     public $forced_caller_id_number = "0000000000";
+    public $call_timeout = 20;
 }
 
 class CycleAlgorithm {
@@ -321,6 +322,7 @@ function getServiceBodyConfiguration($service_body_id) {
         $config->volunteer_routing_redirect_id = $config->volunteer_routing_redirect ? $data->volunteers_redirect_id : 0;
         $config->forced_caller_id_enabled = isset($data->forced_caller_id) && strlen($data->forced_caller_id) > 0;
         $config->forced_caller_id_number = $config->forced_caller_id_enabled ? $data->forced_caller_id : "0000000000";
+        $config->call_timeout = isset($data->call_timeout) ? intval($data->call_timeout) : 20;
     }
 
     return $config;
