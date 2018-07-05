@@ -203,7 +203,7 @@ var wrapFunction = function(fn, context, params) {
 
 function addShift(e) {
     $("#time_zone").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
-    $("#shiftVolunteerName").html("%person%");
+    $("#shiftVolunteerName").html($(e).closest(".volunteerCard").find("#volunteer_name").val());
     $("#selectShiftDialog").attr({
         "volunteer_id": $(e).closest(".volunteerCard").attr("id"),
         "day_id": $(e).attr("data-shiftid")
