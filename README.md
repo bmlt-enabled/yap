@@ -403,15 +403,15 @@ Incompatible with Yap 1.x Volunteer Dialers, you will have reconfigure your setu
 1) You will need to ensure that the following `config.php` parameters are set.  They should be a service body admin that will be responsible for reading and writing data back to your BMLT.  This will not work with the "Server Administrator" account.
 
 ```php
-static $bmlt_username = "sezf_admin";
-static $bmlt_password = "sezf_admin";
+static $bmlt_username = "";
+static $bmlt_password = "";
 ```
 
 2) You will need to specify Twilio API parameters.  You can find this on your account dashboard when you login into Twilio.
 
 ```php
-$twilio_account_sid
-$twilio_auth_token  
+static $twilio_account_sid = "";
+static $twilio_auth_token = "";
 ```
 
 3) Head over to your admin login page.  https://your-yap-instance/admin.
