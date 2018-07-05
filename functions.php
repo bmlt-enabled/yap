@@ -53,7 +53,7 @@ function getCoordinatesForAddress($address) {
         $map_details_response = get($GLOBALS['google_maps_endpoint']
             . "&address="
             . urlencode($address)
-            . (isset($GLOBALS['location_lookup_bias']) ? "&components=" . urlencode($GLOBALS['location_lookup_bias']) : ""));
+            . (isset($GLOBALS['location_lookup_bias']) ? "&components=" . urlencode($GLOBALS['location_lookup_bias']) : "&components=country:us"));
         $map_details = json_decode($map_details_response);
         if (count($map_details->results) > 0) {
             $coordinates->location  = $map_details->results[0]->formatted_address;
