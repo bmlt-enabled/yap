@@ -25,7 +25,6 @@
         }
     }
 
-
     $root_server_settings = json_decode(get(getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetServerInfo"));
 
     if (strpos(getHelplineBMLTRootServer(), 'index.php')) {
