@@ -10,7 +10,6 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";?>
         recordingStatusCallbackMethod="GET"
         finishOnKey="#"
         maxLength="120"
-        timeout="15">
-    </Record>
+        timeout="15"/>
     <Hangup/>
 </Response>
