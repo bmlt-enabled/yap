@@ -28,7 +28,7 @@
     $root_server_settings = json_decode(get(getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetServerInfo"));
 
     if (strpos(getHelplineBMLTRootServer(), 'index.php')) {
-        echo "\n\nYour root server points to index.php. Please make sure to set it to just the root directory.";
+        echo "Your root server points to index.php. Please make sure to set it to just the root directory.";
         exit();
     }
 
