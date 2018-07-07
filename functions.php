@@ -275,7 +275,10 @@ function getServiceBodyDetailForUser() {
     $service_bodies = admin_GetServiceBodiesForUser();
     $service_body_detail = getServiceBodies();
     $user_service_bodies = [];
-    foreach ($service_bodies as $service_body) {
+    $service_bodies_check = isset($service_bodies) && !is_array($service_bodies)
+        ? array($service_bodies) : $service_bodies;
+
+    foreach ($service_bodies_check as $service_body) {
         foreach ($service_body_detail as $service_body_detail_item) {
             if ($service_body->id == $service_body_detail_item->id) {
                 array_push($user_service_bodies, $service_body_detail_item);
