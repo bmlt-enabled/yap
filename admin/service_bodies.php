@@ -53,6 +53,13 @@ sort_on_field($service_bodies, 'name');
                                                 Call Timeout (default: 20 seconds):
                                                 <input class="form-control form-control-sm" type="text" name="call_timeout" id="call_timeout">
 
+                                                Call Strategy:
+                                                <select class="form-control form-control-sm" name="call_strategy" id="call_strategy">
+                                                    <option value="0">Loop Forever</option>
+                                                    <option value="1">Cycle Once, Then Voicemail</option>
+                                                    <option value="2">Random Forever</option>
+                                                </select>
+
                                                 SMS to Volunteer Options:
                                                 <select class="form-control form-control-sm" name="volunteer_sms_notification" id="volunteer_sms_notification">
                                                     <option value="no_sms">No SMS</option>

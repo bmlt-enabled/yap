@@ -6,6 +6,7 @@ use Twilio\Rest\Client;
 
 class CallConfig {
     public $phone_number;
+    public $voicemail_url;
     public $options;
 }
 
@@ -22,8 +23,8 @@ function getCallConfig($client, $serviceBodyConfiguration) {
     }
 
     $config = new CallConfig();
-    // TODO: Can specify algorithm by service body.
-    $config->phone_number = getHelplineVolunteer( $serviceBodyConfiguration->service_body_id, $tracker, CycleAlgorithm::LOOP_FOREVER );
+    $config->phone_number = getHelplineVolunteer( $serviceBodyConfiguration->service_body_id, $tracker, $serviceBodyConfiguration->call_strategy );
+    $config->voicemail_url = $webhook_url . '/voicemail.php';
     $config->options = array(
         'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'],
         'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&tracker=' . ++ $tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'],
@@ -65,25 +66,31 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
         // Do not call if the caller hung up.
         if (count($participants) > 0) {
             $callerSid = $participants[0]->callSid;
-            $callerNumber = $client->calls($callerSid)->fetch()->from;
+            if ($callConfig->phone_number == SpecialPhoneNumber::VOICE_MAIL) {
+                $client->calls($callerSid)->update(array(
+                    "method" => "GET",
+                    "url" => $callConfig->voicemail_url
+                ));
+            } else {
+                $callerNumber = $client->calls( $callerSid )->fetch()->from;
+                try {
+                    if ( $serviceBodyConfiguration->volunteer_sms_notification_enabled ) {
+                        $client->messages->create(
+                            $callConfig->phone_number,
+                            array(
+                                "body" => "You have an incoming helpline call from " . $callerNumber . ".",
+                                "from" => $callConfig->options['callerId']
+                            ) );
+                    }
 
-            try {
-                if ( $serviceBodyConfiguration->volunteer_sms_notification_enabled ) {
-                    $client->messages->create(
+                    $client->calls->create(
                         $callConfig->phone_number,
-                        array(
-                            "body" => "You have an incoming helpline call from " . $callerNumber,
-                            "from" => $callConfig->options['callerId']
-                        ) );
+                        $callConfig->options['callerId'],
+                        $callConfig->options
+                    );
+                } catch ( \Twilio\Exceptions\TwilioException $e ) {
+                    error_log( $e );
                 }
-
-                $client->calls->create(
-                    $callConfig->phone_number,
-                    $callConfig->options['callerId'],
-                    $callConfig->options
-                );
-            } catch ( \Twilio\Exceptions\TwilioException $e ) {
-                error_log( $e );
             }
         }
     } elseif ( isset( $_REQUEST['StatusCallbackEvent'] ) && $_REQUEST['StatusCallbackEvent'] == 'participant-leave' ) {

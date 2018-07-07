@@ -50,17 +50,22 @@ class ServiceBodyConfiguration {
     public $forced_caller_id_number = "0000000000";
     public $call_timeout = 20;
     public $volunteer_sms_notification_enabled = false;
+    public $call_strategy = CycleAlgorithm::LOOP_FOREVER;
 }
 
 class CycleAlgorithm {
-    const CYCLE_AND_FAILOVER = 0;
-    const LOOP_FOREVER = 1;
+    const LOOP_FOREVER = 0;
+    const CYCLE_AND_VOICEMAIL = 1;
     const RANDOMIZER = 2;
 }
 
 class DataType {
     const YAP_CONFIG = "_YAP_CONFIG_";
     const YAP_DATA = "_YAP_DATA_";
+}
+
+class SpecialPhoneNumber {
+    const VOICE_MAIL = "voicemail";
 }
 
 function word($name) {
@@ -325,6 +330,7 @@ function getServiceBodyConfiguration($service_body_id) {
         $config->forced_caller_id_number = $config->forced_caller_id_enabled ? $data->forced_caller_id : "0000000000";
         $config->call_timeout = isset($data->call_timeout) && strlen($data->call_timeout > 0) ? intval($data->call_timeout) : 20;
         $config->volunteer_sms_notification_enabled = isset($data->volunteer_sms_notification) && $data->volunteer_sms_notification != "no_sms";
+        $config->call_strategy = isset($data->call_strategy) ? intval($data->call_strategy) : $config->call_strategy;
     }
 
     return $config;
@@ -394,10 +400,9 @@ function getHelplineVolunteersActiveNow($service_body_int) {
 function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = CycleAlgorithm::CYCLE_AND_FAILOVER) {
     $volunteers = getHelplineVolunteersActiveNow($service_body_int);
     if ( isset($volunteers) && count( $volunteers ) > 0 ) {
-        if ($cycle_algorithm == CycleAlgorithm::CYCLE_AND_FAILOVER) {
+        if ($cycle_algorithm == CycleAlgorithm::CYCLE_AND_VOICEMAIL) {
             if ( $tracker > count( $volunteers ) - 1 ) {
-                // TODO: Put failover number here, voicemail?
-                return "000000000";
+                return SpecialPhoneNumber::VOICE_MAIL;
             }
 
             return $volunteers[ $tracker ]->contact;
