@@ -24,7 +24,7 @@ function getCallConfig($client, $serviceBodyConfiguration) {
 
     $config = new CallConfig();
     $config->phone_number = getHelplineVolunteer( $serviceBodyConfiguration->service_body_id, $tracker, $serviceBodyConfiguration->call_strategy );
-    $config->voicemail_url = $webhook_url . '/voicemail.php';
+    $config->voicemail_url = $webhook_url . '/voicemail.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&caller_id=' . $caller_id;
     $config->options = array(
         'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'],
         'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&tracker=' . ++ $tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'],
@@ -37,11 +37,10 @@ function getCallConfig($client, $serviceBodyConfiguration) {
     return $config;
 }
 
-$service_body_id     = $_REQUEST['service_body_id'];
-$serviceBodyConfiguration = getServiceBodyConfiguration($service_body_id);
-
-$sid                 = $GLOBALS['twilio_account_sid'];
-$token               = $GLOBALS['twilio_auth_token'];
+$service_body_id            = $_REQUEST['service_body_id'];
+$serviceBodyConfiguration   = getServiceBodyConfiguration($service_body_id);
+$sid                        = $GLOBALS['twilio_account_sid'];
+$token                      = $GLOBALS['twilio_auth_token'];
 try {
     $client = new Client( $sid, $token );
 } catch ( \Twilio\Exceptions\ConfigurationException $e ) {
@@ -66,13 +65,13 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
         // Do not call if the caller hung up.
         if (count($participants) > 0) {
             $callerSid = $participants[0]->callSid;
+            $callerNumber = $client->calls( $callerSid )->fetch()->from;
             if ($callConfig->phone_number == SpecialPhoneNumber::VOICE_MAIL) {
                 $client->calls($callerSid)->update(array(
                     "method" => "GET",
-                    "url" => $callConfig->voicemail_url
+                    "url" => $callConfig->voicemail_url . "&caller_number=" . $callerNumber
                 ));
             } else {
-                $callerNumber = $client->calls( $callerSid )->fetch()->from;
                 try {
                     if ( $serviceBodyConfiguration->volunteer_sms_notification_enabled ) {
                         $client->messages->create(

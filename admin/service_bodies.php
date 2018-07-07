@@ -65,6 +65,9 @@ sort_on_field($service_bodies, 'name');
                                                     <option value="no_sms">No SMS</option>
                                                     <option value="send_sms">Send SMS to Volunteer</option>
                                                 </select>
+
+                                                Primary Contact Number (typically the Chair/Coordinator):
+                                                <input class="form-control form-control-sm" type="text" name="primary_contact" id="primary_contact">
                                             </form>
                                         </div>
                                         <div class="modal-footer">

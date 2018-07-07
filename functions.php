@@ -51,6 +51,8 @@ class ServiceBodyConfiguration {
     public $call_timeout = 20;
     public $volunteer_sms_notification_enabled = false;
     public $call_strategy = CycleAlgorithm::LOOP_FOREVER;
+    public $primary_contact_enabled = false;
+    public $primary_contact_number = "0000000000";
 }
 
 class CycleAlgorithm {
@@ -259,6 +261,15 @@ function getServiceBodies() {
     return json_decode(get($bmlt_search_endpoint));
 }
 
+function getServiceBody($service_body_id) {
+    $service_bodies = getServiceBodies();
+    foreach ($service_bodies as $service_body) {
+        if ($service_body->id == $service_body_id) return $service_body;
+    }
+
+    return null;
+}
+
 function getServiceBodyDetailForUser() {
     $service_bodies = admin_GetServiceBodiesForUser();
     $service_body_detail = getServiceBodies();
@@ -331,6 +342,8 @@ function getServiceBodyConfiguration($service_body_id) {
         $config->call_timeout = isset($data->call_timeout) && strlen($data->call_timeout > 0) ? intval($data->call_timeout) : 20;
         $config->volunteer_sms_notification_enabled = isset($data->volunteer_sms_notification) && $data->volunteer_sms_notification != "no_sms";
         $config->call_strategy = isset($data->call_strategy) ? intval($data->call_strategy) : $config->call_strategy;
+        $config->primary_contact_enabled = isset($data->primary_contact) && strlen($data->primary_contact);
+        $config->primary_contact_number = $config->primary_contact_enabled ? $data->primary_contact : "";
     }
 
     return $config;
