@@ -146,7 +146,6 @@ function loadVolunteers(serviceBodyId, callback) {
 
 function addVolunteer(volunteerData) {
     var shiftRenderQueue = [];
-
     var getLastVolunteerCard = $("#volunteerCards").children().length > 0
         ? parseInt($("#volunteerCards").children().last().attr("id").replace("volunteerCard_", ""))
         : 0;
