@@ -53,6 +53,7 @@ class ServiceBodyConfiguration {
     public $call_strategy = CycleAlgorithm::LOOP_FOREVER;
     public $primary_contact_enabled = false;
     public $primary_contact_number = "0000000000";
+    public $moh = "https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical";
 }
 
 class CycleAlgorithm {
@@ -342,8 +343,9 @@ function getServiceBodyConfiguration($service_body_id) {
         $config->call_timeout = isset($data->call_timeout) && strlen($data->call_timeout > 0) ? intval($data->call_timeout) : 20;
         $config->volunteer_sms_notification_enabled = isset($data->volunteer_sms_notification) && $data->volunteer_sms_notification != "no_sms";
         $config->call_strategy = isset($data->call_strategy) ? intval($data->call_strategy) : $config->call_strategy;
-        $config->primary_contact_enabled = isset($data->primary_contact) && strlen($data->primary_contact);
+        $config->primary_contact_enabled = isset($data->primary_contact) && strlen($data->primary_contact) > 0;
         $config->primary_contact_number = $config->primary_contact_enabled ? $data->primary_contact : "";
+        $config->moh = isset($data->moh) && strlen($data->moh) > 0 ? $data->moh : $config->moh;
     }
 
     return $config;
