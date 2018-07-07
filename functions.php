@@ -1,6 +1,6 @@
 <?php
 include_once 'config.php';
-$version = "2.0.0-beta1";
+$version = "2.0.0-beta2";
 $word_language_selected = isset($GLOBALS['word_language']) ? $GLOBALS['word_language'] : 'en-US';
 include_once 'lang/'.$word_language_selected.'.php';
 
