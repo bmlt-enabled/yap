@@ -146,7 +146,10 @@ function loadVolunteers(serviceBodyId, callback) {
 
 function addVolunteer(volunteerData) {
     var shiftRenderQueue = [];
-    var getLastVolunteerCard = parseInt($("#volunteerCards").children().length);
+
+    var getLastVolunteerCard = $("#volunteerCards").children().length > 0
+        ? parseInt($("#volunteerCards").children().last().attr("id").replace("volunteerCard_", ""))
+        : 0;
     var volunteerCardTemplate = $("#volunteerCardTemplate").clone();
     var volunteerId = "volunteerCard_" + (++getLastVolunteerCard);
     volunteerCardTemplate.attr("id", volunteerId);
