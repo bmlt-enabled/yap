@@ -49,6 +49,7 @@ class ServiceBodyConfiguration {
     public $forced_caller_id_enabled = false;
     public $forced_caller_id_number = "0000000000";
     public $call_timeout = 20;
+    public $volunteer_sms_notification_enabled = false;
 }
 
 class CycleAlgorithm {
@@ -323,6 +324,7 @@ function getServiceBodyConfiguration($service_body_id) {
         $config->forced_caller_id_enabled = isset($data->forced_caller_id) && strlen($data->forced_caller_id) > 0;
         $config->forced_caller_id_number = $config->forced_caller_id_enabled ? $data->forced_caller_id : "0000000000";
         $config->call_timeout = isset($data->call_timeout) && strlen($data->call_timeout > 0) ? intval($data->call_timeout) : 20;
+        $config->volunteer_sms_notification_enabled = isset($data->volunteer_sms_notification) && $data->volunteer_sms_notification != "no_sms";
     }
 
     return $config;

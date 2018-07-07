@@ -60,14 +60,31 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
         $callConfig = getCallConfig($client, $serviceBodyConfiguration);
         error_log( "Dialing " . $callConfig->phone_number );
 
-        try {
-            $client->calls->create(
-                $callConfig->phone_number,
-                $callConfig->options['callerId'],
-                $callConfig->options
-            );
-        } catch ( \Twilio\Exceptions\TwilioException $e ) {
-            error_log($e);
+        $participants = $client->conferences($conferences[0]->sid)->participants->read();
+
+        // Do not call if the caller hung up.
+        if (count($participants) > 0) {
+            $callerSid = $participants[0]->callSid;
+            $callerNumber = $client->calls($callerSid)->fetch()->from;
+
+            try {
+                if ( $serviceBodyConfiguration->volunteer_sms_notification_enabled ) {
+                    $client->messages->create(
+                        $callConfig->phone_number,
+                        array(
+                            "body" => "You have an incoming helpline call from " . $callerNumber,
+                            "from" => $callConfig->options['callerId']
+                        ) );
+                }
+
+                $client->calls->create(
+                    $callConfig->phone_number,
+                    $callConfig->options['callerId'],
+                    $callConfig->options
+                );
+            } catch ( \Twilio\Exceptions\TwilioException $e ) {
+                error_log( $e );
+            }
         }
     } elseif ( isset( $_REQUEST['StatusCallbackEvent'] ) && $_REQUEST['StatusCallbackEvent'] == 'participant-leave' ) {
         $conference_sid          = $conferences[0]->sid;
