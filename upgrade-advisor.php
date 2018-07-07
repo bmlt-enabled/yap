@@ -45,6 +45,3 @@
     if ($all_good) {
         echo "Ready to Yap!";
     }
-
-
-
