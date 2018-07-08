@@ -1,5 +1,4 @@
 <?php
-$language = "english";
 $press = "press";
 $one = "one";
 $two = "two";

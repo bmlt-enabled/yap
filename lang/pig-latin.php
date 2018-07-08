@@ -1,5 +1,4 @@
 <?php
-$language = "igpay atinlay";
 $press = "esspray";
 $one = "oneway";
 $two = "otway";
