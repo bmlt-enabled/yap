@@ -3,7 +3,7 @@
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
-    $exploded_result = explode("\|", $GLOBALS["helpline_fallback"]);
+    $exploded_result = explode("\|", setting("helpline_fallback"));
     $phone_number = isset($exploded_result[0]) ? $exploded_result[0] : "";
     $extension = isset($exploded_result[1]) ? $exploded_result[1] : "w";
 ?>

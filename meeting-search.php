@@ -7,7 +7,7 @@
     $longitude = $_REQUEST['Longitude'];
 
     try {
-        $results_count = $results_count = isset($GLOBALS['result_count_max']) ? $GLOBALS['result_count_max'] : 5;
+        $results_count = $results_count = has_setting('result_count_max') ? setting('result_count_max') : 5;
         $meeting_results = getMeetings($latitude, $longitude, $results_count, null, null);
     } catch (Exception $e) {
         header("Location: fallback.php");
@@ -52,10 +52,10 @@
             echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . $results[2] . "</Say>";
         }
 
-        if (isset($GLOBALS['include_map_link']) && $GLOBALS['include_map_link']) $results[2] .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude;
+        if (has_setting('include_map_link') && setting('include_map_link')) $results[2] .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude;
         $message = "<Sms>" . $results[0] . $text_space . $results[1] . $text_space . $results[2] . "</Sms>";
         error_log($message);
-        if (isset($GLOBALS["sms_ask"]) && $GLOBALS["sms_ask"] && !isset($_REQUEST["SmsSid"])) {
+        if (has_setting("sms_ask") && setting("sms_ask") && !isset($_REQUEST["SmsSid"])) {
             array_push($sms_messages, $message);
         } else {
             echo $message;
@@ -72,16 +72,16 @@
             <Say voice="<?php echo $voice ?>" language="<?php echo $language ?>">
                 <?php echo word( 'press' ) ?> <?php echo word( "one" ) ?> <?php echo word( 'if_you_would_like_these_results_texted_to_you' ) ?>
             </Say>
-            <?php if ( isset( $GLOBALS['infinite_searching'] ) && $GLOBALS['infinite_searching'] ) { ?>
+            <?php if (has_setting('infinite_searching') && setting('infinite_searching')) { ?>
                 <Say voice="<?php echo $voice ?>" language="<?php echo $language ?>">
-                    <?php echo word( 'press' ) ?> <?php echo word( "two" ) ?> <?php echo word( 'if_you_would_like_to_search_again' ) ?>
-                    . <?php echo word( 'press' ) ?> <?php echo word( "three" ) ?> <?php echo word( 'if_you_would_like_to_do_both' ) ?>
+                    <?php echo word( 'press' ) ?> <?php echo word( "two" ) ?> <?php echo word( 'if_you_would_like_to_search_again' ) ?>...
+                    <?php echo word( 'press' ) ?> <?php echo word( "three" ) ?> <?php echo word( 'if_you_would_like_to_do_both' ) ?>
                 </Say>
             <?php } ?>
             <Gather numDigits="1" timeout="10"
                     action="post-call-action.php?Payload=<?php echo urlencode( json_encode( $sms_messages ) ) ?>"
                     method="GET"/>
-        <?php } elseif (isset($GLOBALS['infinite_searching']) && $GLOBALS['infinite_searching']) { ?>
+        <?php } elseif (has_setting('infinite_searching') && setting('infinite_searching')) { ?>
             <Say voice="<?php echo $voice ?>" language="<?php echo $language ?>">
                 <?php echo word('press')?> <?php echo word("two")?> <?php echo word('if_you_would_like_to_search_again') ?>.
             </Say>

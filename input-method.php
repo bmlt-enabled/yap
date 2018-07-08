@@ -25,7 +25,7 @@
     
     	<?php 
 			if ($playTitle == "1") {
-				echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . $GLOBALS['title'] . "</Say>";
+				echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . setting("title") . "</Say>";
 			}
 		?>
        
@@ -38,7 +38,7 @@
 
         <?php
             if ($searchType == "2") {
-                if (isset($GLOBALS['jft_option']) && $GLOBALS['jft_option']) { ?>
+                if (has_setting('jft_option') && setting('jft_option')) { ?>
                     <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
                         <?php echo word('press') ?> <?php echo word('three') ?> <?php echo word('to_listen_to_the_just_for_today') ?>
                 </Say>

@@ -62,13 +62,13 @@
                         numDigits="1"
                         action="helpline-search.php?CaptchaVerified=1&amp;ForceNumber=<?php echo urlencode($_REQUEST['ForceNumber'])?><?php echo $waiting_message ? "&amp;WaitingMessage=1" : "" ?>">
                     <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
-                        <?php echo $GLOBALS['title'] ?>... <?php echo word( 'press_any_key_to_continue' ) ?>
+                        <?php echo setting('title') ?>... <?php echo word( 'press_any_key_to_continue' ) ?>
                     </Say>
                 </Gather>
                 <Hangup/>
         <?php } else if ($waiting_message) { ?>
                 <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
-                    <?php echo !$captcha_verified ? $GLOBALS['title'] : "" ?> <?php echo word( 'please_wait_while_we_connect_your_call' ) ?>
+                    <?php echo !$captcha_verified ? setting('title') : "" ?> <?php echo word( 'please_wait_while_we_connect_your_call' ) ?>
                 </Say>
             <?php }
         }?>

@@ -10,7 +10,7 @@
 <Response>
     <Gather numDigits="1" timeout="10" action="input-method.php" method="GET">
 	<Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
-            <?php echo $GLOBALS['title'] ?>
+            <?php echo setting('title') ?>
 	</Say>
         <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
             <?php echo word('press') ?> <?php echo word('one') ?> <?php echo word('to_find') ?> <?php echo word('someone_to_talk_to') ?>

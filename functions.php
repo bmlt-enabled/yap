@@ -131,12 +131,12 @@ function getTimeZoneForCoordinates($latitude, $longitude) {
 }
 
 function getProvince() {
-    if (isset($GLOBALS['sms_bias_bypass']) && $GLOBALS['sms_bias_bypass']) {
+    if (has_setting('sms_bias_bypass') && setting('sms_bias_bypass')) {
         return "";
     } elseif (isset($_REQUEST['ToState']) && strlen($_REQUEST['ToState']) > 0) {
         return $_REQUEST['ToState']; // Retrieved from Twilio metadata
-    } elseif (isset($GLOBALS['toll_free_province_bias'])) {
-        return $GLOBALS['toll_free_province_bias']; // Override for Tollfree
+    } elseif (has_setting('toll_free_province_bias')) {
+        return setting('toll_free_province_bias'); // Override for Tollfree
     } else {
         return "";
     }
@@ -151,11 +151,11 @@ function getGatherHints() {
 }
 
 function helplineSearch($latitude, $longitude) {
-    $helpline_search_radius = isset($GLOBALS['helpline_search_radius']) ? $GLOBALS['helpline_search_radius'] : 30;
+    $helpline_search_radius = has_setting('helpline_search_radius') ? setting('helpline_search_radius') : 30;
     $bmlt_search_endpoint = getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $helpline_search_radius;
     $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
 
-    if (isset($GLOBALS['helpline_search_unpublished']) && $GLOBALS['helpline_search_unpublished']) {
+    if (has_setting('helpline_search_unpublished') && setting('helpline_search_unpublished')) {
         $search_url = $search_url . "&advanced_published=0";
         if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
             auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
@@ -176,10 +176,10 @@ function getFormatString($formats, $ignore = false, $helpline = false) {
 }
 
 function meetingSearch($meeting_results, $latitude, $longitude, $day) {
-	$meeting_search_radius = isset($GLOBALS['meeting_search_radius']) ? $GLOBALS['meeting_search_radius'] : -50;
+	$meeting_search_radius = has_setting('meeting_search_radius') ? setting('meeting_search_radius') : -50;
     $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $meeting_search_radius . "&weekdays=" . $day;
-    if (isset($GLOBALS['ignore_formats'])) {
-        $bmlt_search_endpoint .= getFormatString($GLOBALS['ignore_formats'], true);
+    if (has_setting('ignore_formats')) {
+        $bmlt_search_endpoint .= getFormatString(setting('ignore_formats'), true);
     }
 
     $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
@@ -243,7 +243,7 @@ function getServiceBodyCoverage($latitude, $longitude) {
 }
 
 function getGraceMinutes() {
-    return isset($GLOBALS['grace_minutes']) ? $GLOBALS['grace_minutes'] : 15;
+    return has_setting('grace_minutes') ? setting('grace_minutes') : 15;
 }
 
 function getTimezoneList() {

@@ -11,7 +11,7 @@
         $action = "address-lookup.php";
     }
 
-    $postal_code_length = isset($GLOBALS['postal_code_length']) ? $GLOBALS['postal_code_length'] : "5";
+    $postal_code_length = has_setting('postal_code_length') ? setting('postal_code_length') : "5";
 ?>
 <Response>
     <Gather numDigits="<?php echo $postal_code_length?>" timeout="10" action="<?php echo $action; ?>" method="GET">
