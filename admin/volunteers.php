@@ -4,7 +4,7 @@
         <div class="alert alert-success" role="alert" style="display:none;" id="volunteer_saved_alert">
             Saved.
         </div>
-        <label for="service_body_id">Service Body</label>
+        <label for="service_body_id"><?php echo word('service_body')?></label>
         <select class="form-control form-control-sm" id="service_body_id">
             <option>-= Select A Service Body =-</option>
             <?php

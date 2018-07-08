@@ -12,9 +12,9 @@ sort_on_field($service_bodies, 'name');
                 <thead>
                     <tr>
                         <th scope="col">ID</th>
-                        <th scope="col">Service Body</th>
-                        <th scole="col">Helpline</th>
-                        <th scope="col">Action</th>
+                        <th scope="col"><?php echo word("service_body")?></th>
+                        <th scope="col"><?php echo word("helpline")?></th>
+                        <th scope="col"><?php echo word("action")?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -24,7 +24,7 @@ sort_on_field($service_bodies, 'name');
                         <td><?php echo $service_body->name ?></td>
                         <td><?php echo isset($service_body->helpline) ? $service_body->helpline : "" ?></td>
                         <td>
-                            <button class="btn btn-sm btn-info" onclick="serviceBodyConfigure(<?php echo $service_body->id ?>);">Configure</button>
+                            <button class="btn btn-sm btn-info" onclick="serviceBodyConfigure(<?php echo $service_body->id ?>);"><?php echo word('configure')?></button>
                             <div class="modal fade" id="serviceBodyConfiguration_<?php echo $service_body->id ?>" tabindex="-1" role="dialog" aria-labelledby="configureShiftDialog" aria-hidden="true">
                                 <input type="hidden" id="helpline_data_id" name="helpline_data_id" class="helpline_data_id" value="0" />
                                 <div class="modal-dialog modal-dialog-centered" role="document">

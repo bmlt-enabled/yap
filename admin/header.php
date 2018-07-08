@@ -1,6 +1,6 @@
 <?php
-    $word_language_selected = isset($GLOBALS['word_language']) ? $GLOBALS['word_language'] : 'en-US';
-    include_once dirname(__DIR__).'/config.php';
+    include_once dirname(__DIR__).'/functions.php';
+    isset($_SESSION["Language"]) ? $_SESSION["Language"] : getDefaultLanguage();
     include_once dirname(__DIR__).'/lang/'.$word_language_selected.'.php';
 ?>
 <!doctype html>

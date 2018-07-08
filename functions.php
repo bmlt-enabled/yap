@@ -1,14 +1,19 @@
 <?php
 include_once 'config.php';
 include_once 'session.php';
-$version = "2.0.0-beta2";
-$word_language_selected = isset($GLOBALS['word_language']) ? $GLOBALS['word_language'] : 'en-US';
+static $version = "2.0.0-beta2";
+$word_language_selected = isset($_SESSION["Language"]) ? $_SESSION["Language"] : getDefaultLanguage();
 include_once 'lang/'.$word_language_selected.'.php';
 
 $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
 $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key" . trim($google_maps_api_key);
 # BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
 static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+static $available_languages = [
+   "en-US" => "English",
+   "pig-latin" => "Igpay Atinlay"
+];
 
 class VolunteerInfo {
     public $title;
@@ -74,6 +79,10 @@ class SpecialPhoneNumber {
 
 function word($name) {
     return isset($GLOBALS['override_' . $name]) ? $GLOBALS['override_' . $name] : $GLOBALS[$name];
+}
+
+function getDefaultLanguage() {
+    return isset($GLOBALS['word_language']) ? $GLOBALS['word_language'] : 'en-US';
 }
 
 function getConferenceName($service_body_id) {

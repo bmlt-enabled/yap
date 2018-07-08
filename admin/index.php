@@ -14,7 +14,16 @@
         <label for="inputPassword" class="sr-only"><?php echo $GLOBALS['password']?></label>
         <input name="password" type="password" id="inputPassword" class="form-control" placeholder="<?php echo $GLOBALS['password']?>" required>
         <button class="btn btn-lg btn-primary btn-block" type="submit"><?php echo $GLOBALS['authenticate']?></button>
+        <select class="form-control" name="admin_language" id="admin_language">
+            <?php
+            foreach ($available_languages as $key => $available_language) {
+                ?>
+                <option value="<?php echo $key; ?>"><?php echo $available_language; ?></option>
+            <?php
+            }
+            ?>
+        </select>
     </form>
-</div> <!-- /container -->
+</div>
 <?php
     include_once 'footer.php';

@@ -5,7 +5,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 ?>
 <Response>
     <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
-        Please leave a message after the tone, hang up when finished.
+        <?php echo word("please_leave_a_message_after_the_tone")?>, <?php echo word("hang_up_when_finished")?>
     </Say>
     <Record
         playBeep="true"
