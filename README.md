@@ -188,19 +188,13 @@ This could useful for wiring up to a Grasshopper extension.  Typically you set t
 
 For example, if you set this up as extension 1, from within you employee extensions you would instruct the caller to press *1 (star one) for finding meetings.  
 
-## Skipping Location Gathering With Helpline Call Routing
+## Forced Helpline Routing
 
-To do this set the `$helpline_direct_location` variable in the `config.php` file to the location you want to direct the helpline to.
+You can force the helpline option to go directly to a specific service body by specifying the following on your webhook in Twilio.
 
-```php
-static $helpline_direct_location = "Boston,MA";
-```
+`?ForcedHelplineServiceBodyId=x`
 
-If your option has a space in it, use the `+` symbol.  Example:
-
-```php
-static $helpline_direct_location = "Willow+Spring,NC";
-```
+The service body id would be found in your BMLT root server.  It must exist in that root server instance to be routed correctly.
 
 ## Helpline Search Radius ##
 

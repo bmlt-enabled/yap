@@ -5,11 +5,13 @@
 
     $dial_string = "";
     if (!isset($_REQUEST['ForceNumber'])) {
-        $address = $_REQUEST['Digits'];
-
-        $coordinates  = getCoordinatesForAddress( $address );
-        $service_body = getServiceBodyCoverage( $coordinates->latitude, $coordinates->longitude );
-
+        if (isset($_SESSION["ForcedHelplineServiceBodyId"])) {
+            $service_body = getServiceBody($_SESSION["ForcedHelplineServiceBodyId"]);
+        } else {
+            $address = $_REQUEST['Digits'];
+            $coordinates  = getCoordinatesForAddress( $address );
+            $service_body = getServiceBodyCoverage( $coordinates->latitude, $coordinates->longitude );
+        }
         $location    = $service_body->name;
         $dial_string = $service_body->helpline;
         $waiting_message = true;
