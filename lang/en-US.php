@@ -1,8 +1,11 @@
 <?php
 $press = "press";
+$zero = "zero";
 $one = "one";
 $two = "two";
 $three = "three";
+$four = "four";
+$five = "five";
 $to_find = "to find";
 $to_search_for = "to search for";
 $by = "by";

@@ -33,6 +33,7 @@ $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key="
 $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key" . trim($google_maps_api_key);
 # BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
 static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+static $numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 
 static $available_languages = [
    "en-US" => "English",
@@ -110,6 +111,19 @@ class SettingSource {
 
 function word($name) {
     return isset($GLOBALS['override_' . $name]) ? $GLOBALS['override_' . $name] : $GLOBALS[$name];
+}
+
+function getNumberForWord($name) {
+    $numbers = $GLOBALS['numbers'];
+    for ($n = 0; $n < count($numbers); $n++) {
+        if ($name == $numbers[$n]) {
+            return $n;
+        }
+    }
+}
+
+function getWordForNumber($number) {
+    return $GLOBALS['numbers'][$number];
 }
 
 function has_setting($name) {
