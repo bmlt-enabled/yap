@@ -1,6 +1,6 @@
 <?php
     include_once dirname(__DIR__).'/functions.php';
-    isset($_SESSION["Language"]) ? $_SESSION["Language"] : getDefaultLanguage();
+    isset($_SESSION["override_word_language"]) ? $_SESSION["override_word_language"] : getDefaultLanguage();
     include_once dirname(__DIR__).'/lang/'.$word_language_selected.'.php';
 ?>
 <!doctype html>

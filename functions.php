@@ -2,7 +2,7 @@
 include_once 'config.php';
 include_once 'session.php';
 static $version = "2.0.0-beta2";
-$word_language_selected = isset($_SESSION["Language"]) ? $_SESSION["Language"] : getDefaultLanguage();
+$word_language_selected = isset($_SESSION["override_word_language"]) ? $_SESSION["override_word_language"] : getDefaultLanguage();
 include_once 'lang/'.$word_language_selected.'.php';
 
 $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
@@ -82,7 +82,23 @@ function word($name) {
 }
 
 function getDefaultLanguage() {
-    return isset($GLOBALS['word_language']) ? $GLOBALS['word_language'] : 'en-US';
+    return has_setting('word_language') ? setting('word_language') : 'en-US';
+}
+
+function has_setting($name) {
+    return !is_null(setting($name));
+}
+
+function setting($name) {
+    if (isset($_REQUEST[$name])) {
+        return $_REQUEST[$name];
+    } else if (isset($_SESSION["override_" . $name])) {
+        return $_SESSION["override_" . $name];
+    } else if (isset($GLOBALS[$name])) {
+        return $GLOBALS[$name];
+    } else {
+        return null;
+    }
 }
 
 function getConferenceName($service_body_id) {
@@ -96,7 +112,7 @@ function getCoordinatesForAddress($address) {
         $map_details_response = get($GLOBALS['google_maps_endpoint']
             . "&address="
             . urlencode($address)
-            . (isset($GLOBALS['location_lookup_bias']) ? "&components=" . urlencode($GLOBALS['location_lookup_bias']) : "&components=country:us"));
+            . (has_setting('location_lookup_bias') ? "&components=" . urlencode(setting('location_lookup_bias')) : "&components=country:us"));
         $map_details = json_decode($map_details_response);
         if (count($map_details->results) > 0) {
             $coordinates->location  = $map_details->results[0]->formatted_address;
