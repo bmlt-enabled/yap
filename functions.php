@@ -2,8 +2,7 @@
 include_once 'config.php';
 include_once 'session.php';
 static $version = "2.0.0-beta2";
-$word_language_selected = isset($_SESSION["override_word_language"]) ? $_SESSION["override_word_language"] : getDefaultLanguage();
-include_once 'lang/'.$word_language_selected.'.php';
+include_once 'lang/'.setting('word_language').'.php';
 
 $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
 $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key" . trim($google_maps_api_key);
@@ -13,6 +12,32 @@ static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Th
 static $available_languages = [
    "en-US" => "English",
    "pig-latin" => "Igpay Atinlay"
+];
+
+static $settings_whitelist = [
+    'title' => [ 'description' => '' , 'default' => ''],
+    'location_lookup_bias' => [ 'description' => '' , 'default' => 'components=country:us'],
+    'jft_option' => [ 'description' => '' , 'default' => false],
+    'sms_ask' => [ 'description' => '' , 'default' => false],
+    'bmlt_root_server' => [ 'description' => '' , 'default' => ''],
+    'helpline_bmlt_root_server' => [ 'description' => '' , 'default' => ''],
+    'voice' => [ 'description' => '' , 'default' => 'woman'],
+    'language' => [ 'description' => '' , 'default' => 'en'],
+    'helpline_search_radius' => [ 'description' => '' , 'default' => 30],
+    'helpline_search_unpublished' => [ 'description' => '' , 'default' => false],
+    'gather_language' => [ 'description' => '' , 'default' => 'en-US'],
+    'gather_hints' => [ 'description' => '' , 'default' => ''],
+    'word_language' => [ 'description' => '' , 'default' => 'en-US'],
+    'province_lookup' => [ 'description' => '' , 'default' => false],
+    'toll_free_province_bias' => [ 'description' => '' , 'default' => ''],
+    'ignore_formats' => [ 'description' => '' , 'default' => ''],
+    'fallback_number' => [ 'description' => '' , 'default' => ''],
+    'result_count_max' => [ 'description' => '' , 'default' => 5],
+    'postal_code_length' => [ 'description' => '' , 'default' => 5],
+    'grace_minutes' => [ 'description' => '' , 'default' => 15],
+    'meeting_search_radius' => [ 'description' => '' , 'default' => -50],
+    'include_map_link' => [ 'description' => '' , 'default' => false],
+    'infinite_searching' => [ 'description' => '' , 'default' => false]
 ];
 
 class VolunteerInfo {
@@ -77,12 +102,15 @@ class SpecialPhoneNumber {
     const VOICE_MAIL = "voicemail";
 }
 
-function word($name) {
-    return isset($GLOBALS['override_' . $name]) ? $GLOBALS['override_' . $name] : $GLOBALS[$name];
+class SettingSource {
+    const QUERYSTRING = "Transaction Override";
+    const SESSION = "Session Override";
+    const CONFIG = "config.php";
+    const DEFAULT_SETTING = "Factory Default";
 }
 
-function getDefaultLanguage() {
-    return has_setting('word_language') ? setting('word_language') : 'en-US';
+function word($name) {
+    return isset($GLOBALS['override_' . $name]) ? $GLOBALS['override_' . $name] : $GLOBALS[$name];
 }
 
 function has_setting($name) {
@@ -90,14 +118,32 @@ function has_setting($name) {
 }
 
 function setting($name) {
+    $result = null;
+
     if (isset($_REQUEST[$name])) {
-        return $_REQUEST[$name];
+        $result =  $_REQUEST[$name];
     } else if (isset($_SESSION["override_" . $name])) {
-        return $_SESSION["override_" . $name];
+        $result = $_SESSION["override_" . $name];
     } else if (isset($GLOBALS[$name])) {
-        return $GLOBALS[$name];
+        $result = $GLOBALS[$name];
+    } else if (isset($GLOBALS['settings_whitelist'][$name]['default'])) {
+        $result = $GLOBALS['settings_whitelist'][$name]['default'];
+    }
+
+    return $result;
+}
+
+function setting_source($name) {
+    if (isset($_REQUEST[$name])) {
+        return SettingSource::QUERYSTRING;
+    } else if (isset($_SESSION["override_" . $name])) {
+        return SettingSource::SESSION;
+    } else if (isset($GLOBALS[$name])) {
+        return SettingSource::CONFIG;
+    } else if (isset($GLOBALS['settings_whitelist'][$name]['default'])) {
+        return SettingSource::DEFAULT_SETTING;
     } else {
-        return null;
+        return "NOT SET";
     }
 }
 
@@ -112,7 +158,7 @@ function getCoordinatesForAddress($address) {
         $map_details_response = get($GLOBALS['google_maps_endpoint']
             . "&address="
             . urlencode($address)
-            . (has_setting('location_lookup_bias') ? "&components=" . urlencode(setting('location_lookup_bias')) : "&components=country:us"));
+            . "&components=" . urlencode(setting('location_lookup_bias')));
         $map_details = json_decode($map_details_response);
         if (count($map_details->results) > 0) {
             $coordinates->location  = $map_details->results[0]->formatted_address;
@@ -142,16 +188,8 @@ function getProvince() {
     }
 }
 
-function getGatherLanguage() {
-    return isset($GLOBALS["gather_language"]) ? $GLOBALS["gather_language"] : "en-US";
-}
-
-function getGatherHints() {
-    return isset($GLOBALS["gather_hints"]) ? $GLOBALS["gather_hints"] : "";
-}
-
 function helplineSearch($latitude, $longitude) {
-    $helpline_search_radius = has_setting('helpline_search_radius') ? setting('helpline_search_radius') : 30;
+    $helpline_search_radius = setting('helpline_search_radius');
     $bmlt_search_endpoint = getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $helpline_search_radius;
     $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
 
@@ -176,8 +214,7 @@ function getFormatString($formats, $ignore = false, $helpline = false) {
 }
 
 function meetingSearch($meeting_results, $latitude, $longitude, $day) {
-	$meeting_search_radius = has_setting('meeting_search_radius') ? setting('meeting_search_radius') : -50;
-    $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $meeting_search_radius . "&weekdays=" . $day;
+    $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . setting('meeting_search_radius') . "&weekdays=" . $day;
     if (has_setting('ignore_formats')) {
         $bmlt_search_endpoint .= getFormatString(setting('ignore_formats'), true);
     }
@@ -242,10 +279,6 @@ function getServiceBodyCoverage($latitude, $longitude) {
     }
 }
 
-function getGraceMinutes() {
-    return has_setting('grace_minutes') ? setting('grace_minutes') : 15;
-}
-
 function getTimezoneList() {
     return DateTimeZone::listIdentifiers(DateTimeZone::ALL);
 }
@@ -255,7 +288,7 @@ function getMeetings($latitude, $longitude, $results_count, $today = null, $tomo
     # Could be wired up to use multiple roots in the future by using a parameter to select
     date_default_timezone_set($time_zone_results->timeZoneId);
 
-    $graced_date_time = (new DateTime())->modify(sprintf("-%s minutes", getGraceMinutes()));
+    $graced_date_time = (new DateTime())->modify(sprintf("-%s minutes", setting('grace_minutes')));
     if ($today == null) $today = $graced_date_time ->format( "w" ) + 1;
 
     $meeting_results = new MeetingResults();
@@ -276,10 +309,10 @@ function isItPastTime($meeting_day, $meeting_time) {
 
 function getNextMeetingInstance($meeting_day, $meeting_time) {
     $mod_meeting_day = (new DateTime())
-        ->modify(sprintf("-%s minutes", getGraceMinutes()))
+        ->modify(sprintf("-%s minutes", setting('grace_minutes')))
         ->modify($GLOBALS['days_of_the_week'][$meeting_day])->format("Y-m-d");
     $mod_meeting_datetime = (new DateTime($mod_meeting_day . " " . $meeting_time))
-        ->modify(sprintf("+%s minutes", getGraceMinutes()));
+        ->modify(sprintf("+%s minutes", setting('grace_minutes')));
     return $mod_meeting_datetime;
 }
 

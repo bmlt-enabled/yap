@@ -4,7 +4,7 @@ header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 ?>
 <Response>
-    <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
+    <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
         <?php echo word("please_leave_a_message_after_the_tone")?>, <?php echo word("hang_up_when_finished")?>
     </Say>
     <Record

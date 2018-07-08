@@ -29,17 +29,17 @@
 			}
 		?>
        
-        <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
+        <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
             <?php echo word('press') ?> <?php echo word('one') ?> <?php echo word('to_search_for') ?> <?php echo $searchDescription ?> <?php echo word ('by') ?> <?php echo word('city_or_county') ?>
         </Say>
-        <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
+        <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
             <?php echo word('press') ?> <?php echo word('two') ?> <?php echo word('to_search_for') ?> <?php echo $searchDescription ?> <?php echo word ('by') ?> <?php echo word('zip_code') ?>
         </Say>
 
         <?php
             if ($searchType == "2") {
                 if (has_setting('jft_option') && setting('jft_option')) { ?>
-                    <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
+                    <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
                         <?php echo word('press') ?> <?php echo word('three') ?> <?php echo word('to_listen_to_the_just_for_today') ?>
                 </Say>
                 <?php }
