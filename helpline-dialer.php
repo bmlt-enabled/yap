@@ -14,7 +14,13 @@ function getCallConfig($client, $serviceBodyConfiguration) {
     $tracker            = !isset( $_REQUEST["tracker"] ) ? 0 : $_REQUEST["tracker"];
     $numbers            = $client->incomingPhoneNumbers->read( array( "phoneNumber" => $_REQUEST['Caller'] ) );
     $voice_url          = $numbers[0]->voiceUrl;
-    $webhook_url        = substr( $voice_url, 0, strrpos( $voice_url, "/" ) );
+    if (strpos(basename($voice_url), ".php")) {
+        $webhook_url = substr( $voice_url, 0, strrpos( $voice_url, "/" ) );
+    } else if (strpos($voice_url, "?")) {
+        $webhook_url =  substr( $voice_url, 0, strrpos( $voice_url, "?" ) );
+    } else {
+        $webhook_url = $voice_url;
+    }
 
     if ( $serviceBodyConfiguration->forced_caller_id_enabled ) {
         $caller_id = $serviceBodyConfiguration->forced_caller_id_number;

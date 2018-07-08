@@ -2,18 +2,6 @@
 include_once 'config.php';
 include_once 'session.php';
 static $version = "2.0.0-beta2";
-include_once 'lang/'.setting('word_language').'.php';
-
-$google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
-$timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key" . trim($google_maps_api_key);
-# BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
-static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
-static $available_languages = [
-   "en-US" => "English",
-   "pig-latin" => "Igpay Atinlay"
-];
-
 static $settings_whitelist = [
     'title' => [ 'description' => '' , 'default' => ''],
     'location_lookup_bias' => [ 'description' => '' , 'default' => 'components=country:us'],
@@ -37,7 +25,18 @@ static $settings_whitelist = [
     'grace_minutes' => [ 'description' => '' , 'default' => 15],
     'meeting_search_radius' => [ 'description' => '' , 'default' => -50],
     'include_map_link' => [ 'description' => '' , 'default' => false],
-    'infinite_searching' => [ 'description' => '' , 'default' => false]
+    'infinite_searching' => [ 'description' => '' , 'default' => false],
+];
+include_once 'lang/'.setting('word_language').'.php';
+
+$google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
+$timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key" . trim($google_maps_api_key);
+# BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
+static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+static $available_languages = [
+   "en-US" => "English",
+   "pig-latin" => "Igpay Atinlay"
 ];
 
 class VolunteerInfo {
