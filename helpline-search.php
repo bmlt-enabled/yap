@@ -5,8 +5,8 @@
 
     $dial_string = "";
     if (!isset($_REQUEST['ForceNumber'])) {
-        if (isset($_SESSION["ForcedHelplineServiceBodyId"])) {
-            $service_body = getServiceBody($_SESSION["ForcedHelplineServiceBodyId"]);
+        if (isset($_SESSION["override_service_body_id"])) {
+            $service_body = getServiceBody(setting("service_body_id"));
         } else {
             $address = $_REQUEST['Digits'];
             $coordinates  = getCoordinatesForAddress( $address );

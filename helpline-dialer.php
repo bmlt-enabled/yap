@@ -43,7 +43,7 @@ function getCallConfig($client, $serviceBodyConfiguration) {
     return $config;
 }
 
-$service_body_id            = $_REQUEST['service_body_id'];
+$service_body_id            = setting('service_body_id');
 $serviceBodyConfiguration   = getServiceBodyConfiguration($service_body_id);
 $sid                        = $GLOBALS['twilio_account_sid'];
 $token                      = $GLOBALS['twilio_auth_token'];

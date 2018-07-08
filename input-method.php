@@ -4,7 +4,7 @@
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
     
     if ($searchType == "1") {
-        if (isset($_SESSION['ForcedHelplineServiceBodyId'])) {
+        if (isset($_SESSION['override_service_body_id'])) {
             header("Location: helpline-search.php?Called=" . $_REQUEST["Called"]);
             exit();
         }

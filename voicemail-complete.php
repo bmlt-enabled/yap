@@ -5,7 +5,7 @@ use Twilio\Rest\Client;
 header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
-$serviceBodyConfiguration = getServiceBodyConfiguration($_REQUEST["service_body_id"]);
+$serviceBodyConfiguration = getServiceBodyConfiguration(setting("service_body_id"));
 
 if ($serviceBodyConfiguration->primary_contact_enabled) {
     $sid                        = $GLOBALS['twilio_account_sid'];
@@ -16,7 +16,7 @@ if ($serviceBodyConfiguration->primary_contact_enabled) {
         error_log("Missing Twilio Credentials");
     }
 
-    $serviceBodyName = getServiceBody($_REQUEST["service_body_id"])->name;
+    $serviceBodyName = getServiceBody(setting("service_body_id"))->name;
 
     $client->messages->create(
         $serviceBodyConfiguration->primary_contact_number,

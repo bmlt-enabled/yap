@@ -2,10 +2,6 @@
     include 'functions.php';
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-
-    if (isset($_REQUEST["ForcedHelplineServiceBodyId"])) {
-        $_SESSION["ForcedHelplineServiceBodyId"] = $_REQUEST["ForcedHelplineServiceBodyId"];
-    }
 ?>
 <Response>
     <Gather numDigits="1" timeout="10" action="input-method.php" method="GET">
