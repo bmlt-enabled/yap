@@ -1,4 +1,5 @@
 <?php
+$language_title = "igpay atinlay";
 $press = "esspray";
 $one = "oneway";
 $two = "otway";
@@ -6,6 +7,7 @@ $three = "eethray";
 $to_find = "otay indfay";
 $to_search_for = "otay earchsay orfay";
 $by = "ybay";
+$for = "orfay";
 $someone_to_talk_to = "omeonesay otay alktay otay";
 $meetings = "eetingsmay";
 $searching_meeting_information_for = "earchingsay eetingmay informationway orfay";

@@ -1,4 +1,5 @@
 <?php
+$language_title = "english";
 $press = "press";
 $zero = "zero";
 $one = "one";
@@ -9,6 +10,7 @@ $five = "five";
 $to_find = "to find";
 $to_search_for = "to search for";
 $by = "by";
+$for = "for";
 $someone_to_talk_to = "someone to talk to";
 $meetings = "meetings";
 $searching_meeting_information_for = "searching meeting information for";
