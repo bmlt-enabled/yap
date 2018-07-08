@@ -14,7 +14,9 @@
                     </thead>
                     <tbody>
                     <?php
-                    foreach ($GLOBALS['settings_whitelist'] as $key => $value) { ?>
+                    $settings_array = $GLOBALS['settings_whitelist'];
+                    ksort($settings_array);
+                    foreach ($settings_array as $key => $value) { ?>
                         <tr>
                             <td><?php echo $key ?></td>
                             <td><?php
