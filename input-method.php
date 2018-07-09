@@ -25,9 +25,14 @@
     
     	<?php 
 			if ($playTitle == "1") {
-				echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . setting("title") . "</Say>";
+				echo "<Say voice=\"" . setting("voice") . "\" language=\"" . setting("language") . "\">" . setting("title") . "</Say>";
 			}
-		?>
+
+            if (isset($_REQUEST["Retry"])) {
+                echo "<Say voice=\"" . setting("voice") . "\" language=\"" . setting("language") . "\">" . word("could_not_find_location_please_retry_your_entry") . "</Say>";
+                echo "<Pause length=\"1\"/>";
+            }
+        ?>
        
         <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
             <?php echo word('press') ?> <?php echo word('one') ?> <?php echo word('to_search_for') ?> <?php echo $searchDescription ?> <?php echo word ('by') ?> <?php echo word('city_or_county') ?>

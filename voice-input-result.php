@@ -14,5 +14,5 @@
     }
 ?>
 <Response>
-    <Redirect method="GET"><?php echo $action; ?>?Digits=<?php echo urlencode($speechResult . ", " . $province); ?></Redirect>
+    <Redirect method="GET"><?php echo $action; ?>?Digits=<?php echo urlencode($speechResult . ", " . $province); ?>&amp;SearchType=<?php echo $searchType?></Redirect>
 </Response>

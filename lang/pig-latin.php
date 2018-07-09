@@ -1,9 +1,16 @@
 <?php
 $language_title = "igpay atinlay";
 $press = "esspray";
+$zero = "erozay";
 $one = "oneway";
 $two = "otway";
 $three = "eethray";
+$four = "ourfay";
+$five = "ivefay";
+$six = "ixsay";
+$seven = "evensay";
+$eight = "eightyay";
+$nine = "inenay";
 $to_find = "otay indfay";
 $to_search_for = "otay earchsay orfay";
 $by = "ybay";
@@ -65,3 +72,4 @@ $helpline = "elplinehay";
 $action = "actionyay";
 $configure = "onfigurecay";
 $retrieving_service_body_configuration = "etrievingray ervicesay odybay onfigurationcay";
+$could_not_find_location_please_retry_your_entry = "orrysay , ouldcay otnay indfay ocationlay , easeplay etryray ouryay entryyay";

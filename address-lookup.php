@@ -5,6 +5,12 @@
     
     $address = $_REQUEST['Digits'];
     $coordinates = getCoordinatesForAddress($address);
+
+    if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) {
+        header("Location: input-method.php?Digits=" . $_REQUEST["SearchType"] . "&Retry=1");
+        exit();
+    }
+
     $day = "today";
 ?>
 <Response>

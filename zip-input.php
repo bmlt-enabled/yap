@@ -10,6 +10,8 @@
     } else {
         $action = "address-lookup.php";
     }
+
+    $action .= "?SearchType=" . $searchType;
 ?>
 <Response>
     <Gather numDigits="<?php echo setting('postal_code_length')?>" timeout="10" action="<?php echo $action; ?>" method="GET">

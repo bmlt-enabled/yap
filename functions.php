@@ -278,6 +278,11 @@ function getServiceBodyCoverage($latitude, $longitude) {
     $service_bodies = getServiceBodies();
     $already_checked = [];
 
+    // Must do this because the BMLT returns an empty object instead of an empty array.
+    if (!is_array($search_results)) {
+        throw new Exception("No helpline results found for this search criteria.");
+    }
+
     for ($j = 0; $j < count($search_results); $j++) {
         $service_body_id = $search_results[$j]->service_body_bigint;
         if (in_array($service_body_id, $already_checked)) continue;

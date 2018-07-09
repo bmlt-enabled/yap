@@ -10,7 +10,15 @@
         } else {
             $address = $_REQUEST['Digits'];
             $coordinates  = getCoordinatesForAddress( $address );
-            $service_body = getServiceBodyCoverage( $coordinates->latitude, $coordinates->longitude );
+            try {
+                if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) {
+                    throw new Exception("Couldn't find an address for that location.");
+                }
+                $service_body = getServiceBodyCoverage( $coordinates->latitude, $coordinates->longitude );
+            } catch (Exception $e) {
+                header("Location: input-method.php?Digits=" . $_REQUEST["SearchType"] . "&Retry=1");
+                exit();
+            }
         }
         $location    = $service_body->name;
         $dial_string = $service_body->helpline;
