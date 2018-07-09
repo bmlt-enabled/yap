@@ -382,7 +382,7 @@ Music on hold will play when doing volunteer routing which is configurable from 
 
 You can also specify a link to any MP3 or even a Shoutcast stream.
 
-#Miscellaneous
+# Miscellaneous
 
 ## Playback for the Just For Today Meditation
 This will add an option on the main menu to press 3 to playback the Just For Today meditation.
