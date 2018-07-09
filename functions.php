@@ -123,7 +123,7 @@ function getNumberForWord($name) {
 }
 
 function getWordForNumber($number) {
-    return $GLOBALS['numbers'][$number];
+    return word([$number]);
 }
 
 function has_setting($name) {
