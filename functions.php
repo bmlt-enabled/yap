@@ -26,6 +26,7 @@ static $settings_whitelist = [
     'meeting_search_radius' => [ 'description' => '' , 'default' => -50],
     'include_map_link' => [ 'description' => '' , 'default' => false],
     'infinite_searching' => [ 'description' => '' , 'default' => false],
+    'language_selections' => [ 'description' => '', 'default' => '']
 ];
 include_once 'lang/'.setting('word_language').'.php';
 
@@ -123,7 +124,7 @@ function getNumberForWord($name) {
 }
 
 function getWordForNumber($number) {
-    return word([$number]);
+    return word($GLOBALS['numbers'][$number]);
 }
 
 function has_setting($name) {

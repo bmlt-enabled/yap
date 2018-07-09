@@ -5,10 +5,10 @@
 
     if (has_setting('language_selections')) {
         if (!isset($_REQUEST["Digits"])) {
-            header( 'Location: language-selector.php' );
+            header( 'Location: /language-selector.php' );
             exit();
         } else {
-            $_SESSION["override_word_language"] = setting('language_selections')[intval($_REQUEST["Digits"]) - 1];
+            $_SESSION["override_word_language"] = explode(",", setting('language_selections'))[intval($_REQUEST["Digits"]) - 1];
             include_once 'lang/'.setting('word_language').'.php';
         }
     }

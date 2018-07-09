@@ -8,7 +8,7 @@ if (!has_setting('language_selections')) {
     exit();
 }
 
-$language_selection_options = setting('language_selections');
+$language_selection_options = explode(",", setting('language_selections'));
 $_SESSION["override_voice"] = "alice";
 ?>
 <Response>
@@ -21,7 +21,7 @@ $_SESSION["override_voice"] = "alice";
             include_once 'lang/'.$language_selection_options[$i].'.php'
             ?>
             <Say voice="<?php echo setting("voice")?>" language="<?php echo $language_selection_options[$i] ?>">
-                <?php echo word('for') ?> <?php echo word('language_title') ?> <?php echo word('press') ?> <?php echo word(getWordForNumber($i + 1)) ?>
+                <?php echo word('for') ?> <?php echo word('language_title') ?> <?php echo word('press') ?> <?php echo getWordForNumber($i + 1) ?>
             </Say>
         <?php } ?>
     </Gather>
