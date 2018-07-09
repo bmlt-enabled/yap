@@ -8,7 +8,9 @@
             header( 'Location: /language-selector.php' );
             exit();
         } else {
-            $_SESSION["override_word_language"] = explode(",", setting('language_selections'))[intval($_REQUEST["Digits"]) - 1];
+            $selected_language = explode(",", setting('language_selections'))[intval($_REQUEST["Digits"]) - 1];
+            $_SESSION["override_word_language"] = $selected_language;
+            $_SESSION["override_gather_language"] = $selected_language;
             include_once 'lang/'.setting('word_language').'.php';
         }
     }
