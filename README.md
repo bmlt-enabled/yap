@@ -25,6 +25,7 @@ General
 * [Language Options](#language-options)
 * [Postal Code Lengths](#postal-code-lengths)
 * [Fallback](#fallback)
+* [Voice Greeting](#voice-greeting)
 
 Meeting Search
 
@@ -167,7 +168,7 @@ static $lanugage_selections = "en-US,pig-latin";
 
 This example will make option 1, English and option 2, pig latin.
 
-## Postal Code Lengths ##
+## Postal Code Lengths
 
 By default a 5 digit postal code will be asked for.  To override this set the following, for instance a 4 digit postal code:
 
@@ -181,6 +182,14 @@ There may be times when a root server is down, it's possible to redirect a call 
 
 ```php
 static $helpline_fallback = "1919555555";
+```
+
+## Voice Greeting
+
+It's possible to record a custom voice prompt and have it play back instead of the traditional voice engine.  Set the following:
+
+```php
+static $en_US_greeting = "https://example.com/your-recorded-greeting.mp3"
 ```
 
 # Meeting Search

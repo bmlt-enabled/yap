@@ -22,30 +22,27 @@
 ?>
 <Response>
     <Gather numDigits="1" timeout="10" action="input-method-result.php?SearchType=<?php echo $searchType ?>" method="GET">
-    
-    	<?php 
-			if ($playTitle == "1") {
-				echo "<Say voice=\"" . setting("voice") . "\" language=\"" . setting("language") . "\">" . setting("title") . "</Say>";
-			}
-
-            if (isset($_REQUEST["Retry"])) {
-                echo "<Say voice=\"" . setting("voice") . "\" language=\"" . setting("language") . "\">" . word("could_not_find_location_please_retry_your_entry") . "</Say>";
-                echo "<Pause length=\"1\"/>";
-            }
-        ?>
+    	<?php
+        if ($playTitle == "1") { ?>
+            <Say voice="<?php echo setting("voice") ?>" language="<?php echo setting("language")?>"><?php echo setting("title")?></Say>
+		<?php }
+        if (isset($_REQUEST["Retry"])) { ?>
+            <Say voice="<?php echo setting("voice") ?>" language="<?php echo setting("language")?>"><?php echo word("could_not_find_location_please_retry_your_entry")?></Say>
+            <Pause length="1"/>
+        <?php } ?>
        
         <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
-            <?php echo word('press') ?> <?php echo word('one') ?> <?php echo word('to_search_for') ?> <?php echo $searchDescription ?> <?php echo word ('by') ?> <?php echo word('city_or_county') ?>
+            <?php echo word('press') . " " . word('one') . " " . word('to_search_for') . " " . $searchDescription . " " . word ('by') . " " . word('city_or_county') ?>
         </Say>
         <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
-            <?php echo word('press') ?> <?php echo word('two') ?> <?php echo word('to_search_for') ?> <?php echo $searchDescription ?> <?php echo word ('by') ?> <?php echo word('zip_code') ?>
+            <?php echo word('press') . " "  . word('two') . " " . word('to_search_for') . " " . $searchDescription . " " . word ('by') . " " . word('zip_code') ?>
         </Say>
 
         <?php
             if ($searchType == "2") {
                 if (has_setting('jft_option') && setting('jft_option')) { ?>
                     <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
-                        <?php echo word('press') ?> <?php echo word('three') ?> <?php echo word('to_listen_to_the_just_for_today') ?>
+                        <?php echo word('press') . " " . word('three') . " " . word('to_listen_to_the_just_for_today') ?>
                 </Say>
                 <?php }
             }
