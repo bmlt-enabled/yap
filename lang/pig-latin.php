@@ -65,6 +65,7 @@ $remove = "emoveray";
 $settings = "ettingssay";
 $add_shift = "addyay iftshay";
 $add_24by7_shifts = "addyay 24/7 iftsshay";
+$remove_all_shifts = "emoveray allyay ifshiftshay";
 $please_leave_a_message_after_the_tone = "easeplay eavelay ayay essagemay afteryay ethay onetay";
 $hang_up_when_finished = "anghay upyay enwhay inishedfay";
 $name = "amenay";

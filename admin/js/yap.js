@@ -204,7 +204,7 @@ var wrapFunction = function(fn, context, params) {
 };
 
 function addShift(e) {
-    $("#time_zone").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
     $("#shiftVolunteerName").html($(e).closest(".volunteerCard").find("#volunteer_name").val());
     $("#selectShiftDialog").attr({
         "volunteer_id": $(e).closest(".volunteerCard").attr("id"),
@@ -214,6 +214,7 @@ function addShift(e) {
 }
 
 function add24by7Shifts(e) {
+    $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
     $("#selectTimeZoneDialog").attr("data-volunteerid", $(e).closest(".volunteerCard").attr("id"));
     $("#selectTimeZoneDialog").modal("show");
 }
@@ -254,6 +255,10 @@ function saveShift(e) {
 
 function removeShift(e) {
     $(e).closest(".shiftCard").remove();
+}
+
+function removeAllShifts(e) {
+    $(e).closest(".volunteerCard").find(".shiftCard").remove()
 }
 
 function toggleCardDetails(e) {
