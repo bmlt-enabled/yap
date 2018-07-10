@@ -25,7 +25,14 @@
         }
     }
 
+    $googleapi_setttings = json_decode(get("https://maps.googleapis.com/maps/api/geocode/json?key=" .$google_maps_api_key. "&address=91409"));
+
     $root_server_settings = json_decode(get(getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetServerInfo"));
+
+    if ($googleapi_setttings->status == "REQUEST_DENIED") {
+        echo "Your google api key came back with the following error. " .$googleapi_setttings->error_message. " Please make sure the API key has no referer restrictions and is entered properly. You can check your key at the Google API console <a target=\"_blank\" href=\"https://console.cloud.google.com/apis/\">here</a>";
+        exit();
+    }
 
     if (strpos(getHelplineBMLTRootServer(), 'index.php')) {
         echo "Your root server points to index.php. Please make sure to set it to just the root directory.";
