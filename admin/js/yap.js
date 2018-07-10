@@ -214,16 +214,25 @@ function addShift(e) {
 }
 
 function add24by7Shifts(e) {
+    $("#selectTimeZoneDialog").attr("data-volunteerid", $(e).closest(".volunteerCard").attr("id"));
+    $("#selectTimeZoneDialog").modal("show");
+}
+
+function selectTimeZoneFor247Shifts(e) {
+    var volunteerId = $(e).closest("#selectTimeZoneDialog").attr("data-volunteerid");
+    var tz = $(e).closest("#selectTimeZoneDialog").find("#time_zone").val();
     for (var x = 1; x <= 7; x++) {
         var shiftInfoObj = {
             "day": x,
-            "tz": 'UTC',
+            "tz": tz,
             "start_time": '12:00 AM',
             "end_time": '11:59 PM'
         };
 
-        renderShift($(e).closest(".volunteerCard").attr("id"), shiftInfoObj);
+        renderShift(volunteerId, shiftInfoObj);
     }
+
+    $("#selectTimeZoneDialog").modal("hide");
 }
 
 function saveShift(e) {

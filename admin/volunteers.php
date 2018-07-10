@@ -22,6 +22,30 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="selectTimeZoneDialog" tabindex="-1" role="dialog" aria-labelledby="selectTimeZoneDialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        Select Time Zone For 24/7 Shifts
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group form-row form-inline">
+                            Time Zone:
+                            <select class="form-control form-control-sm time_zone_selector" id="time_zone">
+                                <?php
+                                foreach (getTimezoneList() as $tzItem) { ?>
+                                    <option value="<?php echo $tzItem?>"><?php echo $tzItem; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="selectTimeZoneFor247Shifts(this)">Select</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="modal fade" id="selectShiftDialog" tabindex="-1" role="dialog" aria-labelledby="selectShiftDialog" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
