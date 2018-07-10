@@ -42,6 +42,13 @@
         exit();
     }
 
+    $googleapi_setttings = json_decode(get($google_maps_endpoint . "&address=91409"));
+
+    if ($googleapi_setttings->status == "REQUEST_DENIED") {
+        echo "Your Google Maps API key came back with the following error. " .$googleapi_setttings->error_message. " Please make sure you have the \"Google Maps Geocoding API\" enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console <a target=\"_blank\" href=\"https://console.cloud.google.com/apis/\">here</a>";
+        exit();
+    }
+
     if ($all_good) {
         echo "Ready to Yap!";
     }
