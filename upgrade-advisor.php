@@ -30,7 +30,7 @@
     $root_server_settings = json_decode(get(getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetServerInfo"));
 
     if ($googleapi_setttings->status == "REQUEST_DENIED") {
-        echo "Your google api key came back with the following error. " .$googleapi_setttings->error_message. " Please make sure the API key has no referer restrictions and is entered properly. You can check your key at the Google API console <a target=\"_blank\" href=\"https://console.cloud.google.com/apis/\">here</a>";
+        echo "Your Google Maps API key came back with the following error. " .$googleapi_setttings->error_message. " Please make sure you have the \"Google Maps Geocoding API\" enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console <a target=\"_blank\" href=\"https://console.cloud.google.com/apis/\">here</a>";
         exit();
     }
 
