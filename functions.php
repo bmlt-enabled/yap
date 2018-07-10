@@ -393,7 +393,7 @@ function getAllHelplineData($data_type) {
 
 function getVolunteerRoutingEnabledServiceBodies() {
     $all_helpline_data = getAllHelplineData("_YAP_CONFIG_");
-    $service_bodies = getServiceBodies();
+    $service_bodies = getServiceBodyDetailForUser();
     $helpline_enabled = [];
 
     for ($x = 0; $x < count($all_helpline_data); $x++) {
