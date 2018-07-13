@@ -31,9 +31,13 @@
             header: {
                 left: null,
                 center: null,
-                right: null
+                right: "agendaWeek, agendaDay, prev, next"
             },
-            height: 'auto'
+            height: 'auto',
+            validRange: {
+                start: moment().startOf('day').format("YYYY-MM-DD"),
+                end: moment().add(7, 'days').endOf('day').format("YYYY-MM-DD")
+            }
         });
 
         $('select#service_body_id').change(function() {
