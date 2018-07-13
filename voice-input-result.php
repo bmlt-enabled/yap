@@ -3,7 +3,7 @@
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     
-    $province = has_setting('province_lookup') ? $_REQUEST['Province'] : getProvince();
+    $province = has_setting('province_lookup') && setting('province_lookup') ? $_REQUEST['Province'] : getProvince();
     $speechResult = $_REQUEST['SpeechResult'];
     $searchType = $_REQUEST['SearchType'];
     
