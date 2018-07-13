@@ -20,32 +20,4 @@
 <link rel='stylesheet' href='css/fullcalendar-3.9.0.min.css' />
 <script src='js/moment-2.11.1.min.js'></script>
 <script src='js/fullcalendar-3.9.0.min.js'></script>
-<script type="text/javascript">
-    $(function() {
-        $('#calendar').fullCalendar({
-            allDaySlot: false,
-            defaultView: 'agendaWeek',
-            nowIndicator: true,
-            firstDay: (new Date()).getDay(),
-            themeSystem: 'bootstrap4',
-            header: {
-                left: null,
-                center: null,
-                right: "agendaWeek, agendaDay, prev, next"
-            },
-            height: 'auto',
-            validRange: {
-                start: moment().startOf('day').format("YYYY-MM-DD"),
-                end: moment().add(7, 'days').endOf('day').format("YYYY-MM-DD")
-            }
-        });
-
-        $('select#service_body_id').change(function() {
-            if (parseInt($('select#service_body_id').val()) > 0) {
-                $('#calendar').fullCalendar('removeEventSources');
-                $("#calendar").fullCalendar('removeEvents');
-                $('#calendar').fullCalendar('addEventSource', '../helpline-schedule.php?service_body_id=' + $('select#service_body_id').val());
-            }
-        })
-    })
-</script>
+<script type="text/javascript">$(function(){schedulePage()})</script>
