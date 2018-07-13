@@ -578,26 +578,6 @@ function sort_on_field(&$objects, $on, $order = 'ASC') {
     usort($objects, create_function('$a,$b', $comparer));
 }
 
-function countOccurrences($initialSchedule, $volunteerName) {
-    $occurrences = 0;
-    for ($v = 0; $v <= count($initialSchedule); $v++) {
-        if ($initialSchedule[$v]["title"] == $volunteerName) {
-            $occurrences++;
-        }
-    }
-
-    return $occurrences > 1;
-}
-
-function getDurationInterval($duration_time) {
-    $durationArray = explode(":", $duration_time);
-    $durationInterval = new DurationInterval();
-    $durationInterval->hours = $durationArray[0];
-    $durationInterval->minutes = $durationArray[1];
-    $durationInterval->seconds = $durationArray[2];
-    return $durationInterval;
-}
-
 function getHelplineBMLTRootServer() {
     return isset($GLOBALS['helpline_bmlt_root_server']) ? $GLOBALS['helpline_bmlt_root_server'] : $GLOBALS['bmlt_root_server'];
 }
