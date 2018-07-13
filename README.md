@@ -163,7 +163,7 @@ You can also create a language selection menu upon dialing in.  It will only be 
 Add a new setting called, specifying the language codes for each language you want included.  The order will indicate the order in which it will be played back:
 
 ```php
-static $lanugage_selections = "en-US,pig-latin";
+static $language_selections = "en-US,pig-latin";
 ```
 
 This example will make option 1, English and option 2, pig latin.
