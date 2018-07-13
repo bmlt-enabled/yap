@@ -2,6 +2,11 @@
     include 'config.php';
     include 'functions.php';
 
+    function status($state, $message) {
+        header( "Content-Type: application/json" );
+        echo "{\"status\":" . ($state ? "true" : "false") . ",\"message\":\"".$message."\"}";
+        exit();
+    }
 
     $all_good = true;
     $settings = [
@@ -20,35 +25,30 @@
 
     foreach ($settings as $setting) {
         if (!isThere($setting)) {
-            echo "Missing required setting: " . $setting . "<br/>";
-            exit();
+            status(false, "Missing required setting: " . $setting);
         }
     }
 
     $root_server_settings = json_decode(get(getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetServerInfo"));
 
     if (strpos(getHelplineBMLTRootServer(), 'index.php')) {
-        echo "Your root server points to index.php. Please make sure to set it to just the root directory.";
-        exit();
+        status(false,"Your root server points to index.php. Please make sure to set it to just the root directory.");
     }
 
     if (!isset($root_server_settings)) {
-        echo "Your root server returned no server information.  Double-check that you have the right root server url.";
-        exit();
+        status(false, "Your root server returned no server information.  Double-check that you have the right root server url.");
     }
 
     if ($root_server_settings[0]->semanticAdmin != "1") {
-        echo "Semantic Admin not enabled on your root server, be sure to set the variable mentioned <a target=\"_blank\" href=\"https://bmlt.magshare.net/semantic/semantic-administration/\">here</a>.";
-        exit();
+        status(false, "Semantic Admin not enabled on your root server, be sure to set the variable mentioned here: https://bmlt.magshare.net/semantic/semantic-administration.");
     }
 
     $googleapi_setttings = json_decode(get($google_maps_endpoint . "&address=91409"));
 
     if ($googleapi_setttings->status == "REQUEST_DENIED") {
-        echo "Your Google Maps API key came back with the following error. " .$googleapi_setttings->error_message. " Please make sure you have the \"Google Maps Geocoding API\" enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console <a target=\"_blank\" href=\"https://console.cloud.google.com/apis/\">here</a>";
-        exit();
+        status(false, "Your Google Maps API key came back with the following error. " .$googleapi_setttings->error_message. " Please make sure you have the 'Google Maps Geocoding API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
     }
 
     if ($all_good) {
-        echo "Ready to Yap!";
+        status(true, "Ready To Yap!");
     }
