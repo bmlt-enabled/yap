@@ -465,10 +465,18 @@ function getVolunteerRoutingEnabledServiceBodies() {
 
 function getServiceBodyConfiguration($service_body_id) {
     $helplineData = getHelplineData($service_body_id, DataType::YAP_CONFIG);
+
     $config = new ServiceBodyConfiguration();
     $config->service_body_id = $service_body_id;
     if (isset($helplineData) && count($helplineData) > 0) {
         $data = $helplineData[0]['data'][0];
+
+        foreach ($data as $key => $value) {
+            if (strpos($key, 'override_') == 0) {
+                $_SESSION[$key] = $value;
+            }
+        }
+
         $config->volunteer_routing_enabled = strpos($data->volunteer_routing, "volunteers") >= 0;
         $config->volunteer_routing_redirect = $data->volunteer_routing == "volunteers_redirect";
         $config->volunteer_routing_redirect_id = $config->volunteer_routing_redirect ? $data->volunteers_redirect_id : 0;

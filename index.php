@@ -15,6 +15,10 @@
         }
     }
 
+    if (isset($_REQUEST["override_service_body_id"])) {
+        getServiceBodyConfiguration($_REQUEST["override_service_body_id"]);
+    }
+
     $promptset_name = str_replace("-", "_", setting("word_language")) . "_greeting";
 ?>
 <Response>

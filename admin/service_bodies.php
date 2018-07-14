@@ -71,6 +71,9 @@ sort_on_field($service_bodies, 'name');
 
                                                 Music On Hold (<a target="_blank" href="https://github.com/radius314/yap/tree/unstable#music-on-hold">more</a>):
                                                 <input class="form-control form-control-sm" type="text" name="moh" id="moh">
+
+                                                Recorded Greeting (URL to any MP3):
+                                                <input class="form-control form-control-sm" type="text" name="override_en_US_greeting" id="override_en_US_greeting">
                                             </form>
                                         </div>
                                         <div class="modal-footer">
