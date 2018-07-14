@@ -341,7 +341,7 @@ function getServiceBodyCoverage($latitude, $longitude) {
         if (in_array($service_body_id, $already_checked)) continue;
         for ($i = 0; $i < count($service_bodies); $i++) {
             if ($service_bodies[$i]->id == $service_body_id) {
-                if (strlen($service_bodies[$i]->helpline) > 0) {
+                if (strlen($service_bodies[$i]->helpline) > 0 || getServiceBodyConfiguration($service_bodies[$i]->id)->volunteer_routing_enabled) {
                     return $service_bodies[$i];
                 } else {
                     array_push($already_checked, $service_bodies[$i]->id);
