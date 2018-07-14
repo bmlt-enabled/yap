@@ -1,7 +1,7 @@
 <?php
 include_once 'config.php';
 include_once 'session.php';
-static $version = "2.0.0-beta3";
+static $version = "2.0.0-beta4";
 static $settings_whitelist = [
     'title' => [ 'description' => '' , 'default' => ''],
     'location_lookup_bias' => [ 'description' => '' , 'default' => 'components=country:us'],
