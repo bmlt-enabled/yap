@@ -19,6 +19,7 @@ General
 
 * [Setup](#setup)
 * [Voice Recognition Optimizations](#voice-recognition-optimizations)
+* [Configuration Predence](#configuration-precedence)
 * [State/Province Lookup](#state-province-lookup)
 * [Tollfree Bias](#tollfree-bias)
 * [Location Lookup Bias](#location-lookup-bias)
