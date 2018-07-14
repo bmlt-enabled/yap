@@ -16,7 +16,7 @@
                 }
                 $service_body = getServiceBodyCoverage( $coordinates->latitude, $coordinates->longitude );
             } catch (Exception $e) {
-                header("Location: input-method.php?Digits=" . $_REQUEST["SearchType"] . "&Retry=1");
+                header("Location: input-method.php?Digits=" . $_REQUEST["SearchType"] . "&Retry=1&RetryMessage=" . $e->getMessage());
                 exit();
             }
         }

@@ -8,7 +8,7 @@ static $settings_whitelist = [
     'jft_option' => [ 'description' => '' , 'default' => false],
     'sms_ask' => [ 'description' => '' , 'default' => false],
     'bmlt_root_server' => [ 'description' => '' , 'default' => ''],
-    'helpline_bmlt_root_server' => [ 'description' => '' , 'default' => ''],
+    'helpline_bmlt_root_server' => [ 'description' => '' , 'default' => null],
     'voice' => [ 'description' => '' , 'default' => 'woman'],
     'language' => [ 'description' => '' , 'default' => 'en'],
     'helpline_search_radius' => [ 'description' => '' , 'default' => 30],
@@ -333,7 +333,7 @@ function getServiceBodyCoverage($latitude, $longitude) {
 
     // Must do this because the BMLT returns an empty object instead of an empty array.
     if (!is_array($search_results)) {
-        throw new Exception("No helpline results found for this search criteria.");
+        throw new Exception(word('helpline_no_results_found_retry'));
     }
 
     for ($j = 0; $j < count($search_results); $j++) {
@@ -632,7 +632,7 @@ function sort_on_field(&$objects, $on, $order = 'ASC') {
 }
 
 function getHelplineBMLTRootServer() {
-    return isset($GLOBALS['helpline_bmlt_root_server']) ? $GLOBALS['helpline_bmlt_root_server'] : $GLOBALS['bmlt_root_server'];
+    return has_setting('helpline_bmlt_root_server') ? setting('helpline_bmlt_root_server') : $GLOBALS['bmlt_root_server'];
 }
 
 function auth_bmlt($username, $password, $master = false) {

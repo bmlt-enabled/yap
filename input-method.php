@@ -26,8 +26,9 @@
         if ($playTitle == "1") { ?>
             <Say voice="<?php echo setting("voice") ?>" language="<?php echo setting("language")?>"><?php echo setting("title")?></Say>
 		<?php }
-        if (isset($_REQUEST["Retry"])) { ?>
-            <Say voice="<?php echo setting("voice") ?>" language="<?php echo setting("language")?>"><?php echo word("could_not_find_location_please_retry_your_entry")?></Say>
+        if (isset($_REQUEST["Retry"])) {
+            $retry_message = isset($_REQUEST["RetryMessage"]) ? $_REQUEST["RetryMessage"] : word("could_not_find_location_please_retry_your_entry");?>
+            <Say voice="<?php echo setting("voice") ?>" language="<?php echo setting("language")?>"><?php echo $retry_message?></Say>
             <Pause length="1"/>
         <?php } ?>
        

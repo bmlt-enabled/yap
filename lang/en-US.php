@@ -74,3 +74,4 @@ $action = "Action";
 $configure = "Configure";
 $retrieving_service_body_configuration = "Retrieving Service Body Configuration";
 $could_not_find_location_please_retry_your_entry = "sorry, could not find location, please retry your entry";
+$helpline_no_results_found_retry = "sorry, no results could be found for your search criteria, please retry your entry";
