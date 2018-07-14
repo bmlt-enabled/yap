@@ -342,21 +342,6 @@ function spinnerDialog(show, text, callback) {
     }
 }
 
-function showUpgradeAdvisorResults() {
-    $.getJSON("../upgrade-advisor.php", function(data) {
-        if (data.status) {
-            status = "Operational";
-            $("#upgrade-advisor-details").addClass("btn-success")
-        } else {
-            status = "Problem";
-            $("#upgrade-advisor-details").addClass("btn-danger")
-        }
-        $("#upgrade-advisor-details").html("Status: " + status);
-        $("#upgrade-advisor-details").attr("title", data.message);
-        $("#upgrade-advisor-details").tooltip();
-    });
-}
-
 function dataEncoder(dataObject) {
     return btoa(JSON.stringify(dataObject));
 }

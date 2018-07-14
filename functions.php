@@ -110,6 +110,59 @@ class SettingSource {
     const DEFAULT_SETTING = "Factory Default";
 }
 
+class UpgradeAdvisor {
+    private static $all_good = true;
+    private static $settings = [
+        'title',
+        'bmlt_root_server',
+        'google_maps_api_key',
+        'twilio_account_sid',
+        'twilio_auth_token',
+        'bmlt_username',
+        'bmlt_password',
+    ];
+
+    private static function isThere($setting) {
+        return isset($GLOBALS[$setting]) && strlen($GLOBALS[$setting]) > 0;
+    }
+
+    private static function getState($status, $message) {
+        return ["status"=>$status, "message"=>$message];
+    }
+
+    public static function getStatus() {
+        foreach (UpgradeAdvisor::$settings as $setting) {
+            if (!UpgradeAdvisor::isThere($setting)) {
+                return UpgradeAdvisor::getState(false, "Missing required setting: " . $setting);
+            }
+        }
+
+        $root_server_settings = json_decode(get(getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetServerInfo"));
+
+        if (strpos(getHelplineBMLTRootServer(), 'index.php')) {
+            return UpgradeAdvisor::getState(false,"Your root server points to index.php. Please make sure to set it to just the root directory.");
+        }
+
+        if (!isset($root_server_settings)) {
+            return UpgradeAdvisor::getState(false, "Your root server returned no server information.  Double-check that you have the right root server url.");
+        }
+
+        if ($root_server_settings[0]->semanticAdmin != "1") {
+            return UpgradeAdvisor::getState(false, "Semantic Admin not enabled on your root server, be sure to set the variable mentioned here: https://bmlt.magshare.net/semantic/semantic-administration.");
+        }
+
+        $googleapi_setttings = json_decode(get($GLOBALS['google_maps_endpoint'] . "&address=91409"));
+
+        if ($googleapi_setttings->status == "REQUEST_DENIED") {
+            return UpgradeAdvisor::getState(false, "Your Google Maps API key came back with the following error. " .$googleapi_setttings->error_message. " Please make sure you have the 'Google Maps Geocoding API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
+        }
+
+        if (UpgradeAdvisor::$all_good) {
+            return UpgradeAdvisor::getState(true, "Ready To Yap!");
+        }
+    }
+}
+
 function word($name) {
     return isset($GLOBALS['override_' . $name]) ? $GLOBALS['override_' . $name] : $GLOBALS[$name];
 }
