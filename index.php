@@ -5,7 +5,7 @@
 
     if (strlen(setting('language_selections')) > 0) {
         if (!isset($_REQUEST["Digits"])) {
-            header( 'Location: /language-selector.php' );
+            header( 'Location: language-selector.php' );
             exit();
         } else {
             $selected_language = explode(",", setting('language_selections'))[intval($_REQUEST["Digits"]) - 1];
