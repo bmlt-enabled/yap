@@ -4,8 +4,9 @@
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
     if (strlen(setting('language_selections')) > 0) {
-        if (!isset($_REQUEST["Digits"])) {
-            header( 'Location: language-selector.php' );
+        if (!isset($_REQUEST["Digits"])) {?>
+            <Response><Redirect>language-selector.php</Redirect></Response>
+        <?php
             exit();
         } else {
             $selected_language = explode(",", setting('language_selections'))[intval($_REQUEST["Digits"]) - 1];
