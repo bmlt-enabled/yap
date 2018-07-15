@@ -164,6 +164,7 @@ class UpgradeAdvisor {
                 if (basename($number->voiceUrl)) {
                     if (!strpos($number->voiceUrl, '.php')
                         && !strpos($number->voiceUrl, 'twiml')
+                        && !strpos($number->voiceUrl, '/?')
                         && substr($number->voiceUrl, -1) !== "/") {
                         return UpgradeAdvisor::getState(false, $number->phoneNumber . " webhook should end either with `/` or `/index.php`");
                     }
