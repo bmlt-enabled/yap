@@ -157,6 +157,23 @@ class UpgradeAdvisor {
             return UpgradeAdvisor::getState(false, "Your Google Maps API key came back with the following error. " .$googleapi_setttings->error_message. " Please make sure you have the 'Google Maps Geocoding API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
         }
 
+        require_once 'vendor/autoload.php';
+        try {
+            $client = new Twilio\Rest\Client($GLOBALS['twilio_account_sid'], $GLOBALS['twilio_auth_token']);
+            foreach ($client->incomingPhoneNumbers->read() as $number) {
+                if (basename($number->voiceUrl)) {
+                    if (!strpos($number->voiceUrl, '.php')
+                        && !strpos($number->voiceUrl, 'twiml')
+                        && substr($number->voiceUrl, -1) !== "/") {
+                        return UpgradeAdvisor::getState(false, $number->phoneNumber . " webhook should end either with `/` or `/index.php`");
+                    }
+                }
+            }
+
+        } catch ( \Twilio\Exceptions\ConfigurationException $e ) {
+            error_log("Missing Twilio Credentials");
+        }
+
         if (UpgradeAdvisor::$all_good) {
             return UpgradeAdvisor::getState(true, "Ready To Yap!");
         }

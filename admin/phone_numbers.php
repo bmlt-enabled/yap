@@ -24,8 +24,8 @@ $client = new Client( $sid, $token );
                     <tr>
                         <td><?php echo $number->phoneNumber ?></td>
                         <td><?php echo $number->friendlyName ?></td>
-                        <td><?php echo $number->voiceUrl ?></td>
-                        <td><?php echo $number->smsUrl ?></td>
+                        <td><a target="_blank" href="<?php echo $number->voiceUrl ?>"><?php echo $number->voiceUrl ?></a></td>
+                        <td><a target="_blank" href="<?php echo $number->smsUrl ?>"><?php echo $number->smsUrl ?></a></td>
                     </tr>
                 <?php } ?>
                 </tbody>
