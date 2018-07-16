@@ -109,6 +109,7 @@
 <div class="card volunteerCard border-dark" id="volunteerCardTemplate" style="display:none;">
     <form id="volunteersForm">
         <div class="card-header">
+            <div class="volunteer-sort-icon"></div>
             Volunteer Name: <input type="text" id="volunteer_name" name="volunteer_name">
             <button class="btn btn-sm btn-info volunteerCardBodyToggleButton" type="button" onclick="toggleCardDetails(this);return false;">+</button>
             <span id="volunteerSequence" class="float-right"></span>

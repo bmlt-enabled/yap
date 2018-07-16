@@ -14,7 +14,9 @@ function volunteerPage() {
         }
     });
 
-    $("#volunteerCards").sortable();
+    $("#volunteerCards").sortable({
+        "handle":".volunteer-sort-icon"
+    });
 
     for (var hr = 1; hr <= 12; hr++) {
         var hr_value = hr < 10 ? "0" + hr : hr.toString();
