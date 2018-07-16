@@ -50,6 +50,7 @@ class VolunteerInfo {
     public $sequence;
     public $time_zone;
     public $contact;
+    public $color;
 }
 
 class Coordinates {
@@ -634,12 +635,19 @@ function getVolunteerInfo($volunteers) {
                 $volunteerInfo->weekday    = $GLOBALS['days_of_the_week'][ $vsi->day ];
                 $volunteerInfo->sequence   = $v;
                 $volunteerInfo->contact    = $volunteer->volunteer_phone_number;
+                $volunteerInfo->color      = "#" . getNameHashColorCode($volunteerInfo->title);
                 array_push( $finalSchedule, $volunteerInfo );
             }
         }
     }
 
     return $finalSchedule;
+}
+
+function getNameHashColorCode($str) {
+    $code = dechex(crc32($str));
+    $code = substr($code, 0, 6);
+    return $code;
 }
 
 function dataEncoder($dataObject) {
