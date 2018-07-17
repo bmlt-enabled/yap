@@ -625,7 +625,8 @@ function getVolunteerInfo($volunteers) {
 
     for ($v = 0; $v < count($volunteers['data']); $v++) {
         $volunteer = $volunteers['data'][$v];
-        if (isset($volunteer->volunteer_enabled) && $volunteer->volunteer_enabled) {
+        if (isset($volunteer->volunteer_enabled) && $volunteer->volunteer_enabled &&
+            isset($volunteer->volunteer_phone_number) && strlen($volunteer->volunteer_phone_number) > 0) {
             $volunteerShiftSchedule = dataDecoder($volunteer->volunteer_shift_schedule);
             foreach ($volunteerShiftSchedule as $vsi) {
                 $volunteerInfo             = new VolunteerInfo();
