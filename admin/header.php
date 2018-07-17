@@ -11,7 +11,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap-4.1.0.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/yap.css">
+    <link rel="stylesheet" href="css/yap.css?v=<?php echo time()?>">
     <title>Yap Admin</title>
 </head>
 <body>
