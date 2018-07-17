@@ -19,7 +19,7 @@ General
 
 * [Setup](#setup)
 * [Voice Recognition Optimizations](#voice-recognition-optimizations)
-* [Configuration Predence](#configuration-precedence)
+* [Configuration Precedence](#configuration-precedence)
 * [State/Province Lookup](#state-province-lookup)
 * [Tollfree Bias](#tollfree-bias)
 * [Location Lookup Bias](#location-lookup-bias)
@@ -388,7 +388,7 @@ static $twilio_auth_token = "";
 
 ## Music On Hold
 
-Music on hold will play when doing volunteer routing which is configurable from within the service body configuration.  You can specify one more URLs to an MP3 file or Shoutcast stream.  Separate them by commas.
+Music on hold will play when doing volunteer routing which is configurable from within the service body configuration.  You can specify one or more URLs to an MP3 file or Shoutcast stream.  Separate them by commas.
 
 There are also some free alternatives.  They are licensed by Creative Commons.  They are playlists themselves so they may not be combined with any other URLs. 
 
