@@ -74,6 +74,9 @@ sort_on_field($service_bodies, 'name');
 
                                                 Recorded Greeting (URL to any MP3):
                                                 <input class="form-control form-control-sm" type="text" name="override_en_US_greeting" id="override_en_US_greeting">
+
+                                                Voice Mail Greeting (URL to any MP3):
+                                                <input class="form-control form-control-sm" type="text" name="override_en_US_voicemail_greeting" id="override_en_US_voicemail_greeting">
                                             </form>
                                         </div>
                                         <div class="modal-footer">

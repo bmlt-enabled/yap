@@ -492,7 +492,7 @@ function getServiceBodyConfiguration($service_body_id) {
         $data = $helplineData[0]['data'][0];
 
         foreach ($data as $key => $value) {
-            if (strpos($key, 'override_') == 0 && strlen($value) > 0) {
+            if (strpos($key, 'override_') === 0 && strlen($value) > 0) {
                 $_SESSION[$key] = $value;
             }
         }
