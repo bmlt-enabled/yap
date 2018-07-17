@@ -48,7 +48,7 @@
             ?>
         <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>"><?php echo word('please_wait_while_we_connect_your_call') ?></Say>
         <Dial>
-            <Conference waitUrl="<?php echo $serviceBodyConfiguration->moh ?>"
+            <Conference waitUrl="<?php echo $serviceBodyConfiguration->moh_count == 1 ? $serviceBodyConfiguration->moh : "playlist.php?items=" . $serviceBodyConfiguration->moh?>"
                         statusCallback="helpline-dialer.php?service_body_id=<?php echo $calculated_service_body_id ?>&amp;Caller=<?php echo $_REQUEST['Called'] ?>"
                         startConferenceOnEnter="false"
                         endConferenceOnExit="true"

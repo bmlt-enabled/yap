@@ -87,6 +87,7 @@ class ServiceBodyConfiguration {
     public $primary_contact_enabled = false;
     public $primary_contact_number = "0000000000";
     public $moh = "https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical";
+    public $moh_count = 1;
 }
 
 class CycleAlgorithm {
@@ -507,6 +508,7 @@ function getServiceBodyConfiguration($service_body_id) {
         $config->primary_contact_enabled = isset($data->primary_contact) && strlen($data->primary_contact) > 0;
         $config->primary_contact_number = $config->primary_contact_enabled ? $data->primary_contact : "";
         $config->moh = isset($data->moh) && strlen($data->moh) > 0 ? $data->moh : $config->moh;
+        $config->moh_count = count(explode(",", $config->moh));
     }
 
     return $config;
