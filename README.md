@@ -192,6 +192,14 @@ It's possible to record a custom voice prompt and have it play back instead of t
 static $en_US_greeting = "https://example.com/your-recorded-greeting.mp3"
 ```
 
+You can also set a custom greeting for voicemail.
+
+```php
+static $en_US_voicemail_greeting = "https://example.com/your-recorded-greeting.mp3"
+```
+
+These settings are overridable from within each service body configuration.
+
 # Meeting Search
 
 ## Meeting Search Radius
