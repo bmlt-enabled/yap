@@ -7,5 +7,4 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Twilio\\' => array($vendorDir . '/twilio/sdk/Twilio'),
-    'Predis\\' => array($vendorDir . '/predis/predis/src'),
 );
