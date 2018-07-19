@@ -55,7 +55,7 @@ Helpline/Volunteer Routing
 Miscellaneous
 * [Playback for the Just For Today Meditation](#playback-for-the-just-for-today-meditation)
 * [Upgrading](#upgrading)
-* [Upgrading from Yap 1.x to 2.0](#upgrading-from-yap-1.x-to-yap-2.0)
+* [Upgrading from Yap 1.x to 2.x](#upgrading-from-yap-1x-to-yap-2x)
 * [Contribute](#contribute)
 * [Call Flow](#call-flow)
 
@@ -425,7 +425,7 @@ Make a new folder with the newer version and copy over the config.php.  Once you
 
 You can also run `make upgrade`, if you have shell access.
 
-## Upgrading from Yap 1.x to Yap 2.0
+## Upgrading from Yap 1.x to Yap 2.x
 
 Follow the upgrade steps as you normally do above.  You will also need to follow item #3 under [Setup](#setup), to add the Twilio credentials.
 
