@@ -72,7 +72,7 @@ Here is an instructional video that might assist you: https://www.dropbox.com/s/
 
 3. **NEW**>> You will need to (`config.php`) enter `$twilio_account_sid` and `$twilio_auth_token`.  You can find this on your account dashboard.  
 
-![alt text](resources/twilio-auth.png)
+![alt text](resources/twilio-auth-v2.png)
 
 4. Be sure to get a Google Maps API key.  Specify this in config.php as the value for `$google_maps_api_key`.  Make sure you have "Google Maps Geocoding API" enabled on your credentials.  If you have one already for your BMLT, you can use that as well (you don't need a separate one).  This article may be useful https://bmlt.magshare.net/google-maps-api-keys-and-geolocation-issues/.
 
