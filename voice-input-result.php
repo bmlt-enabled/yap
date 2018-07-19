@@ -3,7 +3,7 @@
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     
-    $province = $province_lookup ? $_REQUEST['Province'] : getProvince();
+    $province = has_setting('province_lookup') && setting('province_lookup') ? $_REQUEST['Province'] : getProvince();
     $speechResult = $_REQUEST['SpeechResult'];
     $searchType = $_REQUEST['SearchType'];
     
@@ -14,5 +14,5 @@
     }
 ?>
 <Response>
-    <Redirect method="GET"><?php echo $action; ?>?Digits=<?php echo urlencode($speechResult . ", " . $province); ?></Redirect>
+    <Redirect method="GET"><?php echo $action; ?>?Digits=<?php echo urlencode($speechResult . ", " . $province); ?>&amp;SearchType=<?php echo $searchType?></Redirect>
 </Response>

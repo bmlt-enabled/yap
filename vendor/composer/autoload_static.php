@@ -7,16 +7,16 @@ namespace Composer\Autoload;
 class ComposerStaticInit211839d18b0c3e24c5457707508f819b
 {
     public static $prefixLengthsPsr4 = array (
-        'P' => 
+        'T' => 
         array (
-            'Predis\\' => 7,
+            'Twilio\\' => 7,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Predis\\' => 
+        'Twilio\\' => 
         array (
-            0 => __DIR__ . '/..' . '/predis/predis/src',
+            0 => __DIR__ . '/..' . '/twilio/sdk/Twilio',
         ),
     );
 

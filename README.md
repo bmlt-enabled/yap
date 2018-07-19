@@ -2,6 +2,8 @@
 [![Waffle.io - Columns and their card count](https://badge.waffle.io/radius314/yap.png?columns=all)](https://waffle.io/radius314/yap?utm_source=badge)
 # yap
 
+Requires a minimum of PHP 5.6 to use.
+
 The purposes of yap are :
 * To be able to take the results of a BMLT root server and play it back through the telephone.  
 * To be able to set up routing rules for zip codes and helpline numbers with optional extension dialing.
@@ -10,54 +12,117 @@ Unlike it's predecessor bmlt-vox, this doesn't require any special infrastructur
 
 We are taking advantage of using Twilio which essentially handles all the VOIP parts.  You provision a number, set up an application, and point it your PHP server.
 
-## Setup 
+# Table of Contents
+
+General
+
+* [Setup](#setup)
+* [Voice Recognition Optimizations](#voice-recognition-optimizations)
+* [Configuration Precedence](#configuration-precedence)
+* [State/Province Lookup](#state-province-lookup)
+* [Tollfree Bias](#tollfree-bias)
+* [Location Lookup Bias](#location-lookup-bias)
+* [Language Options](#language-options)
+* [Postal Code Lengths](#postal-code-lengths)
+* [Fallback](#fallback)
+* [Voice Greeting](#voice-greeting)
+
+Meeting Search
+
+* [Meeting Search Radius](#meeting-search-radius)
+* [Results Counts Maximums](#results-counts-maximums)
+* [Grace Period](#grace-period)
+* [Ignoring Certain Formats](#ignoring-certain-formats)
+* [Post Call Options](#post-call-options)
+    * [Making SMS results for voice calls optional](#making-sms-results-for-voice-calls-optional)
+    * [Infinite Searches](#infinite-searches)
+* [SMS Gateway](#sms-gateway)
+* [Adding Map Links](#adding-map-links)
+
+Helpline/Volunteer Routing
+
+* [Helpline Search Radius](#helpline-search-radius)
+* [Using Hidden Service Bodies For Helpline Lookups](#using-hidden-service-bodies-for-helpline-lookups)
+* [Using A Different BMLT Server for Helplines](#using-a-different-bmlt-server-for-routing)
+* [Helpline Call Routing](#helpline-call-routing)
+* [Checking Call Routing](#checking-call-routing)
+* [Skipping Helpline Call Routing](#skipping-helpline-call-routing)
+* [Force Helpline Routing](#force-helpline-routing)
+* [Force Dialing](#force-dialing)
+* [Volunteer Routing](#volunteer-routing)
+* [Music On Hold](#music-on-hold)
+
+Miscellaneous
+* [Playback for the Just For Today Meditation](#playback-for-the-just-for-today-meditation)
+* [Upgrading](#upgrading)
+* [Contribute](#contribute)
+* [Call Flow](#call-flow)
+
+# General
+
+## Setup
 
 Here is an instructional video that might assist you: https://www.dropbox.com/s/e59dzal4rkkcl2r/twilio.mp4?dl=0
-
 **This will require that you have an SSL certificate installed on your webserver to transit a secure connection.  This is required by Twilio.**
 
-1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: https://github.com/radius314/yap/archive/1.3.3.zip.
+1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: https://github.com/radius314/yap/archive/2.0.0.zip.
 
-2. Once the application is configured you will need to customize the config.php file.  There are several settings there that are documented in that file.  There are a number of different ways to utilize the yap platform.  
+2. Once the application is configured you will need to customize the config.php file.  There are several settings there that are documented in that file.  There are a number of different ways to utilize the yap platform. 
 
-3. Be sure to get a Google Maps API key.  Specify this in config.php as the value for `$google_maps_api_key`.  Make sure you have "Google Maps Geocoding API" enabled on your credentials.  If you have a referrer restriction on the same key as your BMLT one, you will need to create a separate key for Yap.  Yap will not be able to work with an API key that has a referrer restriction, however you are able to set up an IP Address restriction if you choose to.  You would specify the IPs of your Yap instance that will be making the request to the Google Maps API.  In addition this, article may be useful https://bmlt.magshare.net/google-maps-api-keys-and-geolocation-issues/.
+3. **NEW**>> You will need to (`config.php`) enter `$twilio_account_sid` and `$twilio_auth_token`.  You can find this on your account dashboard.  
 
-4. Try testing that your application actually is functioning properly by opening a browser http://example.com/index.php.  
+4. Be sure to get a Google Maps API key.  Specify this in config.php as the value for `$google_maps_api_key`.  Make sure you have "Google Maps Geocoding API" enabled on your credentials.  If you have one already for your BMLT, you can use that as well (you don't need a separate one).  This article may be useful https://bmlt.magshare.net/google-maps-api-keys-and-geolocation-issues/.
 
-5. You will need to set up a Twilio account, and do the following:
+5. Try testing that your application actually is functioning properly by opening a browser http://example.com/index.php.  
+
+6. You will need to set up a Twilio account, and do the following:
 * Purchase a phone number (typically you would buy one for your locale, tollfree is pretty much unnecessary these days).
-* Configure that number to point to a Webook.  It would be something like http://example.com/index.php.
-* Ensure that you are using HTTP GET and not HTTP POST.
+* Configure that number to point to a Webook.  It would be something like https://example.com/index.php.
 
-6. Make a call to your number and try it out.  If there is a problem the debugger in the Twilio console will let you know why.  Most likely you did not setup your config.php file correctly.
+7. You can test whether or not you are properly configured by going to https://example.com/upgrade-advisor.php.
 
-## Results Counts Maximums ##
+8. Make a call to your number and try it out.  If there is a problem the debugger in the Twilio console will let you know why.  Most likely you did not setup your config.php file correctly.
 
-The default number of meeting results is 5.  You can change this in your `config.php` with the following:
+## Configuration Precedence
 
-```php
-static $result_count_max = 10;
-```
+It's possible to override most of the settings in several different ways.  There is a sequence of precedence as follows.  You can always validate the setting by going to the settings in the admin portal.
 
-This would set to a maximum of ten (10) results.
+1) Querystring parameters that match the name.  For example if you wanted to override the title for one page you'd do the following: `index.php?title=something+here`
+2) Session overrides.  This means the entire call will use this setting.  `index.php?override_title=something+here`.  Twilio will respect this setting for entire during of the call.
+3) Config.php.  Any setting is controllable from within config.php.
+4) Factory defaults.  You can review them on your `/admin/settings.php` page.
 
-## Meeting Search Radius ##
+## Voice Recognition Optimizations
 
-Change the default meeting search radius, this can be in miles or a negative number which would set the radius at the first n results. You can change this in your `config.php` with the following:
+It's possible to set the expected spoken language, for recognition by setting the following variable in config.php to the culture variant.  The default is `en-US`, which is US English.
 
-```php
-static $meeting_search_radius = 30;
-```
-This would set the radius to a maximum of 30 miles.
+Use the this chart to find the code of your preference https://www.twilio.com/docs/api/twiml/gather#languagetags.
 
 ```php
-static $meeting_search_radius = -50;
+static $gather_language = "en-US";
 ```
-This would set the radius at the first 50 results and is the default.
 
-More information on how the BMLT uses search radius is here: https://bmlt.magshare.net/how-auto-radius-works/
+You can also set some expected words or hints, to help the voice recognition engine along.  Use the setting by separating words with commas.  You can use phrases as well.  
 
-## Location Lookup Bias ##
+Each hint may not be more than 100 characters (including spaces).  You can use up to 500 hints.
+
+```php
+static $gather_hints = "";
+```
+
+## State/Province Lookup
+
+It may be that your instance needs to search multiple states.  By default searches will be biased towards the local number state (unless it's tollfree).  To enable province lookup set the `$province_lookup`, variable to `true` in the `config.php` file.  
+
+## Tollfree Bias
+
+Tollfree is independent of any state/province bias.  
+
+To enable a specific bias, add `static $toll_free_province_bias` to your `config.php`, and set to the two letter state bias.  
+
+Example `$toll_free_province_bias = "TX"`, will bias to Texas.
+
+## Location Lookup Bias
 
 By default location lookups are biased toward the US.  You can create a series of refinements by using the `$location_lookup_bias` in config.php.
 
@@ -69,7 +134,7 @@ static $location_lookup_bias = "country:France";
 
 A full listing of available bias options are available here: https://developers.google.com/maps/documentation/geocoding/intro#ComponentFiltering.  You can use as few or as many as you want, by separating each set with pipe "|" character.
 
-## Language Options ##
+## Language Options
 
 There is a concept of language resource files.  You will notice them in the `lang/` folder.  Please open a ticket if you would like to contribute to translating to another language.
 
@@ -92,7 +157,17 @@ static $voice = "alice";
 static $language = "en-AU";
 ``` 
 
-## Postal Code Lengths ##
+You can also create a language selection menu upon dialing in.  It will only be available for those that there are resource files for in `lang/` folder.  If you have some translations, please send them, so they can be merged in.
+
+Add a new setting called, specifying the language codes for each language you want included.  The order will indicate the order in which it will be played back:
+
+```php
+static $language_selections = "en-US,pig-latin";
+```
+
+This example will make option 1, English and option 2, pig latin.
+
+## Postal Code Lengths
 
 By default a 5 digit postal code will be asked for.  To override this set the following, for instance a 4 digit postal code:
 
@@ -100,145 +175,68 @@ By default a 5 digit postal code will be asked for.  To override this set the fo
 static $postal_code_length = 4;
 ```
 
-## Ignoring Certain Formats ##
+## Fallback
+
+There may be times when a root server is down, it's possible to redirect a call to another if this happens.  In your `config.php`, specify the following.
+
+```php
+static $helpline_fallback = "1919555555";
+```
+
+## Voice Greeting
+
+It's possible to record a custom voice prompt and have it play back instead of the traditional voice engine.  Set the following:
+
+```php
+static $en_US_greeting = "https://example.com/your-recorded-greeting.mp3"
+```
+
+You can also set a custom greeting for voicemail.
+
+```php
+static $en_US_voicemail_greeting = "https://example.com/your-recorded-greeting.mp3"
+```
+
+These settings are overridable from within each service body configuration.
+
+# Meeting Search
+
+## Meeting Search Radius
+
+Change the default meeting search radius, this can be in miles or a negative number which would set the radius at the first n results. You can change this in your `config.php` with the following:
+
+```php
+static $meeting_search_radius = 30;
+```
+This would set the radius to a maximum of 30 miles.
+
+```php
+static $meeting_search_radius = -50;
+```
+This would set the radius at the first 50 results and is the default.
+
+More information on how the BMLT uses search radius is here: https://bmlt.magshare.net/how-auto-radius-works/
+
+## Results Counts Maximums
+
+The default number of meeting results is 5.  You can change this in your `config.php` with the following:
+
+```php
+static $result_count_max = 10;
+```
+
+This would set to a maximum of ten (10) results.
+
+## Grace Period
+
+By default a 15 minute grace period will be applied.  This can be adjusted by setting `$grace_minutes` in your `config.php`.
+
+## Ignoring Certain Formats
 
 In some cases you might want to ignore a specific format.  Add the following setting with the formats you want to exclude.  Separate each with a comma.
 
 ```php
 static $ignore_formats = "ASM";
-```
-
-## Voice Recognition Optimizations ##
-
-It's possible to set the expected spoken language, for recognition by setting the following variable in config.php to the culture variant.  The default is `en-US`, which is US English.
-
-Use the this chart to find the code of your preference https://www.twilio.com/docs/api/twiml/gather#languagetags.
-
-```php
-static $gather_language = "en-US";
-```
-
-You can also set some expected words or hints, to help the voice recognition engine along.  Use the setting by separating words with commas.  You can use phrases as well.  
-
-Each hint may not be more than 100 characters (including spaces).  You can use up to 500 hints.
-
-```php
-static $gather_hints = "";
-```
-
-### Grace Period
-
-By default a 15 minute grace period will be applied.  This can be adjusted by setting `$grace_minutes` in your `config.php`.
-
-## Helpline Call Routing
-
-The helpline router utilizes a BMLT server (2.9.0 or later), that has helpline numbers properly configured in the "Service Body Administration" section.  
-
-The yap platform will ask for a piece of location information in turn it will look up latitude and longitude and then send that information to the BMLT root server you have configured.
-
-You can also tie this into an existing extension based system, say for example Grasshopper.  If you want to dial an extension just add something like `555-555-5555|wwww700` for example after the helpline field on the BMLT Service Body Administration.  In this case it's instructing to dial 555-555-5555 and wait 4 seconds and then dial 700. 
-
-## Skipping Helpline Call Routing
-
-When configuring the TwiML app instead of pointing to `index.php` point to `input-method.php?Digits=2`.
-
-If you still want the title to display also point to `input-method.php?Digits=2&PlayTitle=1`.
-
-This could useful for wiring up to a Grasshopper extension.  Typically you set this as Department Extension and have your prompt instruct to press a series of keypresses.  
-
-For example, if you set this up as extension 1, from within you employee extensions you would instruct the caller to press *1 (star one) for finding meetings.  
-
-## Skipping Location Gathering With Helpline Call Routing
-
-To do this set the `$helpline_direct_location` variable in the `config.php` file to the location you want to direct the helpline to.
-
-```php
-static $helpline_direct_location = "Boston,MA";
-```
-
-If your option has a space in it, use the `+` symbol.  Example:
-
-```php
-static $helpline_direct_location = "Willow+Spring,NC";
-```
-
-## Helpline Search Radius ##
-
-Change the default helpline search radius, this is in miles. You can change this in your `config.php` with the following:
-
-```php
-static $helpline_search_radius = 30;
-```
-This would set the radius to a maximum of 30 miles and is the default.
-
-## Helpline Force Dialing
-
-You might want to force a particular Twilio number to just call another number.  Just use the following webhook.
-
-`/helpline-search.php?ForceNumber=8885551212` or for extension dialing `/helpline-search.php?ForceNumber=8885551212%7Cwwww700`.  Each `w` is a 1 second pause.
-
-In some cases, when using 1 second pauses you may want to indicate that there is something happening to the end user as there will be a delay.
-
-If you would like there to be a CAPTCHA to prevent robocalls + fax machines, you can add this to your query.
-
-`&Captcha=1`
-
-And/or, if you would like to have a basic waiting message, but no CAPTCHA use.
-
-`&WaitingMessage=1`
-
-These options can be combined.
-
-## Including province prior to lookup
-
-It may be that your yap instance needs to search multiple states.  By default yap will be biased towards the local number state (unless it's tollfree).  To enable province lookup set the `$province_lookup`, variable to `true` in the `config.php` file.  
-
-## Tollfree bias
-
-Tollfree is independent of any state/province bias.  
-
-To enable a specific bias, add `static $toll_free_province_bias` to your `config.php`, and set to the two letter state bias.  
-
-Example `$toll_free_province_bias = "TX"`, will bias to Texas.
-
-## Using hidden service bodies
-
-It is possible to create a service body with an unpublished group in order create additional routing for service bodies that may not exist in a given root server.  
-
-Once those service bodies have been populated and the unpublished meetings are added, you can make use of the helpline field to route calls.
-
-You will also need to add to the config.php three additional variables.  This allows yap to authenticate to the root server and retrieve the unpublished meetings.  This is required as a BMLT root server by design will not return unpublished meetings in the semantic interface.
-
-```php
-static $helpline_search_unpublished = true;
-static $bmlt_username = "";
-static $bmlt_password = "";
-```
-
-If for some reason this doesn't work, there is an alternative authentication method that seems to work for non-SSL connections `static $alt_auth_method = true`.
-
-You will need to also ensure that PHP has write access to write to this folder, in order to store the authentication cookie from the BMLT root server.
-
-**NOTE: This will not work for a sandwich server, because there is currently no concept of authentication.**
-
-## Using as a separate BMLT server for call routing
-
-In order to specify a different BMLT root server for call routing but not for meeting list lookups, set the following variable in config.php.
-
-```php
-static $helpline_bmlt_root_server = "";
-```
-
-## To upgrade easy ##
-
-You will need `make`.  Once you have that, run `make upgrade`.
-
-## Checking the call routing
-
-There is a very simple way to check where a could would be routed to.
-
-```shell
-curl https://example.com/yap/helpline-search.php?Digits=Turkey,NC
 ```
 
 ## Post Call Options
@@ -263,7 +261,7 @@ static $infinite_searching = true;
 
 ## SMS Gateway
 
-In order to use SMS to get a list of meetings you will configure Messaging to point to Webook sms-gateway.php.  Ensure that it's using HTTP GET.
+In order to use SMS to get a list of meetings you will configure Messaging to point to Webook sms-gateway.php.
 
 Then you can send a zip code, county or city to your phone number and get back a response.
 
@@ -275,80 +273,143 @@ Some older handsets are not capable of rendering maps links.  If you want to ena
 static $include_map_link = true;
 ```
 
-## Fallback
+# Helpline / Volunteer Routing
 
-There may be times when a root server is down, it's possible to redirect a call to another if this happens.  In your `config.php`, specify the following.
+## Helpline Search Radius
 
-```php
-static $helpline_fallback = "1919555555";
-```
-
-## Volunteer Dialer (Beta)
-
-You can also supply a list of volunteers in a BMLT server.  
-
-1) Create a new format called "HV"
-2) In the service body under the helpline specify "yap".
-3) Make a new meeting (do not publish it).
-4) For the meeting name use the volunteer's name.
-5) Select the appropriate service body in the dropdown.  (Note: this service body must be set to "yap" as the helpline in Step #2)
-6) Set the Start Time and Duration which will determine the length of the shift (this will recur every day unless you create additional volunteer entries that match the name)
-7) Set the Location, this is currently used to specify what timezone the volunteer is in (in the future it may help with more succinct locating).
-8) Select "HV" as the format.
-9) Under the phone 1 field, enter this persons phone number.
-10) Since this will be querying unpublished values you must set in `config.php` the BMLT server credentials.
-   
-```php 
-   static $bmlt_username = "";
-   static $bmlt_password = "";
-```
-
-Some additional details on this:
-
-- You can visualize the shift schedule by going to http://example.com/yap/schedule.html and selecting from the dropdown.
-- If you want to have a volunteer that always is on, then set the start time to "Midnight" and the Duration "Open-Ended"
-- You can control the sequence by specifying "Location".  This will be sorted numerically ascending.  (for example 0 is the highest, 99 is the lowest)
-- You can do a helpline to helpline redirect if you want to redirect one service body helpline to another..  You do this by setting the helpline number in your bmlt for your service body that you want redirected to yap->## where ## is the service body id that you want to redirect to.
-- You can control the timeout between calls, which is defaulted at 20 seconds.  You do this by setting in config.php the following parameter.
+Change the default helpline search radius, this is in miles. You can change this in your `config.php` with the following:
 
 ```php
-    static $call_timeout = 20;
+static $helpline_search_radius = 30;
 ```
+This would set the radius to a maximum of 30 miles and is the default.
 
-- You can change the outbound caller id to a different verified twilio number by setting the phone number in config.php
-```php
-    static $forced_callerid = '###-###-####';
-```
+## Using Hidden Service Bodies For Helpline Lookups
 
-## Facebook Messenger Gateway (Meetings Lookup)
+It is possible to create a service body with an unpublished group in order create additional routing for service bodies that may not exist in a given root server.  
 
-**Your Yap server will have to have HTTPS/SSL enabled.  You will also need redis running locally.**
+Once those service bodies have been populated and the unpublished meetings are added, you can make use of the helpline field to route calls.
 
-1) Create a new app under your Facebook developer account https://developers.facebook.com/apps/.  Whatever you name it will be the name of your bot.  (Example: North Carolina Region of NA)
-2) Select "Messenger" as application product
-3) You will need to link your bot to a page.  Either use an existing one or make a new one.  It may make sense to your service bodies one (not your personal one).
-4) A token will be generated which you will need to add to config.php as the following:
+You will also need to add to the config.php three additional variables.  This allows yap to authenticate to the root server and retrieve the unpublished meetings.  This is required as a BMLT root server by design will not return unpublished meetings in the semantic interface.
 
 ```php
-static $fbmessenger_accesstoken = '';
+static $helpline_search_unpublished = true;
+static $bmlt_username = "";
+static $bmlt_password = "";
 ```
 
-5) The verify token is an arbitrary secret which you use to verify that the request is coming from Facebook.  It prevents someone from hijacking your endpoint and flooding with messages.  Set the value you pick to the value in config.php:
+You will need to also ensure that PHP has write access to write to this folder, in order to store the authentication cookie from the BMLT root server.
+
+**NOTE: This will not work for the Tomato server, because there is no concept of authentication.**
+
+## Using A Different BMLT server for routing
+
+In order to specify a different BMLT root server for call routing but not for meeting list lookups, set the following variable in config.php.
 
 ```php
-static $fbmessenger_verifytoken = '';
+static $helpline_bmlt_root_server = "";
 ```
 
-6) Add a new webhook.
-7) The callback URL will be your Yap server pointing to the file `fbmessenger-gateway.php`.
-8) Select "messages" and "messaging_postbacks" under subscription fields.
-9) Once you've created your webhook, assign it to the page you created.
-10) Call `https://your-yap-server/fbmessenger-activate.php` to activate yap connection to Facebook.
-11) By default you will be in development mode and you should be able to search for the bot under your messenger on your personal account.  Once you are satisfied you can turn on the bot, which will allow other people to find it.
-12) When are ready to go out of development mode, you will need to set a Privacy Policy under Basic Settings.  You will also have to set a Category.
-13) You will need to submit your app to Facebook for review.  This requires setting a logo, as well as some same submissions that they the Facebook team can test with.  It may take up to 5 days for the review to pass.
+## Helpline Call Routing
 
-Note: If you decide to change the `$title` in your config.php, you will have to force a refresh on your Facebook Messenger settings by calling `http://your-yap-server/fbmessenger-activate.php` again.  After this is done, it may take some time for Facebook to show these changes.
+The helpline router utilizes a BMLT server (2.9.0 or later), that has helpline numbers properly configured in the "Service Body Administration" section.  
+
+A prompt will ask for a piece of location information in turn it will look up latitude and longitude and then send that information to the BMLT root server you have configured.
+
+You can also tie this into an existing extension based system, say for example Grasshopper.  If you want to dial an extension just add something like `555-555-5555|wwww700` for example after the helpline field on the BMLT Service Body Administration.  In this case it's instructing to dial 555-555-5555 and wait 4 seconds and then dial 700. 
+
+## Checking the call routing
+
+There is a very simple way to check where a could would be routed to.
+
+```shell
+curl https://example.com/yap/helpline-search.php?Digits=Turkey,NC
+```
+
+## Skipping Helpline Call Routing
+
+When configuring the TwiML app instead of pointing to `index.php` point to `input-method.php?Digits=2`.
+
+If you still want the title to display also point to `input-method.php?Digits=2&PlayTitle=1`.
+
+This could useful for wiring up to a Grasshopper extension.  Typically you set this as Department Extension and have your prompt instruct to press a series of keypresses.  
+
+For example, if you set this up as extension 1, from within you employee extensions you would instruct the caller to press *1 (star one) for finding meetings.  
+
+## Force Helpline Routing
+
+You can force the helpline option to go directly to a specific service body by specifying the following on your webhook in Twilio.
+
+`?override_service_body_id=x`
+
+The service body id would be found in your BMLT root server.  It must exist in that root server instance to be routed correctly.
+
+## Force Dialing
+
+You might want to force a particular Twilio number to just call another number.  Just use the following webhook.
+
+`/helpline-search.php?ForceNumber=8885551212` or for extension dialing `/helpline-search.php?ForceNumber=8885551212%7Cwwww700`.  Each `w` is a 1 second pause.
+
+In some cases, when using 1 second pauses you may want to indicate that there is something happening to the end user as there will be a delay.
+
+If you would like there to be a CAPTCHA to prevent robocalls + fax machines, you can add this to your query.
+
+`&Captcha=1`
+
+And/or, if you would like to have a basic waiting message, but no CAPTCHA use.
+
+`&WaitingMessage=1`
+
+These options can be combined.
+
+## Volunteer Routing
+
+Incompatible with Yap 1.x Volunteer Dialers, you will have reconfigure your setup.  
+
+1) You will need to ensure that the following `config.php` parameters are set.  They should be a service body admin that will be responsible for reading and writing data back to your BMLT.  This will not work with the "Server Administrator" account.
+
+```php
+static $bmlt_username = "";
+static $bmlt_password = "";
+```
+
+2) You will need to specify Twilio API parameters.  You can find this on your account dashboard when you login into Twilio.
+
+```php
+static $twilio_account_sid = "";
+static $twilio_auth_token = "";
+```
+
+3) Head over to your admin login page.  https://your-yap-instance/admin.
+4) Login with any credentials from your BMLT server.   
+5) Go to the Service Bodies tab and click "Configure".  From there you should see a check box to enable Volunteer Routing.  Check it off and save.
+6) Go to Volunteers, and you should see that service body in the dropdown, and select it.
+7) Click Add Volunteer.  Fill out the Name field, and then click the "+" to expand out the rest of the details.  You should be able to start populating the number and shift information.  You will also have to click "Enable" in the bottom right.  Once you are done, click "Save Volunteers".
+8) You can also sort the sequence by dragging and dropping the volunteer cards.
+9) Go to Schedules to preview your changes.  Select your service body from the dropdown, and it should render onto the calendar.  
+10) You can now test to see if things are working.
+
+* Volunteer Routing Redirect: You do this by setting in the Service Body Configuration the Volunteer Routing mechanism to "Volunteers Redirect" and specifying the respective Service Body Id in the "Volunteers Redirect Id" field. 
+* Forced Caller Id: This setting changes the outgoing display caller id.
+* Call Timeout: This is the number of seconds before trying the next number for volunteer routing.
+
+## Music On Hold
+
+Music on hold will play when doing volunteer routing which is configurable from within the service body configuration.  You can specify one or more URLs to an MP3 file or Shoutcast stream.  Separate them by commas.
+
+There are also some free alternatives.  They are licensed by Creative Commons.  They are playlists themselves so they may not be combined with any other URLs. 
+
+* Ambient: https://twimlets.com/holdmusic?Bucket=com.twilio.music.ambient - [[license]](http://com.twilio.music.ambient.s3.amazonaws.com/license.txt)
+* Classical (default): https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical - [[license]](http://com.twilio.music.classical.s3.amazonaws.com/license.txt)
+* Electronica: https://twimlets.com/holdmusic?Bucket=com.twilio.music.electronica - [[license]](http://com.twilio.music.electronica.s3.amazonaws.com/license.txt)
+* Guitars: https://twimlets.com/holdmusic?Bucket=com.twilio.music.guitars - [[license]](http://com.twilio.music.guitars.s3.amazonaws.com/license.txt)
+* New Age: https://twimlets.com/holdmusic?Bucket=com.twilio.music.newage - [[license]](http://com.twilio.music.newage.s3.amazonaws.com/license.txt)
+* Rock: https://twimlets.com/holdmusic?Bucket=com.twilio.music.rock - [[license]](http://com.twilio.music.rock.s3.amazonaws.com/license.txt)
+* Soft Rock: https://twimlets.com/holdmusic?Bucket=com.twilio.music.soft-rock - [[license]](http://com.twilio.music.soft-rock.s3.amazonaws.com/license.txt)
+
+Music on Hold loops indefinitely.
+
+# Miscellaneous
 
 ## Playback for the Just For Today Meditation
 This will add an option on the main menu to press 3 to playback the Just For Today meditation.
@@ -357,11 +418,21 @@ This will add an option on the main menu to press 3 to playback the Just For Tod
 static $jft_option = true;
 ```
 
+## Upgrading
+
+You will need `make`.  Once you have that, run `make upgrade`.
+
 ## Contribute
 
 Fork this repo and send a pull request.  For testing locally, run the yap server and then use `ngrok`.  Grab the ngrok hostname that is generated and then use that in your Twilio settings.
 
 You get an instant proxy to your local services to step through and debug.
+
+## Connectors
+
+Yap has an API, and so there are other ways to pull out Yap information.
+
+* [Facebook Messenger Bot](https://github.com/radius314/yap-fbmessenger-bot)
 
 ## Call Flow
 
