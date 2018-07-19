@@ -429,6 +429,12 @@ Fork this repo and send a pull request.  For testing locally, run the yap server
 
 You get an instant proxy to your local services to step through and debug.
 
+## Connectors
+
+Yap has an API, and so there are other ways to pull out Yap information.
+
+* [Facebook Messenger Bot](https://github.com/radius314/yap-fbmessenger-bot)
+
 ## Call Flow
 
 ![alt text](resources/yap-flow.png)
