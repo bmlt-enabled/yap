@@ -1,9 +1,8 @@
 [![Build Status](https://travis-ci.org/radius314/yap.svg?branch=master)](https://travis-ci.org/radius314/yap)
 [![Waffle.io - Columns and their card count](https://badge.waffle.io/radius314/yap.png?columns=all)](https://waffle.io/radius314/yap?utm_source=badge)
-# yap 2.0 beta 2 (+nightlies)
+# yap
 
-## Warning this is breaking change and features are very unstable and changing rapidly.
-Requires a minimum of PHP 5.3.9 to use.
+Requires a minimum of PHP 5.6 to use.
 
 The purposes of yap are :
 * To be able to take the results of a BMLT root server and play it back through the telephone.  
@@ -66,7 +65,7 @@ Miscellaneous
 Here is an instructional video that might assist you: https://www.dropbox.com/s/e59dzal4rkkcl2r/twilio.mp4?dl=0
 **This will require that you have an SSL certificate installed on your webserver to transit a secure connection.  This is required by Twilio.**
 
-1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: https://github.com/radius314/yap/archive/2.0.0-beta4.zip.
+1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: https://github.com/radius314/yap/archive/2.0.0.zip.
 
 2. Once the application is configured you will need to customize the config.php file.  There are several settings there that are documented in that file.  There are a number of different ways to utilize the yap platform. 
 

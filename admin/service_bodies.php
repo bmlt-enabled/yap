@@ -69,7 +69,7 @@ sort_on_field($service_bodies, 'name');
                                                 Primary Contact Number (typically the Chair/Coordinator):
                                                 <input class="form-control form-control-sm" type="text" name="primary_contact" id="primary_contact">
 
-                                                Music On Hold (<a target="_blank" href="https://github.com/radius314/yap/tree/unstable#music-on-hold">more</a>):
+                                                Music On Hold (<a target="_blank" href="https://github.com/radius314/yap/tree/master#music-on-hold">more</a>):
                                                 <input class="form-control form-control-sm" type="text" name="moh" id="moh">
 
                                                 Recorded Greeting (URL to any MP3):

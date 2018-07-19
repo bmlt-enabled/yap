@@ -5,7 +5,7 @@ lint:
 
 upgrade:
 	mv config.php ../
-	git pull origin unstable
+	git pull origin master
 	mv ../config.php .
 
 simulate:

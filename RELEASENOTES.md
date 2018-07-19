@@ -1,30 +1,32 @@
 # Release Notes
 
-### 2.0.0 (unreleased)
+### 2.0.0 (July 19, 2018)
 * The "Admin" portal. Yap has the ability to make managing helpline volunteers very easy. If you are using helpline volunteer routing in Yap 1.x, you know how painful it was.
 * The "Admin" portal re-uses the BMLT permission hierarchy scheme. This means if you sign into the Yap admin portal, that user will only see their service bodies. This makes it very easy to allow service bodies to administer their own volunteers. 
 * Eliminated the "yap" in the Helpline field and "HV" formats for tagging things. The admin portal makes it simple to add volunteers and schedules.
 * Music on hold while dialing out to a volunteer. In Yap 1.x it was dead air.
 * README.md has a table of contents (makes it easier to find things), the documentation itself needs a cleanup.
 * Talks directly to Twilio API. This is the just beginning of the ability to hook into some more powerful functionality. With this requires adding your Twilio credentials to config.php. You will notice in the Admin portal that you can see all your provisioned numbers very easily.
-* Music on Hold for volunteer routing.
+* Music on Hold for volunteer routing with playlist capabilities.
 * Music on Hold Customizations, you can supply any MP3 file or Shoutcast/Icecast stream.
 * Voicemail capabilities for volunteer routing.
 * Optional SMS notifications for new voicemail.
-* Customizable call cycling algorithms (Loop Forever, Cycle Once and go to Voice Mail, or Random Forever)
+* Customizable call cycling algorithms (Loop Forever, Cycle Once and go to Voice Mail, or Random Forever).
 * Quick button for adding/removing 24/7 shifts for volunteers.
-* Optional SMS notification for information volunteers of inbound calls (with Caller ID, for easy callbacks)
+* Optional SMS notification for information volunteers of inbound calls (with Caller ID, for easy callbacks).
 * Updates to the upgrade-advisor.php for checking common root server misconfigurations.
 * Forced Caller ID setting (Yap 1.x feature parity)
 * Redirect service body to another (Yap 1.x feature parity)
 * Configurable per call timeouts (Yap 1.x feature parity)
 * Various UI bug fixes, smoother modal transitions.
-* Improved voice recognition failure handing 
-* Call session configuration, defaults and overrides
+* Improved voice recognition failure handing.
+* Call session configuration, defaults and overrides.
 * Settings page for viewing the various options and their current value.
 * Configuration precedence model.
 * Multi-lingual phone menu + admin portal support.
 * Direct to service helpline routing option.
+* Custom mp3 prompts for initial greeting and voicemail.
+* Facebook Messenger Bot split off to it's own application.
 
 ### 1.3.3 (July 6, 2018)
 * Added CAPTCHA to force dialing + made configuration options a little more flexible, this should prevent robocalls and fax dialers (ala Grasshopper).
