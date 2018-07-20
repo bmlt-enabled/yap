@@ -260,7 +260,7 @@ function getCoordinatesForAddress($address) {
             $map_details_response = get($GLOBALS['osm_maps_endpoint']
                 . "&postalcode="
                 . urlencode($address)
-                . (isset($GLOBALS['location_lookup_bias']) ? "&country=" . urlencode($GLOBALS['location_lookup_bias']) : ""));
+                . (isset($GLOBALS['location_lookup_bias']) ? "&countrycodes=" . urlencode($GLOBALS['location_lookup_bias']) : ""));
             $map_details = json_decode($map_details_response);
             if ($map_details[0]->place_id != null) { 
                 $coordinates->location  = $map_details[0]->display_name;
