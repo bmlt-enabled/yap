@@ -72,8 +72,11 @@
 
 ### 1.0.0 (April 11, 2018)
 
-### First Commit (April 15, 2017)
+### Yap First Commit (April 15, 2017)
+https://github.com/radius314/yap/commit/ead27730db78a002c318ccfc26f63a484f30a6a3
 
 ### bmlt-vox last commit (March 21, 2017)
+https://github.com/radius314/bmlt-vox/commit/113531f38bb31ff765d26a69aef85b1d16a9cc1a
 
 ### bmlt-vox first commit (April 27, 2016)
+https://github.com/radius314/bmlt-vox/commit/ef3616f5f11b043af4cac92a7ce8695530e1e705
