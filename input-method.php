@@ -4,10 +4,11 @@
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
     
     if ($searchType == "1") {
-    if (isset($GLOBALS['helpline_direct_location']) && $GLOBALS['helpline_direct_location']) {
-        header("Location: helpline-search.php?Digits=" .$GLOBALS['helpline_direct_location']);
-        exit();
-    }
+        if (isset($_SESSION['override_service_body_id'])) {
+            header("Location: helpline-search.php?Called=" . $_REQUEST["Called"]);
+            exit();
+        }
+
         $searchDescription = word('someone_to_talk_to');
     } else if ($searchType == "2") {
         $searchDescription = word('meetings');
@@ -21,25 +22,28 @@
 ?>
 <Response>
     <Gather numDigits="1" timeout="10" action="input-method-result.php?SearchType=<?php echo $searchType ?>" method="GET">
-    
-    	<?php 
-			if ($playTitle == "1") {
-				echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . $GLOBALS['title'] . "</Say>";
-			}
-		?>
+    	<?php
+        if ($playTitle == "1") { ?>
+            <Say voice="<?php echo setting("voice") ?>" language="<?php echo setting("language")?>"><?php echo setting("title")?></Say>
+		<?php }
+        if (isset($_REQUEST["Retry"])) {
+            $retry_message = isset($_REQUEST["RetryMessage"]) ? $_REQUEST["RetryMessage"] : word("could_not_find_location_please_retry_your_entry");?>
+            <Say voice="<?php echo setting("voice") ?>" language="<?php echo setting("language")?>"><?php echo $retry_message?></Say>
+            <Pause length="1"/>
+        <?php } ?>
        
-        <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
-            <?php echo word('press') ?> <?php echo word('one') ?> <?php echo word('to_search_for') ?> <?php echo $searchDescription ?> <?php echo word ('by') ?> <?php echo word('city_or_county') ?>
+        <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
+            <?php echo word('press') . " " . word('one') . " " . word('to_search_for') . " " . $searchDescription . " " . word ('by') . " " . word('city_or_county') ?>
         </Say>
-        <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
-            <?php echo word('press') ?> <?php echo word('two') ?> <?php echo word('to_search_for') ?> <?php echo $searchDescription ?> <?php echo word ('by') ?> <?php echo word('zip_code') ?>
+        <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
+            <?php echo word('press') . " "  . word('two') . " " . word('to_search_for') . " " . $searchDescription . " " . word ('by') . " " . word('zip_code') ?>
         </Say>
 
         <?php
             if ($searchType == "2") {
-                if (isset($GLOBALS['jft_option']) && $GLOBALS['jft_option']) { ?>
-                    <Say voice="<?php echo $voice; ?>" language="<?php echo $language; ?>">
-                        <?php echo word('press') ?> <?php echo word('three') ?> <?php echo word('to_listen_to_the_just_for_today') ?>
+                if (has_setting('jft_option') && setting('jft_option')) { ?>
+                    <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
+                        <?php echo word('press') . " " . word('three') . " " . word('to_listen_to_the_just_for_today') ?>
                 </Say>
                 <?php }
             }

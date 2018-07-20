@@ -12,9 +12,9 @@ sort_on_field($service_bodies, 'name');
                 <thead>
                     <tr>
                         <th scope="col">ID</th>
-                        <th scope="col">Service Body</th>
-                        <th scole="col">Helpline</th>
-                        <th scope="col">Action</th>
+                        <th scope="col"><?php echo word("service_body")?></th>
+                        <th scope="col"><?php echo word("helpline")?></th>
+                        <th scope="col"><?php echo word("action")?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -24,7 +24,7 @@ sort_on_field($service_bodies, 'name');
                         <td><?php echo $service_body->name ?></td>
                         <td><?php echo isset($service_body->helpline) ? $service_body->helpline : "" ?></td>
                         <td>
-                            <button class="btn btn-sm btn-info" onclick="serviceBodyConfigure(<?php echo $service_body->id ?>);">Configure</button>
+                            <button class="btn btn-sm btn-info" onclick="serviceBodyConfigure(<?php echo $service_body->id ?>);"><?php echo word('configure')?></button>
                             <div class="modal fade" id="serviceBodyConfiguration_<?php echo $service_body->id ?>" tabindex="-1" role="dialog" aria-labelledby="configureShiftDialog" aria-hidden="true">
                                 <input type="hidden" id="helpline_data_id" name="helpline_data_id" class="helpline_data_id" value="0" />
                                 <div class="modal-dialog modal-dialog-centered" role="document">
@@ -52,6 +52,31 @@ sort_on_field($service_bodies, 'name');
 
                                                 Call Timeout (default: 20 seconds):
                                                 <input class="form-control form-control-sm" type="text" name="call_timeout" id="call_timeout">
+
+                                                Call Strategy:
+                                                <select class="form-control form-control-sm" name="call_strategy" id="call_strategy">
+                                                    <option value="0">Loop Forever</option>
+                                                    <option value="1">Cycle Once, Then Voicemail</option>
+                                                    <option value="2">Random Forever</option>
+                                                </select>
+
+                                                SMS to Volunteer Options:
+                                                <select class="form-control form-control-sm" name="volunteer_sms_notification" id="volunteer_sms_notification">
+                                                    <option value="no_sms">No SMS</option>
+                                                    <option value="send_sms">Send SMS to Volunteer</option>
+                                                </select>
+
+                                                Primary Contact Number (typically the Chair/Coordinator):
+                                                <input class="form-control form-control-sm" type="text" name="primary_contact" id="primary_contact">
+
+                                                Music On Hold (<a target="_blank" href="https://github.com/radius314/yap/tree/master#music-on-hold">more</a>):
+                                                <input class="form-control form-control-sm" type="text" name="moh" id="moh">
+
+                                                Recorded Greeting (URL to any MP3):
+                                                <input class="form-control form-control-sm" type="text" name="override_en_US_greeting" id="override_en_US_greeting">
+
+                                                Voice Mail Greeting (URL to any MP3):
+                                                <input class="form-control form-control-sm" type="text" name="override_en_US_voicemail_greeting" id="override_en_US_voicemail_greeting">
                                             </form>
                                         </div>
                                         <div class="modal-footer">

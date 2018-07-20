@@ -13,7 +13,7 @@ $final_array = explode("\n", $without_tabs);
     <?php
         foreach ($final_array as $item)  {
             if ($item != "") {
-                echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">"
+                echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">"
                      . html_entity_decode($item) . "</Say>";
             }
         }

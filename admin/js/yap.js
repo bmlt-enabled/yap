@@ -14,7 +14,9 @@ function volunteerPage() {
         }
     });
 
-    $("#volunteerCards").sortable();
+    $("#volunteerCards").sortable({
+        "handle":".volunteer-sort-icon"
+    });
 
     for (var hr = 1; hr <= 12; hr++) {
         var hr_value = hr < 10 ? "0" + hr : hr.toString();
@@ -25,6 +27,38 @@ function volunteerPage() {
         var min_value = min < 10 ? "0" + min : min.toString();
         $(".minutes_field").append(new Option(min_value, min_value));
     }
+}
+
+function schedulePage() {
+    $('#calendar').fullCalendar({
+        allDaySlot: false,
+        defaultView: 'agendaWeek',
+        nowIndicator: true,
+        firstDay: (new Date()).getDay(),
+        themeSystem: 'bootstrap4',
+        header: {
+            left: null,
+            center: null,
+            right: "agendaWeek, agendaDay, prev, next"
+        },
+        height: 'auto',
+        validRange: {
+            start: moment().startOf('day').format("YYYY-MM-DD"),
+            end: moment().add(7, 'days').endOf('day').format("YYYY-MM-DD")
+        },
+        viewRender: function() {
+            $(".fa-chevron-left").html("<");
+            $(".fa-chevron-right").html(">");
+        }
+    });
+
+    $('select#service_body_id').change(function() {
+        if (parseInt($('select#service_body_id').val()) > 0) {
+            $('#calendar').fullCalendar('removeEventSources');
+            $("#calendar").fullCalendar('removeEvents');
+            $('#calendar').fullCalendar('addEventSource', '../helpline-schedule.php?service_body_id=' + $('select#service_body_id').val());
+        }
+    })
 }
 
 function addVolunteers() {
@@ -146,7 +180,15 @@ function loadVolunteers(serviceBodyId, callback) {
 
 function addVolunteer(volunteerData) {
     var shiftRenderQueue = [];
-    var getLastVolunteerCard = parseInt($("#volunteerCards").children().length);
+    var cards = $("#volunteerCards").children();
+    var getLastVolunteerCard = 0;
+    for (var c = 0; c < cards.length; c++) {
+        var currentId = parseInt($(cards[c]).attr("id").replace("volunteerCard_", ""));
+        if (currentId > getLastVolunteerCard) {
+            getLastVolunteerCard = currentId;
+        }
+    }
+
     var volunteerCardTemplate = $("#volunteerCardTemplate").clone();
     var volunteerId = "volunteerCard_" + (++getLastVolunteerCard);
     volunteerCardTemplate.attr("id", volunteerId);
@@ -202,7 +244,7 @@ var wrapFunction = function(fn, context, params) {
 };
 
 function addShift(e) {
-    $("#time_zone").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
     $("#shiftVolunteerName").html($(e).closest(".volunteerCard").find("#volunteer_name").val());
     $("#selectShiftDialog").attr({
         "volunteer_id": $(e).closest(".volunteerCard").attr("id"),
@@ -212,16 +254,26 @@ function addShift(e) {
 }
 
 function add24by7Shifts(e) {
+    $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    $("#selectTimeZoneDialog").attr("data-volunteerid", $(e).closest(".volunteerCard").attr("id"));
+    $("#selectTimeZoneDialog").modal("show");
+}
+
+function selectTimeZoneFor247Shifts(e) {
+    var volunteerId = $(e).closest("#selectTimeZoneDialog").attr("data-volunteerid");
+    var tz = $(e).closest("#selectTimeZoneDialog").find("#time_zone").val();
     for (var x = 1; x <= 7; x++) {
         var shiftInfoObj = {
             "day": x,
-            "tz": 'UTC',
+            "tz": tz,
             "start_time": '12:00 AM',
             "end_time": '11:59 PM'
         };
 
-        renderShift($(e).closest(".volunteerCard").attr("id"), shiftInfoObj);
+        renderShift(volunteerId, shiftInfoObj);
     }
+
+    $("#selectTimeZoneDialog").modal("hide");
 }
 
 function saveShift(e) {
@@ -243,6 +295,10 @@ function saveShift(e) {
 
 function removeShift(e) {
     $(e).closest(".shiftCard").remove();
+}
+
+function removeAllShifts(e) {
+    $(e).closest(".volunteerCard").find(".shiftCard").remove()
 }
 
 function toggleCardDetails(e) {

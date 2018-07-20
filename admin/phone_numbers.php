@@ -13,8 +13,8 @@ $client = new Client( $sid, $token );
             <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th scope="col">Phone Number</th>
-                        <th scope="col">Name</th>
+                        <th scope="col"><?php echo word('phone_numbers') ?></th>
+                        <th scope="col"><?php echo word('name') ?></th>
                         <th scope="col">Voice Url</th>
                         <th scope="col">SMS Url</th>
                     </tr>
@@ -24,8 +24,8 @@ $client = new Client( $sid, $token );
                     <tr>
                         <td><?php echo $number->phoneNumber ?></td>
                         <td><?php echo $number->friendlyName ?></td>
-                        <td><?php echo $number->voiceUrl ?></td>
-                        <td><?php echo $number->smsUrl ?></td>
+                        <td><a target="_blank" href="<?php echo $number->voiceUrl ?>"><?php echo $number->voiceUrl ?></a></td>
+                        <td><a target="_blank" href="<?php echo $number->smsUrl ?>"><?php echo $number->smsUrl ?></a></td>
                     </tr>
                 <?php } ?>
                 </tbody>
