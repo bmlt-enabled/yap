@@ -74,17 +74,24 @@ Here is an instructional video that might assist you: https://www.dropbox.com/s/
 
 ![alt text](resources/twilio-auth-v2.png)
 
-4. Be sure to get a Google Maps API key.  Specify this in config.php as the value for `$google_maps_api_key`.  Make sure you have "Google Maps Geocoding API" enabled on your credentials.  If you have one already for your BMLT, you can use that as well (you don't need a separate one).  This article may be useful https://bmlt.magshare.net/google-maps-api-keys-and-geolocation-issues/.
+4.  You will need to ensure that the following `config.php` parameters are set.  They should be a service body admin that will be responsible for reading and writing data back to your BMLT.  This will not work with the "Server Administrator" account.  The user should be at the highest level of access in your BMLT hierarchy that you require access to.
+   
+```php
+static $bmlt_username = "";
+static $bmlt_password = "";
+```
 
-5. Try testing that your application actually is functioning properly by opening a browser http://example.com/index.php.  
+5. Be sure to get a Google Maps API key.  Specify this in config.php as the value for `$google_maps_api_key`.  Make sure you have "Google Maps Geocoding API" enabled on your credentials.  If you have one already for your BMLT, you can use that as well (you don't need a separate one).  This article may be useful https://bmlt.magshare.net/google-maps-api-keys-and-geolocation-issues/.
 
-6. You will need to set up a Twilio account, and do the following:
-* Purchase a phone number (typically you would buy one for your locale, tollfree is pretty much unnecessary these days).
-* Configure that number to point to a Webook.  It would be something like https://example.com/index.php.
+6. Try testing that your application actually is functioning properly by opening a browser http://example.com/index.php.  
 
-7. You can test whether or not you are properly configured by going to https://example.com/upgrade-advisor.php.
+7. You will need to set up a Twilio account, and do the following:
+    * Purchase a phone number (typically you would buy one for your locale, tollfree is pretty much unnecessary these days).
+    * Configure that number to point to a Webook.  It would be something like https://example.com/index.php.
 
-8. Make a call to your number and try it out.  If there is a problem the debugger in the Twilio console will let you know why.  Most likely you did not setup your config.php file correctly.
+8. You can test whether or not you are properly configured by going to https://example.com/upgrade-advisor.php.
+
+9. Make a call to your number and try it out.  If there is a problem the debugger in the Twilio console will let you know why.  Most likely you did not setup your config.php file correctly.
 
 ## Configuration Precedence
 
@@ -392,9 +399,9 @@ static $twilio_auth_token = "";
 9) Go to Schedules to preview your changes.  Select your service body from the dropdown, and it should render onto the calendar.  
 10) You can now test to see if things are working.
 
-* Volunteer Routing Redirect: You do this by setting in the Service Body Configuration the Volunteer Routing mechanism to "Volunteers Redirect" and specifying the respective Service Body Id in the "Volunteers Redirect Id" field. 
-* Forced Caller Id: This setting changes the outgoing display caller id.
-* Call Timeout: This is the number of seconds before trying the next number for volunteer routing.
+    * Volunteer Routing Redirect: You do this by setting in the Service Body Configuration the Volunteer Routing mechanism to "Volunteers Redirect" and specifying the respective Service Body Id in the "Volunteers Redirect Id" field. 
+    * Forced Caller Id: This setting changes the outgoing display caller id.
+    * Call Timeout: This is the number of seconds before trying the next number for volunteer routing.
 
 ## Music On Hold
 
