@@ -3,7 +3,7 @@ $service_bodies = getServiceBodyDetailForUser();
 sort_on_field($service_bodies, 'name');
 ?>
 <div class="container">
-    <div class="alert alert-success" role="alert" style="display:none;" id="service_body_saved_alert">
+    <div class="alert" role="alert" style="display:none;" id="service_body_saved_alert">
         Saved.
     </div>
     <div class="row">

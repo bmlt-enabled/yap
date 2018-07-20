@@ -122,9 +122,18 @@ function saveServiceBodyConfig(service_body_id) {
             helpline_data_id,
             data,
             '_YAP_CONFIG_',
-            function() {
-                $("#service_body_saved_alert").show();
-                $("#service_body_saved_alert").fadeOut(3000);
+            function(xhr, status) {
+                var alert = $("#service_body_saved_alert");
+                if (xhr.responseText === "{}" || xhr.status !== 200) {
+                    alert.addClass("alert-danger");
+                    alert.html("Could not save.");
+                } else {
+                    alert.addClass("alert-success");
+                    alert.html("Saved.");
+                }
+
+                alert.show();
+                alert.fadeOut(3000);
                 spinnerDialog(false);
             }
         );
