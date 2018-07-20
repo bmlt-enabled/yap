@@ -89,3 +89,34 @@ div#signin {
 #shiftDay {
     display: inline;
 }
+
+.spinnerImage {
+    height: 31px;
+    width: 31px;
+    background: url('../img/loader.gif') no-repeat;
+    display: inline;
+    float: left;
+    padding-right: 40px;
+}
+
+#spinnerDialogText {
+    padding-top: 3px;
+}
+
+#admin_language {
+    margin-top: 10px;
+}
+
+#calendar {
+    margin-top: 10px;
+}
+
+.volunteer-sort-icon {
+    height: 32px;
+    width: 32px;
+    background: url('../img/drag-reorder.png') no-repeat;
+    display: inline;
+    float: left;
+    padding-right: 45px;
+    cursor: move;
+}

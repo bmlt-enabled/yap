@@ -4,7 +4,7 @@
         <div class="alert alert-success" role="alert" style="display:none;" id="volunteer_saved_alert">
             Saved.
         </div>
-        <label for="service_body_id">Service Body</label>
+        <label for="service_body_id"><?php echo word('service_body')?></label>
         <select class="form-control form-control-sm" id="service_body_id">
             <option>-= Select A Service Body =-</option>
             <?php
@@ -17,8 +17,32 @@
         <div class="row">
             <div id="newVolunteerDialog" class="col-sm" style="display:none;">
                 <div class="form-group">
-                    <button id="add-volunteer" class="btn btn-sm btn-primary" type="button" onclick="addVolunteers();""><?php echo $GLOBALS['add_volunteer']?></button>
-                    <button id="save-volunteers" class="btn btn-sm btn-success" type="button" onclick="saveVolunteers();"><?php echo $GLOBALS['save_volunteers']?></button>
+                    <button id="add-volunteer" class="btn btn-sm btn-primary" type="button" onclick="addVolunteers();""><?php echo word('add_volunteer')?></button>
+                    <button id="save-volunteers" class="btn btn-sm btn-success" type="button" onclick="saveVolunteers();"><?php echo word('save_volunteers')?></button>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="selectTimeZoneDialog" tabindex="-1" role="dialog" aria-labelledby="selectTimeZoneDialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        Select Time Zone For 24/7 Shifts
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group form-row form-inline">
+                            Time Zone:
+                            <select class="form-control form-control-sm time_zone_selector" id="time_zone">
+                                <?php
+                                foreach (getTimezoneList() as $tzItem) { ?>
+                                    <option value="<?php echo $tzItem?>"><?php echo $tzItem; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="selectTimeZoneFor247Shifts(this)">Select</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -85,6 +109,7 @@
 <div class="card volunteerCard border-dark" id="volunteerCardTemplate" style="display:none;">
     <form id="volunteersForm">
         <div class="card-header">
+            <div class="volunteer-sort-icon"></div>
             Volunteer Name: <input type="text" id="volunteer_name" name="volunteer_name">
             <button class="btn btn-sm btn-info volunteerCardBodyToggleButton" type="button" onclick="toggleCardDetails(this);return false;">+</button>
             <span id="volunteerSequence" class="float-right"></span>
@@ -95,8 +120,9 @@
                 <tr>
                     <th>
                         Shifts
-                        <button class="btn btn-sm btn-info" onclick="addShift(this);return false;"><?php echo $GLOBALS['add_shift']?></button>
-                        <button class="btn btn-sm btn-info" onclick="add24by7Shifts(this);return false;"><?php echo $GLOBALS['add_24by7_shifts']?></button>
+                        <button class="btn btn-sm btn-info" onclick="addShift(this);return false;"><?php echo word('add_shift')?></button>
+                        <button class="btn btn-sm btn-info" onclick="add24by7Shifts(this);return false;"><?php echo word('add_24by7_shifts')?></button>
+                        <button class="btn btn-sm btn-danger" onclick="removeAllShifts(this);return false;"><?php echo word('remove_all_shifts')?></button>
                     </th>
                 </tr>
                 <tr>
@@ -113,7 +139,7 @@
                     <input type="checkbox" class="form-check-input" name="volunteer_enabled" id="volunteer_enabled" value="false" onclick="checkboxStatusToggle(this)">
                     <label class="form-check-label" for="volunteer_enabled">Enabled</label>
                 </div>
-                <button class="btn btn-sm btn-danger" type="button" onclick="removeVolunteer(this);return false;"><?php echo $GLOBALS['remove']?></button>
+                <button class="btn btn-sm btn-danger" type="button" onclick="removeVolunteer(this);return false;"><?php echo word('remove')?></button>
             </div>
         </div>
     </form>
@@ -127,7 +153,7 @@
     </div>
     <div class="card-footer">
         <div id="shiftRemove" class="float-right">
-            <button class="btn btn-sm btn-danger" type="button" onclick="removeShift(this);return false;"><?php echo $GLOBALS['remove']?></button>
+            <button class="btn btn-sm btn-danger" type="button" onclick="removeShift(this);return false;"><?php echo word('remove')?></button>
         </div>
     </div>
 </div>

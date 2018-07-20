@@ -3,8 +3,11 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-body">
-                <div id="spinnerDialogText">
-                    Retrieving data...
+                <div id="spinnerContents">
+                    <div class="spinnerImage"></div>
+                    <div id="spinnerDialogText">
+                        Retrieving data...
+                    </div>
                 </div>
             </div>
         </div>

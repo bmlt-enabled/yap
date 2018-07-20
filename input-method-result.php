@@ -8,8 +8,7 @@
     }
 
     $searchType = $_REQUEST['SearchType'];
-
-    if ($province_lookup) {
+    if (has_setting('province_lookup') && setting('province_lookup') ) {
         $action = "province-voice-input.php";
     } else {
         $action = "city-or-county-voice-input.php";

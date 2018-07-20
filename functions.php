@@ -1,13 +1,45 @@
 <?php
 include_once 'config.php';
-$version = "2.0.0-beta1";
-$word_language_selected = isset($GLOBALS['word_language']) ? $GLOBALS['word_language'] : 'en-US';
-include_once 'lang/'.$word_language_selected.'.php';
+include_once 'session.php';
+static $version = "2.0.0";
+static $settings_whitelist = [
+    'title' => [ 'description' => '' , 'default' => ''],
+    'location_lookup_bias' => [ 'description' => '' , 'default' => 'components=country:us'],
+    'jft_option' => [ 'description' => '' , 'default' => false],
+    'sms_ask' => [ 'description' => '' , 'default' => false],
+    'bmlt_root_server' => [ 'description' => '' , 'default' => ''],
+    'helpline_bmlt_root_server' => [ 'description' => '' , 'default' => null],
+    'voice' => [ 'description' => '' , 'default' => 'woman'],
+    'language' => [ 'description' => '' , 'default' => 'en'],
+    'helpline_search_radius' => [ 'description' => '' , 'default' => 30],
+    'helpline_search_unpublished' => [ 'description' => '' , 'default' => false],
+    'gather_language' => [ 'description' => '' , 'default' => 'en-US'],
+    'gather_hints' => [ 'description' => '' , 'default' => ''],
+    'word_language' => [ 'description' => '' , 'default' => 'en-US'],
+    'province_lookup' => [ 'description' => '' , 'default' => false],
+    'toll_free_province_bias' => [ 'description' => '' , 'default' => ''],
+    'ignore_formats' => [ 'description' => '' , 'default' => ''],
+    'fallback_number' => [ 'description' => '' , 'default' => ''],
+    'result_count_max' => [ 'description' => '' , 'default' => 5],
+    'postal_code_length' => [ 'description' => '' , 'default' => 5],
+    'grace_minutes' => [ 'description' => '' , 'default' => 15],
+    'meeting_search_radius' => [ 'description' => '' , 'default' => -50],
+    'include_map_link' => [ 'description' => '' , 'default' => false],
+    'infinite_searching' => [ 'description' => '' , 'default' => false],
+    'language_selections' => [ 'description' => '', 'default' => '']
+];
+include_once 'lang/'.setting('word_language').'.php';
 
 $maps_endpoint = "https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1"; 
 $timezone_lookup_endpoint = "https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1"; 
 # BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
 static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+static $numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+
+static $available_languages = [
+   "en-US" => "English",
+   "pig-latin" => "Igpay Atinlay"
+];
 
 class VolunteerInfo {
     public $title;
@@ -18,6 +50,7 @@ class VolunteerInfo {
     public $sequence;
     public $time_zone;
     public $contact;
+    public $color;
 }
 
 class Coordinates {
@@ -49,11 +82,17 @@ class ServiceBodyConfiguration {
     public $forced_caller_id_enabled = false;
     public $forced_caller_id_number = "0000000000";
     public $call_timeout = 20;
+    public $volunteer_sms_notification_enabled = false;
+    public $call_strategy = CycleAlgorithm::LOOP_FOREVER;
+    public $primary_contact_enabled = false;
+    public $primary_contact_number = "0000000000";
+    public $moh = "https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical";
+    public $moh_count = 1;
 }
 
 class CycleAlgorithm {
-    const CYCLE_AND_FAILOVER = 0;
-    const LOOP_FOREVER = 1;
+    const LOOP_FOREVER = 0;
+    const CYCLE_AND_VOICEMAIL = 1;
     const RANDOMIZER = 2;
 }
 
@@ -62,8 +101,137 @@ class DataType {
     const YAP_DATA = "_YAP_DATA_";
 }
 
+class SpecialPhoneNumber {
+    const VOICE_MAIL = "voicemail";
+}
+
+class SettingSource {
+    const QUERYSTRING = "Transaction Override";
+    const SESSION = "Session Override";
+    const CONFIG = "config.php";
+    const DEFAULT_SETTING = "Factory Default";
+}
+
+class UpgradeAdvisor {
+    private static $all_good = true;
+    private static $settings = [
+        'title',
+        'bmlt_root_server',
+        'google_maps_api_key',
+        'twilio_account_sid',
+        'twilio_auth_token',
+        'bmlt_username',
+        'bmlt_password',
+    ];
+
+    private static function isThere($setting) {
+        return isset($GLOBALS[$setting]) && strlen($GLOBALS[$setting]) > 0;
+    }
+
+    private static function getState($status, $message) {
+        return ["status"=>$status, "message"=>$message];
+    }
+
+    public static function getStatus() {
+        foreach (UpgradeAdvisor::$settings as $setting) {
+            if (!UpgradeAdvisor::isThere($setting)) {
+                return UpgradeAdvisor::getState(false, "Missing required setting: " . $setting);
+            }
+        }
+
+        $root_server_settings = json_decode(get(getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetServerInfo"));
+
+        if (strpos(getHelplineBMLTRootServer(), 'index.php')) {
+            return UpgradeAdvisor::getState(false,"Your root server points to index.php. Please make sure to set it to just the root directory.");
+        }
+
+        if (!isset($root_server_settings)) {
+            return UpgradeAdvisor::getState(false, "Your root server returned no server information.  Double-check that you have the right root server url.");
+        }
+
+        if ($root_server_settings[0]->semanticAdmin != "1") {
+            return UpgradeAdvisor::getState(false, "Semantic Admin not enabled on your root server, be sure to set the variable mentioned here: https://bmlt.magshare.net/semantic/semantic-administration.");
+        }
+
+        $googleapi_setttings = json_decode(get($GLOBALS['google_maps_endpoint'] . "&address=91409"));
+
+        if ($googleapi_setttings->status == "REQUEST_DENIED") {
+            return UpgradeAdvisor::getState(false, "Your Google Maps API key came back with the following error. " .$googleapi_setttings->error_message. " Please make sure you have the 'Google Maps Geocoding API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
+        }
+
+        require_once 'vendor/autoload.php';
+        try {
+            $client = new Twilio\Rest\Client($GLOBALS['twilio_account_sid'], $GLOBALS['twilio_auth_token']);
+            foreach ($client->incomingPhoneNumbers->read() as $number) {
+                if (basename($number->voiceUrl)) {
+                    if (!strpos($number->voiceUrl, '.php')
+                        && !strpos($number->voiceUrl, 'twiml')
+                        && !strpos($number->voiceUrl, '/?')
+                        && substr($number->voiceUrl, -1) !== "/") {
+                        return UpgradeAdvisor::getState(false, $number->phoneNumber . " webhook should end either with `/` or `/index.php`");
+                    }
+                }
+            }
+
+        } catch ( \Twilio\Exceptions\ConfigurationException $e ) {
+            error_log("Missing Twilio Credentials");
+        }
+
+        if (UpgradeAdvisor::$all_good) {
+            return UpgradeAdvisor::getState(true, "Ready To Yap!");
+        }
+    }
+}
+
 function word($name) {
     return isset($GLOBALS['override_' . $name]) ? $GLOBALS['override_' . $name] : $GLOBALS[$name];
+}
+
+function getNumberForWord($name) {
+    $numbers = $GLOBALS['numbers'];
+    for ($n = 0; $n < count($numbers); $n++) {
+        if ($name == $numbers[$n]) {
+            return $n;
+        }
+    }
+}
+
+function getWordForNumber($number) {
+    return word($GLOBALS['numbers'][$number]);
+}
+
+function has_setting($name) {
+    return !is_null(setting($name));
+}
+
+function setting($name) {
+    $result = null;
+
+    if (isset($_REQUEST[$name])) {
+        $result =  $_REQUEST[$name];
+    } else if (isset($_SESSION["override_" . $name])) {
+        $result = $_SESSION["override_" . $name];
+    } else if (isset($GLOBALS[$name])) {
+        $result = $GLOBALS[$name];
+    } else if (isset($GLOBALS['settings_whitelist'][$name]['default'])) {
+        $result = $GLOBALS['settings_whitelist'][$name]['default'];
+    }
+
+    return $result;
+}
+
+function setting_source($name) {
+    if (isset($_REQUEST[$name])) {
+        return SettingSource::QUERYSTRING;
+    } else if (isset($_SESSION["override_" . $name])) {
+        return SettingSource::SESSION;
+    } else if (isset($GLOBALS[$name])) {
+        return SettingSource::CONFIG;
+    } else if (isset($GLOBALS['settings_whitelist'][$name]['default'])) {
+        return SettingSource::DEFAULT_SETTING;
+    } else {
+        return "NOT SET";
+    }
 }
 
 function getConferenceName($service_body_id) {
@@ -77,7 +245,7 @@ function getCoordinatesForAddress($address) {
         $map_details_response = get($GLOBALS['maps_endpoint']
             . "&postalcode="
             . urlencode($address)
-            . (isset($GLOBALS['location_lookup_bias']) ? "&country=" . urlencode($GLOBALS['location_lookup_bias']) : ""));
+            . "&components=" . urlencode(setting('location_lookup_bias')));
         $map_details = json_decode($map_details_response);
         if ($map_details[0]->place_id != null) { 
             $coordinates->location  = $map_details[0]->display_name; 
@@ -95,31 +263,23 @@ function getTimeZoneForCoordinates($latitude, $longitude) {
 }
 
 function getProvince() {
-    if (isset($GLOBALS['sms_bias_bypass']) && $GLOBALS['sms_bias_bypass']) {
+    if (has_setting('sms_bias_bypass') && setting('sms_bias_bypass')) {
         return "";
     } elseif (isset($_REQUEST['ToState']) && strlen($_REQUEST['ToState']) > 0) {
         return $_REQUEST['ToState']; // Retrieved from Twilio metadata
-    } elseif (isset($GLOBALS['toll_free_province_bias'])) {
-        return $GLOBALS['toll_free_province_bias']; // Override for Tollfree
+    } elseif (has_setting('toll_free_province_bias')) {
+        return setting('toll_free_province_bias'); // Override for Tollfree
     } else {
         return "";
     }
 }
 
-function getGatherLanguage() {
-    return isset($GLOBALS["gather_language"]) ? $GLOBALS["gather_language"] : "en-US";
-}
-
-function getGatherHints() {
-    return isset($GLOBALS["gather_hints"]) ? $GLOBALS["gather_hints"] : "";
-}
-
 function helplineSearch($latitude, $longitude) {
-    $helpline_search_radius = isset($GLOBALS['helpline_search_radius']) ? $GLOBALS['helpline_search_radius'] : 30;
+    $helpline_search_radius = setting('helpline_search_radius');
     $bmlt_search_endpoint = getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $helpline_search_radius;
     $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
 
-    if (isset($GLOBALS['helpline_search_unpublished']) && $GLOBALS['helpline_search_unpublished']) {
+    if (has_setting('helpline_search_unpublished') && setting('helpline_search_unpublished')) {
         $search_url = $search_url . "&advanced_published=0";
         if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
             auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
@@ -140,10 +300,9 @@ function getFormatString($formats, $ignore = false, $helpline = false) {
 }
 
 function meetingSearch($meeting_results, $latitude, $longitude, $day) {
-	$meeting_search_radius = isset($GLOBALS['meeting_search_radius']) ? $GLOBALS['meeting_search_radius'] : -50;
-    $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $meeting_search_radius . "&weekdays=" . $day;
-    if (isset($GLOBALS['ignore_formats'])) {
-        $bmlt_search_endpoint .= getFormatString($GLOBALS['ignore_formats'], true);
+    $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . setting('meeting_search_radius') . "&weekdays=" . $day;
+    if (has_setting('ignore_formats')) {
+        $bmlt_search_endpoint .= getFormatString(setting('ignore_formats'), true);
     }
 
     $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
@@ -191,12 +350,17 @@ function getServiceBodyCoverage($latitude, $longitude) {
     $service_bodies = getServiceBodies();
     $already_checked = [];
 
+    // Must do this because the BMLT returns an empty object instead of an empty array.
+    if (!is_array($search_results)) {
+        throw new Exception(word('helpline_no_results_found_retry'));
+    }
+
     for ($j = 0; $j < count($search_results); $j++) {
         $service_body_id = $search_results[$j]->service_body_bigint;
         if (in_array($service_body_id, $already_checked)) continue;
         for ($i = 0; $i < count($service_bodies); $i++) {
             if ($service_bodies[$i]->id == $service_body_id) {
-                if (strlen($service_bodies[$i]->helpline) > 0) {
+                if (strlen($service_bodies[$i]->helpline) > 0 || getServiceBodyConfiguration($service_bodies[$i]->id)->volunteer_routing_enabled) {
                     return $service_bodies[$i];
                 } else {
                     array_push($already_checked, $service_bodies[$i]->id);
@@ -204,10 +368,6 @@ function getServiceBodyCoverage($latitude, $longitude) {
             }
         }
     }
-}
-
-function getGraceMinutes() {
-    return isset($GLOBALS['grace_minutes']) ? $GLOBALS['grace_minutes'] : 15;
 }
 
 function getTimezoneList() {
@@ -219,7 +379,7 @@ function getMeetings($latitude, $longitude, $results_count, $today = null, $tomo
     # Could be wired up to use multiple roots in the future by using a parameter to select
     date_default_timezone_set($time_zone_results->timeZoneId);
 
-    $graced_date_time = (new DateTime())->modify(sprintf("-%s minutes", getGraceMinutes()));
+    $graced_date_time = (new DateTime())->modify(sprintf("-%s minutes", setting('grace_minutes')));
     if ($today == null) $today = $graced_date_time ->format( "w" ) + 1;
 
     $meeting_results = new MeetingResults();
@@ -240,10 +400,10 @@ function isItPastTime($meeting_day, $meeting_time) {
 
 function getNextMeetingInstance($meeting_day, $meeting_time) {
     $mod_meeting_day = (new DateTime())
-        ->modify(sprintf("-%s minutes", getGraceMinutes()))
+        ->modify(sprintf("-%s minutes", setting('grace_minutes')))
         ->modify($GLOBALS['days_of_the_week'][$meeting_day])->format("Y-m-d");
     $mod_meeting_datetime = (new DateTime($mod_meeting_day . " " . $meeting_time))
-        ->modify(sprintf("+%s minutes", getGraceMinutes()));
+        ->modify(sprintf("+%s minutes", setting('grace_minutes')));
     return $mod_meeting_datetime;
 }
 
@@ -252,11 +412,23 @@ function getServiceBodies() {
     return json_decode(get($bmlt_search_endpoint));
 }
 
+function getServiceBody($service_body_id) {
+    $service_bodies = getServiceBodies();
+    foreach ($service_bodies as $service_body) {
+        if ($service_body->id == $service_body_id) return $service_body;
+    }
+
+    return null;
+}
+
 function getServiceBodyDetailForUser() {
     $service_bodies = admin_GetServiceBodiesForUser();
     $service_body_detail = getServiceBodies();
     $user_service_bodies = [];
-    foreach ($service_bodies as $service_body) {
+    $service_bodies_check = isset($service_bodies) && !is_array($service_bodies)
+        ? array($service_bodies) : $service_bodies;
+
+    foreach ($service_bodies_check as $service_body) {
         foreach ($service_body_detail as $service_body_detail_item) {
             if ($service_body->id == $service_body_detail_item->id) {
                 array_push($user_service_bodies, $service_body_detail_item);
@@ -293,7 +465,7 @@ function getAllHelplineData($data_type) {
 
 function getVolunteerRoutingEnabledServiceBodies() {
     $all_helpline_data = getAllHelplineData("_YAP_CONFIG_");
-    $service_bodies = getServiceBodies();
+    $service_bodies = getServiceBodyDetailForUser();
     $helpline_enabled = [];
 
     for ($x = 0; $x < count($all_helpline_data); $x++) {
@@ -312,16 +484,30 @@ function getVolunteerRoutingEnabledServiceBodies() {
 
 function getServiceBodyConfiguration($service_body_id) {
     $helplineData = getHelplineData($service_body_id, DataType::YAP_CONFIG);
+
     $config = new ServiceBodyConfiguration();
     $config->service_body_id = $service_body_id;
     if (isset($helplineData) && count($helplineData) > 0) {
         $data = $helplineData[0]['data'][0];
+
+        foreach ($data as $key => $value) {
+            if (strpos($key, 'override_') === 0 && strlen($value) > 0) {
+                $_SESSION[$key] = $value;
+            }
+        }
+
         $config->volunteer_routing_enabled = strpos($data->volunteer_routing, "volunteers") >= 0;
         $config->volunteer_routing_redirect = $data->volunteer_routing == "volunteers_redirect";
         $config->volunteer_routing_redirect_id = $config->volunteer_routing_redirect ? $data->volunteers_redirect_id : 0;
         $config->forced_caller_id_enabled = isset($data->forced_caller_id) && strlen($data->forced_caller_id) > 0;
         $config->forced_caller_id_number = $config->forced_caller_id_enabled ? $data->forced_caller_id : "0000000000";
         $config->call_timeout = isset($data->call_timeout) && strlen($data->call_timeout > 0) ? intval($data->call_timeout) : 20;
+        $config->volunteer_sms_notification_enabled = isset($data->volunteer_sms_notification) && $data->volunteer_sms_notification != "no_sms";
+        $config->call_strategy = isset($data->call_strategy) ? intval($data->call_strategy) : $config->call_strategy;
+        $config->primary_contact_enabled = isset($data->primary_contact) && strlen($data->primary_contact) > 0;
+        $config->primary_contact_number = $config->primary_contact_enabled ? $data->primary_contact : "";
+        $config->moh = isset($data->moh) && strlen($data->moh) > 0 ? $data->moh : $config->moh;
+        $config->moh_count = count(explode(",", $config->moh));
     }
 
     return $config;
@@ -391,10 +577,9 @@ function getHelplineVolunteersActiveNow($service_body_int) {
 function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = CycleAlgorithm::CYCLE_AND_FAILOVER) {
     $volunteers = getHelplineVolunteersActiveNow($service_body_int);
     if ( isset($volunteers) && count( $volunteers ) > 0 ) {
-        if ($cycle_algorithm == CycleAlgorithm::CYCLE_AND_FAILOVER) {
+        if ($cycle_algorithm == CycleAlgorithm::CYCLE_AND_VOICEMAIL) {
             if ( $tracker > count( $volunteers ) - 1 ) {
-                // TODO: Put failover number here, voicemail?
-                return "000000000";
+                return SpecialPhoneNumber::VOICE_MAIL;
             }
 
             return $volunteers[ $tracker ]->contact;
@@ -439,7 +624,8 @@ function getVolunteerInfo($volunteers) {
 
     for ($v = 0; $v < count($volunteers['data']); $v++) {
         $volunteer = $volunteers['data'][$v];
-        if (isset($volunteer->volunteer_enabled) && $volunteer->volunteer_enabled) {
+        if (isset($volunteer->volunteer_enabled) && $volunteer->volunteer_enabled &&
+            isset($volunteer->volunteer_phone_number) && strlen($volunteer->volunteer_phone_number) > 0) {
             $volunteerShiftSchedule = dataDecoder($volunteer->volunteer_shift_schedule);
             foreach ($volunteerShiftSchedule as $vsi) {
                 $volunteerInfo             = new VolunteerInfo();
@@ -451,12 +637,19 @@ function getVolunteerInfo($volunteers) {
                 $volunteerInfo->weekday    = $GLOBALS['days_of_the_week'][ $vsi->day ];
                 $volunteerInfo->sequence   = $v;
                 $volunteerInfo->contact    = $volunteer->volunteer_phone_number;
+                $volunteerInfo->color      = "#" . getNameHashColorCode($volunteerInfo->title);
                 array_push( $finalSchedule, $volunteerInfo );
             }
         }
     }
 
     return $finalSchedule;
+}
+
+function getNameHashColorCode($str) {
+    $code = dechex(crc32($str));
+    $code = substr($code, 0, 6);
+    return $code;
 }
 
 function dataEncoder($dataObject) {
@@ -474,28 +667,8 @@ function sort_on_field(&$objects, $on, $order = 'ASC') {
     usort($objects, create_function('$a,$b', $comparer));
 }
 
-function countOccurrences($initialSchedule, $volunteerName) {
-    $occurrences = 0;
-    for ($v = 0; $v <= count($initialSchedule); $v++) {
-        if ($initialSchedule[$v]["title"] == $volunteerName) {
-            $occurrences++;
-        }
-    }
-
-    return $occurrences > 1;
-}
-
-function getDurationInterval($duration_time) {
-    $durationArray = explode(":", $duration_time);
-    $durationInterval = new DurationInterval();
-    $durationInterval->hours = $durationArray[0];
-    $durationInterval->minutes = $durationArray[1];
-    $durationInterval->seconds = $durationArray[2];
-    return $durationInterval;
-}
-
 function getHelplineBMLTRootServer() {
-    return isset($GLOBALS['helpline_bmlt_root_server']) ? $GLOBALS['helpline_bmlt_root_server'] : $GLOBALS['bmlt_root_server'];
+    return has_setting('helpline_bmlt_root_server') ? setting('helpline_bmlt_root_server') : $GLOBALS['bmlt_root_server'];
 }
 
 function auth_bmlt($username, $password, $master = false) {
