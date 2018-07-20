@@ -436,7 +436,7 @@ You can also run `make upgrade`, if you have shell access.
 
 ## Upgrading from Yap 1.x to Yap 2.x
 
-Follow the upgrade steps as you normally do above.  You will also need to follow item #3 under [Setup](#setup), to add the Twilio credentials.
+Follow the upgrade steps as you normally do above.  You will also need to follow item #3 & #4 under [Setup](#setup), to add the Twilio credentials.
 
 You can check that everything is functioning by going to the upgrade advisor http://your-instance/upgrade-advisor.php
 
