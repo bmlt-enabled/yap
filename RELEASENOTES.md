@@ -1,5 +1,9 @@
 # Release Notes
 
+### 2.0.0 (unreleased)
+* Admin portal.
+* Music on hold for helpline call
+
 ### next
 * Added CAPTCHA to force dialing + made configuration options a little more flexible, this should prevent robocalls and fax dialers (ala Grasshopper).
 * Improved setup documentation for Google API Keys + Search Radius on the BMLT.

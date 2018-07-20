@@ -1,33 +1,83 @@
 <?php
-    include 'functions.php';
-    header("content-type: text/xml");
-    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+include 'config.php';
+include 'functions.php';
+require_once 'vendor/autoload.php';
+use Twilio\Rest\Client;
 
-    $tracker = isset($_REQUEST["tracker"]) ? intval($_REQUEST["tracker"]) + 1 : 0;
-    $service_body_id = $_REQUEST["service_body_id"];
-    $phone_number = getHelplineVolunteer($service_body_id, $tracker);
-    $call_status = isset($_REQUEST["DialCallStatus"]) ? $_REQUEST["DialCallStatus"] : "starting";
-    $call_timeout = isset($GLOBALS["call_timeout"]) ? $GLOBALS["call_timeout"] : 20;
-?>
-<Response>
-<?php
-    if ($call_status != "completed") {
-        if (isset($GLOBALS['forced_callerid']) && $GLOBALS['forced_callerid']) { 
-          $caller_id = $GLOBALS["forced_callerid"];
-        } else { 
-          $caller_id = isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000";
-        }?>
-    <Dial method="GET"
-          timeout="<?php echo $call_timeout; ?>"
-          callerId="<?php echo $caller_id; ?>"
-          action="helpline-dialer.php?service_body_id=<?php echo $service_body_id; ?>&amp;tracker=<?php echo $tracker; ?>&amp;Called=<?php echo urlencode(isset($_REQUEST["Called"]) ? $_REQUEST["Called"] : "0000000000") ?>">
-            <Number>
-                <?php echo $phone_number; ?>
-            </Number>
-        </Dial>
-<?php
+class CallConfig {
+    public $phone_number;
+    public $options;
+}
+
+function getCallConfig($client, $serviceBodyConfiguration) {
+    $tracker            = !isset( $_REQUEST["tracker"] ) ? 0 : $_REQUEST["tracker"];
+    $numbers            = $client->incomingPhoneNumbers->read( array( "phoneNumber" => $_REQUEST['Caller'] ) );
+    $voice_url          = $numbers[0]->voiceUrl;
+    $webhook_url        = substr( $voice_url, 0, strrpos( $voice_url, "/" ) );
+
+    if ( $serviceBodyConfiguration->forced_caller_id_enabled ) {
+        $caller_id = $serviceBodyConfiguration->forced_caller_id_number;
     } else {
-        echo "<Hangup />";
+        $caller_id = isset( $_REQUEST["Caller"] ) ? $_REQUEST["Caller"] : "0000000000";
     }
-    ?>
-</Response>
+
+    $config = new CallConfig();
+    // TODO: Can specify algorithm by service body.
+    $config->phone_number = getHelplineVolunteer( $serviceBodyConfiguration->service_body_id, $tracker, CycleAlgorithm::LOOP_FOREVER );
+    $config->options = array(
+        'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'],
+        'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&tracker=' . ++ $tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'],
+        'statusCallbackEvent'  => 'completed',
+        'statusCallbackMethod' => 'GET',
+        'timeout'              => $serviceBodyConfiguration->call_timeout,
+        'callerId'             => $caller_id
+    );
+
+    return $config;
+}
+
+$service_body_id     = $_REQUEST['service_body_id'];
+$serviceBodyConfiguration = getServiceBodyConfiguration($service_body_id);
+
+$sid                 = $GLOBALS['twilio_account_sid'];
+$token               = $GLOBALS['twilio_auth_token'];
+try {
+    $client = new Client( $sid, $token );
+} catch ( \Twilio\Exceptions\ConfigurationException $e ) {
+    error_log("Missing Twilio Credentials");
+}
+
+if (isset($_REQUEST["Debug"])) {
+    echo var_dump(getCallConfig($client, $serviceBodyConfiguration));
+    exit();
+}
+
+$conferences = $client->conferences->read( array ("friendlyName" => $_REQUEST['FriendlyName'] ) );
+if (count($conferences) > 0 && $conferences[0]->status != "completed") {
+    // Make timeout configurable per volunteer
+    if ( ( isset( $_REQUEST['SequenceNumber'] ) && intval( $_REQUEST['SequenceNumber'] ) == 1 ) ||
+         ( isset( $_REQUEST['CallStatus'] ) && ( $_REQUEST['CallStatus'] == 'no-answer' || $_REQUEST['CallStatus'] == 'completed' ) ) ) {
+        $callConfig = getCallConfig($client, $serviceBodyConfiguration);
+        error_log( "Dialing " . $callConfig->phone_number );
+
+        try {
+            $client->calls->create(
+                $callConfig->phone_number,
+                $callConfig->options['callerId'],
+                $callConfig->options
+            );
+        } catch ( \Twilio\Exceptions\TwilioException $e ) {
+            error_log($e);
+        }
+    } elseif ( isset( $_REQUEST['StatusCallbackEvent'] ) && $_REQUEST['StatusCallbackEvent'] == 'participant-leave' ) {
+        $conference_sid          = $conferences[0]->sid;
+        $conference_participants = $client->conferences( $conference_sid )->participants;
+        foreach ( $conference_participants as $participant ) {
+            try {
+                $client->calls( $participant->callSid )->update( array( $status => 'completed' ) );
+            } catch ( \Twilio\Exceptions\TwilioException $e ) {
+                error_log($e);
+            }
+        }
+    }
+}

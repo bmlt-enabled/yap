@@ -1,7 +1,8 @@
 <?php
 include_once 'config.php';
-$word_language = isset($GLOBALS['word_language']) ? $GLOBALS['word_language'] : 'en-US';
-include_once 'lang/'.$word_language.'.php';
+$version = "2.0.0-beta1";
+$word_language_selected = isset($GLOBALS['word_language']) ? $GLOBALS['word_language'] : 'en-US';
+include_once 'lang/'.$word_language_selected.'.php';
 
 $maps_endpoint = "https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1"; 
 $timezone_lookup_endpoint = "https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1"; 
@@ -15,8 +16,6 @@ class VolunteerInfo {
     public $weekday_id;
     public $weekday;
     public $sequence;
-    public $origin_duration;
-    public $origin_start_time;
     public $time_zone;
     public $contact;
 }
@@ -42,8 +41,33 @@ class MeetingResults {
     public $filteredList = [];
 }
 
+class ServiceBodyConfiguration {
+    public $service_body_id;
+    public $volunteer_routing_enabled = false;
+    public $volunteer_routing_redirect = false;
+    public $volunteer_routing_redirect_id = 0;
+    public $forced_caller_id_enabled = false;
+    public $forced_caller_id_number = "0000000000";
+    public $call_timeout = 20;
+}
+
+class CycleAlgorithm {
+    const CYCLE_AND_FAILOVER = 0;
+    const LOOP_FOREVER = 1;
+    const RANDOMIZER = 2;
+}
+
+class DataType {
+    const YAP_CONFIG = "_YAP_CONFIG_";
+    const YAP_DATA = "_YAP_DATA_";
+}
+
 function word($name) {
     return isset($GLOBALS['override_' . $name]) ? $GLOBALS['override_' . $name] : $GLOBALS[$name];
+}
+
+function getConferenceName($service_body_id) {
+    return $service_body_id . "_" . rand(1000000, 9999999) . "_" . time();
 }
 
 function getCoordinatesForAddress($address) {
@@ -98,7 +122,7 @@ function helplineSearch($latitude, $longitude) {
     if (isset($GLOBALS['helpline_search_unpublished']) && $GLOBALS['helpline_search_unpublished']) {
         $search_url = $search_url . "&advanced_published=0";
         if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
-            auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password']);
+            auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
         }
     }
 
@@ -186,6 +210,10 @@ function getGraceMinutes() {
     return isset($GLOBALS['grace_minutes']) ? $GLOBALS['grace_minutes'] : 15;
 }
 
+function getTimezoneList() {
+    return DateTimeZone::listIdentifiers(DateTimeZone::ALL);
+}
+
 function getMeetings($latitude, $longitude, $results_count, $today = null, $tomorrow = null) {
     $time_zone_results = getTimeZoneForCoordinates($latitude, $longitude);
     # Could be wired up to use multiple roots in the future by using a parameter to select
@@ -224,30 +252,110 @@ function getServiceBodies() {
     return json_decode(get($bmlt_search_endpoint));
 }
 
-function getYapBasedHelplines() {
-    $service_bodies = getServiceBodies();
-    $yapHelplines = [];
+function getServiceBodyDetailForUser() {
+    $service_bodies = admin_GetServiceBodiesForUser();
+    $service_body_detail = getServiceBodies();
+    $user_service_bodies = [];
     foreach ($service_bodies as $service_body) {
-        if (isset($service_body->helpline) && strpos($service_body->helpline, 'yap') !== false) {
-            $r_service_body = $service_body;
-            if (strpos($service_body->helpline, '->') !== false) {
-                $r_service_body->id = explode('->', $service_body->helpline)[1];
-                $r_service_body->name = $r_service_body->name . " (Redirected To Service Body: " . $r_service_body->id . ")";
+        foreach ($service_body_detail as $service_body_detail_item) {
+            if ($service_body->id == $service_body_detail_item->id) {
+                array_push($user_service_bodies, $service_body_detail_item);
             }
-
-            array_push($yapHelplines, $r_service_body);
         }
     }
 
-    return json_encode($yapHelplines);
+    return $user_service_bodies;
+}
+
+function admin_GetServiceBodiesForUser() {
+    $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_permissions";
+    return json_decode(get($url, $_SESSION['username']))->service_body;
+}
+
+function admin_PersistHelplineData($helpline_data_id = 0, $service_body_id, $data, $data_type = DataType::YAP_DATA) {
+    $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php";
+    if ($helpline_data_id == 0) {
+        $data_bmlt_encoded = "admin_action=add_meeting&service_body_id=" . $service_body_id . "&meeting_field[]=meeting_name,".$data_type;
+    } else {
+        $data_bmlt_encoded = "admin_action=modify_meeting&meeting_id=" . $helpline_data_id;
+    }
+
+    $helpline_data = str_replace(",", ";", $data);
+    error_log("helpline_data_length:" . strlen($helpline_data));
+    $data_bmlt_encoded .= "&meeting_field[]=contact_phone_1," . $helpline_data;
+
+    return post($url, $data_bmlt_encoded, false, $_SESSION['username']);
+}
+
+function getAllHelplineData($data_type) {
+    return getHelplineData(0, $data_type);
+}
+
+function getVolunteerRoutingEnabledServiceBodies() {
+    $all_helpline_data = getAllHelplineData("_YAP_CONFIG_");
+    $service_bodies = getServiceBodies();
+    $helpline_enabled = [];
+
+    for ($x = 0; $x < count($all_helpline_data); $x++) {
+        if (isset($all_helpline_data[$x]['data'][0]->volunteer_routing) && $all_helpline_data[$x]['data'][0]->volunteer_routing == "volunteers") {
+            for ($y = 0; $y < count($service_bodies); $y++) {
+                if ( $all_helpline_data[ $x ]['service_body_id'] == intval($service_bodies[$y]->id) ) {
+                    $all_helpline_data[ $x ]['service_body_name'] = $service_bodies[$y]->name;
+                    array_push($helpline_enabled, $all_helpline_data[$x]);
+                }
+            }
+        }
+    }
+
+    return $helpline_enabled;
+}
+
+function getServiceBodyConfiguration($service_body_id) {
+    $helplineData = getHelplineData($service_body_id, DataType::YAP_CONFIG);
+    $config = new ServiceBodyConfiguration();
+    $config->service_body_id = $service_body_id;
+    if (isset($helplineData) && count($helplineData) > 0) {
+        $data = $helplineData[0]['data'][0];
+        $config->volunteer_routing_enabled = strpos($data->volunteer_routing, "volunteers") >= 0;
+        $config->volunteer_routing_redirect = $data->volunteer_routing == "volunteers_redirect";
+        $config->volunteer_routing_redirect_id = $config->volunteer_routing_redirect ? $data->volunteers_redirect_id : 0;
+        $config->forced_caller_id_enabled = isset($data->forced_caller_id) && strlen($data->forced_caller_id) > 0;
+        $config->forced_caller_id_number = $config->forced_caller_id_enabled ? $data->forced_caller_id : "0000000000";
+        $config->call_timeout = isset($data->call_timeout) && strlen($data->call_timeout > 0) ? intval($data->call_timeout) : 20;
+    }
+
+    return $config;
+}
+
+function getHelplineData($service_body_id, $data_type = DataType::YAP_DATA) {
+    $helpline_data_items = [];
+    auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
+    $helpline_data = json_decode(get(getHelplineBMLTRootServer()
+                                     . "/client_interface/json/?switcher=GetSearchResults"
+                                     . (($service_body_id != 0) ? "&services=" . $service_body_id : "")
+                                     . "&meeting_key=meeting_name&meeting_key_value=" . $data_type
+                                     . "&advanced_published=0"));
+
+    if ($helpline_data != null) {
+        foreach ( $helpline_data as $item ) {
+            $json_string = str_replace( ';', ',', html_entity_decode( explode( '#@-@#', $item->contact_phone_1 )[2] ) );
+            array_push($helpline_data_items, [
+                'id'              => intval( $item->id_bigint ),
+                'data'            => json_decode( $json_string )->data,
+                'service_body_id' => intval( $item->service_body_bigint )
+            ]);
+        }
+    }
+
+    return $helpline_data_items;
 }
 
 function getNextShiftInstance($shift_day, $shift_time, $shift_tz) {
-    date_default_timezone_set($shift_tz->timeZoneId);
-    if ($shift_time == "23:59:00") {
-    	$shift_time = "00:00:00";
-    }
-    return getNextMeetingInstance($shift_day, $shift_time);
+    date_default_timezone_set($shift_tz);
+    $mod_meeting_day = (new DateTime())
+        ->modify($GLOBALS['days_of_the_week'][$shift_day])->format("Y-m-d");
+    $mod_meeting_datetime = (new DateTime($mod_meeting_day . " " . $shift_time));
+    return $mod_meeting_datetime;
 }
 
 function getIdsFormats($types, $helpline = false) {
@@ -270,7 +378,7 @@ function getHelplineVolunteersActiveNow($service_body_int) {
     $volunteers = json_decode(getHelplineSchedule($service_body_int));
     $activeNow = [];
     for ($v = 0; $v < count($volunteers); $v++) {
-        date_default_timezone_set($volunteers[$v]->time_zone->timeZoneId);
+        date_default_timezone_set($volunteers[$v]->time_zone);
         $current_time = new DateTime();
         if ($current_time >= (new DateTime($volunteers[$v]->start)) && $current_time <= (new DateTime($volunteers[$v]->end))) {
             array_push($activeNow, $volunteers[$v]);
@@ -280,42 +388,41 @@ function getHelplineVolunteersActiveNow($service_body_int) {
     return $activeNow;
 }
 
-function getHelplineVolunteer($service_body_int, $tracker) {
+function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = CycleAlgorithm::CYCLE_AND_FAILOVER) {
     $volunteers = getHelplineVolunteersActiveNow($service_body_int);
-    if (count($volunteers) > 0) {
-        if ($tracker > count($volunteers) - 1) {
-            $tracker = count($volunteers) - 1;
-        }
+    if ( isset($volunteers) && count( $volunteers ) > 0 ) {
+        if ($cycle_algorithm == CycleAlgorithm::CYCLE_AND_FAILOVER) {
+            if ( $tracker > count( $volunteers ) - 1 ) {
+                // TODO: Put failover number here, voicemail?
+                return "000000000";
+            }
 
-        if (isset($volunteers[$tracker]->contact) && $volunteers[$tracker]->contact != "") {
-            return explode("#@-@#", $volunteers[$tracker]->contact)[2];
+            return $volunteers[ $tracker ]->contact;
+        }
+        else if ($cycle_algorithm == CycleAlgorithm::LOOP_FOREVER) {
+            return $volunteers[$tracker % count( $volunteers )]->contact;
+        } else if ($cycle_algorithm == CycleAlgorithm::RANDOMIZER) {
+            return $volunteers[rand(0, count( $volunteers ) - 1)]->contact;
         }
     }
 
     return "000000000";
 }
 
-function getFormatResults($service_body_int, $format_codes) {
-    if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
-        if (auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'])) {
-            $bmlt_search_endpoint = getHelplineBMLTRootServer() . '/client_interface/json/?switcher=GetSearchResults&services=' . $service_body_int . getFormatString($format_codes, false, true) . '&advanced_published=0';
-            return get($bmlt_search_endpoint);
-        }
-    }
-
-    return null;
-}
-
 function getHelplineSchedule($service_body_int) {
-    $volunteers = json_decode(getFormatResults($service_body_int, 'HV'));
-    list($volunteerNames, $finalSchedule) = getVolunteerInfo($volunteers);
-    $finalSchedule = flattenSchedule(array_count_values($volunteerNames), $finalSchedule);
+    $helplineData = getHelplineData($service_body_int);
+    if (count($helplineData) > 0) {
+        $volunteers    = $helplineData[0];
+        $finalSchedule = getVolunteerInfo( $volunteers );
 
-    usort($finalSchedule, function($a, $b) {
-        return $a->sequence > $b->sequence;
-    });
+        usort( $finalSchedule, function ( $a, $b ) {
+            return $a->sequence > $b->sequence;
+        } );
 
-    return json_encode($finalSchedule);
+        return json_encode( $finalSchedule );
+    } else {
+        return new StdClass();
+    }
 }
 
 function filterOut($volunteers) {
@@ -327,63 +434,44 @@ function filterOut($volunteers) {
     return json_encode($volunteers_array);
 }
 
-function flattenSchedule($volunteerShiftCounts, $finalSchedule) {
-    foreach (array_keys($volunteerShiftCounts) as $volunteerName) {
-        // Ensure that they are only listed once
-        if ($volunteerShiftCounts[$volunteerName] == 1) {
-            // Get the information for their shift
-            $finalSchedule = walkShifts($finalSchedule, $volunteerName);
-        }
-    }
-    return $finalSchedule;
-}
-
-function walkShifts($finalSchedule, $volunteerName) {
-    foreach ($finalSchedule as $volunteerInfoItem) {
-        if ($volunteerName == $volunteerInfoItem->title) {
-            // Figure out what day is represented already
-            $dayRepresented = $volunteerInfoItem->weekday_id;
-            $finalSchedule = spreadSchedule($finalSchedule, $dayRepresented, $volunteerInfoItem);
-        }
-    }
-    return $finalSchedule;
-}
-
-function spreadSchedule($finalSchedule, $dayRepresented, $volunteerInfoItem) {
-    for ($d = 1; $d <= 7; $d++) {
-        // Loop through days, don't read the day that is already represented
-        if ($dayRepresented !== $d) {
-            $volunteerClone = clone $volunteerInfoItem;
-            $volunteerClone->start = getNextShiftInstance($d, $volunteerInfoItem->origin_start_time, $volunteerClone->time_zone)->format("Y-m-d H:i:s");
-            $volunteerClone->end = date_add(new DateTime($volunteerClone->start), date_interval_create_from_date_string($volunteerClone->origin_duration->getDurationFormat()))->format("Y-m-d H:i:s");
-            $volunteerClone->weekday = $GLOBALS['days_of_the_week'][$d];
-            $volunteerClone->weekday_id = $d;
-            array_push($finalSchedule, $volunteerClone);
-        }
-    }
-    return $finalSchedule;
-}
-
 function getVolunteerInfo($volunteers) {
     $finalSchedule = [];
-    $volunteerNames = [];
 
-    for ($v = 0; $v < count($volunteers); $v++) {
-        $volunteerInfo = new VolunteerInfo();
-        $volunteerInfo->title = $volunteers[$v]->meeting_name;
-        $volunteerInfo->time_zone = getTimeZoneForCoordinates($volunteers[$v]->latitude, $volunteers[$v]->longitude);
-        $volunteerInfo->start = getNextShiftInstance($volunteers[$v]->weekday_tinyint, $volunteers[$v]->start_time, $volunteerInfo->time_zone)->format("Y-m-d H:i:s");
-        $volunteerInfo->origin_duration = getDurationInterval($volunteers[$v]->duration_time);
-        $volunteerInfo->end = date_add(new DateTime($volunteerInfo->start), date_interval_create_from_date_string($volunteerInfo->origin_duration->getDurationFormat()))->format("Y-m-d H:i:s");
-        $volunteerInfo->weekday_id = intval($volunteers[$v]->weekday_tinyint);
-        $volunteerInfo->weekday = $GLOBALS['days_of_the_week'][$volunteers[$v]->weekday_tinyint];
-        $volunteerInfo->sequence = $volunteers[$v]->location_info != null ? intval($volunteers[$v]->location_info) : 0;
-        $volunteerInfo->origin_start_time = $volunteers[$v]->start_time;
-        $volunteerInfo->contact = $volunteers[$v]->contact_phone_1;
-        array_push($volunteerNames, $volunteers[$v]->meeting_name);
-        array_push($finalSchedule, $volunteerInfo);
+    for ($v = 0; $v < count($volunteers['data']); $v++) {
+        $volunteer = $volunteers['data'][$v];
+        if (isset($volunteer->volunteer_enabled) && $volunteer->volunteer_enabled) {
+            $volunteerShiftSchedule = dataDecoder($volunteer->volunteer_shift_schedule);
+            foreach ($volunteerShiftSchedule as $vsi) {
+                $volunteerInfo             = new VolunteerInfo();
+                $volunteerInfo->title      = $volunteer->volunteer_name;
+                $volunteerInfo->time_zone  = $vsi->tz;
+                $volunteerInfo->start      = getNextShiftInstance( $vsi->day, $vsi->start_time, $volunteerInfo->time_zone )->format( "Y-m-d H:i:s" );
+                $volunteerInfo->end        = getNextShiftInstance( $vsi->day, $vsi->end_time, $volunteerInfo->time_zone )->format( "Y-m-d H:i:s" );
+                $volunteerInfo->weekday_id = $vsi->day;
+                $volunteerInfo->weekday    = $GLOBALS['days_of_the_week'][ $vsi->day ];
+                $volunteerInfo->sequence   = $v;
+                $volunteerInfo->contact    = $volunteer->volunteer_phone_number;
+                array_push( $finalSchedule, $volunteerInfo );
+            }
+        }
     }
-    return array($volunteerNames, $finalSchedule);
+
+    return $finalSchedule;
+}
+
+function dataEncoder($dataObject) {
+    return base64_encode(json_encode($dataObject));
+}
+
+function dataDecoder($dataString) {
+    return json_decode(base64_decode($dataString));
+}
+
+function sort_on_field(&$objects, $on, $order = 'ASC') {
+    $comparer = ($order === 'DESC')
+        ? "return -strcmp(\$a->{$on},\$b->{$on});"
+        : "return strcmp(\$a->{$on},\$b->{$on});";
+    usort($objects, create_function('$a,$b', $comparer));
 }
 
 function countOccurrences($initialSchedule, $volunteerName) {
@@ -410,28 +498,69 @@ function getHelplineBMLTRootServer() {
     return isset($GLOBALS['helpline_bmlt_root_server']) ? $GLOBALS['helpline_bmlt_root_server'] : $GLOBALS['bmlt_root_server'];
 }
 
-function auth_bmlt($username, $password) {
+function auth_bmlt($username, $password, $master = false) {
     $ch = curl_init();
     $auth_endpoint = (isset($GLOBALS['alt_auth_method']) && $GLOBALS['alt_auth_method'] ? '/index.php' : '/local_server/server_admin/xml.php');
     curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . $auth_endpoint);
     curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
+    curl_setopt($ch, CURLOPT_COOKIEJAR,  ($master ? 'master' : $username) . '_cookie.txt');
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
     curl_setopt($ch, CURLOPT_POSTFIELDS, 'admin_action=login&c_comdef_admin_login='.$username.'&c_comdef_admin_password='.$password);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_HEADER, false);
+    curl_setopt($ch, CURLOPT_HEADER,  false);
     $res = curl_exec($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    return !strpos($res, "NOT AUTHORIZED");
+    return !strpos($res,  "NOT AUTHORIZED");
 }
 
-function get($url) {
+function check_auth($username) {
+    $cookie_file = $username . '_cookie.txt';
+    if (file_exists($cookie_file)) {
+        $ch = curl_init();
+        curl_setopt( $ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=get_permissions' );
+        curl_setopt( $ch, CURLOPT_POST, 1 );
+        curl_setopt( $ch, CURLOPT_COOKIEJAR, $cookie_file );
+        curl_setopt( $ch, CURLOPT_COOKIEFILE, $cookie_file );
+        curl_setopt( $ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+        curl_setopt( $ch, CURLOPT_HEADER, false );
+        $res = curl_exec( $ch );
+        curl_close( $ch );
+    } else {
+        $res = "NOT AUTHORIZED";
+    }
+
+    return !preg_match('/NOT AUTHORIZED/', $res);
+}
+
+function logout_auth($username) {
+    session_unset();
+    $cookie_file = $username . '_cookie.txt';
+    if (file_exists($cookie_file)) {
+        $ch = curl_init();
+        curl_setopt( $ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=logout' );
+        curl_setopt( $ch, CURLOPT_POST, 1 );
+        curl_setopt( $ch, CURLOPT_COOKIEJAR, $cookie_file );
+        curl_setopt( $ch, CURLOPT_COOKIEFILE, $cookie_file );
+        curl_setopt( $ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+        curl_setopt( $ch, CURLOPT_HEADER, false );
+        $res = curl_exec( $ch );
+        curl_close( $ch );
+    } else {
+        $res = "BYE;";
+    }
+
+    return !preg_match('/BYE/', $res);
+}
+
+function get($url, $username = 'master') {
     error_log($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookie.txt');
-    curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $username . '_cookie.txt');
+    curl_setopt($ch, CURLOPT_COOKIEJAR, $username . '_cookie.txt');
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $data = curl_exec($ch);
@@ -444,13 +573,18 @@ function get($url) {
     return $data;
 }
 
-function post($url, $payload) {
+function post($url, $payload, $is_json = true, $username = 'master') {
     error_log($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $username . '_cookie.txt');
+    curl_setopt($ch, CURLOPT_COOKIEJAR, $username . '_cookie.txt');
+    $post_field_count = $is_json ? 1 : substr_count($payload, '=');
+    curl_setopt($ch, CURLOPT_POST, $post_field_count);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $is_json ? json_encode($payload) : $payload);
+    if ($is_json) {
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    }
     curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap" );
     $data = curl_exec($ch);
     $errorno = curl_errno($ch);
@@ -458,7 +592,6 @@ function post($url, $payload) {
     if ($errorno > 0) {
         throw new Exception(curl_strerror($errorno));
     }
-
     return $data;
 }
 

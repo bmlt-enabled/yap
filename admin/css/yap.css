@@ -1,0 +1,91 @@
+div#signin {
+    margin-top:40px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: #eee;
+}
+
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+    margin-bottom: 10px;
+}
+.form-signin .checkbox {
+    font-weight: normal;
+}
+.form-signin .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+.form-signin input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+#no-auth-message {
+    color:red;
+    font-size:14px;
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+#add-volunteer {
+    margin-top:10px;
+}
+
+#save-volunteers {
+    margin-top:10px;
+}
+
+.volunteerCard {
+    margin-top:10px;
+}
+
+#newVolunteerDialog {
+    margin-top:10px;
+}
+
+#volunteerCardFooter {
+    margin-bottom:10px;
+}
+
+#volunteer_schedule {
+    margin-top:20px;
+}
+
+.day_of_the_week_field {
+    visibility: hidden;
+}
+
+.removeShiftLink {
+    color: white;
+}
+
+.removeShiftLink:hover {
+    text-decoration: none;
+    color: white;
+}
+
+#shiftDay {
+    display: inline;
+}
