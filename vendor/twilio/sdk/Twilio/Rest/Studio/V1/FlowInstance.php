@@ -30,13 +30,14 @@ use Twilio\Version;
  */
 class FlowInstance extends InstanceResource {
     protected $_engagements = null;
+    protected $_executions = null;
 
     /**
      * Initialize the FlowInstance
      * 
      * @param \Twilio\Version $version Version that contains the resource
      * @param mixed[] $payload The response payload
-     * @param string $sid The sid
+     * @param string $sid A string that uniquely identifies this Flow.
      * @return \Twilio\Rest\Studio\V1\FlowInstance 
      */
     public function __construct(Version $version, array $payload, $sid = null) {
@@ -99,6 +100,15 @@ class FlowInstance extends InstanceResource {
      */
     protected function getEngagements() {
         return $this->proxy()->engagements;
+    }
+
+    /**
+     * Access the executions
+     * 
+     * @return \Twilio\Rest\Studio\V1\Flow\ExecutionList 
+     */
+    protected function getExecutions() {
+        return $this->proxy()->executions;
     }
 
     /**
