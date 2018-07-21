@@ -94,9 +94,18 @@ function saveVolunteers() {
             data,
             "_YAP_DATA_",
             function (xhr, status) {
+                var alert = $("#volunteer_saved_alert");
+                if (xhr.responseText === "{}" || xhr.status !== 200) {
+                    alert.addClass("alert-danger");
+                    alert.html("Could not save.");
+                } else {
+                    alert.addClass("alert-success");
+                    alert.html("Saved.");
+                }
+
+                alert.show();
+                alert.fadeOut(3000);
                 spinnerDialog(false);
-                $("#volunteer_saved_alert").show();
-                $("#volunteer_saved_alert").fadeOut(3000);
                 $("#save-volunteers").removeClass('disabled');
             }
         );
@@ -155,7 +164,8 @@ function saveToAdminApi(service_body_id, helpline_data_id, data, data_type, call
         data: JSON.stringify({"data": data}),
         dataType: "json",
         contentType: "application/json",
-        complete: callback
+        complete: callback,
+        timeout: 60000
     });
 }
 
