@@ -1,5 +1,10 @@
 # Release Notes
 
+### 2.0.1 (July 22, 2018)
+* Bug fix: A schedule with no volunteers now automatically goes to voicemail.
+* Bug fix: Better error handling for saving service bodies and volunteers.
+* Bug fix: An invalid zip code or location was not handling correctly, now it does. 
+
 ### 2.0.0 (July 19, 2018)
 * The "Admin" portal. Yap has the ability to make managing helpline volunteers very easy. If you are using helpline volunteer routing in Yap 1.x, you know how painful it was.
 * The "Admin" portal re-uses the BMLT permission hierarchy scheme. This means if you sign into the Yap admin portal, that user will only see their service bodies. This makes it very easy to allow service bodies to administer their own volunteers. 
