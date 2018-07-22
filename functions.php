@@ -49,7 +49,7 @@ class VolunteerInfo {
     public $weekday;
     public $sequence;
     public $time_zone;
-    public $contact;
+    public $contact = SpecialPhoneNumber::UNKNOWN;
     public $color;
 }
 
@@ -80,12 +80,12 @@ class ServiceBodyConfiguration {
     public $volunteer_routing_redirect = false;
     public $volunteer_routing_redirect_id = 0;
     public $forced_caller_id_enabled = false;
-    public $forced_caller_id_number = "0000000000";
+    public $forced_caller_id_number = SpecialPhoneNumber::UNKNOWN;
     public $call_timeout = 20;
     public $volunteer_sms_notification_enabled = false;
     public $call_strategy = CycleAlgorithm::LOOP_FOREVER;
     public $primary_contact_enabled = false;
-    public $primary_contact_number = "0000000000";
+    public $primary_contact_number = SpecialPhoneNumber::UNKNOWN;
     public $moh = "https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical";
     public $moh_count = 1;
 }
@@ -103,6 +103,7 @@ class DataType {
 
 class SpecialPhoneNumber {
     const VOICE_MAIL = "voicemail";
+    const UNKNOWN = "0000000000";
 }
 
 class SettingSource {
@@ -111,6 +112,8 @@ class SettingSource {
     const CONFIG = "config.php";
     const DEFAULT_SETTING = "Factory Default";
 }
+
+class NoVolunteersException extends Exception {}
 
 class UpgradeAdvisor {
     private static $all_good = true;
@@ -501,7 +504,7 @@ function getServiceBodyConfiguration($service_body_id) {
         $config->volunteer_routing_redirect = $data->volunteer_routing == "volunteers_redirect";
         $config->volunteer_routing_redirect_id = $config->volunteer_routing_redirect ? $data->volunteers_redirect_id : 0;
         $config->forced_caller_id_enabled = isset($data->forced_caller_id) && strlen($data->forced_caller_id) > 0;
-        $config->forced_caller_id_number = $config->forced_caller_id_enabled ? $data->forced_caller_id : "0000000000";
+        $config->forced_caller_id_number = $config->forced_caller_id_enabled ? $data->forced_caller_id : SpecialPhoneNumber::UNKNOWN;
         $config->call_timeout = isset($data->call_timeout) && strlen($data->call_timeout > 0) ? intval($data->call_timeout) : 20;
         $config->volunteer_sms_notification_enabled = isset($data->volunteer_sms_notification) && $data->volunteer_sms_notification != "no_sms";
         $config->call_strategy = isset($data->call_strategy) ? intval($data->call_strategy) : $config->call_strategy;
@@ -562,37 +565,43 @@ function getIdsFormats($types, $helpline = false) {
 }
 
 function getHelplineVolunteersActiveNow($service_body_int) {
-    $volunteers = json_decode(getHelplineSchedule($service_body_int));
-    $activeNow = [];
-    for ($v = 0; $v < count($volunteers); $v++) {
-        date_default_timezone_set($volunteers[$v]->time_zone);
-        $current_time = new DateTime();
-        if ($current_time >= (new DateTime($volunteers[$v]->start)) && $current_time <= (new DateTime($volunteers[$v]->end))) {
-            array_push($activeNow, $volunteers[$v]);
+    try {
+        $volunteers = json_decode( getHelplineSchedule( $service_body_int ) );
+        $activeNow  = [];
+        for ( $v = 0; $v < count( $volunteers ); $v ++ ) {
+            date_default_timezone_set( $volunteers[ $v ]->time_zone );
+            $current_time = new DateTime();
+            if ( $current_time >= ( new DateTime( $volunteers[ $v ]->start ) ) && $current_time <= ( new DateTime( $volunteers[ $v ]->end ) ) ) {
+                array_push( $activeNow, $volunteers[ $v ] );
+            }
         }
-    }
 
-    return $activeNow;
+        return $activeNow;
+    } catch (NoVolunteersException $nve) {
+        throw $nve;
+    }
 }
 
 function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = CycleAlgorithm::CYCLE_AND_FAILOVER) {
-    $volunteers = getHelplineVolunteersActiveNow($service_body_int);
-    if ( isset($volunteers) && count( $volunteers ) > 0 ) {
-        if ($cycle_algorithm == CycleAlgorithm::CYCLE_AND_VOICEMAIL) {
-            if ( $tracker > count( $volunteers ) - 1 ) {
-                return SpecialPhoneNumber::VOICE_MAIL;
+    try {
+        $volunteers = getHelplineVolunteersActiveNow($service_body_int);
+        if ( isset($volunteers) && count( $volunteers ) > 0 ) {
+            if ($cycle_algorithm == CycleAlgorithm::CYCLE_AND_VOICEMAIL) {
+                if ( $tracker > count( $volunteers ) - 1 ) {
+                    return SpecialPhoneNumber::VOICE_MAIL;
+                }
+
+                return $volunteers[ $tracker ]->contact;
             }
-
-            return $volunteers[ $tracker ]->contact;
+            else if ($cycle_algorithm == CycleAlgorithm::LOOP_FOREVER) {
+                return $volunteers[$tracker % count( $volunteers )]->contact;
+            } else if ($cycle_algorithm == CycleAlgorithm::RANDOMIZER) {
+                return $volunteers[rand(0, count( $volunteers ) - 1)]->contact;
+            }
         }
-        else if ($cycle_algorithm == CycleAlgorithm::LOOP_FOREVER) {
-            return $volunteers[$tracker % count( $volunteers )]->contact;
-        } else if ($cycle_algorithm == CycleAlgorithm::RANDOMIZER) {
-            return $volunteers[rand(0, count( $volunteers ) - 1)]->contact;
-        }
+    } catch (NoVolunteersException $nve) {
+        return SpecialPhoneNumber::UNKNOWN;
     }
-
-    return "000000000";
 }
 
 function getHelplineSchedule($service_body_int) {
@@ -607,7 +616,7 @@ function getHelplineSchedule($service_body_int) {
 
         return json_encode( $finalSchedule );
     } else {
-        return new StdClass();
+        throw new NoVolunteersException();
     }
 }
 

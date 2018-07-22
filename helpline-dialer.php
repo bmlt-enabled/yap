@@ -25,12 +25,12 @@ function getCallConfig($client, $serviceBodyConfiguration) {
     if ( $serviceBodyConfiguration->forced_caller_id_enabled ) {
         $caller_id = $serviceBodyConfiguration->forced_caller_id_number;
     } else {
-        $caller_id = isset( $_REQUEST["Caller"] ) ? $_REQUEST["Caller"] : "0000000000";
+        $caller_id = isset( $_REQUEST["Caller"] ) ? $_REQUEST["Caller"] : SpecialPhoneNumber::UNKNOWN;
     }
 
     $config = new CallConfig();
     $config->phone_number = getHelplineVolunteer( $serviceBodyConfiguration->service_body_id, $tracker, $serviceBodyConfiguration->call_strategy );
-    $config->voicemail_url = $webhook_url . '/voicemail.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&caller_id=' . $caller_id;
+    $config->voicemail_url = $webhook_url . '/voicemail.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&caller_id=' . trim($caller_id);
     $config->options = array(
         'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'],
         'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&tracker=' . ++ $tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'],
@@ -72,7 +72,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
         if (count($participants) > 0) {
             $callerSid = $participants[0]->callSid;
             $callerNumber = $client->calls( $callerSid )->fetch()->from;
-            if ($callConfig->phone_number == SpecialPhoneNumber::VOICE_MAIL) {
+            if ($callConfig->phone_number == SpecialPhoneNumber::VOICE_MAIL || $callConfig->phone_number == SpecialPhoneNumber::UNKNOWN) {
                 $client->calls($callerSid)->update(array(
                     "method" => "GET",
                     "url" => $callConfig->voicemail_url . "&caller_number=" . $callerNumber
