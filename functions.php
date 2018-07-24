@@ -244,7 +244,7 @@ function getCoordinatesForAddress($address) {
     $coordinates = new Coordinates();
 
     if (strlen($address) > 0) {
-        if (isset($google_maps_api_key)) {
+        if ($GLOBALS['google_maps_api_key'] != "") {
                 $map_details_response = get($GLOBALS['google_maps_endpoint']
                 . "&address="
                 . urlencode($address)
