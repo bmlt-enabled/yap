@@ -16,7 +16,7 @@ $promptset_name = str_replace("-", "_", setting("word_language")) . "_voicemail_
     <?php } ?>
     <Record
         playBeep="true"
-        recordingStatusCallback="voicemail-complete.php?service_body_id=<?php echo setting("service_body_id") ?>&amp;caller_id=<?php echo urlencode($_REQUEST["caller_id"])?>&amp;caller_number=<?php echo urlencode($_REQUEST["caller_number"])?>"
+        recordingStatusCallback="voicemail-complete.php?service_body_id=<?php echo setting("service_body_id") ?>&amp;caller_id=<?php echo urlencode($_REQUEST["caller_id"])?>&amp;caller_number=<?php echo urlencode($_REQUEST["caller_number"])?>&amp;called_number=<?php echo urlencode($_REQUEST["Called"])?>"
         recordingStatusCallbackMethod="GET"
         maxLength="120"
         timeout="15"/>

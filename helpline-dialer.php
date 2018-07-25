@@ -12,12 +12,11 @@ class CallConfig {
 
 function getCallConfig($client, $serviceBodyConfiguration) {
     $tracker            = !isset( $_REQUEST["tracker"] ) ? 0 : $_REQUEST["tracker"];
-    $numbers            = $client->incomingPhoneNumbers->read( array( "phoneNumber" => $_REQUEST['Caller'] ) );
-    $voice_url          = $numbers[0]->voiceUrl;
+    $voice_url          = "https://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'];
     if (strpos(basename($voice_url), ".php")) {
         $webhook_url = substr( $voice_url, 0, strrpos( $voice_url, "/" ) );
     } else if (strpos($voice_url, "?")) {
-        $webhook_url =  substr( $voice_url, 0, strrpos( $voice_url, "?" ) );
+        $webhook_url = substr( $voice_url, 0, strrpos( $voice_url, "?" ) );
     } else {
         $webhook_url = $voice_url;
     }
@@ -28,16 +27,25 @@ function getCallConfig($client, $serviceBodyConfiguration) {
         $caller_id = isset( $_REQUEST["Caller"] ) ? $_REQUEST["Caller"] : SpecialPhoneNumber::UNKNOWN;
     }
 
+    if (isset( $_REQUEST["OriginalCallerId"] )) {
+        $original_caller_id = $_REQUEST["OriginalCallerId"];
+    } elseif (isset($_REQUEST["Caller"])) {
+        $original_caller_id = $_REQUEST["Caller"];
+    } else {
+        $original_caller_id = SpecialPhoneNumber::UNKNOWN;
+    }
+
     $config = new CallConfig();
     $config->phone_number = getHelplineVolunteer( $serviceBodyConfiguration->service_body_id, $tracker, $serviceBodyConfiguration->call_strategy );
     $config->voicemail_url = $webhook_url . '/voicemail.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&caller_id=' . trim($caller_id);
     $config->options = array(
         'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'],
-        'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&tracker=' . ++ $tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'],
+        'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&tracker=' . ++$tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'] . '&OriginalCallerId=' . trim($original_caller_id),
         'statusCallbackEvent'  => 'completed',
         'statusCallbackMethod' => 'GET',
         'timeout'              => $serviceBodyConfiguration->call_timeout,
-        'callerId'             => $caller_id
+        'callerId'             => $caller_id,
+        'originalCallerId'     => $original_caller_id
     );
 
     return $config;
@@ -84,7 +92,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                             $callConfig->phone_number,
                             array(
                                 "body" => "You have an incoming helpline call from " . $callerNumber . ".",
-                                "from" => $callConfig->options['callerId']
+                                "from" => $callConfig->options['originalCallerId']
                             ) );
                     }
 

@@ -21,7 +21,7 @@ if ($serviceBodyConfiguration->primary_contact_enabled) {
     $client->messages->create(
         $serviceBodyConfiguration->primary_contact_number,
         array(
-            "from" => $_REQUEST["caller_id"],
+            "from" => $_REQUEST["called_number"],
             "body" => "You have a message from the " . $serviceBodyName . " helpline from caller " . $_REQUEST["caller_number"] . ", " . $_REQUEST["RecordingUrl"]
         )
     );
