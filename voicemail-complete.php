@@ -22,7 +22,7 @@ if ($serviceBodyConfiguration->primary_contact_number_enabled) {
         $serviceBodyConfiguration->primary_contact_number,
         array(
             "from" => $_REQUEST["called_number"],
-            "body" => "You have a message from the " . $serviceBodyName . " helpline from caller " . $_REQUEST["caller_number"] . ", " . $_REQUEST["RecordingUrl"]
+            "body" => "You have a message from the " . $serviceBodyName . " helpline from caller " . $_REQUEST["caller_number"] . ", " . $_REQUEST["RecordingUrl"] . ".mp3"
         )
     );
 }
