@@ -4,7 +4,7 @@ lint:
 	find . -name '*.php' -exec php -l {} \;
 
 upgrade:
-    ./upgrade.sh
+	./upgrade.sh
 
 simulate:
 	ngrok http 3100
