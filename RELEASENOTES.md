@@ -1,5 +1,12 @@
 # Release Notes
 
+### 2.1.0 (July 27, 2018)
+* Email notifications with voicemail (see the README for more information)
+* Bug fix: Titles were being cut off.  There is now a 2 second delay to prevent this from happening.
+* Bug fix: Authentication issue with special characters resolved.
+* Bug fix: Voicemail was not working with Forced CallerID, this was resolved.
+* Bug fix: Volunteer routing with no numbers will automatically go to voicemail.
+
 ### 2.0.1 (July 22, 2018)
 * Bug fix: A schedule with no volunteers now automatically goes to voicemail.
 * Bug fix: Better error handling for saving service bodies and volunteers.

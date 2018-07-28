@@ -1,7 +1,7 @@
 <?php
 include_once 'config.php';
 include_once 'session.php';
-static $version = "2.0.1";
+static $version = "2.1.0";
 static $settings_whitelist = [
     'title' => [ 'description' => '' , 'default' => ''],
     'location_lookup_bias' => [ 'description' => '' , 'default' => 'components=country:us'],
@@ -135,6 +135,15 @@ class UpgradeAdvisor {
         'bmlt_password',
     ];
 
+    private static $email_settings = [
+        'smtp_host',
+        'smtp_username',
+        'smtp_password',
+        'smtp_secure',
+        'smtp_from_address',
+        'smtp_from_name'
+    ];
+
     private static function isThere($setting) {
         return isset($GLOBALS[$setting]) && strlen($GLOBALS[$setting]) > 0;
     }
@@ -186,6 +195,14 @@ class UpgradeAdvisor {
 
         } catch ( \Twilio\Exceptions\ConfigurationException $e ) {
             error_log("Missing Twilio Credentials");
+        }
+
+        if (has_setting('smtp_host')) {
+            foreach (UpgradeAdvisor::$email_settings as $setting) {
+                if (!UpgradeAdvisor::isThere($setting)) {
+                    return UpgradeAdvisor::getState(false, "Missing required email setting: " . $setting);
+                }
+            }
         }
 
         if (UpgradeAdvisor::$all_good) {
