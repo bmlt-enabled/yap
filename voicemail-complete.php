@@ -17,7 +17,7 @@ if ($serviceBodyConfiguration->primary_contact_number_enabled) {
     } catch ( \Twilio\Exceptions\ConfigurationException $e ) {
         error_log( "Missing Twilio Credentials" );
     }
-    
+
     $client->messages->create(
         $serviceBodyConfiguration->primary_contact_number,
         array(
@@ -48,7 +48,7 @@ if ($serviceBodyConfiguration->primary_contact_email_enabled && has_setting('smt
         $mail->addAddress($serviceBodyConfiguration->primary_contact_email);
         $mail->addStringAttachment(file_get_contents($_REQUEST["RecordingUrl"] . ".mp3"), $_REQUEST["RecordingUrl"] . ".mp3");
         $mail->Body = "You have a message from the " . $serviceBodyName . " helpline from caller " . $_REQUEST["caller_number"] . ", " . $_REQUEST["RecordingUrl"] . ".mp3";
-        $mail->Subject = 'Helpline Call for ' . $serviceBodyName;
+        $mail->Subject = 'Helpline Voicemail from ' . $serviceBodyName;
         $mail->send();
     } catch (Exception $e) {
         error_log('Message could not be sent. Mailer Error: ' . $mail->ErrorInfo);
