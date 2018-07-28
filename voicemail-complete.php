@@ -2,12 +2,13 @@
 include 'functions.php';
 require_once 'vendor/autoload.php';
 use Twilio\Rest\Client;
+use PHPMailer\PHPMailer\PHPMailer;
 header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
 $serviceBodyConfiguration = getServiceBodyConfiguration(setting("service_body_id"));
 
-if ($serviceBodyConfiguration->primary_contact_enabled) {
+if ($serviceBodyConfiguration->primary_contact_number_enabled) {
     $sid                        = $GLOBALS['twilio_account_sid'];
     $token                      = $GLOBALS['twilio_auth_token'];
     try {
@@ -25,4 +26,29 @@ if ($serviceBodyConfiguration->primary_contact_enabled) {
             "body" => "You have a message from the " . $serviceBodyName . " helpline from caller " . $_REQUEST["caller_number"] . ", " . $_REQUEST["RecordingUrl"]
         )
     );
+
+    if ($serviceBodyConfiguration->primary_contact_email_enabled && has_setting('smtp_host')) {
+        try {
+            $mail = new PHPMailer(true);
+            $mail->isSMTP();
+            $mail->Host = setting('smtp_host');
+            $mail->SMTPAuth = true;
+            $mail->Username = setting('smtp_username');
+            $mail->Password = setting('smtp_password');
+            $mail->SMTPSecure = setting('smtp_secure');
+            if (has_setting('smtp_alt_port')) {
+                $mail->Port = setting('smtp_alt_port');
+            }
+            $mail->setFrom(setting('smtp_from_address'), setting('smtp_from_name'));
+            $mail->isHTML(true);
+            $mail->addAddress($serviceBodyConfiguration->primary_contact_email);
+            $mail->addStringAttachment(file_get_contents($_REQUEST["RecordingUrl"] . ".wav"), $_REQUEST["RecordingUrl"] . ".wav");
+            $mail->Body = "You have a message from the " . $serviceBodyName . " helpline from caller " . $_REQUEST["caller_number"] . ", " . $_REQUEST["RecordingUrl"];
+            $mail->Subject = 'Helpline Call for ' . $serviceBodyName;
+            $mail->send();
+        } catch (Exception $e) {
+            error_log('Message could not be sent. Mailer Error: ' . $mail->ErrorInfo);
+        }
+
+    }
 }

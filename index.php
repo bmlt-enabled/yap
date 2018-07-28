@@ -23,6 +23,7 @@
     $promptset_name = str_replace("-", "_", setting("word_language")) . "_greeting";
 ?>
 <Response>
+    <Pause length="2"></Pause>
     <Gather numDigits="1" timeout="10" action="input-method.php" method="GET">
         <?php if (has_setting($promptset_name)) {?>
             <Play><?php echo setting($promptset_name) ?></Play>

@@ -402,6 +402,31 @@ static $twilio_auth_token = "";
     * Forced Caller Id: This setting changes the outgoing display caller id.
     * Call Timeout: This is the number of seconds before trying the next number for volunteer routing.
 
+## Voicemail
+
+This is configured through service body configuration, through your call strategy setting.  If you specify a Primary Contact Number, it will SMS a link to that person when a voicemail is left.
+
+Voicemail links are also available in the Twilio Console under "Recordings".  
+
+You can also optionally use email.  You will have to enable this by adding an email address under the Primary Contact Email.
+
+You will also need to ensure that the following settings are in your `config.php`.
+
+```php
+static $smtp_host = '';             // the smtp server
+static $smtp_username = '';         // the smtp username
+static $smtp_password = '';         // the smtp password
+static $smtp_secure = '';           // either ssl (port 486) or more securely tls (port 587)
+static $smtp_from_address = '';     // the address where the email will be sent from
+static $smtp_from_name = '';        // the label name on the from address
+```
+
+If you need to, for some reason, to override the port here is another optional setting.
+
+```php
+static $smtp_alt_port = '';         // enter the integer for the respective to use
+```
+
 ## Music On Hold
 
 Music on hold will play when doing volunteer routing which is configurable from within the service body configuration.  You can specify one or more URLs to an MP3 file or Shoutcast stream.  Separate them by commas.

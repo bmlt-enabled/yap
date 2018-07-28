@@ -11,12 +11,20 @@ class ComposerStaticInit211839d18b0c3e24c5457707508f819b
         array (
             'Twilio\\' => 7,
         ),
+        'P' => 
+        array (
+            'PHPMailer\\PHPMailer\\' => 20,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'Twilio\\' => 
         array (
             0 => __DIR__ . '/..' . '/twilio/sdk/Twilio',
+        ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
     );
 

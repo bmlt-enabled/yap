@@ -26,7 +26,13 @@ static $settings_whitelist = [
     'meeting_search_radius' => [ 'description' => '' , 'default' => -50],
     'include_map_link' => [ 'description' => '' , 'default' => false],
     'infinite_searching' => [ 'description' => '' , 'default' => false],
-    'language_selections' => [ 'description' => '', 'default' => '']
+    'language_selections' => [ 'description' => '', 'default' => ''],
+    'smtp_host' => ['description' => '', 'default' => ''],
+    'smtp_username' => ['description' => '', 'default' => ''],
+    'smtp_password' => ['description' => '', 'default' => ''],
+    'smtp_secure' => ['description' => '', 'default' => ''],
+    'smtp_from_address' => ['description' => '', 'default' => ''],
+    'smtp_from_name' => ['description' => '', 'default' => ''],
 ];
 include_once 'lang/'.setting('word_language').'.php';
 
@@ -84,8 +90,10 @@ class ServiceBodyConfiguration {
     public $call_timeout = 20;
     public $volunteer_sms_notification_enabled = false;
     public $call_strategy = CycleAlgorithm::LOOP_FOREVER;
-    public $primary_contact_enabled = false;
+    public $primary_contact_number_enabled = false;
     public $primary_contact_number = SpecialPhoneNumber::UNKNOWN;
+    public $primary_contact_email_enabled = false;
+    public $primary_contact_email;
     public $moh = "https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical";
     public $moh_count = 1;
 }
@@ -508,8 +516,10 @@ function getServiceBodyConfiguration($service_body_id) {
         $config->call_timeout = isset($data->call_timeout) && strlen($data->call_timeout > 0) ? intval($data->call_timeout) : 20;
         $config->volunteer_sms_notification_enabled = isset($data->volunteer_sms_notification) && $data->volunteer_sms_notification != "no_sms";
         $config->call_strategy = isset($data->call_strategy) ? intval($data->call_strategy) : $config->call_strategy;
-        $config->primary_contact_enabled = isset($data->primary_contact) && strlen($data->primary_contact) > 0;
-        $config->primary_contact_number = $config->primary_contact_enabled ? $data->primary_contact : "";
+        $config->primary_contact_number_enabled = isset($data->primary_contact) && strlen($data->primary_contact) > 0;
+        $config->primary_contact_number = $config->primary_contact_number_enabled ? $data->primary_contact : "";
+        $config->primary_contact_email_enabled = isset($data->primary_contact_email) && strlen($data->primary_contact_email) > 0;
+        $config->primary_contact_email = $config->primary_contact_email_enabled ? $data->primary_contact_email : "";
         $config->moh = isset($data->moh) && strlen($data->moh) > 0 ? $data->moh : $config->moh;
         $config->moh_count = count(explode(",", $config->moh));
     }
