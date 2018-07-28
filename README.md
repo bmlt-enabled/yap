@@ -427,6 +427,8 @@ If you need to, for some reason, to override the port here is another optional s
 static $smtp_alt_port = '';         // enter the integer for the respective to use
 ```
 
+If you do not receive an email, check your server logs.  There should be some good information there.  Also the upgrade advisor should give you some information about what might be missing as long as $smtp_host is set.
+
 ## Music On Hold
 
 Music on hold will play when doing volunteer routing which is configurable from within the service body configuration.  You can specify one or more URLs to an MP3 file or Shoutcast stream.  Separate them by commas.

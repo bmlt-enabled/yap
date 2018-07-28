@@ -2,6 +2,7 @@
 
 ### 2.1.0 (July 27, 2018)
 * Email notifications with voicemail (see the README for more information)
+* Voicemails are now MP3s to ensure reliable playback and delivery even in the lowest of bandwidth situations.
 * Bug fix: Titles were being cut off.  There is now a 2 second delay to prevent this from happening.
 * Bug fix: Authentication issue with special characters resolved.
 * Bug fix: Voicemail was not working with Forced CallerID, this was resolved.

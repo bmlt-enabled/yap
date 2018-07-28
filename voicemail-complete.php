@@ -38,12 +38,16 @@ if ($serviceBodyConfiguration->primary_contact_number_enabled) {
             $mail->SMTPSecure = setting('smtp_secure');
             if (has_setting('smtp_alt_port')) {
                 $mail->Port = setting('smtp_alt_port');
+            } elseif (setting('smtp_secure') == 'tls') {
+                $mail->Port = 587;
+            } elseif (setting('smtp_secure') == 'ssl') {
+                $mail->Port = 465;
             }
             $mail->setFrom(setting('smtp_from_address'), setting('smtp_from_name'));
             $mail->isHTML(true);
             $mail->addAddress($serviceBodyConfiguration->primary_contact_email);
-            $mail->addStringAttachment(file_get_contents($_REQUEST["RecordingUrl"] . ".wav"), $_REQUEST["RecordingUrl"] . ".wav");
-            $mail->Body = "You have a message from the " . $serviceBodyName . " helpline from caller " . $_REQUEST["caller_number"] . ", " . $_REQUEST["RecordingUrl"];
+            $mail->addStringAttachment(file_get_contents($_REQUEST["RecordingUrl"] . ".mp3"), $_REQUEST["RecordingUrl"] . ".mp3");
+            $mail->Body = "You have a message from the " . $serviceBodyName . " helpline from caller " . $_REQUEST["caller_number"] . ", " . $_REQUEST["RecordingUrl"] . ".mp3";
             $mail->Subject = 'Helpline Call for ' . $serviceBodyName;
             $mail->send();
         } catch (Exception $e) {
