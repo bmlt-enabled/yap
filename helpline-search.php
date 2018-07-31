@@ -83,8 +83,8 @@
         <Dial>
             <Number sendDigits="<?php echo $extension ?>"><?php echo $phone_number ?></Number>
         </Dial>
-    <?php } else { ?>
-        <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>"><?php echo word('the_location_you_entered_is_not_found') ?></Say>
-        <Redirect method="GET">zip-input.php?Digits=1</Redirect>
-    <?php } ?>
+    <?php } else {
+        header("Location: input-method.php?Digits=" . urlencode($_REQUEST["SearchType"]) . "&Retry=1&RetryMessage=" . urlencode(word('the_location_you_entered_is_not_found')));
+        exit();
+    } ?>
 </Response>
