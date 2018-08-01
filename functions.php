@@ -3,36 +3,30 @@ include_once 'config.php';
 include_once 'session.php';
 static $version = "2.1.0";
 static $settings_whitelist = [
-    'title' => [ 'description' => '' , 'default' => ''],
-    'location_lookup_bias' => [ 'description' => '' , 'default' => 'components=country:us'],
-    'jft_option' => [ 'description' => '' , 'default' => false],
-    'sms_ask' => [ 'description' => '' , 'default' => false],
-    'bmlt_root_server' => [ 'description' => '' , 'default' => ''],
-    'helpline_bmlt_root_server' => [ 'description' => '' , 'default' => null],
-    'voice' => [ 'description' => '' , 'default' => 'woman'],
-    'language' => [ 'description' => '' , 'default' => 'en'],
-    'helpline_search_radius' => [ 'description' => '' , 'default' => 30],
-    'helpline_search_unpublished' => [ 'description' => '' , 'default' => false],
-    'gather_language' => [ 'description' => '' , 'default' => 'en-US'],
-    'gather_hints' => [ 'description' => '' , 'default' => ''],
-    'word_language' => [ 'description' => '' , 'default' => 'en-US'],
-    'province_lookup' => [ 'description' => '' , 'default' => false],
-    'toll_free_province_bias' => [ 'description' => '' , 'default' => ''],
-    'ignore_formats' => [ 'description' => '' , 'default' => ''],
-    'fallback_number' => [ 'description' => '' , 'default' => ''],
-    'result_count_max' => [ 'description' => '' , 'default' => 5],
-    'postal_code_length' => [ 'description' => '' , 'default' => 5],
-    'grace_minutes' => [ 'description' => '' , 'default' => 15],
-    'meeting_search_radius' => [ 'description' => '' , 'default' => -50],
-    'include_map_link' => [ 'description' => '' , 'default' => false],
-    'infinite_searching' => [ 'description' => '' , 'default' => false],
-    'language_selections' => [ 'description' => '', 'default' => ''],
-    'smtp_host' => ['description' => '', 'default' => ''],
-    'smtp_username' => ['description' => '', 'default' => ''],
-    'smtp_password' => ['description' => '', 'default' => ''],
-    'smtp_secure' => ['description' => '', 'default' => ''],
-    'smtp_from_address' => ['description' => '', 'default' => ''],
-    'smtp_from_name' => ['description' => '', 'default' => ''],
+    'title' => [ 'description' => '' , 'default' => '', 'overridable' => true],
+    'location_lookup_bias' => [ 'description' => '' , 'default' => 'components=country:us', 'overridable' => true],
+    'jft_option' => [ 'description' => '' , 'default' => false, 'overridable' => true],
+    'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true],
+    'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false],
+    'helpline_bmlt_root_server' => [ 'description' => '' , 'default' => null, 'overridable' => false],
+    'voice' => [ 'description' => '' , 'default' => 'woman', 'overridable' => true],
+    'language' => [ 'description' => '' , 'default' => 'en', 'overridable' => true],
+    'helpline_search_radius' => [ 'description' => '' , 'default' => 30, 'overridable' => true],
+    'helpline_search_unpublished' => [ 'description' => '' , 'default' => false, 'overridable' => true],
+    'gather_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
+    'gather_hints' => [ 'description' => '' , 'default' => '', 'overridable' => true],
+    'word_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
+    'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true],
+    'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true],
+    'ignore_formats' => [ 'description' => '' , 'default' => '', 'overridable' => true],
+    'fallback_number' => [ 'description' => '' , 'default' => '', 'overridable' => true],
+    'result_count_max' => [ 'description' => '' , 'default' => 5, 'overridable' => true],
+    'postal_code_length' => [ 'description' => '' , 'default' => 5, 'overridable' => true],
+    'grace_minutes' => [ 'description' => '' , 'default' => 15, 'overridable' => true],
+    'meeting_search_radius' => [ 'description' => '' , 'default' => -50, 'overridable' => true],
+    'include_map_link' => [ 'description' => '' , 'default' => false, 'overridable' => true],
+    'infinite_searching' => [ 'description' => '' , 'default' => false, 'overridable' => true],
+    'language_selections' => [ 'description' => '', 'default' => '', 'overridable' => true]
 ];
 
 static $available_languages = [
@@ -244,19 +238,21 @@ function has_setting($name) {
 }
 
 function setting($name) {
-    $result = null;
-
-    if (isset($_REQUEST[$name])) {
-        $result =  $_REQUEST[$name];
-    } else if (isset($_SESSION["override_" . $name])) {
-        $result = $_SESSION["override_" . $name];
-    } else if (isset($GLOBALS[$name])) {
-        $result = $GLOBALS[$name];
-    } else if (isset($GLOBALS['settings_whitelist'][$name]['default'])) {
-        $result = $GLOBALS['settings_whitelist'][$name]['default'];
+    if ($GLOBALS['settings_whitelist'][$name]['overridable']) {
+        if (isset($_REQUEST[$name])) {
+            return $_REQUEST[$name];
+        } else if (isset($_SESSION["override_" . $name])) {
+            return $_SESSION["override_" . $name];
+        }
     }
 
-    return $result;
+    if (isset($GLOBALS[$name])) {
+        return $GLOBALS[$name];
+    } else if (isset($GLOBALS['settings_whitelist'][$name]['default'])) {
+        return $GLOBALS['settings_whitelist'][$name]['default'];
+    }
+
+    return null;
 }
 
 function setting_source($name) {
