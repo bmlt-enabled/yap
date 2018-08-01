@@ -12,7 +12,7 @@
             $selected_language = explode(",", setting('language_selections'))[intval($_REQUEST["Digits"]) - 1];
             $_SESSION["override_word_language"] = $selected_language;
             $_SESSION["override_gather_language"] = $selected_language;
-            include_once 'lang/'.setting('word_language').'.php';
+            include_once 'lang/'.getWordLanguage().'.php';
         }
     }
 
@@ -20,7 +20,7 @@
         getServiceBodyConfiguration($_REQUEST["override_service_body_id"]);
     }
 
-    $promptset_name = str_replace("-", "_", setting("word_language")) . "_greeting";
+    $promptset_name = str_replace("-", "_", getWordLanguage()) . "_greeting";
 ?>
 <Response>
     <Gather numDigits="1" timeout="10" action="input-method.php" method="GET">

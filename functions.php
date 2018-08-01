@@ -34,18 +34,19 @@ static $settings_whitelist = [
     'smtp_from_address' => ['description' => '', 'default' => ''],
     'smtp_from_name' => ['description' => '', 'default' => ''],
 ];
-include_once 'lang/'.setting('word_language').'.php';
+
+static $available_languages = [
+    "en-US" => "English",
+    "pig-latin" => "Igpay Atinlay"
+];
+
+include_once 'lang/'.getWordLanguage().'.php';
 
 $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
 $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key" . trim($google_maps_api_key);
 # BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
 static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 static $numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-
-static $available_languages = [
-   "en-US" => "English",
-   "pig-latin" => "Igpay Atinlay"
-];
 
 class VolunteerInfo {
     public $title;
@@ -209,6 +210,16 @@ class UpgradeAdvisor {
             return UpgradeAdvisor::getState(true, "Ready To Yap!");
         }
     }
+}
+
+function getWordLanguage() {
+    foreach ($GLOBALS['available_languages'] as $key => $available_language) {
+        if ($key == setting('word_language')) {
+            return $key;
+        }
+    }
+
+    return "";
 }
 
 function word($name) {

@@ -4,7 +4,7 @@ header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
 getServiceBodyConfiguration(setting("service_body_id"));
-$promptset_name = str_replace("-", "_", setting("word_language")) . "_voicemail_greeting";
+$promptset_name = str_replace("-", "_", getWordLanguage()) . "_voicemail_greeting";
 ?>
 <Response>
     <?php if (has_setting($promptset_name)) {?>

@@ -1,6 +1,6 @@
 <?php
     include_once dirname(__DIR__).'/functions.php';
-    include_once dirname(__DIR__).'/lang/'.setting('word_language').'.php';
+    include_once dirname(__DIR__).'/lang/'.getWordLanguage().'.php';
 ?>
 <!doctype html>
 <html lang="en">
