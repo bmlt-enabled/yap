@@ -26,7 +26,8 @@ static $settings_whitelist = [
     'meeting_search_radius' => [ 'description' => '' , 'default' => -50, 'overridable' => true],
     'include_map_link' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'infinite_searching' => [ 'description' => '' , 'default' => false, 'overridable' => true],
-    'language_selections' => [ 'description' => '', 'default' => '', 'overridable' => true]
+    'language_selections' => [ 'description' => '', 'default' => '', 'overridable' => true],
+    'tomato_helpline_routing' => [ 'description' => '', 'default' => 'false', 'overridable' => true],
 ];
 
 static $available_languages = [
@@ -41,6 +42,7 @@ $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?
 # BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
 static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 static $numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+static $tomato_url = "https://tomato.na-bmlt.org/main_server";
 
 class VolunteerInfo {
     public $title;
@@ -712,7 +714,13 @@ function sort_on_field(&$objects, $on, $order = 'ASC') {
 }
 
 function getHelplineBMLTRootServer() {
-    return has_setting('helpline_bmlt_root_server') ? setting('helpline_bmlt_root_server') : $GLOBALS['bmlt_root_server'];
+    if (has_setting('tomato_helpline_routing') && setting('tomato_helpline_routing')) {
+        return $GLOBALS['tomato_url'];
+    } else if (has_setting('helpline_bmlt_root_server')) {
+        return setting( 'helpline_bmlt_root_server' );
+    } else {
+        return $GLOBALS['bmlt_root_server'];
+    }
 }
 
 function auth_bmlt($username, $password, $master = false) {
