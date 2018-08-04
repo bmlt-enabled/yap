@@ -50,6 +50,7 @@ Helpline/Volunteer Routing
 * [Force Dialing](#force-dialing)
 * [Volunteer Routing](#volunteer-routing)
 * [Music On Hold](#music-on-hold)
+* [Tomato Helpline Routing](#tomato-helpline-routing)
 
 Miscellaneous
 * [Playback for the Just For Today Meditation](#playback-for-the-just-for-today-meditation)
@@ -65,7 +66,7 @@ Miscellaneous
 Here is an instructional video that might assist you: https://www.dropbox.com/s/e59dzal4rkkcl2r/twilio.mp4?dl=0
 **This will require that you have an SSL certificate installed on your webserver to transit a secure connection.  This is required by Twilio.**
 
-1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: https://github.com/radius314/yap/archive/2.1.1.zip.
+1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: https://github.com/radius314/yap/archive/2.1.2.zip.
 
 2. Once the application is configured you will need to customize the config.php file.  There are several settings there that are documented in that file.  There are a number of different ways to utilize the yap platform. 
 
@@ -446,6 +447,16 @@ There are also some free alternatives.  They are licensed by Creative Commons.  
 * Soft Rock: https://twimlets.com/holdmusic?Bucket=com.twilio.music.soft-rock - [[license]](http://com.twilio.music.soft-rock.s3.amazonaws.com/license.txt)
 
 Music on Hold loops indefinitely.
+
+## Tomato Helpline Routing
+
+In some cases you might want make use of aggregated helpline information.  This might be a bit nuanced, but it exists.  
+
+One thing to note about this setting, is that Tomato is not able to get service body configuration, so it will be limited to helpline field routing only.
+
+You can use this in your config.php, however keep in mind that this would break your admin portal.  Typically this would be used with a webhook as such.
+
+`override_tomato_helpline_routing=true`
 
 # Miscellaneous
 

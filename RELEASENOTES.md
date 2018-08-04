@@ -1,5 +1,9 @@
 # Release Notes
 
+### 2.1.2 (Aug 4, 2018)
+* Tomato helpline routing feature
+* Fixing several bad regressions introduced in 2.1.1 (mostly configuration related)
+
 ### 2.1.1 (Aug 3, 2018)
 * Initial pause happens while gather is occurring, allows for extension dialing
 * Fix for SMS voicemail link as MP3 @pjaudiomv
