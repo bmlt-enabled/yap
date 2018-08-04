@@ -548,7 +548,7 @@ function getServiceBodyConfiguration($service_body_id) {
             }
         }
 
-        $config->volunteer_routing_enabled = strpos($data->volunteer_routing, "volunteers") && strpos($data->volunteer_routing, "volunteers") >= 0;
+        $config->volunteer_routing_enabled = str_exists($data->volunteer_routing, "volunteers");
         $config->volunteer_routing_redirect = $data->volunteer_routing == "volunteers_redirect";
         $config->volunteer_routing_redirect_id = $config->volunteer_routing_redirect ? $data->volunteers_redirect_id : 0;
         $config->forced_caller_id_enabled = isset($data->forced_caller_id) && strlen($data->forced_caller_id) > 0;
@@ -718,6 +718,10 @@ function dataEncoder($dataObject) {
 
 function dataDecoder($dataString) {
     return json_decode(base64_decode($dataString));
+}
+
+function str_exists($subject, $needle) {
+    return strpos($subject, $needle) !== false;
 }
 
 function sort_on_field(&$objects, $on, $order = 'ASC') {
