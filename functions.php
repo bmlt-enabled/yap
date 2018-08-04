@@ -1,7 +1,7 @@
 <?php
 include_once 'config.php';
 include_once 'session.php';
-static $version = "2.1.0";
+static $version = "2.1.1";
 static $settings_whitelist = [
     'title' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'location_lookup_bias' => [ 'description' => '' , 'default' => 'components=country:us', 'overridable' => true],
@@ -238,7 +238,7 @@ function has_setting($name) {
 }
 
 function setting($name) {
-    if ($GLOBALS['settings_whitelist'][$name]['overridable']) {
+    if (isset($GLOBALS['settings_whitelist'][$name]) && $GLOBALS['settings_whitelist'][$name]['overridable']) {
         if (isset($_REQUEST[$name])) {
             return $_REQUEST[$name];
         } else if (isset($_SESSION["override_" . $name])) {

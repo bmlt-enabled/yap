@@ -1,5 +1,14 @@
 # Release Notes
 
+### 2.1.1 (Aug 3, 2018)
+* Initial pause happens while gather is occurring, allows for extension dialing
+* Fix for SMS voicemail link as MP3 @pjaudiomv
+* Fix for disabling volunteer routing after being set
+* Fix for legacy error handling for not finding helplines in favor of newer method
+* Security patch to hide smtp settings that were exposed in Settings page on admin portal
+* Security patch to whitelist all settings (preventing insecure overrides) @DeathCamel58
+* Security patch to whitelist all languages (prevents directory hopping) @DeathCamel58
+
 ### 2.1.0 (July 27, 2018)
 * Email notifications with voicemail (see the README for more information)
 * Voicemails are now MP3s to ensure reliable playback and delivery even in the lowest of bandwidth situations.
