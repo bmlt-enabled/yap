@@ -27,7 +27,7 @@ static $settings_whitelist = [
     'include_map_link' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'infinite_searching' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'language_selections' => [ 'description' => '', 'default' => '', 'overridable' => true],
-    'tomato_helpline_routing' => [ 'description' => '', 'default' => 'false', 'overridable' => true],
+    'tomato_helpline_routing' => [ 'description' => '', 'default' => false, 'overridable' => true],
 ];
 
 static $available_languages = [
@@ -714,7 +714,7 @@ function sort_on_field(&$objects, $on, $order = 'ASC') {
 }
 
 function getHelplineBMLTRootServer() {
-    if (has_setting('tomato_helpline_routing') && setting('tomato_helpline_routing')) {
+    if (json_decode(setting('tomato_helpline_routing'))) {
         return $GLOBALS['tomato_url'];
     } else if (has_setting('helpline_bmlt_root_server')) {
         return setting( 'helpline_bmlt_root_server' );
