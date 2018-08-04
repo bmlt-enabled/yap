@@ -41,7 +41,7 @@
 
         <?php
             if ($searchType == "2") {
-                if (has_setting('jft_option') && setting('jft_option')) { ?>
+                if (has_setting('jft_option') && json_decode(setting('jft_option'))) { ?>
                     <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
                         <?php echo word('press') . " " . word('three') . " " . word('to_listen_to_the_just_for_today') ?>
                 </Say>

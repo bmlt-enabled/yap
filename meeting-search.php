@@ -52,10 +52,10 @@
             echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . $results[2] . "</Say>";
         }
 
-        if (setting('include_map_link')) $results[2] .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude;
+        if (json_decode(setting('include_map_link'))) $results[2] .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude;
         $message = "<Sms>" . $results[0] . $text_space . $results[1] . $text_space . $results[2] . "</Sms>";
         error_log($message);
-        if (setting("sms_ask") && !isset($_REQUEST["SmsSid"])) {
+        if (json_decode(setting("sms_ask")) && !isset($_REQUEST["SmsSid"])) {
             array_push($sms_messages, $message);
         } else {
             echo $message;
@@ -72,7 +72,7 @@
             <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">
                 <?php echo word( 'press' ) ?> <?php echo word( "one" ) ?> <?php echo word( 'if_you_would_like_these_results_texted_to_you' ) ?>
             </Say>
-            <?php if (setting('infinite_searching')) { ?>
+            <?php if (json_decode(setting('infinite_searching'))) { ?>
                 <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">
                     <?php echo word( 'press' ) ?> <?php echo word( "two" ) ?> <?php echo word( 'if_you_would_like_to_search_again' ) ?>...
                     <?php echo word( 'press' ) ?> <?php echo word( "three" ) ?> <?php echo word( 'if_you_would_like_to_do_both' ) ?>
@@ -81,7 +81,7 @@
             <Gather numDigits="1" timeout="10"
                     action="post-call-action.php?Payload=<?php echo urlencode( json_encode( $sms_messages ) ) ?>"
                     method="GET"/>
-        <?php } elseif (setting('infinite_searching')) { ?>
+        <?php } elseif (json_decode(setting('infinite_searching'))) { ?>
             <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">
                 <?php echo word('press')?> <?php echo word("two")?> <?php echo word('if_you_would_like_to_search_again') ?>.
             </Say>

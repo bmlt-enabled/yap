@@ -317,7 +317,7 @@ function helplineSearch($latitude, $longitude) {
     $bmlt_search_endpoint = getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $helpline_search_radius;
     $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
 
-    if (has_setting('helpline_search_unpublished') && setting('helpline_search_unpublished')) {
+    if (has_setting('helpline_search_unpublished') && json_decode(setting('helpline_search_unpublished'))) {
         $search_url = $search_url . "&advanced_published=0";
         if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
             auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
