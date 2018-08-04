@@ -35,6 +35,17 @@ static $available_languages = [
     "pig-latin" => "Igpay Atinlay"
 ];
 
+static $available_prompts = [
+    "greeting",
+    "voicemail_greeting"
+];
+
+foreach ($available_languages as $available_language_key => $available_language_value) {
+    foreach ($available_prompts as $available_prompt) {
+        $settings_whitelist[str_replace("-", "_", $available_language_key) . "_" . $available_prompt] = [ 'description' => '', 'default' => '', 'overridable' => true];
+    }
+}
+
 include_once 'lang/'.getWordLanguage().'.php';
 
 $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
