@@ -3,31 +3,34 @@ include_once 'config.php';
 include_once 'session.php';
 static $version = "2.1.1";
 static $settings_whitelist = [
-    'title' => [ 'description' => '' , 'default' => '', 'overridable' => true],
-    'location_lookup_bias' => [ 'description' => '' , 'default' => 'components=country:us', 'overridable' => true],
-    'jft_option' => [ 'description' => '' , 'default' => false, 'overridable' => true],
-    'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false],
+    'fallback_number' => [ 'description' => '' , 'default' => '', 'overridable' => true],
+    'gather_hints' => [ 'description' => '' , 'default' => '', 'overridable' => true],
+    'gather_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
+    'grace_minutes' => [ 'description' => '' , 'default' => 15, 'overridable' => true],
     'helpline_bmlt_root_server' => [ 'description' => '' , 'default' => null, 'overridable' => false],
-    'voice' => [ 'description' => '' , 'default' => 'woman', 'overridable' => true],
-    'language' => [ 'description' => '' , 'default' => 'en', 'overridable' => true],
+    'helpline_fallback' => [ 'description' => '', 'default' => '', 'overridable' => true],
     'helpline_search_radius' => [ 'description' => '' , 'default' => 30, 'overridable' => true],
     'helpline_search_unpublished' => [ 'description' => '' , 'default' => false, 'overridable' => true],
-    'gather_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
-    'gather_hints' => [ 'description' => '' , 'default' => '', 'overridable' => true],
-    'word_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
-    'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true],
-    'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'ignore_formats' => [ 'description' => '' , 'default' => '', 'overridable' => true],
-    'fallback_number' => [ 'description' => '' , 'default' => '', 'overridable' => true],
-    'result_count_max' => [ 'description' => '' , 'default' => 5, 'overridable' => true],
-    'postal_code_length' => [ 'description' => '' , 'default' => 5, 'overridable' => true],
-    'grace_minutes' => [ 'description' => '' , 'default' => 15, 'overridable' => true],
-    'meeting_search_radius' => [ 'description' => '' , 'default' => -50, 'overridable' => true],
     'include_map_link' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'infinite_searching' => [ 'description' => '' , 'default' => false, 'overridable' => true],
+    'jft_option' => [ 'description' => '' , 'default' => false, 'overridable' => true],
+    'language' => [ 'description' => '' , 'default' => 'en', 'overridable' => true],
     'language_selections' => [ 'description' => '', 'default' => '', 'overridable' => true],
+    'location_lookup_bias' => [ 'description' => '' , 'default' => 'components=country:us', 'overridable' => true],
+    'meeting_search_radius' => [ 'description' => '' , 'default' => -50, 'overridable' => true],
+    'postal_code_length' => [ 'description' => '' , 'default' => 5, 'overridable' => true],
+    'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true],
+    'result_count_max' => [ 'description' => '' , 'default' => 5, 'overridable' => true],
+    'service_body_id' => [ 'description' => '', 'default' => '', 'overridable' => true],
+    'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true],
+    'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true],
+    'title' => [ 'description' => '' , 'default' => '', 'overridable' => true],
+    'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'tomato_helpline_routing' => [ 'description' => '', 'default' => false, 'overridable' => true],
+    'voice' => [ 'description' => '' , 'default' => 'woman', 'overridable' => true],
+    'word_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
 ];
 
 static $available_languages = [
@@ -312,7 +315,7 @@ function getTimeZoneForCoordinates($latitude, $longitude) {
 }
 
 function getProvince() {
-    if (has_setting('sms_bias_bypass') && setting('sms_bias_bypass')) {
+    if (has_setting('sms_bias_bypass') && json_decode(setting('sms_bias_bypass'))) {
         return "";
     } elseif (isset($_REQUEST['ToState']) && strlen($_REQUEST['ToState']) > 0) {
         return $_REQUEST['ToState']; // Retrieved from Twilio metadata
