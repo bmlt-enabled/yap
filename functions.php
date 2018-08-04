@@ -23,7 +23,7 @@ static $settings_whitelist = [
     'postal_code_length' => [ 'description' => '' , 'default' => 5, 'overridable' => true],
     'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'result_count_max' => [ 'description' => '' , 'default' => 5, 'overridable' => true],
-    'service_body_id' => [ 'description' => '', 'default' => '', 'overridable' => true],
+    'service_body_id' => [ 'description' => '', 'default' => null, 'overridable' => true],
     'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'title' => [ 'description' => '' , 'default' => '', 'overridable' => true],
@@ -45,7 +45,7 @@ static $available_prompts = [
 
 foreach ($available_languages as $available_language_key => $available_language_value) {
     foreach ($available_prompts as $available_prompt) {
-        $settings_whitelist[str_replace("-", "_", $available_language_key) . "_" . $available_prompt] = [ 'description' => '', 'default' => '', 'overridable' => true];
+        $settings_whitelist[str_replace("-", "_", $available_language_key) . "_" . $available_prompt] = [ 'description' => '', 'default' => null, 'overridable' => true];
     }
 }
 
