@@ -648,6 +648,8 @@ function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = Cy
             } else if ($cycle_algorithm == CycleAlgorithm::RANDOMIZER) {
                 return $volunteers[rand(0, count( $volunteers ) - 1)]->contact;
             }
+        } else {
+            return SpecialPhoneNumber::UNKNOWN;
         }
     } catch (NoVolunteersException $nve) {
         return SpecialPhoneNumber::UNKNOWN;
