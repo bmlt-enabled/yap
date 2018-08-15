@@ -1,6 +1,6 @@
 # Release Notes
 
-### 2.1.3
+### 2.1.3 (August 14, 2018)
 * Fix for no volunteers specified in schedule edge case
 * Phone Numbers page removed from admin portal
 * Security patch to prevent logins from masquerading root servers
