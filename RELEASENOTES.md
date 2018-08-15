@@ -1,5 +1,10 @@
 # Release Notes
 
+### 2.1.3
+* Fix for no volunteers specified in schedule edge case
+* Phone Numbers page removed from admin portal
+* Security patch to prevent logins from masquerading root servers
+
 ### 2.1.2 (Aug 4, 2018)
 * Tomato helpline routing feature
 * Fixing several bad regressions introduced in 2.1.1 (mostly configuration related)

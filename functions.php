@@ -756,7 +756,7 @@ function auth_bmlt($username, $password, $master = false) {
     $res = curl_exec($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    return !strpos($res,  "NOT AUTHORIZED");
+    return preg_match('/^OK$/', $res) == 1;
 }
 
 function check_auth($username) {
