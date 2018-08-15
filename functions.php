@@ -1,7 +1,7 @@
 <?php
 include_once 'config.php';
 include_once 'session.php';
-static $version = "2.1.2";
+static $version = "2.1.3";
 static $settings_whitelist = [
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false],
     'fallback_number' => [ 'description' => '' , 'default' => '', 'overridable' => true],
