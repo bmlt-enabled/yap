@@ -144,6 +144,10 @@ class UpgradeAdvisor {
         'twilio_auth_token',
         'bmlt_username',
         'bmlt_password',
+        'mysql_hostname',
+        'mysql_username',
+        'mysql_password',
+        'mysql_database'
     ];
 
     private static $email_settings = [
@@ -213,6 +217,18 @@ class UpgradeAdvisor {
                 if (!UpgradeAdvisor::isThere($setting)) {
                     return UpgradeAdvisor::getState(false, "Missing required email setting: " . $setting);
                 }
+            }
+        }
+
+        if (isset($GLOBALS['mysql_hostname'])) {
+            if ($GLOBALS['mysql_hostname'] == "localhost") {
+                return UpgradeAdvisor::getState(false, "Use 127.0.0.1 instead of localhost.");
+            }
+
+            try {
+                $conn = new PDO(sprintf("mysql:host=%s;dbname=%s", $GLOBALS['mysql_hostname'], $GLOBALS['mysql_database']), $GLOBALS['mysql_username'], $GLOBALS['mysql_password']);
+            } catch (PDOException $e) {
+                return UpgradeAdvisor::getState( false, $e->getMessage());
             }
         }
 
