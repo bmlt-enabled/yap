@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
     yap:
-      image: php:7.2.8-apache
+      build: .
       restart: always
       ports:
         - 3100:80

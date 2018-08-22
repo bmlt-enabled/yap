@@ -143,7 +143,10 @@ class UpgradeAdvisor {
         'twilio_account_sid',
         'twilio_auth_token',
         'bmlt_username',
-        'bmlt_password',
+        'bmlt_password'
+    ];
+
+    private static $database_settings = [
         'mysql_hostname',
         'mysql_username',
         'mysql_password',
