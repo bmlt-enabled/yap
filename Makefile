@@ -1,3 +1,4 @@
+
 .PHONY: upgrade
 
 lint:
@@ -8,3 +9,7 @@ upgrade:
 
 simulate:
 	ngrok http 3100
+
+debug:
+	docker-compose up
+
