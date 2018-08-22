@@ -1,4 +1,3 @@
-
 .PHONY: upgrade
 
 lint:
@@ -12,4 +11,3 @@ simulate:
 
 debug:
 	docker-compose up
-
