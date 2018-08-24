@@ -247,7 +247,7 @@ function checkBlacklist() {
     if (has_setting('blocklist') && strlen(setting('blocklist')) > 0 && isset($_REQUEST['Caller'])) {
         $blocklist_items = explode(",", setting('blocklist'));
         foreach ($blocklist_items as $blocklist_item) {
-            if (strpos($blocklist_item, urlencode($_REQUEST['Caller'])) === 0) {
+            if (strpos($blocklist_item, $_REQUEST['Caller']) === 0) {
                 header("content-type: text/xml");
                 echo "<?xml version='1.0' encoding='UTF-8'?>\n<Response><Reject/></Response>";
                 exit;
