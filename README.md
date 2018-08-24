@@ -216,7 +216,7 @@ These settings are overridable from within each service body configuration.
 
 If you want to completely block a specific number you can use the setting as follows (comma-separated).
 
-Do not include "+" symbol the numbers you are blocking.  Sometimes it's best to look at the Caller querystring value to see the exact number being passed.
+Sometimes it's best to look at the Caller querystring value in your logs or the Twilio console to see the exact number being passed.
 
 ```php
 static $blocklist = "";
