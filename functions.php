@@ -1,8 +1,9 @@
 <?php
 include_once 'config.php';
 include_once 'session.php';
-static $version = "2.1.3";
+static $version = "2.1.4";
 static $settings_whitelist = [
+    'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false],
     'fallback_number' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'gather_hints' => [ 'description' => '' , 'default' => '', 'overridable' => true],
@@ -32,7 +33,7 @@ static $settings_whitelist = [
     'voice' => [ 'description' => '' , 'default' => 'woman', 'overridable' => true],
     'word_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
 ];
-
+checkBlacklist();
 static $available_languages = [
     "en-US" => "English",
     "pig-latin" => "Igpay Atinlay"
@@ -237,6 +238,20 @@ class UpgradeAdvisor {
 
         if (UpgradeAdvisor::$all_good) {
             return UpgradeAdvisor::getState(true, "Ready To Yap!");
+        }
+    }
+}
+
+
+function checkBlacklist() {
+    if (has_setting('blocklist') && strlen(setting('blocklist')) > 0 && isset($_REQUEST['Caller'])) {
+        $blocklist_items = explode(",", setting('blocklist'));
+        foreach ($blocklist_items as $blocklist_item) {
+            if (strpos($blocklist_item, trim($_REQUEST['Caller'])) === 0) {
+                header("content-type: text/xml");
+                echo "<?xml version='1.0' encoding='UTF-8'?>\n<Response><Reject/></Response>";
+                exit;
+            }
         }
     }
 }

@@ -1,5 +1,8 @@
 # Release Notes
 
+### 2.1.4 (unreleased)
+* Blocklist for automatically rejecting specific calls or messages.
+
 ### 2.1.3 (August 14, 2018)
 * Fix for no volunteers specified in schedule edge case
 * Phone Numbers page removed from admin portal

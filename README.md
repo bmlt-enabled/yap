@@ -25,6 +25,7 @@ General
 * [Postal Code Lengths](#postal-code-lengths)
 * [Fallback](#fallback)
 * [Voice Greeting](#voice-greeting)
+* [Blocklist](#blocklist)
 
 Meeting Search
 
@@ -210,6 +211,16 @@ static $en_US_voicemail_greeting = "https://example.com/your-recorded-greeting.m
 ```
 
 These settings are overridable from within each service body configuration.
+
+## Blocklist
+
+If you want to completely block a specific number you can use the setting as follows (comma-separated).
+
+Do not include "+" symbol the numbers you are blocking.  Sometimes it's best to look at the Caller querystring value to see the exact number being passed.
+
+```php
+static $blocklist = "";
+```
 
 # Meeting Search
 
