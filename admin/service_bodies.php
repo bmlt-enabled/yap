@@ -42,6 +42,7 @@ sort_on_field($service_bodies, 'name');
                                                     <option value="helpline_field">Helpline Field Number</option>
                                                     <option value="volunteers">Volunteers</option>
                                                     <option value="volunteers_redirect">Volunteers Redirect</option>
+                                                    <option value="volunteers_and_sms">Volunteers and SMS</option>
                                                 </select>
 
                                                 Volunteers Redirect Id:
@@ -60,10 +61,16 @@ sort_on_field($service_bodies, 'name');
                                                     <option value="2">Random Forever</option>
                                                 </select>
 
-                                                SMS to Volunteer Options:
+                                                Inbound call SMS to Volunteer Options:
                                                 <select class="form-control form-control-sm" name="volunteer_sms_notification" id="volunteer_sms_notification">
                                                     <option value="no_sms">No SMS</option>
                                                     <option value="send_sms">Send SMS to Volunteer</option>
+                                                </select>
+
+                                                SMS Strategy:
+                                                <select class="form-control form-control-sm" name="sms_strategy" id="sms_strategy">
+                                                    <option value="2">Random</option>
+                                                    <option value="3">Blast</option>
                                                 </select>
 
                                                 Primary Contact Number (typically the Chair/Coordinator):

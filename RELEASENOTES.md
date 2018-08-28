@@ -1,7 +1,10 @@
 # Release Notes
 
-### 2.1.4 (unreleased)
+### 2.2.0 (unreleased)
+* Introducing helpline SMS routing.
+* Notes field added for each volunteer to help with various metadata.
 * Blocklist for automatically rejecting specific calls or messages.
+* Fix for int'l numbers that were not auto-prepending "+" on SMS volunteer notification.
 
 ### 2.1.3 (August 14, 2018)
 * Fix for no volunteers specified in schedule edge case

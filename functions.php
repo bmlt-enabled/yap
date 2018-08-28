@@ -1,7 +1,7 @@
 <?php
 include_once 'config.php';
 include_once 'session.php';
-static $version = "2.1.4";
+static $version = "2.2.0";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false],
@@ -69,6 +69,7 @@ class VolunteerInfo {
     public $time_zone;
     public $contact = SpecialPhoneNumber::UNKNOWN;
     public $color;
+    public $type = VolunteerType::PHONE;
 }
 
 class Coordinates {
@@ -108,12 +109,15 @@ class ServiceBodyConfiguration {
     public $primary_contact_email;
     public $moh = "https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical";
     public $moh_count = 1;
+    public $sms_routing_enabled = false;
+    public $sms_strategy = CycleAlgorithm::RANDOMIZER;
 }
 
 class CycleAlgorithm {
     const LOOP_FOREVER = 0;
     const CYCLE_AND_VOICEMAIL = 1;
     const RANDOMIZER = 2;
+    const BLASTING = 3;
 }
 
 class DataType {
@@ -131,6 +135,11 @@ class SettingSource {
     const SESSION = "Session Override";
     const CONFIG = "config.php";
     const DEFAULT_SETTING = "Factory Default";
+}
+
+class VolunteerType {
+    const PHONE = "PHONE";
+    const SMS = "SMS";
 }
 
 class NoVolunteersException extends Exception {}
@@ -555,7 +564,8 @@ function getVolunteerRoutingEnabledServiceBodies() {
     $helpline_enabled = [];
 
     for ($x = 0; $x < count($all_helpline_data); $x++) {
-        if (isset($all_helpline_data[$x]['data'][0]->volunteer_routing) && $all_helpline_data[$x]['data'][0]->volunteer_routing == "volunteers") {
+        if (isset($all_helpline_data[$x]['data'][0]->volunteer_routing) &&
+            ($all_helpline_data[$x]['data'][0]->volunteer_routing == "volunteers" || $all_helpline_data[$x]['data'][0]->volunteer_routing == "volunteers_and_sms")) {
             for ($y = 0; $y < count($service_bodies); $y++) {
                 if ( $all_helpline_data[ $x ]['service_body_id'] == intval($service_bodies[$y]->id) ) {
                     $all_helpline_data[ $x ]['service_body_name'] = $service_bodies[$y]->name;
@@ -596,6 +606,8 @@ function getServiceBodyConfiguration($service_body_id) {
         $config->primary_contact_email = $config->primary_contact_email_enabled ? $data->primary_contact_email : "";
         $config->moh = isset($data->moh) && strlen($data->moh) > 0 ? $data->moh : $config->moh;
         $config->moh_count = count(explode(",", $config->moh));
+        $config->sms_routing_enabled = $data->volunteer_routing == "volunteers_and_sms";
+        $config->sms_strategy = isset($data->sms_strategy) ? $data->sms_strategy : $config->sms_strategy;
     }
 
     return $config;
@@ -648,14 +660,16 @@ function getIdsFormats($types, $helpline = false) {
     return $finalFormats;
 }
 
-function getHelplineVolunteersActiveNow($service_body_int) {
+function getHelplineVolunteersActiveNow($service_body_int, $volunteer_type = VolunteerType::PHONE) {
     try {
         $volunteers = json_decode( getHelplineSchedule( $service_body_int ) );
         $activeNow  = [];
         for ( $v = 0; $v < count( $volunteers ); $v ++ ) {
             date_default_timezone_set( $volunteers[ $v ]->time_zone );
             $current_time = new DateTime();
-            if ( $current_time >= ( new DateTime( $volunteers[ $v ]->start ) ) && $current_time <= ( new DateTime( $volunteers[ $v ]->end ) ) ) {
+            if ( ($current_time >= ( new DateTime( $volunteers[ $v ]->start ) )
+                 && $current_time <= ( new DateTime( $volunteers[ $v ]->end ) ) )
+                 && (!isset($volunteers[$v]->type) || $volunteers[$v]->type == $volunteer_type )) {
                 array_push( $activeNow, $volunteers[ $v ] );
             }
         }
@@ -666,21 +680,27 @@ function getHelplineVolunteersActiveNow($service_body_int) {
     }
 }
 
-function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = CycleAlgorithm::CYCLE_AND_FAILOVER) {
+function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = CycleAlgorithm::CYCLE_AND_FAILOVER, $volunteer_type = VolunteerType::PHONE) {
     try {
-        $volunteers = getHelplineVolunteersActiveNow($service_body_int);
-        if ( isset($volunteers) && count( $volunteers ) > 0 ) {
-            if ($cycle_algorithm == CycleAlgorithm::CYCLE_AND_VOICEMAIL) {
+        $volunteers = getHelplineVolunteersActiveNow( $service_body_int, $volunteer_type);
+        if ( isset( $volunteers ) && count( $volunteers ) > 0 ) {
+            if ( $cycle_algorithm == CycleAlgorithm::CYCLE_AND_VOICEMAIL ) {
                 if ( $tracker > count( $volunteers ) - 1 ) {
                     return SpecialPhoneNumber::VOICE_MAIL;
                 }
 
                 return $volunteers[ $tracker ]->contact;
-            }
-            else if ($cycle_algorithm == CycleAlgorithm::LOOP_FOREVER) {
-                return $volunteers[$tracker % count( $volunteers )]->contact;
-            } else if ($cycle_algorithm == CycleAlgorithm::RANDOMIZER) {
-                return $volunteers[rand(0, count( $volunteers ) - 1)]->contact;
+            } else if ( $cycle_algorithm == CycleAlgorithm::LOOP_FOREVER ) {
+                return $volunteers[ $tracker % count( $volunteers ) ]->contact;
+            } else if ( $cycle_algorithm == CycleAlgorithm::RANDOMIZER ) {
+                return $volunteers[ rand( 0, count( $volunteers ) - 1 ) ]->contact;
+            } else if ( $cycle_algorithm == CycleAlgorithm::BLASTING ) {
+                $volunteers_all = [];
+                foreach ($volunteers as $volunteer) {
+                    array_push($volunteers_all, $volunteer->contact);
+                }
+
+                return join(",", $volunteers_all);
             }
         } else {
             return SpecialPhoneNumber::UNKNOWN;
@@ -725,7 +745,8 @@ function getVolunteerInfo($volunteers) {
             $volunteerShiftSchedule = dataDecoder($volunteer->volunteer_shift_schedule);
             foreach ($volunteerShiftSchedule as $vsi) {
                 $volunteerInfo             = new VolunteerInfo();
-                $volunteerInfo->title      = $volunteer->volunteer_name;
+                $volunteerInfo->type       = isset($vsi->type) ? $vsi->type : $volunteerInfo->type;
+                $volunteerInfo->title      = $volunteer->volunteer_name . " (" . $volunteerInfo->type . ")";
                 $volunteerInfo->time_zone  = $vsi->tz;
                 $volunteerInfo->start      = getNextShiftInstance( $vsi->day, $vsi->start_time, $volunteerInfo->time_zone )->format( "Y-m-d H:i:s" );
                 $volunteerInfo->end        = getNextShiftInstance( $vsi->day, $vsi->end_time, $volunteerInfo->time_zone )->format( "Y-m-d H:i:s" );

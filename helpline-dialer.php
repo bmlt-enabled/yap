@@ -36,7 +36,7 @@ function getCallConfig($client, $serviceBodyConfiguration) {
     }
 
     $config = new CallConfig();
-    $config->phone_number = getHelplineVolunteer( $serviceBodyConfiguration->service_body_id, $tracker, $serviceBodyConfiguration->call_strategy );
+    $config->phone_number = getHelplineVolunteer( $serviceBodyConfiguration->service_body_id, $tracker, $serviceBodyConfiguration->call_strategy, VolunteerType::PHONE );
     $config->voicemail_url = $webhook_url . '/voicemail.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&caller_id=' . trim($caller_id);
     $config->options = array(
         'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'],

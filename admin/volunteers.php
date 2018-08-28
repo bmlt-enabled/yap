@@ -17,7 +17,7 @@
         <div class="row">
             <div id="newVolunteerDialog" class="col-sm" style="display:none;">
                 <div class="form-group">
-                    <button id="add-volunteer" class="btn btn-sm btn-primary" type="button" onclick="addVolunteers();""><?php echo word('add_volunteer')?></button>
+                    <button id="add-volunteer" class="btn btn-sm btn-primary" type="button" onclick="addVolunteers();"><?php echo word('add_volunteer')?></button>
                     <button id="save-volunteers" class="btn btn-sm btn-success" type="button" onclick="saveVolunteers();"><?php echo word('save_volunteers')?></button>
                 </div>
             </div>
@@ -29,13 +29,19 @@
                         Select Time Zone For 24/7 Shifts
                     </div>
                     <div class="modal-body">
-                        <div class="form-group form-row form-inline">
+                        <div class="form-group form-row">
                             Time Zone:
                             <select class="form-control form-control-sm time_zone_selector" id="time_zone">
                                 <?php
                                 foreach (getTimezoneList() as $tzItem) { ?>
                                     <option value="<?php echo $tzItem?>"><?php echo $tzItem; ?></option>
                                 <?php } ?>
+                            </select>
+
+                            Type:
+                            <select class="form-control form-control-sm type_selector" id="type">
+                                <option value="PHONE" selected>Phone</option>
+                                <option value="SMS">SMS</option>
                             </select>
                         </div>
                     </div>
@@ -95,6 +101,14 @@
                                 <option value="PM">PM</option>
                             </select>
                         </div>
+                        <div class="form-group form-row form-inline">
+                            Type:
+                            <select class="form-control form-control-sm type_selector" id="type">
+                                <option value="PHONE" selected>Phone</option>
+                                <option value="SMS">SMS</option>
+                            </select>
+                        </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -127,11 +141,14 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="card-deck" id="shiftsCards"></div>
+                        <div class="card-deck">
+                            <div class="card-columns" id="shiftsCards"></div>
+                        </div>
                     </td>
                 </tr>
             </table>
             <input class="day_of_the_week_field" type="text" name="volunteer_shift_schedule" id="volunteer_shift_schedule" size="1"/>
+            Notes: <textarea name="volunteer_notes" id="volunteer_notes" cols="30" rows="5"></textarea>
         </div>
         <div class="card-footer bg-transparent">
             <div id="volunteerCardFooter" class="float-right">
@@ -144,14 +161,14 @@
         </div>
     </form>
 </div>
-<div class="card text-white bg-secondary mb-3 shiftCard" id="shiftCardTemplate" style="max-width: 15rem; display:none;">
+<div class="card text-white bg-secondary mb-3 shiftCard" id="shiftCardTemplate">
     <div class="card-header">
         <div id="shiftDay"></div>
     </div>
     <div class="card-body">
         <div class="card-text-sm" id="shiftInfo"></div>
     </div>
-    <div class="card-footer">
+    <div id="shiftCardFooter" class="card-footer">
         <div id="shiftRemove" class="float-right">
             <button class="btn btn-sm btn-danger" type="button" onclick="removeShift(this);return false;"><?php echo word('remove')?></button>
         </div>

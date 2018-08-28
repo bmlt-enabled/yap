@@ -248,10 +248,11 @@ function checkboxStatusToggle(e) {
 function renderShift(volunteerId, shiftInfoObj) {
     if (shiftInfoObj !== null) {
         var shiftCardTemplate = $("#shiftCardTemplate").clone();
-        shiftCardTemplate.find("#shiftDay").html(dayOfTheWeek[shiftInfoObj["day"]]);
+        shiftCardTemplate.find("#shiftDay").html(dayOfTheWeek[shiftInfoObj["day"]] + " (" + shiftInfoObj["type"] + ")");
         shiftCardTemplate.attr("data", JSON.stringify(shiftInfoObj));
         shiftCardTemplate.find("#shiftInfo").html(shiftInfoObj["start_time"] + "-" + shiftInfoObj["end_time"] + " " + shiftInfoObj["tz"]);
         shiftCardTemplate.show();
+        shiftCardTemplate.css({"display":"inline-block"});
         shiftCardTemplate.appendTo($("#" + volunteerId).find("#shiftsCards"))
     }
 }
@@ -281,12 +282,14 @@ function add24by7Shifts(e) {
 function selectTimeZoneFor247Shifts(e) {
     var volunteerId = $(e).closest("#selectTimeZoneDialog").attr("data-volunteerid");
     var tz = $(e).closest("#selectTimeZoneDialog").find("#time_zone").val();
+    var type = $(e).closest("#selectTimeZoneDialog").find("#type").val();
     for (var x = 1; x <= 7; x++) {
         var shiftInfoObj = {
             "day": x,
             "tz": tz,
             "start_time": '12:00 AM',
-            "end_time": '11:59 PM'
+            "end_time": '11:59 PM',
+            "type": type
         };
 
         renderShift(volunteerId, shiftInfoObj);
@@ -301,11 +304,13 @@ function saveShift(e) {
     var time_zone_id = $("#time_zone").val();
     var start_time = $("#start_time_hour").val() + ":" + $("#start_time_minute").val() + " " + $("#start_time_division").val();
     var end_time = $("#end_time_hour").val() + ":" + $("#end_time_minute").val() + " " + $("#end_time_division").val();
+    var type = $("#type").val();
     var shiftInfoObj = {
         "day": day_id,
         "tz": time_zone_id,
         "start_time": start_time,
-        "end_time": end_time
+        "end_time": end_time,
+        "type": type
     };
 
     renderShift(volunteer_id, shiftInfoObj);

@@ -120,3 +120,16 @@ div#signin {
     padding-right: 45px;
     cursor: move;
 }
+
+.shiftCard {
+    display:none;
+    max-width: 14rem;
+}
+
+.card-columns {
+    column-count: 4;
+}
+
+#shiftCardFooter {
+    margin-bottom:30px;
+}
