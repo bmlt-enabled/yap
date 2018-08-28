@@ -53,7 +53,7 @@ foreach ($available_languages as $available_language_key => $available_language_
 include_once 'lang/'.getWordLanguage().'.php';
 
 $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
-$timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key" . trim($google_maps_api_key);
+$timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key=" . trim($google_maps_api_key);
 # BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
 static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 static $numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
