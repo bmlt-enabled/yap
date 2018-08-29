@@ -33,14 +33,14 @@ if ($serviceBodyConfiguration->sms_routing_enabled) {
     $client->messages->create(
         $original_caller_id,
         array(
-            "body" => "Your request has been received, someone should be responding to you shortly.",
+            "body" => "Thank you and your request has been received.  A volunteer should be responding to you shortly.",
             "from" => $_REQUEST['To']
         ) );
 
     $client->messages->create(
         $phone_number,
         array(
-            "body" => "Someone is requesting help from " . $original_caller_id . ", please respond back to them.",
+            "body" => "Helpline: Someone is requesting SMS help from " . $original_caller_id . ", please text or call them back.",
             "from" => $_REQUEST['To']
         ) );
 }
