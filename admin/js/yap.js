@@ -305,7 +305,7 @@ function saveShift(e) {
     var time_zone_id = $("#time_zone").val();
     var start_time = $("#start_time_hour").val() + ":" + $("#start_time_minute").val() + " " + $("#start_time_division").val();
     var end_time = $("#end_time_hour").val() + ":" + $("#end_time_minute").val() + " " + $("#end_time_division").val();
-    var type = $("#type").val();
+    var type = $("#single_shift_type").val();
     var shiftInfoObj = {
         "day": day_id,
         "tz": time_zone_id,
