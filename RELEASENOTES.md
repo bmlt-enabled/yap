@@ -1,6 +1,6 @@
 # Release Notes
 
-### 2.2.0 (unreleased)
+### 2.2.0 (August 28, 2018)
 * Introducing helpline SMS routing.
 * Notes field added for each volunteer to help with various metadata.
 * Blocklist for automatically rejecting specific calls or messages.
