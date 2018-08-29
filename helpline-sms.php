@@ -14,18 +14,14 @@ $sid                        = $GLOBALS['twilio_account_sid'];
 $token                      = $GLOBALS['twilio_auth_token'];
 $tracker                    = !isset( $_REQUEST["tracker"] ) ? 0 : $_REQUEST["tracker"];
 
-$phone_number = getHelplineVolunteer( $serviceBodyConfiguration->service_body_id, $tracker, $serviceBodyConfiguration->sms_strategy, VolunteerType::SMS );
-if ($phone_number == SpecialPhoneNumber::UNKNOWN) {
-    $phone_number = $serviceBodyConfiguration->primary_contact_number;
-}
-
-try {
-    $client = new Client( $sid, $token );
-} catch ( \Twilio\Exceptions\ConfigurationException $e ) {
-    error_log("Missing Twilio Credentials");
-}
-
 if ($serviceBodyConfiguration->sms_routing_enabled) {
+    try {
+        $client = new Client( $sid, $token );
+    } catch ( \Twilio\Exceptions\ConfigurationException $e ) {
+        error_log("Missing Twilio Credentials");
+    }
+
+    $phone_numbers = explode(',', getHelplineVolunteer( $serviceBodyConfiguration->service_body_id, $tracker, $serviceBodyConfiguration->sms_strategy, VolunteerType::SMS ));
     if (isset( $_REQUEST["OriginalCallerId"] )) {
         $original_caller_id = $_REQUEST["OriginalCallerId"];
     }
@@ -37,10 +33,16 @@ if ($serviceBodyConfiguration->sms_routing_enabled) {
             "from" => $_REQUEST['To']
         ) );
 
-    $client->messages->create(
-        $phone_number,
-        array(
-            "body" => "Helpline: Someone is requesting SMS help from " . $original_caller_id . ", please text or call them back.",
-            "from" => $_REQUEST['To']
-        ) );
+    foreach ($phone_numbers as $phone_number) {
+        if ($phone_number == SpecialPhoneNumber::UNKNOWN) {
+            $phone_number = $serviceBodyConfiguration->primary_contact_number;
+        }
+
+        $client->messages->create(
+            $phone_number,
+            array(
+                "body" => "Helpline: Someone is requesting SMS help from " . $original_caller_id . ", please text or call them back.",
+                "from" => $_REQUEST['To']
+            ) );
+    }
 }
