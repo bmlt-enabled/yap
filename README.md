@@ -50,6 +50,7 @@ Helpline/Volunteer Routing
 * [Force Helpline Routing](#force-helpline-routing)
 * [Force Dialing](#force-dialing)
 * [Volunteer Routing](#volunteer-routing)
+* [SMS Volunteer Routing](#sms-volunteer-routing)
 * [Music On Hold](#music-on-hold)
 * [Tomato Helpline Routing](#tomato-helpline-routing)
 
@@ -421,6 +422,16 @@ static $twilio_auth_token = "";
     * Volunteer Routing Redirect: You do this by setting in the Service Body Configuration the Volunteer Routing mechanism to "Volunteers Redirect" and specifying the respective Service Body Id in the "Volunteers Redirect Id" field. 
     * Forced Caller Id: This setting changes the outgoing display caller id.
     * Call Timeout: This is the number of seconds before trying the next number for volunteer routing.
+
+## SMS Volunteer Routing
+
+This is enabled in the service body configuration through the drop down selecting "Volunteer and SMS".
+
+There are two routing strategies, random or blast.  Blast will send to all active volunteers at that moment in time.
+
+This is configured similarly to phone volunteer routing.  You can add shifts as `SMS` or `Phone & SMS`.
+
+The SMS trigger keyword by default is "talk", followed by the location information.  You can override this by using the `sms_helpline_keyword` setting.  
 
 ## Voicemail
 

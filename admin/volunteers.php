@@ -42,6 +42,7 @@
                             <select class="form-control form-control-sm type_selector" id="type">
                                 <option value="PHONE" selected>Phone</option>
                                 <option value="SMS">SMS</option>
+                                <option value="PHONE,SMS">Phone & SMS</option>
                             </select>
                         </div>
                     </div>
@@ -106,6 +107,7 @@
                             <select class="form-control form-control-sm type_selector" id="single_shift_type">
                                 <option value="PHONE" selected>Phone</option>
                                 <option value="SMS">SMS</option>
+                                <option value="PHONE,SMS">Phone + SMS</option>
                             </select>
                         </div>
 
@@ -148,7 +150,8 @@
                 </tr>
             </table>
             <input class="day_of_the_week_field" type="text" name="volunteer_shift_schedule" id="volunteer_shift_schedule" size="1"/>
-            Notes: <textarea name="volunteer_notes" id="volunteer_notes" cols="30" rows="5"></textarea>
+            <p>Notes</p>
+            <textarea name="volunteer_notes" id="volunteer_notes"></textarea>
         </div>
         <div class="card-footer bg-transparent">
             <div id="volunteerCardFooter" class="float-right">

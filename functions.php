@@ -670,7 +670,7 @@ function getHelplineVolunteersActiveNow($service_body_int, $volunteer_type = Vol
             $current_time = new DateTime();
             if ( ($current_time >= ( new DateTime( $volunteers[ $v ]->start ) )
                  && $current_time <= ( new DateTime( $volunteers[ $v ]->end ) ) )
-                 && (!isset($volunteers[$v]->type) || $volunteers[$v]->type == $volunteer_type )) {
+                 && (!isset($volunteers[$v]->type) || str_exists($volunteers[$v]->type, $volunteer_type ))) {
                 array_push( $activeNow, $volunteers[ $v ] );
             }
         }
