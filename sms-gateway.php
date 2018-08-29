@@ -8,13 +8,14 @@
 ?>
 <Response>
 <?php
-    if (str_exists(strtoupper($address), "HELP")) {
-        if (strlen(trim(str_replace("HELP", "", strtoupper($address)))) > 0) {?>
+    $sms_helpline_keyword = setting("sms_helpline_keyword");
+    if (str_exists(strtoupper($address), strtoupper($sms_helpline_keyword))) {
+        if (strlen(trim(str_replace(strtoupper($sms_helpline_keyword), "", strtoupper($address)))) > 0) {?>
             <Redirect method="GET">helpline-sms.php?OriginalCallerId=<?php echo $_REQUEST['From']?>&amp;To=<?php echo $_REQUEST['To']?>&amp;Latitude=<?php echo strval($coordinates->latitude) ?>&amp;Longitude=<?php echo strval($coordinates->longitude) ?></Redirect>
 <?php
         } else {
 ?>
-        <Sms>Please enter as "help" followed by your location as a city, county or zip code</Sms>
+        <Sms>Please send a message formatting as "<?php echo $sms_helpline_keyword?>", followed by your location as a city, county or zip code, to talk to someone.</Sms>
 <?php   }
     } else {
 ?>

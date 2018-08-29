@@ -27,6 +27,7 @@ static $settings_whitelist = [
     'service_body_id' => [ 'description' => '', 'default' => null, 'overridable' => true],
     'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true],
+    'sms_helpline_keyword' => ['description' => '', 'default' => 'talk', 'overridable' => true],
     'title' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'tomato_helpline_routing' => [ 'description' => '', 'default' => false, 'overridable' => true],
