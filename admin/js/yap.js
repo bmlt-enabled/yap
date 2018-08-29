@@ -248,7 +248,8 @@ function checkboxStatusToggle(e) {
 function renderShift(volunteerId, shiftInfoObj) {
     if (shiftInfoObj !== null) {
         var shiftCardTemplate = $("#shiftCardTemplate").clone();
-        shiftCardTemplate.find("#shiftDay").html(dayOfTheWeek[shiftInfoObj["day"]] + " (" + shiftInfoObj["type"] + ")");
+        var volunter_type = shiftInfoObj["type"] != null ? shiftInfoObj["type"] : "PHONE";
+        shiftCardTemplate.find("#shiftDay").html(dayOfTheWeek[shiftInfoObj["day"]] + " (" + volunter_type + ")");
         shiftCardTemplate.attr("data", JSON.stringify(shiftInfoObj));
         shiftCardTemplate.find("#shiftInfo").html(shiftInfoObj["start_time"] + "-" + shiftInfoObj["end_time"] + " " + shiftInfoObj["tz"]);
         shiftCardTemplate.show();
