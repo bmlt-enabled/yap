@@ -1,5 +1,8 @@
 # Release Notes
 
+### 2.2.1 (UNRELEASED)
+* Use Redirect twilio verb instead of header function for redirects.
+
 ### 2.2.0 (August 28, 2018)
 * Introducing helpline SMS routing.
 * Notes field added for each volunteer to help with various metadata.
