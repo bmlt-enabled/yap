@@ -17,7 +17,7 @@
                 $service_body_obj = getServiceBodyCoverage( $coordinates->latitude, $coordinates->longitude );
             } catch (Exception $e) { ?>
                 <Response>
-                <Redirect method="GET">input-method.php?Digits=<?php urlencode($_REQUEST["SearchType"]) . "&Retry=1&RetryMessage=" . urlencode($e->getMessage()); ?></Redirect>
+                <Redirect method="GET">input-method.php?Digits=<?php echo urlencode($_REQUEST["SearchType"]) . "&Retry=1&RetryMessage=" . urlencode($e->getMessage()); ?></Redirect>
                 </Response>
                 <?php
                 exit();
@@ -87,7 +87,7 @@
             <Number sendDigits="<?php echo $extension ?>"><?php echo $phone_number ?></Number>
         </Dial>
     <?php } else { ?>
-        <Redirect method="GET">input-method.php?Digits=<?php urlencode($_REQUEST["SearchType"]) . "&Retry=1&RetryMessage=" . urlencode(word('the_location_you_entered_is_not_found'));?></Redirect>
+        <Redirect method="GET">input-method.php?Digits=<?php echo urlencode($_REQUEST["SearchType"]) . "&Retry=1&RetryMessage=" . urlencode(word('the_location_you_entered_is_not_found'));?></Redirect>
         <?php
          exit();
     } ?>

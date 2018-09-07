@@ -6,7 +6,7 @@
     if ($searchType == "1") {
         if (isset($_SESSION['override_service_body_id'])) { ?>
             <Response>
-            <Redirect method="GET">helpline-search.php?Called=<?php $_REQUEST["Called"]; ?></Redirect>
+            <Redirect method="GET">helpline-search.php?Called=<?php echo $_REQUEST["Called"]; ?></Redirect>
             </Response>
             <?php
             exit();

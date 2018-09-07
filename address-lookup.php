@@ -8,7 +8,7 @@
 
     if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) { ?>
         <Response>
-        <Redirect method="GET">input-method.php?Digits=<?php $_REQUEST["SearchType"] . "&Retry=1"; ?></Redirect>
+        <Redirect method="GET">input-method.php?Digits=<?php echo $_REQUEST["SearchType"] . "&Retry=1"; ?></Redirect>
         </Response>
          <?php
         exit();
