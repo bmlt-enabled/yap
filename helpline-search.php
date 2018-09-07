@@ -87,9 +87,7 @@
             <Number sendDigits="<?php echo $extension ?>"><?php echo $phone_number ?></Number>
         </Dial>
     <?php } else { ?>
-        <Response>
         <Redirect method="GET">input-method.php?Digits=<?php urlencode($_REQUEST["SearchType"]) . "&Retry=1&RetryMessage=" . urlencode(word('the_location_you_entered_is_not_found'));?></Redirect>
-        </Response>
         <?php
          exit();
     } ?>
