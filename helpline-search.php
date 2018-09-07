@@ -15,8 +15,11 @@
                     throw new Exception("Couldn't find an address for that location.");
                 }
                 $service_body_obj = getServiceBodyCoverage( $coordinates->latitude, $coordinates->longitude );
-            } catch (Exception $e) {
-                header("Location: input-method.php?Digits=" . urlencode($_REQUEST["SearchType"]) . "&Retry=1&RetryMessage=" . urlencode($e->getMessage()));
+            } catch (Exception $e) { ?>
+                <Response>
+                <Redirect method="GET">input-method.php?Digits=<?php urlencode($_REQUEST["SearchType"]) . "&Retry=1&RetryMessage=" . urlencode($e->getMessage()); ?></Redirect>
+                </Response>
+                <?php
                 exit();
             }
         }
@@ -83,8 +86,11 @@
         <Dial>
             <Number sendDigits="<?php echo $extension ?>"><?php echo $phone_number ?></Number>
         </Dial>
-    <?php } else {
-        header("Location: input-method.php?Digits=" . urlencode($_REQUEST["SearchType"]) . "&Retry=1&RetryMessage=" . urlencode(word('the_location_you_entered_is_not_found')));
-        exit();
+    <?php } else { ?>
+        <Response>
+        <Redirect method="GET">input-method.php?Digits=<?php urlencode($_REQUEST["SearchType"]) . "&Retry=1&RetryMessage=" . urlencode(word('the_location_you_entered_is_not_found'));?></Redirect>
+        </Response>
+        <?php
+         exit();
     } ?>
 </Response>
