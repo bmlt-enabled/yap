@@ -9,8 +9,11 @@
     try {
         $results_count = $results_count = has_setting('result_count_max') ? setting('result_count_max') : 5;
         $meeting_results = getMeetings($latitude, $longitude, $results_count, null, null);
-    } catch (Exception $e) {
-        header("Location: fallback.php");
+    } catch (Exception $e) { ?>
+        <Response>
+        <Redirect method="GET">fallback.php</Redirect>
+        </Response>
+        <?php
         exit;
     }
 

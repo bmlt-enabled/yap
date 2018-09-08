@@ -6,8 +6,11 @@
     $address = $_REQUEST['Digits'];
     $coordinates = getCoordinatesForAddress($address);
 
-    if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) {
-        header("Location: input-method.php?Digits=" . $_REQUEST["SearchType"] . "&Retry=1");
+    if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) { ?>
+        <Response>
+        <Redirect method="GET">input-method.php?Digits=<?php echo $_REQUEST["SearchType"] . "&Retry=1"; ?></Redirect>
+        </Response>
+         <?php
         exit();
     }
 
