@@ -18,11 +18,16 @@ if ($serviceBodyConfiguration->primary_contact_number_enabled) {
         error_log( "Missing Twilio Credentials" );
     }
 
+    $callerNumber = $_REQUEST["caller_number"];
+    if (strpos($callerNumber, "+") !== 0) {
+        $callerNumber .= "+" . $callerNumber;
+    }
+
     $client->messages->create(
         $serviceBodyConfiguration->primary_contact_number,
         array(
             "from" => $_REQUEST["called_number"],
-            "body" => "You have a message from the " . $serviceBodyName . " helpline from caller " . $_REQUEST["caller_number"] . ", " . $_REQUEST["RecordingUrl"] . ".mp3"
+            "body" => "You have a message from the " . $serviceBodyName . " helpline from caller " . $callerNumber . ", " . $_REQUEST["RecordingUrl"] . ".mp3"
         )
     );
 }
