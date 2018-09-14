@@ -1,7 +1,9 @@
 # Release Notes
 
-### 2.2.1 (UNRELEASED)
+### 2.2.1 (September 13, 2018)
 * Use Redirect twilio verb instead of header function for redirects.
+* Fix for int'l numbers that were not auto-prepending "+" on SMS voicemail notification. 
+* README table of contents fixes
 
 ### 2.2.0 (August 28, 2018)
 * Introducing helpline SMS routing.
