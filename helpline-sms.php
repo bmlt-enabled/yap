@@ -28,7 +28,7 @@ try {
         $client->messages->create(
             $original_caller_id,
             array(
-                "body" => "Thank you and your request has been received.  A volunteer should be responding to you shortly.",
+                "body" => word('your_request_has_been_received'),
                 "from" => $_REQUEST['To']
             ) );
 
@@ -40,7 +40,7 @@ try {
             $client->messages->create(
                 $phone_number,
                 array(
-                    "body" => "Helpline: Someone is requesting SMS help from " . $original_caller_id . ", please text or call them back.",
+                    "body" => word('helpline') . ": " . word('someone_is_requesting_sms_help_from') . " " . $original_caller_id . ", " . word('please_call_or_text_them_back'),
                     "from" => $_REQUEST['To']
                 ) );
         }
@@ -49,7 +49,7 @@ try {
     $client->messages->create(
         $original_caller_id,
         array(
-            "body" => "Could not find a volunteer for the location, please retry your request.",
+            "body" => word('could_not_find_a_volunteer'),
             "from" => $_REQUEST['To']
         ) );
 }

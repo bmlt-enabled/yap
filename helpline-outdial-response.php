@@ -22,12 +22,12 @@ $participants = $client->conferences($conferences[0]->sid)->participants->read()
 <?php if (count($participants) > 0) {?>
     <Gather numDigits="1" timeout="15" action="helpline-answer-response.php?conference_name=<?php echo $_REQUEST['conference_name'] ?>" method="GET">
         <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
-            You have a call from the helpline, press 1 to accept.  Press any other key to hangup.
+            <?php echo word('you_have_a_call_from_the_helpline') ?>
         </Say>
     </Gather>
 <?php } else { ?>
     <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
-        Unfortunately the caller hung up before we could connect you.  Good bye.
+        <?php echo word('the_caller_hungup') ?>
     </Say>
     <Hangup/>
 <?php } ?>

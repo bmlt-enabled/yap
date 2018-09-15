@@ -15,7 +15,7 @@
 <?php
         } else {
 ?>
-        <Sms>Please send a message formatting as "<?php echo $sms_helpline_keyword?>", followed by your location as a city, county or zip code, to talk to someone.</Sms>
+        <Sms><?php echo word('please_send_a_message_formatting_as') ?> "<?php echo $sms_helpline_keyword?>", <?php echo word('followed_by_your_location')?>, <?php echo word('for') ?> <?php echo word('someone_to_talk_to')?>.</Sms>
 <?php   }
     } else {
 ?>
