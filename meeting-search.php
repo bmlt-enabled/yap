@@ -9,7 +9,7 @@
     try {
         $results_count = $results_count = has_setting('result_count_max') ? setting('result_count_max') : 5;
         $meeting_results = getMeetings($latitude, $longitude, $results_count, null, null);
-        $results_count_num = (count($meeting_results->filteredList) < $results_count) ? count($meeting_results->filteredList) : $results_count;
+        $results_count_num = count($meeting_results->filteredList) < $results_count ? count($meeting_results->filteredList) : $results_count;
     } catch (Exception $e) { ?>
         <Response>
         <Redirect method="GET">fallback.php</Redirect>
