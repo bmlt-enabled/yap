@@ -302,7 +302,7 @@ function selectTimeZoneFor247Shifts(e) {
 function saveShift(e) {
     var volunteer_id = $("#selectShiftDialog").attr("volunteer_id");
     var day_id = $("#day_of_the_week").val();
-    var time_zone_id = $("#time_zone").val();
+    var time_zone_id = $(e).closest("#selectShiftDialog").find("#time_zone").val();
     var start_time = $("#start_time_hour").val() + ":" + $("#start_time_minute").val() + " " + $("#start_time_division").val();
     var end_time = $("#end_time_hour").val() + ":" + $("#end_time_minute").val() + " " + $("#end_time_division").val();
     var type = $("#single_shift_type").val();
