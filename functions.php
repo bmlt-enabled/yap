@@ -13,7 +13,7 @@ static $settings_whitelist = [
     'helpline_fallback' => [ 'description' => '', 'default' => '', 'overridable' => true],
     'helpline_search_radius' => [ 'description' => '' , 'default' => 30, 'overridable' => true],
     'helpline_search_unpublished' => [ 'description' => '' , 'default' => false, 'overridable' => true],
-    'ignore_formats' => [ 'description' => '' , 'default' => '', 'overridable' => true],
+    'ignore_formats' => [ 'description' => '' , 'default' => null, 'overridable' => true],
     'include_map_link' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'infinite_searching' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'jft_option' => [ 'description' => '' , 'default' => false, 'overridable' => true],
