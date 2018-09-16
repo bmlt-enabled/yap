@@ -37,7 +37,8 @@ static $settings_whitelist = [
 checkBlacklist();
 static $available_languages = [
     "en-US" => "English",
-    "pig-latin" => "Igpay Atinlay"
+    "pig-latin" => "Igpay Atinlay",
+    "pt-BR" => "Português"
 ];
 
 static $available_prompts = [
