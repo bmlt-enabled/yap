@@ -9,6 +9,7 @@
     try {
         $results_count = $results_count = has_setting('result_count_max') ? setting('result_count_max') : 5;
         $meeting_results = getMeetings($latitude, $longitude, $results_count, null, null);
+        $results_count_num = (count($meeting_results->filteredList) < $results_count) ? count($meeting_results->filteredList) : $results_count;
     } catch (Exception $e) { ?>
         <Response>
         <Redirect method="GET">fallback.php</Redirect>
@@ -18,12 +19,6 @@
     }
 
     $filtered_list = $meeting_results->filteredList;
-    if ( count($filtered_list) < $results_count ) {
-        $results_count_num = count($filtered_list);
-    }
-    else {
-        $results_count_num = $results_count;
-    }
     $sms_messages = [];
 
     $text_space = " ";
