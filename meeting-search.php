@@ -18,6 +18,12 @@
     }
 
     $filtered_list = $meeting_results->filteredList;
+    if ( count($filtered_list) < $results_count ) {
+        $results_count_num = count($filtered_list);
+    }
+    else {
+        $results_count_num = $results_count;
+    }
     $sms_messages = [];
 
     $text_space = " ";
@@ -31,7 +37,7 @@
         } elseif (count($filtered_list) == 0) {
             echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('there_are_no_other_meetings_for_today') . ". " . word('thank_you_for_calling_goodbye') . "</Say>";
         } else {
-            echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('meeting_information_found_listing_the_top') . " " . $results_count . " " . word('results') . "</Say>";
+            echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('meeting_information_found_listing_the_top') . " " . $results_count_num . " " . word('results') . "</Say>";
         }
     } else {
         if ($meeting_results->originalListCount == 0) {
