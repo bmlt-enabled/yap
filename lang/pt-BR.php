@@ -11,6 +11,7 @@ $six = "meia";
 $seven = "sete";
 $eight = "oito";
 $nine = "nove";
+$days_of_the_week = [1 => "Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 $to_find = "encontrar";
 $to_search_for = "buscar";
 $by = "por";

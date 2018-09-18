@@ -11,6 +11,7 @@ $six = "six";
 $seven = "seven";
 $eight = "eight";
 $nine = "nine";
+$days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 $to_find = "to find";
 $to_search_for = "to search for";
 $by = "by";

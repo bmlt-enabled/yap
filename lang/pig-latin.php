@@ -11,6 +11,7 @@ $six = "ixsay";
 $seven = "evensay";
 $eight = "eightyay";
 $nine = "inenay";
+$days_of_the_week = [1 => "undaysay", "ondaymay", "uesdaytay", "ednesdayway", "ursdaythay", "idayfray", "aturdaysay"];
 $to_find = "otay indfay";
 $to_search_for = "otay earchsay orfay";
 $by = "ybay";

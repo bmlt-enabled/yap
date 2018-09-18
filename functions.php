@@ -56,8 +56,7 @@ include_once 'lang/'.getWordLanguage().'.php';
 
 $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
 $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key=" . trim($google_maps_api_key);
-# BMLT uses weird date formatting, Sunday is 1.  PHP uses 0 based Sunday.
-static $days_of_the_week = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+static $date_calculations_map = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 static $numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 static $tomato_url = "https://tomato.na-bmlt.org/main_server";
 
@@ -498,7 +497,7 @@ function isItPastTime($meeting_day, $meeting_time) {
 function getNextMeetingInstance($meeting_day, $meeting_time) {
     $mod_meeting_day = (new DateTime())
         ->modify(sprintf("-%s minutes", setting('grace_minutes')))
-        ->modify($GLOBALS['days_of_the_week'][$meeting_day])->format("Y-m-d");
+        ->modify($GLOBALS['date_calculations_map'][$meeting_day])->format("Y-m-d");
     $mod_meeting_datetime = (new DateTime($mod_meeting_day . " " . $meeting_time))
         ->modify(sprintf("+%s minutes", setting('grace_minutes')));
     return $mod_meeting_datetime;
@@ -641,7 +640,7 @@ function getHelplineData($service_body_id, $data_type = DataType::YAP_DATA) {
 function getNextShiftInstance($shift_day, $shift_time, $shift_tz) {
     date_default_timezone_set($shift_tz);
     $mod_meeting_day = (new DateTime())
-        ->modify($GLOBALS['days_of_the_week'][$shift_day])->format("Y-m-d");
+        ->modify($GLOBALS['date_calculations_map'][$shift_day])->format("Y-m-d");
     $mod_meeting_datetime = (new DateTime($mod_meeting_day . " " . $shift_time));
     return $mod_meeting_datetime;
 }
