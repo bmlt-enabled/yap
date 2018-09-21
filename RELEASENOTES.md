@@ -1,46 +1,53 @@
 # Release Notes
 
+### 2.2.2 (unreleased)
+* Playback link of custom prompts in service body configuration modal. [#143]
+* Bug fix for non-default timezone adding for volunteers on single shift entry. [#138]
+* Bug fix for top results count when less than the the result_count_max property. [#139]
+* Regression bug fix for helpline lookup failures not handled properly.
+* Retry workflow instead of hangup when no more meetings found for today for a given lookup.
+
 ### 2.2.1 (September 13, 2018)
-* Use Redirect twilio verb instead of header function for redirects.
-* Fix for int'l numbers that were not auto-prepending "+" on SMS voicemail notification. 
+* Use Redirect twilio verb instead of header function for redirects. [#133]
+* Fix for int'l numbers that were not auto-prepending "+" on SMS voicemail notification. [#137] 
 * README table of contents fixes
 
 ### 2.2.0 (August 28, 2018)
-* Introducing helpline SMS routing.
-* Notes field added for each volunteer to help with various metadata.
-* Blocklist for automatically rejecting specific calls or messages.
-* Fix for int'l numbers that were not auto-prepending "+" on SMS volunteer notification.
+* Introducing helpline SMS routing. [#46]
+* Notes field added for each volunteer to help with various metadata. [#127]
+* Blocklist for automatically rejecting specific calls or messages. [#125]
+* Fix for int'l numbers that were not auto-prepending "+" on SMS volunteer notification. [#124]
 
 ### 2.1.3 (August 14, 2018)
-* Fix for no volunteers specified in schedule edge case
-* Phone Numbers page removed from admin portal
-* Security patch to prevent logins from masquerading root servers
+* Fix for no volunteers specified in schedule edge case. [#122]
+* Phone Numbers page removed from admin portal.
+* Security patch to prevent logins from masquerading root servers. 
 
 ### 2.1.2 (Aug 4, 2018)
-* Tomato helpline routing feature
-* Fixing several bad regressions introduced in 2.1.1 (mostly configuration related)
+* Tomato helpline routing feature.
+* Fixing several bad regressions introduced in 2.1.1 (mostly configuration related). [#116] [#117] [#118]
 
 ### 2.1.1 (Aug 3, 2018)
-* Initial pause happens while gather is occurring, allows for extension dialing
-* Fix for SMS voicemail link as MP3 @pjaudiomv
-* Fix for disabling volunteer routing after being set
-* Fix for legacy error handling for not finding helplines in favor of newer method
-* Security patch to hide smtp settings that were exposed in Settings page on admin portal
-* Security patch to whitelist all settings (preventing insecure overrides) @DeathCamel58
-* Security patch to whitelist all languages (prevents directory hopping) @DeathCamel58
+* Initial pause happens while gather is occurring, allows for extension dialing.
+* Fix for SMS voicemail link as MP3 @pjaudiomv.
+* Fix for disabling volunteer routing after being set.
+* Fix for legacy error handling for not finding helplines in favor of newer method.
+* Security patch to hide smtp settings that were exposed in Settings page on admin portal.
+* Security patch to whitelist all settings (preventing insecure overrides) @DeathCamel58.
+* Security patch to whitelist all languages (prevents directory hopping) @DeathCamel58.
 
 ### 2.1.0 (July 27, 2018)
-* Email notifications with voicemail (see the README for more information)
+* Email notifications with voicemail (see the README for more information) [#113]
 * Voicemails are now MP3s to ensure reliable playback and delivery even in the lowest of bandwidth situations.
 * Bug fix: Titles were being cut off.  There is now a 2 second delay to prevent this from happening.
 * Bug fix: Authentication issue with special characters resolved.
 * Bug fix: Voicemail was not working with Forced CallerID, this was resolved.
-* Bug fix: Volunteer routing with no numbers will automatically go to voicemail.
+* Bug fix: Volunteer routing with no numbers will automatically go to voicemail. [#112]
 
 ### 2.0.1 (July 22, 2018)
-* Bug fix: A schedule with no volunteers now automatically goes to voicemail.
-* Bug fix: Better error handling for saving service bodies and volunteers.
-* Bug fix: An invalid zip code or location was not handling correctly, now it does. 
+* Bug fix: A schedule with no volunteers now automatically goes to voicemail. [#107]
+* Bug fix: Better error handling for saving service bodies and volunteers. 
+* Bug fix: An invalid zip code or location was not handling correctly, now it does. [#106]
 
 ### 2.0.0 (July 19, 2018)
 * The "Admin" portal. Yap has the ability to make managing helpline volunteers very easy. If you are using helpline volunteer routing in Yap 1.x, you know how painful it was.
