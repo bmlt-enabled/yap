@@ -1,11 +1,11 @@
 # Release Notes
 
 ### 2.2.2 (September 21, 2018)
-* Playback link of custom prompts in service body configuration modal. [#143]
+* Playback link of custom prompts on service body configuration modal. [#143]
 * Bug fix for non-default timezone adding for volunteers on single shift entry. [#138]
-* Bug fix for top results count when less than the the result_count_max property. [#139]
+* Bug fix for top results count when less than the result_count_max property. [#139]
 * Regression bug fix for helpline lookup failures not handled properly.
-* Retry workflow instead of hangup when no more meetings found for today for a given lookup.
+* Retry workflow instead of a hangup when no more meetings found for today for a given lookup.
 
 ### 2.2.1 (September 13, 2018)
 * Use Redirect twilio verb instead of header function for redirects. [#133]
