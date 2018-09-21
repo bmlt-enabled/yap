@@ -89,6 +89,5 @@
     <?php } else { ?>
         <Redirect method="GET">input-method.php?Digits=<?php echo urlencode($_REQUEST["SearchType"]) . "&amp;Retry=1&amp;RetryMessage=" . urlencode(word('the_location_you_entered_is_not_found'));?></Redirect>
         <?php
-         exit();
     } ?>
 </Response>
