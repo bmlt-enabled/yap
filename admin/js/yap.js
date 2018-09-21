@@ -355,6 +355,11 @@ function serviceBodyConfigure(service_body_id) {
     });
 }
 
+function openUrl(e, id) {
+    window.open($(e).parent().find("#" + id).val());
+    return false;
+}
+
 function spinnerDialog(show, text, callback) {
     var d = $("#spinnerDialog");
     if (show) {
