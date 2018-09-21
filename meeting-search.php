@@ -30,7 +30,7 @@
         if ($meeting_results->originalListCount == 0) {
             echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('no_results_found') . "... " . word('you_might_have_invalid_entry') . "... " . word('try_again') . "</Say><Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
         } elseif (count($filtered_list) == 0) {
-            echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('there_are_no_other_meetings_for_today') . ". " . word('thank_you_for_calling_goodbye') . "</Say>";
+            echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('there_are_no_other_meetings_for_today') . ".... " . word('try_again') . "</Say><Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
         } else {
             echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('meeting_information_found_listing_the_top') . " " . $results_count_num . " " . word('results') . "</Say>";
         }
