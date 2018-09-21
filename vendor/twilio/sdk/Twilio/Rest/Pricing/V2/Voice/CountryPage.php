@@ -7,14 +7,11 @@
  * /       /
  */
 
-namespace Twilio\Rest\Preview\Studio\Flow\Engagement;
+namespace Twilio\Rest\Pricing\V2\Voice;
 
 use Twilio\Page;
 
-/**
- * PLEASE NOTE that this class contains preview products that are subject to change. Use them with caution. If you currently do not have developer preview access, please contact help@twilio.com.
- */
-class StepPage extends Page {
+class CountryPage extends Page {
     public function __construct($version, $response, $solution) {
         parent::__construct($version, $response);
 
@@ -23,12 +20,7 @@ class StepPage extends Page {
     }
 
     public function buildInstance(array $payload) {
-        return new StepInstance(
-            $this->version,
-            $payload,
-            $this->solution['flowSid'],
-            $this->solution['engagementSid']
-        );
+        return new CountryInstance($this->version, $payload);
     }
 
     /**
@@ -37,6 +29,6 @@ class StepPage extends Page {
      * @return string Machine friendly representation
      */
     public function __toString() {
-        return '[Twilio.Preview.Studio.StepPage]';
+        return '[Twilio.Pricing.V2.CountryPage]';
     }
 }

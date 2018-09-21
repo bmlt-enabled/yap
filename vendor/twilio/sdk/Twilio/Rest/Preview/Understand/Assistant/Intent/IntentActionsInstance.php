@@ -7,77 +7,71 @@
  * /       /
  */
 
-namespace Twilio\Rest\Preview\Studio;
+namespace Twilio\Rest\Preview\Understand\Assistant\Intent;
 
-use Twilio\Deserialize;
 use Twilio\Exceptions\TwilioException;
 use Twilio\InstanceResource;
+use Twilio\Options;
 use Twilio\Values;
 use Twilio\Version;
 
 /**
  * PLEASE NOTE that this class contains preview products that are subject to change. Use them with caution. If you currently do not have developer preview access, please contact help@twilio.com.
  * 
- * @property string sid
  * @property string accountSid
- * @property string friendlyName
- * @property string status
- * @property boolean debug
- * @property integer version
- * @property \DateTime dateCreated
- * @property \DateTime dateUpdated
+ * @property string assistantSid
+ * @property string intentSid
  * @property string url
- * @property array links
+ * @property array data
  */
-class FlowInstance extends InstanceResource {
-    protected $_engagements = null;
-
+class IntentActionsInstance extends InstanceResource {
     /**
-     * Initialize the FlowInstance
+     * Initialize the IntentActionsInstance
      * 
      * @param \Twilio\Version $version Version that contains the resource
      * @param mixed[] $payload The response payload
-     * @param string $sid The sid
-     * @return \Twilio\Rest\Preview\Studio\FlowInstance 
+     * @param string $assistantSid The assistant_sid
+     * @param string $intentSid The intent_sid
+     * @return \Twilio\Rest\Preview\Understand\Assistant\Intent\IntentActionsInstance 
      */
-    public function __construct(Version $version, array $payload, $sid = null) {
+    public function __construct(Version $version, array $payload, $assistantSid, $intentSid) {
         parent::__construct($version);
 
         // Marshaled Properties
         $this->properties = array(
-            'sid' => Values::array_get($payload, 'sid'),
             'accountSid' => Values::array_get($payload, 'account_sid'),
-            'friendlyName' => Values::array_get($payload, 'friendly_name'),
-            'status' => Values::array_get($payload, 'status'),
-            'debug' => Values::array_get($payload, 'debug'),
-            'version' => Values::array_get($payload, 'version'),
-            'dateCreated' => Deserialize::dateTime(Values::array_get($payload, 'date_created')),
-            'dateUpdated' => Deserialize::dateTime(Values::array_get($payload, 'date_updated')),
+            'assistantSid' => Values::array_get($payload, 'assistant_sid'),
+            'intentSid' => Values::array_get($payload, 'intent_sid'),
             'url' => Values::array_get($payload, 'url'),
-            'links' => Values::array_get($payload, 'links'),
+            'data' => Values::array_get($payload, 'data'),
         );
 
-        $this->solution = array('sid' => $sid ?: $this->properties['sid'], );
+        $this->solution = array('assistantSid' => $assistantSid, 'intentSid' => $intentSid, );
     }
 
     /**
      * Generate an instance context for the instance, the context is capable of
      * performing various actions.  All instance actions are proxied to the context
      * 
-     * @return \Twilio\Rest\Preview\Studio\FlowContext Context for this FlowInstance
+     * @return \Twilio\Rest\Preview\Understand\Assistant\Intent\IntentActionsContext Context for this
+     *                                                                               IntentActionsInstance
      */
     protected function proxy() {
         if (!$this->context) {
-            $this->context = new FlowContext($this->version, $this->solution['sid']);
+            $this->context = new IntentActionsContext(
+                $this->version,
+                $this->solution['assistantSid'],
+                $this->solution['intentSid']
+            );
         }
 
         return $this->context;
     }
 
     /**
-     * Fetch a FlowInstance
+     * Fetch a IntentActionsInstance
      * 
-     * @return FlowInstance Fetched FlowInstance
+     * @return IntentActionsInstance Fetched IntentActionsInstance
      * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
@@ -85,22 +79,14 @@ class FlowInstance extends InstanceResource {
     }
 
     /**
-     * Deletes the FlowInstance
+     * Update the IntentActionsInstance
      * 
-     * @return boolean True if delete succeeds, false otherwise
+     * @param array|Options $options Optional Arguments
+     * @return IntentActionsInstance Updated IntentActionsInstance
      * @throws TwilioException When an HTTP error occurs.
      */
-    public function delete() {
-        return $this->proxy()->delete();
-    }
-
-    /**
-     * Access the engagements
-     * 
-     * @return \Twilio\Rest\Preview\Studio\Flow\EngagementList 
-     */
-    protected function getEngagements() {
-        return $this->proxy()->engagements;
+    public function update($options = array()) {
+        return $this->proxy()->update($options);
     }
 
     /**
@@ -133,6 +119,6 @@ class FlowInstance extends InstanceResource {
         foreach ($this->solution as $key => $value) {
             $context[] = "$key=$value";
         }
-        return '[Twilio.Preview.Studio.FlowInstance ' . implode(' ', $context) . ']';
+        return '[Twilio.Preview.Understand.IntentActionsInstance ' . implode(' ', $context) . ']';
     }
 }

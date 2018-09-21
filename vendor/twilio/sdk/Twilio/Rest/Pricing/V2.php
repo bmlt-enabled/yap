@@ -7,39 +7,38 @@
  * /       /
  */
 
-namespace Twilio\Rest\Preview;
+namespace Twilio\Rest\Pricing;
 
 use Twilio\Domain;
 use Twilio\Exceptions\TwilioException;
-use Twilio\Rest\Preview\Studio\FlowList;
+use Twilio\Rest\Pricing\V2\VoiceList;
 use Twilio\Version;
 
 /**
- * @property \Twilio\Rest\Preview\Studio\FlowList flows
- * @method \Twilio\Rest\Preview\Studio\FlowContext flows(string $sid)
+ * @property \Twilio\Rest\Pricing\V2\VoiceList voice
  */
-class Studio extends Version {
-    protected $_flows = null;
+class V2 extends Version {
+    protected $_voice = null;
 
     /**
-     * Construct the Studio version of Preview
+     * Construct the V2 version of Pricing
      * 
      * @param \Twilio\Domain $domain Domain that contains the version
-     * @return \Twilio\Rest\Preview\Studio Studio version of Preview
+     * @return \Twilio\Rest\Pricing\V2 V2 version of Pricing
      */
     public function __construct(Domain $domain) {
         parent::__construct($domain);
-        $this->version = 'Studio';
+        $this->version = 'v2';
     }
 
     /**
-     * @return \Twilio\Rest\Preview\Studio\FlowList 
+     * @return \Twilio\Rest\Pricing\V2\VoiceList 
      */
-    protected function getFlows() {
-        if (!$this->_flows) {
-            $this->_flows = new FlowList($this);
+    protected function getVoice() {
+        if (!$this->_voice) {
+            $this->_voice = new VoiceList($this);
         }
-        return $this->_flows;
+        return $this->_voice;
     }
 
     /**
@@ -81,6 +80,6 @@ class Studio extends Version {
      * @return string Machine friendly representation
      */
     public function __toString() {
-        return '[Twilio.Preview.Studio]';
+        return '[Twilio.Pricing.V2]';
     }
 }

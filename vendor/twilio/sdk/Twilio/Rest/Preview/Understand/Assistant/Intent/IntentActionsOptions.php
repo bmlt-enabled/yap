@@ -7,7 +7,7 @@
  * /       /
  */
 
-namespace Twilio\Rest\Preview\Studio\Flow;
+namespace Twilio\Rest\Preview\Understand\Assistant\Intent;
 
 use Twilio\Options;
 use Twilio\Values;
@@ -15,32 +15,32 @@ use Twilio\Values;
 /**
  * PLEASE NOTE that this class contains preview products that are subject to change. Use them with caution. If you currently do not have developer preview access, please contact help@twilio.com.
  */
-abstract class EngagementOptions {
+abstract class IntentActionsOptions {
     /**
-     * @param string $parameters The parameters
-     * @return CreateEngagementOptions Options builder
+     * @param array $actions The actions
+     * @return UpdateIntentActionsOptions Options builder
      */
-    public static function create($parameters = Values::NONE) {
-        return new CreateEngagementOptions($parameters);
+    public static function update($actions = Values::NONE) {
+        return new UpdateIntentActionsOptions($actions);
     }
 }
 
-class CreateEngagementOptions extends Options {
+class UpdateIntentActionsOptions extends Options {
     /**
-     * @param string $parameters The parameters
+     * @param array $actions The actions
      */
-    public function __construct($parameters = Values::NONE) {
-        $this->options['parameters'] = $parameters;
+    public function __construct($actions = Values::NONE) {
+        $this->options['actions'] = $actions;
     }
 
     /**
-     * The parameters
+     * The actions
      * 
-     * @param string $parameters The parameters
+     * @param array $actions The actions
      * @return $this Fluent Builder
      */
-    public function setParameters($parameters) {
-        $this->options['parameters'] = $parameters;
+    public function setActions($actions) {
+        $this->options['actions'] = $actions;
         return $this;
     }
 
@@ -56,6 +56,6 @@ class CreateEngagementOptions extends Options {
                 $options[] = "$key=$value";
             }
         }
-        return '[Twilio.Preview.Studio.CreateEngagementOptions ' . implode(' ', $options) . ']';
+        return '[Twilio.Preview.Understand.UpdateIntentActionsOptions ' . implode(' ', $options) . ']';
     }
 }

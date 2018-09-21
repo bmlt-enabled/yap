@@ -7,14 +7,14 @@
  * /       /
  */
 
-namespace Twilio\Rest\Preview\Studio;
+namespace Twilio\Rest\Preview\Understand\Assistant;
 
 use Twilio\Page;
 
 /**
  * PLEASE NOTE that this class contains preview products that are subject to change. Use them with caution. If you currently do not have developer preview access, please contact help@twilio.com.
  */
-class FlowPage extends Page {
+class AssistantFallbackActionsPage extends Page {
     public function __construct($version, $response, $solution) {
         parent::__construct($version, $response);
 
@@ -23,7 +23,11 @@ class FlowPage extends Page {
     }
 
     public function buildInstance(array $payload) {
-        return new FlowInstance($this->version, $payload);
+        return new AssistantFallbackActionsInstance(
+            $this->version,
+            $payload,
+            $this->solution['assistantSid']
+        );
     }
 
     /**
@@ -32,6 +36,6 @@ class FlowPage extends Page {
      * @return string Machine friendly representation
      */
     public function __toString() {
-        return '[Twilio.Preview.Studio.FlowPage]';
+        return '[Twilio.Preview.Understand.AssistantFallbackActionsPage]';
     }
 }

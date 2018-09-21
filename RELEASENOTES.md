@@ -1,6 +1,6 @@
 # Release Notes
 
-### 2.2.2 (unreleased)
+### 2.2.2 (September 21, 2018)
 * Playback link of custom prompts in service body configuration modal. [#143]
 * Bug fix for non-default timezone adding for volunteers on single shift entry. [#138]
 * Bug fix for top results count when less than the the result_count_max property. [#139]

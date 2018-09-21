@@ -7,80 +7,57 @@
  * /       /
  */
 
-namespace Twilio\Rest\Preview\Studio\Flow\Engagement;
+namespace Twilio\Rest\Preview\Understand\Assistant;
 
-use Twilio\Deserialize;
 use Twilio\Exceptions\TwilioException;
 use Twilio\InstanceResource;
+use Twilio\Options;
 use Twilio\Values;
 use Twilio\Version;
 
 /**
  * PLEASE NOTE that this class contains preview products that are subject to change. Use them with caution. If you currently do not have developer preview access, please contact help@twilio.com.
  * 
- * @property string sid
  * @property string accountSid
- * @property string flowSid
- * @property string engagementSid
- * @property string name
- * @property array context
- * @property string transitionedFrom
- * @property string transitionedTo
- * @property \DateTime dateCreated
- * @property \DateTime dateUpdated
+ * @property string assistantSid
  * @property string url
+ * @property array data
  */
-class StepInstance extends InstanceResource {
+class AssistantFallbackActionsInstance extends InstanceResource {
     /**
-     * Initialize the StepInstance
+     * Initialize the AssistantFallbackActionsInstance
      * 
      * @param \Twilio\Version $version Version that contains the resource
      * @param mixed[] $payload The response payload
-     * @param string $flowSid Flow Sid.
-     * @param string $engagementSid Engagement Sid.
-     * @param string $sid The sid
-     * @return \Twilio\Rest\Preview\Studio\Flow\Engagement\StepInstance 
+     * @param string $assistantSid The assistant_sid
+     * @return \Twilio\Rest\Preview\Understand\Assistant\AssistantFallbackActionsInstance 
      */
-    public function __construct(Version $version, array $payload, $flowSid, $engagementSid, $sid = null) {
+    public function __construct(Version $version, array $payload, $assistantSid) {
         parent::__construct($version);
 
         // Marshaled Properties
         $this->properties = array(
-            'sid' => Values::array_get($payload, 'sid'),
             'accountSid' => Values::array_get($payload, 'account_sid'),
-            'flowSid' => Values::array_get($payload, 'flow_sid'),
-            'engagementSid' => Values::array_get($payload, 'engagement_sid'),
-            'name' => Values::array_get($payload, 'name'),
-            'context' => Values::array_get($payload, 'context'),
-            'transitionedFrom' => Values::array_get($payload, 'transitioned_from'),
-            'transitionedTo' => Values::array_get($payload, 'transitioned_to'),
-            'dateCreated' => Deserialize::dateTime(Values::array_get($payload, 'date_created')),
-            'dateUpdated' => Deserialize::dateTime(Values::array_get($payload, 'date_updated')),
+            'assistantSid' => Values::array_get($payload, 'assistant_sid'),
             'url' => Values::array_get($payload, 'url'),
+            'data' => Values::array_get($payload, 'data'),
         );
 
-        $this->solution = array(
-            'flowSid' => $flowSid,
-            'engagementSid' => $engagementSid,
-            'sid' => $sid ?: $this->properties['sid'],
-        );
+        $this->solution = array('assistantSid' => $assistantSid, );
     }
 
     /**
      * Generate an instance context for the instance, the context is capable of
      * performing various actions.  All instance actions are proxied to the context
      * 
-     * @return \Twilio\Rest\Preview\Studio\Flow\Engagement\StepContext Context for
-     *                                                                 this
-     *                                                                 StepInstance
+     * @return \Twilio\Rest\Preview\Understand\Assistant\AssistantFallbackActionsContext Context for this
+     *                                                                                   AssistantFallbackActionsInstance
      */
     protected function proxy() {
         if (!$this->context) {
-            $this->context = new StepContext(
+            $this->context = new AssistantFallbackActionsContext(
                 $this->version,
-                $this->solution['flowSid'],
-                $this->solution['engagementSid'],
-                $this->solution['sid']
+                $this->solution['assistantSid']
             );
         }
 
@@ -88,13 +65,26 @@ class StepInstance extends InstanceResource {
     }
 
     /**
-     * Fetch a StepInstance
+     * Fetch a AssistantFallbackActionsInstance
      * 
-     * @return StepInstance Fetched StepInstance
+     * @return AssistantFallbackActionsInstance Fetched
+     *                                          AssistantFallbackActionsInstance
      * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         return $this->proxy()->fetch();
+    }
+
+    /**
+     * Update the AssistantFallbackActionsInstance
+     * 
+     * @param array|Options $options Optional Arguments
+     * @return AssistantFallbackActionsInstance Updated
+     *                                          AssistantFallbackActionsInstance
+     * @throws TwilioException When an HTTP error occurs.
+     */
+    public function update($options = array()) {
+        return $this->proxy()->update($options);
     }
 
     /**
@@ -127,6 +117,6 @@ class StepInstance extends InstanceResource {
         foreach ($this->solution as $key => $value) {
             $context[] = "$key=$value";
         }
-        return '[Twilio.Preview.Studio.StepInstance ' . implode(' ', $context) . ']';
+        return '[Twilio.Preview.Understand.AssistantFallbackActionsInstance ' . implode(' ', $context) . ']';
     }
 }

@@ -7,21 +7,18 @@
  * /       /
  */
 
-namespace Twilio\Rest\Preview\Studio;
+namespace Twilio\Rest\Pricing\V2\Voice;
 
 use Twilio\ListResource;
 use Twilio\Values;
 use Twilio\Version;
 
-/**
- * PLEASE NOTE that this class contains preview products that are subject to change. Use them with caution. If you currently do not have developer preview access, please contact help@twilio.com.
- */
-class FlowList extends ListResource {
+class CountryList extends ListResource {
     /**
-     * Construct the FlowList
+     * Construct the CountryList
      * 
      * @param Version $version Version that contains the resource
-     * @return \Twilio\Rest\Preview\Studio\FlowList 
+     * @return \Twilio\Rest\Pricing\V2\Voice\CountryList 
      */
     public function __construct(Version $version) {
         parent::__construct($version);
@@ -29,11 +26,11 @@ class FlowList extends ListResource {
         // Path Solution
         $this->solution = array();
 
-        $this->uri = '/Flows';
+        $this->uri = '/Voice/Countries';
     }
 
     /**
-     * Streams FlowInstance records from the API as a generator stream.
+     * Streams CountryInstance records from the API as a generator stream.
      * This operation lazily loads records as efficiently as possible until the
      * limit
      * is reached.
@@ -59,7 +56,7 @@ class FlowList extends ListResource {
     }
 
     /**
-     * Reads FlowInstance records from the API as a list.
+     * Reads CountryInstance records from the API as a list.
      * Unlike stream(), this operation is eager and will load `limit` records into
      * memory before returning.
      * 
@@ -71,20 +68,20 @@ class FlowList extends ListResource {
      *                        page_size is defined but a limit is defined, read()
      *                        will attempt to read the limit with the most
      *                        efficient page size, i.e. min(limit, 1000)
-     * @return FlowInstance[] Array of results
+     * @return CountryInstance[] Array of results
      */
     public function read($limit = null, $pageSize = null) {
         return iterator_to_array($this->stream($limit, $pageSize), false);
     }
 
     /**
-     * Retrieve a single page of FlowInstance records from the API.
+     * Retrieve a single page of CountryInstance records from the API.
      * Request is executed immediately
      * 
      * @param mixed $pageSize Number of records to return, defaults to 50
      * @param string $pageToken PageToken provided by the API
      * @param mixed $pageNumber Page Number, this value is simply for client state
-     * @return \Twilio\Page Page of FlowInstance
+     * @return \Twilio\Page Page of CountryInstance
      */
     public function page($pageSize = Values::NONE, $pageToken = Values::NONE, $pageNumber = Values::NONE) {
         $params = Values::of(array(
@@ -99,15 +96,15 @@ class FlowList extends ListResource {
             $params
         );
 
-        return new FlowPage($this->version, $response, $this->solution);
+        return new CountryPage($this->version, $response, $this->solution);
     }
 
     /**
-     * Retrieve a specific page of FlowInstance records from the API.
+     * Retrieve a specific page of CountryInstance records from the API.
      * Request is executed immediately
      * 
      * @param string $targetUrl API-generated URL for the requested results page
-     * @return \Twilio\Page Page of FlowInstance
+     * @return \Twilio\Page Page of CountryInstance
      */
     public function getPage($targetUrl) {
         $response = $this->version->getDomain()->getClient()->request(
@@ -115,17 +112,17 @@ class FlowList extends ListResource {
             $targetUrl
         );
 
-        return new FlowPage($this->version, $response, $this->solution);
+        return new CountryPage($this->version, $response, $this->solution);
     }
 
     /**
-     * Constructs a FlowContext
+     * Constructs a CountryContext
      * 
-     * @param string $sid The sid
-     * @return \Twilio\Rest\Preview\Studio\FlowContext 
+     * @param string $isoCountry Fetches voice prices for country
+     * @return \Twilio\Rest\Pricing\V2\Voice\CountryContext 
      */
-    public function getContext($sid) {
-        return new FlowContext($this->version, $sid);
+    public function getContext($isoCountry) {
+        return new CountryContext($this->version, $isoCountry);
     }
 
     /**
@@ -134,6 +131,6 @@ class FlowList extends ListResource {
      * @return string Machine friendly representation
      */
     public function __toString() {
-        return '[Twilio.Preview.Studio.FlowList]';
+        return '[Twilio.Pricing.V2.CountryList]';
     }
 }
