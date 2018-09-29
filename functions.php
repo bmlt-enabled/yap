@@ -968,13 +968,14 @@ function get_jft($sms = false) {
 
     $stripped_results = strip_tags( $result );
     $without_tabs     = str_replace( "\t", "", $stripped_results );
+	$trim_results     = trim($without_tabs);
 	if ($sms == true) {
-		$without_htmlentities = html_entity_decode($without_tabs);
+		$without_htmlentities = html_entity_decode($trim_results);
 	    $without_extranewlines = preg_replace("/[\r\n]+/", "\n\n", $without_htmlentities);
 		return $without_extranewlines;
 	}
     else {
-        $final_array = explode( "\n", $without_tabs );
+        $final_array = explode( "\n", $trim_results );
         array_push($final_array, $copyright_info);
 		return $final_array;
 	}
