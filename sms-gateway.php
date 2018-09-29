@@ -27,7 +27,7 @@
     } 
 	else if (str_exists(strtoupper($address), strtoupper('jft'))) {
          $jft = get_jft(true);
-	     $message = $client->messages
+         $message = $client->messages
             ->create($_REQUEST['From'], // to
                array("from" => $_REQUEST['To'], "body" => $jft)
             );
