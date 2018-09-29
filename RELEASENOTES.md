@@ -1,5 +1,8 @@
 # Release Notes
 
+### 2.2.3 (TBD)
+* Add jft response to sms gatweway. [#147]
+
 ### 2.2.2 (September 21, 2018)
 * Playback link of custom prompts on service body configuration modal. [#143]
 * Bug fix for non-default timezone adding for volunteers on single shift entry. [#138]

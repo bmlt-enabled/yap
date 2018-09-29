@@ -9,7 +9,7 @@ $d->validateOnParse = true;
 $result = null;
 
 if (setting('word_language') == 'en-US') {
-    $url = 'http://www.jftna.org/jft/';
+    $url = 'https://www.jftna.org/jft/';
     $jft_language_dom_element = "table";
     $copyright_info = '';
 } else if (setting('word_language') == 'pt-BR' || setting('word_language') == 'pt-PT') {
