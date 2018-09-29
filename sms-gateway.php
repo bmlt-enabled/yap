@@ -1,8 +1,15 @@
 <?php
+    include 'config.php';
     include 'functions.php';
+    require_once 'vendor/autoload.php';
+    use Twilio\Rest\Client;
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
+    $sid = $GLOBALS['twilio_account_sid'];
+    $token = $GLOBALS['twilio_auth_token'];
+    $client = new Client( $sid, $token );
+	
     $address = $_REQUEST['Body'];
     $coordinates = getCoordinatesForAddress($address . "," . getProvince());
 ?>
@@ -19,13 +26,12 @@
 <?php   }
     } 
 	else if (str_exists(strtoupper($address), strtoupper('jft'))) {
-         $result = get("https://www.jftna.org/jft/");
-         $stripped_results = strip_tags($result);
-         $without_tabs = str_replace("\t", "", $stripped_results);
-	     $without_htmlentities = html_entity_decode($without_tabs);
-	     $without_extranewlines = preg_replace("/[\r\n]+/", "\n\n", $without_htmlentities); ?>
-         <Sms><?php  echo $without_extranewlines; ?> </Sms>
- <?php } 
+         $jft = get_jft(true);
+	     $message = $client->messages
+            ->create($_REQUEST['From'], // to
+               array("from" => $_REQUEST['To'], "body" => $jft)
+            );
+	} 
 	else {
 ?>
     <Redirect method="GET">meeting-search.php?SearchType=1&amp;Latitude=<?php echo strval($coordinates->latitude) ?>&amp;Longitude=<?php echo strval($coordinates->longitude) ?></Redirect>
