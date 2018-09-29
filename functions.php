@@ -38,7 +38,8 @@ checkBlacklist();
 static $available_languages = [
     "en-US" => "English",
     "pig-latin" => "Igpay Atinlay",
-    "pt-BR" => "Português"
+    "pt-BR" => "Português (Brazil)",
+    "fr-CA" => "Français (Canada)"
 ];
 
 static $available_prompts = [
