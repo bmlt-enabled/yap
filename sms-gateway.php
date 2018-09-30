@@ -18,15 +18,11 @@
         <Message><?php echo word('please_send_a_message_formatting_as') ?> "<?php echo $sms_helpline_keyword?>", <?php echo word('followed_by_your_location')?>, <?php echo word('for') ?> <?php echo word('someone_to_talk_to')?>.</Message>
 <?php   }
     } 
-	else if (str_exists(strtoupper($address), strtoupper('jft'))) {
-         $result = get("https://www.jftna.org/jft/");
-         $stripped_results = strip_tags($result);
-         $without_tabs = str_replace("\t", "", $stripped_results);
-	     $without_htmlentities = html_entity_decode($without_tabs);
-	     $without_extranewlines = preg_replace("/[\r\n]+/", "\n\n", $without_htmlentities); ?>
-         <Sms><?php  echo $without_extranewlines; ?> </Sms>
- <?php } 
-	else {
+    else if (str_exists(strtoupper($address), strtoupper('jft'))) { ?>
+         <Message><?php echo get_jft(true); ?></Message>
+<?php 
+    } 
+    else {
 ?>
     <Redirect method="GET">meeting-search.php?SearchType=1&amp;Latitude=<?php echo strval($coordinates->latitude) ?>&amp;Longitude=<?php echo strval($coordinates->longitude) ?></Redirect>
 <?php

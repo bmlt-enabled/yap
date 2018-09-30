@@ -925,3 +925,67 @@ function async_post($url, $payload)  {
     fwrite($fp, $out);
     fclose($fp);
 }
+
+function sms_chunk_split($msg) {
+    $msg = preg_replace('/[\r\n]+/', ' ', $msg);
+    $chunks = wordwrap($msg, 1600, '\n');
+    return explode('\n', $chunks);
+}
+
+function get_jft($sms = false) {
+    $d = new DOMDocument();
+    $d->validateOnParse = true;
+    $result = null;
+
+    if (setting('word_language') == 'en-US') {
+        $url = 'http://www.jftna.org/jft/';
+        $jft_language_dom_element = "table";
+        $copyright_info = '';
+        $preg_search_lang = "\r\n";
+        $preg_replace_lang = "\n\n";
+    } else if (setting('word_language') == 'pt-BR' || setting('word_language') == 'pt-PT') {
+        $url = 'http://www.na.org.br/meditacao';
+        $jft_language_dom_element = '*[@class=\'content-home\']';
+        $copyright_info = 'Todos os direitos reservados à: http://www.na.org.br';
+        $preg_search_lang = "\r\n";
+        $preg_replace_lang = "\n";
+    } else if (setting('word_language') == 'es-ES') {
+        $url = 'https://forozonalatino.org/sxh';
+        $jft_language_dom_element = '*[@id=\'sx-wrapper\']';
+        $copyright_info = 'Servicio del Foro Zonal Latinoamericano, Copyright 2017 NA World Services, Inc. Todos los Derechos Reservados.';
+        $preg_search_lang = "\r\n\s";
+        $preg_replace_lang = " ";
+    } else if (setting('word_language') == 'fr-FR' || setting('word_language') == 'ca-FR') {
+        $url = 'https://jpa.narcotiquesanonymes.org';
+        $jft_language_dom_element = '*[@class=\'contenu-principal\']';
+        $copyright_info = 'Copyright (c) 2007-'.date("Y").', NA World Services, Inc. All Rights Reserved';
+        $preg_search_lang = "\r\n";
+        $preg_replace_lang = "\n\n";
+    }
+
+    $jft = new DOMDocument;
+    libxml_use_internal_errors(true);
+    $d->loadHTML(get($url));
+    libxml_clear_errors();
+    libxml_use_internal_errors(false);
+    $xpath = new DOMXpath($d);
+    $body = $xpath->query("//$jft_language_dom_element");
+    foreach ($body as $child) {
+        $jft->appendChild($jft->importNode($child, true));
+    }
+    $result .= $jft->saveHTML();
+
+    $stripped_results = strip_tags( $result );
+    $without_tabs     = str_replace( "\t", "", $stripped_results );
+    $trim_results     = trim($without_tabs);
+    if ($sms == true) {
+        $without_htmlentities = html_entity_decode($trim_results);
+        $without_extranewlines = preg_replace("/[$preg_search_lang]+/", "$preg_replace_lang", $without_htmlentities);
+        return $without_extranewlines;
+    }
+    else {
+        $final_array = explode( "\n", $trim_results );
+        array_push($final_array, $copyright_info);
+        return $final_array;
+    }
+}
