@@ -36,9 +36,9 @@
         }
     } else {
         if ($meeting_results->originalListCount == 0) {
-            echo "<Sms>" . word('no_results_found') . "... " . word('you_might_have_invalid_entry') . "..." . word('try_again') . "</Sms>";
+            echo "<Message>" . word('no_results_found') . "... " . word('you_might_have_invalid_entry') . "..." . word('try_again') . "</Message>";
         } elseif (count($filtered_list) == 0) {
-            echo "<Sms>" . word('there_are_no_other_meetings_for_today') . "</Sms>";
+            echo "<Message>" . word('there_are_no_other_meetings_for_today') . "</Message>";
         }
     }
 
@@ -57,7 +57,7 @@
         }
 
         if (json_decode(setting('include_map_link'))) $results[2] .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude;
-        $message = "<Sms>" . $results[0] . $text_space . $results[1] . $text_space . $results[2] . "</Sms>";
+        $message = "<Message>" . $results[0] . $text_space . $results[1] . $text_space . $results[2] . "</Message>";
         error_log($message);
         if (json_decode(setting("sms_ask")) && !isset($_REQUEST["SmsSid"])) {
             array_push($sms_messages, $message);
