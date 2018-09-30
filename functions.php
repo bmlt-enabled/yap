@@ -1,7 +1,7 @@
 <?php
 include_once 'config.php';
 include_once 'session.php';
-static $version = "2.2.2";
+static $version = "2.3.0";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false],
@@ -987,5 +987,15 @@ function get_jft($sms = false) {
         $final_array = explode( "\n", $trim_results );
         array_push($final_array, $copyright_info);
         return $final_array;
+    }
+}
+
+function getIvrResponse() {
+    if (isset($_REQUEST['Digits'])) {
+        return $_REQUEST['Digits'];
+    } elseif (isset($_REQUEST['SpeechResult'])) {
+        return $_REQUEST['SpeechResult'];
+    } else {
+        return "0";
     }
 }

@@ -4,7 +4,7 @@
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
     $sms_messages = isset($_REQUEST['Payload']) ? json_decode(urldecode($_REQUEST["Payload"])) : [];
-    $digits = $_REQUEST['Digits'];
+    $digits = getIvrResponse();
 
     echo "<Response>";
 

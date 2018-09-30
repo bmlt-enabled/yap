@@ -1,6 +1,6 @@
 <?php
     include 'functions.php';
-    $inputMethod = $_REQUEST['Digits'];
+    $inputMethod = getIvrResponse();
 
     if ($inputMethod == "3") {
         header('Location: fetch-jft.php');

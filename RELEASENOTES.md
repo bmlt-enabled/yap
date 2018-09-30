@@ -1,7 +1,11 @@
 # Release Notes
 
-### 2.2.3 (TBD)
-* Add jft response to sms gatweway. [#147]
+### 2.3.0 (September 30, 2018)
+* Added "jft" response to SMS gateway (support for English, French, Spanish and Brazilian). [#147]
+* You can now press or say any option in the IVR menus.  
+* Postal codes support speech recognition which assists with letters in Canadian ones. [#142]
+* Added French Canadian language support.
+* Migrated retired <Sms> to new <Message> TwiML tag.
 
 ### 2.2.2 (September 21, 2018)
 * Playback link of custom prompts on service body configuration modal. [#143]

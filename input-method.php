@@ -1,6 +1,6 @@
 <?php
     include 'functions.php';
-    $searchType = $_REQUEST['Digits'];
+    $searchType = getIvrResponse();
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
     
     if ($searchType == "1") {
@@ -27,7 +27,7 @@
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 ?>
 <Response>
-    <Gather numDigits="1" timeout="10" action="input-method-result.php?SearchType=<?php echo $searchType ?>" method="GET">
+    <Gather input="speech dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=<?php echo $searchType ?>" method="GET">
     	<?php
         if ($playTitle == "1") { ?>
             <Say voice="<?php echo setting("voice") ?>" language="<?php echo setting("language")?>"><?php echo setting("title")?></Say>

@@ -8,7 +8,7 @@
         if (isset($_SESSION["override_service_body_id"])) {
             $service_body_obj = getServiceBody(setting("service_body_id"));
         } else {
-            $address = $_REQUEST['Digits'];
+            $address = getIvrResponse();
             $coordinates  = getCoordinatesForAddress( $address );
             try {
                 if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) {
