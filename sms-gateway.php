@@ -1,15 +1,8 @@
 <?php
-    include 'config.php';
     include 'functions.php';
-    require_once 'vendor/autoload.php';
-    use Twilio\Rest\Client;
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
-    $sid = $GLOBALS['twilio_account_sid'];
-    $token = $GLOBALS['twilio_auth_token'];
-    $client = new Client( $sid, $token );
-	
     $address = $_REQUEST['Body'];
     $coordinates = getCoordinatesForAddress($address . "," . getProvince());
 ?>
@@ -22,17 +15,14 @@
 <?php
         } else {
 ?>
-        <Sms><?php echo word('please_send_a_message_formatting_as') ?> "<?php echo $sms_helpline_keyword?>", <?php echo word('followed_by_your_location')?>, <?php echo word('for') ?> <?php echo word('someone_to_talk_to')?>.</Sms>
+        <Message><?php echo word('please_send_a_message_formatting_as') ?> "<?php echo $sms_helpline_keyword?>", <?php echo word('followed_by_your_location')?>, <?php echo word('for') ?> <?php echo word('someone_to_talk_to')?>.</Message>
 <?php   }
     } 
-	else if (str_exists(strtoupper($address), strtoupper('jft'))) {
-         $jft = get_jft(true);
-         $message = $client->messages
-            ->create($_REQUEST['From'], // to
-               array("from" => $_REQUEST['To'], "body" => $jft)
-            );
-	} 
-	else {
+    else if (str_exists(strtoupper($address), strtoupper('jft'))) { ?>
+         <Message><?php echo get_jft(true); ?></Message>
+<?php 
+    } 
+    else {
 ?>
     <Redirect method="GET">meeting-search.php?SearchType=1&amp;Latitude=<?php echo strval($coordinates->latitude) ?>&amp;Longitude=<?php echo strval($coordinates->longitude) ?></Redirect>
 <?php
