@@ -938,7 +938,7 @@ function get_jft($sms = false) {
     $result = null;
 
     if (setting('word_language') == 'en-US') {
-        $url = 'http://www.jftna.org/jft/';
+        $url = 'https://www.jftna.org/jft/';
         $jft_language_dom_element = "table";
         $copyright_info = '';
         $preg_search_lang = "\r\n";
