@@ -1,5 +1,8 @@
 # Release Notes
 
+### 2.3.1 (September 30, 2018)
+* Fixed the voice prompt to "press or say" in conjunction with being able to speak responses on menus.
+
 ### 2.3.0 (September 30, 2018)
 * Added "jft" response to SMS gateway (support for English, French, Spanish and Brazilian). [#147]
 * You can now press or say any option in the IVR menus.  

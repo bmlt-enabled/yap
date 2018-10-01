@@ -1,6 +1,6 @@
 <?php
 $language_title = "english";
-$press = "press";
+$press = "press or say";
 $zero = "zero";
 $one = "one";
 $two = "two";
