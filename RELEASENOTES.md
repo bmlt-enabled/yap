@@ -1,5 +1,8 @@
 # Release Notes
 
+### 2.3.2 (October 2, 2018)
+* Hotfix for broken SMS sending of meeting list information due to a Twilio bug. [#150]
+
 ### 2.3.1 (September 30, 2018)
 * Fixed the voice prompt to "press or say" in conjunction with being able to speak responses on menus.
 
