@@ -206,13 +206,13 @@ class UpgradeAdvisor {
         $googleapi_settings = json_decode(get($GLOBALS['google_maps_endpoint'] . "&address=91409"));
 
         if ($googleapi_settings->status == "REQUEST_DENIED") {
-            return UpgradeAdvisor::getState(false, "Your Google Maps API key came back with the following error. " . $googleapi_setttings->errorMessage. " Please make sure you have the 'Google Maps Geocoding API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
+            return UpgradeAdvisor::getState(false, "Your Google Maps API key came back with the following error. " . $googleapi_settings->errorMessage. " Please make sure you have the 'Google Maps Geocoding API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
         }
 
         $timezone_settings = json_decode(get($GLOBALS['timezone_lookup_endpoint'] . "&location=34.2011137,-118.475058&timestamp=" . time()));
 
         if ($timezone_settings->status == "REQUEST_DENIED") {
-            return UpgradeAdvisor::getState(false, "Your Google Maps API key came back with the following error. " . $timezone_settings->errorMessage. " Please make sure you have the 'Google Maps Geocoding API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
+            return UpgradeAdvisor::getState(false, "Your Google Maps API key came back with the following error. " . $timezone_settings->errorMessage. " Please make sure you have the 'Google Time Zone API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
         }
 
         require_once 'vendor/autoload.php';
