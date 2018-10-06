@@ -996,12 +996,34 @@ function get_jft($sms = false) {
     }
 }
 
-function getIvrResponse() {
+function getIvrResponse($redirected_from = null, $prior_digit = 0, $expected_exacts = array(), $expected_likes = array()) {
+    $response = "0";
+
     if (isset($_REQUEST['Digits'])) {
-        return $_REQUEST['Digits'];
+        $response = $_REQUEST['Digits'];
     } elseif (isset($_REQUEST['SpeechResult'])) {
-        return $_REQUEST['SpeechResult'];
-    } else {
-        return "0";
+        $response = $_REQUEST['SpeechResult'];
     }
+
+    if (count($expected_exacts) > 0 || count($expected_likes) > 0) {
+        $found_at_least_once = false;
+        foreach ($expected_exacts as $expected_exact) {
+            if ($expected_exact == $response) $found_at_least_once = true;
+        }
+
+        if (!$found_at_least_once) {
+            foreach ($expected_likes as $expected_like) {
+                if (str_exists($response, $expected_like)) {
+                    $found_at_least_once = true;
+                }
+            }
+        }
+
+        if (!$found_at_least_once) {
+            echo "<Response><Say voice=\"" . $GLOBALS['voice'] . "\" language=\"" . $GLOBALS['language'] . "\">" . word('you_might_have_invalid_entry') . "</Say><Redirect>" . $redirected_from . "?Digits=" . $prior_digit . "</Redirect></Response>";
+            exit();
+        }
+    }
+
+    return $response;
 }

@@ -1,6 +1,8 @@
 <?php
+    header("content-type: text/xml");
+    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     include 'functions.php';
-    $searchType = getIvrResponse();
+    $searchType = getIvrResponse("index.php", "", ["1", "2", "3"]);
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
     
     if ($searchType == "1") {
@@ -15,16 +17,15 @@
         $searchDescription = word('someone_to_talk_to');
     } else if ($searchType == "2") {
         $searchDescription = word('meetings');
-    } else { ?>
+    } else if ($searchType == "3" ) { ?>
         <Response>
         <Redirect method="GET">fetch-jft.php</Redirect>
         </Response>
         <?php
         exit();
-    }
+    } else {
 
-    header("content-type: text/xml");
-    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+    }
 ?>
 <Response>
     <Gather input="speech dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=<?php echo $searchType ?>" method="GET">
