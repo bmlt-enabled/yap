@@ -1,7 +1,7 @@
 <?php
 include_once 'config.php';
 include_once 'session.php';
-static $version = "2.3.2";
+static $version = "2.3.3-beta";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false],
@@ -996,7 +996,7 @@ function get_jft($sms = false) {
     }
 }
 
-function getIvrResponse($redirected_from = null, $prior_digit = 0, $expected_exacts = array(), $expected_likes = array()) {
+function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_exacts = array(), $expected_likes = array()) {
     $response = "0";
 
     if (isset($_REQUEST['Digits'])) {
@@ -1020,7 +1020,9 @@ function getIvrResponse($redirected_from = null, $prior_digit = 0, $expected_exa
         }
 
         if (!$found_at_least_once) {
-            echo "<Response><Say voice=\"" . $GLOBALS['voice'] . "\" language=\"" . $GLOBALS['language'] . "\">" . word('you_might_have_invalid_entry') . "</Say><Redirect>" . $redirected_from . "?Digits=" . $prior_digit . "</Redirect></Response>";
+            $qs = $prior_digit != null ? "?Digits=" . $prior_digit : "";
+
+            echo "<Response><Say voice=\"" . $GLOBALS['voice'] . "\" language=\"" . $GLOBALS['language'] . "\">" . word('you_might_have_invalid_entry') . "</Say><Redirect>" . $redirected_from . $qs . "</Redirect></Response>";
             exit();
         }
     }
