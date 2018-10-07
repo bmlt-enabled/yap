@@ -1,7 +1,7 @@
 # Release Notes
 
 ### 2.3.3 (Unreleased)
-* Fix for dealing with bad input as a result of voice recognition [#155]
+* Fix for dealing with bad input as a result of voice recognition on IVR inputs [#155]
 
 ### 2.3.2 (October 2, 2018)
 * Hotfix for broken SMS sending of meeting list information due to a Twilio bug. [#150]
