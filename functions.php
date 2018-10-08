@@ -19,7 +19,7 @@ static $settings_whitelist = [
     'jft_option' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'language' => [ 'description' => '' , 'default' => 'en', 'overridable' => true],
     'language_selections' => [ 'description' => '', 'default' => '', 'overridable' => true],
-    'location_lookup_bias' => [ 'description' => '' , 'default' => 'components=country:us', 'overridable' => true],
+    'location_lookup_bias' => [ 'description' => '' , 'default' => 'country:us', 'overridable' => true],
     'meeting_search_radius' => [ 'description' => '' , 'default' => -50, 'overridable' => true],
     'postal_code_length' => [ 'description' => '' , 'default' => 5, 'overridable' => true],
     'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true],
