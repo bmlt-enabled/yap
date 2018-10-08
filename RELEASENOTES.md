@@ -1,6 +1,6 @@
 # Release Notes
 
-### 2.3.3 (Unreleased)
+### 2.3.3 (October 8, 2018)
 * Fix for double usage of "components" in Google Maps API bias. [#157]
 * Fix for dealing with bad input as a result of voice recognition on IVR inputs [#155]
 
