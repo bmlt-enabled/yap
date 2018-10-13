@@ -11,3 +11,7 @@ simulate:
 
 debug:
 	docker-compose up
+
+test:
+	composer test
+
