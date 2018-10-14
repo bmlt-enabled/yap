@@ -97,6 +97,7 @@ class MeetingResults {
 
 class ServiceBodyConfiguration {
     public $service_body_id;
+    public $service_body_name;
     public $volunteer_routing_enabled = false;
     public $volunteer_routing_redirect = false;
     public $volunteer_routing_redirect_id = 0;
@@ -104,6 +105,7 @@ class ServiceBodyConfiguration {
     public $forced_caller_id_number = SpecialPhoneNumber::UNKNOWN;
     public $call_timeout = 20;
     public $volunteer_sms_notification_enabled = false;
+    public $gender_routing_enabled = false;
     public $call_strategy = CycleAlgorithm::LOOP_FOREVER;
     public $primary_contact_number_enabled = false;
     public $primary_contact_number = SpecialPhoneNumber::UNKNOWN;
@@ -567,17 +569,17 @@ function getAllHelplineData($data_type) {
 }
 
 function getVolunteerRoutingEnabledServiceBodies() {
-    $all_helpline_data = getAllHelplineData("_YAP_CONFIG_");
+    $all_helpline_data = getAllHelplineData(DataType::YAP_CONFIG);
     $service_bodies = getServiceBodyDetailForUser();
-    $helpline_enabled = [];
+    $helpline_enabled = array();
 
     for ($x = 0; $x < count($all_helpline_data); $x++) {
-        if (isset($all_helpline_data[$x]['data'][0]->volunteer_routing) &&
-            ($all_helpline_data[$x]['data'][0]->volunteer_routing == "volunteers" || $all_helpline_data[$x]['data'][0]->volunteer_routing == "volunteers_and_sms")) {
+        $config = getServiceBodyConfigurationData($all_helpline_data[$x]);
+        if ($config->volunteer_routing_enabled || $config->sms_routing_enabled) {
             for ($y = 0; $y < count($service_bodies); $y++) {
-                if ( $all_helpline_data[ $x ]['service_body_id'] == intval($service_bodies[$y]->id) ) {
-                    $all_helpline_data[ $x ]['service_body_name'] = $service_bodies[$y]->name;
-                    array_push($helpline_enabled, $all_helpline_data[$x]);
+                if ($config->service_body_id == intval($service_bodies[$y]->id) ) {
+                    $config->service_body_name = $service_bodies[$y]->name;
+                    array_push($helpline_enabled, $config);
                 }
             }
         }
@@ -586,13 +588,11 @@ function getVolunteerRoutingEnabledServiceBodies() {
     return $helpline_enabled;
 }
 
-function getServiceBodyConfiguration($service_body_id) {
-    $helplineData = getHelplineData($service_body_id, DataType::YAP_CONFIG);
-
+function getServiceBodyConfigurationData($helplineData) {
     $config = new ServiceBodyConfiguration();
-    $config->service_body_id = $service_body_id;
-    if (isset($helplineData) && count($helplineData) > 0) {
-        $data = $helplineData[0]['data'][0];
+    if (isset($helplineData)) {
+        $data = $helplineData['data'][0];
+        $config->service_body_id = $helplineData['service_body_id'];
 
         foreach ($data as $key => $value) {
             if (strpos($key, 'override_') === 0 && strlen($value) > 0) {
@@ -607,6 +607,7 @@ function getServiceBodyConfiguration($service_body_id) {
         $config->forced_caller_id_number = $config->forced_caller_id_enabled ? $data->forced_caller_id : SpecialPhoneNumber::UNKNOWN;
         $config->call_timeout = isset($data->call_timeout) && strlen($data->call_timeout > 0) ? intval($data->call_timeout) : 20;
         $config->volunteer_sms_notification_enabled = isset($data->volunteer_sms_notification) && $data->volunteer_sms_notification != "no_sms";
+        $config->gender_routing_enabled = isset($data->gender_routing) && intval($data->gender_routing) == 1;
         $config->call_strategy = isset($data->call_strategy) ? intval($data->call_strategy) : $config->call_strategy;
         $config->primary_contact_number_enabled = isset($data->primary_contact) && strlen($data->primary_contact) > 0;
         $config->primary_contact_number = $config->primary_contact_number_enabled ? $data->primary_contact : "";
@@ -615,10 +616,15 @@ function getServiceBodyConfiguration($service_body_id) {
         $config->moh = isset($data->moh) && strlen($data->moh) > 0 ? $data->moh : $config->moh;
         $config->moh_count = count(explode(",", $config->moh));
         $config->sms_routing_enabled = $data->volunteer_routing == "volunteers_and_sms";
-        $config->sms_strategy = isset($data->sms_strategy) ? $data->sms_strategy : $config->sms_strategy;
+        $config->sms_strategy = isset($data->sms_strategy) ? intval($data->sms_strategy) : $config->sms_strategy;
     }
 
     return $config;
+}
+
+function getServiceBodyConfiguration($service_body_id) {
+    $helplineData = getHelplineData($service_body_id, DataType::YAP_CONFIG);
+    return getServiceBodyConfigurationData($helplineData[0]);
 }
 
 function getHelplineData($service_body_id, $data_type = DataType::YAP_DATA) {
