@@ -1,9 +1,9 @@
 <?php
-    include_once 'header.php';
+require_once 'header.php';
 
-    if ($_SERVER['REQUEST_URI'] == "/admin") {
-        header('Location: /admin/', null, 301);
-    };
+if ($_SERVER['REQUEST_URI'] == "/admin") {
+    header('Location: /admin/', null, 301);
+};
 ?>
 <div id="signin" class="container">
     <form class="form-signin" method="POST" action="auth_login.php">
@@ -26,4 +26,4 @@
     </form>
 </div>
 <?php
-    include_once 'footer.php';
+require_once 'footer.php';

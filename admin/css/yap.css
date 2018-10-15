@@ -136,3 +136,7 @@ div#signin {
 #volunteer_notes {
     width: 100%;
 }
+
+.dropdown_next_to_another_field {
+    padding-left: 10px;
+}

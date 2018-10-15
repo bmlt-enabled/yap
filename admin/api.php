@@ -1,5 +1,5 @@
 <?php
-include_once 'auth_verify.php';
+require_once 'auth_verify.php';
 if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'save') {
     admin_PersistHelplineData($_REQUEST['helpline_data_id'],
         $_REQUEST['service_body_id'],

@@ -1,4 +1,4 @@
-<?php include_once 'nav.php';
+<?php require_once 'nav.php';
 $service_bodies = getServiceBodyDetailForUser();
 sort_on_field($service_bodies, 'name');
 ?>
@@ -110,4 +110,4 @@ sort_on_field($service_bodies, 'name');
         </div>
     </div>
 </div>
-<?php include_once 'footer.php';?>
+<?php require_once 'footer.php';?>

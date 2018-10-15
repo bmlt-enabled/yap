@@ -1,5 +1,5 @@
 <?php
-    include_once 'nav.php';
+    require_once 'nav.php';
     $status = UpgradeAdvisor::getStatus();
 ?>
 <div class="container">
@@ -25,7 +25,7 @@
         </div>
     </div>
 </div>
-<?php include_once 'footer.php';?>
+<?php require_once 'footer.php';?>
 <script type="text/javascript">
     $(function() {
         $("#upgrade-advisor-details").tooltip();

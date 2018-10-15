@@ -1,5 +1,5 @@
 <?php
-include '../functions.php';
+require_once __DIR__.'/../endpoints/functions.php';
 header("content-type: application/json");
 echo json_encode(getMeetings(
     $_REQUEST['latitude'],

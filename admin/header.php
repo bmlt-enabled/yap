@@ -1,6 +1,6 @@
 <?php
-    include_once dirname(__DIR__).'/functions.php';
-    include_once dirname(__DIR__).'/lang/'.getWordLanguage().'.php';
+    require_once __DIR__.'/../endpoints/functions.php';
+    include_once __DIR__.'/../lang/'.getWordLanguage().'.php';
 ?>
 <!doctype html>
 <html lang="en">
@@ -15,4 +15,4 @@
     <title>Yap Admin</title>
 </head>
 <body>
-<?php include_once 'spinner_dialog.php';
+<?php require_once 'spinner_dialog.php';

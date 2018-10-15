@@ -1,6 +1,5 @@
 <?php
-include_once '../config.php';
-include_once '../functions.php';
+require_once __DIR__.'/../endpoints/functions.php';
 
 logout_auth($_SESSION['username']);
 header('Location: index.php');

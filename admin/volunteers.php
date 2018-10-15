@@ -1,4 +1,4 @@
-<?php include_once 'nav.php'; ?>
+<?php require_once 'nav.php'; ?>
     <div id="volunteers" class="container">
         <input type="hidden" name="helpline_data_id" id="helpline_data_id" value="0" />
         <div class="alert alert-success" role="alert" style="display:none;" id="volunteer_saved_alert">
@@ -104,7 +104,7 @@
                         </div>
                         <div class="form-group form-row form-inline">
                             Type:
-                            <select class="form-control form-control-sm type_selector" id="single_shift_type">
+                            <select class="form-control form-control-sm" id="single_shift_type">
                                 <option value="PHONE" selected>Phone</option>
                                 <option value="SMS">SMS</option>
                                 <option value="PHONE,SMS">Phone + SMS</option>
@@ -121,7 +121,7 @@
         </div>
         <div id="volunteerCards" class="list-group-flush" class="row"></div>
     </div>
-<?php include_once 'footer.php';?>
+<?php require_once 'footer.php';?>
 <div class="card volunteerCard border-dark" id="volunteerCardTemplate" style="display:none;">
     <form id="volunteersForm">
         <div class="card-header">
@@ -131,11 +131,20 @@
             <span id="volunteerSequence" class="float-right"></span>
         </div>
         <div class="card-body volunteerCardBody collapse">
-            Phone Number: <input type="text" id="volunteer_phone_number" name="volunteer_phone_number">
+            <div class="form-group form-row form-inline">
+                Phone Number: <input type="text" id="volunteer_phone_number" name="volunteer_phone_number">
+                <span class="dropdown_next_to_another_field">
+                    Gender: <select class="form-control form-control-sm" name="gender" id="gender">
+                        <option value="UNASSIGNED">Unassigned</option>
+                        <option value="MALE">Male</option>
+                        <option value="FEMALE">Female</option>
+                    </select>
+                </span>
+            </div>
             <table id="volunteer_schedule" class="table table-striped table-bordered">
                 <tr>
                     <th>
-                        Shifts
+                        <Shifts></Shifts>
                         <button class="btn btn-sm btn-info" onclick="addShift(this);return false;"><?php echo word('add_shift')?></button>
                         <button class="btn btn-sm btn-info" onclick="add24by7Shifts(this);return false;"><?php echo word('add_24by7_shifts')?></button>
                         <button class="btn btn-sm btn-danger" onclick="removeAllShifts(this);return false;"><?php echo word('remove_all_shifts')?></button>
