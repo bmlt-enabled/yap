@@ -1,9 +1,4 @@
 Options +FollowSymLinks
 RewriteEngine on
-
-RewriteCond %{REQUEST_URI} !.*(?:api|admin|lang).*
-RewriteCond %{REQUEST_URI} !.*php.*
-RewriteRule ([^/]+)/?$ $1/endpoints/index.php [NC,L]
-
 RewriteCond %{REQUEST_URI} !.*(?:api|admin|lang).*
 RewriteRule ([^/]+)/?$ endpoints/$1 [NC]

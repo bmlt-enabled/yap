@@ -1,5 +1,5 @@
 <?php
-if (intval(preg_match('/.*(?:api|admin|lang).*/', $_SERVER["REQUEST_URI"])) == 0) {
+if (intval(preg_match('/.*(?:admin|api|lang).*/', $_SERVER["REQUEST_URI"])) == 0) {
     $path_array = explode("/", $_SERVER["REQUEST_URI"]);
     $filename = $path_array[count($path_array) - 1];
     $new_file_path = "endpoints/" . ($filename !== "" ? $filename : "index.php");
