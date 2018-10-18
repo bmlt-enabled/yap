@@ -15,7 +15,7 @@ if ($serviceBodyConfiguration->primary_contact_number_enabled) {
     try {
         $client = new Client( $sid, $token );
     } catch ( \Twilio\Exceptions\ConfigurationException $e ) {
-        error_log( "Missing Twilio Credentials" );
+        log_debug( "Missing Twilio Credentials" );
     }
 
     $callerNumber = $_REQUEST["caller_number"];
@@ -59,7 +59,7 @@ if ($serviceBodyConfiguration->primary_contact_email_enabled && has_setting('smt
         $mail->Subject = 'Helpline Voicemail from ' . $serviceBodyName;
         $mail->send();
     } catch (Exception $e) {
-        error_log('Message could not be sent. Mailer Error: ' . $mail->ErrorInfo);
+        log_debug('Message could not be sent. Mailer Error: ' . $mail->ErrorInfo);
     }
 
 }

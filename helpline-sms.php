@@ -11,7 +11,7 @@ try {
     try {
         $client = new Client( $sid, $token );
     } catch ( \Twilio\Exceptions\ConfigurationException $e ) {
-        error_log("Missing Twilio Credentials");
+        log_debug("Missing Twilio Credentials");
     }
 
     if (isset( $_REQUEST["OriginalCallerId"] )) {

@@ -58,7 +58,7 @@ $token                      = $GLOBALS['twilio_auth_token'];
 try {
     $client = new Client( $sid, $token );
 } catch ( \Twilio\Exceptions\ConfigurationException $e ) {
-    error_log("Missing Twilio Credentials");
+    log_debug("Missing Twilio Credentials");
 }
 
 if (isset($_REQUEST["Debug"])) {
@@ -72,7 +72,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     if ( ( isset( $_REQUEST['SequenceNumber'] ) && intval( $_REQUEST['SequenceNumber'] ) == 1 ) ||
          ( isset( $_REQUEST['CallStatus'] ) && ( $_REQUEST['CallStatus'] == 'no-answer' || $_REQUEST['CallStatus'] == 'completed' ) ) ) {
         $callConfig = getCallConfig($client, $serviceBodyConfiguration);
-        error_log( "Dialing " . $callConfig->phone_number );
+        log_debug( "Dialing " . $callConfig->phone_number );
 
         $participants = $client->conferences($conferences[0]->sid)->participants->read();
 
@@ -105,7 +105,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                         $callConfig->options
                     );
                 } catch ( \Twilio\Exceptions\TwilioException $e ) {
-                    error_log( $e );
+                    log_debug( $e );
                 }
             }
         }

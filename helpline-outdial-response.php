@@ -9,7 +9,7 @@ $token                      = $GLOBALS['twilio_auth_token'];
 try {
     $client = new Client( $sid, $token );
 } catch ( \Twilio\Exceptions\ConfigurationException $e ) {
-    error_log("Missing Twilio Credentials");
+    log_debug("Missing Twilio Credentials");
 }
 
 header("content-type: text/xml");

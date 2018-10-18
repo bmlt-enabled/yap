@@ -1,5 +1,6 @@
 <?php
 include_once 'config.php';
+include_once 'logging.php';
 include_once 'session.php';
 static $version = "2.3.3";
 static $settings_whitelist = [
@@ -230,7 +231,7 @@ class UpgradeAdvisor {
             }
 
         } catch ( \Twilio\Exceptions\ConfigurationException $e ) {
-            error_log("Missing Twilio Credentials");
+            log_debug("Missing Twilio Credentials");
         }
 
         if (has_setting('smtp_host')) {
@@ -556,7 +557,7 @@ function admin_PersistHelplineData($helpline_data_id = 0, $service_body_id, $dat
     }
 
     $helpline_data = str_replace(",", ";", $data);
-    error_log("helpline_data_length:" . strlen($helpline_data));
+    log_debug("helpline_data_length:" . strlen($helpline_data));
     $data_bmlt_encoded .= "&meeting_field[]=contact_phone_1," . $helpline_data;
 
     return post($url, $data_bmlt_encoded, false, $_SESSION['username']);
@@ -864,7 +865,7 @@ function logout_auth($username) {
 }
 
 function get($url, $username = 'master') {
-    error_log($url);
+    log_debug($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $username . '_cookie.txt');
@@ -882,7 +883,7 @@ function get($url, $username = 'master') {
 }
 
 function post($url, $payload, $is_json = true, $username = 'master') {
-    error_log($url);
+    log_debug($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $username . '_cookie.txt');
@@ -904,7 +905,7 @@ function post($url, $payload, $is_json = true, $username = 'master') {
 }
 
 function async_post($url, $payload)  {
-    error_log($url);
+    log_debug($url);
     $parts = parse_url($url);
 
     if (isset($parts['port'])) {
