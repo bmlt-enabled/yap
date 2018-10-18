@@ -65,6 +65,7 @@ $save_volunteers = "Guarde voluntários";
 $remove = "Remova";
 $settings = "Ajustes";
 $add_shift = "Adicionar turno";
+$add_7_day_shifts = "Add 7 Day Shifts";
 $add_24by7_shifts = "Adicionar turnos de 24/7";
 $remove_all_shifts = "Remova todos os turnos";
 $please_leave_a_message_after_the_tone = "por favor, deixe uma mensagem após o tom";

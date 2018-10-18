@@ -274,6 +274,16 @@ function addShift(e) {
     $("#selectShiftDialog").modal("show");
 }
 
+function add7DayShifts(e) {
+    $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    $("#shiftVolunteerName").html($(e).closest(".volunteerCard").find("#volunteer_name").val());
+    $("#selectRepeatShiftDialog").attr({
+        "volunteer_id": $(e).closest(".volunteerCard").attr("id"),
+        "day_id": $(e).attr("data-shiftid")
+    });
+    $("#selectRepeatShiftDialog").modal("show");
+}
+
 function add24by7Shifts(e) {
     $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
     $("#selectTimeZoneDialog").attr("data-volunteerid", $(e).closest(".volunteerCard").attr("id"));
@@ -297,6 +307,27 @@ function selectTimeZoneFor247Shifts(e) {
     }
 
     $("#selectTimeZoneDialog").modal("hide");
+}
+
+function save7DayShifts(e) {
+    var volunteerId = $(e).closest("#selectRepeatShiftDialog").attr("volunteer_id");
+    var tz = $(e).closest("#selectRepeatShiftDialog").find("#time_zone").val();
+    var type = $("#7day_shift_type").val();
+    var start_time = $("#start_time_hour").val() + ":" + $("#start_time_minute").val() + " " + $("#start_time_division").val();
+    var end_time = $("#end_time_hour").val() + ":" + $("#end_time_minute").val() + " " + $("#end_time_division").val();
+    for (var x = 1; x <= 7; x++) {
+        var shiftInfoObj = {
+            "day": x,
+            "tz": tz,
+            "start_time": start_time,
+            "end_time": end_time,
+            "type": type
+        };
+
+        renderShift(volunteerId, shiftInfoObj);
+    }
+
+    $("#selectRepeatShiftDialog").modal("hide");
 }
 
 function saveShift(e) {

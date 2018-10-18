@@ -2,6 +2,7 @@
 
 ### next 
 * Support for multiple service body contacts via email for voicemail.
+* Added the ability to add 7 day shifts with the same time block.
 
 ### 2.3.3 (October 8, 2018)
 * Fix for double usage of "components" in Google Maps API bias. [#157]
