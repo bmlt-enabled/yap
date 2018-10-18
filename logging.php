@@ -7,7 +7,7 @@ if (isset($GLOBALS['logentries_token'])) {
 function log_debug($message) {
     if (isset($GLOBALS['logentries_token'])) {
         $GLOBALS['log']->Debug($message);
-    } else {
+    } elseif (isset($GLOBALS['debug']) && boolval($GLOBALS['debug'])) {
         error_log($message);
     }
 }

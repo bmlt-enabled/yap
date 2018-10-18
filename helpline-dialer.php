@@ -72,7 +72,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     if ( ( isset( $_REQUEST['SequenceNumber'] ) && intval( $_REQUEST['SequenceNumber'] ) == 1 ) ||
          ( isset( $_REQUEST['CallStatus'] ) && ( $_REQUEST['CallStatus'] == 'no-answer' || $_REQUEST['CallStatus'] == 'completed' ) ) ) {
         $callConfig = getCallConfig($client, $serviceBodyConfiguration);
-        log_debug( "Dialing " . $callConfig->phone_number );
+        log_debug("Next volunteer to call " . $callConfig->phone_number);
 
         $participants = $client->conferences($conferences[0]->sid)->participants->read();
 
@@ -84,13 +84,16 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                 if (strpos($callerNumber, "+") !== 0) {
                     $callerNumber .= "+" . trim($callerNumber);
                 }
+                log_debug("callerNumber: " . $callerNumber . ", callerSid: " . $callerSid);
                 if ($callConfig->phone_number == SpecialPhoneNumber::VOICE_MAIL || $callConfig->phone_number == SpecialPhoneNumber::UNKNOWN) {
+                    log_debug("Calling voicemail.");
                     $client->calls($callerSid)->update(array(
                         "method" => "GET",
                         "url" => $callConfig->voicemail_url . "&caller_number=" . $callerNumber
                     ));
                 } else {
                     if ($serviceBodyConfiguration->volunteer_sms_notification_enabled) {
+                        log_debug("Sending volunteer SMS notification: " . $callConfig->phone_number);
                         $client->messages->create(
                             $callConfig->phone_number,
                             array(
@@ -99,6 +102,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                             ));
                     }
 
+                    log_debug("Calling: " . $callConfig->phone_number);
                     $client->calls->create(
                         $callConfig->phone_number,
                         $callConfig->options['callerId'],
@@ -106,7 +110,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                     );
                 }
             } catch ( \Twilio\Exceptions\TwilioException $e ) {
-                    log_debug( $e );
+                log_debug( $e );
             }
         }
     } elseif ( isset( $_REQUEST['StatusCallbackEvent'] ) && $_REQUEST['StatusCallbackEvent'] == 'participant-leave' ) {

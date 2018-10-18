@@ -689,7 +689,7 @@ function getHelplineVolunteersActiveNow($service_body_int, $volunteer_type = Vol
     }
 }
 
-function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = CycleAlgorithm::CYCLE_AND_FAILOVER, $volunteer_type = VolunteerType::PHONE) {
+function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = CycleAlgorithm::LOOP_FOREVER, $volunteer_type = VolunteerType::PHONE) {
     try {
         $volunteers = getHelplineVolunteersActiveNow( $service_body_int, $volunteer_type);
         if ( isset( $volunteers ) && count( $volunteers ) > 0 ) {
