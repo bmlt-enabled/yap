@@ -78,25 +78,25 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
 
         // Do not call if the caller hung up.
         if (count($participants) > 0) {
-            $callerSid = $participants[0]->callSid;
-            $callerNumber = $client->calls( $callerSid )->fetch()->from;
-            if (strpos($callerNumber, "+") !== 0) {
-                $callerNumber .= "+" . trim($callerNumber);
-            }
-            if ($callConfig->phone_number == SpecialPhoneNumber::VOICE_MAIL || $callConfig->phone_number == SpecialPhoneNumber::UNKNOWN) {
-                $client->calls($callerSid)->update(array(
-                    "method" => "GET",
-                    "url" => $callConfig->voicemail_url . "&caller_number=" . $callerNumber
-                ));
-            } else {
-                try {
-                    if ( $serviceBodyConfiguration->volunteer_sms_notification_enabled ) {
+            try {
+                $callerSid = $participants[0]->callSid;
+                $callerNumber = $client->calls($callerSid)->fetch()->from;
+                if (strpos($callerNumber, "+") !== 0) {
+                    $callerNumber .= "+" . trim($callerNumber);
+                }
+                if ($callConfig->phone_number == SpecialPhoneNumber::VOICE_MAIL || $callConfig->phone_number == SpecialPhoneNumber::UNKNOWN) {
+                    $client->calls($callerSid)->update(array(
+                        "method" => "GET",
+                        "url" => $callConfig->voicemail_url . "&caller_number=" . $callerNumber
+                    ));
+                } else {
+                    if ($serviceBodyConfiguration->volunteer_sms_notification_enabled) {
                         $client->messages->create(
                             $callConfig->phone_number,
                             array(
                                 "body" => "You have an incoming helpline call from " . $callerNumber . ".",
                                 "from" => $callConfig->options['originalCallerId']
-                            ) );
+                            ));
                     }
 
                     $client->calls->create(
@@ -104,9 +104,9 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                         $callConfig->options['callerId'],
                         $callConfig->options
                     );
-                } catch ( \Twilio\Exceptions\TwilioException $e ) {
-                    log_debug( $e );
                 }
+            } catch ( \Twilio\Exceptions\TwilioException $e ) {
+                    log_debug( $e );
             }
         }
     } elseif ( isset( $_REQUEST['StatusCallbackEvent'] ) && $_REQUEST['StatusCallbackEvent'] == 'participant-leave' ) {
