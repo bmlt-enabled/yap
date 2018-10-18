@@ -100,6 +100,8 @@ class ComposerStaticInit211839d18b0c3e24c5457707508f819b
     );
 
     public static $classMap = array (
+        'LeLogger' => __DIR__ . '/..' . '/logentries/logentries/LeLogger.php',
+        'LeLoggerTest' => __DIR__ . '/..' . '/logentries/logentries/unit_tests/LeLoggerTests.php',
         'PHPUnit\\Exception' => __DIR__ . '/..' . '/phpunit/phpunit/src/Exception.php',
         'PHPUnit\\Framework\\Assert' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert.php',
         'PHPUnit\\Framework\\AssertionFailedError' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/AssertionFailedError.php',

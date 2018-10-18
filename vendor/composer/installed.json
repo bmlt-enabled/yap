@@ -243,6 +243,44 @@
         ]
     },
     {
+        "name": "logentries/logentries",
+        "version": "1.6",
+        "version_normalized": "1.6.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/logentries/le_php.git",
+            "reference": "43beb04c45957c2820399f7a4d116b0324ad1c87"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/logentries/le_php/zipball/43beb04c45957c2820399f7a4d116b0324ad1c87",
+            "reference": "43beb04c45957c2820399f7a4d116b0324ad1c87",
+            "shasum": ""
+        },
+        "require-dev": {
+            "phpunit/phpunit": "3.7.*"
+        },
+        "time": "2014-06-17T08:42:10+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "./"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Mark Lacomber",
+                "email": "marklacomber@gmail.com"
+            }
+        ],
+        "description": "Logging library for use with Logentries"
+    },
+    {
         "name": "myclabs/deep-copy",
         "version": "1.8.1",
         "version_normalized": "1.8.1.0",
@@ -691,17 +729,17 @@
     },
     {
         "name": "phpunit/php-code-coverage",
-        "version": "6.0.8",
-        "version_normalized": "6.0.8.0",
+        "version": "6.1.1",
+        "version_normalized": "6.1.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-            "reference": "848f78b3309780fef7ec8c4666b7ab4e6b09b22f"
+            "reference": "b097681a19a48e52706f57e47a09594bac4f7cab"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/848f78b3309780fef7ec8c4666b7ab4e6b09b22f",
-            "reference": "848f78b3309780fef7ec8c4666b7ab4e6b09b22f",
+            "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/b097681a19a48e52706f57e47a09594bac4f7cab",
+            "reference": "b097681a19a48e52706f57e47a09594bac4f7cab",
             "shasum": ""
         },
         "require": {
@@ -712,7 +750,7 @@
             "phpunit/php-text-template": "^1.2.1",
             "phpunit/php-token-stream": "^3.0",
             "sebastian/code-unit-reverse-lookup": "^1.0.1",
-            "sebastian/environment": "^3.1",
+            "sebastian/environment": "^3.1 || ^4.0",
             "sebastian/version": "^2.0.1",
             "theseer/tokenizer": "^1.1"
         },
@@ -722,11 +760,11 @@
         "suggest": {
             "ext-xdebug": "^2.6.0"
         },
-        "time": "2018-10-04T03:41:23+00:00",
+        "time": "2018-10-18T09:01:38+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "6.0-dev"
+                "dev-master": "6.1-dev"
             }
         },
         "installation-source": "dist",
@@ -953,17 +991,17 @@
     },
     {
         "name": "phpunit/phpunit",
-        "version": "7.4.0",
-        "version_normalized": "7.4.0.0",
+        "version": "7.4.1",
+        "version_normalized": "7.4.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/sebastianbergmann/phpunit.git",
-            "reference": "f3837fa1e07758057ae06e8ddec6d06ba183f126"
+            "reference": "c5a120ade60992bd671a912188ee9ee9f8083bbd"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/f3837fa1e07758057ae06e8ddec6d06ba183f126",
-            "reference": "f3837fa1e07758057ae06e8ddec6d06ba183f126",
+            "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c5a120ade60992bd671a912188ee9ee9f8083bbd",
+            "reference": "c5a120ade60992bd671a912188ee9ee9f8083bbd",
             "shasum": ""
         },
         "require": {
@@ -984,7 +1022,7 @@
             "phpunit/php-timer": "^2.0",
             "sebastian/comparator": "^3.0",
             "sebastian/diff": "^3.0",
-            "sebastian/environment": "^3.1",
+            "sebastian/environment": "^3.1 || ^4.0",
             "sebastian/exporter": "^3.1",
             "sebastian/global-state": "^2.0",
             "sebastian/object-enumerator": "^3.0.3",
@@ -1002,7 +1040,7 @@
             "ext-xdebug": "*",
             "phpunit/php-invoker": "^2.0"
         },
-        "time": "2018-10-05T04:05:24+00:00",
+        "time": "2018-10-18T09:02:52+00:00",
         "bin": [
             "phpunit"
         ],
@@ -1718,17 +1756,17 @@
     },
     {
         "name": "twilio/sdk",
-        "version": "5.21.4",
-        "version_normalized": "5.21.4.0",
+        "version": "5.24.1",
+        "version_normalized": "5.24.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/twilio/twilio-php.git",
-            "reference": "4bdc0b8add796dd900c2bc7a63a84a187fe4f21d"
+            "reference": "2dd9c1fa804c0ad0c91cfa2eec152ca24f40efc9"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/twilio/twilio-php/zipball/4bdc0b8add796dd900c2bc7a63a84a187fe4f21d",
-            "reference": "4bdc0b8add796dd900c2bc7a63a84a187fe4f21d",
+            "url": "https://api.github.com/repos/twilio/twilio-php/zipball/2dd9c1fa804c0ad0c91cfa2eec152ca24f40efc9",
+            "reference": "2dd9c1fa804c0ad0c91cfa2eec152ca24f40efc9",
             "shasum": ""
         },
         "require": {
@@ -1738,7 +1776,7 @@
             "apigen/apigen": "^4.1",
             "phpunit/phpunit": "4.5.*"
         },
-        "time": "2018-08-31T21:47:27+00:00",
+        "time": "2018-10-16T00:12:03+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
