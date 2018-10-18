@@ -81,7 +81,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
             $callerSid = $participants[0]->callSid;
             $callerNumber = $client->calls( $callerSid )->fetch()->from;
             if (strpos($callerNumber, "+") !== 0) {
-                $callerNumber .= "+" . $callerNumber;
+                $callerNumber .= "+" . trim($callerNumber);
             }
             if ($callConfig->phone_number == SpecialPhoneNumber::VOICE_MAIL || $callConfig->phone_number == SpecialPhoneNumber::UNKNOWN) {
                 $client->calls($callerSid)->update(array(
