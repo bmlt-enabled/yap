@@ -50,7 +50,10 @@ if ($serviceBodyConfiguration->primary_contact_email_enabled && has_setting('smt
         }
         $mail->setFrom(setting('smtp_from_address'), setting('smtp_from_name'));
         $mail->isHTML(true);
-        $mail->addAddress($serviceBodyConfiguration->primary_contact_email);
+        $recipients = explode(",", $serviceBodyConfiguration->primary_contact_email);
+        foreach ($recipients as $recipient) {
+            $mail->addAddress($recipient);
+        }
         $mail->addStringAttachment(file_get_contents($_REQUEST["RecordingUrl"] . ".mp3"), $_REQUEST["RecordingUrl"] . ".mp3");
         $mail->Body = "You have a message from the " . $serviceBodyName . " helpline from caller " . $_REQUEST["caller_number"] . ", " . $_REQUEST["RecordingUrl"] . ".mp3";
         $mail->Subject = 'Helpline Voicemail from ' . $serviceBodyName;

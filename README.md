@@ -441,7 +441,7 @@ This is configured through service body configuration, through your call strateg
 
 Voicemail links are also available in the Twilio Console under "Recordings".  
 
-You can also optionally use email.  You will have to enable this by adding an email address under the Primary Contact Email.
+You can also optionally use email.  You will have to enable this by adding an email address under the Primary Contact Email.  You can optionally supply a list of comma separated emails for multiple recipients.
 
 You will also need to ensure that the following settings are in your `config.php`.
 
