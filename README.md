@@ -55,7 +55,7 @@ Helpline/Volunteer Routing
 * [Tomato Helpline Routing](#tomato-helpline-routing)
 
 Miscellaneous
-* [Logging/Debugging]
+* [Logging/Debugging](#loggingdebugging)
 * [Playback for the Just For Today Meditation](#playback-for-the-just-for-today-meditation)
 * [Upgrading](#upgrading)
 * [Upgrading from Yap 1.x to 2.x](#upgrading-from-yap-1x-to-yap-2x)
@@ -439,6 +439,8 @@ As a safety measure, if no volunteers are specified with "SMS", but it's enabled
 ## Voicemail
 
 This is configured through service body configuration, through your call strategy setting.  If you specify a Primary Contact Number, it will SMS a link to that person when a voicemail is left.
+
+You can also comma separate the values if you want it to go to more than one person.
 
 Voicemail links are also available in the Twilio Console under "Recordings".  
 

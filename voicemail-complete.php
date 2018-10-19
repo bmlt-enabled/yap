@@ -23,13 +23,16 @@ if ($serviceBodyConfiguration->primary_contact_number_enabled) {
         $callerNumber .= "+" . $callerNumber;
     }
 
-    $client->messages->create(
-        $serviceBodyConfiguration->primary_contact_number,
-        array(
-            "from" => $_REQUEST["called_number"],
-            "body" => "You have a message from the " . $serviceBodyName . " helpline from caller " . $callerNumber . ", " . $_REQUEST["RecordingUrl"] . ".mp3"
-        )
-    );
+    $recipients = explode(",", $serviceBodyConfiguration->primary_contact_number);
+    foreach ($recipients as $recipient) {
+        $client->messages->create(
+            $recipient,
+            array(
+                "from" => $_REQUEST["called_number"],
+                "body" => "You have a message from the " . $serviceBodyName . " helpline from caller " . $callerNumber . ", " . $_REQUEST["RecordingUrl"] . ".mp3"
+            )
+        );
+    }
 }
 
 if ($serviceBodyConfiguration->primary_contact_email_enabled && has_setting('smtp_host')) {
