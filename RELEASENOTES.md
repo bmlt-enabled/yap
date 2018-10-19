@@ -1,10 +1,11 @@
 # Release Notes
 
 ### 2.4.0 (October 18, 2018)
-* Support for multiple service body contacts for email notifications for voicemail.
-#* Support for multiple service body contacts for SMS notifications for voicemail.
+* Support for multiple service body contacts (CSV) for email notifications for voicemail.
+* Support for multiple service body contacts (CSV) for SMS notifications for voicemail.
+* Show enabled volunteers highlighted in light grey, making non-enabled ones more obvious visually [#161]
 * Added the ability to add 7 day shifts with the same time block.
-* Made debug logging disabled by default.
+* Made debug logging disabled by default and added additional logging messages.
 
 ### 2.3.3 (October 8, 2018)
 * Fix for double usage of "components" in Google Maps API bias. [#157]

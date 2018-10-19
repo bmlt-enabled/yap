@@ -231,6 +231,10 @@ function addVolunteer(volunteerData) {
         }
     }
 
+    if (volunteerData == null || !volunteerData.hasOwnProperty("volunteer_enabled")) {
+        volunteerCardTemplate.addClass("volunteerDisabled");
+    }
+
     volunteerCardTemplate.appendTo("#volunteerCards");
     while (shiftRenderQueue.length > 0) {
         (shiftRenderQueue.shift())();
@@ -242,6 +246,11 @@ function removeVolunteer(e) {
 }
 
 function checkboxStatusToggle(e) {
+    if (!e.checked) {
+        $(e).closest(".volunteerCard").addClass("volunteerDisabled");
+    } else {
+        $(e).closest(".volunteerCard").removeClass('volunteerDisabled')
+    }
     $(e).val(e.checked);
 }
 
@@ -418,3 +427,7 @@ function dataEncoder(dataObject) {
 function dataDecoder(dataString) {
     return JSON.parse(atob(dataString));
 }
+
+Object.prototype.hasOwnProperty = function(property) {
+    return this[property] !== undefined;
+};

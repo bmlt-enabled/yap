@@ -59,6 +59,7 @@ div#signin {
 
 .volunteerCard {
     margin-top:10px;
+    background-color: #CCC;
 }
 
 #newVolunteerDialog {
@@ -136,4 +137,8 @@ div#signin {
 
 #volunteer_notes {
     width: 100%;
+}
+
+.volunteerDisabled {
+    background-color: #FFF;
 }
