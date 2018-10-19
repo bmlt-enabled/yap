@@ -18,6 +18,10 @@ class ComposerStaticInit211839d18b0c3e24c5457707508f819b
         array (
             'phpDocumentor\\Reflection\\' => 25,
         ),
+        'Z' => 
+        array (
+            'Zwijn\\Monolog\\' => 14,
+        ),
         'W' => 
         array (
             'Webmozart\\Assert\\' => 17,
@@ -28,8 +32,13 @@ class ComposerStaticInit211839d18b0c3e24c5457707508f819b
         ),
         'P' => 
         array (
+            'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'PHPMailer\\PHPMailer\\' => 20,
+        ),
+        'M' => 
+        array (
+            'Monolog\\' => 8,
         ),
         'G' => 
         array (
@@ -51,6 +60,10 @@ class ComposerStaticInit211839d18b0c3e24c5457707508f819b
             1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
             2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
         ),
+        'Zwijn\\Monolog\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/nvanheuverzwijn/monolog-logdna/src/Monolog',
+        ),
         'Webmozart\\Assert\\' => 
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
@@ -59,6 +72,10 @@ class ComposerStaticInit211839d18b0c3e24c5457707508f819b
         array (
             0 => __DIR__ . '/..' . '/twilio/sdk/Twilio',
         ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
         'Psr\\Http\\Message\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/http-message/src',
@@ -66,6 +83,10 @@ class ComposerStaticInit211839d18b0c3e24c5457707508f819b
         'PHPMailer\\PHPMailer\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
+        ),
+        'Monolog\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
@@ -100,8 +121,6 @@ class ComposerStaticInit211839d18b0c3e24c5457707508f819b
     );
 
     public static $classMap = array (
-        'LeLogger' => __DIR__ . '/..' . '/logentries/logentries/LeLogger.php',
-        'LeLoggerTest' => __DIR__ . '/..' . '/logentries/logentries/unit_tests/LeLoggerTests.php',
         'PHPUnit\\Exception' => __DIR__ . '/..' . '/phpunit/phpunit/src/Exception.php',
         'PHPUnit\\Framework\\Assert' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert.php',
         'PHPUnit\\Framework\\AssertionFailedError' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/AssertionFailedError.php',

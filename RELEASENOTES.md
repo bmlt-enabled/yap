@@ -1,8 +1,10 @@
 # Release Notes
 
-### next 
-* Support for multiple service body contacts via email for voicemail.
+### 2.4.0 (October 18, 2018)
+* Support for multiple service body contacts for email notifications for voicemail.
+#* Support for multiple service body contacts for SMS notifications for voicemail.
 * Added the ability to add 7 day shifts with the same time block.
+* Made debug logging disabled by default.
 
 ### 2.3.3 (October 8, 2018)
 * Fix for double usage of "components" in Google Maps API bias. [#157]

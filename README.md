@@ -55,6 +55,7 @@ Helpline/Volunteer Routing
 * [Tomato Helpline Routing](#tomato-helpline-routing)
 
 Miscellaneous
+* [Logging/Debugging]
 * [Playback for the Just For Today Meditation](#playback-for-the-just-for-today-meditation)
 * [Upgrading](#upgrading)
 * [Upgrading from Yap 1.x to 2.x](#upgrading-from-yap-1x-to-yap-2x)
@@ -489,6 +490,9 @@ You can use this in your config.php, however keep in mind that this would break 
 `override_tomato_helpline_routing=true`
 
 # Miscellaneous
+
+## Logging/Debugging
+To enable advanced debugging set in your config.php `static $debug = true`;
 
 ## Playback for the Just For Today Meditation
 This will add an option on the main menu to press 3 to playback the Just For Today meditation.
