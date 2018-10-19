@@ -1,8 +1,8 @@
 <?php
 if (isset($GLOBALS['cloudlog_key']) && isset($GLOBALS['cloudlog_app'])) {
-    include './vendor/autoload.php';
-    $logger = new \Monolog\Logger('general');
-    $logdnaHandler = new \Zwijn\Monolog\Handler\LogdnaHandler($GLOBALS['cloudlog_key'], $GLOBALS['cloudlog_app'], \Monolog\Logger::DEBUG);
+    include __DIR__.'/vendor/autoload.php';
+    $logger = new \Monolog\Logger($GLOBALS['cloudlog_app']);
+    $logdnaHandler = new \Zwijn\Monolog\Handler\LogdnaHandler($GLOBALS['cloudlog_key'], "yap", \Monolog\Logger::DEBUG);
     $logger->pushHandler($logdnaHandler);
 }
 
