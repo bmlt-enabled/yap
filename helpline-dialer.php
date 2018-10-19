@@ -118,6 +118,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
         $conference_participants = $client->conferences( $conference_sid )->participants;
         foreach ( $conference_participants as $participant ) {
             try {
+                log_debug("Someone left the conference: " . $participant->callSid);
                 $client->calls( $participant->callSid )->update( array( $status => 'completed' ) );
             } catch ( \Twilio\Exceptions\TwilioException $e ) {
                 error_log($e);
