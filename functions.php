@@ -936,7 +936,7 @@ function async_post($url, $payload)  {
 
 function sms_chunk_split($msg) {
     $msg = preg_replace('/[\r\n]+/', ' ', $msg);
-    $chunks = wordwrap($msg, 1600, '\n');
+    $chunks = wordwrap($msg, 149, '\n');
     return explode('\n', $chunks);
 }
 
@@ -989,7 +989,12 @@ function get_jft($sms = false) {
     if ($sms == true) {
         $without_htmlentities = html_entity_decode($trim_results);
         $without_extranewlines = preg_replace("/[$preg_search_lang]+/", "$preg_replace_lang", $without_htmlentities);
-        return $without_extranewlines;
+        $message = sms_chunk_split($without_extranewlines);
+        $finalMessage  = array();
+        for ($i = 0; $i < count($message); $i++) {
+            $finalMessage[] = "(" .($i + 1). " of " .count($message). ")\n" .$message[$i];
+        }
+        return $finalMessage;
     }
     else {
         $final_array = explode( "\n", $trim_results );

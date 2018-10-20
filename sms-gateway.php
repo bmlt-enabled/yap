@@ -26,7 +26,10 @@
 <?php   }
     } 
     else if (str_exists(strtoupper($address), strtoupper('jft'))) {
-        $message = $client->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => get_jft(true)));
+        $message_get = get_jft(true);
+        for ($i = 0; $i < count($message_get); $i++) {
+            $message = $client->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message_get[$i]));
+        }
     }
     else {
 ?>
