@@ -26,9 +26,9 @@
 <?php   }
     } 
     else if (str_exists(strtoupper($address), strtoupper('jft'))) {
-        $message_get = get_jft(true);
-        for ($i = 0; $i < count($message_get); $i++) {
-            $message = $client->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message_get[$i]));
+        $jft_chunks = get_jft(true);
+        for ($i = 0; $i < count($jft_chunks); $i++) {
+            $message = $client->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $jft_chunks[$i]));
         }
     }
     else {

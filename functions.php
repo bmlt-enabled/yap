@@ -935,8 +935,8 @@ function async_post($url, $payload)  {
 }
 
 function sms_chunk_split($msg) {
-    $msg = preg_replace('/[\r\n]+/', ' ', $msg);
-    $chunks = wordwrap($msg, 149, '\n');
+    $chunk_width = '1575';
+    $chunks = wordwrap($msg, $chunk_width, '\n');
     return explode('\n', $chunks);
 }
 
@@ -992,7 +992,7 @@ function get_jft($sms = false) {
         $message = sms_chunk_split($without_extranewlines);
         $finalMessage  = array();
         for ($i = 0; $i < count($message); $i++) {
-            $finalMessage[] = "(" .($i + 1). " of " .count($message). ")\n" .$message[$i];
+            array_push($finalMessage,"(" .($i + 1). " of " .count($message). ")\n" .$message[$i]);
         }
         return $finalMessage;
     }
