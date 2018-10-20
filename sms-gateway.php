@@ -28,7 +28,7 @@
     else if (str_exists(strtoupper($address), strtoupper('jft'))) {
         $jft_chunks = get_jft(true);
         for ($i = 0; $i < count($jft_chunks); $i++) {
-            $message = $client->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $jft_chunks[$i]));
+            $client->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $jft_chunks[$i]));
         }
     }
     else {
