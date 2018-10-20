@@ -992,7 +992,8 @@ function get_jft($sms = false) {
         $message = sms_chunk_split($without_extranewlines);
         $finalMessage  = array();
         for ($i = 0; $i < count($message); $i++) {
-            array_push($finalMessage,"(" .($i + 1). " of " .count($message). ")\n" .$message[$i]);
+            $jft_message = "(" .($i + 1). " of " .count($message). ")\n" .$message[$i];
+            array_push($finalMessage,$jft_message);
         }
         return $finalMessage;
     }
