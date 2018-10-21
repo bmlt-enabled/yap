@@ -2,7 +2,7 @@
 
 ### NEXT
 * Custom Query support, return all meetings for example for an isolate geographical area like an island [#11]
-* Fix for JFT's that were too long and hitting the 1600 character limit [#163]
+* Fix for "jft" SMS gateway responses that were too long and hitting the 1600 character limit [#163]
 
 ### 2.4.0 (October 18, 2018)
 * Support for multiple service body contacts (CSV) for email notifications for voicemail.

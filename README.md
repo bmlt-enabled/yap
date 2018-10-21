@@ -323,9 +323,11 @@ In some cases you may need to combine this with the `result_count_max` to increa
 
 There are a couple of other stock magic variables.
 
-1. {DAY} = will use the day of today / tomorrow.
-2. {LATITUDE} = the latitude of the lookup.
-3. {LONGITUDE} = the longitude of the lookup.
+1. `{DAY}` - will use the day of today / tomorrow.
+2. `{LATITUDE}` - the latitude of the lookup.
+3. `{LONGITUDE}` - the longitude of the lookup.
+
+If you do not have `{LATITUDE}` or `{LONGITUDE}` in your custom query, it will automatically skip the location gathering aspects of the meeting search menus and go directly to returning results. 
 
 # Helpline / Volunteer Routing
 
