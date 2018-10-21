@@ -46,10 +46,11 @@ function schedulePage() {
             start: moment().startOf('day').format("YYYY-MM-DD"),
             end: moment().add(7, 'days').endOf('day').format("YYYY-MM-DD")
         },
+        eventOrder: ['sequence'],
         viewRender: function() {
             $(".fa-chevron-left").html("<");
             $(".fa-chevron-right").html(">");
-        }
+        },
     });
 
     $('select#service_body_id').change(function() {
