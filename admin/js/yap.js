@@ -39,7 +39,7 @@ function schedulePage() {
         header: {
             left: null,
             center: null,
-            right: "agendaWeek, agendaDay, prev, next"
+            right: "agendaWeek, agendaDay, list, prev, next"
         },
         height: 'auto',
         validRange: {
@@ -47,6 +47,7 @@ function schedulePage() {
             end: moment().add(7, 'days').endOf('day').format("YYYY-MM-DD")
         },
         eventOrder: ['sequence'],
+        slotEventOverlap: false,
         viewRender: function() {
             $(".fa-chevron-left").html("<");
             $(".fa-chevron-right").html(">");

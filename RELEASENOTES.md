@@ -1,19 +1,21 @@
 # Release Notes
 
-### NEXT
-* Custom Query support, return all meetings for example for an isolate geographical area like an island [#11]
-* Fix for "jft" SMS gateway responses that were too long and hitting the 1600 character limit [#163]
+### 2.5.0 (unreleased)
+* Custom Query support, return all meetings for example for an isolate geographical area like an island. [#11]
+* Added list view button for schedule rendering.
+* Fix for "jft" SMS gateway responses that were too long and hitting the 1600 character limit. [#163]
+* Fix for schedule sorting not being respected in calendar view (still a known issue with time sequencing taking precedence). [#162]
 
 ### 2.4.0 (October 18, 2018)
 * Support for multiple service body contacts (CSV) for email notifications for voicemail.
 * Support for multiple service body contacts (CSV) for SMS notifications for voicemail.
-* Show enabled volunteers highlighted in light grey, making non-enabled ones more obvious visually [#161]
+* Show enabled volunteers highlighted in light grey, making non-enabled ones more obvious visually. [#161]
 * Added the ability to add 7 day shifts with the same time block.
 * Made debug logging disabled by default and added additional logging messages.
 
 ### 2.3.3 (October 8, 2018)
 * Fix for double usage of "components" in Google Maps API bias. [#157]
-* Fix for dealing with bad input as a result of voice recognition on IVR inputs [#155]
+* Fix for dealing with bad input as a result of voice recognition on IVR inputs. [#155]
 
 ### 2.3.2 (October 2, 2018)
 * Hotfix for broken SMS sending of meeting list information due to a Twilio bug. [#150]
