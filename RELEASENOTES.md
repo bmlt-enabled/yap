@@ -1,7 +1,7 @@
 # Release Notes
 
 ### 2.5.0 (unreleased)
-* Custom Query support, return all meetings for example for an isolate geographical area like an island. [#11]
+* Custom Query support, return all meetings for example for an isolated geographical area, for instance an island. [#11]
 * Added list view button for schedule rendering.
 * Fix for "jft" SMS gateway responses that were too long and hitting the 1600 character limit. [#163]
 * Fix for schedule sorting not being respected in calendar view (still a known issue with time sequencing taking precedence). [#162]
