@@ -313,7 +313,7 @@ You can do this with the setting `custom_query`.  This setting also supports the
 
 For example say you want to always use the service body id for making queries, you could create the settings as follows:
 
-`&services[]={SETTING_SERVICE_BODY_ID}`
+`static $custom_query="&services[]={SETTING_SERVICE_BODY_ID}"`
 
 Because there is a setting called `service_body_id` already and assuming you had overridden it, meeting searches will now send a query to the BMLT and return accordingly.  
 
