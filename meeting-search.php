@@ -10,11 +10,11 @@
     $token = $GLOBALS['twilio_auth_token'];
     $client = new Client( $sid, $token );
     
-    $latitude = $_REQUEST['Latitude'];
-    $longitude = $_REQUEST['Longitude'];
+    $latitude = isset($_REQUEST['Latitude']) ? $_REQUEST['Latitude'] : null;
+    $longitude = isset($_REQUEST['Longitude']) ? $_REQUEST['Longitude'] : null;
 
     try {
-        $results_count = $results_count = has_setting('result_count_max') ? setting('result_count_max') : 5;
+        $results_count = has_setting('result_count_max') ? setting('result_count_max') : 5;
         $meeting_results = getMeetings($latitude, $longitude, $results_count, null, null);
         $results_count_num = count($meeting_results->filteredList) < $results_count ? count($meeting_results->filteredList) : $results_count;
     } catch (Exception $e) { ?>

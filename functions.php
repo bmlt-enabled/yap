@@ -6,6 +6,7 @@ static $version = "2.4.0";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false],
+    'custom_query' => ['description' => '', 'default' => '&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width={SETTING_MEETING_SEARCH_RADIUS}&weekdays={DAY}', 'overridable' => true],
     'fallback_number' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'gather_hints' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'gather_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
@@ -404,14 +405,26 @@ function getFormatString($formats, $ignore = false, $helpline = false) {
 }
 
 function meetingSearch($meeting_results, $latitude, $longitude, $day) {
-    $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . setting('meeting_search_radius') . "&weekdays=" . $day;
+    $bmlt_base_url = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults";
+    $bmlt_search_endpoint = setting('custom_query');
     if (has_setting('ignore_formats')) {
         $bmlt_search_endpoint .= getFormatString(setting('ignore_formats'), true);
     }
 
-    $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
+    $magic_vars = ["{LATITUDE}", "{LONGITUDE}", "{DAY}"];
+    $magic_swap = [$latitude, $longitude, $day];
+    $custom_magic_vars = [];
+    preg_match('/(\{SETTING_.*\})/U', $bmlt_search_endpoint, $custom_magic_vars);
+    foreach ($custom_magic_vars as $custom_magic_var) {
+        array_push($magic_vars, $custom_magic_var);
+        array_push($magic_swap, setting(strtolower(preg_replace('/(\{SETTING_(.*)\})/U', "$2", $custom_magic_var))));
+    }
+
+    $search_url = str_replace($magic_vars, $magic_swap, $bmlt_search_endpoint);
+    $final_url = $bmlt_base_url . $search_url;
+
     try {
-        $search_response = get($search_url);
+        $search_response = get($final_url);
     } catch (Exception $e) {
         if ($e->getMessage() == "Couldn't resolve host name") {
             throw $e;
@@ -426,7 +439,9 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day) {
     $filteredList = $meeting_results->filteredList;
     if ($search_response !== "{}") {
         for ($i = 0; $i < count($search_results); $i++) {
-            if (!isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time)) {
+            if (strpos($bmlt_search_endpoint, "{DAY}") && !isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time)) {
+                array_push($filteredList, $search_results[$i]);
+            } else {
                 array_push($filteredList, $search_results[$i]);
             }
         }
@@ -479,18 +494,19 @@ function getTimezoneList() {
 }
 
 function getMeetings($latitude, $longitude, $results_count, $today = null, $tomorrow = null) {
-    $time_zone_results = getTimeZoneForCoordinates($latitude, $longitude);
-    # Could be wired up to use multiple roots in the future by using a parameter to select
-    date_default_timezone_set($time_zone_results->timeZoneId);
+    if ($latitude != null & $longitude != null) {
+        $time_zone_results = getTimeZoneForCoordinates($latitude, $longitude);
+        # Could be wired up to use multiple roots in the future by using a parameter to select
+        date_default_timezone_set($time_zone_results->timeZoneId);
 
-    $graced_date_time = (new DateTime())->modify(sprintf("-%s minutes", setting('grace_minutes')));
-    if ($today == null) $today = $graced_date_time ->format( "w" ) + 1;
+        $graced_date_time = (new DateTime())->modify(sprintf("-%s minutes", setting('grace_minutes')));
+        if ($today == null) $today = $graced_date_time->format("w") + 1;
+        if ($tomorrow == null) $tomorrow = $graced_date_time->modify("+24 hours")->format("w") + 1;
+    }
 
     $meeting_results = new MeetingResults();
     $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $today);
     if (count($meeting_results->filteredList) < $results_count) {
-        if ($tomorrow == null) $tomorrow = $graced_date_time->modify("+24 hours")->format("w") + 1;
-
         $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $tomorrow);
     }
     return $meeting_results;
