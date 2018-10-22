@@ -65,6 +65,7 @@ $save_volunteers = "Save Volunteers";
 $remove = "Remove";
 $settings = "Settings";
 $add_shift = "Add Shift";
+$add_7_day_shifts = "Add 7 Day Shifts";
 $add_24by7_shifts = "Add 24/7 Shifts";
 $remove_all_shifts = "Remove All Shifts";
 $please_leave_a_message_after_the_tone = "please leave a message after the tone";

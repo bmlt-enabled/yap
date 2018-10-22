@@ -38,6 +38,7 @@ Meeting Search
     * [Infinite Searches](#infinite-searches)
 * [SMS Gateway](#sms-gateway)
 * [Adding Map Links](#adding-map-links)
+* [Custom Query](#custom-query)
 
 Helpline/Volunteer Routing
 
@@ -55,6 +56,7 @@ Helpline/Volunteer Routing
 * [Tomato Helpline Routing](#tomato-helpline-routing)
 
 Miscellaneous
+* [Logging/Debugging](#loggingdebugging)
 * [Playback for the Just For Today Meditation](#playback-for-the-just-for-today-meditation)
 * [Upgrading](#upgrading)
 * [Upgrading from Yap 1.x to 2.x](#upgrading-from-yap-1x-to-yap-2x)
@@ -303,6 +305,30 @@ Some older handsets are not capable of rendering maps links.  If you want to ena
 static $include_map_link = true;
 ```
 
+## Custom Query
+
+In some cases you may want use a custom BMLT query.  For example, if you have a small service body you may want to ignore the day of the week concept that is the default behavior in searches.
+
+You can do this with the setting `custom_query`.  This setting also supports the use of some magic variables.
+
+For example say you want to always use the service body id for making queries, you could create the settings as follows:
+
+`static $custom_query="&services[]={SETTING_SERVICE_BODY_ID}"`
+
+Because there is a setting called `service_body_id` already and assuming you had overridden it, meeting searches will now send a query to the BMLT and return accordingly.  
+
+You could have also hardcoded it if you wanted.  Like any other variable, you can set this on the querystring as a session wide override.
+
+In some cases you may need to combine this with the `result_count_max` to increase the limit of how many results are returned.  You may also need to use `sms_ask`, as many results could be returned.
+
+There are a couple of other stock magic variables.
+
+1. `{DAY}` - will use the day of today / tomorrow.
+2. `{LATITUDE}` - the latitude of the lookup.
+3. `{LONGITUDE}` - the longitude of the lookup.
+
+If you do not have `{LATITUDE}` or `{LONGITUDE}` in your custom query, it will automatically skip the location gathering aspects of the meeting search menus and go directly to returning results. 
+
 # Helpline / Volunteer Routing
 
 ## Helpline Search Radius
@@ -439,9 +465,11 @@ As a safety measure, if no volunteers are specified with "SMS", but it's enabled
 
 This is configured through service body configuration, through your call strategy setting.  If you specify a Primary Contact Number, it will SMS a link to that person when a voicemail is left.
 
+You can also comma separate the values if you want it to go to more than one person.
+
 Voicemail links are also available in the Twilio Console under "Recordings".  
 
-You can also optionally use email.  You will have to enable this by adding an email address under the Primary Contact Email.
+You can also optionally use email.  You will have to enable this by adding an email address under the Primary Contact Email.  You can optionally supply a list of comma separated emails for multiple recipients.
 
 You will also need to ensure that the following settings are in your `config.php`.
 
@@ -489,6 +517,9 @@ You can use this in your config.php, however keep in mind that this would break 
 `override_tomato_helpline_routing=true`
 
 # Miscellaneous
+
+## Logging/Debugging
+To enable advanced debugging set in your config.php `static $debug = true`;
 
 ## Playback for the Just For Today Meditation
 This will add an option on the main menu to press 3 to playback the Just For Today meditation.

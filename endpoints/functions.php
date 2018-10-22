@@ -1,10 +1,12 @@
 <?php
 require_once __DIR__.'/../config.php';
+require_once __DIR__.'/../logging.php';
 require_once 'session.php';
 static $version = "3.0.0-beta";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false],
+    'custom_query' => ['description' => '', 'default' => '&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width={SETTING_MEETING_SEARCH_RADIUS}&weekdays={DAY}', 'overridable' => true],
     'fallback_number' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'gather_hints' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'gather_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
@@ -231,7 +233,7 @@ class UpgradeAdvisor {
             }
 
         } catch ( \Twilio\Exceptions\ConfigurationException $e ) {
-            error_log("Missing Twilio Credentials");
+            log_debug("Missing Twilio Credentials");
         }
 
         if (has_setting('smtp_host')) {
@@ -404,14 +406,26 @@ function getFormatString($formats, $ignore = false, $helpline = false) {
 }
 
 function meetingSearch($meeting_results, $latitude, $longitude, $day) {
-    $bmlt_search_endpoint = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . setting('meeting_search_radius') . "&weekdays=" . $day;
+    $bmlt_base_url = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults";
+    $bmlt_search_endpoint = setting('custom_query');
     if (has_setting('ignore_formats')) {
         $bmlt_search_endpoint .= getFormatString(setting('ignore_formats'), true);
     }
 
-    $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
+    $magic_vars = ["{LATITUDE}", "{LONGITUDE}", "{DAY}"];
+    $magic_swap = [$latitude, $longitude, $day];
+    $custom_magic_vars = [];
+    preg_match('/(\{SETTING_.*\})/U', $bmlt_search_endpoint, $custom_magic_vars);
+    foreach ($custom_magic_vars as $custom_magic_var) {
+        array_push($magic_vars, $custom_magic_var);
+        array_push($magic_swap, setting(strtolower(preg_replace('/(\{SETTING_(.*)\})/U', "$2", $custom_magic_var))));
+    }
+
+    $search_url = str_replace($magic_vars, $magic_swap, $bmlt_search_endpoint);
+    $final_url = $bmlt_base_url . $search_url;
+
     try {
-        $search_response = get($search_url);
+        $search_response = get($final_url);
     } catch (Exception $e) {
         if ($e->getMessage() == "Couldn't resolve host name") {
             throw $e;
@@ -426,7 +440,9 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day) {
     $filteredList = $meeting_results->filteredList;
     if ($search_response !== "{}") {
         for ($i = 0; $i < count($search_results); $i++) {
-            if (!isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time)) {
+            if (strpos($bmlt_search_endpoint, "{DAY}") && !isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time)) {
+                array_push($filteredList, $search_results[$i]);
+            } else {
                 array_push($filteredList, $search_results[$i]);
             }
         }
@@ -479,18 +495,19 @@ function getTimezoneList() {
 }
 
 function getMeetings($latitude, $longitude, $results_count, $today = null, $tomorrow = null) {
-    $time_zone_results = getTimeZoneForCoordinates($latitude, $longitude);
-    # Could be wired up to use multiple roots in the future by using a parameter to select
-    date_default_timezone_set($time_zone_results->timeZoneId);
+    if ($latitude != null & $longitude != null) {
+        $time_zone_results = getTimeZoneForCoordinates($latitude, $longitude);
+        # Could be wired up to use multiple roots in the future by using a parameter to select
+        date_default_timezone_set($time_zone_results->timeZoneId);
 
-    $graced_date_time = (new DateTime())->modify(sprintf("-%s minutes", setting('grace_minutes')));
-    if ($today == null) $today = $graced_date_time ->format( "w" ) + 1;
+        $graced_date_time = (new DateTime())->modify(sprintf("-%s minutes", setting('grace_minutes')));
+        if ($today == null) $today = $graced_date_time->format("w") + 1;
+        if ($tomorrow == null) $tomorrow = $graced_date_time->modify("+24 hours")->format("w") + 1;
+    }
 
     $meeting_results = new MeetingResults();
     $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $today);
     if (count($meeting_results->filteredList) < $results_count) {
-        if ($tomorrow == null) $tomorrow = $graced_date_time->modify("+24 hours")->format("w") + 1;
-
         $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $tomorrow);
     }
     return $meeting_results;
@@ -557,7 +574,7 @@ function admin_PersistHelplineData($helpline_data_id = 0, $service_body_id, $dat
     }
 
     $helpline_data = str_replace(",", ";", $data);
-    error_log("helpline_data_length:" . strlen($helpline_data));
+    log_debug("helpline_data_length:" . strlen($helpline_data));
     $data_bmlt_encoded .= "&meeting_field[]=contact_phone_1," . $helpline_data;
 
     return post($url, $data_bmlt_encoded, false, $_SESSION['username']);
@@ -693,9 +710,10 @@ function getHelplineVolunteersActiveNow($service_body_int, $volunteer_type = Vol
     }
 }
 
-function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = CycleAlgorithm::CYCLE_AND_FAILOVER, $volunteer_type = VolunteerType::PHONE) {
+function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = CycleAlgorithm::LOOP_FOREVER, $volunteer_type = VolunteerType::PHONE) {
     try {
         $volunteers = getHelplineVolunteersActiveNow( $service_body_int, $volunteer_type);
+        log_debug("getHelplineVolunteer():: activeVolunteers: " . var_export($volunteers, true) . ", service_body_id: " . $service_body_int . ", volunteer_type: " . $volunteer_type);
         if ( isset( $volunteers ) && count( $volunteers ) > 0 ) {
             if ( $cycle_algorithm == CycleAlgorithm::CYCLE_AND_VOICEMAIL ) {
                 if ( $tracker > count( $volunteers ) - 1 ) {
@@ -869,7 +887,7 @@ function logout_auth($username) {
 }
 
 function get($url, $username = 'master') {
-    error_log($url);
+    log_debug($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $username . '_cookie.txt');
@@ -887,7 +905,7 @@ function get($url, $username = 'master') {
 }
 
 function post($url, $payload, $is_json = true, $username = 'master') {
-    error_log($url);
+    log_debug($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $username . '_cookie.txt');
@@ -909,7 +927,7 @@ function post($url, $payload, $is_json = true, $username = 'master') {
 }
 
 function async_post($url, $payload)  {
-    error_log($url);
+    log_debug($url);
     $parts = parse_url($url);
 
     if (isset($parts['port'])) {
@@ -938,8 +956,8 @@ function async_post($url, $payload)  {
 }
 
 function sms_chunk_split($msg) {
-    $msg = preg_replace('/[\r\n]+/', ' ', $msg);
-    $chunks = wordwrap($msg, 1600, '\n');
+    $chunk_width = 1575;
+    $chunks = wordwrap($msg, $chunk_width, '\n');
     return explode('\n', $chunks);
 }
 
@@ -992,7 +1010,18 @@ function get_jft($sms = false) {
     if ($sms == true) {
         $without_htmlentities = html_entity_decode($trim_results);
         $without_extranewlines = preg_replace("/[$preg_search_lang]+/", "$preg_replace_lang", $without_htmlentities);
-        return $without_extranewlines;
+        $message = sms_chunk_split($without_extranewlines);
+        $finalMessage  = array();
+        if (count($message) > 1) {
+            for ($i = 0; $i < count($message); $i++) {
+                $jft_message = "(" .($i + 1). " of " .count($message). ")\n" .$message[$i];
+                array_push($finalMessage,$jft_message);
+            }
+        }
+        else {
+            array_push($finalMessage,$message);
+        }
+        return $finalMessage;
     }
     else {
         $final_array = explode( "\n", $trim_results );

@@ -65,6 +65,7 @@ $save_volunteers = "avesay olunteersvay";
 $remove = "emoveray";
 $settings = "ettingssay";
 $add_shift = "addyay iftshay";
+$add_7_day_shifts = "addyay 7 ayday iftsshay";
 $add_24by7_shifts = "addyay 24/7 iftsshay";
 $remove_all_shifts = "emoveray allyay ifshiftshay";
 $please_leave_a_message_after_the_tone = "easeplay eavelay ayay essagemay afteryay ethay onetay";

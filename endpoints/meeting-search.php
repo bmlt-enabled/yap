@@ -4,26 +4,27 @@ require_once 'twilio-client.php';
 header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
-$latitude = $_REQUEST['Latitude'];
-$longitude = $_REQUEST['Longitude'];
+    
+    $latitude = isset($_REQUEST['Latitude']) ? $_REQUEST['Latitude'] : null;
+    $longitude = isset($_REQUEST['Longitude']) ? $_REQUEST['Longitude'] : null;
 
-try {
-    $results_count = $results_count = has_setting('result_count_max') ? setting('result_count_max') : 5;
-    $meeting_results = getMeetings($latitude, $longitude, $results_count, null, null);
-    $results_count_num = count($meeting_results->filteredList) < $results_count ? count($meeting_results->filteredList) : $results_count;
-} catch (Exception $e) { ?>
-    <Response>
-    <Redirect method="GET">fallback.php</Redirect>
-    </Response>
-    <?php
-    exit;
-}
+    try {
+        $results_count = has_setting('result_count_max') ? setting('result_count_max') : 5;
+        $meeting_results = getMeetings($latitude, $longitude, $results_count, null, null);
+        $results_count_num = count($meeting_results->filteredList) < $results_count ? count($meeting_results->filteredList) : $results_count;
+    } catch (Exception $e) { ?>
+        <Response>
+        <Redirect method="GET">fallback.php</Redirect>
+        </Response>
+        <?php
+        exit;
+    }
 
-$filtered_list = $meeting_results->filteredList;
-$sms_messages = [];
+    $filtered_list = $meeting_results->filteredList;
+    $sms_messages = [];
 
-$text_space = " ";
-$message = "";
+    $text_space = " ";
+    $message = "";
 ?>
 <Response>
 <?php
@@ -59,7 +60,7 @@ $message = "";
 
         if (json_decode(setting('include_map_link'))) $results[2] .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude;
         $message = $results[0] . $text_space . $results[1] . $text_space . $results[2];
-        error_log($message);
+        log_debug($message);
         if (json_decode(setting("sms_ask")) && !isset($_REQUEST["SmsSid"])) {
             array_push($sms_messages, $message);
         } else {

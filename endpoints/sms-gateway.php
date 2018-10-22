@@ -20,7 +20,10 @@ $coordinates = getCoordinatesForAddress($address . "," . getProvince());
 <?php   }
     } 
     else if (str_exists(strtoupper($address), strtoupper('jft'))) {
-        $message = $twilioClient->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => get_jft(true)));
+        $jft_chunks = get_jft(true);
+        for ($i = 0; $i < count($jft_chunks); $i++) {
+            $client->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $jft_chunks[$i]));
+        }
     }
     else {
 ?>

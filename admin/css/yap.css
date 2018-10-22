@@ -137,6 +137,10 @@ div#signin {
     width: 100%;
 }
 
+.volunteerDisabled {
+    background-color: #FFF;
+}
+
 .dropdown_next_to_another_field {
     padding-left: 10px;
 }

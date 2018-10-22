@@ -65,6 +65,7 @@ $save_volunteers = "Sauvegarder les volontaires";
 $remove = "Retirer";
 $settings = "Paramètres";
 $add_shift = "ajouter un quart de travail";
+$add_7_day_shifts = "Add 7 Day Shifts";
 $add_24by7_shifts = "Ajouter des postes 24/7";
 $remove_all_shifts = "Supprimer tous les quarts de travail";
 $please_leave_a_message_after_the_tone = "s'il vous plaît laisser un message après la tonalité";

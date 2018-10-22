@@ -53,6 +53,60 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="selectRepeatShiftDialog" tabindex="-1" role="dialog" aria-labelledby="selectRepeatShiftDialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Shift: <span id="shiftVolunteerName"></span></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group form-row form-inline">
+                            Time Zone:
+                            <select class="form-control form-control-sm time_zone_selector" id="time_zone">
+                                <?php
+                                foreach (getTimezoneList() as $tzItem) { ?>
+                                    <option value="<?php echo $tzItem?>"><?php echo $tzItem; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="form-group form-row form-inline">
+                            Start Time:
+                            <select class="form-control form-control-sm hours_field" id="start_time_hour"></select> :
+                            <select class="form-control form-control-sm minutes_field" id="start_time_minute"></select>
+                            <select class="form-control form-control-sm division_field" id="start_time_division">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
+                        <div class="form-group form-row form-inline">
+                            End Time:
+                            <select class="form-control form-control-sm hours_field" id="end_time_hour"></select> :
+                            <select class="form-control form-control-sm minutes_field" id="end_time_minute"></select>
+                            <select class="form-control form-control-sm division_field" id="end_time_division">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
+                        <div class="form-group form-row form-inline">
+                            Type:
+                            <select class="form-control form-control-sm type_selector" id="single_shift_type">
+                                <option value="PHONE" selected>Phone</option>
+                                <option value="SMS">SMS</option>
+                                <option value="PHONE,SMS">Phone + SMS</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="save7DayShifts(this)">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="modal fade" id="selectShiftDialog" tabindex="-1" role="dialog" aria-labelledby="selectShiftDialog" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -104,7 +158,7 @@
                         </div>
                         <div class="form-group form-row form-inline">
                             Type:
-                            <select class="form-control form-control-sm" id="single_shift_type">
+                            <select class="form-control form-control-sm type_selector" id="7day_shift_type">
                                 <option value="PHONE" selected>Phone</option>
                                 <option value="SMS">SMS</option>
                                 <option value="PHONE,SMS">Phone + SMS</option>
@@ -146,6 +200,7 @@
                     <th>
                         <Shifts></Shifts>
                         <button class="btn btn-sm btn-info" onclick="addShift(this);return false;"><?php echo word('add_shift')?></button>
+                        <button class="btn btn-sm btn-info" onclick="add7DayShifts(this);return false;"><?php echo word('add_7_day_shifts')?></button>
                         <button class="btn btn-sm btn-info" onclick="add24by7Shifts(this);return false;"><?php echo word('add_24by7_shifts')?></button>
                         <button class="btn btn-sm btn-danger" onclick="removeAllShifts(this);return false;"><?php echo word('remove_all_shifts')?></button>
                     </th>
