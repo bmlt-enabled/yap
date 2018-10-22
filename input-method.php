@@ -1,7 +1,7 @@
 <?php
+    include 'functions.php';
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-    include 'functions.php';
     $searchType = getIvrResponse("index.php", "", ["1", "2", "3"]);
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
     
