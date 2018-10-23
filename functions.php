@@ -499,12 +499,14 @@ function getTimezoneList() {
     return DateTimeZone::listIdentifiers(DateTimeZone::ALL);
 }
 
+function setTimeZoneForLatitudeAndLongitude($latitude, $longitude) {
+    $time_zone_results = getTimeZoneForCoordinates($latitude, $longitude);
+    date_default_timezone_set($time_zone_results->timeZoneId);
+}
+
 function getMeetings($latitude, $longitude, $results_count, $today = null, $tomorrow = null) {
     if ($latitude != null & $longitude != null) {
-        $time_zone_results = getTimeZoneForCoordinates($latitude, $longitude);
-        # Could be wired up to use multiple roots in the future by using a parameter to select
-        date_default_timezone_set($time_zone_results->timeZoneId);
-
+        setTimeZoneForLatitudeAndLongitude($latitude, $longitude);
         $graced_date_time = (new DateTime())->modify(sprintf("-%s minutes", setting('grace_minutes')));
         if ($today == null) $today = $graced_date_time->format("w") + 1;
         if ($tomorrow == null) $tomorrow = $graced_date_time->modify("+24 hours")->format("w") + 1;
@@ -517,6 +519,13 @@ function getMeetings($latitude, $longitude, $results_count, $today = null, $tomo
     }
 
     if ($meeting_results->originalListCount > 0 && setting('meeting_result_sort') == MeetingResultSort::LOGICAL) {
+        if ($today == null) {
+            setTimeZoneForLatitudeAndLongitude(
+                $meeting_results->filteredList[0]->latitude,
+                $meeting_results->filteredList[0]->longitude);
+
+            $today = (new DateTime())->format("w") + 1;
+        }
         $days = array_column($meeting_results->filteredList, 'weekday_tinyint');
         $today_str = strval($today);
         $meeting_results->filteredList = array_merge(
