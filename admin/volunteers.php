@@ -39,7 +39,7 @@
                             </select>
 
                             Type:
-                            <select class="form-control form-control-sm type_selector" id="type">
+                            <select class="form-control form-control-sm type_selector" id="shift_type">
                                 <option value="PHONE" selected>Phone</option>
                                 <option value="SMS">SMS</option>
                                 <option value="PHONE,SMS">Phone & SMS</option>
@@ -92,7 +92,7 @@
                         </div>
                         <div class="form-group form-row form-inline">
                             Type:
-                            <select class="form-control form-control-sm type_selector" id="single_shift_type">
+                            <select class="form-control form-control-sm type_selector" id="shift_type">
                                 <option value="PHONE" selected>Phone</option>
                                 <option value="SMS">SMS</option>
                                 <option value="PHONE,SMS">Phone + SMS</option>
@@ -158,7 +158,7 @@
                         </div>
                         <div class="form-group form-row form-inline">
                             Type:
-                            <select class="form-control form-control-sm type_selector" id="7day_shift_type">
+                            <select class="form-control form-control-sm type_selector" id="shift_type">
                                 <option value="PHONE" selected>Phone</option>
                                 <option value="SMS">SMS</option>
                                 <option value="PHONE,SMS">Phone + SMS</option>

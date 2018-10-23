@@ -304,7 +304,7 @@ function add24by7Shifts(e) {
 function selectTimeZoneFor247Shifts(e) {
     var volunteerId = $(e).closest("#selectTimeZoneDialog").attr("data-volunteerid");
     var tz = $(e).closest("#selectTimeZoneDialog").find("#time_zone").val();
-    var type = $(e).closest("#selectTimeZoneDialog").find("#type").val();
+    var type = $(e).closest("#selectTimeZoneDialog").find("#shift_type").val();
     for (var x = 1; x <= 7; x++) {
         var shiftInfoObj = {
             "day": x,
@@ -323,7 +323,7 @@ function selectTimeZoneFor247Shifts(e) {
 function save7DayShifts(e) {
     var volunteerId = $(e).closest("#selectRepeatShiftDialog").attr("volunteer_id");
     var tz = $(e).closest("#selectRepeatShiftDialog").find("#time_zone").val();
-    var type = $("#7day_shift_type").val();
+    var type = $(e).closest("#selectRepeatShiftDialog").find("#shift_type").val();
     var start_time = $("#start_time_hour").val() + ":" + $("#start_time_minute").val() + " " + $("#start_time_division").val();
     var end_time = $("#end_time_hour").val() + ":" + $("#end_time_minute").val() + " " + $("#end_time_division").val();
     for (var x = 1; x <= 7; x++) {
@@ -344,10 +344,11 @@ function save7DayShifts(e) {
 function saveShift(e) {
     var volunteer_id = $("#selectShiftDialog").attr("volunteer_id");
     var day_id = $("#day_of_the_week").val();
-    var time_zone_id = $(e).closest("#selectShiftDialog").find("#time_zone").val();
-    var start_time = $("#start_time_hour").val() + ":" + $("#start_time_minute").val() + " " + $("#start_time_division").val();
-    var end_time = $("#end_time_hour").val() + ":" + $("#end_time_minute").val() + " " + $("#end_time_division").val();
-    var type = $("#single_shift_type").val();
+    var closestShiftDialog = $(e).closest("#selectShiftDialog");
+    var time_zone_id = $(closestShiftDialog).find("#time_zone").val();
+    var start_time = $(closestShiftDialog).find("#start_time_hour").val() + ":" + $(closestShiftDialog).find("#start_time_minute").val() + " " + $(closestShiftDialog).find("#start_time_division").val();
+    var end_time = $(closestShiftDialog).find("#end_time_hour").val() + ":" + $(closestShiftDialog).find("#end_time_minute").val() + " " + $(closestShiftDialog).find("#end_time_division").val();
+    var type = $(closestShiftDialog).find("#shift_type").val();
     var shiftInfoObj = {
         "day": day_id,
         "tz": time_zone_id,
