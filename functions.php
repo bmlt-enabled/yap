@@ -22,6 +22,7 @@ static $settings_whitelist = [
     'language' => [ 'description' => '' , 'default' => 'en', 'overridable' => true],
     'language_selections' => [ 'description' => '', 'default' => '', 'overridable' => true],
     'location_lookup_bias' => [ 'description' => '' , 'default' => 'country:us', 'overridable' => true],
+    'meeting_result_sort' => [ 'description' => '' , 'default' => MeetingResultSort::LOGICAL, 'overridable' => true],
     'meeting_search_radius' => [ 'description' => '' , 'default' => -50, 'overridable' => true],
     'postal_code_length' => [ 'description' => '' , 'default' => 5, 'overridable' => true],
     'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true],
@@ -144,6 +145,11 @@ class SettingSource {
 class VolunteerType {
     const PHONE = "PHONE";
     const SMS = "SMS";
+}
+
+class MeetingResultSort {
+    const LOGICAL = 0;
+    const NATURAL = 1;
 }
 
 class NoVolunteersException extends Exception {}
@@ -509,6 +515,16 @@ function getMeetings($latitude, $longitude, $results_count, $today = null, $tomo
     if (count($meeting_results->filteredList) < $results_count) {
         $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $tomorrow);
     }
+
+    if ($meeting_results->originalListCount > 0 && setting('meeting_result_sort') == MeetingResultSort::LOGICAL) {
+        $days = array_column($meeting_results->filteredList, 'weekday_tinyint');
+        $today_str = strval($today);
+        $meeting_results->filteredList = array_merge(
+            array_splice($meeting_results->filteredList, array_search($today_str, $days)),
+            array_splice($meeting_results->filteredList, 0)
+        );
+    }
+
     return $meeting_results;
 }
 

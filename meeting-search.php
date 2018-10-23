@@ -69,7 +69,9 @@
         if (json_decode(setting("sms_ask")) && !isset($_REQUEST["SmsSid"])) {
             array_push($sms_messages, $message);
         } else {
-            $client->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
+            if (isset($_REQUEST['From']) && isset($_REQUEST['To'])) {
+                $client->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
+            }
         }
             
         $results_counter++;

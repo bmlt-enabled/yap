@@ -39,6 +39,7 @@ Meeting Search
 * [SMS Gateway](#sms-gateway)
 * [Adding Map Links](#adding-map-links)
 * [Custom Query](#custom-query)
+* [Sorting Results](#sorting-results)
 
 Helpline/Volunteer Routing
 
@@ -328,6 +329,12 @@ There are a couple of other stock magic variables.
 3. `{LONGITUDE}` - the longitude of the lookup.
 
 If you do not have `{LATITUDE}` or `{LONGITUDE}` in your custom query, it will automatically skip the location gathering aspects of the meeting search menus and go directly to returning results. 
+
+## Sorting Results
+
+By default the results will be sorted starting with today and then moving on to the next result.  This can be changed by sorting naturally.
+
+`static $meeting_result_sort = 1`
 
 # Helpline / Volunteer Routing
 
