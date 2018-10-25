@@ -22,6 +22,7 @@ static $settings_whitelist = [
     'language' => [ 'description' => '' , 'default' => 'en', 'overridable' => true],
     'language_selections' => [ 'description' => '', 'default' => '', 'overridable' => true],
     'location_lookup_bias' => [ 'description' => '' , 'default' => 'country:us', 'overridable' => true],
+    'meeting_result_sort' => [ 'description' => '' , 'default' => MeetingResultSort::TODAY, 'overridable' => true],
     'meeting_search_radius' => [ 'description' => '' , 'default' => -50, 'overridable' => true],
     'postal_code_length' => [ 'description' => '' , 'default' => 5, 'overridable' => true],
     'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true],
@@ -146,6 +147,10 @@ class SettingSource {
 class VolunteerType {
     const PHONE = "PHONE";
     const SMS = "SMS";
+}
+
+class MeetingResultSort {
+    const TODAY = 0;
 }
 
 class NoVolunteersException extends Exception {}
@@ -494,12 +499,14 @@ function getTimezoneList() {
     return DateTimeZone::listIdentifiers(DateTimeZone::ALL);
 }
 
+function setTimeZoneForLatitudeAndLongitude($latitude, $longitude) {
+    $time_zone_results = getTimeZoneForCoordinates($latitude, $longitude);
+    date_default_timezone_set($time_zone_results->timeZoneId);
+}
+
 function getMeetings($latitude, $longitude, $results_count, $today = null, $tomorrow = null) {
     if ($latitude != null & $longitude != null) {
-        $time_zone_results = getTimeZoneForCoordinates($latitude, $longitude);
-        # Could be wired up to use multiple roots in the future by using a parameter to select
-        date_default_timezone_set($time_zone_results->timeZoneId);
-
+        setTimeZoneForLatitudeAndLongitude($latitude, $longitude);
         $graced_date_time = (new DateTime())->modify(sprintf("-%s minutes", setting('grace_minutes')));
         if ($today == null) $today = $graced_date_time->format("w") + 1;
         if ($tomorrow == null) $tomorrow = $graced_date_time->modify("+24 hours")->format("w") + 1;
@@ -510,6 +517,27 @@ function getMeetings($latitude, $longitude, $results_count, $today = null, $tomo
     if (count($meeting_results->filteredList) < $results_count) {
         $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $tomorrow);
     }
+
+    if ($meeting_results->originalListCount > 0) {
+        if ($today == null) {
+            setTimeZoneForLatitudeAndLongitude(
+                $meeting_results->filteredList[0]->latitude,
+                $meeting_results->filteredList[0]->longitude);
+
+            $today = (new DateTime())->format("w") + 1;
+        }
+
+        $sort_day_start = setting('meeting_result_sort') == MeetingResultSort::TODAY
+            ? $today : setting('meeting_result_sort');
+
+        $days = array_column($meeting_results->filteredList, 'weekday_tinyint');
+        $today_str = strval($sort_day_start);
+        $meeting_results->filteredList = array_merge(
+            array_splice($meeting_results->filteredList, array_search($today_str, $days)),
+            array_splice($meeting_results->filteredList, 0)
+        );
+    }
+
     return $meeting_results;
 }
 

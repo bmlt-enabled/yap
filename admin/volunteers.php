@@ -39,7 +39,7 @@
                             </select>
 
                             Type:
-                            <select class="form-control form-control-sm type_selector" id="type">
+                            <select class="form-control form-control-sm type_selector" id="shift_type">
                                 <option value="PHONE" selected>Phone</option>
                                 <option value="SMS">SMS</option>
                                 <option value="PHONE,SMS">Phone & SMS</option>
@@ -92,7 +92,7 @@
                         </div>
                         <div class="form-group form-row form-inline">
                             Type:
-                            <select class="form-control form-control-sm type_selector" id="single_shift_type">
+                            <select class="form-control form-control-sm type_selector" id="shift_type">
                                 <option value="PHONE" selected>Phone</option>
                                 <option value="SMS">SMS</option>
                                 <option value="PHONE,SMS">Phone + SMS</option>
@@ -158,7 +158,7 @@
                         </div>
                         <div class="form-group form-row form-inline">
                             Type:
-                            <select class="form-control form-control-sm type_selector" id="7day_shift_type">
+                            <select class="form-control form-control-sm type_selector" id="shift_type">
                                 <option value="PHONE" selected>Phone</option>
                                 <option value="SMS">SMS</option>
                                 <option value="PHONE,SMS">Phone + SMS</option>
@@ -198,7 +198,7 @@
             <table id="volunteer_schedule" class="table table-striped table-bordered">
                 <tr>
                     <th>
-                        <Shifts></Shifts>
+                        Shifts
                         <button class="btn btn-sm btn-info" onclick="addShift(this);return false;"><?php echo word('add_shift')?></button>
                         <button class="btn btn-sm btn-info" onclick="add7DayShifts(this);return false;"><?php echo word('add_7_day_shifts')?></button>
                         <button class="btn btn-sm btn-info" onclick="add24by7Shifts(this);return false;"><?php echo word('add_24by7_shifts')?></button>

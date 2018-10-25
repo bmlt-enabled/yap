@@ -64,7 +64,9 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
         if (json_decode(setting("sms_ask")) && !isset($_REQUEST["SmsSid"])) {
             array_push($sms_messages, $message);
         } else {
-            $twilioClient->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
+            if (isset($_REQUEST['From']) && isset($_REQUEST['To'])) {
+            	$twilioClient->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
+            }
         }
             
         $results_counter++;
