@@ -1,6 +1,6 @@
 # Release Notes
 
-### 2.5.0 (unreleased)
+### 2.5.0 (October 24, 2018)
 * Custom Query support, return all meetings for example for an isolated geographical area, for instance an island. [#11]
 * Meeting results are default sorted starting today and then looping through the week (configurable). [#168]
 * Added list view button for schedule rendering.
