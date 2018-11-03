@@ -60,6 +60,7 @@
             echo "<Pause length=\"1\"/>";
             echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('starts_at') . " " . $results[1] . "</Say>";
             echo "<Pause length=\"1\"/>";
+            $results[2] = preg_replace($city_pron_fix_a, $city_pron_fix_b, $results[2]); #added this line to fix city pronunciation
             echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . $results[2] . "</Say>";
         }
 
@@ -102,6 +103,7 @@
         <?php } ?>
 
     <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">
+        <?php echo word('meeting_search_more_info')?> # added this line to allow for added information to be given before saying goodbye
         <?php echo word('thank_you_for_calling_goodbye')?>
     </Say>
     <?php } ?>
