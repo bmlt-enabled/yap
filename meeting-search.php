@@ -60,8 +60,7 @@
             echo "<Pause length=\"1\"/>";
             echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('starts_at') . " " . $results[1] . "</Say>";
             echo "<Pause length=\"1\"/>";
-          
-            $results[2] = preg_replace($city_pron_fix_a, $city_pron_fix_b, $results[2]);
+         
             echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . $results[2] . "</Say>";
         }
 
