@@ -1,0 +1,60 @@
+The following chages were made.  Will try to update README.md tomorrow.  I'm wiped out now.
+
+A. Changes to allow for more information to be given before saying goodbye in meeting-search.php .
+#One line was added and one new variable was added, meeting _search_more_info .
+
+Variables are set in config.php in the form of:
+
+static $meeting _search_more_info = "whatever you want to say before goodbye";
+
+
+#..................................
+    <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">
+        <?php echo word('meeting_search_more_info')?> # added this line
+        <?php echo word('thank_you_for_calling_goodbye')?> 
+    </Say>
+    <?php } ?>
+#..................................
+
+
+
+
+B. Changes made to post-call-action.php to allow for more information to be given before saying goodbye.
+#One line was added and one new variable was added, post_call_more_info .
+
+Variables are set in config.php in the form of:
+
+static $post call_more_info = "whatever you want to say before goodbye";
+
+#.......................................
+        echo "<Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
+    } else {
+            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . word('post_call_more_info') . "</Say>";  # added this line
+            echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . word('thank_you_for_calling_goodbye') . "</Say>";
+#........................................
+
+
+
+
+
+C. #Changes made to index.php to add voice content before and after title 
+#Two additional lines and two new variables, pre_title_greeting and post_title_greeting :
+
+
+Variables are set in config.php in the form of:
+
+static $pre_title_greeting = "whatever you want to add before title"
+static $post_title_greeting = "whatever you want to add after title"
+
+#................................................
+
+          <?php if (has_setting($promptset_name)) {?>
+            <Play><?php echo setting($promptset_name) ?></Play>
+        <?php } else { ?>
+            <?php if ( ! isset( $_REQUEST["Digits"] ) ) { ?>
+                <Say voice="<?php echo setting( 'voice' ) ?>" language="<?php echo setting( 'language' ) ?>">
+                    <?php echo setting( 'pre_title_greeting' ) ?>  #added this line
+                    <?php echo setting( 'title' ) ?>
+                    <?php echo setting( 'post_title_greeting' ) ?>  #added this line
+#...............................................
+
