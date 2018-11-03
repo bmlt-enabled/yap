@@ -24,6 +24,7 @@
     if ($digits == 2 || $digits == 3) {
         echo "<Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
     } else {
+        echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . word('post_call_more_info') . "</Say>";
         echo "<Say voice=\"" . $voice . "\" language=\"" . $language . "\">" . word('thank_you_for_calling_goodbye') . "</Say>";
     }
 
