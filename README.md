@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/radius314/yap.svg?branch=master)](https://travis-ci.org/radius314/yap)
 # yap
+Note: See Readme.ricks_fork for explanation of added features.  Got to get sleep before updating this file.
 
 Requires a minimum of PHP 5.6 to use.
 
