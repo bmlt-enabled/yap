@@ -58,3 +58,37 @@ static $post_title_greeting = "whatever you want to add after title"
                     <?php echo setting( 'post_title_greeting' ) ?>  #added this line
 #...............................................
 
+D. This allows you to change the pronunciation of the city.  
+If the variables are set in config.php it will alter the pronunciation of the text to speech.  
+Unfortunately it also changes the text message to reflect the new spelling.  I could use some help on this.
+If the variables are not set in config.php or are hashed out then it doesn't affect anything. 
+
+file: meeting-search.php
+
+added line: #           $results[2] = preg_replace($city_pron_fix_a, $city_pron_fix_b, $results[2]);
+
+
+String variables $city_pron_fix_a and $city_pron_fix_b are set in config.php in the form of:
+
+static $city_pron_fix_a = "/actual spelling/";
+static $city_pron_fix_b = "spelling for best pronunciation";
+
+Take for example Bossier:
+
+static $city_pron_fix_a = "/Bossier/";
+static $city_pron_fix_b = "Boes-yur";
+
+
+
+#...........................................................................................
+            echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('number') . " " . ($results_counter + 1) . "</Say>";
+            echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . $results[0] . "</Say>";
+            echo "<Pause length=\"1\"/>";
+            echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('starts_at') . " " . $results[1] . "</Say>";
+            echo "<Pause length=\"1\"/>";
+            $results[2] = preg_replace($city_pron_fix_a, $city_pron_fix_b, $results[2]); #added this line
+            echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . $results[2] . "</Say>";
+#..........................................................................................
+
+
+
