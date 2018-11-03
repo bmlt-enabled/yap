@@ -28,6 +28,8 @@ static $settings_whitelist = [
     'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'result_count_max' => [ 'description' => '' , 'default' => 5, 'overridable' => true],
     'service_body_id' => [ 'description' => '', 'default' => null, 'overridable' => true],
+    'city_pron_fix_a' => [ 'description' => '', 'default' => null, 'overridable' => true],
+    'city_pron_fix_b' => [ 'description' => '', 'default' => null, 'overridable' => true],
     'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'sms_helpline_keyword' => ['description' => '', 'default' => 'talk', 'overridable' => true],
