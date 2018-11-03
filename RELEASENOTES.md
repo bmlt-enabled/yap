@@ -1,4 +1,8 @@
 # Release Notes
+### 2.5.0.experimental (November 3,2018)
+* Added ability to change pronunciation of the city.  NOTE: ALSO CHANGES SPELLING IF USING SMS
+* Added ability to add message before saying goodbye
+* Added ability to add message before and after title when phone is answered.
 
 ### 2.5.0 (October 24, 2018)
 * Custom Query support, return all meetings for example for an isolated geographical area, for instance an island. [#11]
