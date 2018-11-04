@@ -31,9 +31,7 @@
         <?php } else { ?>
             <?php if ( ! isset( $_REQUEST["Digits"] ) ) { ?>
                 <Say voice="<?php echo setting( 'voice' ) ?>" language="<?php echo setting( 'language' ) ?>">
-                    <?php echo setting( 'pre_title_greeting' ) ?>
                     <?php echo setting( 'title' ) ?>
-                    <?php echo setting( 'post_title_greeting' ) ?>
                 </Say>
             <?php } ?>
             <Say voice="<?php echo setting( 'voice' ) ?>" language="<?php echo setting( 'language' ) ?>">
