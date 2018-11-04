@@ -95,7 +95,6 @@
         <?php } ?>
 
     <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">
-	<?php echo word('meeting_search_more_info')?>
         <?php echo word('thank_you_for_calling_goodbye')?>
     </Say>
     <?php } ?>
