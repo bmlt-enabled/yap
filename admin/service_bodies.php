@@ -59,6 +59,7 @@ sort_on_field($service_bodies, 'name');
                                                     <option value="0">Loop Forever</option>
                                                     <option value="1">Cycle Once, Then Voicemail</option>
                                                     <option value="2">Random Forever</option>
+                                                    <option value="3">Blasting</option>
                                                 </select>
 
                                                 Inbound call SMS to Volunteer Options:
