@@ -1,5 +1,5 @@
 <?php
-include_once 'config.php';
+include_once '../config.php';
 include_once 'logging.php';
 include_once 'session.php';
 static $version = "2.5.0";
@@ -147,10 +147,6 @@ class SettingSource {
 class VolunteerType {
     const PHONE = "PHONE";
     const SMS = "SMS";
-}
-
-class MeetingResultSort {
-    const TODAY = 0;
 }
 
 class MeetingResultSort {
