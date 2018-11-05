@@ -1,8 +1,11 @@
 # Release Notes
 
-### 2.5.0 (unreleased)
+### 2.5.0 (October 24, 2018)
 * Custom Query support, return all meetings for example for an isolated geographical area, for instance an island. [#11]
+* Meeting results are default sorted starting today and then looping through the week (configurable). [#168]
 * Added list view button for schedule rendering.
+* Fix on volunteer management single shift add not respecting times. [#167]
+* Fix for session initialization issue happening on at least one server. [#165]
 * Fix for "jft" SMS gateway responses that were too long and hitting the 1600 character limit. [#163]
 * Fix for schedule sorting not being respected in calendar view (still a known issue with time sequencing taking precedence). [#162]
 

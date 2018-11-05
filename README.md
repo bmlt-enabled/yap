@@ -39,6 +39,7 @@ Meeting Search
 * [SMS Gateway](#sms-gateway)
 * [Adding Map Links](#adding-map-links)
 * [Custom Query](#custom-query)
+* [Sorting Results](#sorting-results)
 
 Helpline/Volunteer Routing
 
@@ -70,7 +71,7 @@ Miscellaneous
 Here is an instructional video that might assist you: https://www.dropbox.com/s/e59dzal4rkkcl2r/twilio.mp4?dl=0
 **This will require that you have an SSL certificate installed on your webserver to transit a secure connection.  This is required by Twilio.**
 
-1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: https://github.com/radius314/yap/archive/unstable.zip.
+1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: https://github.com/radius314/yap/archive/2.5.0.zip.
 
 2. Once the application is configured you will need to customize the config.php file.  There are several settings there that are documented in that file.  There are a number of different ways to utilize the yap platform. 
 
@@ -162,7 +163,7 @@ static $override_city_or_county = "city or suburb";
 
 You can see the full listing in the `lang/en-US.php` which always has the full latest listing of the voice prompts.
 
-You can also change the spoken language accent.  There is a wide variety.  See the Twilio documentation for more details: https://www.twilio.com/docs/voice/twiml/say#attributes-language
+You can also change the spoken language accent.  There is a wide variety.  See the Twilio documentation for more details: https://www.twilio.com/docs/voice/twiml/say#attributes-language.  There are also some additional voices available here as well https://www.twilio.com/docs/voice/twiml/say/text-speech#voices.
 
 An example would be using an Australian English Accent.  Set your config.php to:
 
@@ -328,6 +329,14 @@ There are a couple of other stock magic variables.
 3. `{LONGITUDE}` - the longitude of the lookup.
 
 If you do not have `{LATITUDE}` or `{LONGITUDE}` in your custom query, it will automatically skip the location gathering aspects of the meeting search menus and go directly to returning results. 
+
+## Sorting Results
+
+By default the results will be sorted starting with today and then moving on to the next result.  If latitude and longitude are not used in the meeting query, the first meeting latitude and longitude will be the assumed timezone.
+
+If you wanted to hardcode the sorting to start with another day you could use say for Wednesday use `static $meeting_result_sort = 4;`.
+
+Or you can keep a more natural flow by setting it to 1 which would sort Sunday to Saturday.
 
 # Helpline / Volunteer Routing
 

@@ -83,22 +83,24 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                         "url" => $callConfig->voicemail_url . "&caller_number=" . $callerNumber
                     ));
                 } else {
-                    if ($serviceBodyConfiguration->volunteer_sms_notification_enabled) {
-                        log_debug("Sending volunteer SMS notification: " . $callConfig->phone_number);
-                        $twilioClient->messages->create(
-                            $callConfig->phone_number,
-                            array(
-                                "body" => "You have an incoming helpline call from " . $callerNumber . ".",
-                                "from" => $callConfig->options['originalCallerId']
-                            ));
-                    }
+                    foreach (explode(",", $callConfig->phone_number) as $volunteer_number) {
+                        if ($serviceBodyConfiguration->volunteer_sms_notification_enabled) {
+                            log_debug("Sending volunteer SMS notification: " . $callConfig->phone_number);
+                            $twilioClient->messages->create(
+                                $volunteer_number,
+                                array(
+                                    "body" => "You have an incoming helpline call from " . $callerNumber . ".",
+                                    "from" => $callConfig->options['originalCallerId']
+                                ));
+                        }
 
-                    log_debug("Calling: " . $callConfig->phone_number);
-                    $twilioClient->calls->create(
-                        $callConfig->phone_number,
-                        $callConfig->options['callerId'],
-                        $callConfig->options
-                    );
+                        log_debug("Calling: " . $callConfig->phone_number);
+                        $twilioClient->calls->create(
+                            $volunteer_number,
+                            $callConfig->options['callerId'],
+                            $callConfig->options
+                        );
+                    }
                 }
             } catch ( \Twilio\Exceptions\TwilioException $e ) {
                 log_debug( $e );

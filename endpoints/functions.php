@@ -1,8 +1,8 @@
 <?php
-require_once __DIR__.'/../config.php';
-require_once __DIR__ . '/logging.php';
-require_once 'session.php';
-static $version = "3.0.0-beta";
+include_once 'config.php';
+include_once 'logging.php';
+include_once 'session.php';
+static $version = "2.5.0";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false],
@@ -147,6 +147,10 @@ class SettingSource {
 class VolunteerType {
     const PHONE = "PHONE";
     const SMS = "SMS";
+}
+
+class MeetingResultSort {
+    const TODAY = 0;
 }
 
 class MeetingResultSort {
