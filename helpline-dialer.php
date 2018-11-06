@@ -40,7 +40,9 @@ function getCallConfig($client, $serviceBodyConfiguration) {
     $config->voicemail_url = $webhook_url . '/voicemail.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&caller_id=' . trim($caller_id);
     $config->options = array(
         'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'],
-        'statusCallback'       => $webhook_url . '/helpline-dialer.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&tracker=' . ++$tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'] . '&OriginalCallerId=' . trim($original_caller_id),
+        'statusCallback'       => $serviceBodyConfiguration->call_strategy == CycleAlgorithm::BLASTING
+            ? ($webhook_url . '/helpline-dialer.php?noop=1')
+            : ($webhook_url . '/helpline-dialer.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&tracker=' . ++$tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'] . '&OriginalCallerId=' . trim($original_caller_id)),
         'statusCallbackEvent'  => 'completed',
         'statusCallbackMethod' => 'GET',
         'timeout'              => $serviceBodyConfiguration->call_timeout,
@@ -49,6 +51,10 @@ function getCallConfig($client, $serviceBodyConfiguration) {
     );
 
     return $config;
+}
+
+if (isset($_REQUEST['noop'])) {
+    exit();
 }
 
 $service_body_id            = setting('service_body_id');
