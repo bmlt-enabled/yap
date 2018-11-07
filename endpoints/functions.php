@@ -74,6 +74,7 @@ class VolunteerInfo {
     public $time_zone;
     public $contact = SpecialPhoneNumber::UNKNOWN;
     public $color;
+    public $gender;
     public $type = VolunteerType::PHONE;
 }
 
@@ -151,6 +152,23 @@ class VolunteerType {
 
 class MeetingResultSort {
     const TODAY = 0;
+}
+
+class VolunteerGender {
+    const UNSPECIFIED = 0;
+    const MALE = 1;
+    const FEMALE = 2;
+
+    static function getGenderById($genderId) {
+        switch ($genderId) {
+            case 1:
+                return "MALE";
+            case 2:
+                return "FEMALE";
+            default:
+                return "";
+        }
+    }
 }
 
 class NoVolunteersException extends Exception {}
@@ -718,7 +736,7 @@ function getIdsFormats($types, $helpline = false) {
     return $finalFormats;
 }
 
-function getHelplineVolunteersActiveNow($service_body_int, $volunteer_type = VolunteerType::PHONE) {
+function getHelplineVolunteersActiveNow($service_body_int, $volunteer_type = VolunteerType::PHONE, $volunteer_gender = VolunteerGender::UNSPECIFIED) {
     try {
         $volunteers = json_decode( getHelplineSchedule( $service_body_int ) );
         $activeNow  = [];
@@ -727,7 +745,8 @@ function getHelplineVolunteersActiveNow($service_body_int, $volunteer_type = Vol
             $current_time = new DateTime();
             if ( ($current_time >= ( new DateTime( $volunteers[ $v ]->start ) )
                  && $current_time <= ( new DateTime( $volunteers[ $v ]->end ) ) )
-                 && (!isset($volunteers[$v]->type) || str_exists($volunteers[$v]->type, $volunteer_type ))) {
+                 && (!isset($volunteers[$v]->type) || str_exists($volunteers[$v]->type, $volunteer_type ))
+                 && ($volunteer_gender !== VolunteerGender::UNSPECIFIED && isset($volunteers[$v]->gender) && $volunteer_gender == $volunteers[$v]->gender)) {
                 array_push( $activeNow, $volunteers[ $v ] );
             }
         }
@@ -738,9 +757,13 @@ function getHelplineVolunteersActiveNow($service_body_int, $volunteer_type = Vol
     }
 }
 
-function getHelplineVolunteer($service_body_int, $tracker, $cycle_algorithm = CycleAlgorithm::LOOP_FOREVER, $volunteer_type = VolunteerType::PHONE) {
+function getHelplineVolunteer($service_body_int,
+                              $tracker,
+                              $cycle_algorithm = CycleAlgorithm::LOOP_FOREVER,
+                              $volunteer_type = VolunteerType::PHONE,
+                              $volunteer_gender = VolunteerGender::UNSPECIFIED) {
     try {
-        $volunteers = getHelplineVolunteersActiveNow( $service_body_int, $volunteer_type);
+        $volunteers = getHelplineVolunteersActiveNow( $service_body_int, $volunteer_type, $volunteer_gender);
         log_debug("getHelplineVolunteer():: activeVolunteers: " . var_export($volunteers, true) . ", service_body_id: " . $service_body_int . ", volunteer_type: " . $volunteer_type);
         if ( isset( $volunteers ) && count( $volunteers ) > 0 ) {
             if ( $cycle_algorithm == CycleAlgorithm::CYCLE_AND_VOICEMAIL ) {
@@ -805,7 +828,7 @@ function getVolunteerInfo($volunteers) {
             foreach ($volunteerShiftSchedule as $vsi) {
                 $volunteerInfo             = new VolunteerInfo();
                 $volunteerInfo->type       = isset($vsi->type) ? $vsi->type : $volunteerInfo->type;
-                $volunteerInfo->title      = $volunteer->volunteer_name . " (" . $volunteerInfo->type . ")";
+                $volunteerInfo->title      = $volunteer->volunteer_name . " (" . $volunteerInfo->type . ") " . (isset($volunteer->volunteer_gender) ? VolunteerGender::getGenderById($volunteer->volunteer_gender) : "");
                 $volunteerInfo->time_zone  = $vsi->tz;
                 $volunteerInfo->start      = getNextShiftInstance( $vsi->day, $vsi->start_time, $volunteerInfo->time_zone )->format( "Y-m-d H:i:s" );
                 $volunteerInfo->end        = getNextShiftInstance( $vsi->day, $vsi->end_time, $volunteerInfo->time_zone )->format( "Y-m-d H:i:s" );
@@ -814,6 +837,7 @@ function getVolunteerInfo($volunteers) {
                 $volunteerInfo->sequence   = $v;
                 $volunteerInfo->contact    = $volunteer->volunteer_phone_number;
                 $volunteerInfo->color      = "#" . getNameHashColorCode($volunteerInfo->title);
+                $volunteerInfo->gender     = isset($volunteer->volunteer_gender) ? $volunteer->volunteer_gender : VolunteerGender::UNSPECIFIED;
                 array_push( $finalSchedule, $volunteerInfo );
             }
         }

@@ -188,10 +188,10 @@
             <div class="form-group form-row form-inline">
                 Phone Number: <input type="text" id="volunteer_phone_number" name="volunteer_phone_number">
                 <span class="dropdown_next_to_another_field">
-                    Gender: <select class="form-control form-control-sm" name="gender" id="gender">
-                        <option value="UNASSIGNED">Unassigned</option>
-                        <option value="MALE">Male</option>
-                        <option value="FEMALE">Female</option>
+                    Gender: <select class="form-control form-control-sm" name="volunteer_gender" id="volunteer_gender">
+                        <option value="0">Unassigned</option>
+                        <option value="1">Male</option>
+                        <option value="2">Female</option>
                     </select>
                 </span>
             </div>

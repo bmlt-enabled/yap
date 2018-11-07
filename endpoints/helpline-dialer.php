@@ -34,13 +34,21 @@ function getCallConfig($twilioClient, $serviceBodyConfiguration) {
     }
 
     $config = new CallConfig();
-    $config->phone_number = getHelplineVolunteer( $serviceBodyConfiguration->service_body_id, $tracker, $serviceBodyConfiguration->call_strategy, VolunteerType::PHONE );
+    $config->phone_number = getHelplineVolunteer( $serviceBodyConfiguration->service_body_id,
+        $tracker,
+        $serviceBodyConfiguration->call_strategy,
+        VolunteerType::PHONE,
+        isset($_REQUEST['Gender']) ? $_REQUEST['Gender'] : VolunteerGender::UNSPECIFIED);
     $config->voicemail_url = $webhook_url . '/voicemail.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&caller_id=' . trim($caller_id);
     $config->options = array(
         'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'],
         'statusCallback'       => $serviceBodyConfiguration->call_strategy == CycleAlgorithm::BLASTING
             ? ($webhook_url . '/helpline-dialer.php?noop=1')
-            : ($webhook_url . '/helpline-dialer.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&tracker=' . ++$tracker . '&FriendlyName=' . $_REQUEST['FriendlyName'] . '&OriginalCallerId=' . trim($original_caller_id)),
+            : ($webhook_url . '/helpline-dialer.php?service_body_id=' . $serviceBodyConfiguration->service_body_id
+                . ('&tracker=' . ++$tracker)
+                . ('&FriendlyName=' . $_REQUEST['FriendlyName'])
+                . (isset($_REQUEST['Gender']) ? '&Gender=' . $_REQUEST['Gender'] : "")
+                . ('&OriginalCallerId=' . trim($original_caller_id))),
         'statusCallbackEvent'  => 'completed',
         'statusCallbackMethod' => 'GET',
         'timeout'              => $serviceBodyConfiguration->call_timeout,
@@ -58,7 +66,7 @@ if (isset($_REQUEST['noop'])) {
 $service_body_id            = setting('service_body_id');
 $serviceBodyConfiguration   = getServiceBodyConfiguration($service_body_id);
 
-if (isset($_REQUEST["Debug"])) {
+if (isset($_REQUEST['Debug']) && intval($_REQUEST['Debug']) == 1) {
     echo var_dump(getCallConfig($twilioClient, $serviceBodyConfiguration));
     exit();
 }
