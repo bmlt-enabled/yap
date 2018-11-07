@@ -2,7 +2,7 @@
 require_once 'auth_verify.php';
 require_once 'header.php';
 ?>
-<nav class="navbar navbar-expand-lg navbar-dark bg-prmary">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <a class="navbar-brand" href="#">Yap</a>
     <button class="navbar-toggler"
             type="button" data-toggle="collapse"
