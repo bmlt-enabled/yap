@@ -841,10 +841,11 @@ function str_exists($subject, $needle) {
 }
 
 function sort_on_field(&$objects, $on, $order = 'ASC') {
-    $comparer = ($order === 'DESC')
-        ? "return -strcmp(\$a->{$on},\$b->{$on});"
-        : "return strcmp(\$a->{$on},\$b->{$on});";
-    usort($objects, create_function('$a,$b', $comparer));
+    usort($objects, function($a, $b) use ($on, $order) {
+        return $order === 'DESC'
+            ? "return -strcmp(\$a->{$on},\$b->{$on});"
+            : "return strcmp(\$a->{$on},\$b->{$on});";
+    });
 }
 
 function getHelplineBMLTRootServer() {
