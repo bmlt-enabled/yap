@@ -2,7 +2,6 @@ div#signin {
     margin-top:40px;
     padding-top: 40px;
     padding-bottom: 40px;
-    background-color: #eee;
 }
 
 .form-signin {
@@ -92,12 +91,12 @@ div#signin {
 }
 
 .spinnerImage {
-    height: 31px;
-    width: 31px;
-    background: url('../img/loader.gif') no-repeat;
+    height: 45px;
+    width: 45px;
+    background: url('../img/loader3.gif') no-repeat;
     display: inline;
     float: left;
-    padding-right: 40px;
+    padding-right: 50px;
 }
 
 #spinnerDialogText {
@@ -132,7 +131,7 @@ div#signin {
 }
 
 #shiftCardFooter {
-    margin-bottom:30px;
+    height: 60px;
 }
 
 #volunteer_notes {
@@ -141,4 +140,8 @@ div#signin {
 
 .volunteerDisabled {
     background-color: #FFF;
+}
+
+.dropdown_next_to_another_field {
+    padding-left: 10px;
 }

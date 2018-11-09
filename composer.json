@@ -2,7 +2,9 @@
     "require": {
         "twilio/sdk": "5.24.1",
         "phpmailer/phpmailer": "6.0.5",
-        "phpunit/phpunit": "^7.4",
+        "phpunit/phpunit": "^7.4"
+    },
+    "require-dev": {
         "guzzlehttp/guzzle": "^6.3",
         "nvanheuverzwijn/monolog-logdna": "^2.1"
     },

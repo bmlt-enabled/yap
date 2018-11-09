@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/radius314/yap.svg?branch=master)](https://travis-ci.org/radius314/yap)
 # yap
 
-Requires a minimum of PHP 5.6 to use.
+Recommended to use PHP 7.2 or greater.  PHP 5.6 is going to be end of life on December 31, 2018 and cannot guarantee compatibility after that.
 
 The purposes of yap are :
 * To be able to take the results of a BMLT root server and play it back through the telephone.  
@@ -52,7 +52,8 @@ Helpline/Volunteer Routing
 * [Force Helpline Routing](#force-helpline-routing)
 * [Force Dialing](#force-dialing)
 * [Volunteer Routing](#volunteer-routing)
-* [SMS Volunteer Routing](#sms-volunteer-routing)
+* [SMS Volunteer Routing](#sms-volunteer-routing)\
+* [Voicemail](#voicemail)
 * [Music On Hold](#music-on-hold)
 * [Tomato Helpline Routing](#tomato-helpline-routing)
 

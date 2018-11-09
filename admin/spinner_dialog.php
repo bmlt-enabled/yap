@@ -6,7 +6,7 @@
                 <div id="spinnerContents">
                     <div class="spinnerImage"></div>
                     <div id="spinnerDialogText">
-                        Retrieving data...
+                        <h3>Retrieving data...</h3>
                     </div>
                 </div>
             </div>

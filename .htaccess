@@ -1,0 +1,4 @@
+Options +FollowSymLinks
+RewriteEngine on
+RewriteCond %{REQUEST_URI} !.*(?:api|admin|lang).*
+RewriteRule ([^/]+)/?$ endpoints/$1 [NC]

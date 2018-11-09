@@ -1,5 +1,5 @@
 <?php
-    include_once 'nav.php';
+    require_once 'nav.php';
     $status = UpgradeAdvisor::getStatus();
 ?>
 <div class="container">
@@ -19,13 +19,13 @@
                 <div class="btn-group-lg">
                     <a target="_blank" class="btn btn-primary btn-md" href="https://github.com/radius314/yap/blob/master/README.md" role="button"><?php echo $GLOBALS['documentation']?></a>
                     <a target="_blank" class="btn btn-info btn-md" href="https://github.com/radius314/yap/issues" role="button"><?php echo $GLOBALS['bugs_requests']?></a>
-                    <a target="_blank" class="btn btn-secondary btn-md" href="https://github.com/radius314/yap/blob/master/RELEASENOTES.md" role="button"><?php echo $GLOBALS['release_notes']?></a>
+                    <a target="_blank" class="btn btn-warning btn-md" href="https://github.com/radius314/yap/blob/master/RELEASENOTES.md" role="button"><?php echo $GLOBALS['release_notes']?></a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<?php include_once 'footer.php';?>
+<?php require_once 'footer.php';?>
 <script type="text/javascript">
     $(function() {
         $("#upgrade-advisor-details").tooltip();

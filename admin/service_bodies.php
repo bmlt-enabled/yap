@@ -1,4 +1,4 @@
-<?php include_once 'nav.php';
+<?php require_once 'nav.php';
 $service_bodies = getServiceBodyDetailForUser();
 sort_on_field($service_bodies, 'name');
 ?>
@@ -54,6 +54,12 @@ sort_on_field($service_bodies, 'name');
                                                 Call Timeout (default: 20 seconds):
                                                 <input class="form-control form-control-sm" type="text" name="call_timeout" id="call_timeout">
 
+                                                Gender Routing:
+                                                <select class="form-control form-control-sm" name="gender_routing" id="gender_routing">
+                                                    <option value="0">Disabled</option>
+                                                    <option value="1">Enabled</option>
+                                                </select>
+
                                                 Call Strategy:
                                                 <select class="form-control form-control-sm" name="call_strategy" id="call_strategy">
                                                     <option value="0">Loop Forever</option>
@@ -105,4 +111,4 @@ sort_on_field($service_bodies, 'name');
         </div>
     </div>
 </div>
-<?php include_once 'footer.php';?>
+<?php require_once 'footer.php';?>

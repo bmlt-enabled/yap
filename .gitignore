@@ -1,6 +1,8 @@
 /nbproject/private/
 cookie.txt
 .idea
+.DS_Store
 *_cookie.txt
 config.php.*
 test.php
+

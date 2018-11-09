@@ -1,8 +1,8 @@
 <?php
-include_once 'auth_verify.php';
-include_once 'header.php';
+require_once 'auth_verify.php';
+require_once 'header.php';
 ?>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <a class="navbar-brand" href="#">Yap</a>
     <button class="navbar-toggler"
             type="button" data-toggle="collapse"
