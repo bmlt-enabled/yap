@@ -1,0 +1,324 @@
+{
+  "0": {
+    "id": "0",
+    "title": "Adding Map Links",
+    "content": "Adding Map LinksSome older handsets are not capable of rendering maps links.  If you want to enable this feature add the following to your config.php file.static $include_map_link = true;",
+    "url": "http://localhost:4000/just-the-docs/docs/meeting-search/adding-map-links/",
+    "relUrl": "/docs/meeting-search/adding-map-links/"
+  },
+  "1": {
+    "id": "1",
+    "title": "Blocklist",
+    "content": "BlocklistIf you want to completely block a specific number you can use the setting as follows (comma-separated).Sometimes it’s best to look at the Caller querystring value in your logs or the Twilio console to see the exact number being passed.static $blocklist = &quot;&quot;;",
+    "url": "http://localhost:4000/just-the-docs/docs/general/blocklist/",
+    "relUrl": "/docs/general/blocklist/"
+  },
+  "2": {
+    "id": "2",
+    "title": "Call Flow",
+    "content": "Call Flow",
+    "url": "http://localhost:4000/just-the-docs/docs/call-flow/",
+    "relUrl": "/docs/call-flow/"
+  },
+  "3": {
+    "id": "3",
+    "title": "Checking the call routing",
+    "content": "Checking the call routingThere is a very simple way to check where a could would be routed to.curl https://example.com/yap/helpline-search.php?Digits=Turkey,NC",
+    "url": "http://localhost:4000/just-the-docs/docs/helpline/checking-call-routing/",
+    "relUrl": "/docs/helpline/checking-call-routing/"
+  },
+  "4": {
+    "id": "4",
+    "title": "Configuration Precedence",
+    "content": "Configuration PrecedenceIt’s possible to override most of the settings in several different ways.  There is a sequence of precedence as follows.  You can always validate the setting by going to the settings in the admin portal.1) Querystring parameters that match the name.  For example if you wanted to override the title for one page you’d do the following: index.php?title=something+here2) Session overrides.  This means the entire call will use this setting.  index.php?override_title=something+here.  Twilio will respect this setting for entire during of the call.3) Config.php.  Any setting is controllable from within config.php.4) Factory defaults.  You can review them on your /admin/settings.php page.",
+    "url": "http://localhost:4000/just-the-docs/docs/general/configuration-precedence/",
+    "relUrl": "/docs/general/configuration-precedence/"
+  },
+  "5": {
+    "id": "5",
+    "title": "Connectors",
+    "content": "ConnectorsYap has an API, and so there are other ways to pull out Yap information.  Facebook Messenger Bot",
+    "url": "http://localhost:4000/just-the-docs/docs/miscellaneous/connectors/",
+    "relUrl": "/docs/miscellaneous/connectors/"
+  },
+  "6": {
+    "id": "6",
+    "title": "Contribute",
+    "content": "ContributeFork this repo and send a pull request.  For testing locally, run the yap server and then use ngrok.  Grab the ngrok hostname that is generated and then use that in your Twilio settings.You get an instant proxy to your local services to step through and debug.",
+    "url": "http://localhost:4000/just-the-docs/docs/miscellaneous/contribute/",
+    "relUrl": "/docs/miscellaneous/contribute/"
+  },
+  "7": {
+    "id": "7",
+    "title": "Custom Query",
+    "content": "Custom QueryIn some cases you may want use a custom BMLT query.  For example, if you have a small service body you may want to ignore the day of the week concept that is the default behavior in searches.You can do this with the setting custom_query.  This setting also supports the use of some magic variables.For example say you want to always use the service body id for making queries, you could create the settings as follows:static $custom_query=&quot;&amp;amp;services[]={SETTING_SERVICE_BODY_ID}&quot;Because there is a setting called service_body_id already and assuming you had overridden it, meeting searches will now send a query to the BMLT and return accordingly.You could have also hardcoded it if you wanted.  Like any other variable, you can set this on the querystring as a session wide override.In some cases you may need to combine this with the result_count_max to increase the limit of how many results are returned.  You may also need to use sms_ask, as many results could be returned.There are a couple of other stock magic variables.  {DAY} - will use the day of today / tomorrow.  {LATITUDE} - the latitude of the lookup.  {LONGITUDE} - the longitude of the lookup.If you do not have {LATITUDE} or {LONGITUDE} in your custom query, it will automatically skip the location gathering aspects of the meeting search menus and go directly to returning results.",
+    "url": "http://localhost:4000/just-the-docs/docs/meeting-search/custom-query/",
+    "relUrl": "/docs/meeting-search/custom-query/"
+  },
+  "8": {
+    "id": "8",
+    "title": "Helpline Search Radius",
+    "content": "Helpline Search RadiusChange the default helpline search radius, this is in miles. You can change this in your config.php with the following:static $helpline_search_radius = 30;This would set the radius to a maximum of 30 miles and is the default.",
+    "url": "http://localhost:4000/just-the-docs/docs/helpline/custom-query/",
+    "relUrl": "/docs/helpline/custom-query/"
+  },
+  "9": {
+    "id": "9",
+    "title": "Using A Different BMLT server for routing",
+    "content": "Using A Different BMLT server for routingIn order to specify a different BMLT root server for call routing but not for meeting list lookups, set the following variable in config.php.static $helpline_bmlt_root_server = &quot;&quot;;",
+    "url": "http://localhost:4000/just-the-docs/docs/helpline/different-bmlt-for-routing/",
+    "relUrl": "/docs/helpline/different-bmlt-for-routing/"
+  },
+  "10": {
+    "id": "10",
+    "title": "Fallback",
+    "content": "FallbackThere may be times when a root server is down, it’s possible to redirect a call to another if this happens.  In your config.php, specify the following.static $helpline_fallback = &quot;1919555555&quot;;",
+    "url": "http://localhost:4000/just-the-docs/docs/general/fallback/",
+    "relUrl": "/docs/general/fallback/"
+  },
+  "11": {
+    "id": "11",
+    "title": "Force Dialing",
+    "content": "Force DialingYou might want to force a particular Twilio number to just call another number.  Just use the following webhook./helpline-search.php?ForceNumber=8885551212 or for extension dialing /helpline-search.php?ForceNumber=8885551212%7Cwwww700.  Each w is a 1 second pause.In some cases, when using 1 second pauses you may want to indicate that there is something happening to the end user as there will be a delay.If you would like there to be a CAPTCHA to prevent robocalls + fax machines, you can add this to your query.&amp;amp;Captcha=1And/or, if you would like to have a basic waiting message, but no CAPTCHA use.&amp;amp;WaitingMessage=1These options can be combined.",
+    "url": "http://localhost:4000/just-the-docs/docs/helpline/force-dialing/",
+    "relUrl": "/docs/helpline/force-dialing/"
+  },
+  "12": {
+    "id": "12",
+    "title": "Force Helpline Routing",
+    "content": "Force Helpline RoutingYou can force the helpline option to go directly to a specific service body by specifying the following on your webhook in Twilio.?override_service_body_id=xThe service body id would be found in your BMLT root server.  It must exist in that root server instance to be routed correctly.",
+    "url": "http://localhost:4000/just-the-docs/docs/helpline/force-helpline-routing/",
+    "relUrl": "/docs/helpline/force-helpline-routing/"
+  },
+  "13": {
+    "id": "13",
+    "title": "General",
+    "content": "GeneralGeneral configuration options.",
+    "url": "http://localhost:4000/just-the-docs/general",
+    "relUrl": "/general"
+  },
+  "14": {
+    "id": "14",
+    "title": "Grace Period",
+    "content": "Grace PeriodThis is so that yap still returns results for meetings that have already started.  By default a 15 minute grace period will be applied.  This can be adjusted by setting $grace_minutes in your config.php.static $grace_minutes = 10;This would set the grace period to ten (10) minutes.",
+    "url": "http://localhost:4000/just-the-docs/docs/meeting-search/grace-period/",
+    "relUrl": "/docs/meeting-search/grace-period/"
+  },
+  "15": {
+    "id": "15",
+    "title": "Helpline Call Routing",
+    "content": "Helpline Call RoutingThe helpline router utilizes a BMLT server (2.9.0 or later), that has helpline numbers properly configured in the “Service Body Administration” section.A prompt will ask for a piece of location information in turn it will look up latitude and longitude and then send that information to the BMLT root server you have configured.You can also tie this into an existing extension based system, say for example Grasshopper.  If you want to dial an extension just add something like 555-555-5555|wwww700 for example after the helpline field on the BMLT Service Body Administration.  In this case it’s instructing to dial 555-555-5555 and wait 4 seconds and then dial 700.",
+    "url": "http://localhost:4000/just-the-docs/docs/helpline/helpline-call-routing/",
+    "relUrl": "/docs/helpline/helpline-call-routing/"
+  },
+  "16": {
+    "id": "16",
+    "title": "Helpline / Volunteer Routing",
+    "content": "Helpline / Volunteer RoutingHelpline / Volunteer Routing configuration options.",
+    "url": "http://localhost:4000/just-the-docs/helpline",
+    "relUrl": "/helpline"
+  },
+  "17": {
+    "id": "17",
+    "title": "Using Hidden Service Bodies For Helpline Lookups",
+    "content": "Using Hidden Service Bodies For Helpline LookupsIt is possible to create a service body with an unpublished group in order create additional routing for service bodies that may not exist in a given root server.Once those service bodies have been populated and the unpublished meetings are added, you can make use of the helpline field to route calls.You will also need to add to the config.php three additional variables.  This allows yap to authenticate to the root server and retrieve the unpublished meetings.  This is required as a BMLT root server by design will not return unpublished meetings in the semantic interface.static $helpline_search_unpublished = true;static $bmlt_username = &quot;&quot;;static $bmlt_password = &quot;&quot;;You will need to also ensure that PHP has write access to write to this folder, in order to store the authentication cookie from the BMLT root server.NOTE: This will not work for the Tomato server, because there is no concept of authentication.",
+    "url": "http://localhost:4000/just-the-docs/docs/helpline/hidden-service-bodies/",
+    "relUrl": "/docs/helpline/hidden-service-bodies/"
+  },
+  "18": {
+    "id": "18",
+    "title": "Ignoring Certain Formats",
+    "content": "Ignoring Certain FormatsIn some cases you might want to ignore a specific format.  Add the following setting with the formats you want to exclude.  Separate each with a comma.static $ignore_formats = &quot;ASM&quot;;",
+    "url": "http://localhost:4000/just-the-docs/docs/meeting-search/ignoring-certain-formats/",
+    "relUrl": "/docs/meeting-search/ignoring-certain-formats/"
+  },
+  "19": {
+    "id": "19",
+    "title": "Home",
+    "content": "YapRequires a minimum of PHP 5.6 to use.The purposes of yap are :  To be able to take the results of a BMLT root server and play it back through the telephone.  To be able to set up routing rules for zip codes and helpline numbers with optional extension dialing.Unlike it’s predecessor bmlt-vox, this doesn’t require any special infrastructure other than a server capable of delivering PHP over HTTP(S).We are taking advantage of using Twilio which essentially handles all the VOIP parts.  You provision a number, set up an application, and point it your PHP server.View on GitHub",
+    "url": "http://localhost:4000/just-the-docs/",
+    "relUrl": "/"
+  },
+  "20": {
+    "id": "20",
+    "title": "Language Options",
+    "content": "Language OptionsThere is a concept of language resource files.  You will notice them in the lang/ folder.  Please open a ticket if you would like to contribute to translating to another language.You can also override any of the language prompts in the config.php file.For example, say you wanted to still use English, but change the “city or county” prompt to say, “city or suburb”.  You would do the following in config.php:static $override_city_or_county = &quot;city or suburb&quot;;You can see the full listing in the lang/en-US.php which always has the full latest listing of the voice prompts.You can also change the spoken language accent.  There is a wide variety.  See the Twilio documentation for more details: https://www.twilio.com/docs/voice/twiml/say#attributes-language.  There are also some additional voices available here as well https://www.twilio.com/docs/voice/twiml/say/text-speech#voices.An example would be using an Australian English Accent.  Set your config.php to:static $voice = &quot;alice&quot;;static $language = &quot;en-AU&quot;;You can also create a language selection menu upon dialing in.  It will only be available for those that there are resource files for in lang/ folder.  If you have some translations, please send them, so they can be merged in.Add a new setting called, specifying the language codes for each language you want included.  The order will indicate the order in which it will be played back:static $language_selections = &quot;en-US,pig-latin&quot;;This example will make option 1, English and option 2, pig latin.",
+    "url": "http://localhost:4000/just-the-docs/docs/general/language-options/",
+    "relUrl": "/docs/general/language-options/"
+  },
+  "21": {
+    "id": "21",
+    "title": "Location Lookup Bias",
+    "content": "Location Lookup BiasBy default location lookups are biased toward the US.  You can create a series of refinements by using the $location_lookup_bias in config.php.For example say you wanted to lookup Bayonne.  By default Bayonne, New Jersey would be interpreted.  If you were intended for France you would set your config as the following:static $location_lookup_bias = &quot;country:France&quot;;            A full listing of available bias options are available here: https://developers.google.com/maps/documentation/geocoding/intro#ComponentFiltering.  You can use as few or as many as you want, by separating each set with pipe “      ” character.      ",
+    "url": "http://localhost:4000/just-the-docs/docs/general/location-lookup-bias/",
+    "relUrl": "/docs/general/location-lookup-bias/"
+  },
+  "22": {
+    "id": "22",
+    "title": "Logging/Debugging",
+    "content": "Logging/DebuggingTo enable advanced debugging set in your config.php static $debug = true;",
+    "url": "http://localhost:4000/just-the-docs/docs/miscellaneous/loggingdebugging/",
+    "relUrl": "/docs/miscellaneous/loggingdebugging/"
+  },
+  "23": {
+    "id": "23",
+    "title": "Meeting Search Radius",
+    "content": "Meeting Search RadiusChange the default meeting search radius, this can be in miles or a negative number which would set the radius at the first n results. You can change this in your config.php with the following:static $meeting_search_radius = 30;This would set the radius to a maximum of 30 miles.static $meeting_search_radius = -50;This would set the radius at the first 50 results and is the default.More information on how the BMLT uses search radius is here: https://bmlt.magshare.net/how-auto-radius-works/",
+    "url": "http://localhost:4000/just-the-docs/docs/meeting-search/meeting-search-radius/",
+    "relUrl": "/docs/meeting-search/meeting-search-radius/"
+  },
+  "24": {
+    "id": "24",
+    "title": "Meeting Search",
+    "content": "Meeting SearchConfiguration options that deal with Meeting Search function.",
+    "url": "http://localhost:4000/just-the-docs/meeting-search",
+    "relUrl": "/meeting-search"
+  },
+  "25": {
+    "id": "25",
+    "title": "Miscellaneous",
+    "content": "MiscellaneousMiscellaneous options.",
+    "url": "http://localhost:4000/just-the-docs/miscellaneous",
+    "relUrl": "/miscellaneous"
+  },
+  "26": {
+    "id": "26",
+    "title": "Music On Hold",
+    "content": "Music On HoldMusic on hold will play when doing volunteer routing which is configurable from within the service body configuration.  You can specify one or more URLs to an MP3 file or Shoutcast stream.  Separate them by commas.There are also some free alternatives.  They are licensed by Creative Commons.  They are playlists themselves so they may not be combined with any other URLs.  Ambient: https://twimlets.com/holdmusic?Bucket=com.twilio.music.ambient - [license]  Classical (default): https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical - [license]  Electronica: https://twimlets.com/holdmusic?Bucket=com.twilio.music.electronica - [license]  Guitars: https://twimlets.com/holdmusic?Bucket=com.twilio.music.guitars - [license]  New Age: https://twimlets.com/holdmusic?Bucket=com.twilio.music.newage - [license]  Rock: https://twimlets.com/holdmusic?Bucket=com.twilio.music.rock - [license]  Soft Rock: https://twimlets.com/holdmusic?Bucket=com.twilio.music.soft-rock - [license]Music on Hold loops indefinitely.",
+    "url": "http://localhost:4000/just-the-docs/docs/helpline/music-on-hold/",
+    "relUrl": "/docs/helpline/music-on-hold/"
+  },
+  "27": {
+    "id": "27",
+    "title": "Playback for the Just For Today Meditation",
+    "content": "Playback for the Just For Today MeditationThis will add an option on the main menu to press 3 to playback the Just For Today meditation.static $jft_option = true;",
+    "url": "http://localhost:4000/just-the-docs/docs/miscellaneous/playback-for-the-just-for-today-meditation/",
+    "relUrl": "/docs/miscellaneous/playback-for-the-just-for-today-meditation/"
+  },
+  "28": {
+    "id": "28",
+    "title": "Post Call Options",
+    "content": "Post Call Options  Making SMS results for voice calls optional  Infinite SearchesMaking SMS results for voice calls optionalThe default of the system is to send an SMS after each voice meeting result.  As an option to you audience you can add the following parameter to your config.php file.static $sms_ask = true;By setting this, a prompt will be played at the end of the results, asking if they would like the results texted to them.  If they do not respond the call will automatically hang up in 10 seconds.Infinite SearchesYou can provide an option to allow someone to search again.  Just set:static $infinite_searching = true;",
+    "url": "http://localhost:4000/just-the-docs/docs/meeting-search/post-call-options/",
+    "relUrl": "/docs/meeting-search/post-call-options/"
+  },
+  "29": {
+    "id": "29",
+    "title": "Postal Code Lengths",
+    "content": "Postal Code LengthsBy default a 5 digit postal code will be asked for.  To override this set the following, for instance a 4 digit postal code:static $postal_code_length = 4;",
+    "url": "http://localhost:4000/just-the-docs/docs/general/postal-code-lengths/",
+    "relUrl": "/docs/general/postal-code-lengths/"
+  },
+  "30": {
+    "id": "30",
+    "title": "Results Counts Maximums",
+    "content": "Results Counts MaximumsThe default number of meeting results is 5.  You can change this in your config.php with the following:static $result_count_max = 10;This would set to a maximum of ten (10) results.",
+    "url": "http://localhost:4000/just-the-docs/docs/meeting-search/results-counts-maximums/",
+    "relUrl": "/docs/meeting-search/results-counts-maximums/"
+  },
+  "31": {
+    "id": "31",
+    "title": "Search",
+    "content": "SearchJust the docs uses lunr.js to add a client-side search interface powered by a JSON index that Jekyll generates. All search results are shown in an auto-complete style interface (there is no search results page). By default, all generated html pages are indexed  using the following data points:  Page title  Page content  Page URLSetup searchBefore you can use search, you must initialize the feature by running thisrake command that comes with the just-the-docs$ bundle exec just-the-docs rake search:initThis command creates the search-data.json file that Jekyll uses to createyour search index. Alternatively, you can create the file manually in theassets/js/ of your Jekyll site with this content:```{% raw %}{  {% for page in site.html_pages %}”{{ forloop.index0 }}”: {    “id”: “{{ forloop.index0 }}”,    “title”: “{{ page.title | xml_escape }}”,    “content”: “{{ page.content | markdownify | strip_html | xml_escape | remove: ‘’ | remove: page.title | strip_newlines | replace: ‘', ‘ ‘}}”,    “url”: “{{ page.url | xml_escape }}”  }{% if forloop.last %}{% else %},  {% endif %}{% endfor %}}{% endraw %}```Note: If you don’t run this rake command or create this file manually, search will not work (or it will use the search index data from this docs site, not your site’s content).",
+    "url": "http://localhost:4000/just-the-docs/docs/search/",
+    "relUrl": "/docs/search/"
+  },
+  "32": {
+    "id": "32",
+    "title": "Setup",
+    "content": "SetupHere is an instructional video that might assist you: https://www.dropbox.com/s/e59dzal4rkkcl2r/twilio.mp4?dl=0This will require that you have an SSL certificate installed on your webserver to transit a secure connection.  This is required by Twilio.      Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: https://github.com/radius314/yap/archive/2.5.0.zip.        Once the application is configured you will need to customize the config.php file.  There are several settings there that are documented in that file.  There are a number of different ways to utilize the yap platform.        NEW» You will need to (config.php) enter $twilio_account_sid and $twilio_auth_token.  You can find this on your account dashboard.    You will need to ensure that the following config.php parameters are set.  They should be a service body admin that will be responsible for reading and writing data back to your BMLT.  This will not work with the “Server Administrator” account.  The user should be at the highest level of access in your BMLT hierarchy that you require access to.static $bmlt_username = &quot;&quot;;static $bmlt_password = &quot;&quot;;      Be sure to get a Google Maps API key.  Specify this in config.php as the value for $google_maps_api_key.  Make sure you have “Google Maps Geocoding API” enabled on your credentials.  This key must be seperate from your BMLT key with no server restrictions, this is safe because yap never passes the key client side.  You can login into your Google API console here: https://console.cloud.google.com/apis/.  This article may be useful https://bmlt.magshare.net/google-maps-api-keys-and-geolocation-issues/.        Try testing that your application actually is functioning properly by opening a browser http://example.com/index.php.    You will need to set up a Twilio account, and do the following:          Purchase a phone number (typically you would buy one for your locale, tollfree is pretty much unnecessary these days).      Configure that number to point to a Webook.  It would be something like https://example.com/index.php.            You can test whether or not you are properly configured by going to https://example.com/upgrade-advisor.php.    Make a call to your number and try it out.  If there is a problem the debugger in the Twilio console will let you know why.  Most likely you did not setup your config.php file correctly.",
+    "url": "http://localhost:4000/just-the-docs/docs/general/setup/",
+    "relUrl": "/docs/general/setup/"
+  },
+  "33": {
+    "id": "33",
+    "title": "Skipping Helpline Call Routing",
+    "content": "Skipping Helpline Call RoutingWhen configuring the TwiML app instead of pointing to index.php point to input-method.php?Digits=2.If you still want the title to display also point to input-method.php?Digits=2&amp;amp;PlayTitle=1.This could useful for wiring up to a Grasshopper extension.  Typically you set this as Department Extension and have your prompt instruct to press a series of keypresses.For example, if you set this up as extension 1, from within you employee extensions you would instruct the caller to press *1 (star one) for finding meetings.",
+    "url": "http://localhost:4000/just-the-docs/docs/helpline/skipping-helpline-call-routing/",
+    "relUrl": "/docs/helpline/skipping-helpline-call-routing/"
+  },
+  "34": {
+    "id": "34",
+    "title": "SMS Gateway",
+    "content": "SMS GatewayIn order to use SMS to get a list of meetings you will configure Messaging to point to Webook sms-gateway.php.Then you can send a zip code, county or city to your phone number and get back a response.",
+    "url": "http://localhost:4000/just-the-docs/docs/meeting-search/sms-gateway/",
+    "relUrl": "/docs/meeting-search/sms-gateway/"
+  },
+  "35": {
+    "id": "35",
+    "title": "SMS Volunteer Routing",
+    "content": "SMS Volunteer RoutingThis is enabled in the service body configuration through the drop down selecting “Volunteer and SMS”.There are two routing strategies, random or blast.  Blast will send to all active volunteers at that moment in time.This is configured similarly to phone volunteer routing.  You can add shifts as SMS or Phone &amp;amp; SMS.The SMS trigger keyword by default is “talk”, followed by the location information.  You can override this by using the sms_helpline_keyword setting.  You cannot use the word “help” or “stop” by itself as these are reserved keywords by Twilio.  You could however, use a combination of words like “get help” or “need help”.As a safety measure, if no volunteers are specified with “SMS”, but it’s enabled on the service body configuration, it will send to the primary contact number.",
+    "url": "http://localhost:4000/just-the-docs/docs/helpline/sms-volunteer-routing/",
+    "relUrl": "/docs/helpline/sms-volunteer-routing/"
+  },
+  "36": {
+    "id": "36",
+    "title": "Sorting Results",
+    "content": "Sorting ResultsBy default the results will be sorted starting with today and then moving on to the next result.  If latitude and longitude are not used in the meeting query, the first meeting latitude and longitude will be the assumed timezone.If you wanted to hardcode the sorting to start with another day you could use say for Wednesday use static $meeting_result_sort = 4;.Or you can keep a more natural flow by setting it to 1 which would sort Sunday to Saturday.",
+    "url": "http://localhost:4000/just-the-docs/docs/meeting-search/sorting-results/",
+    "relUrl": "/docs/meeting-search/sorting-results/"
+  },
+  "37": {
+    "id": "37",
+    "title": "State/Province Lookup",
+    "content": "Code  State/Province LookupState/Province LookupIt may be that your instance needs to search multiple states. By default searches will be biased towards the local number state (unless it’s tollfree).  To enable province lookup set the $province_lookup, variable to true in the config.php file.",
+    "url": "http://localhost:4000/just-the-docs/docs/general/stateprovince-lookup/",
+    "relUrl": "/docs/general/stateprovince-lookup/"
+  },
+  "38": {
+    "id": "38",
+    "title": "Tollfree Bias",
+    "content": "Tollfree BiasTollfree is independent of any state/province bias.To enable a specific bias, add static $toll_free_province_bias to your config.php, and set to the two letter state bias.Example $toll_free_province_bias = &quot;TX&quot;, will bias to Texas.",
+    "url": "http://localhost:4000/just-the-docs/docs/general/tollfree-bias/",
+    "relUrl": "/docs/general/tollfree-bias/"
+  },
+  "39": {
+    "id": "39",
+    "title": "Tomato Helpline Routing",
+    "content": "Tomato Helpline RoutingIn some cases you might want make use of aggregated helpline information.  This might be a bit nuanced, but it exists.One thing to note about this setting, is that Tomato is not able to get service body configuration, so it will be limited to helpline field routing only.You can use this in your config.php, however keep in mind that this would break your admin portal.  Typically this would be used with a webhook as such.override_tomato_helpline_routing=true",
+    "url": "http://localhost:4000/just-the-docs/docs/helpline/tomato-helpline-routing/",
+    "relUrl": "/docs/helpline/tomato-helpline-routing/"
+  },
+  "40": {
+    "id": "40",
+    "title": "Upgrading from Yap 1.x to Yap 2.x",
+    "content": "Upgrading from Yap 1.x to Yap 2.xFollow the upgrade steps as you normally do above.  You will also need to follow item #3 &amp;amp; #4 under Setup, to add the Twilio credentials.You can check that everything is functioning by going to the upgrade advisor http://your-instance/upgrade-advisor.php",
+    "url": "http://localhost:4000/just-the-docs/docs/miscellaneous/upgrading-from-yap-1x-to-yap-2x/",
+    "relUrl": "/docs/miscellaneous/upgrading-from-yap-1x-to-yap-2x/"
+  },
+  "41": {
+    "id": "41",
+    "title": "Upgrading",
+    "content": "UpgradingMake a new folder with the newer version and copy over the config.php.  Once you feel comfortable you can delete the older folder and rename it.You can also run ./upgrade.sh, if you have shell access.  This assumes you did a git clone initially.",
+    "url": "http://localhost:4000/just-the-docs/docs/miscellaneous/upgrading/",
+    "relUrl": "/docs/miscellaneous/upgrading/"
+  },
+  "42": {
+    "id": "42",
+    "title": "Voice Greeting",
+    "content": "Voice GreetingIt’s possible to record a custom voice prompt and have it play back instead of the traditional voice engine.  Set the following:*Keep in mind that this will override the main menu as well, so you should record the relevant prompts (i.e. press 1 to find someone to talk too… press 2 to find a meeting)static $en_US_greeting = &quot;https://example.com/your-recorded-greeting.mp3&quot;You can also set a custom greeting for voicemail.static $en_US_voicemail_greeting = &quot;https://example.com/your-recorded-greeting.mp3&quot;These settings are overridable from within each service body configuration.",
+    "url": "http://localhost:4000/just-the-docs/docs/general/voice-greeting/",
+    "relUrl": "/docs/general/voice-greeting/"
+  },
+  "43": {
+    "id": "43",
+    "title": "Voice Recognition Optimizations",
+    "content": "Voice Recognition OptimizationsIt’s possible to set the expected spoken language, for recognition by setting the following variable in config.php to the culture variant.  The default is en-US, which is US English.Use the this chart to find the code of your preference https://www.twilio.com/docs/api/twiml/gather#languagetags.static $gather_language = &quot;en-US&quot;;You can also set some expected words or hints, to help the voice recognition engine along.  Use the setting by separating words with commas.  You can use phrases as well.Each hint may not be more than 100 characters (including spaces).  You can use up to 500 hints.static $gather_hints = &quot;&quot;;",
+    "url": "http://localhost:4000/just-the-docs/docs/general/voice-recognition-optimizations/",
+    "relUrl": "/docs/general/voice-recognition-optimizations/"
+  },
+  "44": {
+    "id": "44",
+    "title": "Voicemail",
+    "content": "VoicemailThis is configured through service body configuration, through your call strategy setting.  If you specify a Primary Contact Number, it will SMS a link to that person when a voicemail is left.You can also comma separate the values if you want it to go to more than one person.Voicemail links are also available in the Twilio Console under “Recordings”.You can also optionally use email.  You will have to enable this by adding an email address under the Primary Contact Email.  You can optionally supply a list of comma separated emails for multiple recipients.You will also need to ensure that the following settings are in your config.php.static $smtp_host = '';             // the smtp serverstatic $smtp_username = '';         // the smtp usernamestatic $smtp_password = '';         // the smtp passwordstatic $smtp_secure = '';           // either ssl (port 486) or more securely tls (port 587)static $smtp_from_address = '';     // the address where the email will be sent fromstatic $smtp_from_name = '';        // the label name on the from addressIf you need to, for some reason, to override the port here is another optional setting.static $smtp_alt_port = '';         // enter the integer for the respective to useIf you do not receive an email, check your server logs.  There should be some good information there.  Also the upgrade advisor should give you some information about what might be missing as long as $smtp_host is set.",
+    "url": "http://localhost:4000/just-the-docs/docs/helpline/voicemail/",
+    "relUrl": "/docs/helpline/voicemail/"
+  },
+  "45": {
+    "id": "45",
+    "title": "Volunteer Routing",
+    "content": "Volunteer RoutingIncompatible with Yap 1.x Volunteer Dialers, you will have reconfigure your setup.1) You will need to ensure that the following config.php parameters are set.  They should be a service body admin that will be responsible for reading and writing data back to your BMLT.  This will not work with the “Server Administrator” account.static $bmlt_username = &quot;&quot;;static $bmlt_password = &quot;&quot;;2) You will need to specify Twilio API parameters.  You can find this on your account dashboard when you login into Twilio.static $twilio_account_sid = &quot;&quot;;static $twilio_auth_token = &quot;&quot;;3) Head over to your admin login page.  https://your-yap-instance/admin.4) Login with any credentials from your BMLT server. 5) Go to the Service Bodies tab and click “Configure”.  From there you should see a check box to enable Volunteer Routing.  Check it off and save.6) Go to Volunteers, and you should see that service body in the dropdown, and select it.7) Click Add Volunteer.  Fill out the Name field, and then click the “+” to expand out the rest of the details.  You should be able to start populating the number and shift information.  You will also have to click “Enable” in the bottom right.  Once you are done, click “Save Volunteers”.8) You can also sort the sequence by dragging and dropping the volunteer cards.9) Go to Schedules to preview your changes.  Select your service body from the dropdown, and it should render onto the calendar.10) You can now test to see if things are working.* Volunteer Routing Redirect: You do this by setting in the Service Body Configuration the Volunteer Routing mechanism to &quot;Volunteers Redirect&quot; and specifying the respective Service Body Id in the &quot;Volunteers Redirect Id&quot; field. * Forced Caller Id: This setting changes the outgoing display caller id.* Call Timeout: This is the number of seconds before trying the next number for volunteer routing.",
+    "url": "http://localhost:4000/just-the-docs/docs/helpline/volunteer-routing/",
+    "relUrl": "/docs/helpline/volunteer-routing/"
+  }
+}
