@@ -9,7 +9,7 @@ $jft_array = get_jft();
         foreach ($jft_array as $item)  {
             if (trim($item) != "") {
                 echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">"
-                     . html_entity_decode($item, null, "UTF-8") . "</Say>";
+                     . $item . "</Say>";
             }
         }
     ?>
