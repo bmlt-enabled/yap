@@ -15,7 +15,8 @@
 # in the templates via {{ site.myvariable }}.
 title: Yap
 description: Yap Documentation
-baseurl: "//yap.bmlt.app"
+baseurl:
+url: "//yap.bmlt.app"
 theme: just-the-docs
 sass:
   # Load dependancies
