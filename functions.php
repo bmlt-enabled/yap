@@ -446,8 +446,6 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day) {
         for ($i = 0; $i < count($search_results); $i++) {
             if (strpos($bmlt_search_endpoint, "{DAY}") && !isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time)) {
                 array_push($filteredList, $search_results[$i]);
-            } else {
-                array_push($filteredList, $search_results[$i]);
             }
         }
     } else {
