@@ -13,13 +13,13 @@ Here is an [instructional video](https://www.dropbox.com/s/e59dzal4rkkcl2r/twili
 
 **This will require that you have an SSL certificate installed on your webserver to transit a secure connection.  This is required by Twilio.**
 
-1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: https://github.com/radius314/yap/archive/2.5.0.zip.
+1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: [https://github.com/bmlt-enabled/yap/archive/2.5.1.zip](https://github.com/bmlt-enabled/yap/archive/2.5.1.zip).
 
 2. Once the application is configured you will need to customize the config.php file.  There are several settings there that are documented in that file.  There are a number of different ways to utilize the yap platform. 
 
 3. **NEW**>> You will need to (`config.php`) enter `$twilio_account_sid` and `$twilio_auth_token`.  You can find this on your account dashboard.  
 
-![alt text](https://raw.githubusercontent.com/radius314/yap/master/resources/twilio-auth-v2.png)
+![alt text](https://raw.githubusercontent.com/bmlt-enabled/yap/master/resources/twilio-auth-v2.png)
 
 4.  You will need to ensure that the following `config.php` parameters are set.  They should be a service body admin that will be responsible for reading and writing data back to your BMLT.  This will not work with the "Server Administrator" account.  The user should be at the highest level of access in your BMLT hierarchy that you require access to.
    

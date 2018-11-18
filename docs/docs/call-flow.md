@@ -9,4 +9,4 @@ nav_order: 6
 
 ---
 
-![alt text](https://raw.githubusercontent.com/radius314/yap/master/resources/yap-flow.png)
+![alt text](https://raw.githubusercontent.com/bmlt-enabled/yap/master/resources/yap-flow.png)
