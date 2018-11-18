@@ -1,5 +1,8 @@
 # Release Notes
 
+### 2.5.1 (November 18, 2018)
+* Fix for results not being filtered out that have passed in time already for the day [#189]
+
 ### 2.5.0 (October 24, 2018)
 * Custom Query support, return all meetings for example for an isolated geographical area, for instance an island. [#11]
 * Meeting results are default sorted starting today and then looping through the week (configurable). [#168]
