@@ -24,4 +24,4 @@ We are taking advantage of using Twilio which essentially handles all the VOIP p
 
 {: .fs-6 .fw-300 }
 
-[View on GitHub](http://github.com/radius314/yap){: .btn .fs-5 }
+[View on GitHub](http://github.com/bmlt-enabled/yap){: .btn .fs-5 }

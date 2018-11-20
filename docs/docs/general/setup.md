@@ -28,7 +28,7 @@ static $bmlt_username = "";
 static $bmlt_password = "";
 ```
 
-5. Be sure to get a Google Maps API key.  Specify this in config.php as the value for `$google_maps_api_key`.  Make sure you have "Google Maps Geocoding API" enabled on your credentials.  This key must be seperate from your BMLT key with no server restrictions, this is safe because yap never passes the key client side.  You can login into your Google API console here: https://console.cloud.google.com/apis/.  This article may be useful https://bmlt.magshare.net/google-maps-api-keys-and-geolocation-issues/.
+5. Be sure to get a Google Maps API key.  Specify this in config.php as the value for `$google_maps_api_key`.  Make sure you have "Google Maps Geocoding API" and "Google Maps Time Zone API" enabled on your credentials.  This key must be separate from your BMLT key with no server restrictions, this is safe because yap never passes the key client side.  You can login into your Google API console here: https://console.cloud.google.com/apis/.  This article may be useful https://bmlt.magshare.net/google-maps-api-keys-and-geolocation-issues/.
 
 6. Try testing that your application actually is functioning properly by opening a browser http://example.com/index.php.  
 
