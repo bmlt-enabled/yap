@@ -17,7 +17,7 @@ title: Yap
 description: Yap Documentation
 baseurl:
 url: "//yap.bmlt.app"
-remote_theme: "pmarsceill/just-the-docs", "~> 0.2.0"
+remote_theme: "bmlt-enabled/just-the-docs", "~> 0.2.0"
 sass:
   # Load dependancies
   load_paths:
