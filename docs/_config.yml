@@ -18,7 +18,7 @@ description: Yap Documentation
 baseurl:
 url: "//yap.bmlt.app"
 remote_theme: "bmlt-enabled/just-the-docs@v0.2.0"
-color_scheme: "nil"
+color_scheme: "dark"
 sass:
   # Load dependancies
   load_paths:
