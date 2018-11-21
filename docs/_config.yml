@@ -17,17 +17,11 @@ title: Yap
 description: Yap Documentation
 baseurl:
 url: "//yap.bmlt.app"
-remote_theme: "bmlt-enabled/just-the-docs@v0.2.0"
-color_scheme: "dark"
+remote_theme: "bmlt-enabled/just-the-docs"
 sass:
   # Load dependancies
   load_paths:
-    - node_modules/
+  - node_modules/
 
 permalink: pretty
 exclude: ["node_modules/", "*.gemspec", "*.gem", "Gemfile", "Gemfile.lock", "package.json", "script/", "LICENSE.txt", "lib/", "bin/", "README.md", "Rakefile"]
-
-# Aux links for the upper right navigation
-aux_links:
-  "Just the Docs on GitHub":
-    - "//github.com/pmarsceill/just-the-docs"
