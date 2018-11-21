@@ -6,3 +6,6 @@ cookie.txt
 config.php.*
 test.php
 /docs/.sass-cache/
+/docs/_site/
+/docs/.jekyll-cache/
+/docs/.jekyll-metadata
