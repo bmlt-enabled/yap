@@ -22,7 +22,7 @@ static $override_city_or_county = "city or suburb";
 
 You can see the full listing in the `lang/en-US.php` which always has the full latest listing of the voice prompts.
 
-You can also change the spoken language accent.  There is a wide variety.  See the Twilio documentation for more details: https://www.twilio.com/docs/voice/twiml/say#attributes-language.  There are also some additional voices available here as well https://www.twilio.com/docs/voice/twiml/say/text-speech#voices.
+You can also change the spoken language accent.  There is a wide variety.  See the Twilio documentation for more details: [https://www.twilio.com/docs/voice/twiml/say#attributes-language](https://www.twilio.com/docs/voice/twiml/say#attributes-language).  There are also some additional voices available here as well [https://www.twilio.com/docs/voice/twiml/say/text-speech#voices](https://www.twilio.com/docs/voice/twiml/say/text-speech#voices).
 
 An example would be using an Australian English Accent.  Set your config.php to:
 
