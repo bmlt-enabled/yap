@@ -12,7 +12,7 @@ permalink: /
 ---
 
 
-Requires a minimum of PHP 5.6 to use.
+Recommended to use PHP 7.2 or greater.  PHP 5.6 is going to be end of life on December 31, 2018 and cannot guarantee compatibility after that.
 
 The purposes of yap are :
 * To be able to take the results of a BMLT root server and play it back through the telephone.  
