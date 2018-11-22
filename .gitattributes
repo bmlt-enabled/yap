@@ -6,7 +6,7 @@ CODEOWNERS export-ignore
 composer.json export-ignore
 composer.lock export-ignore
 Dockerfile export-ignore
-docker-compose export-ignore
+docker-compose.yml export-ignore
 Makefile export-ignore
 phpunit.xml export-ignore
 /.github export-ignore
