@@ -1,8 +1,6 @@
 [![Build Status](https://travis-ci.org/bmlt-enabled/yap.svg?branch=master)](https://travis-ci.org/radius314/yap)
 # yap
 
-Recommended to use PHP 7.2 or greater.  PHP 5.6 is going to be end of life on December 31, 2018 and cannot guarantee compatibility after that.
-
 The purposes of yap are :
 * To be able to take the results of a BMLT root server and play it back through the telephone.  
 * To be able to set up routing rules for zip codes and helpline numbers with optional extension dialing.
