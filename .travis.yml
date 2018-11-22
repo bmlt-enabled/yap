@@ -15,4 +15,5 @@ deploy:
     repo: bmlt-enabled/yap
   draft: true
   skip_cleanup: true
-  name: unstable-build-${TRAVIS_BUILD_NUMBER}
+  name: unstable
+  overwrite: true
