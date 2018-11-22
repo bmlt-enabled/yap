@@ -15,4 +15,4 @@ deploy:
     repo: bmlt-enabled/yap
   draft: true
   skip_cleanup: true
-  name: bleeding-edge
+  name: unstable-build-${TRAVIS_BUILD_NUMBER}
