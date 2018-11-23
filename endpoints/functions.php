@@ -36,6 +36,7 @@ static $settings_whitelist = [
     'tomato_helpline_routing' => [ 'description' => '', 'default' => false, 'overridable' => true],
     'voice' => [ 'description' => '' , 'default' => 'woman', 'overridable' => true],
     'word_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
+    'include_facility_name' => [ 'description' => '' , 'default' => false, 'overridable' => true],
 ];
 checkBlacklist();
 static $available_languages = [
@@ -486,7 +487,8 @@ function getResultsString($filtered_list) {
                                         . ' ' . (new DateTime($filtered_list->start_time))->format('g:i A')),
         str_replace("&", "&amp;", $filtered_list->location_street
                                         . ($filtered_list->location_municipality !== "" ? " " . $filtered_list->location_municipality : "")
-                                        . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")));
+                                        . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")),
+        str_replace("&", "&amp;", $filtered_list->location_text));
 
 }
 
