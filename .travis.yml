@@ -27,6 +27,7 @@ jobs:
         - composer install
       before_deploy:
         - git archive --format=zip --output=yap-${TRAVIS_TAG}.zip ${TRAVIS_TAG}
+        - zip -ur yap-${TRAVIS_TAG}.zip vendor
       deploy:
         provider: releases
         api_key:
