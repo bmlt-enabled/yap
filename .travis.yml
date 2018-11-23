@@ -7,6 +7,7 @@ jobs:
       script: find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l
     - stage: unstable
       before_deploy:
+        - composer install
         - git archive --format=zip --output=yap-${TRAVIS_BUILD_NUMBER}.zip HEAD
       deploy:
         provider: releases
