@@ -49,23 +49,27 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
         $results = getResultsString($filtered_list[$i]);
 
         if (!isset($_REQUEST["SmsSid"])) {
-            if (has_setting('include_facility_name') && json_decode(setting('include_facility_name'))) {
-                $location_text = trim($results[3]) . " ";
-            }
-            else {
-                $location_text = "";
-            }
             echo "<Pause length=\"1\"/>";
             echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('number') . " " . ($results_counter + 1) . "</Say>";
             echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . $results[0] . "</Say>";
             echo "<Pause length=\"1\"/>";
             echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('starts_at') . " " . $results[1] . "</Say>";
             echo "<Pause length=\"1\"/>";
-            echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . $location_text . $results[2] . "</Say>";
+            if (has_setting('include_location_text') && json_decode(setting('include_location_text'))) {
+                echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . $results[3] . " " . $results[2] . "</Say>";
+
+            } else {
+                echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . $results[2] . "</Say>";
+            }
         }
 
         if (json_decode(setting('include_map_link'))) $results[2] .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude;
-        $message = $results[0] . $text_space . $results[1] . $text_space . has_setting('include_facility_name') && json_decode(setting('include_facility_name')) ? $results[3] . $text_space : "" . $results[2];
+        if (has_setting('include_location_text') && json_decode(setting('include_location_text'))) {
+            $message = $results[0] . $text_space . $results[1] . $text_space . $results[3] . $text_space . $results[2];
+
+        } else {
+            $message = $results[0] . $text_space . $results[1] . $text_space . $results[2];
+        }
         log_debug($message);
         if (json_decode(setting("sms_ask")) && !isset($_REQUEST["SmsSid"])) {
             array_push($sms_messages, $message);

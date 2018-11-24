@@ -36,7 +36,7 @@ static $settings_whitelist = [
     'tomato_helpline_routing' => [ 'description' => '', 'default' => false, 'overridable' => true],
     'voice' => [ 'description' => '' , 'default' => 'woman', 'overridable' => true],
     'word_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
-    'include_facility_name' => [ 'description' => '' , 'default' => false, 'overridable' => true],
+    'include_location_text' => [ 'description' => '' , 'default' => false, 'overridable' => true],
 ];
 checkBlacklist();
 static $available_languages = [
