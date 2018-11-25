@@ -13,7 +13,7 @@ jobs:
         - git config --local user.email "admin@bmlt.app"
         - git tag -d unstable
         - git remote add origin https://${GH_TOKEN}@github.com/bmlt-enabled/yap.git > /dev/null 2>&1
-        - git push --quiet
+        - git push --quiet --tags
         - git tag unstable
         - git archive --format=zip --output=yap-unstable.zip HEAD
         - zip -ur yap-unstable.zip vendor
