@@ -22,8 +22,9 @@ jobs:
         on:
           repo: bmlt-enabled/yap
         skip_cleanup: true
-        name: unstable
+        name: unstable-${TRAVIS_BUILD_NUMBER}
         overwrite: true
+        draft: true
     - stage: stable
       install:
         - composer install
