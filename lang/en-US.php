@@ -85,3 +85,4 @@ $someone_is_requesting_sms_help_from = "someone is requesting SMS help from";
 $please_call_or_text_them_back = "please text or call them back.";
 $please_send_a_message_formatting_as = "please send a message formatting as";
 $followed_by_your_location = "followed by your location as a city, county or zip code";
+$reports = "Reports";
