@@ -55,21 +55,12 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
             echo "<Pause length=\"1\"/>";
             echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('starts_at') . " " . $results[1] . "</Say>";
             echo "<Pause length=\"1\"/>";
-            if (has_setting('include_location_text') && json_decode(setting('include_location_text'))) {
-                echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . $results[3] . " " . $results[2] . "</Say>";
-
-            } else {
-                echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . $results[2] . "</Say>";
-            }
+            echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . (has_setting('include_location_text') && json_decode(setting('include_location_text')) ? $results[2] . " " . $results[3] : $results[3]) . "</Say>";
         }
 
-        if (json_decode(setting('include_map_link'))) $results[2] .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude;
-        if (has_setting('include_location_text') && json_decode(setting('include_location_text'))) {
-            $message = $results[0] . $text_space . $results[1] . $text_space . $results[3] . $text_space . $results[2];
-
-        } else {
-            $message = $results[0] . $text_space . $results[1] . $text_space . $results[2];
-        }
+        if (json_decode(setting('include_map_link'))) $results[3] .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude;
+        if (has_setting('include_location_text') && json_decode(setting('include_location_text'))) $results[1] .= $text_space . $results[2];
+        $message = $results[0] . $text_space . $results[1] . $text_space . $results[3];
         log_debug($message);
         if (json_decode(setting("sms_ask")) && !isset($_REQUEST["SmsSid"])) {
             array_push($sms_messages, $message);

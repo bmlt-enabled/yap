@@ -485,10 +485,10 @@ function getResultsString($filtered_list) {
         str_replace("&", "&amp;", $filtered_list->meeting_name),
         str_replace("&", "&amp;", $GLOBALS['days_of_the_week'][$filtered_list->weekday_tinyint]
                                         . ' ' . (new DateTime($filtered_list->start_time))->format('g:i A')),
+        str_replace("&", "&amp;", $filtered_list->location_text),
         str_replace("&", "&amp;", $filtered_list->location_street
                                         . ($filtered_list->location_municipality !== "" ? " " . $filtered_list->location_municipality : "")
-                                        . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")),
-        str_replace("&", "&amp;", $filtered_list->location_text));
+                                        . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")));
 
 }
 
