@@ -24,7 +24,7 @@ jobs:
         skip_cleanup: true
         name: unstable-${TRAVIS_BUILD_NUMBER}
         overwrite: true
-        draft: true
+        prerelease: true
     - stage: stable
       install:
         - composer install
