@@ -11,6 +11,7 @@ jobs:
       before_deploy:
         - git config --local user.name "fortysevenbot"
         - git config --local user.email "admin@bmlt.app"
+        - git tag -d unstable
         - git tag unstable
         - git archive --format=zip --output=yap-unstable.zip HEAD
         - zip -ur yap-unstable.zip vendor
