@@ -9,6 +9,9 @@ jobs:
       install:
         - composer install
       before_deploy:
+        - git config --local user.name "fortysevenbot"
+        - git config --local user.email "admin@bmlt.app"
+        - git tag unstable
         - git archive --format=zip --output=yap-unstable.zip HEAD
         - zip -ur yap-unstable.zip vendor
       deploy:
@@ -18,7 +21,6 @@ jobs:
         file: yap-unstable.zip
         on:
           repo: bmlt-enabled/yap
-        draft: true
         skip_cleanup: true
         name: unstable
         overwrite: true
