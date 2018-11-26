@@ -86,7 +86,7 @@ sort_on_field($service_bodies, 'name');
                                                 Primary Contact Email (typically the Chair/Coordinator):
                                                 <input class="form-control form-control-sm" type="text" name="primary_contact_email" id="primary_contact_email">
 
-                                                Music On Hold (<a target="_blank" href="https://github.com/radius314/yap/tree/master#music-on-hold">more</a>):
+                                                Music On Hold (<a target="_blank" href="https://yap.bmlt.app/docs/helpline/music-on-hold/">more</a>):
                                                 <input class="form-control form-control-sm" type="text" name="moh" id="moh">
 
                                                 Recorded Greeting (URL to any MP3): (<a href="about:blank" onclick="return openUrl(this, 'override_en_US_greeting');">Play</a>)
