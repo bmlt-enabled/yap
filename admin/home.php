@@ -18,8 +18,8 @@
                 <hr class="my-4">
                 <div class="btn-group-lg">
                     <a target="_blank" class="btn btn-info btn-md" href="https://yap.bmlt.app" role="button"><?php echo $GLOBALS['documentation']?></a>
-                    <a target="_blank" class="btn btn-info btn-md" href="https://github.com/radius314/yap/issues" role="button"><?php echo $GLOBALS['bugs_requests']?></a>
-                    <a target="_blank" class="btn btn-info btn-md" href="https://github.com/radius314/yap/blob/master/RELEASENOTES.md" role="button"><?php echo $GLOBALS['release_notes']?></a>
+                    <a target="_blank" class="btn btn-info btn-md" href="https://github.com/bmlt-enabled/yap/issues" role="button"><?php echo $GLOBALS['bugs_requests']?></a>
+                    <a target="_blank" class="btn btn-info btn-md" href="https://github.com/bmlt-enabled/yap/blob/master/RELEASENOTES.md" role="button"><?php echo $GLOBALS['release_notes']?></a>
                 </div>
             </div>
         </div>
