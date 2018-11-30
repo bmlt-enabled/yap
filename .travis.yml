@@ -6,25 +6,16 @@ jobs:
     - stage: lint
       script: find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l
     - stage: unstable
+      before_install:
+      - pip install --user awscli
+      - export PATH=$PATH:$HOME/.local/bin
       install:
-        - composer install
-      before_deploy:
-        - git config --local user.name "fortysevenbot"
-        - git config --local user.email "admin@bmlt.app"
-        - git tag unstable-${TRAVIS_BUILD_NUMBER}
-        - git archive --format=zip --output=yap-unstable-${TRAVIS_BUILD_NUMBER}.zip HEAD
-        - zip -ur yap-unstable-${TRAVIS_BUILD_NUMBER}.zip vendor
-      deploy:
-        provider: releases
-        api_key:
-          secure: TvmwmGIIjYkvvoqETBN2Zv/UipL3ieFnE5N8eoZhXW16qeiw5uNzxzHkIABLLNh3cqtGD5CuIVyR7M6bZDig3Y98HZxToAW1Is1+2wsc29kURGT7Zbb9EVMJoFIj9P5L79UMXr1aSvabWl5oPHQsstwOWxU4onpT1Xe3AHkojc/cbIPLJBlFh+7VBEoi4RMamVf0te8gPxZ6qjbDhgTgLEcH2N7xyUtDgPMnZST3eJsFOPvEMpXLCciehWgZL1spzmaDD1bpOPFAYVqeeiLc5sz+cSFCWmyw3y+XT6G2pmVQfGzHyWJEBHYvYKBoaYw3ML/DuYXftu1BT1YhBS/6zqA0ORlWeyfYB5CM+ZT+3kPu36YHMQM5BLdUcXvY94mydiUzwX8qValVoK/19wXDk3JM57S527AjkEHcDNDWXgofftzxmWOM91VGI1xQXxZGTOdlH0kIIeJ1/Ybnwhmawb3oICQEIRdtNi8ru2cZsUDV3RLKJ0Apavbbu62yB2IBuZ/qLhJEU429t33KwJIWS7Ull2A59CKjQOyk2Qngt1lEyYs6Bo2O+iLfpLlXkZwYSbrE97CKrpd34DE5p5MusQl1njfCqkG8SD3cb+yzWEdKL0BVQGbNpNYD7MABagWdwzDvRroHF5N0RXp2xzz6JGpnlBhcgL515FFmCQNufwk=
-        file: yap-unstable-${TRAVIS_BUILD_NUMBER}.zip
-        on:
-          repo: bmlt-enabled/yap
-        skip_cleanup: true
-        name: unstable-${TRAVIS_BUILD_NUMBER}
-        overwrite: true
-        prerelease: true
+      - composer install
+      script:
+      - cp LICENSE.txt main_server
+      - export ARTIFACT_FILENAME=yap-unstable${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}.zip
+      - zip -r ${ARTIFACT_FILENAME} main_server
+      - aws s3 cp ${ARTIFACT_FILENAME} s3://archives.bmlt.app/yap/
     - stage: stable
       install:
         - composer install
