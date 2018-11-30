@@ -12,9 +12,9 @@ jobs:
       install:
       - composer install
       script:
-      - cp LICENSE.txt main_server
-      - export ARTIFACT_FILENAME=yap-unstable${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}.zip
-      - zip -r ${ARTIFACT_FILENAME} main_server
+      - export ARTIFACT_FILENAME=yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}.zip
+      - git archive --format=zip --output=${ARTIFACT_FILENAME} HEAD
+      - zip -ur ${ARTIFACT_FILENAME} vendor
       - aws s3 cp ${ARTIFACT_FILENAME} s3://archives.bmlt.app/yap/
     - stage: stable
       install:
@@ -34,12 +34,11 @@ jobs:
 stages:
   - lint
   - name: unstable
-    if: branch = master
+    if: tag NOT present AND branch = master
   - name: stable
-    if: tag IS present AND tag != unstable
+    if: tag IS present
 notifications:
   slack:
     secure: ZslruaPwvC9Eqr1AFPl/p82UyH0oMy9HBWKROF+z7E/N/nlItGjojAkTBbRRAJIzi58YOeJDVbmTjHvI2MYYeYWX1zawkcjVfJa4RDmeqTmj937hBQW/bKEVN3WqNnL0OewDFVXENETzWs3I63e7par7SO7/SR5gJrMKLtK9fTyGi74hgqVWyQSCLNBgZBMPkNmoZ9sfSCgijPxkXYMNJKTgxWYXvAMevWyfQXv+SoBCQ1hh1hsM4LgT5he5id54iEZY7yVEQZkzsZ0HRDnD+JcquJTuaN2B+PNaHL4RtxhWdNjvnkrHJoB0/F3OKuGs0++6T/25jCow0svfrOk9/dDKlH0R1+deCfH0AMj2QM022Ww10iZHDZffwBkUpFayXArCbmUsEdo0IT8Ra1EUx+7E+0+3f4ihlJez6/wwkWfkKfVwNfkhmu4SnwRzf9r0Ryex/xBngDcKerkQ6xsWr3lc6+wQDWZV60224716nMoFZdZIDAvKc+/fNAIc/PtSvZixawEERLV9XyglBMUwKFqyaQtyw1KENxGKbobP9HBkd5cVzGD29Eu7z3xQyN256/NacGu7vyUawyfh0czjkcvHkrrXbmOljmQOwDf1KB/cWFdASO3VFSKfTPE4zgBzjzgN9iEnKslwfHw/z8FRYuCBdXasST+ufln4/j5u3wE=
     on_success: change
   email: false
-
