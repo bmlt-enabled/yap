@@ -15,6 +15,8 @@ Here is an [instructional video](https://www.dropbox.com/s/e59dzal4rkkcl2r/twili
 
 1. Create a new virtual application or add the yap code to an existing folder.  The easiest way to get the code there is to upload the latest version there: [https://github.com/bmlt-enabled/yap/archive/2.5.1.zip](https://github.com/bmlt-enabled/yap/archive/2.5.1.zip).
 
+You can also try out or help test the latest bleeding edge features by installing an unreleased version https://archives.bmlt.app/index.html#yap/.  The newest version would always be the highest numbered build.  
+
 2. Once the application is configured you will need to customize the config.php file.  There are several settings there that are documented in that file.  There are a number of different ways to utilize the yap platform. 
 
 3. You will need to (`config.php`) enter `$twilio_account_sid` and `$twilio_auth_token`.  You can find this on your account dashboard.  
