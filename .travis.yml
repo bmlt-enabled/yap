@@ -34,7 +34,7 @@ jobs:
 stages:
   - lint
   - name: unstable
-    if: tag NOT present AND branch = master
+    if: tag IS blank AND branch = master
   - name: stable
     if: tag IS present
 notifications:
