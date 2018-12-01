@@ -1,5 +1,8 @@
 # Release Notes
 
+### UNRELEASED
+* Added option to turn off speech recognition for input gathering. [#173]
+
 ### 2.5.1 (November 18, 2018)
 * Fix for results not being filtered out that have passed in time already for the day [#189]
 
