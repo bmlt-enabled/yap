@@ -11,11 +11,7 @@
         $action = "address-lookup.php";
     }
 
-    if (has_setting('speech_gathering') && json_decode(setting('speech_gathering'))) {
-        $enterWord = word('please_enter_or_say_your_digit');
-    } else {
-        $enterWord = word('please_enter_your_digit');
-    }
+    $enterWord = has_setting('speech_gathering') && json_decode(setting('speech_gathering')) ? word('please_enter_or_say_your_digit') : word('please_enter_your_digit');
 
     $action .= "?SearchType=" . $searchType;
 ?>

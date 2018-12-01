@@ -1123,19 +1123,11 @@ function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_
 }
 
 function getInputType() {
-    if (has_setting('speech_gathering') && json_decode(setting('speech_gathering'))) {
-        $inputType = "speech dtmf";
-    } else {
-        $inputType = "dtmf";
-    }
+    $inputType = has_setting('speech_gathering') && json_decode(setting('speech_gathering')) ? "speech dtmf" : "dtmf";
     return $inputType;
 }
 
 function getPressWord() {
-    if (has_setting('speech_gathering') && json_decode(setting('speech_gathering'))) {
-        $pressWord = word('press_or_say');
-    } else {
-        $pressWord = word('press');
-    }
+    $pressWord = has_setting('speech_gathering') && json_decode(setting('speech_gathering')) ? word('press_or_say') : word('press');
     return $pressWord;
 }
