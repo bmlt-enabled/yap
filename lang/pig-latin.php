@@ -1,6 +1,7 @@
 <?php
 $language_title = "igpay atinlay";
 $press = "esspray";
+$press_or_say = "esspray orway aysay";
 $zero = "erozay";
 $one = "oneway";
 $two = "otway";
@@ -30,6 +31,7 @@ $city_or_county = "itycay orway ountycay";
 $state_or_province = "satetay orway ovincepray";
 $thank_you_for_calling_goodbye = "ankthay ouyay orfay allingcay, oodbyegay";
 $please_enter_your_digit = "easeplay enterway ouryay ivefay igitday";
+$please_enter_or_say_your_digit = "easeplay enterway orway aysay ouryay ivefay igitday";
 $no_results_found = "onay esultsray oundfay";
 $you_might_have_invalid_entry = "ouyay ightmay avehay anway invalidway entryway";
 $try_again = "ytray againway";
