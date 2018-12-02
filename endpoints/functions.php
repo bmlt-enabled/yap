@@ -37,6 +37,7 @@ static $settings_whitelist = [
     'voice' => [ 'description' => '' , 'default' => 'woman', 'overridable' => true],
     'word_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
     'include_location_text' => [ 'description' => '' , 'default' => false, 'overridable' => true],
+    'speech_gathering' => [ 'description' => '' , 'default' => true, 'overridable' => true],
 ];
 checkBlacklist();
 static $available_languages = [
@@ -1119,4 +1120,12 @@ function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_
     }
 
     return $response;
+}
+
+function getInputType() {
+    return has_setting('speech_gathering') && json_decode(setting('speech_gathering')) ? "speech dtmf" : "dtmf";
+}
+
+function getPressWord() {
+    return has_setting('speech_gathering') && json_decode(setting('speech_gathering')) ? word('press_or_say') : word('press');
 }

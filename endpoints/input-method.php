@@ -36,7 +36,7 @@
     }
 ?>
 <Response>
-    <Gather input="speech dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=<?php echo $searchType ?>" method="GET">
+    <Gather input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=<?php echo $searchType ?>" method="GET">
     	<?php
         if ($playTitle == "1") { ?>
             <Say voice="<?php echo setting("voice") ?>" language="<?php echo setting("language")?>"><?php echo setting("title")?></Say>
@@ -48,17 +48,17 @@
         <?php } ?>
        
         <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
-            <?php echo word('press') . " " . word('one') . " " . word('to_search_for') . " " . $searchDescription . " " . word ('by') . " " . word('city_or_county') ?>
+            <?php echo getPressWord() . " " . word('one') . " " . word('to_search_for') . " " . $searchDescription . " " . word ('by') . " " . word('city_or_county') ?>
         </Say>
         <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
-            <?php echo word('press') . " "  . word('two') . " " . word('to_search_for') . " " . $searchDescription . " " . word ('by') . " " . word('zip_code') ?>
+            <?php echo getPressWord() . " "  . word('two') . " " . word('to_search_for') . " " . $searchDescription . " " . word ('by') . " " . word('zip_code') ?>
         </Say>
 
         <?php
             if ($searchType == "2") {
                 if (has_setting('jft_option') && json_decode(setting('jft_option'))) { ?>
                     <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
-                        <?php echo word('press') . " " . word('three') . " " . word('to_listen_to_the_just_for_today') ?>
+                        <?php echo getPressWord() . " " . word('three') . " " . word('to_listen_to_the_just_for_today') ?>
                 </Say>
                 <?php }
             }

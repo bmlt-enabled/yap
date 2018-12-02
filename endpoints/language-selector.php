@@ -12,7 +12,7 @@ $language_selection_options = explode(",", setting('language_selections'));
 $_SESSION["override_voice"] = "alice";
 ?>
 <Response>
-    <Gather input="speech dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="index.php" method="GET">
+    <Gather input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="index.php" method="GET">
         <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
             <?php echo setting('title') ?>
         </Say>
@@ -21,7 +21,7 @@ $_SESSION["override_voice"] = "alice";
             include_once __DIR__.'/../lang/'.$language_selection_options[$i].'.php'
             ?>
             <Say voice="<?php echo setting("voice")?>" language="<?php echo $language_selection_options[$i] ?>">
-                <?php echo word('for') ?> <?php echo word('language_title') ?> <?php echo word('press') ?> <?php echo getWordForNumber($i + 1) ?>
+                <?php echo word('for') ?> <?php echo word('language_title') ?> <?php echo getPressWord() ?> <?php echo getWordForNumber($i + 1) ?>
             </Say>
         <?php } ?>
     </Gather>

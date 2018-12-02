@@ -24,7 +24,7 @@
     $promptset_name = str_replace("-", "_", getWordLanguage()) . "_greeting";
 ?>
 <Response>
-    <Gather input="speech dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">
+    <Gather input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">
         <Pause length="2"></Pause>
         <?php if (has_setting($promptset_name)) {?>
             <Play><?php echo setting($promptset_name) ?></Play>
@@ -35,15 +35,15 @@
                 </Say>
             <?php } ?>
             <Say voice="<?php echo setting( 'voice' ) ?>" language="<?php echo setting( 'language' ) ?>">
-                <?php echo word( 'press' ) . " " . word( 'one' ) . " " . word( 'to_find' ) . " " . word( 'someone_to_talk_to' ) ?>
+                <?php echo getPressWord() . " " . word( 'one' ) . " " . word( 'to_find' ) . " " . word( 'someone_to_talk_to' ) ?>
             </Say>
             <Say voice="<?php echo setting( 'voice' ) ?>" language="<?php echo setting( 'language' ) ?>">
-                <?php echo word( 'press' ) . " " . word( 'two' ) . " " . word( 'to_search_for' ) . " " . word( 'meetings' ) ?>
+                <?php echo getPressWord() . " " . word( 'two' ) . " " . word( 'to_search_for' ) . " " . word( 'meetings' ) ?>
             </Say>
             <?php
             if ( has_setting( 'jft_option' ) && json_decode(setting( 'jft_option' )) ) { ?>
                 <Say voice="<?php echo setting( 'voice' ) ?>" language="<?php echo setting( 'language' ) ?>">
-                    <?php echo word( 'press' ) . " " . word( 'three' ) . " " . word( 'to_listen_to_the_just_for_today' ) ?>
+                    <?php echo getPressWord() . " " . word( 'three' ) . " " . word( 'to_listen_to_the_just_for_today' ) ?>
                 </Say>
             <?php }
         }?>

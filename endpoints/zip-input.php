@@ -11,12 +11,14 @@
         $action = "address-lookup.php";
     }
 
+    $enterWord = has_setting('speech_gathering') && json_decode(setting('speech_gathering')) ? word('please_enter_or_say_your_digit') : word('please_enter_your_digit');
+
     $action .= "?SearchType=" . $searchType;
 ?>
 <Response>
-    <Gather input="speech dtmf" numDigits="<?php echo setting('postal_code_length')?>" timeout="10" speechTimeout="auto" action="<?php echo $action; ?>" method="GET">
+    <Gather input="<?php echo getInputType() ?>" numDigits="<?php echo setting('postal_code_length')?>" timeout="10" speechTimeout="auto" action="<?php echo $action; ?>" method="GET">
 	<Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
-            <?php echo word('please_enter_your_digit') ?> <?php echo word('zip_code') ?>
+            <?php echo $enterWord ?> <?php echo word('zip_code') ?>
 	</Say>
     </Gather>
 </Response>
