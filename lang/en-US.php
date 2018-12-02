@@ -1,6 +1,7 @@
 <?php
 $language_title = "english";
-$press = "press or say";
+$press = "press";
+$press_or_say = "press or say";
 $zero = "zero";
 $one = "one";
 $two = "two";
@@ -29,7 +30,8 @@ $zip_code = "zip code";
 $city_or_county = "city or county";
 $state_or_province = "state or province";
 $thank_you_for_calling_goodbye = "thank you for calling, goodbye";
-$please_enter_your_digit = "please enter or say your five digit";
+$please_enter_your_digit = "please enter your five digit";
+$please_enter_or_say_your_digit = "please enter or say your five digit";
 $no_results_found = "no results found";
 $you_might_have_invalid_entry = "you might have an invalid entry";
 $try_again = "try again";

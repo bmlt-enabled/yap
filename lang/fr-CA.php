@@ -1,6 +1,7 @@
 <?php
 $language_title = "français";
 $press = "faites-le";
+$press_or_say = "";
 $zero = "zéro";
 $one = "un";
 $two = "deux";
@@ -30,6 +31,7 @@ $city_or_county = "ville ou région";
 $state_or_province = "province";
 $thank_you_for_calling_goodbye = "merci d'avoir appeler, au revoir";
 $please_enter_your_digit = "veuillez entrer vos cinq chiffres";
+$please_enter_or_say_your_digit = "";
 $no_results_found = "aucun résultat trouvé";
 $you_might_have_invalid_entry = "vous pourriez avoir une entrée invalide";
 $try_again = "réessayer";
