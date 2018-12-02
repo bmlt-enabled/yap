@@ -1,5 +1,8 @@
 .PHONY: upgrade
 
+run:
+	docker-compose up --build
+
 lint:
 	find . -name '*.php' -exec php -l {} \;
 
