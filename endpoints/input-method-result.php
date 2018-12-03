@@ -5,7 +5,11 @@
     $inputMethod = getIvrResponse("input-method.php", $_REQUEST["SearchType"], ["1", "2", "3"]);
 
     if ($inputMethod == "3") {
-        header('Location: fetch-jft.php');
+?>
+        <Response>
+            <Redirect method="GET">fetch-jft.php</Redirect>
+        </Response>
+<?php
         exit();
     }
 
