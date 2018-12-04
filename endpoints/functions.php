@@ -276,14 +276,23 @@ class UpgradeAdvisor {
 
             try {
                 $conn = new PDO(sprintf("mysql:host=%s;dbname=%s", $GLOBALS['mysql_hostname'], $GLOBALS['mysql_database']), $GLOBALS['mysql_username'], $GLOBALS['mysql_password']);
-                $migration_version_query = $conn->query("SELECT 1 FROM migrations");
+                $migration_version_query = $conn->query("SELECT 1 FROM migrations ORDER BY version DESC");
 
                 if (!$migration_version_query) {
                     $commands = file_get_contents("../migrations/0.sql");
                     $conn->exec($commands);
+                    $next_version = 1;
+                } else {
+                    $next_version = intval($migration_version_query->fetchColumn(0)) + 1;
                 }
 
-                $version = $conn->exec($migration_version_query);
+                while (file_exists("../migrations/$next_version.sql")) {
+                    $commands = file_get_contents("../migrations/$next_version.sql");
+                    $conn->exec($commands);
+                    $next_version_str = strval($next_version);
+                    $conn->query("INSERT INTO migrations (version) VALUES ('$next_version_str')");
+                    $next_version++;
+                }
             } catch (PDOException $e) {
                 return UpgradeAdvisor::getState( false, $e->getMessage());
             }
