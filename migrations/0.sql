@@ -4,4 +4,4 @@ CREATE TABLE `migrations` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
-INSERT INTO `yap`.`migrations` (`version`) VALUES ('0');
+INSERT INTO `migrations` (`version`) VALUES ('0');

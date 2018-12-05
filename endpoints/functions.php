@@ -276,7 +276,7 @@ class UpgradeAdvisor {
 
             try {
                 $conn = new PDO(sprintf("mysql:host=%s;dbname=%s", $GLOBALS['mysql_hostname'], $GLOBALS['mysql_database']), $GLOBALS['mysql_username'], $GLOBALS['mysql_password']);
-                $migration_version_query = $conn->query("SELECT 1 FROM migrations ORDER BY version DESC");
+                $migration_version_query = $conn->query("SELECT version FROM migrations ORDER BY version DESC LIMIT 1");
 
                 if (!$migration_version_query) {
                     $commands = file_get_contents("../migrations/0.sql");
