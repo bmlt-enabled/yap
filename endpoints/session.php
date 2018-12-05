@@ -1,4 +1,7 @@
-<?php session_start();
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (isset($_REQUEST)) {
     foreach ($_REQUEST as $key => $value) {

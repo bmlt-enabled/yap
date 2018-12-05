@@ -1,9 +1,11 @@
 <?php
+    require_once 'functions.php';
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-    require_once 'functions.php';
     $searchType = getIvrResponse("index.php", "", ["1", "2", "3"]);
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
+
+    writeMetric(["searchType" => $searchType]);
     
     if ($searchType == "1") {
         if (isset($_SESSION['override_service_body_id'])) { ?>

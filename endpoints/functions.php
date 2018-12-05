@@ -1,7 +1,7 @@
 <?php
-include_once '../config.php';
-include_once 'logging.php';
-include_once 'session.php';
+require_once '../config.php';
+require_once 'logging.php';
+require_once 'session.php';
 static $version = "3.0.0-alpha2";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true],
@@ -65,6 +65,26 @@ $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?
 static $date_calculations_map = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 static $numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 static $tomato_url = "https://tomato.na-bmlt.org/main_server";
+
+class DbConnection {
+    private $conn;
+
+    function __construct() {
+        $this->conn = new PDO(sprintf("mysql:host=%s;dbname=%s",
+            $GLOBALS['mysql_hostname'],
+            $GLOBALS['mysql_database']),
+            $GLOBALS['mysql_username'],
+            $GLOBALS['mysql_password']);
+    }
+
+    function getConnection() {
+        return $this->conn;
+    }
+
+    function __destruct() {
+        $this->conn = null;
+    }
+}
 
 class VolunteerInfo {
     public $title;
@@ -1145,4 +1165,9 @@ function getInputType() {
 
 function getPressWord() {
     return has_setting('speech_gathering') && json_decode(setting('speech_gathering')) ? word('press_or_say') : word('press');
+}
+
+function writeMetric($data) {
+    $db = new DbConnection();
+    $db->getConnection()->query("INSERT INTO metrics (data) VALUES ('" . json_encode($data) . "')");
 }

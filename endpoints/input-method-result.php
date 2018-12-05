@@ -1,7 +1,7 @@
 <?php
+    require_once 'functions.php';
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-    require_once 'functions.php';
     $inputMethod = getIvrResponse("input-method.php", $_REQUEST["SearchType"], ["1", "2", "3"]);
 
     if ($inputMethod == "3") {
