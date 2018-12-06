@@ -2,7 +2,7 @@
 require_once '../config.php';
 require_once 'logging.php';
 require_once 'session.php';
-static $version = "3.0.0-alpha2";
+static $version = "3.0.0-alpha3";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false],
@@ -295,12 +295,13 @@ class UpgradeAdvisor {
             }
 
             try {
-                $conn = new PDO(sprintf("mysql:host=%s;dbname=%s", $GLOBALS['mysql_hostname'], $GLOBALS['mysql_database']), $GLOBALS['mysql_username'], $GLOBALS['mysql_password']);
-                $migration_version_query = $conn->query("SELECT version FROM migrations ORDER BY version DESC LIMIT 1");
+                $db = new DbConnection();
+                $migration_version_query = $db->getConnection()->query("SELECT version FROM migrations ORDER BY version DESC LIMIT 1");
 
                 if (!$migration_version_query) {
                     $commands = file_get_contents("../migrations/0.sql");
-                    $conn->exec($commands);
+                    $db->getConnection()
+                        ->exec($commands);
                     $next_version = 1;
                 } else {
                     $next_version = intval($migration_version_query->fetchColumn(0)) + 1;
@@ -308,9 +309,11 @@ class UpgradeAdvisor {
 
                 while (file_exists("../migrations/$next_version.sql")) {
                     $commands = file_get_contents("../migrations/$next_version.sql");
-                    $conn->exec($commands);
+                    $db->getConnection()
+                        ->exec($commands);
                     $next_version_str = strval($next_version);
-                    $conn->query("INSERT INTO migrations (version) VALUES ('$next_version_str')");
+                    $db->getConnection()
+                        ->query("INSERT INTO migrations (version) VALUES ('$next_version_str')");
                     $next_version++;
                 }
             } catch (PDOException $e) {
@@ -1170,4 +1173,14 @@ function getPressWord() {
 function writeMetric($data) {
     $db = new DbConnection();
     $db->getConnection()->query("INSERT INTO metrics (data) VALUES ('" . json_encode($data) . "')");
+}
+
+function getMetric() {
+    $db = new DbConnection();
+    return $db->getConnection()->query("SELECT DATE_FORMAT(timestamp, \"%Y-%m-%d\") as timestamp, 
+                                        COUNT(DATE_FORMAT(timestamp, \"%Y-%m-%d\")) as counts,
+                                        CONVERT(JSON_EXTRACT(data, '$.searchType'), UNSIGNED) as searchType
+                                        FROM metrics 
+                                        GROUP BY DATE_FORMAT(timestamp, \"%Y-%m-%d\"), 
+                                        CONVERT(JSON_EXTRACT(data, '$.searchType'), UNSIGNED)");
 }
