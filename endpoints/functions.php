@@ -16,6 +16,7 @@ static $settings_whitelist = [
     'helpline_search_radius' => [ 'description' => '' , 'default' => 30, 'overridable' => true],
     'helpline_search_unpublished' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'ignore_formats' => [ 'description' => '' , 'default' => null, 'overridable' => true],
+    'include_location_text' => [ 'description' => '', 'default' => false, 'overridable' => true],
     'include_map_link' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'infinite_searching' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'jft_option' => [ 'description' => '' , 'default' => false, 'overridable' => true],
@@ -31,13 +32,12 @@ static $settings_whitelist = [
     'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'sms_helpline_keyword' => ['description' => '', 'default' => 'talk', 'overridable' => true],
+    'speech_gathering' => [ 'description' => '', 'default' => true, 'overridable' => true],
     'title' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'tomato_helpline_routing' => [ 'description' => '', 'default' => false, 'overridable' => true],
-    'voice' => [ 'description' => '' , 'default' => 'woman', 'overridable' => true],
-    'word_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
-    'include_location_text' => [ 'description' => '' , 'default' => false, 'overridable' => true],
-    'speech_gathering' => [ 'description' => '' , 'default' => true, 'overridable' => true],
+    'voice' => [ 'description' => '', 'default' => 'woman', 'overridable' => true],
+    'word_language' => [ 'description' => '', 'default' => 'en-US', 'overridable' => true]
 ];
 checkBlacklist();
 static $available_languages = [
