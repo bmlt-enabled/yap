@@ -389,6 +389,19 @@ function serviceBodyConfigure(service_body_id) {
                     }
                     serviceBodyConfiguration.find("#" + key).val(dataSet[key]);
                 }
+
+                serviceBodyConfiguration.find("select").change(function() {
+                    var trigger = this.id;
+                    for (var match of $("#serviceBodyConfiguration_" + service_body_id).find("[data-" + trigger + "]")) {
+                        if ($(match).attr("data-" + trigger).split(",").indexOf(this.value) > -1) {
+                            $(match).closest(".service_bodies_field_container").show();
+                        } else {
+                            $(match).closest(".service_bodies_field_container").hide();
+                        }
+                    }
+                });
+
+                serviceBodyConfiguration.find("select").change();
             }
 
             spinnerDialog(false, "", function() {

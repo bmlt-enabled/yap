@@ -45,55 +45,91 @@ sort_on_field($service_bodies, 'name');
                                                     <option value="volunteers_and_sms">Volunteers and SMS</option>
                                                 </select>
 
-                                                Volunteers Redirect Id:
-                                                <input class="form-control form-control-sm" type="text" name="volunteers_redirect_id" id="volunteers_redirect_id">
+                                                <div class="service_bodies_field_container">
+                                                    <label for="volunteers_redirect_id">Volunteers Redirect Id:</label>
+                                                    <input class="form-control form-control-sm" type="text" name="volunteers_redirect_id" id="volunteers_redirect_id"
+                                                           data-volunteer_routing="volunteers_redirect">
+                                                </div>
 
-                                                Forced Caller Id (Must Be A Verified Twilio Number):
-                                                <input class="form-control form-control-sm" type="text" name="forced_caller_id" id="forced_caller_id">
+                                                <div class="service_bodies_field_container">
+                                                    <label for="forced_caller_id">Forced Caller Id (Must Be A Verified Twilio Number):</label>
+                                                    <input class="form-control form-control-sm" type="text" name="forced_caller_id" id="forced_caller_id"
+                                                           data-volunteer_routing="helpline_field,volunteers,volunteers_and_sms">
+                                                </div>
 
-                                                Call Timeout (default: 20 seconds):
-                                                <input class="form-control form-control-sm" type="text" name="call_timeout" id="call_timeout">
+                                                <div class="service_bodies_field_container">
+                                                    <label for="call_timeout">Call Timeout (default: 20 seconds):</label>
+                                                    <input class="form-control form-control-sm" type="text" name="call_timeout" id="call_timeout"
+                                                           data-volunteer_routing="volunteers,volunteers_and_sms">
+                                                </div>
 
-                                                Gender Routing:
-                                                <select class="form-control form-control-sm" name="gender_routing" id="gender_routing">
-                                                    <option value="0">Disabled</option>
-                                                    <option value="1">Enabled</option>
-                                                </select>
+                                                <div class="service_bodies_field_container">
+                                                    <label for="call_timeout">Gender Routing:</label>
+                                                    <select class="form-control form-control-sm" name="gender_routing" id="gender_routing"
+                                                            data-volunteer_routing="volunteers,volunteers_and_sms">
+                                                        <option value="0">Disabled</option>
+                                                        <option value="1">Enabled</option>
+                                                    </select>
+                                                </div>
 
-                                                Call Strategy:
-                                                <select class="form-control form-control-sm" name="call_strategy" id="call_strategy">
-                                                    <option value="0">Loop Forever</option>
-                                                    <option value="1">Cycle Once, Then Voicemail</option>
-                                                    <option value="2">Random Forever</option>
-                                                    <option value="3">Blasting</option>
-                                                </select>
+                                                <div class="service_bodies_field_container">
+                                                    <label for="call_strategy">Call Strategy:</label>
+                                                    <select class="form-control form-control-sm" name="call_strategy" id="call_strategy"
+                                                            data-volunteer_routing="volunteers,volunteers_and_sms">
+                                                        <option value="0">Loop Forever</option>
+                                                        <option value="1">Cycle Once, Then Voicemail</option>
+                                                        <option value="2">Random Forever</option>
+                                                        <option value="3">Blasting</option>
+                                                    </select>
+                                                </div>
 
-                                                Inbound call SMS to Volunteer Options:
-                                                <select class="form-control form-control-sm" name="volunteer_sms_notification" id="volunteer_sms_notification">
-                                                    <option value="no_sms">No SMS</option>
-                                                    <option value="send_sms">Send SMS to Volunteer</option>
-                                                </select>
+                                                <div class="service_bodies_field_container">
+                                                    <label for="volunteer_sms_notification">Inbound call SMS to Volunteer Options:</label>s
+                                                    <select class="form-control form-control-sm" name="volunteer_sms_notification" id="volunteer_sms_notification"
+                                                            data-volunteer_routing="volunteers,volunteers_and_sms">
+                                                        <option value="no_sms">No SMS</option>
+                                                        <option value="send_sms">Send SMS to Volunteer</option>
+                                                    </select>
+                                                </div>
 
-                                                SMS Strategy:
-                                                <select class="form-control form-control-sm" name="sms_strategy" id="sms_strategy">
-                                                    <option value="2">Random</option>
-                                                    <option value="3">Blast</option>
-                                                </select>
+                                                <div class="service_bodies_field_container">
+                                                    <label for="sms_strategy">SMS Strategy:</label>
+                                                    <select class="form-control form-control-sm" name="sms_strategy" id="sms_strategy"
+                                                            data-volunteer_routing="volunteers_and_sms">
+                                                        <option value="2">Random</option>
+                                                        <option value="3">Blast</option>
+                                                    </select>
+                                                </div>
 
-                                                Primary Contact Number (typically the Chair/Coordinator):
-                                                <input class="form-control form-control-sm" type="text" name="primary_contact" id="primary_contact">
+                                                <div class="service_bodies_field_container">
+                                                    <label for="primary_contact">Primary Contact Number (typically the Chair/Coordinator):</label>
+                                                    <input class="form-control form-control-sm" type="text" name="primary_contact" id="primary_contact"
+                                                           data-volunteer_routing="volunteers,volunteers_and_sms" data-call_strategy="1">
+                                                </div>
 
-                                                Primary Contact Email (typically the Chair/Coordinator):
-                                                <input class="form-control form-control-sm" type="text" name="primary_contact_email" id="primary_contact_email">
+                                                <div class="service_bodies_field_container">
+                                                    <label for="primary_contact_email">Primary Contact Email (typically the Chair/Coordinator):</label>
+                                                    <input class="form-control form-control-sm" type="text" name="primary_contact_email" id="primary_contact_email"
+                                                           data-volunteer_routing="volunteers,volunteers_and_sms" data-call_strategy="1">
+                                                </div>
 
-                                                Music On Hold (<a target="_blank" href="https://yap.bmlt.app/docs/helpline/music-on-hold/">more</a>):
-                                                <input class="form-control form-control-sm" type="text" name="moh" id="moh">
+                                                <div class="service_bodies_field_container">
+                                                    <label for="moh">Music On Hold (<a target="_blank" href="https://yap.bmlt.app/docs/helpline/music-on-hold/">more</a>):</label>
+                                                    <input class="form-control form-control-sm" type="text" name="moh" id="moh"
+                                                           data-volunteer_routing="volunteers,volunteers_and_sms">
+                                                </div>
 
-                                                Recorded Greeting (URL to any MP3): (<a href="about:blank" onclick="return openUrl(this, 'override_en_US_greeting');">Play</a>)
-                                                <input class="form-control form-control-sm" type="text" name="override_en_US_greeting" id="override_en_US_greeting">
+                                                <div class="service_bodies_field_container">
+                                                    <label for="override_en_US_greeting">Recorded Greeting (URL to any MP3): (<a href="about:blank" onclick="return openUrl(this, 'override_en_US_greeting');">Play</a>)</label>
+                                                    <input class="form-control form-control-sm" type="text" name="override_en_US_greeting" id="override_en_US_greeting"
+                                                           data-volunteer_routing="helpline_field,volunteers,volunteers_and_sms">
+                                                </div>
 
-                                                Voice Mail Greeting (URL to any MP3): (<a href="about:blank" onclick="return openUrl(this, 'override_en_US_voicemail_greeting');">Play</a>)
-                                                <input class="form-control form-control-sm" type="text" name="override_en_US_voicemail_greeting" id="override_en_US_voicemail_greeting">
+                                                <div class="service_bodies_field_container">
+                                                    <label for="override_en_US_voicemail_greeting">Voice Mail Greeting (URL to any MP3): (<a href="about:blank" onclick="return openUrl(this, 'override_en_US_voicemail_greeting');">Play</a>)</label>
+                                                    <input class="form-control form-control-sm" type="text" name="override_en_US_voicemail_greeting" id="override_en_US_voicemail_greeting"
+                                                           data-volunteer_routing="volunteers,volunteers_and_sms" data-call_strategy="1">
+                                                </div>
                                             </form>
                                         </div>
                                         <div class="modal-footer">

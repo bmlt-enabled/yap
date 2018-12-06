@@ -145,3 +145,7 @@ div#signin {
 .dropdown_next_to_another_field {
     padding-left: 10px;
 }
+
+.service_bodies_field_container {
+    display: none;
+}
