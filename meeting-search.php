@@ -91,14 +91,14 @@
                     <?php echo word( 'press' ) ?> <?php echo word( "three" ) ?> <?php echo word( 'if_you_would_like_to_do_both' ) ?>
                 </Say>
             <?php } ?>
-            <Gather numDigits="1" timeout="10" speechTimeout="auto" input="speech dtmf"
+            <Gather numDigits="1" timeout="10" speechTimeout="auto" input="<?php echo getInputType() ?>"
                     action="post-call-action.php?Payload=<?php echo urlencode( json_encode( $sms_messages ) ) ?>"
                     method="GET"/>
         <?php } elseif (json_decode(setting('infinite_searching'))) { ?>
             <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">
                 <?php echo word('press')?> <?php echo word("two")?> <?php echo word('if_you_would_like_to_search_again') ?>.
             </Say>
-            <Gather numDigits="1" timeout="10" speechTimeout="auto" input="speech dtmf" action="post-call-action.php" method="GET"/>
+            <Gather numDigits="1" timeout="10" speechTimeout="auto" input="<?php echo getInputType() ?>" action="post-call-action.php" method="GET"/>
         <?php } ?>
 
     <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">

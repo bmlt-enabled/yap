@@ -1,6 +1,7 @@
 <?php
 $language_title = "português";
 $press = "pressione";
+$press_or_say = "";
 $zero = "cero";
 $one = "um";
 $two = "dois";
@@ -30,6 +31,7 @@ $city_or_county = "cidade ou país";
 $state_or_province = "estado";
 $thank_you_for_calling_goodbye = "obrigado por ligar, até logo";
 $please_enter_your_digit = "por favor, digite seu cinco dígito";
+$please_enter_or_say_your_digit = "";
 $no_results_found = "nenhum resultado encontrado";
 $you_might_have_invalid_entry = "é possível que sua entrada esteja inválida";
 $try_again = "tente de novo";
