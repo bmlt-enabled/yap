@@ -37,6 +37,7 @@ static $settings_whitelist = [
     'voice' => [ 'description' => '' , 'default' => 'woman', 'overridable' => true],
     'word_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
     'speech_gathering' => [ 'description' => '' , 'default' => true, 'overridable' => true],
+    'alt_twilio_acct' => [ 'description' => '' , 'default' => 1, 'overridable' => true],
 ];
 checkBlacklist();
 static $available_languages = [
@@ -64,6 +65,12 @@ $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?
 static $date_calculations_map = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 static $numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 static $tomato_url = "https://tomato.na-bmlt.org/main_server";
+
+if (has_setting('alt_twilio_acct') && setting('alt_twilio_acct')) {
+        $altTwilioAcct = setting('alt_twilio_acct');
+        $GLOBALS['twilio_account_sid'] = $GLOBALS["twilio_account_sid_$altTwilioAcct"];
+        $GLOBALS['twilio_auth_token'] = $GLOBALS["twilio_auth_token_$altTwilioAcct"];
+}
 
 class VolunteerInfo {
     public $title;
