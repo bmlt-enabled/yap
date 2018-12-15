@@ -37,7 +37,7 @@ static $settings_whitelist = [
     'voice' => [ 'description' => '' , 'default' => 'woman', 'overridable' => true],
     'word_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
     'speech_gathering' => [ 'description' => '' , 'default' => true, 'overridable' => true],
-    'alt_twilio_acct' => [ 'description' => '' , 'default' => 1, 'overridable' => true],
+    'alt_twilio_acct' => [ 'description' => '' , 'default' => false, 'overridable' => true],
 ];
 checkBlacklist();
 static $available_languages = [
