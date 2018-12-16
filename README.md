@@ -26,6 +26,7 @@ General
 * [Fallback](#fallback)
 * [Voice Greeting](#voice-greeting)
 * [Blocklist](#blocklist)
+* [Multiple Twilio Accounts](#multiple-twilio-accounts)
 
 Meeting Search
 
@@ -224,6 +225,21 @@ Sometimes it's best to look at the Caller querystring value in your logs or the 
 
 ```php
 static $blocklist = "";
+```
+
+## Multiple Twilio Accounts
+
+If using a single yap instance for multiple service bodies that have seperate twilio accounts, you can specify alternative twilio credentials by adding the following to your webhook.
+
+```php
+?alt_twilio_acct=N;
+```
+
+You will then need to add the additional twilio credentials in your `config.php` for example.
+
+```php
+static $twilio_account_sid_N = "";
+static $twilio_auth_token_N = "";
 ```
 
 # Meeting Search
