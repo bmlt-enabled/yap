@@ -15,3 +15,8 @@ It's possible to override most of the settings in several different ways.  There
 2) Session overrides.  This means the entire call will use this setting.  `index.php?override_title=something+here`.  Twilio will respect this setting for entire during of the call.
 3) Config.php.  Any setting is controllable from within config.php.
 4) Factory defaults.  You can review them on your `/admin/settings.php` page.
+
+You can completely override any `config.php` file setting as well with additional precedence.
+
+1) Create a new file called `config_something.php`.  Add whichever settings you want to override.  You do not need every setting, only those you want to override.
+2) Use the last part after the underscore in your webhook as, for example: https://your-yap-server/index.php?override_config=something.

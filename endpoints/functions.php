@@ -6,6 +6,7 @@ static $version = "3.0.0-alpha3";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false],
+    'config' => [ 'description' => '' , 'default' => null, 'overridable' => true],
     'custom_query' => ['description' => '', 'default' => '&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width={SETTING_MEETING_SEARCH_RADIUS}&weekdays={DAY}', 'overridable' => true],
     'fallback_number' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'gather_hints' => [ 'description' => '' , 'default' => '', 'overridable' => true],
@@ -40,6 +41,9 @@ static $settings_whitelist = [
     'word_language' => [ 'description' => '', 'default' => 'en-US', 'overridable' => true]
 ];
 checkBlacklist();
+if (has_setting('config')) {
+    include_once '../config_'.setting('config').'.php';
+}
 static $available_languages = [
     "en-US" => "English",
     "pig-latin" => "Igpay Atinlay",
@@ -1183,4 +1187,9 @@ function getMetric() {
                                         FROM metrics 
                                         GROUP BY DATE_FORMAT(timestamp, \"%Y-%m-%d\"), 
                                         CONVERT(JSON_EXTRACT(data, '$.searchType'), UNSIGNED)");
+}
+
+// TODO: This should be replaced in 3.x with utilizing a session store.
+function getConfigFileOverrideString() {
+    return has_setting("config") ? "&override_config=".setting("config") : "";
 }
