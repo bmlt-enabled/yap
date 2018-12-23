@@ -1,6 +1,7 @@
 .PHONY: upgrade
 
 run:
+	composer install
 	docker-compose up --build
 
 lint:
@@ -17,4 +18,3 @@ debug:
 
 test:
 	composer test
-
