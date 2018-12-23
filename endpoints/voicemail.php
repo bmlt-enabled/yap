@@ -16,7 +16,7 @@ $promptset_name = str_replace("-", "_", getWordLanguage()) . "_voicemail_greetin
     <?php } ?>
     <Record
         playBeep="true"
-        recordingStatusCallback="voicemail-complete.php?service_body_id=<?php echo setting("service_body_id") ?>&amp;caller_id=<?php echo urlencode($_REQUEST["caller_id"])?>&amp;caller_number=<?php echo urlencode($_REQUEST["caller_number"])?>&amp;called_number=<?php echo urlencode($_REQUEST["Called"])?>"
+        recordingStatusCallback="voicemail-complete.php?service_body_id=<?php echo setting("service_body_id") ?>&amp;caller_id=<?php echo urlencode($_REQUEST["caller_id"])?>&amp;caller_number=<?php echo urlencode($_REQUEST["caller_number"])?>&amp;called_number=<?php echo urlencode($_REQUEST["Called"]) . getConfigFileOverrideString(true) ?>"
         recordingStatusCallbackMethod="GET"
         maxLength="120"
         timeout="15"/>
