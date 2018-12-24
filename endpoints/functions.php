@@ -679,6 +679,12 @@ function admin_PersistHelplineData($helpline_data_id = 0, $service_body_id, $dat
     return post($url, $data_bmlt_encoded, false, $_SESSION['username']);
 }
 
+function admin_GetUserName() {
+    $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_user_info";
+    $user_name_info = json_decode(get($url, $_SESSION['username']))->current_user->name;
+    return isset($user_name_info) ? $user_name_info : $_SESSION['username'];
+}
+
 function getAllHelplineData($data_type) {
     return getHelplineData(0, $data_type);
 }
