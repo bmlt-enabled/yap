@@ -1,13 +1,11 @@
 <?php require_once 'nav.php'; ?>
-<div class="report-container">
-    <canvas id="report"></canvas>
-</div>
+<div id="reports"></div>
 <script type="text/javascript" src="js/moment-2.11.1.min.js"></script>
-<script type="text/javascript" src="js/chart-2.7.3.min.js"></script>
+<script type="text/javascript" src="js/plotly-1.43.1.min.js"></script>
 <?php require_once 'footer.php';
 
-$actions = [1 => 'Volunteer', 'Meetings', 'Just For Today'];
-$colors = [1 => 'red', 'blue', 'green'];
+$actions = ['Volunteer', 'Meetings', 'Just For Today'];
+$colors = ['red', 'blue', 'green'];
 
 $rows = getMetric()->fetchAll();
 $plots = array();
@@ -17,64 +15,40 @@ foreach ($rows as $row) {
         'y' => $row['counts']
     ];
 }
-
-$datasets = [];
-for ($i = 1; $i <= count($plots); $i++) {
-    $datasets[] = [
-        'backgroundColor' => $colors[$i],
-        'borderColor' => $colors[$i],
-        'label' => $actions[$i],
-        'fill' => false,
-        'data' => $plots[$i]
-    ];
-}
 ?>
 <script type="text/javascript">
     $(function() {
-        var ctx = $("#report");
-        var report = new Chart(ctx, {
-            type: 'line',
-            data: {
-                datasets: <?php echo json_encode($datasets); ?>
-            },
-            options: {
-                responsive: true,
-                title: {
-                    display: true,
-                    text: 'Call Actions Report'
-                },
-                scales: {
-                    xAxes: [{
-                        type: 'time',
-                        time: {
-                            unit: 'day',
-                            displayFormats: {'day': 'MM/DD/YY'},
-                            tooltipFormat: 'MM/DD/YY',
-                        },
-                        display: true,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Date'
-                        },
-                        ticks: {
-                            source: 'auto',
-                            major: {
-                                fontStyle: 'bold',
-                                fontColor: '#FF0000'
-                            }
-                        }
-                    }],
-                    yAxes: [{
-                        display: true,
-                        beginAtZero: true,
-                        min: 0,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Counts'
-                        }
-                    }]
-                }
+        var datasets = [];
+        var plots = <?php echo json_encode($plots, true) ?>;
+        var actions = <?php echo json_encode($actions, true) ?>;
+        var colors = <?php echo json_encode($colors, true) ?>;
+        for (var a = 0; a < actions.length; a++) {
+            var xAgg = [];
+            var yAgg = [];
+            for (var p = 0; p < plots[a+1].length; p++) {
+                xAgg.push(plots[a+1][p].x);
+                yAgg.push(plots[a+1][p].y);
             }
-        })
+
+            datasets.push({
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: actions[a],
+                x: xAgg,
+                y: yAgg,
+                line: { color: colors[a] }
+            })
+        }
+
+        Plotly.newPlot("reports", datasets, {
+            title: 'Usage Report',
+            xaxis: {
+                title: 'Day',
+                type: 'date'
+            },
+            yaxis: {
+                title: 'Occurences'
+            }
+        });
     });
 </script>
