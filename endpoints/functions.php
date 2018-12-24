@@ -295,12 +295,16 @@ class UpgradeAdvisor {
 
         if (isset($GLOBALS['mysql_hostname'])) {
             if ($GLOBALS['mysql_hostname'] == "localhost") {
-                return UpgradeAdvisor::getState(false, "Use 127.0.0.1 instead of localhost.");
+                //return UpgradeAdvisor::getState(false, "Use 127.0.0.1 instead of localhost.");
             }
 
             try {
                 $db = new DbConnection();
-                $migration_version_query = $db->getConnection()->query("SELECT version FROM migrations ORDER BY version DESC LIMIT 1");
+                try {
+                    $migration_version_query = $db->getConnection()->query("SELECT version FROM migrations ORDER BY version DESC LIMIT 1");
+                } catch (PDOException $e) {
+                    $migration_version_query = null;
+                }
 
                 if (!$migration_version_query) {
                     $commands = file_get_contents("../migrations/0.sql");
@@ -1183,10 +1187,10 @@ function getMetric() {
     $db = new DbConnection();
     return $db->getConnection()->query("SELECT DATE_FORMAT(timestamp, \"%Y-%m-%d\") as timestamp, 
                                         COUNT(DATE_FORMAT(timestamp, \"%Y-%m-%d\")) as counts,
-                                        CONVERT(JSON_EXTRACT(data, '$.searchType'), UNSIGNED) as searchType
+                                        CONVERT(json_extractor(data, 'searchType'), UNSIGNED) as searchType
                                         FROM metrics 
                                         GROUP BY DATE_FORMAT(timestamp, \"%Y-%m-%d\"), 
-                                        CONVERT(JSON_EXTRACT(data, '$.searchType'), UNSIGNED)");
+                                        CONVERT(json_extractor(data, 'searchType'), UNSIGNED)");
 }
 
 // TODO: This should be replaced in 3.x with utilizing a session store.
