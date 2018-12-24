@@ -1,3 +1,5 @@
+DELIMITER $$
+
 CREATE TABLE `metrics` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `timestamp` DATETIME NOT NULL DEFAULT now(),
@@ -19,4 +21,6 @@ BEGIN
         AND n>0 ) sp
     WHERE TRIM(SUBSTRING_INDEX(txt,':',1)) = CONCAT('"',search_key,'"')
     LIMIT 1);
-END
+END$$
+
+DELIMITER ;
