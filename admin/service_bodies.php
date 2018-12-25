@@ -84,7 +84,7 @@ sort_on_field($service_bodies, 'name');
                                                 </div>
 
                                                 <div class="service_bodies_field_container">
-                                                    <label for="volunteer_sms_notification">Inbound call SMS to Volunteer Options:</label>s
+                                                    <label for="volunteer_sms_notification">Inbound call SMS to Volunteer Options:</label>
                                                     <select class="form-control form-control-sm" name="volunteer_sms_notification" id="volunteer_sms_notification"
                                                             data-volunteer_routing="volunteers,volunteers_and_sms">
                                                         <option value="no_sms">No SMS</option>

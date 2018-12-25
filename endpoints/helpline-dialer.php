@@ -84,6 +84,10 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
 
         // Do not call if the caller hung up.
         if (count($participants) > 0) {
+            if (isset( $_REQUEST['StatusCallbackEvent'] ) && $_REQUEST['StatusCallbackEvent'] == 'participant-join') {
+                setConferenceParticipant($conferences[0]->sid, $participants[0]->callSid);
+            }
+
             try {
                 $callerSid = $participants[0]->callSid;
             	$callerNumber = $twilioClient->calls( $callerSid )->fetch()->from;
