@@ -87,3 +87,5 @@ $someone_is_requesting_sms_help_from = "Alguém está pedido ajuda por SMS de";
 $please_call_or_text_them_back = "Por favor, envie uma mensagem de texto ou ligue para essa pessoa.";
 $please_send_a_message_formatting_as = "por favor, envie uma mensagem usando o formato";
 $followed_by_your_location = "seguido pela sua localização como cidade, município ou CEP";
+$reports = "Reports";
+$records = "Records";

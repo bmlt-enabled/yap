@@ -1200,9 +1200,9 @@ function getMetric() {
                                         CONVERT(json_extractor(data, 'searchType'), UNSIGNED)");
 }
 
-function getConferences() {
+function getConferences($service_body_id) {
     $db = new DbConnection();
-    return $db->getConnection()->query("SELECT * FROM conference_participants;");
+    return $db->getConnection()->query("SELECT * FROM conference_participants WHERE friendlyname LIKE '" . strval(intval($service_body_id)) . "_%';");
 }
 
 function setConferenceParticipant($conferencesid, $callsid, $friendlyname) {

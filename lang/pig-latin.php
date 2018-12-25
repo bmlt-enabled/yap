@@ -79,3 +79,5 @@ $configure = "onfigurecay";
 $retrieving_service_body_configuration = "etrievingray ervicesay odybay onfigurationcay";
 $could_not_find_location_please_retry_your_entry = "orrysay , ouldcay otnay indfay ocationlay , easeplay etryray ouryay entryyay";
 $helpline_no_results_found_retry = "orrysay , onay esultsray ouldcay ebay oundfay orfay ouryay earchsay iteriacray , easeplay etryray ouryay entryyay";
+$reports = "eportsray";
+$records = "ecordsray";
