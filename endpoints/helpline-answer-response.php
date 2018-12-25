@@ -4,9 +4,16 @@ header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";?>
 <Response>
 <?php if ($_REQUEST['Digits'] == "1") {
-    log_debug("They took the call.") ?>
+    log_debug("They took the call.");
+    ?>
     <Dial>
-        <Conference endConferenceOnExit="true" startConferenceOnEnter="true" beep="false">
+        <Conference
+            statusCallback="helpline-dialer.php?service_body_id=<?php echo $calculated_service_body_id . getConfigFileOverrideString(true) ?>"
+            statusCallbackMethod="GET"
+            statusCallbackEvent="join end"
+            endConferenceOnExit="true"
+            startConferenceOnEnter="true"
+            beep="false">
             <?php echo $_REQUEST['conference_name'] ?>
         </Conference>
     </Dial>

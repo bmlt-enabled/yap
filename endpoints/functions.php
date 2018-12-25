@@ -1199,6 +1199,12 @@ function getMetric() {
                                         CONVERT(json_extractor(data, 'searchType'), UNSIGNED)");
 }
 
+function setConferenceParticipant($conferencesid, $callsid) {
+    $db = new DbConnection();
+    return $db->getConnection()->query("INSERT INTO conference_participants (conferencesid,callsid) 
+      VALUES ('$conferencesid', '$callsid')");
+}
+
 // TODO: This should be replaced in 3.x with utilizing a session store.
 function getConfigFileOverrideString($shouldUriEncode = false) {
     return has_setting("config") ? ($shouldUriEncode ? "&amp;" : "&") . "override_config=" . setting("config") : "";
