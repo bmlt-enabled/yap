@@ -3,6 +3,7 @@
 <script type="text/javascript" src="js/moment-2.11.1.min.js"></script>
 <script type="text/javascript" src="js/plotly-1.43.1.min.js"></script>
 <?php require_once 'footer.php';
+include_once '../endpoints/twilio-client.php';
 
 $actions = ['Volunteer', 'Meetings', 'Just For Today'];
 $rows = getMetric()->fetchAll();
@@ -51,14 +52,20 @@ foreach ($rows as $row) {
     });
 </script>
 <div class="container">
-Volunteer Records
+    <h3>Volunteer Records</h3>
 <table border="1">
-    <tr><th>Timestamp</th><th>Conference</th><th>Participant</th></tr>
+    <tr><th>Conference Id</th><th>Duration (in seconds)</th><th>Participant Id</th><th>Timestamp</th></tr>
 <?php
 $rows = getConferences()->fetchAll();
 $conferences = [];
 foreach ($rows as $row) {
-    echo "<tr><td>" . $row['timestamp'] . "</td><td>" . $row['conferencesid'] . "</td><td>" . $row['callsid'] . "</td></tr>";
+    if (isset($lastconferencesid) && $row['conferencesid'] == $lastconferencesid) {
+        echo "<tr><td colspan='2'></td><td>" . $row['callsid'] . "</td><td>" . $row['timestamp'] . "</td></tr>";
+    } else {
+        $conference = $twilioClient->conferences($row['conferencesid'])->fetch();
+        echo "<tr><td>" . $row['conferencesid'] . "</td><td>" . ($conference->dateCreated)->diff($conference->dateUpdated)->s . "</td><td>" . $row['callsid'] . "</td><td>" . $row['timestamp'] . "</td></tr>";
+    }
+    $lastconferencesid = $row['conferencesid'];
 }
 ?>
 </table>

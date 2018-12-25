@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dd199a3c27abd3a879493236d03d051a",
+    "content-hash": "f981ed108ca496a169824f4f598ab831",
     "packages": [
         {
             "name": "monolog/monolog",
@@ -246,16 +246,16 @@
         },
         {
             "name": "twilio/sdk",
-            "version": "5.25.0",
+            "version": "5.27.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twilio/twilio-php.git",
-                "reference": "0144b6f9f643cbe20f58d78bb2e0e6b1ea5d6856"
+                "reference": "debe730c59914961e04a653567af22ed31d6588e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/0144b6f9f643cbe20f58d78bb2e0e6b1ea5d6856",
-                "reference": "0144b6f9f643cbe20f58d78bb2e0e6b1ea5d6856",
+                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/debe730c59914961e04a653567af22ed31d6588e",
+                "reference": "debe730c59914961e04a653567af22ed31d6588e",
                 "shasum": ""
             },
             "require": {
@@ -288,7 +288,7 @@
                 "sms",
                 "twilio"
             ],
-            "time": "2018-11-16T20:15:31+00:00"
+            "time": "2018-12-17T05:40:42+00:00"
         }
     ],
     "packages-dev": [],

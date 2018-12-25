@@ -75,7 +75,7 @@ if (isset($_REQUEST['Debug']) && intval($_REQUEST['Debug']) == 1) {
 $conferences = $twilioClient->conferences->read( array ("friendlyName" => $_REQUEST['FriendlyName'] ) );
 if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     if (isset( $_REQUEST['StatusCallbackEvent'] ) && $_REQUEST['StatusCallbackEvent'] == 'participant-join') {
-        setConferenceParticipant($conferences[0]->sid, $_REQUEST['CallSid']);
+        setConferenceParticipant($conferences[0]->sid, $_REQUEST['CallSid'], $_REQUEST['FriendlyName']);
     }
 
     // Make timeout configurable per volunteer

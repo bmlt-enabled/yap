@@ -1,6 +1,6 @@
 {
     "require": {
-        "twilio/sdk": "^5.25",
+        "twilio/sdk": "^5.27",
         "phpmailer/phpmailer": "^6.0",
         "nvanheuverzwijn/monolog-logdna": "^2.1"
     }

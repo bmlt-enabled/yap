@@ -1205,10 +1205,10 @@ function getConferences() {
     return $db->getConnection()->query("SELECT * FROM conference_participants;");
 }
 
-function setConferenceParticipant($conferencesid, $callsid) {
+function setConferenceParticipant($conferencesid, $callsid, $friendlyname) {
     $db = new DbConnection();
-    return $db->getConnection()->query("INSERT INTO conference_participants (conferencesid,callsid) 
-      VALUES ('$conferencesid', '$callsid')");
+    return $db->getConnection()->query("INSERT INTO conference_participants (conferencesid,callsid,friendlyname) 
+      VALUES ('$conferencesid','$callsid','$friendlyname')");
 }
 
 // TODO: This should be replaced in 3.x with utilizing a session store.
