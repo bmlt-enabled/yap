@@ -5,8 +5,6 @@
 <?php require_once 'footer.php';
 
 $actions = ['Volunteer', 'Meetings', 'Just For Today'];
-$colors = ['red', 'blue', 'green'];
-
 $rows = getMetric()->fetchAll();
 $plots = array();
 foreach ($rows as $row) {
@@ -21,7 +19,7 @@ foreach ($rows as $row) {
         var datasets = [];
         var plots = <?php echo json_encode($plots, true) ?>;
         var actions = <?php echo json_encode($actions, true) ?>;
-        var colors = <?php echo json_encode($colors, true) ?>;
+        var colors = ['red', 'blue', 'green'];
         for (var a = 0; a < actions.length; a++) {
             var xAgg = [];
             var yAgg = [];
