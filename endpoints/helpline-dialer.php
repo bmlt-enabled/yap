@@ -41,7 +41,7 @@ function getCallConfig($twilioClient, $serviceBodyConfiguration) {
         isset($_REQUEST['Gender']) ? $_REQUEST['Gender'] : VolunteerGender::UNSPECIFIED);
     $config->voicemail_url = $webhook_url . '/voicemail.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&caller_id=' . trim($caller_id) . getConfigFileOverrideString();
     $config->options = array(
-        'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'],
+        'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'] . '&service_body_id=' . $serviceBodyConfiguration->service_body_id,
         'statusCallback'       => $serviceBodyConfiguration->call_strategy == CycleAlgorithm::BLASTING
             ? ($webhook_url . '/helpline-dialer.php?noop=1' . getConfigFileOverrideString())
             : ($webhook_url . '/helpline-dialer.php?service_body_id=' . $serviceBodyConfiguration->service_body_id
@@ -74,6 +74,10 @@ if (isset($_REQUEST['Debug']) && intval($_REQUEST['Debug']) == 1) {
 
 $conferences = $twilioClient->conferences->read( array ("friendlyName" => $_REQUEST['FriendlyName'] ) );
 if (count($conferences) > 0 && $conferences[0]->status != "completed") {
+    if (isset( $_REQUEST['StatusCallbackEvent'] ) && $_REQUEST['StatusCallbackEvent'] == 'participant-join') {
+        setConferenceParticipant($conferences[0]->sid, $_REQUEST['CallSid']);
+    }
+
     // Make timeout configurable per volunteer
     if ( ( isset( $_REQUEST['SequenceNumber'] ) && intval( $_REQUEST['SequenceNumber'] ) == 1 ) ||
          ( isset( $_REQUEST['CallStatus'] ) && ( $_REQUEST['CallStatus'] == 'no-answer' || $_REQUEST['CallStatus'] == 'completed' ) ) ) {
@@ -84,10 +88,6 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
 
         // Do not call if the caller hung up.
         if (count($participants) > 0) {
-            if (isset( $_REQUEST['StatusCallbackEvent'] ) && $_REQUEST['StatusCallbackEvent'] == 'participant-join') {
-                setConferenceParticipant($conferences[0]->sid, $participants[0]->callSid);
-            }
-
             try {
                 $callerSid = $participants[0]->callSid;
             	$callerNumber = $twilioClient->calls( $callerSid )->fetch()->from;

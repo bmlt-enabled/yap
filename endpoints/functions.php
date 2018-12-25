@@ -805,7 +805,8 @@ function getHelplineVolunteersActiveNow($service_body_int, $volunteer_type = Vol
             if ( ($current_time >= ( new DateTime( $volunteers[ $v ]->start ) )
                  && $current_time <= ( new DateTime( $volunteers[ $v ]->end ) ) )
                  && (!isset($volunteers[$v]->type) || str_exists($volunteers[$v]->type, $volunteer_type ))
-                 && ($volunteer_gender !== VolunteerGender::UNSPECIFIED && isset($volunteers[$v]->gender) && $volunteer_gender == $volunteers[$v]->gender)) {
+                 && ($volunteer_gender === VolunteerGender::UNSPECIFIED
+                    || (($volunteer_gender !== VolunteerGender::UNSPECIFIED && isset($volunteers[$v]->gender) && $volunteer_gender == $volunteers[$v]->gender)))) {
                 array_push( $activeNow, $volunteers[ $v ] );
             }
         }
