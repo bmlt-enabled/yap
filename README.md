@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/bmlt-enabled/yap.svg?branch=master)](https://travis-ci.org/radius314/yap)
+[![Build Status](https://travis-ci.org/bmlt-enabled/yap.svg?branch=master)](https://travis-ci.org/bmlt-enabled/yap)
 # yap
 
 The purposes of yap are :
