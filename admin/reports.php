@@ -50,3 +50,16 @@ foreach ($rows as $row) {
         });
     });
 </script>
+<div class="container">
+Volunteer Records
+<table border="1">
+    <tr><th>Timestamp</th><th>Conference</th><th>Participant</th></tr>
+<?php
+$rows = getConferences()->fetchAll();
+$conferences = [];
+foreach ($rows as $row) {
+    echo "<tr><td>" . $row['timestamp'] . "</td><td>" . $row['conferencesid'] . "</td><td>" . $row['callsid'] . "</td></tr>";
+}
+?>
+</table>
+</div>

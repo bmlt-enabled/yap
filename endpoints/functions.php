@@ -1200,6 +1200,11 @@ function getMetric() {
                                         CONVERT(json_extractor(data, 'searchType'), UNSIGNED)");
 }
 
+function getConferences() {
+    $db = new DbConnection();
+    return $db->getConnection()->query("SELECT * FROM conference_participants;");
+}
+
 function setConferenceParticipant($conferencesid, $callsid) {
     $db = new DbConnection();
     return $db->getConnection()->query("INSERT INTO conference_participants (conferencesid,callsid) 
