@@ -47,7 +47,7 @@ foreach ($rows as $row) {
                 type: 'date'
             },
             yaxis: {
-                title: 'Occurences'
+                title: 'Occurrences'
             }
         });
     });
