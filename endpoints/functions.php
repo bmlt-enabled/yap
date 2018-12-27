@@ -1194,10 +1194,10 @@ function getMetric() {
     $db = new DbConnection();
     return $db->getConnection()->query("SELECT DATE_FORMAT(timestamp, \"%Y-%m-%d\") as timestamp, 
                                         COUNT(DATE_FORMAT(timestamp, \"%Y-%m-%d\")) as counts,
-                                        CONVERT(json_extractor(data, 'searchType'), UNSIGNED) as searchType
+                                        `data`
                                         FROM metrics 
                                         GROUP BY DATE_FORMAT(timestamp, \"%Y-%m-%d\"), 
-                                        CONVERT(json_extractor(data, 'searchType'), UNSIGNED)");
+                                        `data`");
 }
 
 function getConferences($service_body_id) {

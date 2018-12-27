@@ -8,7 +8,7 @@ $actions = ['Volunteer', 'Meetings', 'Just For Today'];
 $rows = getMetric()->fetchAll();
 $plots = array();
 foreach ($rows as $row) {
-    $plots[$row['searchType']][] = [
+    $plots[json_decode($row['data'])->searchType][] = [
         'x' => $row['timestamp'],
         'y' => $row['counts']
     ];
