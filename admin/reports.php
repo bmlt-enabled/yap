@@ -23,19 +23,21 @@ foreach ($rows as $row) {
         for (var a = 0; a < actions.length; a++) {
             var xAgg = [];
             var yAgg = [];
-            for (var p = 0; p < plots[a+1].length; p++) {
-                xAgg.push(plots[a+1][p].x);
-                yAgg.push(plots[a+1][p].y);
-            }
+            if (plots[a+1] !== undefined) {
+                for (var p = 0; p < plots[a + 1].length; p++) {
+                    xAgg.push(plots[a + 1][p].x);
+                    yAgg.push(plots[a + 1][p].y);
+                }
 
-            datasets.push({
-                type: 'scatter',
-                mode: 'lines+markers',
-                name: actions[a],
-                x: xAgg,
-                y: yAgg,
-                line: { color: colors[a] }
-            })
+                datasets.push({
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: actions[a],
+                    x: xAgg,
+                    y: yAgg,
+                    line: {color: colors[a]}
+                })
+            }
         }
 
         Plotly.newPlot("reports", datasets, {
