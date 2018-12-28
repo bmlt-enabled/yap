@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Connectors
-nav_order: 6
+nav_order: 7
 parent: Miscellaneous
 ---
 
@@ -12,4 +12,5 @@ parent: Miscellaneous
 
 Yap has an API, and so there are other ways to pull out Yap information.
 
-* [Facebook Messenger Bot](https://github.com/radius314/yap-fbmessenger-bot)
+* [Facebook Messenger Bot](https://github.com/bmlt-enabled/yap-fbmessenger-bot)
+* [Alexa Skill](https://github.com/bmlt-enabled/yap-alexaskill)
