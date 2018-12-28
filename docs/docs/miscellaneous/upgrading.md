@@ -12,4 +12,4 @@ parent: Miscellaneous
 
 Make a new folder with the newer version and copy over the config.php.  Once you feel comfortable you can delete the older folder and rename it.
 
-You can also run `./upgrade.sh`, if you have shell access.  This assumes you did a git clone initially.
+Be sure to run the upgrade-advisor.php
