@@ -14,6 +14,9 @@ permalink: /
 
 Recommended to use PHP 7.2 or greater.  PHP 5.6 is going to be end of life on December 31, 2018 and cannot guarantee compatibility after that.
 
+Yap 3.x requires MySQL 5.5 or greater and an Apache-based webserver with mod_rewrite enabled.
+
+
 The purposes of yap are :
 * To be able to take the results of a BMLT root server and play it back through the telephone.  
 * To be able to set up routing rules for zip codes and helpline numbers with optional extension dialing.
