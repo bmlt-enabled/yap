@@ -2,7 +2,7 @@
 require_once '../config.php';
 require_once 'logging.php';
 require_once 'session.php';
-static $version = "3.0.0-beta1";
+static $version = "3.0.0-beta2";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false],
@@ -30,6 +30,7 @@ static $settings_whitelist = [
     'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'result_count_max' => [ 'description' => '' , 'default' => 5, 'overridable' => true],
     'service_body_id' => [ 'description' => '', 'default' => null, 'overridable' => true],
+    'session_id' => ['description' => '', 'default' => '', 'overridable' => true],
     'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true],
     'sms_helpline_keyword' => ['description' => '', 'default' => 'talk', 'overridable' => true],

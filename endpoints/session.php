@@ -1,7 +1,10 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
+require_once '../lib/Session.php';
+if (isset($_REQUEST["session_id"])) {
+    session_id($_REQUEST["session_id"]);
 }
+
+$session = new Session();
 
 if (isset($_REQUEST)) {
     foreach ($_REQUEST as $key => $value) {
