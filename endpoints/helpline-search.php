@@ -41,7 +41,7 @@
     $serviceBodyConfiguration = getServiceBodyConfiguration($service_body_id);
 
     if ($service_body_id > 0 && $serviceBodyConfiguration->volunteer_routing_enabled) {
-        if ($serviceBodyConfiguration->gender_routing_enabled && !isset($_GET['Gender'])) { ?>
+        if ($serviceBodyConfiguration->gender_routing_enabled && !isset($_REQUEST['Gender'])) { ?>
             <Response>
                 <Redirect method="GET">gender-routing.php?SearchType=<?php echo urlencode($_REQUEST["SearchType"])?>&amp;Address=<?php echo urlencode($address); ?></Redirect>
             </Response>
