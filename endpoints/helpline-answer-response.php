@@ -8,7 +8,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";?>
     ?>
     <Dial>
         <Conference
-            statusCallback="helpline-dialer.php?service_body_id=<?php echo $_REQUEST['service_body_id'] . getConfigFileOverrideString(true) ?>"
+            statusCallback="helpline-dialer.php?service_body_id=<?php echo $_REQUEST['service_body_id'] . getSessionLink(true) ?>"
             statusCallbackMethod="GET"
             statusCallbackEvent="join end"
             endConferenceOnExit="true"

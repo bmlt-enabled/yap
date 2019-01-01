@@ -1212,7 +1212,6 @@ function setConferenceParticipant($conferencesid, $callsid, $friendlyname) {
       VALUES ('$conferencesid','$callsid','$friendlyname')");
 }
 
-// TODO: This should be replaced in 3.x with utilizing a session store.
-function getConfigFileOverrideString($shouldUriEncode = false) {
-    return has_setting("config") ? ($shouldUriEncode ? "&amp;" : "&") . "override_config=" . setting("config") : "";
+function getSessionLink($shouldUriEncode = false) {
+    return ($shouldUriEncode ? "&amp;" : "&") . "session_id=" . $_SESSION['PHPSESSID'];
 }

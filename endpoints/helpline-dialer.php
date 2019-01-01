@@ -39,17 +39,17 @@ function getCallConfig($twilioClient, $serviceBodyConfiguration) {
         $serviceBodyConfiguration->call_strategy,
         VolunteerType::PHONE,
         isset($_REQUEST['Gender']) ? $_REQUEST['Gender'] : VolunteerGender::UNSPECIFIED);
-    $config->voicemail_url = $webhook_url . '/voicemail.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&caller_id=' . trim($caller_id) . getConfigFileOverrideString();
+    $config->voicemail_url = $webhook_url . '/voicemail.php?service_body_id=' . $serviceBodyConfiguration->service_body_id . '&caller_id=' . trim($caller_id) . getSessionLink();
     $config->options = array(
         'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'] . '&service_body_id=' . $serviceBodyConfiguration->service_body_id,
         'statusCallback'       => $serviceBodyConfiguration->call_strategy == CycleAlgorithm::BLASTING
-            ? ($webhook_url . '/helpline-dialer.php?noop=1' . getConfigFileOverrideString())
+            ? ($webhook_url . '/helpline-dialer.php?noop=1' . getSessionLink())
             : ($webhook_url . '/helpline-dialer.php?service_body_id=' . $serviceBodyConfiguration->service_body_id
                 . ('&tracker=' . ++$tracker)
                 . ('&FriendlyName=' . $_REQUEST['FriendlyName'])
                 . (isset($_REQUEST['Gender']) ? '&Gender=' . $_REQUEST['Gender'] : "")
                 . ('&OriginalCallerId=' . trim($original_caller_id))
-                . (getConfigFileOverrideString())),
+                . (getSessionLink())),
         'statusCallbackEvent'  => 'completed',
         'statusCallbackMethod' => 'GET',
         'timeout'              => $serviceBodyConfiguration->call_timeout,
