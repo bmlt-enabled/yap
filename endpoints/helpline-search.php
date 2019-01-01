@@ -8,7 +8,7 @@
         if (isset($_SESSION["override_service_body_id"])) {
             $service_body_obj = getServiceBody(setting("service_body_id"));
         } else {
-            $address = getIvrResponse();
+            $address = isset($_SESSION['Address']) ? $_SESSION['Address'] : getIvrResponse();
             $coordinates  = getCoordinatesForAddress( $address );
             try {
                 if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) {
@@ -41,9 +41,10 @@
     $serviceBodyConfiguration = getServiceBodyConfiguration($service_body_id);
 
     if ($service_body_id > 0 && $serviceBodyConfiguration->volunteer_routing_enabled) {
-        if ($serviceBodyConfiguration->gender_routing_enabled && !isset($_REQUEST['Gender'])) { ?>
+        if ($serviceBodyConfiguration->gender_routing_enabled && !isset($_REQUEST['Gender'])) {
+            $_SESSION['Address'] = $address; ?>
             <Response>
-                <Redirect method="GET">gender-routing.php?SearchType=<?php echo urlencode($_REQUEST["SearchType"])?>&amp;Address=<?php echo urlencode($address); ?></Redirect>
+                <Redirect method="GET">gender-routing.php?SearchType=<?php echo urlencode($_REQUEST["SearchType"])?></Redirect>
             </Response>
             <?php
             exit();

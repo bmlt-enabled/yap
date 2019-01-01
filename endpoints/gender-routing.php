@@ -5,7 +5,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
 ?>
 <Response>
-    <Gather language="<?php echo setting('gather_language') ?>" hints="<?php echo setting('gather_hints') ?>" input="<?php echo getInputType() ?>" timeout="5" speechTimeout="auto" action="gender-routing-response.php?SearchType=<?php echo $_REQUEST['SearchType']?>&amp;Address=<?php echo urlencode($_REQUEST['Address'])?>" method="GET">
+    <Gather language="<?php echo setting('gather_language') ?>" hints="<?php echo setting('gather_hints') ?>" input="<?php echo getInputType() ?>" timeout="5" speechTimeout="auto" action="gender-routing-response.php?SearchType=<?php echo $_REQUEST['SearchType']?>" method="GET">
         <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">Press 1 to speak to a man, Press 2 to speak to a woman.</Say>
     </Gather>
 </Response>
