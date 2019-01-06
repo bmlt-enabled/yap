@@ -1,5 +1,5 @@
 <?php
-require_once 'functions.php';
+require_once '_includes/functions.php';
 require_once 'twilio-client.php';
 use PHPMailer\PHPMailer\PHPMailer;
 header("content-type: text/xml");

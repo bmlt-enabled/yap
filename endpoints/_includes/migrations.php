@@ -1,5 +1,5 @@
 <?php
-require_once '../lib/Database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/Database.php';
 
 if (isset($GLOBALS['mysql_hostname'])) {
     try {

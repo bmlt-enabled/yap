@@ -1,5 +1,5 @@
 <?php
-    require_once __DIR__.'/../endpoints/functions.php';
+    require_once __DIR__ . '/../endpoints/_includes/functions.php';
     include_once __DIR__.'/../lang/'.getWordLanguage().'.php';
 ?>
 <!doctype html>

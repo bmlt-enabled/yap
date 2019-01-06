@@ -1,9 +1,9 @@
 <?php
-require_once '../config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config.php';
 require_once 'migrations.php';
 require_once 'logging.php';
 require_once 'session.php';
-static $version = "3.0.0-beta2";
+static $version  = "3.0.0-beta2";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false],
@@ -44,7 +44,7 @@ static $settings_whitelist = [
 ];
 checkBlacklist();
 if (has_setting('config')) {
-    include_once '../config_'.setting('config').'.php';
+    include_once $_SERVER['DOCUMENT_ROOT'] . '/config_'.setting('config').'.php';
 }
 static $available_languages = [
     "en-US" => "English",
@@ -64,7 +64,7 @@ foreach ($available_languages as $available_language_key => $available_language_
     }
 }
 
-include_once __DIR__.'/../lang/'.getWordLanguage().'.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/lang/' .getWordLanguage().'.php';
 
 $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
 $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key=" . trim($google_maps_api_key);

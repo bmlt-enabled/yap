@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__.'/../endpoints/functions.php';
+require_once __DIR__ . '/../endpoints/_includes/functions.php';
 
 logout_auth($_POST['username']);
 if (auth_bmlt($_POST['username'], $_POST['password'])) {

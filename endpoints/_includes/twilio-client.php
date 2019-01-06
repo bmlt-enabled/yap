@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 use Twilio\Rest\Client;
 $sid                        = $GLOBALS['twilio_account_sid'];
 $token                      = $GLOBALS['twilio_auth_token'];

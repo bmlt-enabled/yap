@@ -1,5 +1,5 @@
 <?php
-require_once '../lib/Session.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/Session.php';
 if (isset($_REQUEST["session_id"])) {
     session_id($_REQUEST["session_id"]);
 }
