@@ -1,5 +1,6 @@
 <?php
 require_once '../config.php';
+require_once 'migrations.php';
 require_once 'logging.php';
 require_once 'session.php';
 static $version = "3.0.0-beta2";
@@ -70,26 +71,6 @@ $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?
 static $date_calculations_map = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 static $numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 static $tomato_url = "https://tomato.na-bmlt.org/main_server";
-
-class DbConnection {
-    private $conn;
-
-    function __construct() {
-        $this->conn = new PDO(sprintf("mysql:host=%s;dbname=%s",
-            $GLOBALS['mysql_hostname'],
-            $GLOBALS['mysql_database']),
-            $GLOBALS['mysql_username'],
-            $GLOBALS['mysql_password']);
-    }
-
-    function getConnection() {
-        return $this->conn;
-    }
-
-    function __destruct() {
-        $this->conn = null;
-    }
-}
 
 class VolunteerInfo {
     public $title;
@@ -295,36 +276,8 @@ class UpgradeAdvisor {
         }
 
         if (isset($GLOBALS['mysql_hostname'])) {
-            if ($GLOBALS['mysql_hostname'] == "localhost") {
-                //return UpgradeAdvisor::getState(false, "Use 127.0.0.1 instead of localhost.");
-            }
-
             try {
-                $db = new DbConnection();
-                try {
-                    $migration_version_query = $db->getConnection()->query("SELECT version FROM migrations ORDER BY version DESC LIMIT 1");
-                } catch (PDOException $e) {
-                    $migration_version_query = null;
-                }
-
-                if (!$migration_version_query) {
-                    $commands = file_get_contents("../migrations/0.sql");
-                    $db->getConnection()
-                        ->exec($commands);
-                    $next_version = 1;
-                } else {
-                    $next_version = intval($migration_version_query->fetchColumn(0)) + 1;
-                }
-
-                while (file_exists("../migrations/$next_version.sql")) {
-                    $commands = file_get_contents("../migrations/$next_version.sql");
-                    $db->getConnection()
-                        ->exec($commands);
-                    $next_version_str = strval($next_version);
-                    $db->getConnection()
-                        ->query("INSERT INTO migrations (version) VALUES ('$next_version_str')");
-                    $next_version++;
-                }
+                $db = new Database();
             } catch (PDOException $e) {
                 return UpgradeAdvisor::getState( false, $e->getMessage());
             }
@@ -1187,29 +1140,33 @@ function getPressWord() {
 }
 
 function writeMetric($data) {
-    $db = new DbConnection();
-    $db->getConnection()->query("INSERT INTO metrics (data) VALUES ('" . json_encode($data) . "')");
+    $db = new Database();
+    $db->query("INSERT INTO metrics (data) VALUES ('" . json_encode($data) . "')");
+    $db->execute();
 }
 
 function getMetric() {
-    $db = new DbConnection();
-    return $db->getConnection()->query("SELECT DATE_FORMAT(timestamp, \"%Y-%m-%d\") as timestamp, 
+    $db = new Database();
+    $db->query("SELECT DATE_FORMAT(timestamp, \"%Y-%m-%d\") as timestamp, 
                                         COUNT(DATE_FORMAT(timestamp, \"%Y-%m-%d\")) as counts,
                                         `data`
                                         FROM metrics 
                                         GROUP BY DATE_FORMAT(timestamp, \"%Y-%m-%d\"), 
                                         `data`");
+    return $db->resultset();
 }
 
 function getConferences($service_body_id) {
-    $db = new DbConnection();
-    return $db->getConnection()->query("SELECT * FROM conference_participants WHERE friendlyname LIKE '" . strval(intval($service_body_id)) . "_%';");
+    $db = new Database();
+    $db->query("SELECT * FROM conference_participants WHERE friendlyname LIKE '" . strval(intval($service_body_id)) . "_%';");
+    return $db->resultset();
 }
 
 function setConferenceParticipant($conferencesid, $callsid, $friendlyname) {
-    $db = new DbConnection();
-    return $db->getConnection()->query("INSERT INTO conference_participants (conferencesid,callsid,friendlyname) 
+    $db = new Database();
+    $db->query("INSERT INTO conference_participants (conferencesid,callsid,friendlyname) 
       VALUES ('$conferencesid','$callsid','$friendlyname')");
+    return $db->execute();
 }
 
 function getSessionLink($shouldUriEncode = false) {

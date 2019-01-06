@@ -5,7 +5,7 @@ include_once '../endpoints/twilio-client.php';?>
     <table border="1">
         <tr><th>Conference Id</th><th>Recordings</th><th>Duration (in seconds)</th><th>Participant Id</th><th>Phone Number</th></thd><th>Role</th><th>Timestamp</th></tr>
         <?php
-        $rows = getConferences($_REQUEST['service_body_id'])->fetchAll();
+        $rows = getConferences($_REQUEST['service_body_id']);
         $conferences = [];
         foreach ($rows as $row) {
             $participant = $twilioClient->calls($row['callsid'])->fetch();

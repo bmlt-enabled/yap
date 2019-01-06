@@ -5,7 +5,7 @@
 <?php require_once 'footer.php';
 
 $actions = ['Volunteer', 'Meetings', 'Just For Today'];
-$rows = getMetric()->fetchAll();
+$rows = getMetric();
 $plots = array();
 foreach ($rows as $row) {
     $plots[json_decode($row['data'])->searchType][] = [
