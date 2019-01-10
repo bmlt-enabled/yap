@@ -22,7 +22,5 @@ if ($_REQUEST['data_type'] === DataType::YAP_CONFIG || $_REQUEST['data_type'] ==
     echo json_encode(count($data) > 0 ? $data[0] : new StdClass());
 } else if ($_REQUEST['data_type'] === DataType::YAP_CONFIG_V2) {
     $data = getDbData($_REQUEST['service_body_id'], $_REQUEST['data_type']);
-    echo $data;
+    echo count($data) > 0 ? $data[0]["data"] : json_encode(new StdClass());
 }
-
-

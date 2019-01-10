@@ -636,8 +636,7 @@ function admin_PersistHelplineData($helpline_data_id = 0, $service_body_id, $dat
 
 function admin_PersistDbConfig($service_body_id, $data, $data_type) {
     $db = new Database();
-    $db->query("INSERT INTO config (service_body_id,data,data_type) 
-      VALUES ('$service_body_id','$data','$data_type')");
+    $db->query("INSERT INTO config (service_body_id,data,data_type) VALUES ('$service_body_id','$data','$data_type')");
     return $db->execute();
 }
 
@@ -650,12 +649,7 @@ function admin_GetUserName() {
 function getDbData($service_body_id, $data_type) {
     $db = new Database();
     $db->query("SELECT data FROM config WHERE service_body_id=$service_body_id AND data_type='$data_type'");
-    $resultset = $db->resultset();
-    if ($db->rowCount() > 0) {
-        return $resultset[0]["data"];
-    } else {
-        return "{}";
-    }
+    return $db->resultset();
 }
 
 function getAllHelplineData($data_type) {
