@@ -26,6 +26,7 @@ sort_on_field($service_bodies, 'name');
                         <td>
                             <button class="btn btn-sm btn-info" onclick="serviceBodyConfigure(<?php echo $service_body->id ?>);"><?php echo word('configure')?></button>
                             <button class="btn btn-sm btn-info" onclick="location.href='records.php?service_body_id=<?php echo $service_body->id ?>'"><?php echo word('records')?></button>
+                            <button class="btn btn-sm btn-warning" onclick="twilioKeysConfigure(<?php echo $service_body->id ?>);">Twilio Keys</button>
                             <div class="modal fade" id="serviceBodyConfiguration_<?php echo $service_body->id ?>" tabindex="-1" role="dialog" aria-labelledby="configureShiftDialog" aria-hidden="true">
                                 <input type="hidden" id="helpline_data_id" name="helpline_data_id" class="helpline_data_id" value="0" />
                                 <div class="modal-dialog modal-dialog-centered" role="document">
@@ -38,7 +39,7 @@ sort_on_field($service_bodies, 'name');
                                         </div>
                                         <div class="modal-body serviceBodyConfigurationItems">
                                             <form id="serviceBodyConfigurationForm" class="serviceBodyConfigurationForm">
-                                                Helpling Routing:
+                                                Helpline Routing:
                                                 <select class="form-control form-control-sm" name="volunteer_routing" id="volunteer_routing">
                                                     <option value="helpline_field">Helpline Field Number</option>
                                                     <option value="volunteers">Volunteers</option>
@@ -136,6 +137,31 @@ sort_on_field($service_bodies, 'name');
                                         <div class="modal-footer">
                                             <button class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
                                             <button class="btn btn-sm btn-primary" onclick="saveServiceBodyConfig(<?php echo $service_body->id ?>)">Save Changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="twilioKeysConfiguration_<?php echo $service_body->id ?>" tabindex="-1" role="dialog" aria-labelledby="configureShiftDialog" aria-hidden="true">
+                                <input type="hidden" id="helpline_data_id" name="helpline_data_id" class="helpline_data_id" value="0" />
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Twilio Keys For <?php echo $service_body->name ?></h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body serviceBodyConfigurationItems">
+                                            <form id="twilioKeysConfigurationForm" class="twilioKeysConfigurationForm">
+                                                <label for="twilio_account_sid">Twilio Account SID:</label>
+                                                <input class="form-control form-control-sm" type="text" name="twilio_account_sid" id="twilio_account_sid">
+                                                <label for="twilio_auth_token">Twilio Authentication Token:</label>
+                                                <input class="form-control form-control-sm" type="text" name="twilio_auth_token" id="twilio_auth_token">
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                                            <button class="btn btn-sm btn-primary" onclick="saveTwilioKeysConfig(<?php echo $service_body->id ?>)">Save Changes</button>
                                         </div>
                                     </div>
                                 </div>

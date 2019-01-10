@@ -114,6 +114,42 @@ function saveVolunteers() {
     });
 }
 
+function saveTwilioKeysConfig(service_body_id) {
+    var twilioKeysConfiguration = $("#twilioKeysConfiguration_" + service_body_id);
+    twilioKeysConfiguration.modal('hide');
+    spinnerDialog(true, "Saving Twilio Keys Configuration...", function () {
+        var data = [];
+        var formData = twilioKeysConfiguration.find("#twilioKeysConfigurationForm").serializeArray();
+        var dataObj = {};
+        for (var formItem of formData) {
+            dataObj[formItem["name"]] = formItem["value"]
+        }
+
+        data.push(dataObj);
+
+        saveToAdminApi(
+            service_body_id,
+            0,
+            data,
+            '_YAP_CONFIG_V2_',
+            function(xhr, status) {
+                var alert = $("#service_body_saved_alert");
+                if (xhr.responseText === "{}" || xhr.status !== 200) {
+                    alert.addClass("alert-danger");
+                    alert.html("Could not save.");
+                } else {
+                    alert.addClass("alert-success");
+                    alert.html("Saved.");
+                }
+
+                alert.show();
+                alert.fadeOut(3000);
+                spinnerDialog(false);
+            }
+        );
+    });
+}
+
 function saveServiceBodyConfig(service_body_id) {
     var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
     var helpline_data_id = serviceBodyConfiguration.find(".helpline_data_id").val();
@@ -374,6 +410,26 @@ function toggleCardDetails(e) {
     var isCurrentlyShown = volunteerCard.find(".volunteerCardBody").attr("class").indexOf("show") >= 0;
     volunteerCard.find(".volunteerCardBodyToggleButton").html(isCurrentlyShown ? "+" : "-");
     volunteerCard.find(".volunteerCardBody").collapse('toggle');
+}
+
+function twilioKeysConfigure(service_body_id) {
+    spinnerDialog(true, "Retrieving Twilio Keys Configuration...", function() {
+        var twilioKeysConfiguration = $("#twilioKeysConfiguration_" + service_body_id);
+        loadFromAdminApi(service_body_id, '_YAP_CONFIG_V2_', function(data) {
+            if (!$.isEmptyObject(data)) {
+                var dataSet = data["data"][0];
+                for (var key in dataSet) {
+                    twilioKeysConfiguration.find("#" + key).val(dataSet[key]);
+                }
+
+                twilioKeysConfiguration.find("select").change();
+            }
+
+            spinnerDialog(false, "", function() {
+                twilioKeysConfiguration.modal("show");
+            });
+        });
+    });
 }
 
 function serviceBodyConfigure(service_body_id) {

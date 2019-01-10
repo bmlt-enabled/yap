@@ -138,6 +138,7 @@ class CycleAlgorithm {
 
 class DataType {
     const YAP_CONFIG = "_YAP_CONFIG_";
+    const YAP_CONFIG_V2 = "_YAP_CONFIG_V2_";
     const YAP_DATA = "_YAP_DATA_";
 }
 
@@ -633,10 +634,28 @@ function admin_PersistHelplineData($helpline_data_id = 0, $service_body_id, $dat
     return post($url, $data_bmlt_encoded, false, $_SESSION['username']);
 }
 
+function admin_PersistDbConfig($service_body_id, $data, $data_type) {
+    $db = new Database();
+    $db->query("INSERT INTO config (service_body_id,data,data_type) 
+      VALUES ('$service_body_id','$data','$data_type')");
+    return $db->execute();
+}
+
 function admin_GetUserName() {
     $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_user_info";
     $get_user_info_response = json_decode(get($url, $_SESSION['username']));
     return isset($get_user_info_response->current_user) ? $get_user_info_response->current_user->name : $_SESSION['username'];
+}
+
+function getDbData($service_body_id, $data_type) {
+    $db = new Database();
+    $db->query("SELECT data FROM config WHERE service_body_id=$service_body_id AND data_type='$data_type'");
+    $resultset = $db->resultset();
+    if ($db->rowCount() > 0) {
+        return $resultset[0]["data"];
+    } else {
+        return "{}";
+    }
 }
 
 function getAllHelplineData($data_type) {
@@ -670,7 +689,7 @@ function getServiceBodyConfigurationData($helplineData) {
         $config->service_body_id = $helplineData['service_body_id'];
 
         foreach ($data as $key => $value) {
-            if (strpos($key, 'override_') === 0 && strlen($value) > 0) {
+            if ((strpos($key, 'override_') === 0 || strpos($key, 'config_') === 0) && strlen($value) > 0) {
                 $_SESSION[$key] = $value;
             }
         }
