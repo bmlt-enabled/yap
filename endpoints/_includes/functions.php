@@ -634,16 +634,22 @@ function admin_PersistHelplineData($helpline_data_id = 0, $service_body_id, $dat
     return post($url, $data_bmlt_encoded, false, $_SESSION['username']);
 }
 
-function admin_PersistDbConfig($service_body_id, $data, $data_type) {
-    $db = new Database();
-    $db->query("INSERT INTO config (service_body_id,data,data_type) VALUES ('$service_body_id','$data','$data_type')");
-    return $db->execute();
-}
-
 function admin_GetUserName() {
     $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_user_info";
     $get_user_info_response = json_decode(get($url, $_SESSION['username']));
     return isset($get_user_info_response->current_user) ? $get_user_info_response->current_user->name : $_SESSION['username'];
+}
+
+function admin_PersistDbConfig($service_body_id, $data, $data_type) {
+    $db = new Database();
+    $current_data_check = getDbData($service_body_id, $data_type);
+    if (count($current_data_check) == 0) {
+        $db->query("INSERT INTO config (service_body_id,data,data_type) VALUES ('$service_body_id','$data','$data_type')");
+    } else {
+        $db->query("UPDATE config SET data='$data' WHERE service_body_id=$service_body_id AND data_type='$data_type'");
+    }
+
+    return $db->execute();
 }
 
 function getDbData($service_body_id, $data_type) {
