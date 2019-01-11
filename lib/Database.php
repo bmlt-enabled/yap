@@ -32,6 +32,11 @@ class Database {
         }
     }
 
+    public function __destruct()
+    {
+        $this->close();
+    }
+
     public function query($query) {
         $this->stmt = $this->dbh->prepare($query);
     }

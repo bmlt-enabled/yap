@@ -29,5 +29,7 @@ if (isset($GLOBALS['mysql_hostname'])) {
         }
     } catch (PDOException $e) {
         throw $e;
+    } finally {
+        $db->close();
     }
 }

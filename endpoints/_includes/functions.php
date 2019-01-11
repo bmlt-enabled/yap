@@ -279,6 +279,7 @@ class UpgradeAdvisor {
         if (isset($GLOBALS['mysql_hostname'])) {
             try {
                 $db = new Database();
+                $db->close();
             } catch (PDOException $e) {
                 return UpgradeAdvisor::getState( false, $e->getMessage());
             }
@@ -649,13 +650,21 @@ function admin_PersistDbConfig($service_body_id, $data, $data_type) {
         $db->query("UPDATE config SET data='$data' WHERE service_body_id=$service_body_id AND data_type='$data_type'");
     }
 
-    return $db->execute();
+    $db->execute();
+    $db->close();
 }
 
 function getDbData($service_body_id, $data_type) {
     $db = new Database();
     $db->query("SELECT data FROM config WHERE service_body_id=$service_body_id AND data_type='$data_type'");
-    return $db->resultset();
+    $resultset = $db->resultset();
+    $db->close();
+    return $resultset;
+}
+
+function getAllDbData($data_type) {
+    $db = new Database();
+
 }
 
 function getAllHelplineData($data_type) {
@@ -1162,6 +1171,7 @@ function writeMetric($data) {
     $db = new Database();
     $db->query("INSERT INTO metrics (data) VALUES ('" . json_encode($data) . "')");
     $db->execute();
+    $db->close();
 }
 
 function getMetric() {
@@ -1172,20 +1182,25 @@ function getMetric() {
                                         FROM metrics 
                                         GROUP BY DATE_FORMAT(timestamp, \"%Y-%m-%d\"), 
                                         `data`");
-    return $db->resultset();
+    $resultset = $db->resultset();
+    $db->close();
+    return $resultset;
 }
 
 function getConferences($service_body_id) {
     $db = new Database();
     $db->query("SELECT * FROM conference_participants WHERE friendlyname LIKE '" . strval(intval($service_body_id)) . "_%';");
-    return $db->resultset();
+    $resultset = $db->resultset();
+    $db->close();
+    return $resultset;
 }
 
 function setConferenceParticipant($conferencesid, $callsid, $friendlyname) {
     $db = new Database();
     $db->query("INSERT INTO conference_participants (conferencesid,callsid,friendlyname) 
       VALUES ('$conferencesid','$callsid','$friendlyname')");
-    return $db->execute();
+    $db->execute();
+    $db->close();
 }
 
 function getSessionLink($shouldUriEncode = false) {
