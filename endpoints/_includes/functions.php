@@ -291,6 +291,40 @@ class UpgradeAdvisor {
     }
 }
 
+class ServiceBodyFinder {
+    private $service_bodies;
+
+    function __construct() {
+        $this->service_bodies = getServiceBodies();
+    }
+
+    function getServiceBody($service_body_id) {
+        foreach ($this->service_bodies as $service_body) {
+            if ($service_body->id == $service_body_id) {
+                return $service_body;
+            }
+        }
+    }
+}
+
+class DbConfigFinder {
+    private $config;
+
+    function __construct()
+    {
+        $this->configs = getAllDbData(DataType::YAP_CONFIG_V2);
+    }
+
+    function getConfig($service_body_id) {
+        foreach ($this->configs as $config) {
+            if ($config['service_body_id'] == $service_body_id) {
+                return $config;
+            }
+        }
+
+        return null;
+    }
+}
 
 function checkBlacklist() {
     if (has_setting('blocklist') && strlen(setting('blocklist')) > 0 && isset($_REQUEST['Caller'])) {
@@ -645,9 +679,9 @@ function admin_PersistDbConfig($service_body_id, $data, $data_type) {
     $db = new Database();
     $current_data_check = getDbData($service_body_id, $data_type);
     if (count($current_data_check) == 0) {
-        $db->query("INSERT INTO config (service_body_id,data,data_type) VALUES ('$service_body_id','$data','$data_type')");
+        $db->query("INSERT INTO `config` (`service_body_id`,`data`,`data_type`) VALUES ('$service_body_id','$data','$data_type')");
     } else {
-        $db->query("UPDATE config SET data='$data' WHERE service_body_id=$service_body_id AND data_type='$data_type'");
+        $db->query("UPDATE `config` SET `data`='$data' WHERE `service_body_id`=$service_body_id AND `data_type`='$data_type'");
     }
 
     $db->execute();
@@ -656,7 +690,7 @@ function admin_PersistDbConfig($service_body_id, $data, $data_type) {
 
 function getDbData($service_body_id, $data_type) {
     $db = new Database();
-    $db->query("SELECT data FROM config WHERE service_body_id=$service_body_id AND data_type='$data_type'");
+    $db->query("SELECT `data` FROM `config` WHERE `service_body_id`=$service_body_id AND `data_type`='$data_type'");
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
@@ -664,7 +698,30 @@ function getDbData($service_body_id, $data_type) {
 
 function getAllDbData($data_type) {
     $db = new Database();
+    $db->query("SELECT `data`,`service_body_id` FROM `config` WHERE `data_type`='$data_type'");
+    $resultset = $db->resultset();
+    $db->close();
+    return $resultset;
+}
 
+function getTwilioKeys($service_body_id) {
+    $service_body_finder = new ServiceBodyFinder();
+    $db_config_finder = new DbConfigFinder();
+
+    $lookup_id = $service_body_id;
+
+    while (true) {
+        $config = $db_config_finder->getConfig($lookup_id);
+        if (isset($config)) {
+            $config_obj = json_decode($config['data']);
+            if (isset($config_obj->data[0]->twilio_account_sid) && isset($config_obj->data[0]->twilio_auth_token)) {
+                return $config_obj->data[0];
+            }
+        }
+
+        $lookup_id = $service_body_finder->getServiceBody($lookup_id)->parent_id;
+        if ($lookup_id == 0) return null;
+    }
 }
 
 function getAllHelplineData($data_type) {
@@ -698,7 +755,7 @@ function getServiceBodyConfigurationData($helplineData) {
         $config->service_body_id = $helplineData['service_body_id'];
 
         foreach ($data as $key => $value) {
-            if ((strpos($key, 'override_') === 0 || strpos($key, 'config_') === 0) && strlen($value) > 0) {
+            if (strpos($key, 'override_') === 0 && strlen($value) > 0) {
                 $_SESSION[$key] = $value;
             }
         }
@@ -1169,18 +1226,18 @@ function getPressWord() {
 
 function writeMetric($data) {
     $db = new Database();
-    $db->query("INSERT INTO metrics (data) VALUES ('" . json_encode($data) . "')");
+    $db->query("INSERT INTO `metrics` (`data`) VALUES ('" . json_encode($data) . "')");
     $db->execute();
     $db->close();
 }
 
 function getMetric() {
     $db = new Database();
-    $db->query("SELECT DATE_FORMAT(timestamp, \"%Y-%m-%d\") as timestamp, 
-                                        COUNT(DATE_FORMAT(timestamp, \"%Y-%m-%d\")) as counts,
+    $db->query("SELECT DATE_FORMAT(timestamp, \"%Y-%m-%d\") as `timestamp`, 
+                                        COUNT(DATE_FORMAT(`timestamp`, \"%Y-%m-%d\")) as counts,
                                         `data`
-                                        FROM metrics 
-                                        GROUP BY DATE_FORMAT(timestamp, \"%Y-%m-%d\"), 
+                                        FROM `metrics` 
+                                        GROUP BY DATE_FORMAT(`timestamp`, \"%Y-%m-%d\"), 
                                         `data`");
     $resultset = $db->resultset();
     $db->close();
@@ -1189,7 +1246,7 @@ function getMetric() {
 
 function getConferences($service_body_id) {
     $db = new Database();
-    $db->query("SELECT * FROM conference_participants WHERE friendlyname LIKE '" . strval(intval($service_body_id)) . "_%';");
+    $db->query("SELECT * FROM `conference_participants` WHERE `friendlyname` LIKE '" . strval(intval($service_body_id)) . "_%';");
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
@@ -1197,7 +1254,7 @@ function getConferences($service_body_id) {
 
 function setConferenceParticipant($conferencesid, $callsid, $friendlyname) {
     $db = new Database();
-    $db->query("INSERT INTO conference_participants (conferencesid,callsid,friendlyname) 
+    $db->query("INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`) 
       VALUES ('$conferencesid','$callsid','$friendlyname')");
     $db->execute();
     $db->close();
