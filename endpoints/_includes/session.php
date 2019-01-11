@@ -1,10 +1,9 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/Session.php';
 if (isset($_REQUEST["session_id"])) {
     session_id($_REQUEST["session_id"]);
 }
 
-$session = new Session();
+session_start();
 
 if (isset($_REQUEST)) {
     foreach ($_REQUEST as $key => $value) {
