@@ -17,9 +17,7 @@ Here is an [instructional video](https://www.dropbox.com/s/e59dzal4rkkcl2r/twili
 
 2. Once the application is configured you will need to customize the config.php file.  There are several settings there that are documented in that file.  There are a number of different ways to utilize the yap platform. 
 
-3. You will need to (`config.php`) enter `$twilio_account_sid` and `$twilio_auth_token`.  You can find this on your account dashboard.  ![alt text](https://raw.githubusercontent.com/bmlt-enabled/yap/master/resources/twilio-auth-v2.png)
-
-You can also use a different Twilio account using the admin portal under "Service Bodies".  Keep in mind that if a key or keys are set at any parent above, all child service bodies will inherit that key.  In order to use a key, just specify `override_service_body_id` in your webhook with the applicable id.
+3. You will need to (`config.php`) enter `$twilio_account_sid` and `$twilio_auth_token`.  You can find this on your account dashboard.  ![alt text](https://raw.githubusercontent.com/bmlt-enabled/yap/master/resources/twilio-auth-v2.png)  You can also use a different Twilio account using the admin portal under "Service Bodies".  Keep in mind that if a key or keys are set at any parent above, all child service bodies will inherit that key.  In order to use a key, just specify `override_service_body_id` in your webhook with the applicable id.
 
 4.  You will need to ensure that the following `config.php` parameters are set.  They should be a service body admin that will be responsible for reading and writing data back to your BMLT.  This will not work with the "Server Administrator" account.  The user should be at the highest level of access in your BMLT hierarchy that you require access to. 
 ```php
