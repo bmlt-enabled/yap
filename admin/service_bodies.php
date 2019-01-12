@@ -24,9 +24,9 @@ sort_on_field($service_bodies, 'name');
                         <td><?php echo $service_body->name ?></td>
                         <td><?php echo isset($service_body->helpline) ? $service_body->helpline : "" ?></td>
                         <td>
-                            <button class="btn btn-sm btn-info" onclick="serviceBodyConfigure(<?php echo $service_body->id ?>);"><?php echo word('call_handling')?></button>
+                            <button class="btn btn-sm btn-info" onclick="openServiceBodyCallHandling(<?php echo $service_body->id ?>);"><?php echo word('call_handling')?></button>
                             <button class="btn btn-sm btn-info" onclick="location.href='records.php?service_body_id=<?php echo $service_body->id ?>'"><?php echo word('records')?></button>
-                            <button class="btn btn-sm btn-warning" onclick="twilioKeysConfigure(<?php echo $service_body->id ?>);"><?php echo word('configure')?></button>
+                            <button class="btn btn-sm btn-warning" onclick="openServiceBodyConfigure(<?php echo $service_body->id ?>);"><?php echo word('configure')?></button>
                             <div class="modal fade" id="serviceBodyCallHandling_<?php echo $service_body->id ?>" tabindex="-1" role="dialog" aria-labelledby="configureShiftDialog" aria-hidden="true">
                                 <input type="hidden" id="helpline_data_id" name="helpline_data_id" class="helpline_data_id" value="0" />
                                 <div class="modal-dialog modal-dialog-centered" role="document">
@@ -37,8 +37,8 @@ sort_on_field($service_bodies, 'name');
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
-                                        <div class="modal-body serviceBodyHandlingItems">
-                                            <form id="serviceBodyHandlingForm" class="serviceBodyHandlingForm">
+                                        <div class="modal-body serviceBodyCallHandlingItems">
+                                            <form id="serviceBodyCallHandlingForm" class="serviceBodyCallHandlingForm">
                                                 Helpline Routing:
                                                 <select class="form-control form-control-sm" name="volunteer_routing" id="volunteer_routing">
                                                     <option value="helpline_field">Helpline Field Number</option>
@@ -136,12 +136,12 @@ sort_on_field($service_bodies, 'name');
                                         </div>
                                         <div class="modal-footer">
                                             <button class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
-                                            <button class="btn btn-sm btn-primary" onclick="saveServiceBodyConfig(<?php echo $service_body->id ?>)">Save Changes</button>
+                                            <button class="btn btn-sm btn-primary" onclick="saveServiceBodyCallHandling(<?php echo $service_body->id ?>)">Save Changes</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal fade" id="twilioKeysConfiguration_<?php echo $service_body->id ?>" tabindex="-1" role="dialog" aria-labelledby="configureShiftDialog" aria-hidden="true">
+                            <div class="modal fade" id="serviceBodyConfiguration_<?php echo $service_body->id ?>" tabindex="-1" role="dialog" aria-labelledby="configureShiftDialog" aria-hidden="true">
                                 <input type="hidden" id="helpline_data_id" name="helpline_data_id" class="helpline_data_id" value="0" />
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content">
@@ -152,7 +152,7 @@ sort_on_field($service_bodies, 'name');
                                             </button>
                                         </div>
                                         <div class="modal-body serviceBodyConfigurationItems">
-                                            <form id="twilioKeysConfigurationForm" class="twilioKeysConfigurationForm">
+                                            <form id="serviceBodyConfigurationForm" class="serviceBodyConfigurationForm">
                                                 <label for="twilio_account_sid">Twilio Account SID:</label>
                                                 <input class="form-control form-control-sm" type="text" name="twilio_account_sid" id="twilio_account_sid">
                                                 <label for="twilio_auth_token">Twilio Authentication Token:</label>
@@ -161,7 +161,7 @@ sort_on_field($service_bodies, 'name');
                                         </div>
                                         <div class="modal-footer">
                                             <button class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
-                                            <button class="btn btn-sm btn-primary" onclick="saveTwilioKeysConfig(<?php echo $service_body->id ?>)">Save Changes</button>
+                                            <button class="btn btn-sm btn-primary" onclick="saveServiceBodyConfig(<?php echo $service_body->id ?>)">Save Changes</button>
                                         </div>
                                     </div>
                                 </div>
