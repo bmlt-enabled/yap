@@ -5,16 +5,16 @@ use PHPMailer\PHPMailer\PHPMailer;
 header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
-$serviceBodyConfiguration = getServiceBodyConfiguration(setting("service_body_id"));
+$serviceBodyCallHandling = getServiceBodyCallHandling(setting("service_body_id"));
 $serviceBodyName = getServiceBody( setting( "service_body_id" ) )->name;
 
-if ($serviceBodyConfiguration->primary_contact_number_enabled) {
+if ($serviceBodyCallHandling->primary_contact_number_enabled) {
     $callerNumber = $_REQUEST["caller_number"];
     if (strpos($callerNumber, "+") !== 0) {
         $callerNumber .= "+" . $callerNumber;
     }
 
-    $recipients = explode(",", $serviceBodyConfiguration->primary_contact_number);
+    $recipients = explode(",", $serviceBodyCallHandling->primary_contact_number);
     foreach ($recipients as $recipient) {
     	$twilioClient->messages->create(
             $recipient,
@@ -26,7 +26,7 @@ if ($serviceBodyConfiguration->primary_contact_number_enabled) {
     }
 }
 
-if ($serviceBodyConfiguration->primary_contact_email_enabled && has_setting('smtp_host')) {
+if ($serviceBodyCallHandling->primary_contact_email_enabled && has_setting('smtp_host')) {
     try {
         $mail = new PHPMailer(true);
         $mail->isSMTP();
@@ -44,7 +44,7 @@ if ($serviceBodyConfiguration->primary_contact_email_enabled && has_setting('smt
         }
         $mail->setFrom(setting('smtp_from_address'), setting('smtp_from_name'));
         $mail->isHTML(true);
-        $recipients = explode(",", $serviceBodyConfiguration->primary_contact_email);
+        $recipients = explode(",", $serviceBodyCallHandling->primary_contact_email);
         foreach ($recipients as $recipient) {
             $mail->addAddress($recipient);
         }

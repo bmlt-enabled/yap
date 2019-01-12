@@ -156,7 +156,7 @@ function saveServiceBodyConfig(service_body_id) {
     serviceBodyCallHandling.modal('hide');
     spinnerDialog(true, "Saving Service Body Call Handling...", function () {
         var data = [];
-        var formData = serviceBodyCallHandling.find("#serviceBodyConfigurationForm").serializeArray();
+        var formData = serviceBodyCallHandling.find("#serviceBodyCallHandlingForm").serializeArray();
         var dataObj = {};
         for (var formItem of formData) {
             dataObj[formItem["name"]] = formItem["value"]

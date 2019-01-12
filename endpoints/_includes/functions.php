@@ -107,7 +107,7 @@ class MeetingResults {
     public $filteredList = [];
 }
 
-class ServiceBodyConfiguration {
+class ServiceBodyCallHandling {
     public $service_body_id;
     public $service_body_name;
     public $volunteer_routing_enabled = false;
@@ -546,7 +546,7 @@ function getServiceBodyCoverage($latitude, $longitude) {
         if (in_array($service_body_id, $already_checked)) continue;
         for ($i = 0; $i < count($service_bodies); $i++) {
             if ($service_bodies[$i]->id == $service_body_id) {
-                if (strlen($service_bodies[$i]->helpline) > 0 || getServiceBodyConfiguration($service_bodies[$i]->id)->volunteer_routing_enabled) {
+                if (strlen($service_bodies[$i]->helpline) > 0 || getServiceBodyCallHandling($service_bodies[$i]->id)->volunteer_routing_enabled) {
                     return $service_bodies[$i];
                 } else {
                     array_push($already_checked, $service_bodies[$i]->id);
@@ -734,7 +734,7 @@ function getVolunteerRoutingEnabledServiceBodies() {
     $helpline_enabled = array();
 
     for ($x = 0; $x < count($all_helpline_data); $x++) {
-        $config = getServiceBodyConfigurationData($all_helpline_data[$x]);
+        $config = getServiceBodyCallHandlingData($all_helpline_data[$x]);
         if ($config->volunteer_routing_enabled || $config->sms_routing_enabled) {
             for ($y = 0; $y < count($service_bodies); $y++) {
                 if ($config->service_body_id == intval($service_bodies[$y]->id) ) {
@@ -748,8 +748,8 @@ function getVolunteerRoutingEnabledServiceBodies() {
     return $helpline_enabled;
 }
 
-function getServiceBodyConfigurationData($helplineData) {
-    $config = new ServiceBodyConfiguration();
+function getServiceBodyCallHandlingData($helplineData) {
+    $config = new ServiceBodyCallHandling();
     if (isset($helplineData)) {
         $data = $helplineData['data'][0];
         $config->service_body_id = $helplineData['service_body_id'];
@@ -782,9 +782,9 @@ function getServiceBodyConfigurationData($helplineData) {
     return $config;
 }
 
-function getServiceBodyConfiguration($service_body_id) {
+function getServiceBodyCallHandling($service_body_id) {
     $helplineData = getHelplineData($service_body_id, DataType::YAP_CONFIG);
-    return getServiceBodyConfigurationData($helplineData[0]);
+    return getServiceBodyCallHandlingData($helplineData[0]);
 }
 
 function getHelplineData($service_body_id, $data_type = DataType::YAP_DATA) {

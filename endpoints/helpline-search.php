@@ -38,18 +38,18 @@
     $phone_number = isset($exploded_result[0]) ? $exploded_result[0] : "";
     $extension = isset($exploded_result[1]) ? $exploded_result[1] : "w";
     $service_body_id = isset($service_body_obj) ? $service_body_obj->id : 0;
-    $serviceBodyConfiguration = getServiceBodyConfiguration($service_body_id);
+    $serviceBodyCallHandling = getServiceBodyCallHandling($service_body_id);
 
-    if ($service_body_id > 0 && $serviceBodyConfiguration->volunteer_routing_enabled) {
-        if ($serviceBodyConfiguration->gender_routing_enabled && !isset($_SESSION['Gender'])) {
+    if ($service_body_id > 0 && $serviceBodyCallHandling->volunteer_routing_enabled) {
+        if ($serviceBodyCallHandling->gender_routing_enabled && !isset($_SESSION['Gender'])) {
             $_SESSION['Address'] = $address; ?>
             <Response>
                 <Redirect method="GET">gender-routing.php?SearchType=<?php echo urlencode($_REQUEST["SearchType"])?></Redirect>
             </Response>
             <?php
             exit();
-        } else if ($serviceBodyConfiguration->volunteer_routing_redirect && $serviceBodyConfiguration->volunteer_routing_redirect_id > 0) {
-            $calculated_service_body_id = $serviceBodyConfiguration->volunteer_routing_redirect_id;
+        } else if ($serviceBodyCallHandling->volunteer_routing_redirect && $serviceBodyCallHandling->volunteer_routing_redirect_id > 0) {
+            $calculated_service_body_id = $serviceBodyCallHandling->volunteer_routing_redirect_id;
         } else {
             $calculated_service_body_id = $service_body_id;
         }
@@ -57,7 +57,7 @@
 <Response>
         <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>"><?php echo word('please_wait_while_we_connect_your_call') ?></Say>
         <Dial>
-            <Conference waitUrl="<?php echo $serviceBodyConfiguration->moh_count == 1 ? $serviceBodyConfiguration->moh : "playlist.php?items=" . $serviceBodyConfiguration->moh?>"
+            <Conference waitUrl="<?php echo $serviceBodyCallHandling->moh_count == 1 ? $serviceBodyCallHandling->moh : "playlist.php?items=" . $serviceBodyCallHandling->moh?>"
                         statusCallback="helpline-dialer.php?service_body_id=<?php echo $calculated_service_body_id ?>&amp;Caller=<?php echo $_REQUEST['Called'] . getSessionLink(true) ?>"
                         startConferenceOnEnter="false"
                         endConferenceOnExit="true"

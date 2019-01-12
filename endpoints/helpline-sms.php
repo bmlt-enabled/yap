@@ -8,11 +8,11 @@ try {
     }
 
     $service_body = getServiceBodyCoverage( $_REQUEST['Latitude'], $_REQUEST['Longitude'] );
-    $serviceBodyConfiguration   = getServiceBodyConfiguration($service_body->id);
+    $serviceBodyCallHandling   = getServiceBodyCallHandling($service_body->id);
     $tracker                    = !isset( $_REQUEST["tracker"] ) ? 0 : $_REQUEST["tracker"];
 
-    if ($serviceBodyConfiguration->sms_routing_enabled) {
-        $phone_numbers = explode(',', getHelplineVolunteer( $serviceBodyConfiguration->service_body_id, $tracker, $serviceBodyConfiguration->sms_strategy, VolunteerType::SMS ));
+    if ($serviceBodyCallHandling->sms_routing_enabled) {
+        $phone_numbers = explode(',', getHelplineVolunteer( $serviceBodyCallHandling->service_body_id, $tracker, $serviceBodyCallHandling->sms_strategy, VolunteerType::SMS ));
 
         $twilioClient->messages->create(
             $original_caller_id,
@@ -23,7 +23,7 @@ try {
 
         foreach ($phone_numbers as $phone_number) {
             if ($phone_number == SpecialPhoneNumber::UNKNOWN) {
-                $phone_number = $serviceBodyConfiguration->primary_contact_number;
+                $phone_number = $serviceBodyCallHandling->primary_contact_number;
             }
 
             $twilioClient->messages->create(

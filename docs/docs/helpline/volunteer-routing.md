@@ -35,6 +35,6 @@ static $twilio_auth_token = "";
 9) Go to Schedules to preview your changes.  Select your service body from the dropdown, and it should render onto the calendar.  
 10) You can now test to see if things are working.
 
-    * Volunteer Routing Redirect: You do this by setting in the Service Body Configuration the Volunteer Routing mechanism to "Volunteers Redirect" and specifying the respective Service Body Id in the "Volunteers Redirect Id" field. 
+    * Volunteer Routing Redirect: You do this by setting in the Service Body Call Handling the Volunteer Routing mechanism to "Volunteers Redirect" and specifying the respective Service Body Id in the "Volunteers Redirect Id" field. 
     * Forced Caller Id: This setting changes the outgoing display caller id.
     * Call Timeout: This is the number of seconds before trying the next number for volunteer routing.

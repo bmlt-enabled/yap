@@ -10,7 +10,7 @@ parent: Helpline / Volunteer Routing
 ---
 
 
-This is configured through service body configuration, through your call strategy setting.  If you specify a Primary Contact Number, it will SMS a link to that person when a voicemail is left.
+This is configured through service body call handling, through your call strategy setting.  If you specify a Primary Contact Number, it will SMS a link to that person when a voicemail is left.
 
 You can also comma separate the values if you want it to go to more than one person.
 

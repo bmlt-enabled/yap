@@ -10,7 +10,7 @@ parent: Helpline / Volunteer Routing
 ---
 
 
-Music on hold will play when doing volunteer routing which is configurable from within the service body configuration.  You can specify one or more URLs to an MP3 file or Shoutcast stream.  Separate them by commas.
+Music on hold will play when doing volunteer routing which is configurable from within the service body call handling.  You can specify one or more URLs to an MP3 file or Shoutcast stream.  Separate them by commas.
 
 There are also some free alternatives.  They are licensed by Creative Commons.  They are playlists themselves so they may not be combined with any other URLs. 
 

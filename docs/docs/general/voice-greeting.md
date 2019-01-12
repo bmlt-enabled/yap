@@ -24,4 +24,4 @@ You can also set a custom greeting for voicemail.
 static $en_US_voicemail_greeting = "https://example.com/your-recorded-greeting.mp3"
 ```
 
-These settings are overridable from within each service body configuration.
+These settings are overridable from within each service body call handling.

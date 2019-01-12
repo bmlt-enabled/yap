@@ -3,7 +3,7 @@ require_once '_includes/functions.php';
 header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
-getServiceBodyConfiguration(setting("service_body_id"));
+getServiceBodyCallHandling(setting("service_body_id"));
 $promptset_name = str_replace("-", "_", getWordLanguage()) . "_voicemail_greeting";
 ?>
 <Response>
