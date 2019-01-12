@@ -89,3 +89,4 @@ $please_send_a_message_formatting_as = "por favor, envie uma mensagem usando o f
 $followed_by_your_location = "seguido pela sua localização como cidade, município ou CEP";
 $reports = "Reports";
 $records = "Records";
+$call_handling = "Call Handling";

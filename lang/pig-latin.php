@@ -81,3 +81,4 @@ $could_not_find_location_please_retry_your_entry = "orrysay , ouldcay otnay indf
 $helpline_no_results_found_retry = "orrysay , onay esultsray ouldcay ebay oundfay orfay ouryay earchsay iteriacray , easeplay etryray ouryay entryyay";
 $reports = "eportsray";
 $records = "ecordsray";
+$call_handling = "allcay andlingcay";

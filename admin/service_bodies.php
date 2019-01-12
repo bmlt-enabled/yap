@@ -24,21 +24,21 @@ sort_on_field($service_bodies, 'name');
                         <td><?php echo $service_body->name ?></td>
                         <td><?php echo isset($service_body->helpline) ? $service_body->helpline : "" ?></td>
                         <td>
-                            <button class="btn btn-sm btn-info" onclick="serviceBodyConfigure(<?php echo $service_body->id ?>);"><?php echo word('configure')?></button>
+                            <button class="btn btn-sm btn-info" onclick="serviceBodyConfigure(<?php echo $service_body->id ?>);"><?php echo word('call_handling')?></button>
                             <button class="btn btn-sm btn-info" onclick="location.href='records.php?service_body_id=<?php echo $service_body->id ?>'"><?php echo word('records')?></button>
-                            <button class="btn btn-sm btn-warning" onclick="twilioKeysConfigure(<?php echo $service_body->id ?>);">Twilio Keys</button>
-                            <div class="modal fade" id="serviceBodyConfiguration_<?php echo $service_body->id ?>" tabindex="-1" role="dialog" aria-labelledby="configureShiftDialog" aria-hidden="true">
+                            <button class="btn btn-sm btn-warning" onclick="twilioKeysConfigure(<?php echo $service_body->id ?>);"><?php echo word('configure')?></button>
+                            <div class="modal fade" id="serviceBodyCallHandling_<?php echo $service_body->id ?>" tabindex="-1" role="dialog" aria-labelledby="configureShiftDialog" aria-hidden="true">
                                 <input type="hidden" id="helpline_data_id" name="helpline_data_id" class="helpline_data_id" value="0" />
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title">Configure <?php echo $service_body->name ?></h5>
+                                            <h5 class="modal-title"><?php echo sprintf("%s (%s)", word('call_handling'), $service_body->name); ?></h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
-                                        <div class="modal-body serviceBodyConfigurationItems">
-                                            <form id="serviceBodyConfigurationForm" class="serviceBodyConfigurationForm">
+                                        <div class="modal-body serviceBodyHandlingItems">
+                                            <form id="serviceBodyHandlingForm" class="serviceBodyHandlingForm">
                                                 Helpline Routing:
                                                 <select class="form-control form-control-sm" name="volunteer_routing" id="volunteer_routing">
                                                     <option value="helpline_field">Helpline Field Number</option>
@@ -146,7 +146,7 @@ sort_on_field($service_bodies, 'name');
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title">Twilio Keys For <?php echo $service_body->name ?></h5>
+                                            <h5 class="modal-title"><?php echo sprintf("%s (%s)", word('configure'), $service_body->name) ?></h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>

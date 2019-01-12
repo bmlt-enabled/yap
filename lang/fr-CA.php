@@ -89,3 +89,4 @@ $please_send_a_message_formatting_as = "s'il vous plaît envoyer un message form
 $followed_by_your_location = "suivi de votre position en tant que ville, région ou code postal";
 $reports = "Reports";
 $records = "Records";
+$call_handling = "Call Handling";

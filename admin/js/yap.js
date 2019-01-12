@@ -117,7 +117,7 @@ function saveVolunteers() {
 function saveTwilioKeysConfig(service_body_id) {
     var twilioKeysConfiguration = $("#twilioKeysConfiguration_" + service_body_id);
     twilioKeysConfiguration.modal('hide');
-    spinnerDialog(true, "Saving Twilio Keys Configuration...", function () {
+    spinnerDialog(true, "Saving Service Body Configuration...", function () {
         var data = [];
         var formData = twilioKeysConfiguration.find("#twilioKeysConfigurationForm").serializeArray();
         var dataObj = {};
@@ -151,12 +151,12 @@ function saveTwilioKeysConfig(service_body_id) {
 }
 
 function saveServiceBodyConfig(service_body_id) {
-    var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
-    var helpline_data_id = serviceBodyConfiguration.find(".helpline_data_id").val();
-    serviceBodyConfiguration.modal('hide');
-    spinnerDialog(true, "Saving Service Body Configuration...", function () {
+    var serviceBodyCallHandling = $("#serviceBodyCallHandling_" + service_body_id);
+    var helpline_data_id = serviceBodyCallHandling.find(".helpline_data_id").val();
+    serviceBodyCallHandling.modal('hide');
+    spinnerDialog(true, "Saving Service Body Call Handling...", function () {
         var data = [];
-        var formData = serviceBodyConfiguration.find("#serviceBodyConfigurationForm").serializeArray();
+        var formData = serviceBodyCallHandling.find("#serviceBodyConfigurationForm").serializeArray();
         var dataObj = {};
         for (var formItem of formData) {
             dataObj[formItem["name"]] = formItem["value"]
@@ -413,7 +413,7 @@ function toggleCardDetails(e) {
 }
 
 function twilioKeysConfigure(service_body_id) {
-    spinnerDialog(true, "Retrieving Twilio Keys Configuration...", function() {
+    spinnerDialog(true, "Retrieving Service Body Configuration...", function() {
         var twilioKeysConfiguration = $("#twilioKeysConfiguration_" + service_body_id);
         loadFromAdminApi(service_body_id, '_YAP_CONFIG_V2_', function(data) {
             if (!$.isEmptyObject(data)) {
@@ -433,22 +433,22 @@ function twilioKeysConfigure(service_body_id) {
 }
 
 function serviceBodyConfigure(service_body_id) {
-    spinnerDialog(true, "Retrieving Service Body Configuration...", function() {
-        var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
+    spinnerDialog(true, "Retrieving Service Body Call Handling...", function() {
+        var serviceBodyCallHandling = $("#serviceBodyCallHandling_" + service_body_id);
         loadServiceBodyConfig(service_body_id, function(data) {
             if (!$.isEmptyObject(data)) {
-                serviceBodyConfiguration.find("#helpline_data_id").val(data["id"]);
+                serviceBodyCallHandling.find("#helpline_data_id").val(data["id"]);
                 var dataSet = data["data"][0];
                 for (var key in dataSet) {
                     if (dataSet[key]) {
-                        serviceBodyConfiguration.find("#" + key).prop('checked', true);
+                        serviceBodyCallHandling.find("#" + key).prop('checked', true);
                     }
-                    serviceBodyConfiguration.find("#" + key).val(dataSet[key]);
+                    serviceBodyCallHandling.find("#" + key).val(dataSet[key]);
                 }
 
-                serviceBodyConfiguration.find("select").change(function() {
+                serviceBodyCallHandling.find("select").change(function() {
                     var trigger = this.id;
-                    for (var match of $("#serviceBodyConfiguration_" + service_body_id).find("[data-" + trigger + "]")) {
+                    for (var match of $("#serviceBodyCallHandling_" + service_body_id).find("[data-" + trigger + "]")) {
                         if ($(match).attr("data-" + trigger).split(",").indexOf(this.value) > -1) {
                             $(match).closest(".service_bodies_field_container").show();
                         } else {
@@ -457,11 +457,11 @@ function serviceBodyConfigure(service_body_id) {
                     }
                 });
 
-                serviceBodyConfiguration.find("select").change();
+                serviceBodyCallHandling.find("select").change();
             }
 
             spinnerDialog(false, "", function() {
-                serviceBodyConfiguration.modal("show");
+                serviceBodyCallHandling.modal("show");
             });
         });
     });
