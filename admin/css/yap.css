@@ -149,3 +149,17 @@ div#signin {
 .service_bodies_field_container {
     display: none;
 }
+
+.addFieldButton {
+    display: inline;
+}
+
+#serviceBodyConfigurationFields {
+    display: inline;
+    width: 90%;
+}
+
+.serviceBodyField {
+    display: block;
+}
+

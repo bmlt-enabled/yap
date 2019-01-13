@@ -5,42 +5,44 @@ require_once 'logging.php';
 require_once 'session.php';
 static $version  = "3.0.0-beta2";
 static $settings_whitelist = [
-    'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true],
-    'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false],
-    'config' => [ 'description' => '' , 'default' => null, 'overridable' => true],
-    'custom_query' => ['description' => '', 'default' => '&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width={SETTING_MEETING_SEARCH_RADIUS}&weekdays={DAY}', 'overridable' => true],
-    'fallback_number' => [ 'description' => '' , 'default' => '', 'overridable' => true],
-    'gather_hints' => [ 'description' => '' , 'default' => '', 'overridable' => true],
-    'gather_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
-    'grace_minutes' => [ 'description' => '' , 'default' => 15, 'overridable' => true],
-    'helpline_bmlt_root_server' => [ 'description' => '' , 'default' => null, 'overridable' => false],
-    'helpline_fallback' => [ 'description' => '', 'default' => '', 'overridable' => true],
-    'helpline_search_radius' => [ 'description' => '' , 'default' => 30, 'overridable' => true],
-    'helpline_search_unpublished' => [ 'description' => '' , 'default' => false, 'overridable' => true],
-    'ignore_formats' => [ 'description' => '' , 'default' => null, 'overridable' => true],
-    'include_location_text' => [ 'description' => '', 'default' => false, 'overridable' => true],
-    'include_map_link' => [ 'description' => '' , 'default' => false, 'overridable' => true],
-    'infinite_searching' => [ 'description' => '' , 'default' => false, 'overridable' => true],
-    'jft_option' => [ 'description' => '' , 'default' => false, 'overridable' => true],
-    'language' => [ 'description' => '' , 'default' => 'en', 'overridable' => true],
-    'language_selections' => [ 'description' => '', 'default' => '', 'overridable' => true],
-    'location_lookup_bias' => [ 'description' => '' , 'default' => 'country:us', 'overridable' => true],
-    'meeting_result_sort' => [ 'description' => '' , 'default' => MeetingResultSort::TODAY, 'overridable' => true],
-    'meeting_search_radius' => [ 'description' => '' , 'default' => -50, 'overridable' => true],
-    'postal_code_length' => [ 'description' => '' , 'default' => 5, 'overridable' => true],
-    'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true],
-    'result_count_max' => [ 'description' => '' , 'default' => 5, 'overridable' => true],
-    'service_body_id' => [ 'description' => '', 'default' => null, 'overridable' => true],
-    'session_id' => ['description' => '', 'default' => '', 'overridable' => true],
-    'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true],
-    'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true],
-    'sms_helpline_keyword' => ['description' => '', 'default' => 'talk', 'overridable' => true],
-    'speech_gathering' => [ 'description' => '', 'default' => true, 'overridable' => true],
-    'title' => [ 'description' => '' , 'default' => '', 'overridable' => true],
-    'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true],
-    'tomato_helpline_routing' => [ 'description' => '', 'default' => false, 'overridable' => true],
-    'voice' => [ 'description' => '', 'default' => 'woman', 'overridable' => true],
-    'word_language' => [ 'description' => '', 'default' => 'en-US', 'overridable' => true]
+    'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
+    'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false, 'hidden' => false],
+    'config' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => true],
+    'custom_query' => ['description' => '', 'default' => '&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width={SETTING_MEETING_SEARCH_RADIUS}&weekdays={DAY}', 'overridable' => true, 'hidden' => false],
+    'fallback_number' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
+    'gather_hints' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
+    'gather_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true, 'hidden' => false],
+    'grace_minutes' => [ 'description' => '' , 'default' => 15, 'overridable' => true, 'hidden' => false],
+    'helpline_bmlt_root_server' => [ 'description' => '' , 'default' => null, 'overridable' => false, 'hidden' => false],
+    'helpline_fallback' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => false],
+    'helpline_search_radius' => [ 'description' => '' , 'default' => 30, 'overridable' => true, 'hidden' => false],
+    'helpline_search_unpublished' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'ignore_formats' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => false],
+    'include_location_text' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
+    'include_map_link' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'infinite_searching' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'jft_option' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'language' => [ 'description' => '' , 'default' => 'en', 'overridable' => true, 'hidden' => false],
+    'language_selections' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => false],
+    'location_lookup_bias' => [ 'description' => '' , 'default' => 'country:us', 'overridable' => true, 'hidden' => false],
+    'meeting_result_sort' => [ 'description' => '' , 'default' => MeetingResultSort::TODAY, 'overridable' => true, 'hidden' => false],
+    'meeting_search_radius' => [ 'description' => '' , 'default' => -50, 'overridable' => true, 'hidden' => false],
+    'postal_code_length' => [ 'description' => '' , 'default' => 5, 'overridable' => true, 'hidden' => false],
+    'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'result_count_max' => [ 'description' => '' , 'default' => 5, 'overridable' => true, 'hidden' => false],
+    'service_body_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
+    'session_id' => ['description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
+    'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'sms_helpline_keyword' => ['description' => '', 'default' => 'talk', 'overridable' => true, 'hidden' => false],
+    'speech_gathering' => [ 'description' => '', 'default' => true, 'overridable' => true, 'hidden' => false],
+    'title' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
+    'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
+    'tomato_helpline_routing' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
+    'twilio_account_sid' => [ 'description' => '', 'default' => false, 'overridable' => false, 'hidden' => true],
+    'twilio_auth_token' => [ 'description' => '', 'default' => false, 'overridable' => false, 'hidden' => true],
+    'voice' => [ 'description' => '', 'default' => 'woman', 'overridable' => true, 'hidden' => false],
+    'word_language' => [ 'description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false]
 ];
 checkBlacklist();
 if (has_setting('config')) {
@@ -60,7 +62,7 @@ static $available_prompts = [
 
 foreach ($available_languages as $available_language_key => $available_language_value) {
     foreach ($available_prompts as $available_prompt) {
-        $settings_whitelist[str_replace("-", "_", $available_language_key) . "_" . $available_prompt] = [ 'description' => '', 'default' => null, 'overridable' => true];
+        $settings_whitelist[str_replace("-", "_", $available_language_key) . "_" . $available_prompt] = [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false];
     }
 }
 
@@ -704,7 +706,7 @@ function getAllDbData($data_type) {
     return $resultset;
 }
 
-function getTwilioKeys($service_body_id) {
+function getServiceBodyConfig($service_body_id) {
     $service_body_finder = new ServiceBodyFinder();
     $db_config_finder = new DbConfigFinder();
 

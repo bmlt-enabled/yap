@@ -14,9 +14,8 @@
                     </thead>
                     <tbody>
                     <?php
-                    $settings_array = $GLOBALS['settings_whitelist'];
-                    ksort($settings_array);
-                    foreach ($settings_array as $key => $value) { ?>
+                    foreach ($settings_array as $key => $value) {
+                        if (!$value['hidden']) { ?>
                         <tr>
                             <td><?php echo $key ?></td>
                             <td><?php
@@ -36,7 +35,9 @@
                             </td>
                             <td><?php echo $value['description'] ?></td>
                         </tr>
-                    <?php } ?>
+                    <?php
+                        }
+                    } ?>
                     </tbody>
                 </table>
             </div>

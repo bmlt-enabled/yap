@@ -11,7 +11,7 @@ if (isset($_SESSION["twilio_account_sid"]) && isset($_SESSION["twilio_auth_token
     $token = $_SESSION["twilio_auth_token"];
 } else {
     if (has_setting("service_body_id")) {
-        $config = getTwilioKeys(setting("service_body_id"));
+        $config = getServiceBodyConfig(setting("service_body_id"));
     }
 
     if (isset($config)) {

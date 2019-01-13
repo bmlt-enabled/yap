@@ -153,10 +153,13 @@ sort_on_field($service_bodies, 'name');
                                         </div>
                                         <div class="modal-body serviceBodyConfigurationItems">
                                             <form id="serviceBodyConfigurationForm" class="serviceBodyConfigurationForm">
-                                                <label for="twilio_account_sid">Twilio Account SID:</label>
-                                                <input class="form-control form-control-sm" type="text" name="twilio_account_sid" id="twilio_account_sid">
-                                                <label for="twilio_auth_token">Twilio Authentication Token:</label>
-                                                <input class="form-control form-control-sm" type="text" name="twilio_auth_token" id="twilio_auth_token">
+                                                <select class="form-control form-control-sm" name="serviceBodyConfigurationFields" id="serviceBodyConfigurationFields">
+                                                    <?php foreach ($settings_whitelist as $setting => $value) { ?>
+                                                        <option value="field_<?php echo $setting?>"><?php echo $setting?></option>
+                                                    <?php } ?>
+                                                </select>
+                                                <button class="btn btn-sm btn-primary addFieldButton" onclick="addServiceBodyButtonClick(<?php echo $service_body->id ?>)">+</button>
+                                                <div id="serviceBodyFieldsPlaceholder"></div>
                                             </form>
                                         </div>
                                         <div class="modal-footer">

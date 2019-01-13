@@ -415,14 +415,17 @@ function toggleCardDetails(e) {
 function openServiceBodyConfigure(service_body_id) {
     spinnerDialog(true, "Retrieving Service Body Configuration...", function() {
         var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
+        var serviceBodyFields = $("#serviceBodyConfigurationFields");
         loadFromAdminApi(service_body_id, '_YAP_CONFIG_V2_', function(data) {
             if (!$.isEmptyObject(data)) {
+                clearServiceBodyFields(service_body_id);
                 var dataSet = data["data"][0];
                 for (var key in dataSet) {
-                    serviceBodyConfiguration.find("#" + key).val(dataSet[key]);
+                    if (key !== "serviceBodyConfigurationFields") {
+                        addServiceBodyField(service_body_id, key);
+                        serviceBodyConfiguration.find("#" + key).val(dataSet[key]);
+                    }
                 }
-
-                serviceBodyConfiguration.find("select").change();
             }
 
             spinnerDialog(false, "", function() {
@@ -430,6 +433,20 @@ function openServiceBodyConfigure(service_body_id) {
             });
         });
     });
+}
+
+function addServiceBodyButtonClick(service_body_id) {
+    var configName = $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyConfigurationFields").val().replace("field_", "");
+    addServiceBodyField(service_body_id, configName);
+    event.preventDefault();
+}
+
+function addServiceBodyField(service_body_id, configName) {
+    $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyFieldsPlaceholder").append("<div class=\"serviceBodyField\"><label for=\"" + configName + "\">" + configName + "</label><input class=\"form-control form-control-sm\" type=\"text\" name=\"" + configName + "\" id=\"" + configName + "\"></div>");
+}
+
+function clearServiceBodyFields(service_body_id) {
+    $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyFieldsPlaceholder").html("");
 }
 
 function openServiceBodyCallHandling(service_body_id) {
