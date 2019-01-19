@@ -1,8 +1,8 @@
 <?php
+session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config.php';
 require_once 'migrations.php';
 require_once 'logging.php';
-require_once 'session.php';
 static $version  = "3.0.0-beta2";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -31,7 +31,6 @@ static $settings_whitelist = [
     'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'result_count_max' => [ 'description' => '' , 'default' => 5, 'overridable' => true, 'hidden' => false],
     'service_body_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
-    'session_id' => ['description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
     'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_helpline_keyword' => ['description' => '', 'default' => 'talk', 'overridable' => true, 'hidden' => false],
@@ -44,6 +43,7 @@ static $settings_whitelist = [
     'voice' => [ 'description' => '', 'default' => 'woman', 'overridable' => true, 'hidden' => false],
     'word_language' => [ 'description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false]
 ];
+require_once 'session.php';
 checkBlacklist();
 if (has_setting('config')) {
     include_once $_SERVER['DOCUMENT_ROOT'] . '/config_'.setting('config').'.php';
@@ -709,20 +709,22 @@ function getAllDbData($data_type) {
 function getServiceBodyConfig($service_body_id) {
     $service_body_finder = new ServiceBodyFinder();
     $db_config_finder = new DbConfigFinder();
-
     $lookup_id = $service_body_id;
+    $config = new StdClass();
 
     while (true) {
-        $config = $db_config_finder->getConfig($lookup_id);
-        if (isset($config)) {
-            $config_obj = json_decode($config['data']);
-            if (isset($config_obj->data[0]->twilio_account_sid) && isset($config_obj->data[0]->twilio_auth_token)) {
-                return $config_obj->data[0];
+        $config_from_db = $db_config_finder->getConfig($lookup_id);
+        if (isset($config_from_db)) {
+            $config_obj = json_decode($config_from_db['data']);
+            foreach ($GLOBALS['settings_whitelist'] as $setting => $value) {
+                if (isset($config_obj->data[0]->$setting)) {
+                    $config->$setting = $config_obj->data[0]->$setting;
+                }
             }
         }
 
         $lookup_id = $service_body_finder->getServiceBody($lookup_id)->parent_id;
-        if ($lookup_id == 0) return null;
+        if ($lookup_id == 0) return $config;
     }
 }
 
@@ -1263,5 +1265,5 @@ function setConferenceParticipant($conferencesid, $callsid, $friendlyname) {
 }
 
 function getSessionLink($shouldUriEncode = false) {
-    return ($shouldUriEncode ? "&amp;" : "&") . "session_id=" . $_SESSION['PHPSESSID'];
+    return ($shouldUriEncode ? "&amp;" : "&") . "PHPSESSID=" . $_SESSION['PHPSESSID'];
 }
