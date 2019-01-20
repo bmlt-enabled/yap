@@ -38,8 +38,8 @@ static $settings_whitelist = [
     'title' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'tomato_helpline_routing' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
-    'twilio_account_sid' => [ 'description' => '', 'default' => false, 'overridable' => false, 'hidden' => true],
-    'twilio_auth_token' => [ 'description' => '', 'default' => false, 'overridable' => false, 'hidden' => true],
+    'twilio_account_sid' => [ 'description' => '', 'default' => '', 'overridable' => false, 'hidden' => true],
+    'twilio_auth_token' => [ 'description' => '', 'default' => '', 'overridable' => false, 'hidden' => true],
     'voice' => [ 'description' => '', 'default' => 'woman', 'overridable' => true, 'hidden' => false],
     'word_language' => [ 'description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false]
 ];
