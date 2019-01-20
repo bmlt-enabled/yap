@@ -155,7 +155,7 @@ sort_on_field($service_bodies, 'name');
                                             <form id="serviceBodyConfigurationForm" class="serviceBodyConfigurationForm">
                                                 <select class="form-control form-control-sm" name="serviceBodyConfigurationFields" id="serviceBodyConfigurationFields">
                                                     <?php foreach ($settings_whitelist as $setting => $value) { ?>
-                                                        <option value="field_<?php echo $setting?>"><?php echo $setting?></option>
+                                                        <option value="<?php echo $setting?>"><?php echo $setting?></option>
                                                     <?php } ?>
                                                 </select>
                                                 <button class="btn btn-sm btn-primary addFieldButton" onclick="addServiceBodyButtonClick(<?php echo $service_body->id ?>)">+</button>

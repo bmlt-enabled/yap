@@ -159,7 +159,11 @@ div#signin {
     width: 90%;
 }
 
-.serviceBodyField {
-    display: block;
+.serviceBodyFieldInput {
+    display: inline;
+    width: 90%;
 }
 
+.removeFieldButton {
+    display: inline;
+}

@@ -436,13 +436,19 @@ function openServiceBodyConfigure(service_body_id) {
 }
 
 function addServiceBodyButtonClick(service_body_id) {
-    var configName = $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyConfigurationFields").val().replace("field_", "");
+    var configName = $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyConfigurationFields").val();
     addServiceBodyField(service_body_id, configName);
     event.preventDefault();
 }
 
 function addServiceBodyField(service_body_id, configName) {
-    $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyFieldsPlaceholder").append("<div class=\"serviceBodyField\"><label for=\"" + configName + "\">" + configName + "</label><input class=\"form-control form-control-sm\" type=\"text\" name=\"" + configName + "\" id=\"" + configName + "\"></div>");
+    $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyConfigurationFields option[value='" + configName + "']").remove();
+    $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyFieldsPlaceholder").append("<div id=\"serviceBodyField_" + configName + "\" class=\"serviceBodyField\"><label for=\"" + configName + "\">" + configName + "</label><div class=\"serviceBodyFieldLine\"><input class=\"form-control form-control-sm serviceBodyFieldInput\" type=\"text\" name=\"" + configName + "\" id=\"" + configName + "\"><button class=\"btn btn-sm btn-primary removeFieldButton\" onclick=\"removeServiceBodyField(" + service_body_id + ",'" + configName + "')\">-</button></div></div>");
+}
+
+function removeServiceBodyField(service_body_id, configName) {
+    $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyFieldsPlaceholder").find("#serviceBodyField_" + configName).remove();
+    $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyConfigurationFields").append("<option value=\"" + configName + "\">" + configName + "</option>");
 }
 
 function clearServiceBodyFields(service_body_id) {
