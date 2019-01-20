@@ -443,8 +443,9 @@ function addServiceBodyButtonClick(service_body_id) {
 
 function addServiceBodyField(service_body_id, configName) {
     if (configName != null) {
-        $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyConfigurationFields option[value='" + configName + "']").attr("disabled", "disabled");
-        $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyFieldsPlaceholder").append("<div id=\"serviceBodyField_" + configName + "\" class=\"serviceBodyField\"><label for=\"" + configName + "\">" + configName + "</label><div class=\"serviceBodyFieldLine\"><input class=\"form-control form-control-sm serviceBodyFieldInput\" type=\"text\" name=\"" + configName + "\" id=\"" + configName + "\"><button class=\"btn btn-sm btn-primary removeFieldButton\" onclick=\"removeServiceBodyField(" + service_body_id + ",'" + configName + "')\">-</button></div></div>");
+        var field = $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyConfigurationFields option[value='" + configName + "']")
+        field.attr("disabled", "disabled");
+        $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyFieldsPlaceholder").append("<div id=\"serviceBodyField_" + configName + "\" class=\"serviceBodyField\"><label for=\"" + configName + "\">" + configName + "</label><div class=\"serviceBodyFieldLine\"><input class=\"form-control form-control-sm serviceBodyFieldInput\" type=\"text\" name=\"" + configName + "\" id=\"" + configName + "\" value=\"" + field.attr("data-default") + "\"> <button class=\"btn btn-sm btn-primary removeFieldButton\" onclick=\"removeServiceBodyField(" + service_body_id + ",'" + configName + "')\">-</button></div></div>");
     }
 }
 
