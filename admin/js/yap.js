@@ -442,13 +442,15 @@ function addServiceBodyButtonClick(service_body_id) {
 }
 
 function addServiceBodyField(service_body_id, configName) {
-    $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyConfigurationFields option[value='" + configName + "']").remove();
-    $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyFieldsPlaceholder").append("<div id=\"serviceBodyField_" + configName + "\" class=\"serviceBodyField\"><label for=\"" + configName + "\">" + configName + "</label><div class=\"serviceBodyFieldLine\"><input class=\"form-control form-control-sm serviceBodyFieldInput\" type=\"text\" name=\"" + configName + "\" id=\"" + configName + "\"><button class=\"btn btn-sm btn-primary removeFieldButton\" onclick=\"removeServiceBodyField(" + service_body_id + ",'" + configName + "')\">-</button></div></div>");
+    if (configName != null) {
+        $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyConfigurationFields option[value='" + configName + "']").attr("disabled", "disabled");
+        $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyFieldsPlaceholder").append("<div id=\"serviceBodyField_" + configName + "\" class=\"serviceBodyField\"><label for=\"" + configName + "\">" + configName + "</label><div class=\"serviceBodyFieldLine\"><input class=\"form-control form-control-sm serviceBodyFieldInput\" type=\"text\" name=\"" + configName + "\" id=\"" + configName + "\"><button class=\"btn btn-sm btn-primary removeFieldButton\" onclick=\"removeServiceBodyField(" + service_body_id + ",'" + configName + "')\">-</button></div></div>");
+    }
 }
 
 function removeServiceBodyField(service_body_id, configName) {
     $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyFieldsPlaceholder").find("#serviceBodyField_" + configName).remove();
-    $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyConfigurationFields").append("<option value=\"" + configName + "\">" + configName + "</option>");
+    $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyConfigurationFields option[value='" + configName + "']").removeAttr("disabled");
 }
 
 function clearServiceBodyFields(service_body_id) {
