@@ -1253,7 +1253,7 @@ function getFlag($flag) {
 }
 
 function getSessionLink($shouldUriEncode = false) {
-    return ($shouldUriEncode ? "&amp;" : "&") . "PHPSESSID=" . $_SESSION['PHPSESSID'];
+    return (isset($_SESSION['PHPSESSID']) ? ($shouldUriEncode ? "&amp;" : "&") . ("PHPSESSID=" . $_SESSION['PHPSESSID']) : "");
 }
 
 require_once "legacydata.php";
