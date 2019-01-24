@@ -679,7 +679,7 @@ function admin_PersistDbConfig($service_body_id, $data, $data_type) {
 
 function getDbData($service_body_id, $data_type) {
     $db = new Database();
-    $db->query("SELECT `data` FROM `config` WHERE `service_body_id`=$service_body_id AND `data_type`='$data_type'");
+    $db->query("SELECT `data`,`service_body_id` FROM `config` WHERE `service_body_id`=$service_body_id AND `data_type`='$data_type'");
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
