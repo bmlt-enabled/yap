@@ -3,6 +3,6 @@
 <script src="js/popper.min.js"></script>
 <script src="js/bootstrap-4.1.0.min.js"></script>
 <script src="js/touch-punch-0.2.3.min.js"></script>
-<script src="js/yap.js?v=<?php echo time()?>"></script>
+<script src="js/yap.js"></script>
 </body>
 </html>

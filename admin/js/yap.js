@@ -94,7 +94,7 @@ function saveVolunteers() {
             $("#service_body_id").val(),
             $("#helpline_data_id").val(),
             data,
-            "_YAP_DATA_",
+            "_YAP_VOLUNTEERS_V2_",
             function (xhr, status) {
                 var alert = $("#volunteer_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
@@ -168,7 +168,7 @@ function saveServiceBodyCallHandling(service_body_id) {
             service_body_id,
             helpline_data_id,
             data,
-            '_YAP_CONFIG_',
+            '_YAP_CALL_HANDLING_V2_',
             function(xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
@@ -187,19 +187,13 @@ function saveServiceBodyCallHandling(service_body_id) {
     });
 }
 
-function loadServiceBodyConfig(serviceBodyId, callback) {
-    loadFromAdminApi(serviceBodyId, '_YAP_CONFIG_', function(data) {
-        callback(data);
-    });
-}
-
 function saveToAdminApi(service_body_id, helpline_data_id, data, data_type, callback) {
     $.ajax({
         async: false,
         type: "POST",
         url: "api.php?action=save&helpline_data_id=" + helpline_data_id
         + "&service_body_id=" + service_body_id + "&data_type=" + data_type,
-        data: JSON.stringify({"data": data}),
+        data: JSON.stringify(data),
         dataType: "json",
         contentType: "application/json",
         complete: callback,
@@ -222,11 +216,11 @@ function clearVolunteerCards() {
 }
 
 function loadVolunteers(serviceBodyId, callback) {
-    loadFromAdminApi(serviceBodyId, '_YAP_DATA_', function(data) {
+    loadFromAdminApi(serviceBodyId, '_YAP_VOLUNTEERS_V2_', function(data) {
         var helpline_data_id = 0;
         if (!$.isEmptyObject(data)) {
             helpline_data_id = data["id"];
-            for (item of data["data"]) {
+            for (item of data) {
                 addVolunteer(item)
             }
         }
@@ -419,7 +413,7 @@ function openServiceBodyConfigure(service_body_id) {
         loadFromAdminApi(service_body_id, '_YAP_CONFIG_V2_', function(data) {
             if (!$.isEmptyObject(data)) {
                 clearServiceBodyFields(service_body_id);
-                var dataSet = data["data"][0];
+                var dataSet = data[0];
                 for (var key in dataSet) {
                     if (key !== "serviceBodyConfigurationFields") {
                         addServiceBodyField(service_body_id, key);
@@ -461,10 +455,10 @@ function clearServiceBodyFields(service_body_id) {
 function openServiceBodyCallHandling(service_body_id) {
     spinnerDialog(true, "Retrieving Service Body Call Handling...", function() {
         var serviceBodyCallHandling = $("#serviceBodyCallHandling_" + service_body_id);
-        loadServiceBodyConfig(service_body_id, function(data) {
+        loadFromAdminApi(service_body_id, '_YAP_CALL_HANDLING_V2_', function(data) {
             if (!$.isEmptyObject(data)) {
                 serviceBodyCallHandling.find("#helpline_data_id").val(data["id"]);
-                var dataSet = data["data"][0];
+                var dataSet = data[0];
                 for (var key in dataSet) {
                     if (dataSet[key]) {
                         serviceBodyCallHandling.find("#" + key).prop('checked', true);

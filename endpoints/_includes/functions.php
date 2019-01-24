@@ -142,6 +142,8 @@ class DataType {
     const YAP_CONFIG = "_YAP_CONFIG_";
     const YAP_CONFIG_V2 = "_YAP_CONFIG_V2_";
     const YAP_DATA = "_YAP_DATA_";
+    const YAP_CALL_HANDLING_V2 = "_YAP_CALL_HANDLING_V2_";
+    const YAP_VOLUNTEERS_V2 = "_YAP_VOLUNTEERS_V2_";
 }
 
 class SpecialPhoneNumber {
@@ -656,21 +658,6 @@ function admin_GetServiceBodiesForUser() {
     return json_decode(get($url, $_SESSION['username']))->service_body;
 }
 
-function admin_PersistHelplineData($helpline_data_id = 0, $service_body_id, $data, $data_type = DataType::YAP_DATA) {
-    $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php";
-    if ($helpline_data_id == 0) {
-        $data_bmlt_encoded = "admin_action=add_meeting&service_body_id=" . $service_body_id . "&meeting_field[]=meeting_name,".$data_type;
-    } else {
-        $data_bmlt_encoded = "admin_action=modify_meeting&meeting_id=" . $helpline_data_id;
-    }
-
-    $helpline_data = str_replace(",", ";", $data);
-    log_debug("helpline_data_length:" . strlen($helpline_data));
-    $data_bmlt_encoded .= "&meeting_field[]=contact_phone_1," . $helpline_data;
-
-    return post($url, $data_bmlt_encoded, false, $_SESSION['username']);
-}
-
 function admin_GetUserName() {
     $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_user_info";
     $get_user_info_response = json_decode(get($url, $_SESSION['username']));
@@ -728,12 +715,8 @@ function getServiceBodyConfig($service_body_id) {
     }
 }
 
-function getAllHelplineData($data_type) {
-    return getHelplineData(0, $data_type);
-}
-
 function getVolunteerRoutingEnabledServiceBodies() {
-    $all_helpline_data = getAllHelplineData(DataType::YAP_CONFIG);
+    $all_helpline_data = getAllDbData(DataType::YAP_CALL_HANDLING_V2);
     $service_bodies = getServiceBodyDetailForUser();
     $helpline_enabled = array();
 
@@ -755,7 +738,7 @@ function getVolunteerRoutingEnabledServiceBodies() {
 function getServiceBodyCallHandlingData($helplineData) {
     $config = new ServiceBodyCallHandling();
     if (isset($helplineData)) {
-        $data = $helplineData['data'][0];
+        $data = json_decode($helplineData['data'])[0];
         $config->service_body_id = $helplineData['service_body_id'];
 
         foreach ($data as $key => $value) {
@@ -787,31 +770,8 @@ function getServiceBodyCallHandlingData($helplineData) {
 }
 
 function getServiceBodyCallHandling($service_body_id) {
-    $helplineData = getHelplineData($service_body_id, DataType::YAP_CONFIG);
+    $helplineData = getDbData($service_body_id, DataType::YAP_CALL_HANDLING_V2);
     return getServiceBodyCallHandlingData($helplineData[0]);
-}
-
-function getHelplineData($service_body_id, $data_type = DataType::YAP_DATA) {
-    $helpline_data_items = [];
-    auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
-    $helpline_data = json_decode(get(getHelplineBMLTRootServer()
-                                     . "/client_interface/json/?switcher=GetSearchResults"
-                                     . (($service_body_id != 0) ? "&services=" . $service_body_id : "")
-                                     . "&meeting_key=meeting_name&meeting_key_value=" . $data_type
-                                     . "&advanced_published=0"));
-
-    if ($helpline_data != null) {
-        foreach ( $helpline_data as $item ) {
-            $json_string = str_replace( ';', ',', html_entity_decode( explode( '#@-@#', $item->contact_phone_1 )[2] ) );
-            array_push($helpline_data_items, [
-                'id'              => intval( $item->id_bigint ),
-                'data'            => json_decode( $json_string )->data,
-                'service_body_id' => intval( $item->service_body_bigint )
-            ]);
-        }
-    }
-
-    return $helpline_data_items;
 }
 
 function getNextShiftInstance($shift_day, $shift_time, $shift_tz) {
@@ -895,36 +855,11 @@ function getHelplineVolunteer($service_body_int,
     }
 }
 
-function getHelplineSchedule($service_body_int) {
-    $helplineData = getHelplineData($service_body_int);
-    if (count($helplineData) > 0) {
-        $volunteers    = $helplineData[0];
-        $finalSchedule = getVolunteerInfo( $volunteers );
-
-        usort( $finalSchedule, function ( $a, $b ) {
-            return $a->sequence > $b->sequence;
-        } );
-
-        return json_encode( $finalSchedule );
-    } else {
-        throw new NoVolunteersException();
-    }
-}
-
-function filterOut($volunteers) {
-    $volunteers_array = json_decode($volunteers);
-    for ($v = 0; $v < count($volunteers_array); $v++) {
-        unset($volunteers_array[$v]->contact);
-    }
-
-    return json_encode($volunteers_array);
-}
-
 function getVolunteerInfo($volunteers) {
     $finalSchedule = [];
 
-    for ($v = 0; $v < count($volunteers['data']); $v++) {
-        $volunteer = $volunteers['data'][$v];
+    for ($v = 0; $v < count($volunteers); $v++) {
+        $volunteer = $volunteers[$v];
         if (isset($volunteer->volunteer_enabled) && $volunteer->volunteer_enabled &&
             isset($volunteer->volunteer_phone_number) && strlen($volunteer->volunteer_phone_number) > 0) {
             $volunteerShiftSchedule = dataDecoder($volunteer->volunteer_shift_schedule);
@@ -949,6 +884,31 @@ function getVolunteerInfo($volunteers) {
     return $finalSchedule;
 }
 
+function getHelplineSchedule($service_body_int) {
+    $helplineData = getDbData($service_body_int, DataType::YAP_VOLUNTEERS_V2);
+    if (count($helplineData) > 0) {
+        $volunteers    = json_decode($helplineData[0]['data']);
+        $finalSchedule = getVolunteerInfo( $volunteers );
+
+        usort( $finalSchedule, function ( $a, $b ) {
+            return $a->sequence > $b->sequence;
+        } );
+
+        return json_encode( $finalSchedule );
+    } else {
+        throw new NoVolunteersException();
+    }
+}
+
+function filterOut($volunteers) {
+    $volunteers_array = json_decode($volunteers);
+    for ($v = 0; $v < count($volunteers_array); $v++) {
+        unset($volunteers_array[$v]->contact);
+    }
+
+    return json_encode($volunteers_array);
+}
+
 function getNameHashColorCode($str) {
     $code = dechex(crc32($str));
     $code = substr($code, 0, 6);
@@ -965,6 +925,18 @@ function dataDecoder($dataString) {
 
 function str_exists($subject, $needle) {
     return strpos($subject, $needle) !== false;
+}
+
+function get_str_val($subject) {
+    if (is_bool($subject)) {
+        if ($subject) {
+            return "true";
+        } else {
+            return "false";
+        }
+    }
+
+    return strval($subject);
 }
 
 function sort_on_field(&$objects, $on, $order = 'ASC') {
@@ -1264,6 +1236,24 @@ function setConferenceParticipant($conferencesid, $callsid, $friendlyname) {
     $db->close();
 }
 
+function setFlag($flag, $setting) {
+    $db = new Database();
+    $db->query("INSERT INTO `flags` (`flag_name`,`flag_setting`) 
+      VALUES ('$flag'," . intval($setting) . ")");
+    $db->execute();
+    $db->close();
+}
+
+function getFlag($flag) {
+    $db = new Database();
+    $db->query("SELECT flag_setting FROM `flags` WHERE `flag_name`='$flag'");
+    $resultset = $db->resultset();
+    $db->close();
+    return isset($resultset[0]["flag_setting"]) ? $resultset[0]["flag_setting"] : -1;
+}
+
 function getSessionLink($shouldUriEncode = false) {
     return ($shouldUriEncode ? "&amp;" : "&") . "PHPSESSID=" . $_SESSION['PHPSESSID'];
 }
+
+require_once "legacydata.php";
