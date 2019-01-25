@@ -8,7 +8,7 @@
             <div class="jumbotron">
                 <h1 class="display-5"><?php echo word('welcome')?>, <?php echo admin_GetUserName()?>...</h1>
                 <p class="lead">Yap (<?php echo $GLOBALS['version']?>)</p>
-                <button class="btn btn-sm <?php echo $status['status'] ? "btn-success" : "btn-danger" ?>"
+                <button class="btn btn-sm btn-<?php echo $status['status'] ? "success" : "danger" ?>"
                         id="upgrade-advisor-details"
                         data-toggle="tooltip"
                         data-placement="bottom"

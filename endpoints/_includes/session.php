@@ -1,6 +1,6 @@
 <?php
-if (isset($_REQUEST["PHPSESSID"])) {
-    session_id($_REQUEST["PHPSESSID"]);
+if (isset($_GET["PHPSESSID"])) {
+    session_id($_GET["PHPSESSID"]);
 }
 
 if (session_status() == PHP_SESSION_NONE) {
@@ -22,7 +22,7 @@ if (!isset($_SESSION['override_service_body_id'])) {
 
 if (isset($_REQUEST)) {
     foreach ($_REQUEST as $key => $value) {
-        if (strpos($key, "override_") !== false) {
+        if (str_exists($key, "override_")) {
             $_SESSION[$key] = $value;
         }
     }

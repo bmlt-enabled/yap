@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config.php';
+require_once __DIR__ . '/../../config.php';
 require_once 'migrations.php';
 require_once 'logging.php';
 static $version  = "3.0.0-beta2";
@@ -46,7 +46,7 @@ static $settings_whitelist = [
 require_once 'session.php';
 checkBlacklist();
 if (has_setting('config')) {
-    include_once $_SERVER['DOCUMENT_ROOT'] . '/config_'.setting('config').'.php';
+    include_once __DIR__ . '/../../config_'.setting('config').'.php';
 }
 static $available_languages = [
     "en-US" => "English",
@@ -66,7 +66,7 @@ foreach ($available_languages as $available_language_key => $available_language_
     }
 }
 
-include_once $_SERVER['DOCUMENT_ROOT'] . '/lang/' .getWordLanguage().'.php';
+include_once __DIR__ . '/../../lang/' .getWordLanguage().'.php';
 
 $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
 $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key=" . trim($google_maps_api_key);
@@ -957,12 +957,16 @@ function getHelplineBMLTRootServer() {
     }
 }
 
+function getCookiePath($cookieName) {
+    return __DIR__ . '/../../' . $cookieName;
+}
+
 function auth_bmlt($username, $password, $master = false) {
     $ch = curl_init();
     $auth_endpoint = (isset($GLOBALS['alt_auth_method']) && $GLOBALS['alt_auth_method'] ? '/index.php' : '/local_server/server_admin/xml.php');
     curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . $auth_endpoint);
     curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_COOKIEJAR,  ($master ? 'master' : $username) . '_cookie.txt');
+    curl_setopt($ch, CURLOPT_COOKIEJAR, getCookiePath($master ? 'master' : $username . '_cookie.txt'));
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
     curl_setopt($ch, CURLOPT_POSTFIELDS, 'admin_action=login&c_comdef_admin_login='.$username.'&c_comdef_admin_password='.urlencode($password));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -974,13 +978,13 @@ function auth_bmlt($username, $password, $master = false) {
 }
 
 function check_auth($username) {
-    $cookie_file = $username . '_cookie.txt';
+    $cookie_file = getCookiePath($username . '_cookie.txt');
     if (file_exists($cookie_file)) {
         $ch = curl_init();
         curl_setopt( $ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=get_permissions' );
         curl_setopt( $ch, CURLOPT_POST, 1 );
-        curl_setopt( $ch, CURLOPT_COOKIEJAR, $cookie_file );
-        curl_setopt( $ch, CURLOPT_COOKIEFILE, $cookie_file );
+        curl_setopt( $ch, CURLOPT_COOKIEJAR, $cookie_file);
+        curl_setopt( $ch, CURLOPT_COOKIEFILE, $cookie_file);
         curl_setopt( $ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
         curl_setopt( $ch, CURLOPT_HEADER, false );
@@ -995,13 +999,13 @@ function check_auth($username) {
 
 function logout_auth($username) {
     session_unset();
-    $cookie_file = $username . '_cookie.txt';
+    $cookie_file = getCookiePath($username . '_cookie.txt');
     if (file_exists($cookie_file)) {
         $ch = curl_init();
         curl_setopt( $ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=logout' );
         curl_setopt( $ch, CURLOPT_POST, 1 );
-        curl_setopt( $ch, CURLOPT_COOKIEJAR, $cookie_file );
-        curl_setopt( $ch, CURLOPT_COOKIEFILE, $cookie_file );
+        curl_setopt( $ch, CURLOPT_COOKIEJAR, $cookie_file);
+        curl_setopt( $ch, CURLOPT_COOKIEFILE, $cookie_file);
         curl_setopt( $ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
         curl_setopt( $ch, CURLOPT_HEADER, false );
@@ -1018,8 +1022,8 @@ function get($url, $username = 'master') {
     log_debug($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_COOKIEFILE, $username . '_cookie.txt');
-    curl_setopt($ch, CURLOPT_COOKIEJAR, $username . '_cookie.txt');
+    curl_setopt($ch, CURLOPT_COOKIEFILE, getCookiePath($username . '_cookie.txt'));
+    curl_setopt($ch, CURLOPT_COOKIEJAR, getCookiePath($username . '_cookie.txt'));
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap' );
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $data = curl_exec($ch);
@@ -1036,8 +1040,8 @@ function post($url, $payload, $is_json = true, $username = 'master') {
     log_debug($url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_COOKIEFILE, $username . '_cookie.txt');
-    curl_setopt($ch, CURLOPT_COOKIEJAR, $username . '_cookie.txt');
+    curl_setopt($ch, CURLOPT_COOKIEFILE, getCookiePath($username . '_cookie.txt'));
+    curl_setopt($ch, CURLOPT_COOKIEJAR, getCookiePath($username . '_cookie.txt'));
     $post_field_count = $is_json ? 1 : substr_count($payload, '=');
     curl_setopt($ch, CURLOPT_POST, $post_field_count);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $is_json ? json_encode($payload) : $payload);

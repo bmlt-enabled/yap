@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/Database.php';
+require_once __DIR__ . '/../../lib/Database.php';
 static $root_server_data_migration_flag = "root_server_data_migration";
 
 if (isset($GLOBALS['mysql_hostname'])) {
