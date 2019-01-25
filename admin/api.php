@@ -10,4 +10,4 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'save') {
 }
 
 $data = getDbData($_REQUEST['service_body_id'], $_REQUEST['data_type']);
-echo count($data) > 0 ? $data[0]['data'] : new StdClass();
+echo count($data) > 0 ? $data[0]['data'] : json_encode(new StdClass());
