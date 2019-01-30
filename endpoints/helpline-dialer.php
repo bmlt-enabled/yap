@@ -34,11 +34,12 @@ function getCallConfig($twilioClient, $serviceBodyCallHandling) {
     }
 
     $config = new CallConfig();
-    $config->phone_number = getHelplineVolunteer( $serviceBodyCallHandling->service_body_id,
+    $volunteer = getHelplineVolunteer( $serviceBodyCallHandling->service_body_id,
         $tracker,
         $serviceBodyCallHandling->call_strategy,
         VolunteerType::PHONE,
         isset($_SESSION['Gender']) ? $_SESSION['Gender'] : VolunteerGender::UNSPECIFIED);
+    $config->phone_number = $volunteer->phoneNumber;
     $config->voicemail_url = $webhook_url . '/voicemail.php?service_body_id=' . $serviceBodyCallHandling->service_body_id . '&caller_id=' . trim($caller_id) . getSessionLink();
     $config->options = array(
         'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'] . '&service_body_id=' . $serviceBodyCallHandling->service_body_id,
@@ -63,8 +64,8 @@ if (isset($_REQUEST['noop'])) {
     exit();
 }
 
-$service_body_id            = setting('service_body_id');
-$serviceBodyCallHandling   = getServiceBodyCallHandling($service_body_id);
+$service_body_id = setting('service_body_id');
+$serviceBodyCallHandling = getServiceBodyCallHandling($service_body_id);
 
 if (isset($_REQUEST['Debug']) && intval($_REQUEST['Debug']) == 1) {
     echo var_dump(getCallConfig($twilioClient, $serviceBodyCallHandling));

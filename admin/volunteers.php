@@ -194,6 +194,12 @@
                         <option value="2">Female</option>
                     </select>
                 </span>
+                <span class="dropdown_next_to_another_field">
+                    Trainee: <select class="form-control form-control-sm" name="volunteer_trainee" id="volunteer_trainee">
+                        <option value="null">Unassigned</option>
+                        <option value="tandem">Tandem</option>
+                    </select>
+                </span>
             </div>
             <table id="volunteer_schedule" class="table table-striped table-bordered">
                 <tr>

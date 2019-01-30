@@ -85,7 +85,18 @@ class VolunteerInfo {
     public $contact = SpecialPhoneNumber::UNKNOWN;
     public $color;
     public $gender;
+    public $trainee = VolunteerTraineeOption::UNSPECIFIED;
     public $type = VolunteerType::PHONE;
+}
+
+class Volunteer {
+    public $phoneNumber;
+    public $volunteerInfo;
+
+    public function __construct($phoneNumber, $volunteerInfo = null) {
+        $this->phoneNumber = $phoneNumber;
+        $this->volunteerInfo = $volunteerInfo;
+    }
 }
 
 class Coordinates {
@@ -165,6 +176,12 @@ class VolunteerType {
 
 class MeetingResultSort {
     const TODAY = 0;
+}
+
+class VolunteerTraineeOption {
+    const UNSPECIFIED = null;
+    const RECORD = "record";
+    const TANDEM = "tandem";
 }
 
 class VolunteerGender {
@@ -831,27 +848,30 @@ function getHelplineVolunteer($service_body_int,
         if ( isset( $volunteers ) && count( $volunteers ) > 0 ) {
             if ( $cycle_algorithm == CycleAlgorithm::CYCLE_AND_VOICEMAIL ) {
                 if ( $tracker > count( $volunteers ) - 1 ) {
-                    return SpecialPhoneNumber::VOICE_MAIL;
+                    return new Volunteer(SpecialPhoneNumber::VOICE_MAIL);
                 }
 
-                return $volunteers[ $tracker ]->contact;
+                return new Volunteer($volunteers[ $tracker ]->contact, $volunteers[$tracker]);
             } else if ( $cycle_algorithm == CycleAlgorithm::LOOP_FOREVER ) {
-                return $volunteers[ $tracker % count( $volunteers ) ]->contact;
+                $volunteer = $volunteers[ $tracker % count( $volunteers )];
+                return new Volunteer($volunteer->contact, $volunteer);
             } else if ( $cycle_algorithm == CycleAlgorithm::RANDOMIZER ) {
-                return $volunteers[ rand( 0, count( $volunteers ) - 1 ) ]->contact;
+                $volunteer = $volunteers[rand( 0, count( $volunteers ) - 1 )];
+                return new Volunteer($volunteer->contact, $volunteer);
             } else if ( $cycle_algorithm == CycleAlgorithm::BLASTING ) {
-                $volunteers_all = [];
+                $volunteers_numbers = [];
+
                 foreach ($volunteers as $volunteer) {
-                    array_push($volunteers_all, $volunteer->contact);
+                    array_push($volunteers_numbers, $volunteer->contact);
                 }
 
-                return join(",", $volunteers_all);
+                return new Volunteer(join(",", $volunteers_numbers));
             }
         } else {
-            return SpecialPhoneNumber::UNKNOWN;
+            return new Volunteer(SpecialPhoneNumber::UNKNOWN);
         }
     } catch (NoVolunteersException $nve) {
-        return SpecialPhoneNumber::UNKNOWN;
+        return new Volunteer(SpecialPhoneNumber::UNKNOWN);
     }
 }
 
@@ -876,6 +896,7 @@ function getVolunteerInfo($volunteers) {
                 $volunteerInfo->contact    = $volunteer->volunteer_phone_number;
                 $volunteerInfo->color      = "#" . getNameHashColorCode($volunteerInfo->title);
                 $volunteerInfo->gender     = isset($volunteer->volunteer_gender) ? $volunteer->volunteer_gender : VolunteerGender::UNSPECIFIED;
+                $volunteerInfo->trainee    = isset($volunteer->volunteer_trainee) ? $volunteer->volunteer_trainee : VolunteerTraineeOption::UNSPECIFIED;
                 array_push( $finalSchedule, $volunteerInfo );
             }
         }
