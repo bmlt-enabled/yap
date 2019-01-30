@@ -3,7 +3,7 @@ session_start();
 require_once __DIR__ . '/../../config.php';
 require_once 'migrations.php';
 require_once 'logging.php';
-static $version  = "3.0.0-beta2";
+static $version  = "3.0.0-beta3";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false, 'hidden' => false],
