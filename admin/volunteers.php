@@ -187,19 +187,36 @@
         <div class="card-body volunteerCardBody collapse">
             <div class="form-group form-row form-inline">
                 Phone Number: <input type="text" id="volunteer_phone_number" name="volunteer_phone_number">
-                <span class="dropdown_next_to_another_field">
-                    Gender: <select class="form-control form-control-sm" name="volunteer_gender" id="volunteer_gender">
-                        <option value="0">Unassigned</option>
-                        <option value="1">Male</option>
-                        <option value="2">Female</option>
-                    </select>
-                </span>
-                <span class="dropdown_next_to_another_field">
-                    Trainee: <select class="form-control form-control-sm" name="volunteer_trainee" id="volunteer_trainee">
-                        <option value="null">Unassigned</option>
-                        <option value="tandem">Tandem</option>
-                    </select>
-                </span>
+            </div>
+            <div class="form-group form-row form-inline">
+                Gender: <select class="form-control form-control-sm" name="volunteer_gender" id="volunteer_gender">
+                    <option value="0">Unassigned</option>
+                    <option value="1">Male</option>
+                    <option value="2">Female</option>
+                </select>
+                Trainee: <select class="form-control form-control-sm" name="volunteer_trainee" id="volunteer_trainee">
+                    <option value="null">Unassigned</option>
+                    <option value="tandem">Enabled</option>
+                </select>
+                Trainer: <select class="form-control form-control-sm" name="volunteer_trainer" id="volunteer_trainer">
+                    <option value="0">Unassigned</option>
+                    <option value="1">Enabled</option>
+                </select>
+                Responder: <select class="form-control form-control-sm" name="volunteer_responder" id="volunteer_responder">
+                    <option value="0">Unassigned</option>
+                    <option value="1">Enabled</option>78y
+                </select>
+                <?php
+                if (has_setting('language_selections')) { ?>
+                Languages: <select multiple class="form-control form-control-sm" name="volunteer_languages" id="volunteer_languages">
+                    <?php
+                    foreach ($language_selection_options = explode(",", setting('language_selections')) as $key => $available_language) {
+                        ?>
+                        <option value="<?php echo $key; ?>"><?php echo $available_language; ?></option>
+                        <?php
+                    }
+                } ?>
+                </select>
             </div>
             <table id="volunteer_schedule" class="table table-striped table-bordered">
                 <tr>
