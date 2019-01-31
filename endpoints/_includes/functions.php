@@ -201,6 +201,14 @@ class VolunteerGender {
     }
 }
 
+class VolunteerRoutingParameters {
+    public $service_body_id;
+    public $tracker;
+    public $cycle_algorithm = CycleAlgorithm::LOOP_FOREVER;
+    public $volunteer_type = VolunteerType::PHONE;
+    public $volunteer_gender = VolunteerGender::UNSPECIFIED;
+}
+
 class NoVolunteersException extends Exception {}
 
 class UpgradeAdvisor {
@@ -837,28 +845,24 @@ function getHelplineVolunteersActiveNow($service_body_int, $volunteer_type = Vol
     }
 }
 
-function getHelplineVolunteer($service_body_int,
-                              $tracker,
-                              $cycle_algorithm = CycleAlgorithm::LOOP_FOREVER,
-                              $volunteer_type = VolunteerType::PHONE,
-                              $volunteer_gender = VolunteerGender::UNSPECIFIED) {
+function getHelplineVolunteer($volunteer_routing_params) {
     try {
-        $volunteers = getHelplineVolunteersActiveNow( $service_body_int, $volunteer_type, $volunteer_gender);
-        log_debug("getHelplineVolunteer():: activeVolunteers: " . var_export($volunteers, true) . ", service_body_id: " . $service_body_int . ", volunteer_type: " . $volunteer_type);
+        $volunteers = getHelplineVolunteersActiveNow( $volunteer_routing_params->service_body_id, $volunteer_routing_params->volunteer_type, $volunteer_routing_params->volunteer_gender);
+        log_debug("getHelplineVolunteer():: activeVolunteers: " . var_export($volunteers, true) . ", service_body_id: " . $volunteer_routing_params->service_body_id . ", volunteer_type: " . $volunteer_routing_params->volunteer_type);
         if ( isset( $volunteers ) && count( $volunteers ) > 0 ) {
-            if ( $cycle_algorithm == CycleAlgorithm::CYCLE_AND_VOICEMAIL ) {
-                if ( $tracker > count( $volunteers ) - 1 ) {
+            if ( $volunteer_routing_params->cycle_algorithm == CycleAlgorithm::CYCLE_AND_VOICEMAIL ) {
+                if ( $volunteer_routing_params->tracker > count( $volunteers ) - 1 ) {
                     return new Volunteer(SpecialPhoneNumber::VOICE_MAIL);
                 }
 
-                return new Volunteer($volunteers[ $tracker ]->contact, $volunteers[$tracker]);
-            } else if ( $cycle_algorithm == CycleAlgorithm::LOOP_FOREVER ) {
-                $volunteer = $volunteers[ $tracker % count( $volunteers )];
+                return new Volunteer($volunteers[ $volunteer_routing_params->tracker ]->contact, $volunteers[$volunteer_routing_params->tracker]);
+            } else if ( $volunteer_routing_params->cycle_algorithm == CycleAlgorithm::LOOP_FOREVER ) {
+                $volunteer = $volunteers[ $volunteer_routing_params->tracker % count( $volunteers )];
                 return new Volunteer($volunteer->contact, $volunteer);
-            } else if ( $cycle_algorithm == CycleAlgorithm::RANDOMIZER ) {
+            } else if ( $volunteer_routing_params->cycle_algorithm == CycleAlgorithm::RANDOMIZER ) {
                 $volunteer = $volunteers[rand( 0, count( $volunteers ) - 1 )];
                 return new Volunteer($volunteer->contact, $volunteer);
-            } else if ( $cycle_algorithm == CycleAlgorithm::BLASTING ) {
+            } else if ( $volunteer_routing_params->cycle_algorithm == CycleAlgorithm::BLASTING ) {
                 $volunteers_numbers = [];
 
                 foreach ($volunteers as $volunteer) {

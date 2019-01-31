@@ -5,6 +5,7 @@ require_once '_includes/twilio-client.php';
 class CallConfig {
     public $phone_number;
     public $voicemail_url;
+    public $volunteer_routing_params;
     public $options;
 }
 
@@ -34,11 +35,14 @@ function getCallConfig($twilioClient, $serviceBodyCallHandling) {
     }
 
     $config = new CallConfig();
-    $volunteer = getHelplineVolunteer( $serviceBodyCallHandling->service_body_id,
-        $tracker,
-        $serviceBodyCallHandling->call_strategy,
-        VolunteerType::PHONE,
-        isset($_SESSION['Gender']) ? $_SESSION['Gender'] : VolunteerGender::UNSPECIFIED);
+    $volunteer_routing_parameters = new VolunteerRoutingParameters();
+    $volunteer_routing_parameters->service_body_id = $serviceBodyCallHandling->service_body_id;
+    $volunteer_routing_parameters->tracker = $tracker;
+    $volunteer_routing_parameters->cycle_algorithm = $serviceBodyCallHandling->call_strategy;
+    $volunteer_routing_parameters->volunteer_type = VolunteerType::PHONE;
+    $volunteer_routing_parameters->volunteer_gender = isset($_SESSION['Gender']) ? $_SESSION['Gender'] : VolunteerGender::UNSPECIFIED;
+    $config->volunteer_routing_params = $volunteer_routing_parameters;
+    $volunteer = getHelplineVolunteer($config->volunteer_routing_params);
     $config->phone_number = $volunteer->phoneNumber;
     $config->voicemail_url = $webhook_url . '/voicemail.php?service_body_id=' . $serviceBodyCallHandling->service_body_id . '&caller_id=' . trim($caller_id) . getSessionLink();
     $config->options = array(

@@ -12,7 +12,12 @@ try {
     $tracker                    = !isset( $_REQUEST["tracker"] ) ? 0 : $_REQUEST["tracker"];
 
     if ($serviceBodyCallHandling->sms_routing_enabled) {
-        $phone_numbers = explode(',', getHelplineVolunteer( $serviceBodyCallHandling->service_body_id, $tracker, $serviceBodyCallHandling->sms_strategy, VolunteerType::SMS ));
+        $volunteer_routing_parameters = new VolunteerRoutingParameters();
+        $volunteer_routing_parameters->service_body_id = $serviceBodyCallHandling->service_body_id;
+        $volunteer_routing_parameters->tracker = $tracker;
+        $volunteer_routing_parameters->cycle_algorithm = $serviceBodyCallHandling->sms_strategy;
+        $volunteer_routing_parameters->volunteer_type = VolunteerType::SMS;
+        $phone_numbers = explode(',', getHelplineVolunteer($volunteer_routing_parameters));
 
         $twilioClient->messages->create(
             $original_caller_id,
