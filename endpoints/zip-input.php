@@ -17,8 +17,8 @@
 ?>
 <Response>
     <Gather input="<?php echo getInputType() ?>" numDigits="<?php echo setting('postal_code_length')?>" timeout="10" speechTimeout="auto" action="<?php echo $action; ?>" method="GET">
-	<Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
-            <?php echo $enterWord ?> <?php echo word('zip_code') ?>
-	</Say>
+        <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
+                <?php echo $enterWord ?> <?php echo word('zip_code') ?>
+        </Say>
     </Gather>
 </Response>

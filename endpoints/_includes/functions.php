@@ -23,7 +23,7 @@ static $settings_whitelist = [
     'infinite_searching' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'jft_option' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'language' => [ 'description' => '' , 'default' => 'en', 'overridable' => true, 'hidden' => false],
-    'language_selections' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => false],
+    'language_selections' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'location_lookup_bias' => [ 'description' => '' , 'default' => 'country:us', 'overridable' => true, 'hidden' => false],
     'meeting_result_sort' => [ 'description' => '' , 'default' => MeetingResultSort::TODAY, 'overridable' => true, 'hidden' => false],
     'meeting_search_radius' => [ 'description' => '' , 'default' => -50, 'overridable' => true, 'hidden' => false],

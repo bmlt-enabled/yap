@@ -6,13 +6,14 @@
     log_debug("version: " . $GLOBALS['version']);
     if (strlen(setting('language_selections')) > 0) {
         if (!isset($_REQUEST["Digits"])) {?>
-            <Response><Redirect>language-selector.php</Redirect></Response>
+            <Response><Redirect>lng-selector.php</Redirect></Response>
         <?php
             exit();
         } else {
             $selected_language = explode(",", setting('language_selections'))[intval($_REQUEST["Digits"]) - 1];
             $_SESSION["override_word_language"] = $selected_language;
             $_SESSION["override_gather_language"] = $selected_language;
+            $_SESSION["override_language"] = $selected_language;
             include_once __DIR__.'/../lang/'.getWordLanguage().'.php';
         }
     }
@@ -24,7 +25,7 @@
     $promptset_name = str_replace("-", "_", getWordLanguage()) . "_greeting";
 ?>
 <Response>
-    <Gather input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">
+    <Gather language="<?php echo setting('gather_language') ?>" input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">
         <Pause length="2"></Pause>
         <?php if (has_setting($promptset_name)) {?>
             <Play><?php echo setting($promptset_name) ?></Play>
