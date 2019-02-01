@@ -1,5 +1,8 @@
 # Release Notes
 
+### 2.5.3 (January 31, 2019)
+* SMS Summary Page responsiveness
+
 ### 2.5.2 (January 31, 2019)
 * SMS Summary option [#230]
 
