@@ -1,5 +1,8 @@
 # Release Notes
 
+### 2.5.2 (January 31, 2019)
+* SMS Summary option [#230]
+
 ### 2.5.1 (November 18, 2018)
 * Fix for results not being filtered out that have passed in time already for the day [#189]
 
