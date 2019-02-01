@@ -83,7 +83,7 @@
             $webhook_url = $voice_url;
         }
 
-        $message = "Meeting Results: " . $webhook_url . htmlentities("/meeting-results.php?latitude=" . $latitude . "&longitude=" . $longitude);
+        $message = "Meeting Results: " . $webhook_url . "/meeting-results.php?latitude=" . $latitude . "&longitude=" . $longitude;
         sendSms($message);
     } else {
         $results_counter = 0;
