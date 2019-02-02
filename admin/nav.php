@@ -9,7 +9,7 @@ require_once 'header.php';
                 location.href='index.php?expired=true';
             }
         })
-    }, 5000);
+    }, 60000);
 </script>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <a class="navbar-brand" href="#">Yap</a>
