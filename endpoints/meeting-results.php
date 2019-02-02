@@ -1,11 +1,14 @@
 <?php include_once 'functions.php';?>
 <html>
+<head>
+    <style type="text/css"><?php echo setting("custom_css") ?></style>
+</head>
 <body>
 <table border="1" width="100%">
     <?php
     $meeting_results = getMeetings($_REQUEST['latitude'], $_REQUEST['longitude'], 50, null, null);
     foreach ($meeting_results->filteredList as $meeting) { ?>
-        <tr><td style="font-size: 24px;">
+        <tr><td>
                 <?php
                 $results = getResultsString($meeting);
                 foreach ($results as $result) { ?>

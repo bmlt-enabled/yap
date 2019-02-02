@@ -77,7 +77,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
             $webhook_url = $voice_url;
         }
 
-        $message = "Meeting Results: " . $webhook_url . "/meeting-results.php?latitude=" . $latitude . "&longitude=" . $longitude;
+        $message = "Meeting Results, Click Here: " . $webhook_url . "/meeting-results.php?latitude=" . $latitude . "&longitude=" . $longitude;
         sendSms($message);
     } else {
         $results_counter = 0;

@@ -1,7 +1,16 @@
 # Release Notes
 
-### UNRELEASED
-* Added option to turn off speech recognition for input gathering. [#173]
+### 2.5.4 (February 2, 2019)
+* Added the ability to hide postal code lookups. [#231]
+* Minor textual change SMS Summary Page SMS message.
+* Added the ability to create custom CSS for SMS summary page.
+* Bug fix for "tomorrow" lookups that return no meetings.
+
+### 2.5.3 (January 31, 2019)
+* SMS Summary Page responsiveness
+
+### 2.5.2 (January 31, 2019)
+* SMS Summary option [#230]
 
 ### 2.5.1 (November 18, 2018)
 * Fix for results not being filtered out that have passed in time already for the day [#189]
