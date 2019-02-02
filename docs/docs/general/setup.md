@@ -31,7 +31,7 @@ static $bmlt_password = "";
 
 7. You will need to set up a Twilio account, and do the following.  Purchase a phone number (typically you would buy one for your locale, tollfree is pretty much unnecessary these days).  Configure that number to point to a Webook.  It would be something like https://example.com/index.php.
     
-8. NEW>> You will need to set up a MySQL database.  Once you've done that, set the following in your config.php.
+8. >>version 3.x and up<< You will need to set up a new MySQL database.  Once you've done that, set the following in your config.php.
 ```php
 static $mysql_hostname = "";
 static $mysql_username = "";

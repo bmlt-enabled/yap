@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Sorting Results
-nav_order: 9
+nav_order: 11
 parent: Meeting Search
 ---
 

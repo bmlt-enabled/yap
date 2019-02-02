@@ -1,3 +1,3 @@
 run:
 	bundle update
-	bundle exec jekyll serve --incremental
+	bundle exec jekyll serve --watch
