@@ -90,3 +90,4 @@ $followed_by_your_location = "seguido pela sua localização como cidade, munic�
 $reports = "Reports";
 $records = "Records";
 $call_handling = "Call Handling";
+$session_expired= "Session Expired";

@@ -2,6 +2,15 @@
 require_once 'auth_verify.php';
 require_once 'header.php';
 ?>
+<script type="text/javascript">
+    setInterval(function() {
+        $.get("auth_verify.php?format=json", function(data) {
+            if (data["expired"]) {
+                location.href='index.php?expired=true';
+            }
+        })
+    }, 5000);
+</script>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <a class="navbar-brand" href="#">Yap</a>
     <button class="navbar-toggler"

@@ -90,3 +90,4 @@ $followed_by_your_location = "followed by your location as a city, county or zip
 $reports = "Reports";
 $records = "Records";
 $call_handling = "Call Handling";
+$session_expired = "Session Expired";

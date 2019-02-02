@@ -90,3 +90,4 @@ $followed_by_your_location = "suivi de votre position en tant que ville, région
 $reports = "Reports";
 $records = "Records";
 $call_handling = "Call Handling";
+$session_expired = "Session Expired";
