@@ -2,11 +2,12 @@
 include_once 'config.php';
 include_once 'logging.php';
 include_once 'session.php';
-static $version = "2.5.3";
+static $version = "2.5.4";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false],
     'custom_query' => ['description' => '', 'default' => '&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width={SETTING_MEETING_SEARCH_RADIUS}&weekdays={DAY}', 'overridable' => true],
+    'custom_css' => [ 'description' => '' , 'default' => 'td { font-size: 36px; }', 'overridable' => false],
     'fallback_number' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'gather_hints' => [ 'description' => '' , 'default' => '', 'overridable' => true],
     'gather_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true],
@@ -439,7 +440,11 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day) {
     }
 
     $search_results = json_decode($search_response);
-    $meeting_results->originalListCount += count($search_results);
+    if (is_array($search_results) || $search_results instanceof Countable) {
+        $meeting_results->originalListCount += count($search_results);
+    } else {
+        return $meeting_results;
+    }
 
     $filteredList = $meeting_results->filteredList;
     if ($search_response !== "{}") {

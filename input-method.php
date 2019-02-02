@@ -50,9 +50,11 @@
         <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
             <?php echo word('press') . " " . word('one') . " " . word('to_search_for') . " " . $searchDescription . " " . word ('by') . " " . word('city_or_county') ?>
         </Say>
-        <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
-            <?php echo word('press') . " "  . word('two') . " " . word('to_search_for') . " " . $searchDescription . " " . word ('by') . " " . word('zip_code') ?>
-        </Say>
+        <?php if (!has_setting("disable_postal_code_gather") || !setting("disable_postal_code_gather")) {?>
+            <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
+                <?php echo word('press') . " "  . word('two') . " " . word('to_search_for') . " " . $searchDescription . " " . word ('by') . " " . word('zip_code') ?>
+            </Say>
+        <?php }?>
 
         <?php
             if ($searchType == "2") {
