@@ -1,11 +1,8 @@
 <?php
-if (isset($_GET["PHPSESSID"])) {
-    session_id($_GET["PHPSESSID"]);
-}
-
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+/*log_debug("SESSION: " . json_encode($_SESSION));
+log_debug("GET: " . json_encode($_GET));
+log_debug("COOKIE: " . json_encode($_COOKIE));
+log_debug("REQUEST: " . json_encode($_REQUEST));*/
 
 if (!isset($_SESSION['override_service_body_id'])) {
     if (isset($_REQUEST["service_body_id"]) || isset($_REQUEST["override_service_body_id"])) {

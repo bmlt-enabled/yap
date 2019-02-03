@@ -9,16 +9,8 @@ class CallConfig {
     public $options;
 }
 
-function getCallConfig($twilioClient, $serviceBodyCallHandling) {
+function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = false) {
     $tracker            = !isset( $_REQUEST["tracker"] ) ? 0 : $_REQUEST["tracker"];
-    $voice_url          = "https://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'];
-    if (strpos(basename($voice_url), ".php")) {
-        $webhook_url = substr( $voice_url, 0, strrpos( $voice_url, "/" ) );
-    } else if (strpos($voice_url, "?")) {
-        $webhook_url = substr( $voice_url, 0, strrpos( $voice_url, "?" ) );
-    } else {
-        $webhook_url = $voice_url;
-    }
 
     if ( $serviceBodyCallHandling->forced_caller_id_enabled ) {
         $caller_id = $serviceBodyCallHandling->forced_caller_id_number;
@@ -38,18 +30,21 @@ function getCallConfig($twilioClient, $serviceBodyCallHandling) {
     $volunteer_routing_parameters = new VolunteerRoutingParameters();
     $volunteer_routing_parameters->service_body_id = $serviceBodyCallHandling->service_body_id;
     $volunteer_routing_parameters->tracker = $tracker;
-    $volunteer_routing_parameters->cycle_algorithm = $serviceBodyCallHandling->call_strategy;
+    $volunteer_routing_parameters->cycle_algorithm = $tandem == VolunteerTraineeOption::TANDEM ? CycleAlgorithm::BLASTING : $serviceBodyCallHandling->call_strategy;
     $volunteer_routing_parameters->volunteer_type = VolunteerType::PHONE;
     $volunteer_routing_parameters->volunteer_gender = isset($_SESSION['Gender']) ? $_SESSION['Gender'] : VolunteerGender::UNSPECIFIED;
+    $volunteer_routing_parameters->volunteer_trainer = $tandem == VolunteerTraineeOption::TANDEM ? VolunteerTrainerOption::ENABLED : VolunteerTrainerOption::UNSPECIFIED;
     $config->volunteer_routing_params = $volunteer_routing_parameters;
     $volunteer = getHelplineVolunteer($config->volunteer_routing_params);
     $config->phone_number = $volunteer->phoneNumber;
-    $config->voicemail_url = $webhook_url . '/voicemail.php?service_body_id=' . $serviceBodyCallHandling->service_body_id . '&caller_id=' . trim($caller_id) . getSessionLink();
+    $config->voicemail_url = getWebhookUrl() . '/voicemail.php?service_body_id=' . $serviceBodyCallHandling->service_body_id . '&caller_id=' . trim($caller_id) . getSessionLink();
     $config->options = array(
-        'url'                  => $webhook_url . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'] . '&service_body_id=' . $serviceBodyCallHandling->service_body_id,
+        'url'  => $tandem !== VolunteerTraineeOption::TANDEM
+            ? (getWebhookUrl() . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'] . '&service_body_id=' . $serviceBodyCallHandling->service_body_id . getSessionLink())
+            : (getWebhookUrl() . '/tandem-answer-response.php?conference_name=' . $_REQUEST['FriendlyName'] . '&service_body_id=' . $serviceBodyCallHandling->service_body_id . getSessionLink()),
         'statusCallback'       => $serviceBodyCallHandling->call_strategy == CycleAlgorithm::BLASTING
-            ? ($webhook_url . '/helpline-dialer.php?noop=1' . getSessionLink())
-            : ($webhook_url . '/helpline-dialer.php?service_body_id=' . $serviceBodyCallHandling->service_body_id
+            ? (getWebhookUrl() . '/helpline-dialer.php?initiated_by=helpline-dialer&noop=1' . getSessionLink())
+            : (getWebhookUrl() . '/helpline-dialer.php?initiated_by=helpline-dialer&service_body_id=' . $serviceBodyCallHandling->service_body_id
                 . ('&tracker=' . ++$tracker)
                 . ('&FriendlyName=' . $_REQUEST['FriendlyName'])
                 . ('&OriginalCallerId=' . trim($original_caller_id))
@@ -60,6 +55,9 @@ function getCallConfig($twilioClient, $serviceBodyCallHandling) {
         'callerId'             => $caller_id,
         'originalCallerId'     => $original_caller_id
     );
+    if (isset($_SESSION['ActiveVolunteer']) == false) {
+        $_SESSION['ActiveVolunteer'] = $volunteer;
+    }
 
     return $config;
 }
@@ -78,14 +76,26 @@ if (isset($_REQUEST['Debug']) && intval($_REQUEST['Debug']) == 1) {
 
 $conferences = $twilioClient->conferences->read( array ("friendlyName" => $_REQUEST['FriendlyName'] ) );
 if (count($conferences) > 0 && $conferences[0]->status != "completed") {
+    $tandem = 0;
+    $sms_body = "You have an incoming helpline call from " . $callerNumber . ".";
     if (isset( $_REQUEST['StatusCallbackEvent'] ) && $_REQUEST['StatusCallbackEvent'] == 'participant-join') {
         setConferenceParticipant($conferences[0]->sid, $_REQUEST['CallSid'], $_REQUEST['FriendlyName']);
+
+        if (isset($_SESSION["ActiveVolunteer"])) {
+            $volunteer = $_SESSION["ActiveVolunteer"];
+            if (isset($volunteer->volunteerInfo) && $volunteer->volunteerInfo->trainee == VolunteerTraineeOption::TANDEM) {
+                $_REQUEST['SequenceNumber'] = 1;
+                $_SESSION["ActiveVolunteer"] = null;
+                $sms_body = "You have an incoming helpline trainee call from " . $callerNumber . ".";
+                $tandem = 1;
+            }
+        }
     }
 
     // Make timeout configurable per volunteer
     if ( ( isset( $_REQUEST['SequenceNumber'] ) && intval( $_REQUEST['SequenceNumber'] ) == 1 ) ||
          ( isset( $_REQUEST['CallStatus'] ) && ( $_REQUEST['CallStatus'] == 'no-answer' || $_REQUEST['CallStatus'] == 'completed' ) ) ) {
-        $callConfig = getCallConfig($twilioClient, $serviceBodyCallHandling);
+        $callConfig = getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem);
         log_debug("Next volunteer to call " . $callConfig->phone_number);
 
         $participants = $twilioClient->conferences($conferences[0]->sid)->participants->read();
@@ -112,7 +122,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                             $twilioClient->messages->create(
                                 $volunteer_number,
                                 array(
-                                    "body" => "You have an incoming helpline call from " . $callerNumber . ".",
+                                    "body" => $sms_body,
                                     "from" => $callConfig->options['originalCallerId']
                                 ));
                         }

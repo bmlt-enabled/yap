@@ -1,9 +1,12 @@
 <?php
+if (isset($_GET["PHPSESSID"])) {
+    session_id($_GET["PHPSESSID"]);
+}
 session_start();
 require_once __DIR__ . '/../../config.php';
 require_once 'migrations.php';
 require_once 'logging.php';
-static $version  = "3.0.0-beta3";
+static $version  = "3.0.0-beta4";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false, 'hidden' => false],
@@ -180,9 +183,18 @@ class MeetingResultSort {
 }
 
 class VolunteerTraineeOption {
-    const UNSPECIFIED = null;
-    const RECORD = "record";
-    const TANDEM = "tandem";
+    const UNSPECIFIED = 0;
+    const TANDEM = 1;
+}
+
+class VolunteerTrainerOption {
+    const UNSPECIFIED = 0;
+    const ENABLED = 1;
+}
+
+class VolunteerResponderOption {
+    const UNSPECIFIED = 0;
+    const ENABLED = 1;
 }
 
 class VolunteerGender {
@@ -208,6 +220,7 @@ class VolunteerRoutingParameters {
     public $cycle_algorithm = CycleAlgorithm::LOOP_FOREVER;
     public $volunteer_type = VolunteerType::PHONE;
     public $volunteer_gender = VolunteerGender::UNSPECIFIED;
+    public $volunteer_trainer = VolunteerTrainerOption::UNSPECIFIED;
 }
 
 class NoVolunteersException extends Exception {}
@@ -828,18 +841,21 @@ function getIdsFormats($types, $helpline = false) {
     return $finalFormats;
 }
 
-function getHelplineVolunteersActiveNow($service_body_int, $volunteer_type = VolunteerType::PHONE, $volunteer_gender = VolunteerGender::UNSPECIFIED) {
+function getHelplineVolunteersActiveNow($volunteer_routing_params) {
     try {
-        $volunteers = json_decode( getHelplineSchedule( $service_body_int ) );
+        $volunteers = json_decode( getHelplineSchedule( $volunteer_routing_params->service_body_id ) );
         $activeNow  = [];
         for ( $v = 0; $v < count( $volunteers ); $v ++ ) {
             date_default_timezone_set( $volunteers[ $v ]->time_zone );
             $current_time = new DateTime();
             if ( ($current_time >= ( new DateTime( $volunteers[ $v ]->start ) )
                  && $current_time <= ( new DateTime( $volunteers[ $v ]->end ) ) )
-                 && (!isset($volunteers[$v]->type) || str_exists($volunteers[$v]->type, $volunteer_type ))
-                 && ($volunteer_gender === VolunteerGender::UNSPECIFIED
-                    || (($volunteer_gender !== VolunteerGender::UNSPECIFIED && isset($volunteers[$v]->gender) && $volunteer_gender == $volunteers[$v]->gender)))) {
+                 && (!isset($volunteers[$v]->type) || str_exists($volunteers[$v]->type, $volunteer_routing_params->volunteer_type ))
+                 && ($volunteer_routing_params->volunteer_gender === VolunteerGender::UNSPECIFIED
+                    || (($volunteer_routing_params->volunteer_gender !== VolunteerGender::UNSPECIFIED && isset($volunteers[$v]->gender) && $volunteer_routing_params->volunteer_gender == $volunteers[$v]->gender)))
+                 && ($volunteer_routing_params->volunteer_trainer === VolunteerTraineeOption::UNSPECIFIED
+                    || (($volunteer_routing_params->volunteer_trainer !== VolunteerTraineeOption::UNSPECIFIED && isset($volunteers[$v]->trainer) && $volunteer_routing_params->volunteer_trainer == $volunteers[$v]->trainer)))
+            ) {
                 array_push( $activeNow, $volunteers[ $v ] );
             }
         }
@@ -852,8 +868,8 @@ function getHelplineVolunteersActiveNow($service_body_int, $volunteer_type = Vol
 
 function getHelplineVolunteer($volunteer_routing_params) {
     try {
-        $volunteers = getHelplineVolunteersActiveNow( $volunteer_routing_params->service_body_id, $volunteer_routing_params->volunteer_type, $volunteer_routing_params->volunteer_gender);
-        log_debug("getHelplineVolunteer():: activeVolunteers: " . var_export($volunteers, true) . ", service_body_id: " . $volunteer_routing_params->service_body_id . ", volunteer_type: " . $volunteer_routing_params->volunteer_type);
+        $volunteers = getHelplineVolunteersActiveNow( $volunteer_routing_params );
+        log_debug("getHelplineVolunteer():: activeVolunteers: " . var_export($volunteers, true));
         if ( isset( $volunteers ) && count( $volunteers ) > 0 ) {
             if ( $volunteer_routing_params->cycle_algorithm == CycleAlgorithm::CYCLE_AND_VOICEMAIL ) {
                 if ( $volunteer_routing_params->tracker > count( $volunteers ) - 1 ) {
@@ -906,6 +922,7 @@ function getVolunteerInfo($volunteers) {
                 $volunteerInfo->color      = "#" . getNameHashColorCode($volunteerInfo->title);
                 $volunteerInfo->gender     = isset($volunteer->volunteer_gender) ? $volunteer->volunteer_gender : VolunteerGender::UNSPECIFIED;
                 $volunteerInfo->trainee    = isset($volunteer->volunteer_trainee) ? $volunteer->volunteer_trainee : VolunteerTraineeOption::UNSPECIFIED;
+                $volunteerInfo->trainer    = isset($volunteer->volunteer_trainer) ? $volunteer->volunteer_trainer : VolunteerTrainerOption::UNSPECIFIED;
                 array_push( $finalSchedule, $volunteerInfo );
             }
         }
@@ -1226,6 +1243,17 @@ function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_
     return $response;
 }
 
+function getWebhookUrl() {
+    $voice_url = "https://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'];
+    if (strpos(basename($voice_url), ".php")) {
+        return substr( $voice_url, 0, strrpos( $voice_url, "/" ) );
+    } else if (strpos($voice_url, "?")) {
+        return substr( $voice_url, 0, strrpos( $voice_url, "?" ) );
+    } else {
+        return $voice_url;
+    }
+}
+
 function getInputType() {
     return has_setting('speech_gathering') && json_decode(setting('speech_gathering')) ? "speech dtmf" : "dtmf";
 }
@@ -1287,7 +1315,7 @@ function getFlag($flag) {
 }
 
 function getSessionLink($shouldUriEncode = false) {
-    return (isset($_SESSION['PHPSESSID']) ? ($shouldUriEncode ? "&amp;" : "&") . ("PHPSESSID=" . $_SESSION['PHPSESSID']) : "");
+    return (isset($_REQUEST['PHPSESSID']) ? ($shouldUriEncode ? "&amp;" : "&") . ("PHPSESSID=" . $_REQUEST['PHPSESSID']) : "");
 }
 
 require_once "legacydata.php";

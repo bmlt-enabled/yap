@@ -195,8 +195,8 @@
                     <option value="2">Female</option>
                 </select>
                 Trainee: <select class="form-control form-control-sm" name="volunteer_trainee" id="volunteer_trainee">
-                    <option value="null">Unassigned</option>
-                    <option value="tandem">Enabled</option>
+                    <option value="0">Unassigned</option>
+                    <option value="1">Enabled</option>
                 </select>
                 Trainer: <select class="form-control form-control-sm" name="volunteer_trainer" id="volunteer_trainer">
                     <option value="0">Unassigned</option>
@@ -204,7 +204,7 @@
                 </select>
                 Responder: <select class="form-control form-control-sm" name="volunteer_responder" id="volunteer_responder">
                     <option value="0">Unassigned</option>
-                    <option value="1">Enabled</option>78y
+                    <option value="1">Enabled</option>
                 </select>
                 <?php
                 if (has_setting('language_selections')) { ?>
