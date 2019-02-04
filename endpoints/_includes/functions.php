@@ -90,6 +90,7 @@ class VolunteerInfo {
     public $color;
     public $gender;
     public $shadow = VolunteerShadowOption::UNSPECIFIED;
+    public $responder = VolunteerResponderOption::UNSPECIFIED;
     public $type = VolunteerType::PHONE;
 }
 
@@ -217,6 +218,7 @@ class VolunteerRoutingParameters {
     public $volunteer_type = VolunteerType::PHONE;
     public $volunteer_gender = VolunteerGender::UNSPECIFIED;
     public $volunteer_shadow = VolunteerShadowOption::UNSPECIFIED;
+    public $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
 }
 
 class NoVolunteersException extends Exception {}
@@ -851,6 +853,8 @@ function getHelplineVolunteersActiveNow($volunteer_routing_params) {
                     || (($volunteer_routing_params->volunteer_gender !== VolunteerGender::UNSPECIFIED && isset($volunteers[$v]->gender) && $volunteer_routing_params->volunteer_gender == $volunteers[$v]->gender)))
                  && ($volunteer_routing_params->volunteer_shadow == VolunteerShadowOption::UNSPECIFIED
                     || (($volunteer_routing_params->volunteer_shadow !== VolunteerShadowOption::UNSPECIFIED && isset($volunteers[$v]->shadow) && $volunteer_routing_params->volunteer_shadow == $volunteers[$v]->shadow)))
+                 && ($volunteer_routing_params->volunteer_responder == VolunteerResponderOption::UNSPECIFIED
+                    || (($volunteer_routing_params->volunteer_responder !== VolunteerResponderOption::UNSPECIFIED && isset($volunteers[$v]->responder) && $volunteer_routing_params->volunteer_responder == $volunteers[$v]->responder)))
             ) {
                 array_push( $activeNow, $volunteers[ $v ] );
             }
@@ -917,7 +921,8 @@ function getVolunteerInfo($volunteers) {
                 $volunteerInfo->contact    = $volunteer->volunteer_phone_number;
                 $volunteerInfo->color      = "#" . getNameHashColorCode($volunteerInfo->title);
                 $volunteerInfo->gender     = isset($volunteer->volunteer_gender) ? $volunteer->volunteer_gender : VolunteerGender::UNSPECIFIED;
-                $volunteerInfo->shadow    = isset($volunteer->volunteer_shadow) ? $volunteer->volunteer_shadow : VolunteerShadowOption::UNSPECIFIED;
+                $volunteerInfo->shadow     = isset($volunteer->volunteer_shadow) ? $volunteer->volunteer_shadow : VolunteerShadowOption::UNSPECIFIED;
+                $volunteerInfo->responder  = isset($volunteer->volunteer_responder) ? $volunteer->volunteer_responder : VolunteerResponderOption::UNSPECIFIED;
                 array_push( $finalSchedule, $volunteerInfo );
             }
         }

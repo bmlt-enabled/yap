@@ -9,7 +9,7 @@ class CallConfig {
     public $options;
 }
 
-function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = false) {
+function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = VolunteerShadowOption::UNSPECIFIED) {
     $tracker            = !isset( $_REQUEST["tracker"] ) ? 0 : $_REQUEST["tracker"];
 
     if ( $serviceBodyCallHandling->forced_caller_id_enabled ) {
@@ -34,6 +34,10 @@ function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = false)
     $volunteer_routing_parameters->volunteer_type = VolunteerType::PHONE;
     $volunteer_routing_parameters->volunteer_gender = isset($_SESSION['Gender']) ? $_SESSION['Gender'] : VolunteerGender::UNSPECIFIED;
     $volunteer_routing_parameters->volunteer_shadow = $tandem == VolunteerShadowOption::TRAINEE ? VolunteerShadowOption::TRAINER : VolunteerShadowOption::UNSPECIFIED;
+    $volunteer_routing_parameters->volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
+    if ($tandem == VolunteerShadowOption::UNSPECIFIED) {
+        $_SESSION["volunteer_routing_parameters"] = $volunteer_routing_parameters;
+    }
     $config->volunteer_routing_params = $volunteer_routing_parameters;
     $volunteer = getHelplineVolunteer($config->volunteer_routing_params);
     $config->phone_number = $volunteer->phoneNumber;
