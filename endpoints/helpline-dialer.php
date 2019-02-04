@@ -85,8 +85,8 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
             $volunteer = $_SESSION["ActiveVolunteer"];
             if (isset($volunteer->volunteerInfo) && $volunteer->volunteerInfo->shadow == VolunteerShadowOption::TRAINEE) {
                 $_REQUEST['SequenceNumber'] = 1;
-                $_SESSION["ActiveVolunteer"] = null;
                 $sms_body = "You have an incoming helpline trainee call.";
+                $_SESSION["ActiveVolunteer"] = null;
                 $tandem = 1;
             }
         }
@@ -101,7 +101,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
         $participants = $twilioClient->conferences($conferences[0]->sid)->participants->read();
 
         // Do not call if the caller hung up.
-        if (count($participants) > 0) {
+        if (count($participants) == 1 || (count($participants) > 0 && $tandem == VolunteerShadowOption::TRAINEE)) {
             try {
                 $callerSid = $participants[0]->callSid;
             	$callerNumber = $twilioClient->calls( $callerSid )->fetch()->from;
