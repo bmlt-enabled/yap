@@ -43,8 +43,8 @@ function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = false)
             ? (getWebhookUrl() . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'] . '&service_body_id=' . $serviceBodyCallHandling->service_body_id . getSessionLink())
             : (getWebhookUrl() . '/tandem-answer-response.php?conference_name=' . $_REQUEST['FriendlyName'] . '&service_body_id=' . $serviceBodyCallHandling->service_body_id . getSessionLink()),
         'statusCallback'       => $serviceBodyCallHandling->call_strategy == CycleAlgorithm::BLASTING
-            ? (getWebhookUrl() . '/helpline-dialer.php?initiated_by=helpline-dialer&noop=1' . getSessionLink())
-            : (getWebhookUrl() . '/helpline-dialer.php?initiated_by=helpline-dialer&service_body_id=' . $serviceBodyCallHandling->service_body_id
+            ? (getWebhookUrl() . '/helpline-dialer.php?noop=1' . getSessionLink())
+            : (getWebhookUrl() . '/helpline-dialer.php?service_body_id=' . $serviceBodyCallHandling->service_body_id
                 . ('&tracker=' . ++$tracker)
                 . ('&FriendlyName=' . $_REQUEST['FriendlyName'])
                 . ('&OriginalCallerId=' . trim($original_caller_id))
