@@ -89,7 +89,7 @@ class VolunteerInfo {
     public $contact = SpecialPhoneNumber::UNKNOWN;
     public $color;
     public $gender;
-    public $trainee = VolunteerTraineeOption::UNSPECIFIED;
+    public $shadow = VolunteerShadowOption::UNSPECIFIED;
     public $type = VolunteerType::PHONE;
 }
 
@@ -182,14 +182,10 @@ class MeetingResultSort {
     const TODAY = 0;
 }
 
-class VolunteerTraineeOption {
+class VolunteerShadowOption {
     const UNSPECIFIED = 0;
-    const TANDEM = 1;
-}
-
-class VolunteerTrainerOption {
-    const UNSPECIFIED = 0;
-    const ENABLED = 1;
+    const TRAINEE = 1;
+    const TRAINER = 2;
 }
 
 class VolunteerResponderOption {
@@ -220,7 +216,7 @@ class VolunteerRoutingParameters {
     public $cycle_algorithm = CycleAlgorithm::LOOP_FOREVER;
     public $volunteer_type = VolunteerType::PHONE;
     public $volunteer_gender = VolunteerGender::UNSPECIFIED;
-    public $volunteer_trainer = VolunteerTrainerOption::UNSPECIFIED;
+    public $volunteer_shadow = VolunteerShadowOption::UNSPECIFIED;
 }
 
 class NoVolunteersException extends Exception {}
@@ -851,10 +847,10 @@ function getHelplineVolunteersActiveNow($volunteer_routing_params) {
             if ( ($current_time >= ( new DateTime( $volunteers[ $v ]->start ) )
                  && $current_time <= ( new DateTime( $volunteers[ $v ]->end ) ) )
                  && (!isset($volunteers[$v]->type) || str_exists($volunteers[$v]->type, $volunteer_routing_params->volunteer_type ))
-                 && ($volunteer_routing_params->volunteer_gender === VolunteerGender::UNSPECIFIED
+                 && ($volunteer_routing_params->volunteer_gender == VolunteerGender::UNSPECIFIED
                     || (($volunteer_routing_params->volunteer_gender !== VolunteerGender::UNSPECIFIED && isset($volunteers[$v]->gender) && $volunteer_routing_params->volunteer_gender == $volunteers[$v]->gender)))
-                 && ($volunteer_routing_params->volunteer_trainer === VolunteerTraineeOption::UNSPECIFIED
-                    || (($volunteer_routing_params->volunteer_trainer !== VolunteerTraineeOption::UNSPECIFIED && isset($volunteers[$v]->trainer) && $volunteer_routing_params->volunteer_trainer == $volunteers[$v]->trainer)))
+                 && ($volunteer_routing_params->volunteer_shadow == VolunteerShadowOption::UNSPECIFIED
+                    || (($volunteer_routing_params->volunteer_shadow !== VolunteerShadowOption::UNSPECIFIED && isset($volunteers[$v]->shadow) && $volunteer_routing_params->volunteer_shadow == $volunteers[$v]->shadow)))
             ) {
                 array_push( $activeNow, $volunteers[ $v ] );
             }
@@ -921,8 +917,7 @@ function getVolunteerInfo($volunteers) {
                 $volunteerInfo->contact    = $volunteer->volunteer_phone_number;
                 $volunteerInfo->color      = "#" . getNameHashColorCode($volunteerInfo->title);
                 $volunteerInfo->gender     = isset($volunteer->volunteer_gender) ? $volunteer->volunteer_gender : VolunteerGender::UNSPECIFIED;
-                $volunteerInfo->trainee    = isset($volunteer->volunteer_trainee) ? $volunteer->volunteer_trainee : VolunteerTraineeOption::UNSPECIFIED;
-                $volunteerInfo->trainer    = isset($volunteer->volunteer_trainer) ? $volunteer->volunteer_trainer : VolunteerTrainerOption::UNSPECIFIED;
+                $volunteerInfo->shadow    = isset($volunteer->volunteer_shadow) ? $volunteer->volunteer_shadow : VolunteerShadowOption::UNSPECIFIED;
                 array_push( $finalSchedule, $volunteerInfo );
             }
         }

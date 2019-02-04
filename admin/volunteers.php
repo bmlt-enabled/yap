@@ -194,13 +194,10 @@
                     <option value="1">Male</option>
                     <option value="2">Female</option>
                 </select>
-                Trainee: <select class="form-control form-control-sm" name="volunteer_trainee" id="volunteer_trainee">
+                Shadow: <select class="form-control form-control-sm" name="volunteer_shadow" id="volunteer_shadow">
                     <option value="0">Unassigned</option>
-                    <option value="1">Enabled</option>
-                </select>
-                Trainer: <select class="form-control form-control-sm" name="volunteer_trainer" id="volunteer_trainer">
-                    <option value="0">Unassigned</option>
-                    <option value="1">Enabled</option>
+                    <option value="1">Trainee</option>
+                    <option value="2">Trainer</option>
                 </select>
                 Responder: <select class="form-control form-control-sm" name="volunteer_responder" id="volunteer_responder">
                     <option value="0">Unassigned</option>

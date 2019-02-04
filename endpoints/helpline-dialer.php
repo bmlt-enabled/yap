@@ -30,16 +30,16 @@ function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = false)
     $volunteer_routing_parameters = new VolunteerRoutingParameters();
     $volunteer_routing_parameters->service_body_id = $serviceBodyCallHandling->service_body_id;
     $volunteer_routing_parameters->tracker = $tracker;
-    $volunteer_routing_parameters->cycle_algorithm = $tandem == VolunteerTraineeOption::TANDEM ? CycleAlgorithm::BLASTING : $serviceBodyCallHandling->call_strategy;
+    $volunteer_routing_parameters->cycle_algorithm = $tandem == VolunteerShadowOption::TRAINEE ? CycleAlgorithm::BLASTING : $serviceBodyCallHandling->call_strategy;
     $volunteer_routing_parameters->volunteer_type = VolunteerType::PHONE;
     $volunteer_routing_parameters->volunteer_gender = isset($_SESSION['Gender']) ? $_SESSION['Gender'] : VolunteerGender::UNSPECIFIED;
-    $volunteer_routing_parameters->volunteer_trainer = $tandem == VolunteerTraineeOption::TANDEM ? VolunteerTrainerOption::ENABLED : VolunteerTrainerOption::UNSPECIFIED;
+    $volunteer_routing_parameters->volunteer_shadow = $tandem == VolunteerShadowOption::TRAINEE ? VolunteerShadowOption::TRAINER : VolunteerShadowOption::UNSPECIFIED;
     $config->volunteer_routing_params = $volunteer_routing_parameters;
     $volunteer = getHelplineVolunteer($config->volunteer_routing_params);
     $config->phone_number = $volunteer->phoneNumber;
     $config->voicemail_url = getWebhookUrl() . '/voicemail.php?service_body_id=' . $serviceBodyCallHandling->service_body_id . '&caller_id=' . trim($caller_id) . getSessionLink();
     $config->options = array(
-        'url'  => $tandem !== VolunteerTraineeOption::TANDEM
+        'url'  => $tandem !== VolunteerShadowOption::TRAINEE
             ? (getWebhookUrl() . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'] . '&service_body_id=' . $serviceBodyCallHandling->service_body_id . getSessionLink())
             : (getWebhookUrl() . '/tandem-answer-response.php?conference_name=' . $_REQUEST['FriendlyName'] . '&service_body_id=' . $serviceBodyCallHandling->service_body_id . getSessionLink()),
         'statusCallback'       => $serviceBodyCallHandling->call_strategy == CycleAlgorithm::BLASTING
@@ -83,7 +83,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
 
         if (isset($_SESSION["ActiveVolunteer"])) {
             $volunteer = $_SESSION["ActiveVolunteer"];
-            if (isset($volunteer->volunteerInfo) && $volunteer->volunteerInfo->trainee == VolunteerTraineeOption::TANDEM) {
+            if (isset($volunteer->volunteerInfo) && $volunteer->volunteerInfo->shadow == VolunteerShadowOption::TRAINEE) {
                 $_REQUEST['SequenceNumber'] = 1;
                 $_SESSION["ActiveVolunteer"] = null;
                 $sms_body = "You have an incoming helpline trainee call from " . $callerNumber . ".";
