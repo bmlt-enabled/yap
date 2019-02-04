@@ -86,7 +86,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
             if (isset($volunteer->volunteerInfo) && $volunteer->volunteerInfo->shadow == VolunteerShadowOption::TRAINEE) {
                 $_REQUEST['SequenceNumber'] = 1;
                 $_SESSION["ActiveVolunteer"] = null;
-                $sms_body = "You have an incoming helpline trainee call from " . $callerNumber . ".";
+                $sms_body = "You have an incoming helpline trainee call.";
                 $tandem = 1;
             }
         }
