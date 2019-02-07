@@ -8,6 +8,8 @@ services:
         - 3100:80
       volumes:
         - .:/var/www/html/
+      environment:
+        ENVIRONMENT: dev
     db:
       image: mysql:5.5
       restart: always
