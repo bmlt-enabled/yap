@@ -1,4 +1,4 @@
-FROM php:7.2-apache
+FROM php:7.1-apache
 
 ENV PHP_INI_PATH "/usr/local/etc/php/php.ini"
 
