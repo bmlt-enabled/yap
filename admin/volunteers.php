@@ -209,7 +209,7 @@
                     <?php
                     foreach ($language_selection_options = explode(",", setting('language_selections')) as $key => $available_language) {
                         ?>
-                        <option value="<?php echo $key; ?>"><?php echo $available_language; ?></option>
+                        <option value="<?php echo $available_language; ?>"><?php echo $available_language; ?></option>
                         <?php
                     }
                 } ?>
