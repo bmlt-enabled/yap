@@ -84,7 +84,7 @@ function saveVolunteers() {
             var formData = $(volunteerCard).find("#volunteersForm").serializeArray();
             var dataObj = {};
             for (var formItem of formData) {
-                dataObj[formItem["name"]] = formItem["value"]
+                dataObj[formItem["name"]] = $(volunteerCard).find("#volunteersForm").find("#" + formItem["name"]).val();
             }
 
             data.push(dataObj);
