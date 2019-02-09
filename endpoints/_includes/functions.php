@@ -7,6 +7,10 @@ require_once (!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ .
 require_once 'migrations.php';
 require_once 'logging.php';
 static $version  = "3.0.0-beta5";
+class VolunteerLanguage {
+    const UNSPECIFIED = 0;
+    const DEFAULT = "en";
+}
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false, 'hidden' => false],
@@ -26,7 +30,7 @@ static $settings_whitelist = [
     'include_map_link' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'infinite_searching' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'jft_option' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
-    'language' => [ 'description' => '' , 'default' => 'en', 'overridable' => true, 'hidden' => false],
+    'language' => [ 'description' => '' , 'default' => VolunteerLanguage::DEFAULT, 'overridable' => true, 'hidden' => false],
     'language_selections' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'location_lookup_bias' => [ 'description' => '' , 'default' => 'country:us', 'overridable' => true, 'hidden' => false],
     'meeting_result_sort' => [ 'description' => '' , 'default' => MeetingResultSort::TODAY, 'overridable' => true, 'hidden' => false],
@@ -220,9 +224,56 @@ class VolunteerRoutingParameters {
     public $volunteer_gender = VolunteerGender::UNSPECIFIED;
     public $volunteer_shadow = VolunteerShadowOption::UNSPECIFIED;
     public $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
+    public $volunteer_language = VolunteerLanguage::UNSPECIFIED;
 }
 
 class NoVolunteersException extends Exception {}
+
+class VolunteerRoutingHelpers
+{
+    static function checkVolunteerRoutingTime(DateTime $current_time, $volunteers, $v)
+    {
+        return ($current_time >= (new DateTime($volunteers[$v]->start))
+            && $current_time <= (new DateTime($volunteers[$v]->end)));
+    }
+
+    static function checkVolunteerRoutingLanguage($volunteer_routing_params, $volunteers, $v)
+    {
+        return ($volunteer_routing_params->volunteer_language === VolunteerLanguage::UNSPECIFIED
+            || (($volunteer_routing_params->volunteer_language !== VolunteerLanguage::UNSPECIFIED
+                && isset($volunteers[$v]->language)
+                && in_array($volunteer_routing_params->volunteer_language, $volunteers[$v]->language))));
+    }
+
+    static function checkVolunteerRoutingType($volunteer_routing_params, $volunteers, $v)
+    {
+        return (!isset($volunteers[$v]->type) || str_exists($volunteers[$v]->type, $volunteer_routing_params->volunteer_type));
+    }
+
+    static function checkVolunteerRoutingResponder($volunteer_routing_params, $volunteers, $v)
+    {
+        return ($volunteer_routing_params->volunteer_responder == VolunteerResponderOption::UNSPECIFIED
+            || (($volunteer_routing_params->volunteer_responder !== VolunteerResponderOption::UNSPECIFIED
+                && isset($volunteers[$v]->responder)
+                && $volunteer_routing_params->volunteer_responder == $volunteers[$v]->responder)));
+    }
+
+    static function checkVolunteerRoutingShadow($volunteer_routing_params, $volunteers, $v)
+    {
+        return ($volunteer_routing_params->volunteer_shadow == VolunteerShadowOption::UNSPECIFIED
+            || (($volunteer_routing_params->volunteer_shadow !== VolunteerShadowOption::UNSPECIFIED
+                && isset($volunteers[$v]->shadow)
+                && $volunteer_routing_params->volunteer_shadow == $volunteers[$v]->shadow)));
+    }
+
+    static function checkVolunteerRoutingGender($volunteer_routing_params, $volunteers, $v)
+    {
+        return ($volunteer_routing_params->volunteer_gender == VolunteerGender::UNSPECIFIED
+            || (($volunteer_routing_params->volunteer_gender !== VolunteerGender::UNSPECIFIED
+                && isset($volunteers[$v]->gender)
+                && $volunteer_routing_params->volunteer_gender == $volunteers[$v]->gender)));
+    }
+}
 
 class UpgradeAdvisor {
     private static $all_good = true;
@@ -847,16 +898,13 @@ function getHelplineVolunteersActiveNow($volunteer_routing_params) {
         for ( $v = 0; $v < count( $volunteers ); $v ++ ) {
             date_default_timezone_set( $volunteers[ $v ]->time_zone );
             $current_time = new DateTime();
-            if ( ($current_time >= ( new DateTime( $volunteers[ $v ]->start ) )
-                 && $current_time <= ( new DateTime( $volunteers[ $v ]->end ) ) )
-                 && (!isset($volunteers[$v]->type) || str_exists($volunteers[$v]->type, $volunteer_routing_params->volunteer_type ))
-                 && ($volunteer_routing_params->volunteer_gender == VolunteerGender::UNSPECIFIED
-                    || (($volunteer_routing_params->volunteer_gender !== VolunteerGender::UNSPECIFIED && isset($volunteers[$v]->gender) && $volunteer_routing_params->volunteer_gender == $volunteers[$v]->gender)))
-                 && ($volunteer_routing_params->volunteer_shadow == VolunteerShadowOption::UNSPECIFIED
-                    || (($volunteer_routing_params->volunteer_shadow !== VolunteerShadowOption::UNSPECIFIED && isset($volunteers[$v]->shadow) && $volunteer_routing_params->volunteer_shadow == $volunteers[$v]->shadow)))
-                 && ($volunteer_routing_params->volunteer_responder == VolunteerResponderOption::UNSPECIFIED
-                    || (($volunteer_routing_params->volunteer_responder !== VolunteerResponderOption::UNSPECIFIED && isset($volunteers[$v]->responder) && $volunteer_routing_params->volunteer_responder == $volunteers[$v]->responder)))
-            ) {
+            if ( VolunteerRoutingHelpers::checkVolunteerRoutingTime($current_time, $volunteers, $v)
+                 && VolunteerRoutingHelpers::checkVolunteerRoutingType($volunteer_routing_params, $volunteers, $v)
+                 && VolunteerRoutingHelpers::checkVolunteerRoutingGender($volunteer_routing_params, $volunteers, $v)
+                 && VolunteerRoutingHelpers::checkVolunteerRoutingShadow($volunteer_routing_params, $volunteers, $v)
+                 && VolunteerRoutingHelpers::checkVolunteerRoutingResponder($volunteer_routing_params, $volunteers, $v)
+                 && VolunteerRoutingHelpers::checkVolunteerRoutingLanguage($volunteer_routing_params, $volunteers, $v))
+            {
                 array_push( $activeNow, $volunteers[ $v ] );
             }
         }
@@ -866,6 +914,8 @@ function getHelplineVolunteersActiveNow($volunteer_routing_params) {
         throw $nve;
     }
 }
+
+
 
 function getHelplineVolunteer($volunteer_routing_params) {
     try {
@@ -924,6 +974,7 @@ function getVolunteerInfo($volunteers) {
                 $volunteerInfo->gender     = isset($volunteer->volunteer_gender) ? $volunteer->volunteer_gender : VolunteerGender::UNSPECIFIED;
                 $volunteerInfo->shadow     = isset($volunteer->volunteer_shadow) ? $volunteer->volunteer_shadow : VolunteerShadowOption::UNSPECIFIED;
                 $volunteerInfo->responder  = isset($volunteer->volunteer_responder) ? $volunteer->volunteer_responder : VolunteerResponderOption::UNSPECIFIED;
+                $volunteerInfo->language   = isset($volunteer->volunteer_language) ? $volunteer->volunteer_language : VolunteerLanguage::UNSPECIFIED;
                 array_push( $finalSchedule, $volunteerInfo );
             }
         }

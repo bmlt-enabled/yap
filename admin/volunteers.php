@@ -205,7 +205,7 @@
                 </select>
                 <?php
                 if (has_setting('language_selections')) { ?>
-                Languages: <select multiple class="form-control form-control-sm" name="volunteer_languages" id="volunteer_languages">
+                Languages: <select multiple class="form-control form-control-sm" name="volunteer_language" id="volunteer_language">
                     <?php
                     foreach ($language_selection_options = explode(",", setting('language_selections')) as $key => $available_language) {
                         ?>
