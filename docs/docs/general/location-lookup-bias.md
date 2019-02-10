@@ -18,4 +18,4 @@ For example say you wanted to lookup Bayonne.  By default Bayonne, New Jersey wo
 static $location_lookup_bias = "country:France";
 ```
 
-A full listing of available bias options are available here: [https://developers.google.com/maps/documentation/geocoding/intro#ComponentFiltering](https://developers.google.com/maps/documentation/geocoding/intro#ComponentFiltering).  You can use as few or as many as you want, by separating each set with pipe "|" character.
+A full listing of available bias options are available here: [https://developers.google.com/maps/documentation/geocoding/intro#ComponentFiltering](https://developers.google.com/maps/documentation/geocoding/intro#ComponentFiltering).  You can use as few or as many as you want, by separating each set with pipe "\|" character.
