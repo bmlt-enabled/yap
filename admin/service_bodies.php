@@ -28,7 +28,6 @@ sort_on_field($service_bodies, 'name');
                             <button class="btn btn-sm btn-info" onclick="location.href='records.php?service_body_id=<?php echo $service_body->id ?>'"><?php echo word('records')?></button>
                             <button class="btn btn-sm btn-warning" onclick="openServiceBodyConfigure(<?php echo $service_body->id ?>);"><?php echo word('configure')?></button>
                             <div class="modal fade" id="serviceBodyCallHandling_<?php echo $service_body->id ?>" tabindex="-1" role="dialog" aria-labelledby="configureShiftDialog" aria-hidden="true">
-                                <input type="hidden" id="helpline_data_id" name="helpline_data_id" class="helpline_data_id" value="0" />
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -142,7 +141,6 @@ sort_on_field($service_bodies, 'name');
                                 </div>
                             </div>
                             <div class="modal fade" id="serviceBodyConfiguration_<?php echo $service_body->id ?>" tabindex="-1" role="dialog" aria-labelledby="configureShiftDialog" aria-hidden="true">
-                                <input type="hidden" id="helpline_data_id" name="helpline_data_id" class="helpline_data_id" value="0" />
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">

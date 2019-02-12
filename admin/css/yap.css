@@ -48,11 +48,7 @@ div#signin {
     margin-bottom: 20px;
 }
 
-#add-volunteer {
-    margin-top:10px;
-}
-
-#save-volunteers {
+.volunteer-manage-buttons {
     margin-top:10px;
 }
 
@@ -166,4 +162,8 @@ div#signin {
 
 .removeFieldButton {
     display: inline;
+}
+
+#group_dialog_message {
+    color: red;
 }

@@ -24,7 +24,7 @@ require_once 'header.php';
     <div class="collapse navbar-collapse" id="top-navbar">
         <ul class="navbar-nav mr-auto">
             <?php
-                $pages = array("Home", "Groups", "Reports", "Service Bodies", "Schedules", "Settings", "Volunteers");
+                $pages = array("Home", "Reports", "Service Bodies", "Schedules", "Settings", "Volunteers");
                 foreach ($pages as $page) {
                     $slug = str_replace(" ", "_", strtolower($page))
                     ?>

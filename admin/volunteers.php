@@ -1,6 +1,7 @@
-<?php require_once 'nav.php'; ?>
+<?php require_once 'nav.php';
+$data_type = DataType::YAP_VOLUNTEERS_V2;
+?>
 <div class="container">
-    <input type="hidden" name="helpline_data_id" id="helpline_data_id" value="0" />
     <div class="alert alert-success" role="alert" style="display:none;" id="volunteer_saved_alert">
         Saved.
     </div>

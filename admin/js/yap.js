@@ -3,11 +3,12 @@ dayOfTheWeek = {1:"Sunday",2:"Monday",3:"Tuesday",4:"Wednesday",5:"Thursday",6:"
 function volunteerPage() {
     $("#service_body_id").on("change", function() {
         addNewVolunteerDialog($(this).val() > 0);
+        addGroupVolunteersDialog($(this).val() >= 0);
         clearVolunteerCards();
         if ($(this).val() > 0) {
-            var helpline_data_id = $(this).val();
+            var service_body_id = $(this).val();
             spinnerDialog(true, "Retrieving Volunteers...", function () {
-                loadVolunteers(helpline_data_id, function () {
+                loadVolunteers(service_body_id, function () {
                     spinnerDialog(false);
                 })
             });
@@ -67,7 +68,7 @@ function addVolunteers() {
     addVolunteer({"volunteer_name": ""});
 }
 
-function saveVolunteers() {
+function saveVolunteers(data_type) {
     $("#save-volunteers").addClass('disabled');
     spinnerDialog(true, "Saving Volunteers...", function () {
         var volunteerCards = $("#volunteerCards").children();
@@ -92,9 +93,9 @@ function saveVolunteers() {
 
         saveToAdminApi(
             $("#service_body_id").val(),
-            $("#helpline_data_id").val(),
             data,
-            "_YAP_VOLUNTEERS_V2_",
+            data_type,
+            data_type === "_YAP_GROUP_VOLUNTEERS_V2_" ? $("#group_id").val() : 0,
             function (xhr, status) {
                 var alert = $("#volunteer_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
@@ -129,9 +130,9 @@ function saveServiceBodyConfig(service_body_id) {
 
         saveToAdminApi(
             service_body_id,
-            0,
             data,
             '_YAP_CONFIG_V2_',
+            0,
             function(xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
@@ -152,7 +153,6 @@ function saveServiceBodyConfig(service_body_id) {
 
 function saveServiceBodyCallHandling(service_body_id) {
     var serviceBodyCallHandling = $("#serviceBodyCallHandling_" + service_body_id);
-    var helpline_data_id = serviceBodyCallHandling.find(".helpline_data_id").val();
     serviceBodyCallHandling.modal('hide');
     spinnerDialog(true, "Saving Service Body Call Handling...", function () {
         var data = [];
@@ -166,9 +166,9 @@ function saveServiceBodyCallHandling(service_body_id) {
 
         saveToAdminApi(
             service_body_id,
-            helpline_data_id,
             data,
             '_YAP_CALL_HANDLING_V2_',
+            0,
             function(xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
@@ -187,12 +187,14 @@ function saveServiceBodyCallHandling(service_body_id) {
     });
 }
 
-function saveToAdminApi(service_body_id, helpline_data_id, data, data_type, callback) {
+function saveToAdminApi(service_body_id, data, data_type, parent_id, callback) {
     $.ajax({
         async: false,
         type: "POST",
-        url: "api.php?action=save&helpline_data_id=" + helpline_data_id
-        + "&service_body_id=" + service_body_id + "&data_type=" + data_type,
+        url: "api.php?action=save"
+            + "&service_body_id=" + service_body_id
+            + "&data_type=" + data_type
+            + (parent_id !== null && parent_id !== 0 ? "&parent_id=" + parent_id : ""),
         data: JSON.stringify(data),
         dataType: "json",
         contentType: "application/json",
@@ -201,8 +203,10 @@ function saveToAdminApi(service_body_id, helpline_data_id, data, data_type, call
     });
 }
 
-function loadFromAdminApi(service_body_id, data_type, callback) {
-    $.getJSON("api.php?service_body_id=" + service_body_id + "&data_type=" + data_type, function(data) {
+function loadFromAdminApi(parent_id, service_body_id, data_type, callback) {
+    $.getJSON("api.php?service_body_id=" + service_body_id
+        + "&data_type=" + data_type
+        + (parent_id !== null ? "&parent_id=" + parent_id : ""), function(data) {
         callback(data)
     });
 }
@@ -211,20 +215,34 @@ function addNewVolunteerDialog(isVisible) {
     isVisible ? $("#newVolunteerDialog").show() : $("#newVolunteerDialog").hide();
 }
 
+function addGroupVolunteersDialog(isVisible) {
+    isVisible ? $("#manage-groups").show() : $("#manage-groups").hide();
+}
+
 function clearVolunteerCards() {
     $("#volunteerCards").children().remove()
 }
 
 function loadVolunteers(serviceBodyId, callback) {
-    loadFromAdminApi(serviceBodyId, '_YAP_VOLUNTEERS_V2_', function(data) {
-        var helpline_data_id = 0;
+    loadFromAdminApi(null, serviceBodyId, '_YAP_VOLUNTEERS_V2_', function(data) {
         if (!$.isEmptyObject(data)) {
-            helpline_data_id = data["id"];
+            var data = JSON.parse(data['data'])
             for (item of data) {
                 addVolunteer(item)
             }
         }
-        $("#helpline_data_id").val(helpline_data_id);
+        callback();
+    });
+}
+
+function loadGroupVolunteers(parent_id, service_body_id, callback) {
+    loadFromAdminApi($("#group_id").val(), service_body_id,'_YAP_GROUP_VOLUNTEERS_V2_', function(data) {
+        if (!$.isEmptyObject(data)) {
+            var data = JSON.parse(data['data'])
+            for (item of data) {
+                addVolunteer(item);
+            }
+        }
         callback();
     });
 }
@@ -275,6 +293,10 @@ function addVolunteer(volunteerData) {
 
 function removeVolunteer(e) {
     $(e).closest(".volunteerCard").remove();
+}
+
+function manageGroups(e) {
+    location.href='groups.php?service_body_id=' + $("#service_body_id").val();
 }
 
 function checkboxStatusToggle(e) {
@@ -410,10 +432,10 @@ function openServiceBodyConfigure(service_body_id) {
     spinnerDialog(true, "Retrieving Service Body Configuration...", function() {
         var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
         var serviceBodyFields = $("#serviceBodyConfigurationFields");
-        loadFromAdminApi(service_body_id, '_YAP_CONFIG_V2_', function(data) {
+           loadFromAdminApi(null, service_body_id, '_YAP_CONFIG_V2_', function(data) {
             if (!$.isEmptyObject(data)) {
                 clearServiceBodyFields(service_body_id);
-                var dataSet = data[0];
+                var dataSet = JSON.parse(data['data'])[0];
                 for (var key in dataSet) {
                     if (key !== "serviceBodyConfigurationFields") {
                         addServiceBodyField(service_body_id, key);
@@ -455,10 +477,9 @@ function clearServiceBodyFields(service_body_id) {
 function openServiceBodyCallHandling(service_body_id) {
     spinnerDialog(true, "Retrieving Service Body Call Handling...", function() {
         var serviceBodyCallHandling = $("#serviceBodyCallHandling_" + service_body_id);
-        loadFromAdminApi(service_body_id, '_YAP_CALL_HANDLING_V2_', function(data) {
+        loadFromAdminApi(null, service_body_id, '_YAP_CALL_HANDLING_V2_', function(data) {
             if (!$.isEmptyObject(data)) {
-                serviceBodyCallHandling.find("#helpline_data_id").val(data["id"]);
-                var dataSet = data[0];
+                var dataSet = JSON.parse(data['data'])[0];
                 for (var key in dataSet) {
                     if (dataSet[key]) {
                         serviceBodyCallHandling.find("#" + key).prop('checked', true);
@@ -484,6 +505,77 @@ function openServiceBodyCallHandling(service_body_id) {
                 serviceBodyCallHandling.modal("show");
             });
         });
+    });
+}
+
+function groupsPage() {
+    $("#group_id").on("change", function() {
+        addNewVolunteerDialog($(this).val() >= 0);
+        clearVolunteerCards();
+        if ($(this).val() >= 0) {
+            spinnerDialog(true, "Retrieving Group Volunteers...", function () {
+                loadGroupVolunteers($("#group_id").val(), $("#service_body_id").val(), function () {
+                    spinnerDialog(false);
+                })
+            });
+        }
+    });
+
+    $("#volunteerCards").sortable({
+        "handle":".volunteer-sort-icon"
+    });
+
+    for (var hr = 1; hr <= 12; hr++) {
+        var hr_value = hr < 10 ? "0" + hr : hr.toString();
+        $(".hours_field").append(new Option(hr_value, hr_value));
+    }
+
+    for (var min = 0; min <= 59; min++) {
+        var min_value = min < 10 ? "0" + min : min.toString();
+        $(".minutes_field").append(new Option(min_value, min_value));
+    }
+}
+
+function addGroup() {
+    $("#group_dialog_message").html("");
+    $("#group_name").val("");
+    $("#group_descrption").val("");
+    $("#addGroupDialog").modal('show');
+}
+
+function confirmGroup() {
+    if ($("#group_name").val() == "") {
+        $("#group_dialog_message").html("A name is required.");
+    }
+
+    $("#addGroupButton").hide();
+    $("#addGroupDialog").modal('hide');
+    spinnerDialog(true, "Saving Group...", function () {
+        var data = [{"name":$("#group_name").val(),"description":$("#group_description").val()}];
+        saveToAdminApi(
+            $("#service_body_id").val(),
+            data,
+            '_YAP_GROUPS_V2_',
+            0,
+            function(xhr, status) {
+                var alert = $("#service_body_saved_alert");
+                if (xhr.responseText === "{}" || xhr.status !== 200) {
+                    alert.addClass("alert-danger");
+                    alert.html("Could not save.");
+                    $("#addGroupButton").show();
+                } else {
+                    var new_group_id = xhr.responseJSON['id'];
+                    $("#group_id").append(new Option($("#group_name").val() + " (" + $("#group_description").val() + ")", new_group_id, true, true));
+                    $("#group_id").trigger('change');
+                    alert.addClass("alert-success");
+                    alert.html("Saved.");
+                }
+
+                alert.show();
+                alert.fadeOut(3000);
+                spinnerDialog(false);
+            }
+        );
     });
 }
 

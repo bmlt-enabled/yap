@@ -165,6 +165,8 @@ class DataType {
     const YAP_DATA = "_YAP_DATA_";
     const YAP_CALL_HANDLING_V2 = "_YAP_CALL_HANDLING_V2_";
     const YAP_VOLUNTEERS_V2 = "_YAP_VOLUNTEERS_V2_";
+    const YAP_GROUPS_V2 = "_YAP_GROUPS_V2_";
+    const YAP_GROUP_VOLUNTEERS_V2 = "_YAP_GROUP_VOLUNTEERS_V2_";
 }
 
 class SpecialPhoneNumber {
@@ -625,7 +627,6 @@ function getResultsString($filtered_list) {
         str_replace("&", "&amp;", $filtered_list->location_street
                                         . ($filtered_list->location_municipality !== "" ? " " . $filtered_list->location_municipality : "")
                                         . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")));
-
 }
 
 function getServiceBodyCoverage($latitude, $longitude) {
@@ -757,22 +758,39 @@ function admin_GetUserName() {
     return isset($get_user_info_response->current_user) ? $get_user_info_response->current_user->name : $_SESSION['username'];
 }
 
-function admin_PersistDbConfig($service_body_id, $data, $data_type) {
+function admin_PersistDbConfig($service_body_id, $data, $data_type, $parent_id) {
     $db = new Database();
-    $current_data_check = getDbData($service_body_id, $data_type);
-    if (count($current_data_check) == 0) {
-        $db->query("INSERT INTO `config` (`service_body_id`,`data`,`data_type`) VALUES ('$service_body_id','$data','$data_type')");
-    } else {
-        $db->query("UPDATE `config` SET `data`='$data' WHERE `service_body_id`=$service_body_id AND `data_type`='$data_type'");
-    }
+    $current_data_check = isset($parent_id) && $parent_id > 0 ? getDbDataByParentId($parent_id, $data_type) : getDbData($service_body_id, $data_type);
 
-    $db->execute();
-    $db->close();
+    if (count($current_data_check) == 0) {
+        $db->query("INSERT INTO `config` (`service_body_id`,`data`,`data_type`,`parent_id`) VALUES ('$service_body_id','$data','$data_type','$parent_id')");
+        $db->execute();
+        $db->query("SELECT MAX(id) as id FROM `config`");
+        $resultset = $db->resultset();
+        $db->close();
+        return $resultset[0]['id'];
+    } else {
+        $query = "UPDATE `config` SET `data`='$data' WHERE `service_body_id`=$service_body_id AND `data_type`='$data_type'";
+        if (isset($parent_id) && $parent_id > 0) {
+            $query .= " AND `parent_id`='$parent_id'";
+        }
+        $db->query($query);
+        $db->execute();
+        $db->close();
+    }
 }
 
 function getDbData($service_body_id, $data_type) {
     $db = new Database();
-    $db->query("SELECT `data`,`service_body_id` FROM `config` WHERE `service_body_id`=$service_body_id AND `data_type`='$data_type'");
+    $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `service_body_id`=$service_body_id AND `data_type`='$data_type'");
+    $resultset = $db->resultset();
+    $db->close();
+    return $resultset;
+}
+
+function getDbDataByParentId($parent_id, $data_type) {
+    $db = new Database();
+    $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `parent_id`=$parent_id AND `data_type`='$data_type'");
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
@@ -780,7 +798,7 @@ function getDbData($service_body_id, $data_type) {
 
 function getAllDbData($data_type) {
     $db = new Database();
-    $db->query("SELECT `data`,`service_body_id` FROM `config` WHERE `data_type`='$data_type'");
+    $db->query("SELECT `data`,`service_body_id`,`parent_id` FROM `config` WHERE `data_type`='$data_type'");
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
@@ -826,6 +844,21 @@ function getVolunteerRoutingEnabledServiceBodies() {
     }
 
     return $helpline_enabled;
+}
+
+function getGroups($service_body_id) {
+    $groupsData = getDbData($service_body_id, DataType::YAP_GROUPS_V2);
+    $groupsArray = [];
+    foreach ($groupsData as $group) {
+        $groupsDataObj = json_decode($group['data'])[0];
+        array_push($groupsArray, (object)[
+            'name' => $groupsDataObj->name,
+            'description' => $groupsDataObj->description,
+            'id' => $group['id']
+        ]);
+    }
+
+    return $groupsArray;
 }
 
 function getServiceBodyCallHandlingData($helplineData) {

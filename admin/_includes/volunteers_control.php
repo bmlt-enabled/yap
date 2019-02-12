@@ -1,8 +1,9 @@
 <div class="row">
     <div id="newVolunteerDialog" class="col-sm" style="display:none;">
         <div class="form-group">
-            <button id="add-volunteer" class="btn btn-sm btn-primary" type="button" onclick="addVolunteers();"><?php echo word('add_volunteer')?></button>
-            <button id="save-volunteers" class="btn btn-sm btn-success" type="button" onclick="saveVolunteers();"><?php echo word('save_volunteers')?></button>
+            <button id="add-volunteer" class="btn btn-sm btn-primary volunteer-manage-buttons" type="button" onclick="addVolunteers();"><?php echo word('add_volunteer')?></button>
+            <button id="save-volunteers" class="btn btn-sm btn-success volunteer-manage-buttons" type="button" onclick="saveVolunteers('<?php echo $data_type?>');"><?php echo word('save_volunteers')?></button>
+            <button id="manage-groups" class="btn btn-sm btn-warning volunteer-manage-buttons" type="button" onclick="manageGroups();" style="display: none;"><?php echo word('groups')?></button>
         </div>
     </div>
 </div>
