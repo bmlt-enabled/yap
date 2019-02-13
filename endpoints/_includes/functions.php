@@ -821,7 +821,9 @@ function getServiceBodyConfig($service_body_id) {
             }
         }
 
-        $lookup_id = $service_body_finder->getServiceBody($lookup_id)->parent_id;
+        $found_service_body = $service_body_finder->getServiceBody($lookup_id);
+        if (!isset($found_service_body)) return null;
+        $lookup_id = $found_service_body->parent_id;
         if ($lookup_id == 0) return $config;
     }
 }
