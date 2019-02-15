@@ -57,11 +57,20 @@ div#signin {
     background-color: #CCC;
 }
 
+.groupCard {
+    margin-top:10px;
+    background-color: #CCC;
+}
+
 #newVolunteerDialog {
     margin-top:10px;
 }
 
 #volunteerCardFooter {
+    margin-bottom:10px;
+}
+
+#groupCardFooter {
     margin-bottom:10px;
 }
 
@@ -134,7 +143,7 @@ div#signin {
     width: 100%;
 }
 
-.volunteerDisabled {
+.cardDisabled {
     background-color: #FFF;
 }
 

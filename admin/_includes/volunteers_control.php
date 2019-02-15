@@ -3,7 +3,8 @@
         <div class="form-group">
             <button id="add-volunteer" class="btn btn-sm btn-primary volunteer-manage-buttons" type="button" onclick="addVolunteers();"><?php echo word('add_volunteer')?></button>
             <button id="save-volunteers" class="btn btn-sm btn-success volunteer-manage-buttons" type="button" onclick="saveVolunteers('<?php echo $data_type?>');"><?php echo word('save_volunteers')?></button>
-            <button id="manage-groups" class="btn btn-sm btn-warning volunteer-manage-buttons" type="button" onclick="manageGroups();" style="display: none;"><?php echo word('groups')?></button>
+            <button id="include-group" class="btn btn-sm btn-warning volunteer-manage-buttons" type="button" onclick="showGroupsModal();" style="display: none;"><?php echo word('include_group')?></button>
+            <button id="manage-groups" class="btn btn-sm btn-warning volunteer-manage-buttons" type="button" onclick="manageGroups();" style="display: none;"><?php echo word('manage_groups')?></button>
         </div>
     </div>
 </div>
@@ -227,7 +228,7 @@
                     <input type="checkbox" class="form-check-input" name="volunteer_enabled" id="volunteer_enabled" value="false" onclick="checkboxStatusToggle(this)">
                     <label class="form-check-label" for="volunteer_enabled">Enabled</label>
                 </div>
-                <button class="btn btn-sm btn-danger" type="button" onclick="removeVolunteer(this);return false;"><?php echo word('remove')?></button>
+                <button class="btn btn-sm btn-danger" type="button" onclick="removeCard(this);return false;"><?php echo word('remove')?></button>
             </div>
         </div>
     </form>

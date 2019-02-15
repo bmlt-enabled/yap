@@ -804,6 +804,14 @@ function getAllDbData($data_type) {
     return $resultset;
 }
 
+function getGroupsForServiceBody($service_body_id) {
+    $db = new Database();
+    $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `service_body_id`=$service_body_id AND `data_type`='" . DataType::YAP_GROUPS_V2 . "'");
+    $resultset = $db->resultset();
+    $db->close();
+    return $resultset;
+}
+
 function getServiceBodyConfig($service_body_id) {
     $service_body_finder = new ServiceBodyFinder();
     $db_config_finder = new DbConfigFinder();

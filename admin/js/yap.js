@@ -1,4 +1,5 @@
 dayOfTheWeek = {1:"Sunday",2:"Monday",3:"Tuesday",4:"Wednesday",5:"Thursday",6:"Friday",7:"Saturday"};
+var groups;
 
 function volunteerPage() {
     $("#service_body_id").on("change", function() {
@@ -216,7 +217,13 @@ function addNewVolunteerDialog(isVisible) {
 }
 
 function addGroupVolunteersDialog(isVisible) {
-    isVisible ? $("#manage-groups").show() : $("#manage-groups").hide();
+    if (isVisible) {
+        $("#include-group").show();
+        $("#manage-groups").show();
+    } else {
+        $("#include-group").hide();
+        $("#manage-groups").hide();
+    }
 }
 
 function clearVolunteerCards() {
@@ -228,7 +235,11 @@ function loadVolunteers(serviceBodyId, callback) {
         if (!$.isEmptyObject(data)) {
             var data = JSON.parse(data['data'])
             for (item of data) {
-                addVolunteer(item)
+                if (item.hasOwnProperty('volunteer_name')) {
+                    addVolunteer(item)
+                } else if (item.hasOwnProperty('group_id')) {
+                    includeGroup(item)
+                }
             }
         }
         callback();
@@ -244,6 +255,29 @@ function loadGroupVolunteers(parent_id, service_body_id, callback) {
             }
         }
         callback();
+    });
+}
+
+function loadGroups(service_body_id, callback) {
+    if (groups === undefined) {
+        $.getJSON("groups_api.php?service_body_id=" + service_body_id, function (data) {
+            groups = data;
+            callback(data)
+        });
+    } else {
+        callback(groups);
+    }
+}
+
+function getGroupForId(service_body_id, group_id, callback) {
+    loadGroups(service_body_id, function(data) {
+        for (item of data) {
+            if (item['id'] === group_id) {
+                callback(item);
+            }
+        }
+
+        callback(null);
     });
 }
 
@@ -282,7 +316,7 @@ function addVolunteer(volunteerData) {
     }
 
     if (volunteerData == null || !volunteerData.hasOwnProperty("volunteer_enabled")) {
-        volunteerCardTemplate.addClass("volunteerDisabled");
+        volunteerCardTemplate.addClass("cardDisabled");
     }
 
     volunteerCardTemplate.appendTo("#volunteerCards");
@@ -291,19 +325,79 @@ function addVolunteer(volunteerData) {
     }
 }
 
-function removeVolunteer(e) {
-    $(e).closest(".volunteerCard").remove();
-}
-
 function manageGroups(e) {
     location.href='groups.php?service_body_id=' + $("#service_body_id").val();
 }
 
+function showGroupsModal() {
+    spinnerDialog(true, "Retrieving Groups...", function () {
+        loadGroups($("#service_body_id").val(), function (data) {
+            $("#selected_group_id").find("option").remove();
+            $("#selected_group_id").append(new Option("-= Select a Group =-", 0, true, true));
+            for (item of data) {
+                var group_info = JSON.parse(item['data'])
+                $("#selected_group_id").append(new Option(group_info[0]['name'] + " (" + group_info[0]['description'] + ")", item['id'], false, false));
+            }
+
+            spinnerDialog(false);
+            $("#includeGroupDialog").modal('show');
+        })
+    });
+}
+
+function confirmIncludeGroup(e) {
+    includeGroup({"group_id":$("#selected_group_id").val()});
+}
+
+function includeGroup(groupData) {
+    var shiftRenderQueue = [];
+    var cards = $("#volunteerCards").children();
+    var getLastVolunteerCard = 0;
+    for (var c = 0; c < cards.length; c++) {
+        var currentId = parseInt($(cards[c]).attr("id").replace("volunteerCard_", ""));
+        if (currentId > getLastVolunteerCard) {
+            getLastVolunteerCard = currentId;
+        }
+    }
+
+    var groupCardTemplate = $("#groupCardTemplate").clone();
+    var volunteerId = "volunteerCard_" + (++getLastVolunteerCard);
+    groupCardTemplate.attr("id", volunteerId);
+    groupCardTemplate.find("#volunteerSequence").html(getLastVolunteerCard);
+    groupCardTemplate.show();
+    for (var key in groupData) {
+        // Handle checkbox fields
+        if (groupData[key]) {
+            groupCardTemplate.find("#" + key).prop('checked', true);
+        }
+
+        groupCardTemplate.find("#" + key).val(groupData[key]);
+    }
+
+    if (groupData == null || !groupData.hasOwnProperty("group_enabled")) {
+        groupCardTemplate.addClass("cardDisabled");
+    }
+
+    getGroupForId($("#service_body_id").val(), groupData['group_id'], function (data) {
+        if (data !== null) {
+            var groupInfo = JSON.parse(data['data']);
+            groupCardTemplate.find("#group_name").html(groupInfo[0]['name'])
+        }
+
+        groupCardTemplate.appendTo("#volunteerCards");
+        $("#includeGroupDialog").modal('hide');
+    })
+}
+
+function removeCard(e) {
+    $(e).closest(".card").remove();
+}
+
 function checkboxStatusToggle(e) {
     if (!e.checked) {
-        $(e).closest(".volunteerCard").addClass("volunteerDisabled");
+        $(e).closest(".card").addClass("cardDisabled");
     } else {
-        $(e).closest(".volunteerCard").removeClass('volunteerDisabled')
+        $(e).closest(".card").removeClass('cardDisabled')
     }
     $(e).val(e.checked);
 }
