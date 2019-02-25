@@ -230,6 +230,7 @@ class VolunteerRoutingParameters {
 }
 
 class NoVolunteersException extends Exception {}
+class CurlException extends Exception {}
 
 class VolunteerRoutingHelpers
 {
@@ -334,17 +335,23 @@ class UpgradeAdvisor {
             return UpgradeAdvisor::getState(false, "Semantic Admin not enabled on your root server, be sure to set the variable mentioned here: https://bmlt.magshare.net/semantic/semantic-administration.");
         }
 
-        $googleapi_settings = json_decode(get($GLOBALS['google_maps_endpoint'] . "&address=91409"));
+        try {
+            $googleapi_settings = json_decode(get($GLOBALS['google_maps_endpoint'] . "&address=91409"));
 
-        if ($googleapi_settings->status == "REQUEST_DENIED") {
-            return UpgradeAdvisor::getState(false, "Your Google Maps API key came back with the following error. " . $googleapi_settings->error_message. " Please make sure you have the 'Google Maps Geocoding API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
+            if ($googleapi_settings->status == "REQUEST_DENIED") {
+                return UpgradeAdvisor::getState(false, "Your Google Maps API key came back with the following error. " . $googleapi_settings->error_message. " Please make sure you have the 'Google Maps Geocoding API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
+            }
+
+            $timezone_settings = json_decode(get($GLOBALS['timezone_lookup_endpoint'] . "&location=34.2011137,-118.475058&timestamp=" . time()));
+
+            if ($timezone_settings->status == "REQUEST_DENIED") {
+                return UpgradeAdvisor::getState(false, "Your Google Maps API key came back with the following error. " . $timezone_settings->errorMessage. " Please make sure you have the 'Google Time Zone API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
+            }
+        } catch (CurlException $e) {
+            return UpgradeAdvisor::getState(false, "HTTP Error connecting to Google Maps API, check your network settings.");
         }
 
-        $timezone_settings = json_decode(get($GLOBALS['timezone_lookup_endpoint'] . "&location=34.2011137,-118.475058&timestamp=" . time()));
 
-        if ($timezone_settings->status == "REQUEST_DENIED") {
-            return UpgradeAdvisor::getState(false, "Your Google Maps API key came back with the following error. " . $timezone_settings->errorMessage. " Please make sure you have the 'Google Time Zone API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
-        }
 
         try {
             require_once 'twilio-client.php';
@@ -749,7 +756,8 @@ function getServiceBodyDetailForUser() {
 
 function admin_GetServiceBodiesForUser() {
     $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_permissions";
-    return json_decode(get($url, $_SESSION['username']))->service_body;
+    $service_bodies_for_user = json_decode(get($url, $_SESSION['username']));
+    return isset($service_bodies_for_user->service_body) ? $service_bodies_for_user->service_body : array();
 }
 
 function admin_GetUserName() {
@@ -1174,7 +1182,7 @@ function get($url, $username = 'master') {
     $errorno = curl_errno($ch);
     curl_close($ch);
     if ($errorno > 0) {
-        throw new Exception(curl_strerror($errorno));
+        throw new CurlException(curl_strerror($errorno));
     }
 
     return $data;
@@ -1197,7 +1205,7 @@ function post($url, $payload, $is_json = true, $username = 'master') {
     $errorno = curl_errno($ch);
     curl_close($ch);
     if ($errorno > 0) {
-        throw new Exception(curl_strerror($errorno));
+        throw new CurlException(curl_strerror($errorno));
     }
     return $data;
 }
