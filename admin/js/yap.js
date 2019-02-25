@@ -580,20 +580,20 @@ function openServiceBodyCallHandling(service_body_id) {
                     }
                     serviceBodyCallHandling.find("#" + key).val(dataSet[key]);
                 }
-
-                serviceBodyCallHandling.find("select").change(function() {
-                    var trigger = this.id;
-                    for (var match of $("#serviceBodyCallHandling_" + service_body_id).find("[data-" + trigger + "]")) {
-                        if ($(match).attr("data-" + trigger).split(",").indexOf(this.value) > -1) {
-                            $(match).closest(".service_bodies_field_container").show();
-                        } else {
-                            $(match).closest(".service_bodies_field_container").hide();
-                        }
-                    }
-                });
-
-                serviceBodyCallHandling.find("select").change();
             }
+
+            serviceBodyCallHandling.find("select").change(function() {
+                var trigger = this.id;
+                for (var match of $("#serviceBodyCallHandling_" + service_body_id).find("[data-" + trigger + "]")) {
+                    if ($(match).attr("data-" + trigger).split(",").indexOf(this.value) > -1) {
+                        $(match).closest(".service_bodies_field_container").show();
+                    } else {
+                        $(match).closest(".service_bodies_field_container").hide();
+                    }
+                }
+            });
+
+            serviceBodyCallHandling.find("select").change();
 
             spinnerDialog(false, "", function() {
                 serviceBodyCallHandling.modal("show");
