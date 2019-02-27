@@ -796,6 +796,14 @@ function getDbData($service_body_id, $data_type) {
     return $resultset;
 }
 
+function getDbDataById($id, $data_type) {
+    $db = new Database();
+    $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `id`=$id AND `data_type`='$data_type'");
+    $resultset = $db->resultset();
+    $db->close();
+    return $resultset;
+}
+
 function getDbDataByParentId($parent_id, $data_type) {
     $db = new Database();
     $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `parent_id`=$parent_id AND `data_type`='$data_type'");
@@ -1036,10 +1044,34 @@ function getVolunteerInfo($volunteers) {
     return $finalSchedule;
 }
 
+function getGroupVolunteers($group_id) {
+    $groupData = getDbDataByParentId($group_id, DataType::YAP_GROUP_VOLUNTEERS_V2);
+    return json_decode($groupData[0]['data']);
+}
+
+function getVolunteers($service_body_id) {
+    $volunteerData = getDbData($service_body_id, DataType::YAP_VOLUNTEERS_V2);
+    $volunteerList = [];
+    if (count($volunteerData) > 0) {
+        $volunteers = json_decode($volunteerData[0]['data']);
+        for ($v = 0; $v < count($volunteers); $v++) {
+            if (isset($volunteers[$v]->group_id)) {
+                $groupVolunteers = getGroupVolunteers($volunteers[$v]->group_id);
+                foreach ($groupVolunteers as $groupVolunteer) {
+                    array_push($volunteerList, $groupVolunteer);
+                }
+            } else {
+                array_push($volunteerList, $volunteers[$v]);
+            }
+        }
+    }
+
+    return $volunteerList;
+}
+
 function getHelplineSchedule($service_body_int) {
-    $helplineData = getDbData($service_body_int, DataType::YAP_VOLUNTEERS_V2);
-    if (count($helplineData) > 0) {
-        $volunteers    = json_decode($helplineData[0]['data']);
+    $volunteers = getVolunteers($service_body_int);
+    if (count($volunteers) > 0) {
         $finalSchedule = getVolunteerInfo( $volunteers );
 
         usort( $finalSchedule, function ( $a, $b ) {
