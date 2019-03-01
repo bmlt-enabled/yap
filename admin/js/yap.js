@@ -65,8 +65,8 @@ function schedulePage() {
     })
 }
 
-function addVolunteers() {
-    addVolunteer({"volunteer_name": ""});
+function includeVolunteers() {
+    includeVolunteer({"volunteer_name": ""});
 }
 
 function saveVolunteers(data_type) {
@@ -251,7 +251,7 @@ function loadGroupVolunteers(parent_id, service_body_id, callback) {
         if (!$.isEmptyObject(data)) {
             var data = JSON.parse(data['data'])
             for (item of data) {
-                addVolunteer(item);
+                includeVolunteer(item);
             }
         }
         callback();
@@ -281,7 +281,7 @@ function getGroupForId(service_body_id, group_id, callback) {
     });
 }
 
-function addVolunteer(volunteerData) {
+function includeVolunteer(volunteerData) {
     var shiftRenderQueue = [];
     var cards = $("#volunteerCards").children();
     var getLastVolunteerCard = 0;
