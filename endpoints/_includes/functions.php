@@ -773,7 +773,7 @@ function admin_PersistDbConfig($service_body_id, $data, $data_type, $parent_id) 
     if (count($current_data_check) == 0 || $data_type == DataType::YAP_GROUPS_V2) {
         $db->query("INSERT INTO `config` (`service_body_id`,`data`,`data_type`,`parent_id`) VALUES ('$service_body_id','$data','$data_type'," . ($parent_id == 0 ? "NULL" : "'" . $parent_id . "'") . ")");
         $db->execute();
-        $db->query("SELECT MAX(id) as id FROM `config`");
+        $db->query("SELECT MAX(id) as id FROM `config` WHERE service_body_id='$service_body_id' AND data_type='$data_type'");
         $resultset = $db->resultset();
         $db->close();
         return $resultset[0]['id'];
