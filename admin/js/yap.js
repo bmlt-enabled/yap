@@ -9,9 +9,11 @@ function volunteerPage() {
         if ($(this).val() > 0) {
             var service_body_id = $(this).val();
             spinnerDialog(true, "Retrieving Volunteers...", function () {
-                loadVolunteers(service_body_id, function () {
-                    spinnerDialog(false);
-                })
+                loadGroups(service_body_id, function() {
+                    loadVolunteers(service_body_id, function () {
+                        spinnerDialog(false);
+                    })
+                });
             });
         }
     });
@@ -236,7 +238,7 @@ function loadVolunteers(serviceBodyId, callback) {
             var data = JSON.parse(data['data'])
             for (item of data) {
                 if (item.hasOwnProperty('volunteer_name')) {
-                    addVolunteer(item)
+                    includeVolunteer(item)
                 } else if (item.hasOwnProperty('group_id')) {
                     includeGroup(item)
                 }
