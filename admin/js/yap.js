@@ -606,14 +606,18 @@ function openServiceBodyCallHandling(service_body_id) {
 
 function groupsPage() {
     $("#group_id").on("change", function() {
+        $("#group_name").val($("#group_id option:selected").text());
         addNewVolunteerDialog($(this).val() >= 0);
         clearVolunteerCards();
         if ($(this).val() >= 0) {
             spinnerDialog(true, "Retrieving Group Volunteers...", function () {
                 loadGroupVolunteers($("#group_id").val(), $("#service_body_id").val(), function () {
+                    //$("#editGroupButton").show();
                     spinnerDialog(false);
                 })
             });
+        } else {
+            $("#editGroupButton").hide();
         }
     });
 
@@ -635,7 +639,11 @@ function groupsPage() {
 function addGroup() {
     $("#group_dialog_message").html("");
     $("#group_name").val("");
-    $("#group_descrption").val("");
+    $("#addGroupDialog").modal('show');
+}
+
+function editGroup() {
+    $("#group_dialog_message").html("");
     $("#addGroupDialog").modal('show');
 }
 
@@ -661,7 +669,7 @@ function confirmGroup() {
                     $("#addGroupButton").show();
                 } else {
                     var new_group_id = xhr.responseJSON['id'];
-                    $("#group_id").append(new Option($("#group_name").val() + " (" + $("#group_description").val() + ")", new_group_id, true, true));
+                    $("#group_id").append(new Option($("#group_name").val(), new_group_id, true, true));
                     $("#group_id").trigger('change');
                     alert.addClass("alert-success");
                     alert.html("Saved.");

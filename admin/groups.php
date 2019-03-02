@@ -12,12 +12,13 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
             <option>-= Select A Group =-</option>
             <?php
             foreach (getGroups($_REQUEST['service_body_id']) as $item) {?>
-                <option value="<?php echo $item->id ?>"><?php echo $item->name . ' (' . $item->description . ')' ?></option>
+                <option value="<?php echo $item->id ?>"><?php echo $item->name ?></option>
                 <?php
             }?>
         </select>
     </form>
-    <button class="btn btn-sm btn-success volunteer-manage-buttons" id="addGroupButton" onclick="addGroup();">Add</button>
+    <button class="btn btn-sm btn-primary volunteer-manage-buttons" id="addGroupButton" onclick="addGroup();">Add</button>
+    <button class="btn btn-sm btn-secondary volunteer-manage-buttons" id="editGroupButton" onclick="editGroup();" style="display:none;">Edit</button>
     <button class="btn btm-sm btn-warning volunteer-manage-buttons" id="deleteGroupButton" onclick="deleteGroup();" style="display:none;">Delete</button>
     <?php require_once '_includes/volunteers_control.php';?>
 </div>
@@ -31,9 +32,6 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
                 <div class="form-group form-row">
                     Name (required):
                     <input class="form-control form-control-sm" type="text" id="group_name" name="group_name">
-
-                    Description (optional):
-                    <input class="form-control form-control-sm" type="text" id="group_description" name="group_description">
                 </div>
             </div>
             <div class="modal-footer">
