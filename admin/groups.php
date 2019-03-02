@@ -42,7 +42,7 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
                         Shared With Service Bodies (optional): <select size="10" multiple class="form-control form-control-sm" name="group_shared_service_bodies" id="group_shared_service_bodies">
                             <?php
                             foreach ($shareable_service_bodies as $service_body) { ?>
-                                <option value="<?php echo $service_body->name; ?>"><?php echo $service_body->name; ?></option>
+                                <option value="<?php echo $service_body->id; ?>"><?php echo $service_body->name; ?></option>
                             <?php } ?>
                         </select>
                     </form>

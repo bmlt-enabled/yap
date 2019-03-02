@@ -338,15 +338,19 @@ function manageGroups(e) {
 function showGroupsModal() {
     spinnerDialog(true, "Retrieving Groups...", function () {
         loadGroups($("#service_body_id").val(), function (data) {
-            $("#selected_group_id").find("option").remove();
-            $("#selected_group_id").append(new Option("-= Select a Group =-", 0, true, true));
-            for (item of data) {
-                var group_info = JSON.parse(item['data'])
-                $("#selected_group_id").append(new Option(group_info[0]['group_name'], item['id'], false, false));
-            }
+            if (!$.isEmptyObject(data)) {
+                $("#selected_group_id").find("option").remove();
+                $("#selected_group_id").append(new Option("-= Select a Group =-", 0, true, true));
+                for (item of data) {
+                    var group_info = JSON.parse(item['data'])
+                    $("#selected_group_id").append(new Option(group_info[0]['group_name'], item['id'], false, false));
+                }
 
-            spinnerDialog(false);
-            $("#includeGroupDialog").modal('show');
+                spinnerDialog(false);
+                $("#includeGroupDialog").modal('show');
+            } else {
+                spinnerDialog(false);
+            }
         })
     });
 }

@@ -822,13 +822,26 @@ function getDbDataByParentId($parent_id, $data_type) {
 
 function getAllDbData($data_type) {
     $db = new Database();
-    $db->query("SELECT `data`,`service_body_id`,`parent_id` FROM `config` WHERE `data_type`='$data_type'");
+    $db->query("SELECT `id`,`data`,`service_body_id`,`parent_id` FROM `config` WHERE `data_type`='$data_type'");
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
 }
 
 function getGroupsForServiceBody($service_body_id) {
+    $all_groups = getAllDbData(DataType::YAP_GROUPS_V2);
+    $final_groups = array();
+    foreach ($all_groups as $all_group) {
+        if ($all_group['service_body_id'] === $service_body_id
+            || (isset(json_decode($all_group['data'])[0]->group_shared_service_bodies) && in_array($service_body_id, json_decode($all_group['data'])[0]->group_shared_service_bodies))) {
+            array_push($final_groups, $all_group);
+        }
+    }
+
+    return $final_groups;
+}
+
+function getDbGroupsForServiceBody($service_body_id) {
     $db = new Database();
     $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `service_body_id`=$service_body_id AND `data_type`='" . DataType::YAP_GROUPS_V2 . "'");
     $resultset = $db->resultset();
