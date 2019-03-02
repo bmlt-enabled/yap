@@ -1055,7 +1055,7 @@ function getVolunteers($service_body_id) {
     if (count($volunteerData) > 0) {
         $volunteers = json_decode($volunteerData[0]['data']);
         for ($v = 0; $v < count($volunteers); $v++) {
-            if (isset($volunteers[$v]->group_id)) {
+            if (isset($volunteers[$v]->group_id) && isset($volunteers[$v]->group_enabled) && json_decode($volunteers[$v]->group_enabled)) {
                 $groupVolunteers = getGroupVolunteers($volunteers[$v]->group_id);
                 foreach ($groupVolunteers as $groupVolunteer) {
                     array_push($volunteerList, $groupVolunteer);
