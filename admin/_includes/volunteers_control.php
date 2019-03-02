@@ -197,7 +197,7 @@
                         <option value="<?php echo $available_language; ?>"><?php echo $available_language; ?></option>
                         <?php
                     }
-                    } ?>
+                } ?>
                 </select>
             </div>
             <table id="volunteer_schedule" class="table table-striped table-bordered">

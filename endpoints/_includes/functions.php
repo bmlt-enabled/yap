@@ -788,6 +788,14 @@ function admin_PersistDbConfig($service_body_id, $data, $data_type, $parent_id) 
     }
 }
 
+function admin_PersistDbConfigById($id, $data) {
+    $db = new Database();
+    $query = "UPDATE `config` SET `data`='$data' WHERE `id`=$id";
+    $db->query($query);
+    $db->execute();
+    $db->close();
+}
+
 function getDbData($service_body_id, $data_type) {
     $db = new Database();
     $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `service_body_id`=$service_body_id AND `data_type`='$data_type'");
@@ -878,9 +886,9 @@ function getGroups($service_body_id) {
     foreach ($groupsData as $group) {
         $groupsDataObj = json_decode($group['data'])[0];
         array_push($groupsArray, (object)[
-            'name' => $groupsDataObj->name,
-            'description' => $groupsDataObj->description,
-            'id' => $group['id']
+            'name' => $groupsDataObj->group_name,
+            'id' => $group['id'],
+            'shares' => json_encode($groupsDataObj->group_shared_service_bodies)
         ]);
     }
 

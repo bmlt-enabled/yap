@@ -99,6 +99,7 @@ function saveVolunteers(data_type) {
             data,
             data_type,
             data_type === "_YAP_GROUP_VOLUNTEERS_V2_" ? $("#group_id").val() : 0,
+            0,
             function (xhr, status) {
                 var alert = $("#volunteer_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
@@ -136,6 +137,7 @@ function saveServiceBodyConfig(service_body_id) {
             data,
             '_YAP_CONFIG_V2_',
             0,
+            0,
             function(xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
@@ -172,6 +174,7 @@ function saveServiceBodyCallHandling(service_body_id) {
             data,
             '_YAP_CALL_HANDLING_V2_',
             0,
+            0,
             function(xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
@@ -190,14 +193,15 @@ function saveServiceBodyCallHandling(service_body_id) {
     });
 }
 
-function saveToAdminApi(service_body_id, data, data_type, parent_id, callback) {
+function saveToAdminApi(service_body_id, data, data_type, parent_id, id, callback) {
     $.ajax({
         async: false,
         type: "POST",
         url: "api.php?action=save"
             + "&service_body_id=" + service_body_id
             + "&data_type=" + data_type
-            + (parent_id !== null && parent_id !== 0 ? "&parent_id=" + parent_id : ""),
+            + (parent_id !== null && parent_id !== 0 ? "&parent_id=" + parent_id : "")
+            + (id !== null && id !== 0 ? "&id=" + id : ""),
         data: JSON.stringify(data),
         dataType: "json",
         contentType: "application/json",
@@ -338,7 +342,7 @@ function showGroupsModal() {
             $("#selected_group_id").append(new Option("-= Select a Group =-", 0, true, true));
             for (item of data) {
                 var group_info = JSON.parse(item['data'])
-                $("#selected_group_id").append(new Option(group_info[0]['name'] + " (" + group_info[0]['description'] + ")", item['id'], false, false));
+                $("#selected_group_id").append(new Option(group_info[0]['group_name'], item['id'], false, false));
             }
 
             spinnerDialog(false);
@@ -383,7 +387,7 @@ function includeGroup(groupData) {
     getGroupForId($("#service_body_id").val(), groupData['group_id'], function (data) {
         if (data !== null) {
             var groupInfo = JSON.parse(data['data']);
-            groupCardTemplate.find("#group_name").html(groupInfo[0]['name'])
+            groupCardTemplate.find("#group_name").html(groupInfo[0]['group_name'])
         }
 
         groupCardTemplate.appendTo("#volunteerCards");
@@ -606,13 +610,12 @@ function openServiceBodyCallHandling(service_body_id) {
 
 function groupsPage() {
     $("#group_id").on("change", function() {
-        $("#group_name").val($("#group_id option:selected").text());
         addNewVolunteerDialog($(this).val() >= 0);
         clearVolunteerCards();
         if ($(this).val() >= 0) {
             spinnerDialog(true, "Retrieving Group Volunteers...", function () {
                 loadGroupVolunteers($("#group_id").val(), $("#service_body_id").val(), function () {
-                    //$("#editGroupButton").show();
+                    $("#editGroupButton").show();
                     spinnerDialog(false);
                 })
             });
@@ -638,12 +641,24 @@ function groupsPage() {
 
 function addGroup() {
     $("#group_dialog_message").html("");
+    $("#groupEditorHeader").html("Add Group");
     $("#group_name").val("");
+    $("#group_shared_service_bodies").val("");
     $("#addGroupDialog").modal('show');
 }
 
 function editGroup() {
     $("#group_dialog_message").html("");
+    $("#groupEditorHeader").html("Edit Group");
+
+    $("#group_name").val($("#group_id option:selected").text());
+    for (group of groups) {
+        if (group['id'] == $("#group_id").val()) {
+            $("#group_shared_service_bodies").val(JSON.parse(group['shares']));
+            break;
+        }
+    }
+
     $("#addGroupDialog").modal('show');
 }
 
@@ -655,12 +670,18 @@ function confirmGroup() {
     $("#addGroupButton").hide();
     $("#addGroupDialog").modal('hide');
     spinnerDialog(true, "Saving Group...", function () {
-        var data = [{"name":$("#group_name").val(),"description":$("#group_description").val()}];
+        var formData = $("#groupEditor").serializeArray();
+        var dataObj = {};
+        for (var formItem of formData) {
+            dataObj[formItem["name"]] = $("#groupEditor").find("#" + formItem["name"]).val();
+        }
+
         saveToAdminApi(
             $("#service_body_id").val(),
-            data,
+            [dataObj],
             '_YAP_GROUPS_V2_',
             0,
+            $("#group_id").val(),
             function(xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {

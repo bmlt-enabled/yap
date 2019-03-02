@@ -2,12 +2,19 @@
 require_once 'auth_verify.php';
 header("content-type: application/json");
 if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'save') {
-    $id = admin_PersistDbConfig(
-        $_REQUEST['service_body_id'],
-        file_get_contents('php://input'),
-        $_REQUEST['data_type'],
-        isset($_REQUEST['parent_id']) ? $_REQUEST['parent_id'] : "0"
-    );
+    $data = file_get_contents('php://input');
+
+    if ($_REQUEST['data_type'] === DataType::YAP_GROUPS_V2 && isset($_REQUEST['id'])) {
+        admin_PersistDbConfigById($_REQUEST['id'], $data);
+        $id = $_REQUEST['id'];
+    } else {
+        $id = admin_PersistDbConfig(
+            $_REQUEST['service_body_id'],
+            $data,
+            $_REQUEST['data_type'],
+            isset($_REQUEST['parent_id']) ? $_REQUEST['parent_id'] : "0"
+        );
+    }
 }
 
 if (isset($parent_id) || isset($_REQUEST['parent_id'])) {
