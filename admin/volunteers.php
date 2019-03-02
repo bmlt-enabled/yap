@@ -10,6 +10,7 @@ $data_type = DataType::YAP_VOLUNTEERS_V2;
         <option>-= Select A Service Body =-</option>
         <?php
         $helplineConfiguration = getVolunteerRoutingEnabledServiceBodies();
+        sort_on_field($helplineConfiguration, 'service_body_name');
         foreach ($helplineConfiguration as $item) {?>
             <option value="<?php echo $item->service_body_id ?>"><?php echo $item->service_body_name ?></option>
             <?php

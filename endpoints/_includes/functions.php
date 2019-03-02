@@ -1125,9 +1125,7 @@ function get_str_val($subject) {
 
 function sort_on_field(&$objects, $on, $order = 'ASC') {
     usort($objects, function($a, $b) use ($on, $order) {
-        return $order === 'DESC'
-            ? "return -strcmp(\$a->{$on},\$b->{$on});"
-            : "return strcmp(\$a->{$on},\$b->{$on});";
+        return $order === 'DESC' ? -strcoll($a->{$on},$b->{$on}) : strcoll($a->{$on},$b->{$on});
     });
 }
 
