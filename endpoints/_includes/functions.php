@@ -1046,7 +1046,7 @@ function getVolunteerInfo($volunteers) {
 
 function getGroupVolunteers($group_id) {
     $groupData = getDbDataByParentId($group_id, DataType::YAP_GROUP_VOLUNTEERS_V2);
-    return json_decode($groupData[0]['data']);
+    return isset($groupData[0]['data']) ? json_decode($groupData[0]['data']) : array();
 }
 
 function getVolunteers($service_body_id) {
