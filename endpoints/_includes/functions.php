@@ -860,8 +860,8 @@ function getServiceBodyConfig($service_body_id) {
         if (isset($config_from_db)) {
             $config_obj = json_decode($config_from_db['data']);
             foreach ($GLOBALS['settings_whitelist'] as $setting => $value) {
-                if (isset($config_obj->data[0]->$setting)) {
-                    $config->$setting = $config_obj->data[0]->$setting;
+                if (isset($config_obj[0]->$setting)) {
+                    $config->$setting = $config_obj[0]->$setting;
                 }
             }
         }
