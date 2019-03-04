@@ -5,11 +5,11 @@
     
     $searchType = $_REQUEST['SearchType'];
     
-    if ($searchType == "1") {
-        $action = "helpline-search.php";
-    } else {
-        $action = "address-lookup.php";
-    }
+if ($searchType == "1") {
+    $action = "helpline-search.php";
+} else {
+    $action = "address-lookup.php";
+}
 
     $enterWord = has_setting('speech_gathering') && json_decode(setting('speech_gathering')) ? word('please_enter_or_say_your_digit') : word('please_enter_your_digit');
 

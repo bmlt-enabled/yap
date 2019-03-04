@@ -2,23 +2,25 @@
 require_once '_includes/functions.php';
 require_once '_includes/twilio-client.php';
 
-class CallConfig {
+class CallConfig
+{
     public $phone_number;
     public $voicemail_url;
     public $volunteer_routing_params;
     public $options;
 }
 
-function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = VolunteerShadowOption::UNSPECIFIED) {
-    $tracker            = !isset( $_REQUEST["tracker"] ) ? 0 : $_REQUEST["tracker"];
+function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = VolunteerShadowOption::UNSPECIFIED)
+{
+    $tracker            = !isset($_REQUEST["tracker"]) ? 0 : $_REQUEST["tracker"];
 
-    if ( $serviceBodyCallHandling->forced_caller_id_enabled ) {
+    if ($serviceBodyCallHandling->forced_caller_id_enabled) {
         $caller_id = $serviceBodyCallHandling->forced_caller_id_number;
     } else {
-        $caller_id = isset( $_REQUEST["Caller"] ) ? $_REQUEST["Caller"] : SpecialPhoneNumber::UNKNOWN;
+        $caller_id = isset($_REQUEST["Caller"]) ? $_REQUEST["Caller"] : SpecialPhoneNumber::UNKNOWN;
     }
 
-    if (isset( $_REQUEST["OriginalCallerId"] )) {
+    if (isset($_REQUEST["OriginalCallerId"])) {
         $original_caller_id = $_REQUEST["OriginalCallerId"];
     } elseif (isset($_REQUEST["Caller"])) {
         $original_caller_id = $_REQUEST["Caller"];
@@ -79,11 +81,11 @@ if (isset($_REQUEST['Debug']) && intval($_REQUEST['Debug']) == 1) {
     exit();
 }
 
-$conferences = $twilioClient->conferences->read( array ("friendlyName" => $_REQUEST['FriendlyName'] ) );
+$conferences = $twilioClient->conferences->read(array ("friendlyName" => $_REQUEST['FriendlyName'] ));
 if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     $tandem = 0;
     $sms_body = "You have an incoming helpline call from " . $callerNumber . ".";
-    if (isset( $_REQUEST['StatusCallbackEvent'] ) && $_REQUEST['StatusCallbackEvent'] == 'participant-join') {
+    if (isset($_REQUEST['StatusCallbackEvent']) && $_REQUEST['StatusCallbackEvent'] == 'participant-join') {
         setConferenceParticipant($conferences[0]->sid, $_REQUEST['CallSid'], $_REQUEST['FriendlyName']);
 
         if (isset($_SESSION["ActiveVolunteer"])) {
@@ -98,8 +100,8 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     }
 
     // Make timeout configurable per volunteer
-    if ( ( isset( $_REQUEST['SequenceNumber'] ) && intval( $_REQUEST['SequenceNumber'] ) == 1 ) ||
-         ( isset( $_REQUEST['CallStatus'] ) && ( $_REQUEST['CallStatus'] == 'no-answer' || $_REQUEST['CallStatus'] == 'completed' ) ) ) {
+    if (( isset($_REQUEST['SequenceNumber']) && intval($_REQUEST['SequenceNumber']) == 1 ) ||
+         ( isset($_REQUEST['CallStatus']) && ( $_REQUEST['CallStatus'] == 'no-answer' || $_REQUEST['CallStatus'] == 'completed' ) ) ) {
         $callConfig = getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem);
         log_debug("Next volunteer to call " . $callConfig->phone_number);
 
@@ -109,7 +111,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
         if (count($participants) == 1 || (count($participants) > 0 && $tandem == VolunteerShadowOption::TRAINEE)) {
             try {
                 $callerSid = $participants[0]->callSid;
-            	$callerNumber = $twilioClient->calls( $callerSid )->fetch()->from;
+                $callerNumber = $twilioClient->calls($callerSid)->fetch()->from;
                 if (strpos($callerNumber, "+") !== 0) {
                     $callerNumber .= "+" . trim($callerNumber);
                 }
@@ -129,7 +131,8 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                                 array(
                                     "body" => $sms_body,
                                     "from" => $callConfig->options['originalCallerId']
-                                ));
+                                )
+                            );
                         }
 
                         log_debug("Calling: " . $callConfig->phone_number);
@@ -140,18 +143,18 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                         );
                     }
                 }
-            } catch ( \Twilio\Exceptions\TwilioException $e ) {
-                log_debug( $e );
+            } catch (\Twilio\Exceptions\TwilioException $e) {
+                log_debug($e);
             }
         }
-    } elseif ( isset( $_REQUEST['StatusCallbackEvent'] ) && $_REQUEST['StatusCallbackEvent'] == 'participant-leave' ) {
+    } elseif (isset($_REQUEST['StatusCallbackEvent']) && $_REQUEST['StatusCallbackEvent'] == 'participant-leave') {
         $conference_sid          = $conferences[0]->sid;
-        $conference_participants = $twilioClient->conferences( $conference_sid )->participants;
-        foreach ( $conference_participants as $participant ) {
+        $conference_participants = $twilioClient->conferences($conference_sid)->participants;
+        foreach ($conference_participants as $participant) {
             try {
                 log_debug("Someone left the conference: " . $participant->callSid);
-                $twilioClient->calls( $participant->callSid )->update( array( $status => 'completed' ) );
-            } catch ( \Twilio\Exceptions\TwilioException $e ) {
+                $twilioClient->calls($participant->callSid)->update(array( $status => 'completed' ));
+            } catch (\Twilio\Exceptions\TwilioException $e) {
                 error_log($e);
             }
         }

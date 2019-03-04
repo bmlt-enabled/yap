@@ -6,6 +6,11 @@ run:
 
 lint:
 	find . -name '*.php' -exec php -l {} \;
+	composer install --dev
+	vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=6 --standard=PSR2 --ignore=vendor --extensions=php --report=summary ./
+
+lint-fix:
+	vendor/squizlabs/php_codesniffer/bin/phpcbf --warning-severity=6 --standard=PSR2 --ignore=vendor --extensions=php --report=summary ./
 
 upgrade:
 	./upgrade.sh

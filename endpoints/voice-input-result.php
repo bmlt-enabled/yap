@@ -7,11 +7,11 @@
     $speechResult = $_REQUEST['SpeechResult'];
     $searchType = $_REQUEST['SearchType'];
     
-    if ($searchType == "1") {
-        $action = "helpline-search.php";
-    } else {
-        $action = "address-lookup.php";
-    }
+if ($searchType == "1") {
+    $action = "helpline-search.php";
+} else {
+    $action = "address-lookup.php";
+}
 ?>
 <Response>
     <Redirect method="GET"><?php echo $action; ?>?Digits=<?php echo urlencode($speechResult . ", " . $province); ?>&amp;SearchType=<?php echo $searchType?></Redirect>

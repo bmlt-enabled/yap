@@ -11,7 +11,7 @@ if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) { ?>
         <Redirect method="GET">input-method.php?Digits=<?php echo $_REQUEST["SearchType"] . "&amp;Retry=1"; ?></Redirect>
     </Response>
      <?php
-    exit();
+        exit();
 }
 
 $day = "today";

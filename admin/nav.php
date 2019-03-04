@@ -25,9 +25,9 @@ require_once 'header.php';
         <ul class="navbar-nav mr-auto">
             <?php
                 $pages = array("Home", "Reports", "Service Bodies", "Schedules", "Settings", "Volunteers");
-                foreach ($pages as $page) {
-                    $slug = str_replace(" ", "_", strtolower($page))
-                    ?>
+            foreach ($pages as $page) {
+                $slug = str_replace(" ", "_", strtolower($page))
+                ?>
             <li class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == $slug.".php" ? "active" : ""?>">
                 <a class="nav-link" href="<?php echo $slug?>.php"><?php echo $GLOBALS[$slug]?></a>
             </li>

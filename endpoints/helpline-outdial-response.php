@@ -4,7 +4,7 @@ require_once '_includes/twilio-client.php';
 header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
-$conferences = $twilioClient->conferences->read( array ("friendlyName" => $_REQUEST['conference_name'] ) );
+$conferences = $twilioClient->conferences->read(array ("friendlyName" => $_REQUEST['conference_name'] ));
 $participants = $twilioClient->conferences($conferences[0]->sid)->participants->read();?>
 
 <Response>

@@ -2,10 +2,12 @@
 require_once '_includes/functions.php';
 require_once '_includes/twilio-client.php';
 use PHPMailer\PHPMailer\PHPMailer;
+
 header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
-function sendSmsForVoicemail($recipients, $serviceBodyName, $callerNumber) {
+function sendSmsForVoicemail($recipients, $serviceBodyName, $callerNumber)
+{
     foreach ($recipients as $recipient) {
         $GLOBALS['twilioClient']->messages->create(
             $recipient,
@@ -17,7 +19,8 @@ function sendSmsForVoicemail($recipients, $serviceBodyName, $callerNumber) {
     }
 }
 
-function sendEmailForVoicemail($recipients, $serviceBodyName, $callerNumber) {
+function sendEmailForVoicemail($recipients, $serviceBodyName, $callerNumber)
+{
     try {
         $mail = new PHPMailer(true);
         $mail->isSMTP();
@@ -48,7 +51,7 @@ function sendEmailForVoicemail($recipients, $serviceBodyName, $callerNumber) {
 }
 
 $serviceBodyCallHandling = getServiceBodyCallHandling(setting("service_body_id"));
-$serviceBodyName = getServiceBody( setting( "service_body_id" ) )->name;
+$serviceBodyName = getServiceBody(setting("service_body_id"))->name;
 $callerNumber = $_REQUEST["caller_number"];
 if (strpos($callerNumber, "+") !== 0) {
     $callerNumber .= "+" . $callerNumber;

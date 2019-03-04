@@ -1,7 +1,8 @@
 <?php
 require_once __DIR__ . '/../endpoints/_includes/functions.php';
 
-function session_expired() {
+function session_expired()
+{
     if (!isset($_SESSION['username']) || !check_auth($_SESSION['username'])) {
         session_unset();
         return true;

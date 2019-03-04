@@ -19,23 +19,23 @@
                         <tr>
                             <td><?php echo $key ?></td>
                             <td><?php
-                                if (is_bool(setting($key))) {
-                                    echo setting($key) ? "true" : "false";
-                                } else {
-                                    echo setting($key);
-                                }?>
+                            if (is_bool(setting($key))) {
+                                echo setting($key) ? "true" : "false";
+                            } else {
+                                echo setting($key);
+                            }?>
                             </td>
                             <td><?php echo setting_source($key)?></td>
                             <td><?php
-                                if (is_bool($value['default'])) {
-                                    echo $value['default'] ? "true" : "false";
-                                } else {
-                                    echo $value['default'];
-                                }?>
+                            if (is_bool($value['default'])) {
+                                echo $value['default'] ? "true" : "false";
+                            } else {
+                                echo $value['default'];
+                            }?>
                             </td>
                             <td><?php echo $value['description'] ?></td>
                         </tr>
-                    <?php
+                            <?php
                         }
                     } ?>
                     </tbody>

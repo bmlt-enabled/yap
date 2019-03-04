@@ -1,7 +1,8 @@
 <?php
 $flag_setting = getFlag('root_server_data_migration');
 
-function getHelplineData($service_body_id, $data_type) {
+function getHelplineData($service_body_id, $data_type)
+{
     $helpline_data_items = [];
     auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
     $helpline_data = json_decode(get(getHelplineBMLTRootServer()
@@ -11,12 +12,12 @@ function getHelplineData($service_body_id, $data_type) {
         . "&advanced_published=0"));
 
     if ($helpline_data != null) {
-        foreach ( $helpline_data as $item ) {
-            $json_string = str_replace( ';', ',', html_entity_decode( explode( '#@-@#', $item->contact_phone_1 )[2] ) );
+        foreach ($helpline_data as $item) {
+            $json_string = str_replace(';', ',', html_entity_decode(explode('#@-@#', $item->contact_phone_1)[2]));
             array_push($helpline_data_items, [
-                'id'              => intval( $item->id_bigint ),
-                'data'            => json_decode( $json_string )->data,
-                'service_body_id' => intval( $item->service_body_bigint )
+                'id'              => intval($item->id_bigint),
+                'data'            => json_decode($json_string)->data,
+                'service_body_id' => intval($item->service_body_bigint)
             ]);
         }
     }

@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_URI'] == "/admin") {
             foreach ($available_languages as $key => $available_language) {
                 ?>
                 <option value="<?php echo $key; ?>"><?php echo $available_language; ?></option>
-            <?php
+                <?php
             }
             ?>
         </select>

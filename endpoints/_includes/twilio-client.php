@@ -8,7 +8,7 @@ if (!isset($_SESSION["twilio_account_sid"]) && !isset($_SESSION["twilio_auth_tok
 }
 
 try {
-    $twilioClient = new Client( $_SESSION["twilio_account_sid"], $_SESSION["twilio_auth_token"] );
-} catch ( \Twilio\Exceptions\ConfigurationException $e ) {
+    $twilioClient = new Client($_SESSION["twilio_account_sid"], $_SESSION["twilio_auth_token"]);
+} catch (\Twilio\Exceptions\ConfigurationException $e) {
     error_log("Missing Twilio Credentials");
 }

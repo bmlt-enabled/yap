@@ -10,25 +10,23 @@ $coordinates = getCoordinatesForAddress($address . "," . getProvince());
 <Response>
 <?php
     $sms_helpline_keyword = setting("sms_helpline_keyword");
-    if (str_exists(strtoupper($address), strtoupper($sms_helpline_keyword))) {
-        if (strlen(trim(str_replace(strtoupper($sms_helpline_keyword), "", strtoupper($address)))) > 0) {?>
+if (str_exists(strtoupper($address), strtoupper($sms_helpline_keyword))) {
+    if (strlen(trim(str_replace(strtoupper($sms_helpline_keyword), "", strtoupper($address)))) > 0) {?>
             <Redirect method="GET">helpline-sms.php?OriginalCallerId=<?php echo $_REQUEST['From']?>&amp;To=<?php echo $_REQUEST['To']?>&amp;Latitude=<?php echo strval($coordinates->latitude) ?>&amp;Longitude=<?php echo strval($coordinates->longitude) ?></Redirect>
-<?php
-        } else {
-?>
+        <?php
+    } else {
+        ?>
         <Sms><?php echo word('please_send_a_message_formatting_as') ?> "<?php echo $sms_helpline_keyword?>", <?php echo word('followed_by_your_location')?>, <?php echo word('for') ?> <?php echo word('someone_to_talk_to')?>.</Sms>
-<?php   }
-    } 
-    else if (str_exists(strtoupper($address), strtoupper('jft'))) {
-        $jft_chunks = get_jft(true);
-        for ($i = 0; $i < count($jft_chunks); $i++) {
-            $client->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $jft_chunks[$i]));
-        }
+    <?php   }
+} else if (str_exists(strtoupper($address), strtoupper('jft'))) {
+    $jft_chunks = get_jft(true);
+    for ($i = 0; $i < count($jft_chunks); $i++) {
+        $client->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $jft_chunks[$i]));
     }
-    else {
-?>
+} else {
+    ?>
     <Redirect method="GET">meeting-search.php?SearchType=1&amp;Latitude=<?php echo strval($coordinates->latitude) ?>&amp;Longitude=<?php echo strval($coordinates->longitude) ?></Redirect>
-<?php
-    }
+    <?php
+}
 ?>
 </Response>
