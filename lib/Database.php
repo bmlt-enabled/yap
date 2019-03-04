@@ -4,7 +4,6 @@ define("DB_HOST", $GLOBALS['mysql_hostname']);
 define("DB_USER", $GLOBALS['mysql_username']);
 define("DB_PASS", $GLOBALS['mysql_password']);
 define("DB_NAME", $GLOBALS['mysql_database']);
-define("DB_PORT", isset($GLOBALS['mysql_port']) ? $GLOBALS['mysql_port'] : 3306);
 
 class Database
 {
@@ -12,7 +11,6 @@ class Database
     private $user      = DB_USER;
     private $pass      = DB_PASS;
     private $dbname    = DB_NAME;
-    private $port      = DB_PORT;
     private $dbh;
     private $error;
     private $stmt;
@@ -20,7 +18,6 @@ class Database
     public function __construct()
     {
         // Set DSN
-        // $dsn = 'mysql:host=' . $this->host . ';port=' . strval($this->port) . ';dbname=' . $this->dbname;
         $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->dbname;
         // Set options
         $options = array(

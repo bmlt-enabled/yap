@@ -5,11 +5,11 @@ run:
 	docker-compose up --build
 
 lint:
-	find . -name '*.php' -exec php -l {} \;
+	find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l
 	composer install --dev
 	vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=6 --standard=PSR2 --ignore=vendor --extensions=php --report=summary ./
 
-lint-fix:
+lint-fix: lint
 	vendor/squizlabs/php_codesniffer/bin/phpcbf --warning-severity=6 --standard=PSR2 --ignore=vendor --extensions=php --report=summary ./
 
 upgrade:
