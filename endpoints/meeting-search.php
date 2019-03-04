@@ -53,6 +53,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     $results_counter = 0;
     for ($i = 0; $i < count($filtered_list); $i++) {
         $results = getResultsString($filtered_list[$i]);
+        $location_line = (has_setting('include_location_text') && json_decode(setting('include_location_text'))) ? $results[2] . $text_space . $results[3] : $results[3];
 
         if (!isset($_REQUEST["SmsSid"])) {
             echo "<Pause length=\"1\"/>";
@@ -61,6 +62,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
             echo "<Pause length=\"1\"/>";
             echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('starts_at') . " " . $results[1] . "</Say>";
             echo "<Pause length=\"1\"/>";
+            echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . $location_line . "</Say>";
         }
 
         $results_counter++;
@@ -83,8 +85,8 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
         $results_counter = 0;
         for ($i = 0; $i < count($filtered_list); $i++) {
             $results = getResultsString($filtered_list[$i]);
-            if (has_setting('include_location_text') && json_decode(setting('include_location_text'))) $results[1] .= $text_space . $results[2];
-            $message = $results[0] . $text_space . $results[1] . $text_space . $results[3];
+            $location_line = (has_setting('include_location_text') && json_decode(setting('include_location_text'))) ? $results[2] . $text_space . $results[3] : $results[3];
+            $message = $results[0] . $text_space . $results[1] . $text_space . $location_line;
 
             if (json_decode(setting("sms_ask")) && !isset($_REQUEST["SmsSid"])) {
                 array_push($sms_messages, $message);
