@@ -1,14 +1,9 @@
 <?php
+require_once '../lib/CallConfig.php';
+use app\bmltenabled\yap\CallConfig;
+
 require_once '_includes/functions.php';
 require_once '_includes/twilio-client.php';
-
-class CallConfig
-{
-    public $phone_number;
-    public $voicemail_url;
-    public $volunteer_routing_params;
-    public $options;
-}
 
 function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = VolunteerShadowOption::UNSPECIFIED)
 {
