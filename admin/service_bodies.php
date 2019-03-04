@@ -156,7 +156,7 @@ sort_on_field($service_bodies, 'name');
                                                         <option data-default="<?php echo get_str_val($value["default"]) ?>" value="<?php echo $setting?>"><?php echo $setting?></option>
                                                     <?php } ?>
                                                 </select>
-                                                <button class="btn btn-sm btn-primary addFieldButton" onclick="addServiceBodyButtonClick(<?php echo $service_body->id ?>)">+</button>
+                                                <button type="button" class="btn btn-sm btn-primary addFieldButton" onclick="addServiceBodyButtonClick(<?php echo $service_body->id ?>)">+</button>
                                                 <div id="serviceBodyFieldsPlaceholder"></div>
                                             </form>
                                         </div>

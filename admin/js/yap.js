@@ -536,7 +536,7 @@ function openServiceBodyConfigure(service_body_id) {
     spinnerDialog(true, "Retrieving Service Body Configuration...", function() {
         var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
         var serviceBodyFields = $("#serviceBodyConfigurationFields");
-           loadFromAdminApi(null, service_body_id, '_YAP_CONFIG_V2_', function(data) {
+        loadFromAdminApi(null, service_body_id, '_YAP_CONFIG_V2_', function(data) {
             if (!$.isEmptyObject(data)) {
                 clearServiceBodyFields(service_body_id);
                 var dataSet = JSON.parse(data['data'])[0];
@@ -558,7 +558,6 @@ function openServiceBodyConfigure(service_body_id) {
 function addServiceBodyButtonClick(service_body_id) {
     var configName = $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyConfigurationFields").val();
     addServiceBodyField(service_body_id, configName);
-    event.preventDefault();
 }
 
 function addServiceBodyField(service_body_id, configName) {
