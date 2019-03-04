@@ -766,7 +766,7 @@ function admin_GetUserName() {
     return isset($get_user_info_response->current_user) ? $get_user_info_response->current_user->name : $_SESSION['username'];
 }
 
-function admin_PersistDbConfig($service_body_id, $data, $data_type, $parent_id) {
+function admin_PersistDbConfig($service_body_id, $data, $data_type, $parent_id = 0) {
     $db = new Database();
     $current_data_check = isset($parent_id) && $parent_id > 0 ? getDbDataByParentId($parent_id, $data_type) : getDbData($service_body_id, $data_type);
 
