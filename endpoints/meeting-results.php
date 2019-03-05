@@ -1,4 +1,4 @@
-<?php include_once 'functions.php';?>
+<?php require_once '_includes/functions.php';?>
 <html>
 <head>
     <style type="text/css"><?php echo setting("custom_css") ?></style>
