@@ -4,7 +4,7 @@ header("content-type: application/json");
 if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'save') {
     $data = file_get_contents('php://input');
 
-    if ($_REQUEST['data_type'] === DataType::YAP_GROUPS_V2 && isset($_REQUEST['id'])) {
+    if ($_REQUEST['data_type'] === DataType::YAP_GROUPS_V2 && isset($_REQUEST['id']) && intval($_REQUEST['id']) > 0) {
         admin_PersistDbConfigById($_REQUEST['id'], $data);
         $id = $_REQUEST['id'];
     } else {

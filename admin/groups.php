@@ -9,7 +9,7 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
     <label for="group_id"><?php echo word('groups')?></label>
     <form id="groupsForm">
         <select class="form-control form-control-sm dropdown_next_to_another_field" id="group_id">
-            <option>-= Select A Group =-</option>
+            <option value="0">-= Select A Group =-</option>
             <?php
             $groups = getGroups($_REQUEST['service_body_id']);
             sort_on_field($groups, 'name');
