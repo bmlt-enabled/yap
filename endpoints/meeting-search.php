@@ -29,7 +29,7 @@ try {
 function sendSms($message)
 {
     if (isset($_REQUEST['From']) && isset($_REQUEST['To'])) {
-        $GLOBALS['client']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
+        $twilioClient->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
     }
 }
 ?>
