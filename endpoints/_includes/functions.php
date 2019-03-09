@@ -6,7 +6,7 @@ session_start();
 require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
 require_once 'migrations.php';
 require_once 'logging.php';
-static $version  = "3.0.0-beta5";
+static $version  = "3.0.0-beta5.4";
 class VolunteerLanguage
 {
     const UNSPECIFIED = 0;
@@ -338,7 +338,7 @@ class UpgradeAdvisor
 
     private static function getState($status, $message)
     {
-        return ["status"=>$status, "message"=>$message];
+        return ["status"=>$status, "message"=>$message, "version"=>$GLOBALS['version']];
     }
 
     public static function getStatus()
