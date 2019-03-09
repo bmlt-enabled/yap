@@ -40,6 +40,7 @@ static $settings_whitelist = [
     'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'result_count_max' => [ 'description' => '' , 'default' => 5, 'overridable' => true, 'hidden' => false],
     'service_body_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
+    'service_body_config_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_helpline_keyword' => ['description' => '', 'default' => 'talk', 'overridable' => true, 'hidden' => false],
@@ -378,8 +379,6 @@ class UpgradeAdvisor
         } catch (CurlException $e) {
             return UpgradeAdvisor::getState(false, "HTTP Error connecting to Google Maps API, check your network settings.");
         }
-
-
 
         try {
             require_once 'twilio-client.php';

@@ -1,7 +1,13 @@
 <?php
 if (!isset($_SESSION['override_service_body_id'])) {
+    $service_body_id = 0;
     if (isset($_REQUEST["service_body_id"]) || isset($_REQUEST["override_service_body_id"])) {
         $service_body_id = isset($_REQUEST["service_body_id"]) ? $_REQUEST["service_body_id"] : $_REQUEST["override_service_body_id"];
+    } else if (isset($_REQUEST["override_service_body_config_id"])) {
+        $service_body_id = $_REQUEST["override_service_body_config_id"];
+    }
+
+    if ($service_body_id > 0) {
         $service_body_config = getServiceBodyConfig($service_body_id);
 
         if (isset($service_body_config)) {
