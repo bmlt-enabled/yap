@@ -10,7 +10,7 @@ static $version  = "3.0.0-beta5";
 class VolunteerLanguage
 {
     const UNSPECIFIED = 0;
-    const DEFAULT = "en";
+    const COMMON = "en";
 }
 static $settings_whitelist = [
     'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -31,7 +31,7 @@ static $settings_whitelist = [
     'include_map_link' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'infinite_searching' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'jft_option' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
-    'language' => [ 'description' => '' , 'default' => VolunteerLanguage::DEFAULT, 'overridable' => true, 'hidden' => false],
+    'language' => [ 'description' => '' , 'default' => VolunteerLanguage::COMMON, 'overridable' => true, 'hidden' => false],
     'language_selections' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'location_lookup_bias' => [ 'description' => '' , 'default' => 'country:us', 'overridable' => true, 'hidden' => false],
     'meeting_result_sort' => [ 'description' => '' , 'default' => MeetingResultSort::TODAY, 'overridable' => true, 'hidden' => false],
