@@ -1279,7 +1279,7 @@ function auth_bmlt($username, $password, $master = false)
     $res = curl_exec($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    return preg_match('/^OK$/', $res) == 1;
+    return preg_match('/^OK$/', str_replace(array("\r", "\n"), '', $res)) == 1;
 }
 
 function check_auth($username)
