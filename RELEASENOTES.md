@@ -1,4 +1,19 @@
 # Release Notes
+### 3.0.0 (unreleased)
+* Call blasting which gives the ability to call all on shift volunteers simultaneously. 
+* Language based call routing and volunteers.  This feature allow you to set up a list of volunteers that speak a particular language and route calls to them if that language is selected.
+* Gender based volunteer routing.  
+* Shadow feature which all for tandem based training of volunteers.
+* Include location_text field from the BMLT in meeting responses (SMS and Voice Response).
+* Option to disable voice recognition (useful for demos in a noisy room).
+* Volunteer groups, which allow for re-using schedules of volunteers and sharing to other service bodies.
+* Service body based configuration overrides.  This allows you to override any setting in your config.php from within the admin UI.  For example, with this feature you can have multiple Twilio API keys on a single Yap instance.
+* Volunteer calling records with details and duration.
+* Voicemail links are accessible by each respective service body in calling records section.
+* Voicemail can be routed now to any volunteer using the Responder setting.
+* Reporting interface that displays daily numbers of action types.
+* Display name visible now on the Admin Interface (if using the root server >= 2.13.5)
+* New UI theme for Admin interface.
 
 ### 2.5.4 (February 2, 2019)
 * Added the ability to hide postal code lookups. [#231]
