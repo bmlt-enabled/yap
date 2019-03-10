@@ -9,12 +9,19 @@ parent: Helpline / Volunteer Routing
 
 ---
 
+This is configured through service body call handling, through your call strategy setting.  
 
-This is configured through service body call handling, through your call strategy setting.  If you specify a Primary Contact Number, it will SMS a link to that person when a voicemail is left.
+### Voicemail Recordings
 
-You can also comma separate the values if you want it to go to more than one person.
+**NEW in Yap 3.x** Recordings are now available in the admin portal under "Service Bodies > Call Records" for each respective area.
 
-Voicemail links are also available in the Twilio Console under "Recordings".  
+### Voicemail Notifications to SMS
+
+**NEW in Yap 3.x** You can set up any volunteer to receive voicemail notifications.  Within the volunteer setting, set the dropdown Responder to "Enabled".
+
+If you specify a Primary Contact Number, it will SMS a link to the recording that person when a voicemail is left.  You can also comma separate the values if you want it to go to more than one person.
+
+### Voicemail Notifications to Email
 
 You can also optionally use email.  You will have to enable this by adding an email address under the Primary Contact Email.  You can optionally supply a list of comma separated emails for multiple recipients.
 
@@ -36,3 +43,4 @@ static $smtp_alt_port = '';         // enter the integer for the respective to u
 ```
 
 If you do not receive an email, check your server logs.  There should be some good information there.  Also the upgrade advisor should give you some information about what might be missing as long as $smtp_host is set.
+

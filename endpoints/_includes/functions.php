@@ -13,8 +13,8 @@ class VolunteerLanguage
     const COMMON = "en";
 }
 static $settings_whitelist = [
-    'blocklist' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
-    'bmlt_root_server' => [ 'description' => '' , 'default' => '', 'overridable' => false, 'hidden' => false],
+    'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers [https://yap.bmlt.app/docs/general/blocklist/]' , 'default' => '', 'overridable' => true, 'hidden' => false],
+    'bmlt_root_server' => [ 'description' => 'The root server to use.' , 'default' => '', 'overridable' => false, 'hidden' => false],
     'config' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => true],
     'custom_css' => [ 'description' => '' , 'default' => 'td { font-size: 36px; }', 'overridable' => true, 'hidden' => false],
     'custom_query' => ['description' => '', 'default' => '&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width={SETTING_MEETING_SEARCH_RADIUS}&weekdays={DAY}', 'overridable' => true, 'hidden' => false],

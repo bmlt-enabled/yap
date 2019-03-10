@@ -31,6 +31,8 @@ static $voice = "alice";
 static $language = "en-AU";
 ``` 
 
+### Language Call Routing
+
 You can also create a language selection menu upon dialing in.  It will only be available for those that there are resource files for in `lang/` folder.  If you have some translations, please send them, so they can be merged in.
 
 Add a new setting called, specifying the language codes for each language you want included.  The order will indicate the order in which it will be played back:
@@ -40,3 +42,5 @@ static $language_selections = "en-US,pig-latin";
 ```
 
 This example will make option 1, English and option 2, pig latin.
+
+**New Yap 3.0** If you want to route calls to volunteers by language, see the section on Language in [Specialized Routing](../../helpline/specialized-routing/).
