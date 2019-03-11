@@ -2,8 +2,8 @@
 
 class CallConfig
 {
-    public $phone_number;
     public $voicemail_url;
     public $volunteer_routing_params;
     public $options;
+    public $volunteer;
 }
