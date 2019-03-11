@@ -1,6 +1,6 @@
 <?php
-if (isset($_GET["ysk"])) {
-    session_id($_GET["ysk"]);
+if (isset($_GET["PHPSESSID"])) {
+    session_id($_GET["PHPSESSID"]);
 }
 session_start();
 require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
@@ -1591,7 +1591,7 @@ function getFlag($flag)
 
 function getSessionLink($shouldUriEncode = false)
 {
-    return (isset($_REQUEST['ysk']) ? ($shouldUriEncode ? "&amp;" : "&") . ("ysk=" . $_REQUEST['ysk']) : "");
+    return (isset($_REQUEST['PHPSESSID']) ? ($shouldUriEncode ? "&amp;" : "&") . ("PHPSESSID=" . $_REQUEST['PHPSESSID']) : "");
 }
 
 require_once "legacydata.php";
