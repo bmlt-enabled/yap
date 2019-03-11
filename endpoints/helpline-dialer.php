@@ -57,7 +57,7 @@ function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = Volunt
         'callerId'             => $caller_id,
         'originalCallerId'     => $original_caller_id
     );
-    if (isset($_SESSION['ActiveVolunteer']) == false) {
+    if (!isset($_SESSION['ActiveVolunteer'])) {
         $_SESSION['ActiveVolunteer'] = $volunteer;
     }
 
@@ -98,7 +98,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     if (( isset($_REQUEST['SequenceNumber']) && intval($_REQUEST['SequenceNumber']) == 1 ) ||
          ( isset($_REQUEST['CallStatus']) && ( $_REQUEST['CallStatus'] == 'no-answer' || $_REQUEST['CallStatus'] == 'completed' ) ) ) {
         $callConfig = getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem);
-        log_debug("Next volunteer to call " . $callConfig->volunteer->phone_number);
+        log_debug("Next volunteer to call " . $callConfig->volunteer->phoneNumber);
 
         $participants = $twilioClient->conferences($conferences[0]->sid)->participants->read();
 
@@ -111,16 +111,16 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                     $callerNumber .= "+" . trim($callerNumber);
                 }
                 log_debug("callerNumber: " . $callerNumber . ", callerSid: " . $callerSid);
-                if ($callConfig->volunteer->phone_number == SpecialPhoneNumber::VOICE_MAIL || $callConfig->volunteer->phone_number == SpecialPhoneNumber::UNKNOWN) {
+                if ($callConfig->volunteer->phoneNumber == SpecialPhoneNumber::VOICE_MAIL || $callConfig->volunteer->phoneNumber == SpecialPhoneNumber::UNKNOWN) {
                     log_debug("Calling voicemail.");
                     $twilioClient->calls($callerSid)->update(array(
                         "method" => "GET",
                         "url" => $callConfig->voicemail_url . "&caller_number=" . $callerNumber
                     ));
                 } else {
-                    foreach (explode(",", $callConfig->volunteer->phone_number) as $volunteer_number) {
+                    foreach (explode(",", $callConfig->volunteer->phoneNumber) as $volunteer_number) {
                         if ($serviceBodyCallHandling->volunteer_sms_notification_enabled) {
-                            log_debug("Sending volunteer SMS notification: " . $callConfig->volunteer->phone_number);
+                            log_debug("Sending volunteer SMS notification: " . $callConfig->volunteer->phoneNumber);
                             $twilioClient->messages->create(
                                 $volunteer_number,
                                 array(
@@ -130,7 +130,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                             );
                         }
 
-                        log_debug("Calling: " . $callConfig->volunteer->phone_number);
+                        log_debug("Calling: " . $callConfig->volunteer->phoneNumber);
                         $twilioClient->calls->create(
                             $volunteer_number,
                             $callConfig->options['callerId'],
