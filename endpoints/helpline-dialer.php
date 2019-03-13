@@ -79,7 +79,7 @@ if (isset($_REQUEST['Debug']) && intval($_REQUEST['Debug']) == 1) {
 $conferences = $twilioClient->conferences->read(array ("friendlyName" => $_REQUEST['FriendlyName'] ));
 if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     $tandem = 0;
-    $sms_body = "You have an incoming helpline call from " . $callerNumber . ".";
+    $sms_body = "You have an incoming helpline call from ";
     if (isset($_REQUEST['StatusCallbackEvent']) && $_REQUEST['StatusCallbackEvent'] == 'participant-join') {
         setConferenceParticipant($conferences[0]->sid, $_REQUEST['CallSid'], $_REQUEST['FriendlyName']);
 
@@ -87,7 +87,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
             $volunteer = $_SESSION["ActiveVolunteer"];
             if (isset($volunteer->volunteerInfo) && $volunteer->volunteerInfo->shadow == VolunteerShadowOption::TRAINEE) {
                 $_REQUEST['SequenceNumber'] = 1;
-                $sms_body = "You have an incoming helpline trainee call.";
+                $sms_body = "You have an incoming helpline trainee call.  The originating helpline call is from ";
                 $_SESSION["ActiveVolunteer"] = null;
                 $tandem = 1;
             }
@@ -124,7 +124,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                             $twilioClient->messages->create(
                                 $volunteer_number,
                                 array(
-                                    "body" => $sms_body,
+                                    "body" => $sms_body . $callerNumber,
                                     "from" => $callConfig->options['originalCallerId']
                                 )
                             );
