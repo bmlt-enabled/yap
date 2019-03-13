@@ -670,7 +670,6 @@ function confirmGroup() {
         $("#group_dialog_message").html("A name is required.");
     }
 
-    $("#addGroupButton").hide();
     $("#addGroupDialog").modal('hide');
     spinnerDialog(true, "Saving Group...", function () {
         var formData = $("#groupEditor").serializeArray();
@@ -693,8 +692,12 @@ function confirmGroup() {
                     $("#addGroupButton").show();
                 } else {
                     var new_group_id = xhr.responseJSON['id'];
-                    $("#group_id").append(new Option($("#group_name").val(), new_group_id, true, true));
-                    $("#group_id").trigger('change');
+                    if (new_group_id === $("#group_id").val()) {
+                        $("#group_id option:selected").text(dataObj["group_name"]);
+                    } else {
+                        $("#group_id").append(new Option($("#group_name").val(), new_group_id, true, true));
+                        $("#group_id").trigger('change');
+                    }
                     alert.addClass("alert-success");
                     alert.html("Saved.");
                 }

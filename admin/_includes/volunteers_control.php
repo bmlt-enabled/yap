@@ -4,7 +4,6 @@
             <button id="add-volunteer" class="btn btn-sm btn-primary volunteer-manage-buttons" type="button" onclick="includeVolunteers();"><?php echo word('add_volunteer')?></button>
             <button id="save-volunteers" class="btn btn-sm btn-success volunteer-manage-buttons" type="button" onclick="saveVolunteers('<?php echo $data_type?>');"><?php echo word('save_volunteers')?></button>
             <button id="include-group" class="btn btn-sm btn-warning volunteer-manage-buttons" type="button" onclick="showGroupsModal();" style="display: none;"><?php echo word('include_group')?></button>
-            <button id="manage-groups" class="btn btn-sm btn-warning volunteer-manage-buttons" type="button" onclick="manageGroups();" style="display: none;"><?php echo word('manage_groups')?></button>
         </div>
     </div>
 </div>

@@ -2,28 +2,52 @@
 $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
 ?>
 <div class="container">
-    <input type="hidden" name="service_body_id" id="service_body_id" value="<?php echo $_REQUEST['service_body_id']?>" />
     <div class="alert alert-success" role="alert" style="display:none;" id="volunteer_saved_alert">
         Saved.
     </div>
-    <label for="group_id"><?php echo word('groups')?></label>
-    <form id="groupsForm">
-        <select class="form-control form-control-sm dropdown_next_to_another_field" id="group_id">
-            <option value="0">-= Select A Group =-</option>
+    <label for="service_body_id"><?php echo word('service_bodies')?></label>
+    <form id="serviceBodyForm" method="POST" action="groups.php">
+        <select class="form-control form-control-sm" id="service_body_id" name="service_body_id">
+            <option>-= Select A Service Body =-</option>
             <?php
-            $groups = getGroups($_REQUEST['service_body_id']);
-            sort_on_field($groups, 'name');
-            foreach ($groups as $item) {?>
-                <option value="<?php echo $item->id ?>"><?php echo $item->name ?></option>
+            $serviceBodies = getServiceBodyDetailForUser();
+            sort_on_field($serviceBodies, 'name');
+            $selected_service_body_id = isset($_REQUEST['service_body_id']) ? $_REQUEST['service_body_id'] : 0;
+            foreach ($serviceBodies as $item) {?>
+                <option value="<?php echo $item->id ?>" <?php echo $selected_service_body_id > 0 && $selected_service_body_id == $item->id ? "selected": ""?>><?php echo $item->name ?></option>
                 <?php
             }?>
         </select>
+        <button id="loadGroupsButton" type="submit" class="btn btn-sm btn-primary">Load</button>
     </form>
-    <script type="text/javascript">groups=<?php echo json_encode($groups); ?></script>
-    <button class="btn btn-sm btn-primary volunteer-manage-buttons" id="addGroupButton" onclick="addGroup();">Add</button>
-    <button class="btn btn-sm btn-secondary volunteer-manage-buttons" id="editGroupButton" onclick="editGroup();" style="display:none;">Edit</button>
-    <button class="btn btm-sm btn-warning volunteer-manage-buttons" id="deleteGroupButton" onclick="deleteGroup();" style="display:none;">Delete</button>
-    <?php require_once '_includes/volunteers_control.php';?>
+    <?php if (isset($_REQUEST['service_body_id'])) { ?>
+        <label for="group_id"><?php echo word('groups')?></label>
+        <form id="groupsForm">
+            <select class="form-control form-control-sm dropdown_next_to_another_field" id="group_id">
+                <option value="0">-= Select A Group =-</option>
+                <?php
+                $groups = getGroups($_REQUEST['service_body_id']);
+                sort_on_field($groups, 'name');
+                foreach ($groups as $item) { ?>
+                    <option value="<?php echo $item->id ?>"><?php echo $item->name ?></option>
+                    <?php
+                } ?>
+            </select>
+        </form>
+        <script type="text/javascript">var groups=<?php echo json_encode($groups); ?></script>
+        <button class="btn btn-sm btn-primary volunteer-manage-buttons" id="addGroupButton" onclick="addGroup();">Add
+        </button>
+        <button class="btn btn-sm btn-secondary volunteer-manage-buttons" id="editGroupButton" onclick="editGroup();"
+                style="display:none;">Edit
+        </button>
+        <button class="btn btm-sm btn-warning volunteer-manage-buttons" id="deleteGroupButton" onclick="deleteGroup();"
+                style="display:none;">Delete
+        </button>
+        <?php require_once '_includes/volunteers_control.php';
+    } else {
+        require_once 'footer.php';
+    }?>
+
 </div>
 <div class="modal fade" id="addGroupDialog" tabindex="-1" role="dialog" aria-labelledby="addGroupDialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">

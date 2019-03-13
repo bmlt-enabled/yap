@@ -52,6 +52,10 @@ div#signin {
     margin-top:10px;
 }
 
+#loadGroupsButton {
+    margin-top: 10px;
+}
+
 .volunteerCard {
     margin-top:10px;
     background-color: #CCC;
