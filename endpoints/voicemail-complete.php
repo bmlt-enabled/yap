@@ -62,9 +62,10 @@ if ($serviceBodyCallHandling->primary_contact_number_enabled) {
     sendSmsForVoicemail($recipients, $serviceBodyName, $callerNumber);
 }
 
-if (isset($_SESSION['volunteer_routing_parameters'])) {
-    $volunteer_routing_options = $_SESSION['volunteer_routing_parameters'];
+if (isset($_SESSION["volunteer_routing_parameters"])) {
+    $volunteer_routing_options = $_SESSION["volunteer_routing_parameters"];
     $volunteer_routing_options->volunteer_responder = VolunteerResponderOption::ENABLED;
+    $volunteer_routing_options->volunteer_shadow = VolunteerShadowOption::UNSPECIFIED;
     $volunteers = getHelplineVolunteersActiveNow($volunteer_routing_options);
     $recipients = [];
     foreach ($volunteers as $volunteer) {

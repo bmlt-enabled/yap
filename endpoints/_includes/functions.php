@@ -1591,7 +1591,15 @@ function getFlag($flag)
 
 function getSessionLink($shouldUriEncode = false)
 {
-    return (isset($_REQUEST['PHPSESSID']) ? ($shouldUriEncode ? "&amp;" : "&") . ("ysk=" . $_REQUEST['PHPSESSID']) : "");
+    if (isset($_REQUEST['ysk'])) {
+        $session_id = $_REQUEST['ysk'];
+    } else if (isset($_REQUEST['PHPSESSID'])) {
+        $session_id = $_REQUEST['PHPSESSID'];
+    } else {
+        $session_id = null;
+    }
+
+    return (isset($session_id) ? ($shouldUriEncode ? "&amp;" : "&") . ("ysk=" . $session_id) : "");
 }
 
 require_once "legacydata.php";
