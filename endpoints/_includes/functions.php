@@ -6,7 +6,7 @@ session_start();
 require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
 require_once 'migrations.php';
 require_once 'logging.php';
-static $version  = "3.0.0-beta5.5";
+static $version  = "3.0.0-beta6.1";
 class VolunteerLanguage
 {
     const UNSPECIFIED = 0;
@@ -1511,7 +1511,7 @@ function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_
 
 function getWebhookUrl()
 {
-    $voice_url = "https://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'];
+    $voice_url = str_replace("/endpoints",  "", "https://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']);
     if (strpos(basename($voice_url), ".php")) {
         return substr($voice_url, 0, strrpos($voice_url, "/"));
     } else if (strpos($voice_url, "?")) {
