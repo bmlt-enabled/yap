@@ -42,7 +42,7 @@ function sendEmailForVoicemail($recipients, $serviceBodyName, $callerNumber)
             $mail->addAddress($recipient);
         }
         $mail->addStringAttachment(file_get_contents($_REQUEST["RecordingUrl"] . ".mp3"), $_REQUEST["RecordingUrl"] . ".mp3");
-        $mail->Body = "You have a message from the " . $serviceBodyName . " helpline from caller " . $callerNumber. ", " . $_REQUEST["RecordingUrl"] . ".mp3";
+        $mail->Body = "You have a message from the " . $serviceBodyName . " helpline from caller " . $callerNumber . ", " . $_REQUEST["RecordingUrl"] . ".mp3";
         $mail->Subject = 'Helpline Voicemail from ' . $serviceBodyName;
         $mail->send();
     } catch (Exception $e) {
@@ -53,8 +53,8 @@ function sendEmailForVoicemail($recipients, $serviceBodyName, $callerNumber)
 $serviceBodyCallHandling = getServiceBodyCallHandling(setting("service_body_id"));
 $serviceBodyName = getServiceBody(setting("service_body_id"))->name;
 $callerNumber = $_REQUEST["caller_number"];
-if (strpos($callerNumber, "+") !== 0) {
-    $callerNumber .= "+" . $callerNumber;
+if (strpos(trim($callerNumber), "+") !== 0) {
+    $callerNumber = "+" . trim($callerNumber);
 }
 
 if ($serviceBodyCallHandling->primary_contact_number_enabled) {
