@@ -60,6 +60,7 @@ if (has_setting('config')) {
 }
 static $available_languages = [
     "en-US" => "English",
+    "es-US" => "Español (United States)",
     "pig-latin" => "Igpay Atinlay",
     "pt-BR" => "Português (Brazil)",
     "fr-CA" => "Français (Canada)"
@@ -1422,7 +1423,7 @@ function get_jft($sms = false)
         $copyright_info = 'Todos os direitos reservados à: http://www.na.org.br';
         $preg_search_lang = "\r\n";
         $preg_replace_lang = "\n";
-    } else if (setting('word_language') == 'es-ES') {
+    } else if (setting('word_language') == 'es-ES' || setting('word_language') == 'es-US') {
         $url = 'https://forozonalatino.org/sxh';
         $jft_language_dom_element = '*[@id=\'sx-wrapper\']';
         $copyright_info = 'Servicio del Foro Zonal Latinoamericano, Copyright 2017 NA World Services, Inc. Todos los Derechos Reservados.';
