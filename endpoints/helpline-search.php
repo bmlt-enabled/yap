@@ -3,7 +3,9 @@
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
-    $dial_string = "";
+    $dial_string = "";?>
+<Response>
+<?php
 if (!isset($_REQUEST['ForceNumber'])) {
     if (isset($_SESSION["override_service_body_id"])) {
         $service_body_obj = getServiceBody(setting("service_body_id"));
@@ -16,7 +18,6 @@ if (!isset($_REQUEST['ForceNumber'])) {
             }
             $service_body_obj = getServiceBodyCoverage($coordinates->latitude, $coordinates->longitude);
         } catch (Exception $e) { ?>
-                <Response>
                 <Redirect method="GET">input-method.php?Digits=<?php echo urlencode($_REQUEST["SearchType"]) . "&amp;Retry=1&amp;RetryMessage=" . urlencode($e->getMessage()); ?></Redirect>
                 </Response>
                 <?php
@@ -38,12 +39,14 @@ if (!isset($_REQUEST['ForceNumber'])) {
     $phone_number = isset($exploded_result[0]) ? $exploded_result[0] : "";
     $extension = isset($exploded_result[1]) ? $exploded_result[1] : "w";
     $service_body_id = isset($service_body_obj) ? $service_body_obj->id : 0;
-    $serviceBodyCallHandling = getServiceBodyCallHandling($service_body_id);
 
-if ($service_body_id > 0 && $serviceBodyCallHandling->volunteer_routing_enabled) {
+if (!setting("tomato_helpline_routing") && !isset($_REQUEST['ForceNumber'])) {
+    $serviceBodyCallHandling = getServiceBodyCallHandling($service_body_id);
+}
+
+if ($service_body_id > 0 && isset($serviceBodyCallHandling) && $serviceBodyCallHandling->volunteer_routing_enabled) {
     if ($serviceBodyCallHandling->gender_routing_enabled && !isset($_SESSION['Gender'])) {
         $_SESSION['Address'] = $address; ?>
-            <Response>
                 <Redirect method="GET">gender-routing.php?SearchType=<?php echo urlencode($_REQUEST["SearchType"])?></Redirect>
             </Response>
             <?php
@@ -54,7 +57,6 @@ if ($service_body_id > 0 && $serviceBodyCallHandling->volunteer_routing_enabled)
         $calculated_service_body_id = $service_body_id;
     }
     ?>
-<Response>
         <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>"><?php echo word('please_wait_while_we_connect_your_call') ?></Say>
         <Dial>
             <Conference waitUrl="<?php echo $serviceBodyCallHandling->moh_count == 1 ? $serviceBodyCallHandling->moh : "playlist.php?items=" . $serviceBodyCallHandling->moh?>"
