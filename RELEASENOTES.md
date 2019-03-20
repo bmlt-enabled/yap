@@ -1,5 +1,6 @@
 # Release Notes
 ### 3.0.0 (unreleased)
+* The sms_summary_page not and sms_ask option can now be used together.
 * Call blasting which gives the ability to call all on shift volunteers simultaneously. 
 * Language based call routing and volunteers.  This feature allow you to set up a list of volunteers that speak a particular language and route calls to them if that language is selected.
 * Gender based volunteer routing.  
