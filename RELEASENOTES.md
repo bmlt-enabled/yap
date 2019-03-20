@@ -11,6 +11,7 @@
 * Volunteer calling records with details and duration.
 * Voicemail links are accessible by each respective service body in calling records section.
 * Voicemail can be routed now to any volunteer using the Responder setting.
+* United States Spanish Translation.
 * Reporting interface that displays daily numbers of action types.
 * Display name visible now on the Admin Interface (if using the root server >= 2.13.5)
 * New UI theme for Admin interface.
