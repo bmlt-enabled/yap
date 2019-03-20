@@ -83,7 +83,12 @@ if (has_setting('sms_summary_page') && json_decode(setting('sms_summary_page')))
     }
 
     $message = "Meeting Results, Click Here: " . $webhook_url . "/meeting-results.php?latitude=" . $latitude . "&longitude=" . $longitude;
-    sendSms($message);
+
+    if (json_decode(setting("sms_ask")) && !isset($_REQUEST["SmsSid"])) {
+        array_push($sms_messages, $message);
+    } else {
+        sendSms($message);
+    }
 } else {
     $results_counter = 0;
     for ($i = 0; $i < count($filtered_list); $i++) {
