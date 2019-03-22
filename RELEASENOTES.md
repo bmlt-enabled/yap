@@ -1,5 +1,5 @@
 # Release Notes
-### 3.0.0 (unreleased)
+### 3.0.0 (March 23, 2019)
 * Call blasting which gives the ability to call all on shift volunteers simultaneously. [#60]
 * Language based call routing and volunteers.  This feature allow you to set up a list of volunteers that speak a particular language and route calls to them if that language is selected. [#146]
 * Gender based volunteer routing. [#136]
