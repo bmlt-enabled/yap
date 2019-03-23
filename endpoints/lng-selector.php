@@ -13,9 +13,6 @@ $_SESSION["override_voice"] = "alice";
 ?>
 <Response>
     <Gather language="<?php echo setting('gather_language') ?>" input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="index.php" method="GET">
-        <Say voice="<?php echo setting('voice'); ?>" language="<?php echo $language_selection_options[0] ?>">
-            <?php echo setting('title') ?>
-        </Say>
         <?php
         for ($i = 0; $i < count($language_selection_options); $i++) {
             include __DIR__.'/../lang/'.$language_selection_options[$i].'.php'
