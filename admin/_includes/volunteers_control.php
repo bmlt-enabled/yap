@@ -48,6 +48,7 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div id="selectRepeatShiftDialogValidation"></div>
                 <div class="form-group form-row form-inline">
                     Time Zone:
                     <select class="form-control form-control-sm time_zone_selector" id="time_zone">
@@ -102,6 +103,7 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div id="selectShiftDialogValidation"></div>
                 <div class="form-group form-row form-inline">
                     Day:
                     <select class="form-control form-control-sm day_of_the_week" id="day_of_the_week">

@@ -180,3 +180,13 @@ div#signin {
 #group_dialog_message {
     color: red;
 }
+
+#selectRepeatShiftDialogValidation {
+    padding-bottom: 10px;
+    color: red;
+}
+
+#selectShiftDialogValidation {
+    padding-bottom: 10px;
+    color: red;
+}

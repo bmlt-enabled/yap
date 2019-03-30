@@ -477,44 +477,52 @@ function selectTimeZoneFor247Shifts(e) {
 }
 
 function save7DayShifts(e) {
-    var volunteerId = $(e).closest("#selectRepeatShiftDialog").attr("volunteer_id");
-    var tz = $(e).closest("#selectRepeatShiftDialog").find("#time_zone").val();
-    var type = $(e).closest("#selectRepeatShiftDialog").find("#shift_type").val();
     var start_time = $("#start_time_hour").val() + ":" + $("#start_time_minute").val() + " " + $("#start_time_division").val();
     var end_time = $("#end_time_hour").val() + ":" + $("#end_time_minute").val() + " " + $("#end_time_division").val();
-    for (var x = 1; x <= 7; x++) {
+    if (Date.parse("01/01/2000 " + start_time) < Date.parse("01/01/2000 " + end_time)) {
+        var volunteerId = $(e).closest("#selectRepeatShiftDialog").attr("volunteer_id");
+        var tz = $(e).closest("#selectRepeatShiftDialog").find("#time_zone").val();
+        var type = $(e).closest("#selectRepeatShiftDialog").find("#shift_type").val();
+        for (var x = 1; x <= 7; x++) {
+            var shiftInfoObj = {
+                "day": x,
+                "tz": tz,
+                "start_time": start_time,
+                "end_time": end_time,
+                "type": type
+            };
+
+            renderShift(volunteerId, shiftInfoObj);
+        }
+
+        $("#selectRepeatShiftDialog").modal("hide");
+    } else {
+        $("#selectRepeatShiftDialogValidation").html("Shift start time should be before end time.");        $("#selectRepeatShiftDialogValidation").html("Shift start time should be before end time.")
+    }
+}
+
+function saveShift(e) {
+    var closestShiftDialog = $(e).closest("#selectShiftDialog");
+    var start_time = $(closestShiftDialog).find("#start_time_hour").val() + ":" + $(closestShiftDialog).find("#start_time_minute").val() + " " + $(closestShiftDialog).find("#start_time_division").val();
+    var end_time = $(closestShiftDialog).find("#end_time_hour").val() + ":" + $(closestShiftDialog).find("#end_time_minute").val() + " " + $(closestShiftDialog).find("#end_time_division").val();
+    if (Date.parse("01/01/2000 " + start_time) < Date.parse("01/01/2000 " + end_time)) {
+        var volunteer_id = $("#selectShiftDialog").attr("volunteer_id");
+        var day_id = $("#day_of_the_week").val();
+        var time_zone_id = $(closestShiftDialog).find("#time_zone").val();
+        var type = $(closestShiftDialog).find("#shift_type").val();
         var shiftInfoObj = {
-            "day": x,
-            "tz": tz,
+            "day": day_id,
+            "tz": time_zone_id,
             "start_time": start_time,
             "end_time": end_time,
             "type": type
         };
 
-        renderShift(volunteerId, shiftInfoObj);
+        renderShift(volunteer_id, shiftInfoObj);
+        $("#selectShiftDialog").modal("hide");
+    } else {
+        $("#selectShiftDialogValidation").html("Shift start time should be before end time.")
     }
-
-    $("#selectRepeatShiftDialog").modal("hide");
-}
-
-function saveShift(e) {
-    var volunteer_id = $("#selectShiftDialog").attr("volunteer_id");
-    var day_id = $("#day_of_the_week").val();
-    var closestShiftDialog = $(e).closest("#selectShiftDialog");
-    var time_zone_id = $(closestShiftDialog).find("#time_zone").val();
-    var start_time = $(closestShiftDialog).find("#start_time_hour").val() + ":" + $(closestShiftDialog).find("#start_time_minute").val() + " " + $(closestShiftDialog).find("#start_time_division").val();
-    var end_time = $(closestShiftDialog).find("#end_time_hour").val() + ":" + $(closestShiftDialog).find("#end_time_minute").val() + " " + $(closestShiftDialog).find("#end_time_division").val();
-    var type = $(closestShiftDialog).find("#shift_type").val();
-    var shiftInfoObj = {
-        "day": day_id,
-        "tz": time_zone_id,
-        "start_time": start_time,
-        "end_time": end_time,
-        "type": type
-    };
-
-    renderShift(volunteer_id, shiftInfoObj);
-    $("#selectShiftDialog").modal("hide");
 }
 
 function removeShift(e) {

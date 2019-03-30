@@ -1,6 +1,8 @@
 # Release Notes
 ### 3.0.1 (UNRELEASED)
 * Fix for no map link being sent when using include map link option. [#254]
+* Added validation for shift time selection to avoid impossible shifts. [#210]
+* Fixes for fr-CA translations.
 
 ### 3.0.0 (March 23, 2019)
 * Call blasting which gives the ability to call all on shift volunteers simultaneously. [#60]
