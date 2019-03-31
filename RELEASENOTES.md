@@ -1,5 +1,5 @@
 # Release Notes
-### 3.0.1 (UNRELEASED)
+### 3.0.1 (March 31, 2019)
 * Fix for no map link being sent when using include map link option. [#254]
 * Added validation for shift time selection to avoid impossible shifts. [#210]
 * Fixes for fr-CA translations.
