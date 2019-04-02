@@ -158,7 +158,22 @@ function saveServiceBodyConfig(service_body_id) {
 
 function saveServiceBodyCallHandling(service_body_id) {
     var serviceBodyCallHandling = $("#serviceBodyCallHandling_" + service_body_id);
+    var urls = [
+        $(serviceBodyCallHandling).find("#override_en_US_voicemail_greeting").val(),
+        $(serviceBodyCallHandling).find("#override_en_US_greeting").val()
+    ];
+
+    $(serviceBodyCallHandling).find("#serviceBodyCallHandlingValidation").html("")
+
+    for (url of urls) {
+        if (url !== undefined && url.length > 0 && url.indexOf("http") !== 0) {
+            $(serviceBodyCallHandling).find("#serviceBodyCallHandlingValidation").html("Please specify a valid URL.");
+            return false;
+        }
+    }
+
     serviceBodyCallHandling.modal('hide');
+
     spinnerDialog(true, "Saving Service Body Call Handling...", function () {
         var data = [];
         var formData = serviceBodyCallHandling.find("#serviceBodyCallHandlingForm").serializeArray();

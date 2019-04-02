@@ -38,6 +38,7 @@ sort_on_field($service_bodies, 'name');
                                         </div>
                                         <div class="modal-body serviceBodyCallHandlingItems">
                                             <form id="serviceBodyCallHandlingForm" class="serviceBodyCallHandlingForm">
+                                                <div id="serviceBodyCallHandlingValidation"></div>
                                                 Helpline Routing:
                                                 <select class="form-control form-control-sm" name="volunteer_routing" id="volunteer_routing">
                                                     <option value="helpline_field">Helpline Field Number</option>
