@@ -29,6 +29,7 @@ static $settings_whitelist = [
     'include_location_text' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'include_map_link' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'infinite_searching' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'initial_pause' => [ 'description' => '' , 'default' => 2, 'overridable' => true, 'hidden' => false],
     'jft_option' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'language' => [ 'description' => '' , 'default' =>  'en', 'overridable' => true, 'hidden' => false],
     'language_selections' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],

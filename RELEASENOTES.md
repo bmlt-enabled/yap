@@ -1,6 +1,8 @@
 # Release Notes
 ### 3.1.0 (Unreleased)
 * Added validation for URL fields in Calling Handling [#228]
+* Added language file for Australian English to simplify configuration [#252] [#253]
+* Added configurable initial pause [#244]
 
 ### 3.0.1 (March 31, 2019)
 * Fix for no map link being sent when using include map link option. [#254]

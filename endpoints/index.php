@@ -26,11 +26,11 @@ if (isset($_REQUEST["override_service_body_id"])) {
 ?>
 <Response>
     <Gather language="<?php echo setting('gather_language') ?>" input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">
-        <Pause length="2"></Pause>
+        <Pause length="<?php echo setting('initial_pause') ?>"></Pause>
         <?php if (has_setting($promptset_name)) {?>
             <Play><?php echo setting($promptset_name) ?></Play>
         <?php } else { ?>
-            <?php if (! isset($_REQUEST["Digits"])) { ?>
+            <?php if (!isset($_REQUEST["Digits"])) { ?>
                 <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">
                     <?php echo setting('title') ?>
                 </Say>

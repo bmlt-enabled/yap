@@ -12,6 +12,7 @@ $language_selection_options = explode(",", setting('language_selections'));
 $_SESSION["override_voice"] = "alice";
 ?>
 <Response>
+    <Pause length="<?php echo setting('initial_pause') ?>"></Pause>
     <Gather language="<?php echo setting('gather_language') ?>" input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="index.php" method="GET">
         <?php
         for ($i = 0; $i < count($language_selection_options); $i++) {
