@@ -60,6 +60,7 @@ if (has_setting('config')) {
 }
 static $available_languages = [
     "en-US" => "English",
+    "en-AU" => "English (Australian)",
     "es-US" => "Español (United States)",
     "pig-latin" => "Igpay Atinlay",
     "pt-BR" => "Português (Brazil)",
