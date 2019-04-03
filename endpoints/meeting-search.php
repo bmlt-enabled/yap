@@ -94,8 +94,10 @@ if (has_setting('sms_summary_page') && json_decode(setting('sms_summary_page')))
     for ($i = 0; $i < count($filtered_list); $i++) {
         $results = getResultsString($filtered_list[$i]);
         $location_line = (has_setting('include_location_text') && json_decode(setting('include_location_text'))) ? $results[2] . $text_space . $results[3] : $results[3];
-        $maplink_line = (has_setting('include_map_link') && json_decode(setting('include_map_link'))) ? $results[4] .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude : $results[4];
-        $message = $results[0] . $text_space . $results[1] . $text_space . $location_line . $maplink_line;
+        $message = $results[0] . $text_space . $results[1] . $text_space . $location_line;
+        if (has_setting('include_map_link') && json_decode(setting('include_map_link'))) {
+            $message .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude;
+        }
 
         if (json_decode(setting("sms_ask")) && !isset($_REQUEST["SmsSid"])) {
             array_push($sms_messages, $message);
