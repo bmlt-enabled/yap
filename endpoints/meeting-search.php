@@ -64,6 +64,10 @@ for ($i = 0; $i < count($filtered_list); $i++) {
         echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('starts_at') . " " . $results[1] . "</Say>";
         echo "<Pause length=\"1\"/>";
         echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . $location_line . "</Say>";
+
+        if (isset($_REQUEST["Debug"])) {
+            echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . json_encode($filtered_list[$i]) . "</Say>";
+        }
     }
 
     $results_counter++;
