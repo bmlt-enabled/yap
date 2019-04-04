@@ -6,7 +6,7 @@ session_start();
 require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
 require_once 'migrations.php';
 require_once 'logging.php';
-static $version  = "3.1.0";
+static $version  = "3.0.2";
 class VolunteerLanguage
 {
     const UNSPECIFIED = 0;
@@ -807,10 +807,8 @@ function getServiceBodyDetailForUser()
     $service_bodies = admin_GetServiceBodiesForUser();
     $service_body_detail = getServiceBodies();
     $user_service_bodies = [];
-    $service_bodies_check = isset($service_bodies) && !is_array($service_bodies)
-        ? array($service_bodies) : $service_bodies;
 
-    foreach ($service_bodies_check as $service_body) {
+    foreach ($service_bodies as $service_body) {
         foreach ($service_body_detail as $service_body_detail_item) {
             if ($service_body->id == $service_body_detail_item->id) {
                 array_push($user_service_bodies, $service_body_detail_item);
@@ -825,7 +823,14 @@ function admin_GetServiceBodiesForUser()
 {
     $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_permissions";
     $service_bodies_for_user = json_decode(get($url, $_SESSION['username']));
-    return isset($service_bodies_for_user->service_body) ? $service_bodies_for_user->service_body : array();
+
+    if (!is_array($service_bodies_for_user->service_body)) {
+        return array($service_bodies_for_user->service_body);
+    } else if (isset($service_bodies_for_user->service_body)) {
+        return $service_bodies_for_user->service_body;
+    } else {
+        return array();
+    }
 }
 
 function admin_GetUserName()
