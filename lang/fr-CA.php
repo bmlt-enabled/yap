@@ -95,4 +95,3 @@ $you_are_being_added_to_an_ongoing_call_as_muted_for_a_trainee = "vous êtes ajo
 $groups = "Groupes";
 $include_group = "Ajouter un groupe";
 $manage_groups = "Gérer les groupes";
-$day = "journée";
