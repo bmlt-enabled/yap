@@ -49,8 +49,8 @@ static $settings_whitelist = [
     'title' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'tomato_helpline_routing' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
-    'twilio_account_sid' => [ 'description' => '', 'default' => '', 'overridable' => false, 'hidden' => true],
-    'twilio_auth_token' => [ 'description' => '', 'default' => '', 'overridable' => false, 'hidden' => true],
+    'twilio_account_sid' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
+    'twilio_auth_token' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
     'voice' => [ 'description' => '', 'default' => 'woman', 'overridable' => true, 'hidden' => false],
     'word_language' => [ 'description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false]
 ];
@@ -510,11 +510,10 @@ function has_setting($name)
 {
     return !is_null(setting($name));
 }
-
 function setting($name)
 {
     if (isset($GLOBALS['settings_whitelist'][$name]) && $GLOBALS['settings_whitelist'][$name]['overridable']) {
-        if (isset($_REQUEST[$name])) {
+        if (isset($_REQUEST[$name]) && $GLOBALS['settings_whitelist'][$name]['hidden'] !== true) {
             return $_REQUEST[$name];
         } else if (isset($_SESSION["override_" . $name])) {
             return $_SESSION["override_" . $name];
