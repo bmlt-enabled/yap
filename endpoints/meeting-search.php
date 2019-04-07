@@ -7,6 +7,14 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     
     $latitude = isset($_REQUEST['Latitude']) ? $_REQUEST['Latitude'] : null;
     $longitude = isset($_REQUEST['Longitude']) ? $_REQUEST['Longitude'] : null;
+    $is_mobile = false;
+
+    if (has_setting('mobile_check') && json_decode(setting('mobile_check'))) {
+    $phone_number = $GLOBALS['twilioClient']->lookups->v1->phoneNumbers($_REQUEST['From'])->fetch(array("type" => "carrier"));
+        if ($phone_number->carrier['type'] === 'mobile') {
+            $is_mobile = true;
+        }
+    }
 
 try {
     $results_count = has_setting('result_count_max') ? setting('result_count_max') : 5;
@@ -26,10 +34,14 @@ try {
     $text_space = " ";
     $message = "";
 
-function sendSms($message)
+function sendSms($message, $is_mobile)
 {
     if (isset($_REQUEST['From']) && isset($_REQUEST['To'])) {
-        $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
+        if (has_setting('mobile_check') && json_decode(setting('mobile_check')) && ($is_mobile == true)) {
+            $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
+        } else if (!json_decode(setting('mobile_check'))) {
+            $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
+        }
     }
 }
 ?>
@@ -91,7 +103,7 @@ if (has_setting('sms_summary_page') && json_decode(setting('sms_summary_page')))
     if (json_decode(setting("sms_ask")) && !isset($_REQUEST["SmsSid"])) {
         array_push($sms_messages, $message);
     } else {
-        sendSms($message);
+        sendSms($message, $is_mobile);
     }
 } else {
     $results_counter = 0;
@@ -106,7 +118,7 @@ if (has_setting('sms_summary_page') && json_decode(setting('sms_summary_page')))
         if (json_decode(setting("sms_ask")) && !isset($_REQUEST["SmsSid"])) {
             array_push($sms_messages, $message);
         } else {
-            sendSms($message);
+            sendSms($message, $is_mobile);
         }
 
         $results_counter++;
