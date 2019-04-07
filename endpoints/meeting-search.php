@@ -28,14 +28,13 @@ try {
 
 function mobileCheck()
 {
-    $is_mobile = true;
     if (has_setting('mobile_check') && json_decode(setting('mobile_check'))) {
         $phone_number = $GLOBALS['twilioClient']->lookups->v1->phoneNumbers($_REQUEST['From'])->fetch(array("type" => "carrier"));
         if ($phone_number->carrier['type'] !== 'mobile') {
-            $is_mobile = false;
+            return false;
         }
     }
-    return $is_mobile;
+    return true;
 }
 
 function sendSms($message)
