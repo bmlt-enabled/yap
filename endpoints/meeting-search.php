@@ -26,9 +26,21 @@ try {
     $text_space = " ";
     $message = "";
 
+function mobileCheck()
+{
+    $is_mobile = true;
+    if (has_setting('mobile_check') && json_decode(setting('mobile_check'))) {
+        $phone_number = $GLOBALS['twilioClient']->lookups->v1->phoneNumbers($_REQUEST['From'])->fetch(array("type" => "carrier"));
+        if ($phone_number->carrier['type'] !== 'mobile') {
+            $is_mobile = false;
+        }
+    }
+    return $is_mobile;
+}
+
 function sendSms($message)
 {
-    if (isset($_REQUEST['From']) && isset($_REQUEST['To'])) {
+    if (isset($_REQUEST['From']) && isset($_REQUEST['To']) && mobileCheck()) {
         $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
     }
 }

@@ -2,6 +2,7 @@
 ### 3.0.3 (Unreleased)
 * Fix for overriden Twilio credentials that weren't being utilized.
 * Renamed "Add" to "Create" for creating new groups.
+* Fix for Twilio warnings messaging landlines. Added mobile_check option. [#171]
 
 ### 3.0.2 (April 4, 2019)
 * Added validation for URL fields in Calling Handling. [#228]
