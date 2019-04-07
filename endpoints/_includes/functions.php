@@ -36,6 +36,7 @@ static $settings_whitelist = [
     'location_lookup_bias' => [ 'description' => '' , 'default' => 'country:us', 'overridable' => true, 'hidden' => false],
     'meeting_result_sort' => [ 'description' => '' , 'default' => MeetingResultSort::TODAY, 'overridable' => true, 'hidden' => false],
     'meeting_search_radius' => [ 'description' => '' , 'default' => -50, 'overridable' => true, 'hidden' => false],
+    'mobile_check' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'postal_code_length' => [ 'description' => '' , 'default' => 5, 'overridable' => true, 'hidden' => false],
     'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'result_count_max' => [ 'description' => '' , 'default' => 5, 'overridable' => true, 'hidden' => false],
