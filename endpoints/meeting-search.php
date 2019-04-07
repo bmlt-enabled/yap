@@ -32,8 +32,10 @@ function mobileCheck()
         $phone_number = $GLOBALS['twilioClient']->lookups->v1->phoneNumbers($_REQUEST['From'])->fetch(array("type" => "carrier"));
         if ($phone_number->carrier['type'] === 'mobile') {
             $is_mobile = true;
+        } else {
+            $is_mobile = false;
         }
-    } else {
+    } else if (!json_decode(setting('mobile_check'))) {
         $is_mobile = false;
     }
     return $is_mobile;
@@ -44,7 +46,7 @@ function sendSms($message)
     if (isset($_REQUEST['From']) && isset($_REQUEST['To'])) {
         if (mobileCheck()) {
             $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
-        } else if (!json_decode(setting('mobile_check'))) {
+        } else {
             $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
         }
     }
