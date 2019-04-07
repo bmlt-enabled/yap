@@ -36,19 +36,15 @@ function mobileCheck()
             $is_mobile = false;
         }
     } else if (!json_decode(setting('mobile_check'))) {
-        $is_mobile = false;
+        $is_mobile = true;
     }
     return $is_mobile;
 }
 
 function sendSms($message)
 {
-    if (isset($_REQUEST['From']) && isset($_REQUEST['To'])) {
-        if (mobileCheck()) {
-            $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
-        } else {
-            $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
-        }
+    if (isset($_REQUEST['From']) && isset($_REQUEST['To']) && mobileCheck()) {
+        $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
     }
 }
 ?>
