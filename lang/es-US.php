@@ -96,3 +96,5 @@ $you_are_being_added_to_an_ongoing_call_as_muted_for_a_trainee = "se le agrega a
 $groups = "grupos";
 $include_group = "incluir grupos";
 $manage_groups = "administrar grupos";
+$create = "Create";
+$edit = "Edit";

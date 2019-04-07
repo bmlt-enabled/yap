@@ -35,13 +35,12 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
             </select>
         </form>
         <script type="text/javascript">var groups=<?php echo json_encode($groups); ?></script>
-        <button class="btn btn-sm btn-primary volunteer-manage-buttons" id="addGroupButton" onclick="addGroup();">Add
-        </button>
+        <button class="btn btn-sm btn-primary volunteer-manage-buttons" id="addGroupButton" onclick="addGroup();"><?php echo word('create') ?></button>
         <button class="btn btn-sm btn-secondary volunteer-manage-buttons" id="editGroupButton" onclick="editGroup();"
-                style="display:none;">Edit
+                style="display:none;"><?php echo word('edit') ?>
         </button>
         <button class="btn btm-sm btn-warning volunteer-manage-buttons" id="deleteGroupButton" onclick="deleteGroup();"
-                style="display:none;">Delete
+                style="display:none;"><?php echo word('delete') ?>
         </button>
         <?php require_once '_includes/volunteers_control.php';
     } else {
