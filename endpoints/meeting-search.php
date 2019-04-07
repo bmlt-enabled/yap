@@ -42,7 +42,6 @@ function mobileCheck()
 function sendSms($message)
 {
     if (isset($_REQUEST['From']) && isset($_REQUEST['To'])) {
-        error_log(mobileCheck());
         if (mobileCheck()) {
             $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
         } else if (!json_decode(setting('mobile_check'))) {
