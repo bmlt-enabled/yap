@@ -1,4 +1,8 @@
 # Release Notes
+### 3.0.4 (Unreleased)
+* Fix for prompts not being utilized from service body config overrides [#268]
+* Fix for mobile check caching (it was being called once for each lookup)
+
 ### 3.0.3 (April 8, 2019)
 * Fix for overriden Twilio credentials that weren't being utilized.
 * Renamed "Add" to "Create" for creating new groups.

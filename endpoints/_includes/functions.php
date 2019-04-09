@@ -6,7 +6,7 @@ session_start();
 require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
 require_once 'migrations.php';
 require_once 'logging.php';
-static $version  = "3.0.3";
+static $version  = "3.0.4";
 class VolunteerLanguage
 {
     const UNSPECIFIED = 0;
@@ -55,11 +55,6 @@ static $settings_whitelist = [
     'voice' => [ 'description' => '', 'default' => 'woman', 'overridable' => true, 'hidden' => false],
     'word_language' => [ 'description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false]
 ];
-require_once 'session.php';
-checkBlacklist();
-if (has_setting('config')) {
-    include_once __DIR__ . '/../../config_'.setting('config').'.php';
-}
 static $available_languages = [
     "en-US" => "English",
     "en-AU" => "English (Australian)",
@@ -78,6 +73,11 @@ foreach ($available_languages as $available_language_key => $available_language_
     foreach ($available_prompts as $available_prompt) {
         $settings_whitelist[str_replace("-", "_", $available_language_key) . "_" . $available_prompt] = [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false];
     }
+}
+require_once 'session.php';
+checkBlacklist();
+if (has_setting('config')) {
+    include_once __DIR__ . '/../../config_'.setting('config').'.php';
 }
 
 include_once __DIR__ . '/../../lang/' .getWordLanguage().'.php';
