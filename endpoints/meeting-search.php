@@ -28,13 +28,18 @@ try {
 
 function mobileCheck()
 {
-    if (has_setting('mobile_check') && json_decode(setting('mobile_check'))) {
-        $phone_number = $GLOBALS['twilioClient']->lookups->v1->phoneNumbers($_REQUEST['From'])->fetch(array("type" => "carrier"));
-        if ($phone_number->carrier['type'] !== 'mobile') {
-            return false;
+    if (!$_SESSION['is_mobile']) {
+        $is_mobile = true;
+        if (has_setting('mobile_check') && json_decode(setting('mobile_check'))) {
+            $phone_number = $GLOBALS['twilioClient']->lookups->v1->phoneNumbers($_REQUEST['From'])->fetch(array("type" => "carrier"));
+            if ($phone_number->carrier['type'] !== 'mobile') {
+                $is_mobile = false;
+            }
         }
+        $_SESSION['is_mobile'] = $is_mobile;
     }
-    return true;
+
+    return $_SESSION['is_mobile'];
 }
 
 function sendSms($message)
