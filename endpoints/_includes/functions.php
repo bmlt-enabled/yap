@@ -1603,6 +1603,8 @@ function getSessionLink($shouldUriEncode = false)
         $session_id = $_REQUEST['ysk'];
     } else if (isset($_REQUEST['PHPSESSID'])) {
         $session_id = $_REQUEST['PHPSESSID'];
+    } else if (isset($_COOKIE['PHPSESSID'])) {
+        $session_id = $_COOKIE['PHPSESSID'];
     } else {
         $session_id = null;
     }
