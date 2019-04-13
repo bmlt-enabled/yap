@@ -512,7 +512,7 @@ function save7DayShifts(e) {
 
         $("#selectRepeatShiftDialog").modal("hide");
     } else {
-        $("#selectRepeatShiftDialogValidation").html("Shift start time should be before end time.");        $("#selectRepeatShiftDialogValidation").html("Shift start time should be before end time.")
+        $("#selectRepeatShiftDialogValidation").html("Shift start time should be before end time.").show().fadeOut(2000);
     }
 }
 
@@ -536,7 +536,7 @@ function saveShift(e) {
         renderShift(volunteer_id, shiftInfoObj);
         $("#selectShiftDialog").modal("hide");
     } else {
-        $("#selectShiftDialogValidation").html("Shift start time should be before end time.")
+        $("#selectShiftDialogValidation").html("Shift start time should be before end time.").show().fadeOut(2000);
     }
 }
 
