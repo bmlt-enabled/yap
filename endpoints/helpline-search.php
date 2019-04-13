@@ -57,7 +57,7 @@ if ($service_body_id > 0 && isset($serviceBodyCallHandling) && $serviceBodyCallH
         $calculated_service_body_id = $service_body_id;
     }
     ?>
-        <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>"><?php echo word('please_wait_while_we_connect_your_call') ?></Say>
+        <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>"><?php echo word('please_wait_while_we_connect_your_call') ?></Say>
         <Dial>
             <Conference waitUrl="<?php echo $serviceBodyCallHandling->moh_count == 1 ? $serviceBodyCallHandling->moh : "playlist.php?items=" . $serviceBodyCallHandling->moh?>"
                         statusCallback="helpline-dialer.php?service_body_id=<?php echo $calculated_service_body_id ?>&amp;Caller=<?php echo $_REQUEST['Called'] . getSessionLink(true) ?>"
@@ -71,7 +71,7 @@ if ($service_body_id > 0 && isset($serviceBodyCallHandling) && $serviceBodyCallH
         </Dial>
 <?php } else if ($phone_number != "") {
     if (!isset($_REQUEST["ForceNumber"])) { ?>
-            <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>"><?php echo word('please_stand_by') ?>... <?php echo word('relocating_your_call_to') ?> <?php echo $location; ?>.</Say>
+            <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>"><?php echo word('please_stand_by') ?>... <?php echo word('relocating_your_call_to') ?> <?php echo $location; ?>.</Say>
     <?php } elseif (isset($_REQUEST["ForceNumber"])) {
         if ($captcha) { ?>
                 <Gather language="<?php echo setting('gather_language') ?>"
@@ -80,13 +80,13 @@ if ($service_body_id > 0 && isset($serviceBodyCallHandling) && $serviceBodyCallH
                         timeout="15"
                         numDigits="1"
                         action="helpline-search.php?CaptchaVerified=1&amp;ForceNumber=<?php echo urlencode($_REQUEST['ForceNumber']) . getSessionLink(true) ?><?php echo $waiting_message ? "&amp;WaitingMessage=1" : "" ?>">
-                    <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
+                    <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
                         <?php echo setting('title') ?>... <?php echo word('press_any_key_to_continue') ?>
                     </Say>
                 </Gather>
                 <Hangup/>
         <?php } else if ($waiting_message) { ?>
-                <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
+                <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
                     <?php echo !$captcha_verified ? setting('title') : "" ?> <?php echo word('please_wait_while_we_connect_your_call') ?>
                 </Say>
         <?php }

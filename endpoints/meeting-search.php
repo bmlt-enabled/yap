@@ -53,11 +53,11 @@ function sendSms($message)
 <?php
 if (!isset($_REQUEST["SmsSid"])) {
     if ($meeting_results->originalListCount == 0) {
-        echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('no_results_found') . "... " . word('you_might_have_invalid_entry') . "... " . word('try_again') . "</Say><Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
+        echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . word('no_results_found') . "... " . word('you_might_have_invalid_entry') . "... " . word('try_again') . "</Say><Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
     } elseif (count($filtered_list) == 0) {
-        echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('there_are_no_other_meetings_for_today') . ".... " . word('try_again') . "</Say><Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
+        echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . word('there_are_no_other_meetings_for_today') . ".... " . word('try_again') . "</Say><Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
     } else {
-        echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('meeting_information_found_listing_the_top') . " " . $results_count_num . " " . word('results') . "</Say>";
+        echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . word('meeting_information_found_listing_the_top') . " " . $results_count_num . " " . word('results') . "</Say>";
     }
 } else {
     if ($meeting_results->originalListCount == 0) {
@@ -74,15 +74,15 @@ for ($i = 0; $i < count($filtered_list); $i++) {
 
     if (!isset($_REQUEST["SmsSid"])) {
         echo "<Pause length=\"1\"/>";
-        echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('number') . " " . ($results_counter + 1) . "</Say>";
-        echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . $results[0] . "</Say>";
+        echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . word('number') . " " . ($results_counter + 1) . "</Say>";
+        echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results[0] . "</Say>";
         echo "<Pause length=\"1\"/>";
-        echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . word('starts_at') . " " . $results[1] . "</Say>";
+        echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . word('starts_at') . " " . $results[1] . "</Say>";
         echo "<Pause length=\"1\"/>";
-        echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . $location_line . "</Say>";
+        echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $location_line . "</Say>";
 
         if (isset($_REQUEST["Debug"])) {
-            echo "<Say voice=\"" . setting('voice') . "\" language=\"" . setting('language') . "\">" . json_encode($filtered_list[$i]) . "</Say>";
+            echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . json_encode($filtered_list[$i]) . "</Say>";
         }
     }
 
@@ -136,11 +136,11 @@ if (has_setting('sms_summary_page') && json_decode(setting('sms_summary_page')))
 if (!isset($_REQUEST["SmsSid"]) && count($filtered_list) > 0) {
     echo "<Pause length=\"2\"/>";
     if (count($sms_messages) > 0) { ?>
-            <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">
+            <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
                 <?php echo getPressWord() ?> <?php echo word("one") ?> <?php echo word('if_you_would_like_these_results_texted_to_you') ?>
             </Say>
             <?php if (json_decode(setting('infinite_searching'))) { ?>
-                <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">
+                <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
                     <?php echo getPressWord() ?> <?php echo word("two") ?> <?php echo word('if_you_would_like_to_search_again') ?>...
                     <?php echo getPressWord() ?> <?php echo word("three") ?> <?php echo word('if_you_would_like_to_do_both') ?>
                 </Say>
@@ -149,13 +149,13 @@ if (!isset($_REQUEST["SmsSid"]) && count($filtered_list) > 0) {
                     action="post-call-action.php?Payload=<?php echo urlencode(json_encode($sms_messages)) ?>"
                     method="GET"/>
     <?php } elseif (json_decode(setting('infinite_searching'))) { ?>
-            <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">
+            <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
                 <?php echo getPressWord()?> <?php echo word("two")?> <?php echo word('if_you_would_like_to_search_again') ?>.
             </Say>
             <Gather numDigits="1" timeout="10" speechTimeout="auto" input="<?php echo getInputType() ?>" action="post-call-action.php" method="GET"/>
     <?php } ?>
 
-    <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">
+    <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
         <?php echo word('thank_you_for_calling_goodbye')?>
     </Say>
 <?php } ?>

@@ -10,7 +10,7 @@ $promptset_name = str_replace("-", "_", getWordLanguage()) . "_voicemail_greetin
     <?php if (has_setting($promptset_name)) {?>
     <Play><?php echo setting($promptset_name) ?></Play>
     <?php } else { ?>
-        <Say voice="<?php echo setting('voice'); ?>" language="<?php echo setting('language') ?>">
+        <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
             <?php echo word("please_leave_a_message_after_the_tone")?>, <?php echo word("hang_up_when_finished")?>
         </Say>
     <?php } ?>

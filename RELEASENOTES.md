@@ -1,5 +1,6 @@
 # Release Notes
-### 3.0.4 (Unreleased)
+### 3.1.0 (Unreleased)
+* Support for different voices for each languages [#260]
 * Fix for prompts not being utilized from service body config overrides [#268]
 * Fix for mobile check caching (it was being called once for each lookup)
 * Fix for responder not working on some servers where the session cookie might be treated differently.

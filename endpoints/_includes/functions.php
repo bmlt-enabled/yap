@@ -6,7 +6,7 @@ session_start();
 require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
 require_once 'migrations.php';
 require_once 'logging.php';
-static $version  = "3.0.4";
+static $version  = "3.1.0";
 class VolunteerLanguage
 {
     const UNSPECIFIED = 0;
@@ -72,6 +72,7 @@ static $available_prompts = [
 foreach ($available_languages as $available_language_key => $available_language_value) {
     foreach ($available_prompts as $available_prompt) {
         $settings_whitelist[str_replace("-", "_", $available_language_key) . "_" . $available_prompt] = [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false];
+        $settings_whitelist[str_replace("-", "_", $available_language_key) . "_voice"] = [ 'description' => '', 'default' => 'alice', 'overridable' => true, 'hidden' => false];
     }
 }
 require_once 'session.php';
@@ -528,6 +529,16 @@ function setting($name)
     }
 
     return null;
+}
+
+function voice()
+{
+    $current_language = str_replace("-", "_", setting('language'));
+    if (has_setting($current_language . "_voice")) {
+        return setting($current_language . "_voice");
+    } else {
+        return setting('voice');
+    }
 }
 
 function setting_source($name)

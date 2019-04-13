@@ -31,19 +31,19 @@ if (isset($_REQUEST["override_service_body_id"])) {
             <Play><?php echo setting($promptset_name) ?></Play>
         <?php } else { ?>
             <?php if (!isset($_REQUEST["Digits"])) { ?>
-                <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">
+                <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
                     <?php echo setting('title') ?>
                 </Say>
             <?php } ?>
-            <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">
+            <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
                 <?php echo getPressWord() . " " . word('one') . " " . word('to_find') . " " . word('someone_to_talk_to') ?>
             </Say>
-            <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">
+            <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
                 <?php echo getPressWord() . " " . word('two') . " " . word('to_search_for') . " " . word('meetings') ?>
             </Say>
             <?php
             if (has_setting('jft_option') && json_decode(setting('jft_option'))) { ?>
-                <Say voice="<?php echo setting('voice') ?>" language="<?php echo setting('language') ?>">
+                <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
                     <?php echo getPressWord() . " " . word('three') . " " . word('to_listen_to_the_just_for_today') ?>
                 </Say>
             <?php }

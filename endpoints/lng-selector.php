@@ -18,7 +18,7 @@ $_SESSION["override_voice"] = "alice";
         for ($i = 0; $i < count($language_selection_options); $i++) {
             include __DIR__.'/../lang/'.$language_selection_options[$i].'.php'
             ?>
-            <Say voice="<?php echo setting("voice")?>" language="<?php echo $language_selection_options[$i] ?>">
+            <Say voice="<?php echo voice()?>" language="<?php echo $language_selection_options[$i] ?>">
                 <?php echo word('for') ?> <?php echo word('language_title') ?> <?php echo getPressWord() ?> <?php echo getWordForNumber($i + 1) ?>
             </Say>
         <?php } ?>

@@ -43,4 +43,12 @@ static $language_selections = "en-US,pig-latin";
 
 This example will make option 1, English and option 2, pig latin.
 
+### Mixing languages and voices
+
+Voices can be configured for every language option.  For example for Spanish:
+
+```php
+es_US_voice = "Polly.Penelope";
+```
+
 **New Yap 3.0** If you want to route calls to volunteers by language, see the section on Language in [Specialized Routing](../../helpline/specialized-routing/).
