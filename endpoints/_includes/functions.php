@@ -1550,23 +1550,33 @@ function getPressWord()
     return has_setting('speech_gathering') && json_decode(setting('speech_gathering')) ? word('press_or_say') : word('press');
 }
 
-function writeMetric($data)
+function writeMetric($data, $service_body_id = 0)
 {
     $db = new Database();
-    $db->query("INSERT INTO `metrics` (`data`) VALUES ('" . json_encode($data) . "')");
+    if ($service_body_id > 0) {
+        $db->query("INSERT INTO `metrics` (`data`, `service_body_id`) VALUES ('" . json_encode($data) . "', " . $service_body_id . ")");
+    } else {
+        $db->query("INSERT INTO `metrics` (`data`) VALUES ('" . json_encode($data) . "')");
+    }
     $db->execute();
     $db->close();
 }
 
-function getMetric()
+/**
+ * @param int $service_body_id
+ * @return mixed
+ */
+function getMetric($service_body_id = 0)
 {
     $db = new Database();
-    $db->query("SELECT DATE_FORMAT(timestamp, \"%Y-%m-%d\") as `timestamp`, 
+    $query = "SELECT DATE_FORMAT(timestamp, \"%Y-%m-%d\") as `timestamp`, 
                                         COUNT(DATE_FORMAT(`timestamp`, \"%Y-%m-%d\")) as counts,
                                         `data`
-                                        FROM `metrics` 
-                                        GROUP BY DATE_FORMAT(`timestamp`, \"%Y-%m-%d\"), 
-                                        `data`");
+                                        FROM `metrics`"
+        . ($service_body_id > 0 ? " WHERE service_body_id = $service_body_id" : "") .
+        " GROUP BY DATE_FORMAT(`timestamp`, \"%Y-%m-%d\"), 
+                                        `data`";
+    $db->query($query);
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
