@@ -531,9 +531,12 @@ function setting($name)
     return null;
 }
 
-function voice()
+function voice($current_language = null)
 {
-    $current_language = str_replace("-", "_", setting('language'));
+    if (!isset($current_language)) {
+        $current_language = str_replace("-", "_", setting('language'));
+    }
+
     if (has_setting($current_language . "_voice")) {
         return setting($current_language . "_voice");
     } else {
@@ -1430,7 +1433,7 @@ function get_jft($sms = false)
     $result = null;
 
     if (setting('word_language') == 'en-US') {
-        $url = 'https://www.jftna.org/jft/';
+        $url = 'https://ddbcd06a.ngrok.io/?today=30';
         $jft_language_dom_element = "table";
         $copyright_info = '';
         $preg_search_lang = "\r\n";

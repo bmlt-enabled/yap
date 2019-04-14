@@ -9,7 +9,6 @@ if (!has_setting('language_selections')) {
 }
 
 $language_selection_options = explode(",", setting('language_selections'));
-$_SESSION["override_voice"] = "alice";
 ?>
 <Response>
     <Pause length="<?php echo setting('initial_pause') ?>"></Pause>
@@ -18,7 +17,7 @@ $_SESSION["override_voice"] = "alice";
         for ($i = 0; $i < count($language_selection_options); $i++) {
             include __DIR__.'/../lang/'.$language_selection_options[$i].'.php'
             ?>
-            <Say voice="<?php echo voice()?>" language="<?php echo $language_selection_options[$i] ?>">
+            <Say voice="<?php echo voice(str_replace("-", "_", $language_selection_options[$i]))?>" language="<?php echo $language_selection_options[$i] ?>">
                 <?php echo word('for') ?> <?php echo word('language_title') ?> <?php echo getPressWord() ?> <?php echo getWordForNumber($i + 1) ?>
             </Say>
         <?php } ?>
