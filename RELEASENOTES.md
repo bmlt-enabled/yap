@@ -1,6 +1,8 @@
 # Release Notes
-### 3.1.0 (Unreleased)
+### 3.1.0 (April 14, 2019)
 * Support for different voices for each languages [#260]
+* Metrics drilldown by service body [#246]
+* Minor tweaks to es-US translation [#262]
 * Fix for prompts not being utilized from service body config overrides [#268]
 * Fix for mobile check caching (it was being called once for each lookup)
 * Fix for responder not working on some servers where the session cookie might be treated differently.
