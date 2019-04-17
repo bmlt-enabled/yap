@@ -44,6 +44,8 @@ if (!setting("tomato_helpline_routing") && !isset($_REQUEST['ForceNumber'])) {
     $serviceBodyCallHandling = getServiceBodyCallHandling($service_body_id);
 }
 
+writeMetric(["searchType" => "1"], setting('service_body_id'));
+
 if ($service_body_id > 0 && isset($serviceBodyCallHandling) && $serviceBodyCallHandling->volunteer_routing_enabled) {
     if ($serviceBodyCallHandling->gender_routing_enabled && !isset($_SESSION['Gender'])) {
         $_SESSION['Address'] = $address; ?>

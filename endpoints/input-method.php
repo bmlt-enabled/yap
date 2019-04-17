@@ -5,7 +5,10 @@
     $searchType = getIvrResponse("index.php", "", ["1", "2", "3"]);
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
 
+
+if ($searchType == "2" || $searchType == "3") {
     writeMetric(["searchType" => $searchType], setting('service_body_id'));
+}
 
 if ($searchType == "1") {
     if (isset($_SESSION['override_service_body_id'])) { ?>
