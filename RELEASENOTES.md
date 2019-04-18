@@ -1,5 +1,5 @@
 # Release Notes
-### 3.1.0 (April 14, 2019)
+### 3.1.0 (April 18, 2019)
 * Support for different voices for each languages [#260]
 * Metrics drilldown by service body [#246]
 * Minor tweaks to es-US translation [#262]
