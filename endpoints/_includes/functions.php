@@ -343,7 +343,8 @@ class UpgradeAdvisor
 
     private static function getState($status, $message)
     {
-        return ["status"=>$status, "message"=>$message, "version"=>$GLOBALS['version']];
+        $build = file_get_contents("../build.txt", false);
+        return ["status"=>$status, "message"=>$message, "version"=>$GLOBALS['version'], "build"=>$build];
     }
 
     public static function getStatus()

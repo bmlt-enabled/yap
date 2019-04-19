@@ -16,6 +16,7 @@ jobs:
       install:
       - composer install
       script:
+      - git rev-parse HEAD > build.txt
       - export ARTIFACT_FILENAME=yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}.zip
       - git archive --format=zip --output=${ARTIFACT_FILENAME} HEAD
       - zip -ur ${ARTIFACT_FILENAME} vendor
