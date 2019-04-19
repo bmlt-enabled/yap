@@ -6,7 +6,7 @@ session_start();
 require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
 require_once 'migrations.php';
 require_once 'logging.php';
-static $version  = "3.1.0";
+static $version  = "3.1.1";
 class VolunteerLanguage
 {
     const UNSPECIFIED = 0;
@@ -343,8 +343,12 @@ class UpgradeAdvisor
 
     private static function getState($status, $message)
     {
-        $build = file_get_contents("../build.txt", false);
-        return ["status"=>$status, "message"=>$message, "version"=>$GLOBALS['version'], "build"=>$build];
+        try {
+            $build = file_get_contents("../build.txt", false);
+        } catch (Exception $e) {
+            $build = $e->getMessage();
+        }
+        return ["status"=>$status, "message"=>$message, "version"=>$GLOBALS['version'], "build"=>str_replace("\n", "", $build)];
     }
 
     public static function getStatus()

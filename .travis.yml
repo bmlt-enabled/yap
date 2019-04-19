@@ -18,7 +18,7 @@ jobs:
       script:
       - export ARTIFACT_FILENAME=yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}.zip
       - git archive --format=zip --output=${ARTIFACT_FILENAME} HEAD
-      - git rev-parse HEAD > build.txt
+      - echo ${TRAVIS_COMMIT} > build.txt
       - zip -ur ${ARTIFACT_FILENAME} build.txt
       - zip -ur ${ARTIFACT_FILENAME} vendor
       - aws s3 cp ${ARTIFACT_FILENAME} s3://archives.bmlt.app/yap/
@@ -27,6 +27,8 @@ jobs:
         - composer install
       before_deploy:
         - git archive --format=zip --output=yap-${TRAVIS_TAG}.zip ${TRAVIS_TAG}
+        - echo ${TRAVIS_COMMIT} > build.txt
+        - zip -ur ${ARTIFACT_FILENAME} build.txt
         - zip -ur yap-${TRAVIS_TAG}.zip vendor
       deploy:
         provider: releases
