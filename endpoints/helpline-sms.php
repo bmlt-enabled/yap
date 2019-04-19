@@ -17,7 +17,7 @@ try {
         $volunteer_routing_parameters->tracker = $tracker;
         $volunteer_routing_parameters->cycle_algorithm = $serviceBodyCallHandling->sms_strategy;
         $volunteer_routing_parameters->volunteer_type = VolunteerType::SMS;
-        $phone_numbers = explode(',', getHelplineVolunteer($volunteer_routing_parameters));
+        $phone_numbers = explode(',', getHelplineVolunteer($volunteer_routing_parameters)->phoneNumber);
 
         $twilioClient->messages->create(
             $original_caller_id,

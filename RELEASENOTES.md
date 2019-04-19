@@ -2,7 +2,8 @@
 
 ### 3.1.1 (Unreleased)
 * Fix for bad XML encoding for Spanish JFT [#273]
-* Feature for getting the git hash for each build for QA and Beta users.
+* Fix for non-working SMS volunteer routing [#274]
+* Data point added to upgrade-advisor for getting the git hash for each build for QA and Beta users.
 
 ### 3.1.0 (April 18, 2019)
 * Support for different voices for each languages [#260]
