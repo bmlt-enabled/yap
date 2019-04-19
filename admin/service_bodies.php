@@ -151,6 +151,7 @@ sort_on_field($service_bodies, 'name');
                                             </button>
                                         </div>
                                         <div class="modal-body serviceBodyConfigurationItems">
+                                            <div>For more information on using this, see the documentation on <a href="https://yap.bmlt.app/docs/general/configuration-precedence/" target="_blank">Configuration Precedence</a>.</div>
                                             <form id="serviceBodyConfigurationForm" class="serviceBodyConfigurationForm">
                                                 <select class="form-control form-control-sm" name="serviceBodyConfigurationFields" id="serviceBodyConfigurationFields">
                                                     <?php foreach ($settings_whitelist as $setting => $value) { ?>
