@@ -24,11 +24,12 @@ jobs:
       - aws s3 cp ${ARTIFACT_FILENAME} s3://archives.bmlt.app/yap/
     - stage: stable
       install:
-        - composer install
+      - composer install
+      - yarn install
       before_deploy:
-        - git archive --format=zip --output=yap-${TRAVIS_TAG}.zip ${TRAVIS_TAG}
-        - echo ${TRAVIS_COMMIT} > build.txt
-        - zip -ur yap-${TRAVIS_TAG}.zip build.txt vendor vendor
+      - git archive --format=zip --output=yap-${TRAVIS_TAG}.zip ${TRAVIS_TAG}
+      - echo ${TRAVIS_COMMIT} > build.txt
+      - zip -ur yap-${TRAVIS_TAG}.zip build.txt vendor admin/vendor
       deploy:
         provider: releases
         api_key:
