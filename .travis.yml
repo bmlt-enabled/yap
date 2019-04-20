@@ -15,6 +15,7 @@ jobs:
       - export PATH=$PATH:$HOME/.local/bin
       install:
       - composer install
+      - yarn install
       script:
       - export ARTIFACT_FILENAME=yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}.zip
       - git archive --format=zip --output=${ARTIFACT_FILENAME} HEAD
