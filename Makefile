@@ -2,6 +2,7 @@
 
 run:
 	composer install
+	yarn install
 	docker-compose up --build
 
 lint:

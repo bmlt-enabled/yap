@@ -18,7 +18,13 @@
     </div>
 </div>
 <?php require_once 'footer.php';?>
-<link rel='stylesheet' href='css/fullcalendar-3.9.0.min.css' />
-<script src='js/moment-2.11.1.min.js'></script>
-<script src='js/fullcalendar-3.9.0.min.js'></script>
+<link rel='stylesheet' href='vendor/@fullcalendar/core/main.min.css' />
+<link rel='stylesheet' href='vendor/@fullcalendar/daygrid/main.min.css' />
+<link rel='stylesheet' href='vendor/@fullcalendar/timegrid/main.min.css' />
+<link rel='stylesheet' href='vendor/@fullcalendar/list/main.min.css' />
+<script src='vendor/moment/min/moment.min.js'></script>
+<script src='vendor/@fullcalendar/core/main.min.js'></script>
+<script src='vendor/@fullcalendar/daygrid/main.min.js'></script>
+<script src='vendor/@fullcalendar/timegrid/main.min.js'></script>
+<script src='vendor/@fullcalendar/list/main.min.js'></script>
 <script type="text/javascript">$(function(){schedulePage()})</script>

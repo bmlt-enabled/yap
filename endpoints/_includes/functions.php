@@ -1160,8 +1160,8 @@ function getVolunteerInfo($volunteers)
                     . (isset($volunteer->volunteer_gender) ? " " . VolunteerGender::getGenderById($volunteer->volunteer_gender) : "")
                     . (isset($volunteer->volunteer_language) ? " " . json_encode($volunteer->volunteer_language) : "");
                 $volunteerInfo->time_zone  = $vsi->tz;
-                $volunteerInfo->start      = getNextShiftInstance($vsi->day, $vsi->start_time, $volunteerInfo->time_zone)->format("Y-m-d H:i:s");
-                $volunteerInfo->end        = getNextShiftInstance($vsi->day, $vsi->end_time, $volunteerInfo->time_zone)->format("Y-m-d H:i:s");
+                $volunteerInfo->start      = str_replace(" ", "T", getNextShiftInstance($vsi->day, $vsi->start_time, $volunteerInfo->time_zone)->format("Y-m-d H:i:s"));
+                $volunteerInfo->end        = str_replace(" ", "T", getNextShiftInstance($vsi->day, $vsi->end_time, $volunteerInfo->time_zone)->format("Y-m-d H:i:s"));
                 $volunteerInfo->weekday_id = $vsi->day;
                 $volunteerInfo->weekday    = $GLOBALS['days_of_the_week'][ $vsi->day ];
                 $volunteerInfo->sequence   = $v;

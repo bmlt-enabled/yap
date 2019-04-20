@@ -1,5 +1,6 @@
 dayOfTheWeek = {1:"Sunday",2:"Monday",3:"Tuesday",4:"Wednesday",5:"Thursday",6:"Friday",7:"Saturday"};
 var groups;
+var calendar;
 
 function reportsPage() {
     $("#service_body_id").on("change", function() {
@@ -82,16 +83,17 @@ function volunteerPage() {
 }
 
 function schedulePage() {
-    $('#calendar').fullCalendar({
+    var calendarEl = document.getElementById('calendar');
+    calendar = new FullCalendar.Calendar(calendarEl, {
         allDaySlot: false,
-        defaultView: 'agendaWeek',
+        defaultView: 'timeGridWeek',
         nowIndicator: true,
         firstDay: (new Date()).getDay(),
         themeSystem: 'bootstrap4',
         header: {
             left: null,
             center: null,
-            right: "agendaWeek, agendaDay, list, prev, next"
+            right: "timeGridWeek, timeGridDay, listWeek, prev, next"
         },
         height: 'auto',
         validRange: {
@@ -100,17 +102,21 @@ function schedulePage() {
         },
         eventOrder: ['sequence'],
         slotEventOverlap: false,
+        plugins: ['timeGrid','list'],
         viewRender: function() {
             $(".fa-chevron-left").html("<");
             $(".fa-chevron-right").html(">");
-        },
+        }
     });
+
+    calendar.render();
 
     $('select#service_body_id').change(function() {
         if (parseInt($('select#service_body_id').val()) > 0) {
-            $('#calendar').fullCalendar('removeEventSources');
-            $("#calendar").fullCalendar('removeEvents');
-            $('#calendar').fullCalendar('addEventSource', '../helpline-schedule.php?service_body_id=' + $('select#service_body_id').val());
+            for (eventSource of calendar.getEventSources()) {
+                eventSource.remove();
+            }
+            calendar.addEventSource('../helpline-schedule.php?service_body_id=' + $('select#service_body_id').val());
         }
     })
 }

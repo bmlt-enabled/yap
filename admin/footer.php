@@ -1,8 +1,8 @@
-<script src="js/jquery-3.3.1.min.js"></script>
-<script src="js/jquery-ui-1.12.1.min.js"></script>
-<script src="js/popper.min.js"></script>
-<script src="js/bootstrap-4.1.0.min.js"></script>
-<script src="js/touch-punch-0.2.3.min.js"></script>
+<script src="vendor/jquery/dist/jquery.min.js"></script>
+<script src="vendor/jquery-ui-dist/jquery-ui.min.js"></script>
+<script src="vendor/popper.js/dist/umd/popper.min.js"></script>
+<script src="vendor/bootstrap/dist/js/bootstrap.bundle.js"></script>
+<script src="vendor/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js"></script>
 <script src="js/yap.js?v=<?php echo time()?>"></script>
 </body>
 </html>

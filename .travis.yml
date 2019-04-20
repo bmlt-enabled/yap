@@ -19,8 +19,7 @@ jobs:
       - export ARTIFACT_FILENAME=yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}.zip
       - git archive --format=zip --output=${ARTIFACT_FILENAME} HEAD
       - echo ${TRAVIS_COMMIT} > build.txt
-      - zip -ur ${ARTIFACT_FILENAME} build.txt
-      - zip -ur ${ARTIFACT_FILENAME} vendor
+      - zip -ur ${ARTIFACT_FILENAME} build.txt vendor admin/vendor
       - aws s3 cp ${ARTIFACT_FILENAME} s3://archives.bmlt.app/yap/
     - stage: stable
       install:
@@ -28,8 +27,7 @@ jobs:
       before_deploy:
         - git archive --format=zip --output=yap-${TRAVIS_TAG}.zip ${TRAVIS_TAG}
         - echo ${TRAVIS_COMMIT} > build.txt
-        - zip -ur ${ARTIFACT_FILENAME} build.txt
-        - zip -ur yap-${TRAVIS_TAG}.zip vendor
+        - zip -ur yap-${TRAVIS_TAG}.zip build.txt vendor vendor
       deploy:
         provider: releases
         api_key:
