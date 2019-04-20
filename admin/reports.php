@@ -13,7 +13,7 @@
     </select>
     <div id="reports"></div>
 </div>
-<script type="text/javascript" src="js/moment-2.11.1.min.js"></script>
-<script type="text/javascript" src="js/plotly-1.43.1.min.js"></script>
+<script type="text/javascript" src="vendor/moment/min/moment.min.js"></script>
+<script type="text/javascript" src="vendor/plotly.js-dist/plotly.js"></script>
 <?php require_once 'footer.php'; ?>
 <script type="text/javascript">$(function(){reportsPage()})</script>
