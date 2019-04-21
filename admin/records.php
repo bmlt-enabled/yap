@@ -18,7 +18,7 @@ include_once '../endpoints/_includes/twilio-client.php';?>
                 $conference = $twilioClient->conferences($row['conferencesid'])->fetch();
                 $recordings = $participant->recordings->read();
                 $recordingUri = count($recordings) > 0 ? "<a href='https://api.twilio.com" . str_replace(".json", ".mp3", $recordings[0]->uri) . "' target='_blank'>Play</a>" : "";
-                $duration = $conference->dateCreated->diff($conference->dateUpdated)->s;
+                $duration = $conference->dateUpdated->getTimestamp() - $conference->dateCreated->getTimestamp();
                 echo "<tr><td>" . $row['conferencesid'] . "</td><td>$recordingUri</a></td><td>" . $duration . "</td><td>" . $row['callsid'] . "</td><td>$phone_number</td><td>$role</td><td>" . $row['timestamp'] . "</td></tr>";
             }
             $lastconferencesid = $row['conferencesid'];
