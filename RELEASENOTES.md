@@ -5,6 +5,7 @@
 * Fix for non-working SMS volunteer routing [#274]
 * Fix for an edge case to render schedule ordering correctly [#162]
 * Data point added to upgrade-advisor for getting the git hash for each build for QA and Beta users.
+* Fix for duration not displaying properly on volunteer records.
 
 ### 3.1.0 (April 18, 2019)
 * Support for different voices for each languages [#260]
