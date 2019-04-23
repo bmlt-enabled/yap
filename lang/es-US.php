@@ -98,3 +98,4 @@ $include_group = "incluir grupos";
 $manage_groups = "administrar grupos";
 $create = "Create";
 $edit = "Edit";
+$delete = "Delete";

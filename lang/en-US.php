@@ -97,3 +97,4 @@ $include_group = "Include Group";
 $manage_groups = "Manage Groups";
 $create = "Create";
 $edit = "Edit";
+$delete = "Delete";

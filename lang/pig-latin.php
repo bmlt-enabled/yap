@@ -89,3 +89,4 @@ $include_group = "includeyay oupgray";
 $manage_groups = "anagemay oupsgray";
 $create = "eatecray";
 $edit = "editcray";
+$delete = "Eleteday";
