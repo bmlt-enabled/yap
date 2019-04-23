@@ -28,7 +28,7 @@ try {
 
 function mobileCheck()
 {
-    if (!$_SESSION['is_mobile']) {
+    if (!isset($_SESSION['is_mobile'])) {
         $is_mobile = true;
         if (has_setting('mobile_check') && json_decode(setting('mobile_check'))) {
             $phone_number = $GLOBALS['twilioClient']->lookups->v1->phoneNumbers($_REQUEST['From'])->fetch(array("type" => "carrier"));
