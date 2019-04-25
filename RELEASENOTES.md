@@ -1,6 +1,7 @@
 # Release Notes
 
-### 3.1.1 (Unreleased)
+### 3.1.1 (April 24, 2018)
+* Italian translation
 * Fix for bad XML encoding for Spanish JFT [#273]
 * Fix for non-working SMS volunteer routing [#274]
 * Fix for an edge case to render schedule ordering correctly [#162]

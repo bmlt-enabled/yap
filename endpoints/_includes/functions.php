@@ -61,7 +61,8 @@ static $available_languages = [
     "es-US" => "Español (United States)",
     "pig-latin" => "Igpay Atinlay",
     "pt-BR" => "Português (Brazil)",
-    "fr-CA" => "Français (Canada)"
+    "fr-CA" => "Français (Canada)",
+    "it-IT" => "Italian (Italy)"
 ];
 
 static $available_prompts = [
