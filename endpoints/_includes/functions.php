@@ -855,9 +855,13 @@ function admin_GetServiceBodiesForUser()
 
 function admin_GetUserName()
 {
-    $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_user_info";
-    $get_user_info_response = json_decode(get($url, $_SESSION['username']));
-    return isset($get_user_info_response->current_user) ? $get_user_info_response->current_user->name : $_SESSION['username'];
+    if (!isset($_SESSION['user_name_string'])) {
+        $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_user_info";
+        $get_user_info_response = json_decode(get($url, $_SESSION['username']));
+        $user_name = isset($get_user_info_response->current_user) ? $get_user_info_response->current_user->name : $_SESSION['username'];
+        $_SESSION['user_name_string'] = $user_name;
+    }
+    return $_SESSION['user_name_string'];
 }
 
 function admin_PersistDbConfig($service_body_id, $data, $data_type, $parent_id = 0)
