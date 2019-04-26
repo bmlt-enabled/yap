@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.1.2 (UNRELEASED)
+* User name is now cached and stored in session.
+
 ### 3.1.1 (April 24, 2018)
 * Italian translation
 * Fix for bad XML encoding for Spanish JFT [#273]
