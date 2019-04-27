@@ -1,7 +1,7 @@
 # Release Notes
 
 ### 3.1.2 (UNRELEASED)
-* User name is now cached and stored in session.
+* User name is now cached and stored in session. [#279]
 
 ### 3.1.1 (April 24, 2018)
 * Italian translation
