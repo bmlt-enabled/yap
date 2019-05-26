@@ -12,7 +12,7 @@ class VolunteerLanguage
     const UNSPECIFIED = 0;
 }
 static $settings_whitelist = [
-    'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers [https://yap.bmlt.app/docs/general/blocklist/]' , 'default' => '', 'overridable' => true, 'hidden' => false],
+    'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'bmlt_root_server' => [ 'description' => 'The root server to use.' , 'default' => '', 'overridable' => false, 'hidden' => false],
     'config' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => true],
     'custom_css' => [ 'description' => '' , 'default' => 'td { font-size: 36px; }', 'overridable' => true, 'hidden' => false],
