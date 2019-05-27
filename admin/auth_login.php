@@ -5,6 +5,7 @@ $auth_v2_result = auth_v2($_POST['username'], $_POST['password']);
 if (count($auth_v2_result) == 1) {
     $_SESSION['username'] = $_POST['username'];
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    $_SESSION['user_name_string'] = $auth_v2_result[0]['name'];
     $_SESSION['is_admin'] = $auth_v2_result[0]['is_admin'];
     $_SESSION['permissions'] = $auth_v2_result[0]['permissions'];
     header('Location: home.php');
