@@ -88,6 +88,7 @@ function schedulePage() {
         allDaySlot: false,
         defaultView: 'timeGridWeek',
         nowIndicator: true,
+        editable: true,
         firstDay: (new Date()).getDay(),
         themeSystem: 'bootstrap4',
         header: {
@@ -102,7 +103,7 @@ function schedulePage() {
         },
         eventOrder: ['sequence'],
         slotEventOverlap: false,
-        plugins: ['timeGrid','list'],
+        plugins: ['timeGrid','list','interaction'],
         viewRender: function() {
             $(".fa-chevron-left").html("<");
             $(".fa-chevron-right").html(">");
