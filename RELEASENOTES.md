@@ -1,7 +1,8 @@
 # Release Notes
 
-### 3.1.2 (UNRELEASED)
+### 3.2.0 (UNRELEASED)
 * User name is now cached and stored in session. [#279]
+* Database user authentication for global administrators 
 
 ### 3.1.1 (April 24, 2018)
 * Italian translation
