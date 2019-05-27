@@ -13,7 +13,7 @@ function session_expired()
 
 if (isset($_REQUEST["service_body_id"])) {
     $found = false;
-    foreach (admin_GetServiceBodiesForUser() as $service_body) {
+    foreach (getServiceBodiesRights() as $service_body) {
         if ($service_body->id == $_REQUEST['service_body_id']) {
             $found = true;
             continue;

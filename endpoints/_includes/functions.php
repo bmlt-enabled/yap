@@ -830,7 +830,7 @@ function getServiceBody($service_body_id)
 
 function getServiceBodyDetailForUser()
 {
-    $service_bodies = admin_GetServiceBodiesForUser();
+    $service_bodies = getServiceBodiesRights();
     $service_body_detail = getServiceBodies();
     $user_service_bodies = [];
 
@@ -845,17 +845,21 @@ function getServiceBodyDetailForUser()
     return $user_service_bodies;
 }
 
-function admin_GetServiceBodiesForUser()
+function getServiceBodiesRights()
 {
-    $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_permissions";
-    $service_bodies_for_user = json_decode(get($url, $_SESSION['username']));
+    if ($_SESSION['auth_mechanism'] == AuthMechanism::V1) {
+        $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_permissions";
+        $service_bodies_for_user = json_decode(get($url, $_SESSION['username']));
 
-    if (!is_array($service_bodies_for_user->service_body)) {
-        return array($service_bodies_for_user->service_body);
-    } else if (isset($service_bodies_for_user->service_body)) {
-        return $service_bodies_for_user->service_body;
-    } else {
-        return array();
+        if (!is_array($service_bodies_for_user->service_body)) {
+            return array($service_bodies_for_user->service_body);
+        } else if (isset($service_bodies_for_user->service_body)) {
+            return $service_bodies_for_user->service_body;
+        } else {
+            return array();
+        }
+    } elseif ($_SESSION['auth_mechanism'] == AuthMechanism::V2 && $_SESSION['is_admin']) {
+        return getServiceBodies();
     }
 }
 
@@ -1324,7 +1328,7 @@ function auth_v2($username, $password)
     $db->query("SELECT * FROM `users` WHERE `username` = '$username' AND `password` = SHA2('$password', 256)");
     $resultset = $db->resultset();
     $db->close();
-    return count($resultset) == 1;
+    return $resultset;
 }
 
 function check_auth($username)
