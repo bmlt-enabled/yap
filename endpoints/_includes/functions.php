@@ -175,6 +175,12 @@ class CycleAlgorithm
     const BLASTING = 3;
 }
 
+class AuthMechanism
+{
+    const V1 = "_BMLT_AUTH_";
+    const V2 = "_YAP_DB_AUTH_";
+}
+
 class DataType
 {
     const YAP_CONFIG = "_YAP_CONFIG_";
@@ -1312,47 +1318,65 @@ function auth_bmlt($username, $password, $master = false)
     return preg_match('/^OK$/', str_replace(array("\r", "\n"), '', $res)) == 1;
 }
 
+function auth($username, $password)
+{
+    $db = new Database();
+    $db->query("SELECT * FROM `users` WHERE `username` = '$username' AND `password` = SHA2('$password', 256)");
+    $resultset = $db->resultset();
+    $db->close();
+    return count($resultset) == 1;
+}
+
 function check_auth($username)
 {
-    $cookie_file = getCookiePath($username . '_cookie.txt');
-    if (file_exists($cookie_file)) {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=get_permissions');
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
-        curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        $res = curl_exec($ch);
-        curl_close($ch);
-    } else {
-        $res = "NOT AUTHORIZED";
-    }
+    if ($_SESSION['auth_mechanism'] == AuthMechanism::V1) {
+        $cookie_file = getCookiePath($username . '_cookie.txt');
+        if (file_exists($cookie_file)) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=get_permissions');
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_HEADER, false);
+            $res = curl_exec($ch);
+            curl_close($ch);
+        } else {
+            $res = "NOT AUTHORIZED";
+        }
 
-    return !preg_match('/NOT AUTHORIZED/', $res);
+        return !preg_match('/NOT AUTHORIZED/', $res);
+    } else {
+        return true;
+    }
 }
 
 function logout_auth($username)
 {
-    session_unset();
-    $cookie_file = getCookiePath($username . '_cookie.txt');
-    if (file_exists($cookie_file)) {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=logout');
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
-        curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        $res = curl_exec($ch);
-        curl_close($ch);
-    } else {
-        $res = "BYE;";
-    }
+    if ($_SESSION['auth_mechanism'] == AuthMechanism::V1) {
+        $cookie_file = getCookiePath($username . '_cookie.txt');
+        if (file_exists($cookie_file)) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=logout');
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_HEADER, false);
+            $res = curl_exec($ch);
+            curl_close($ch);
+        } else {
+            $res = "BYE;";
+        }
 
-    return !preg_match('/BYE/', $res);
+        session_unset();
+        return !preg_match('/BYE/', $res);
+    } else {
+        session_unset();
+        return true;
+    }
 }
 
 function get($url, $username = 'master')
