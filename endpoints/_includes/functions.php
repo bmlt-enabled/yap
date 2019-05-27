@@ -1325,7 +1325,10 @@ function auth_v1($username, $password, $master = false)
 function auth_v2($username, $password)
 {
     $db = new Database();
-    $db->query("SELECT * FROM `users` WHERE `username` = '$username' AND `password` = SHA2('$password', 256)");
+    $db->query("SELECT name, username, password, is_admin, permissions FROM `users` WHERE `username` = :username AND `password` = SHA2(:password, 256)");
+    $db->bind(':username', $username);
+    $db->bind(':password', $password);
+    $db->execute();
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
@@ -1358,7 +1361,7 @@ function check_auth($username)
 
 function logout_auth($username)
 {
-    if ($_SESSION['auth_mechanism'] == AuthMechanism::V1) {
+    if (isset($_SESSION['auth_mechanism']) && $_SESSION['auth_mechanism'] == AuthMechanism::V1) {
         $cookie_file = getCookiePath($username . '_cookie.txt');
         if (file_exists($cookie_file)) {
             $ch = curl_init();
