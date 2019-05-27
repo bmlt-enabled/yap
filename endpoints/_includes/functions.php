@@ -625,7 +625,7 @@ function helplineSearch($latitude, $longitude)
     if (has_setting('helpline_search_unpublished') && json_decode(setting('helpline_search_unpublished'))) {
         $search_url = $search_url . "&advanced_published=0";
         if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
-            auth_bmlt($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
+            auth_v1($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
         }
     }
 
@@ -1301,7 +1301,7 @@ function getCookiePath($cookieName)
     return __DIR__ . '/../../' . $cookieName;
 }
 
-function auth_bmlt($username, $password, $master = false)
+function auth_v1($username, $password, $master = false)
 {
     $ch = curl_init();
     $auth_endpoint = (isset($GLOBALS['alt_auth_method']) && $GLOBALS['alt_auth_method'] ? '/index.php' : '/local_server/server_admin/xml.php');
@@ -1318,7 +1318,7 @@ function auth_bmlt($username, $password, $master = false)
     return preg_match('/^OK$/', str_replace(array("\r", "\n"), '', $res)) == 1;
 }
 
-function auth($username, $password)
+function auth_v2($username, $password)
 {
     $db = new Database();
     $db->query("SELECT * FROM `users` WHERE `username` = '$username' AND `password` = SHA2('$password', 256)");
