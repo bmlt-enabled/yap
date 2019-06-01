@@ -707,7 +707,7 @@ function getResultsString($filtered_list)
                                         . ' ' . (new DateTime($filtered_list->start_time))->format('g:i A')),
         str_replace("&", "&amp;", $filtered_list->location_text),
         str_replace("&", "&amp;", $filtered_list->location_street
-                                        . ($filtered_list->location_municipality !== "" ? " " . $filtered_list->location_municipality : "")
+                                        . ($filtered_list->location_municipality !== "" ? ", " . $filtered_list->location_municipality : "")
                                         . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")));
 }
 
