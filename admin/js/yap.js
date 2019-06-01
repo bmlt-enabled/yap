@@ -102,6 +102,9 @@ function schedulePage() {
             end: moment().add(7, 'days').endOf('day').format("YYYY-MM-DD")
         },
         eventOrder: ['sequence'],
+        eventAllow: function(dropLocation, draggedEvent) {
+            return moment(dropLocation.start).day() === moment(dropLocation.end).day();
+        },
         slotEventOverlap: false,
         plugins: ['timeGrid','list','interaction'],
         viewRender: function() {
