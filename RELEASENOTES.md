@@ -3,6 +3,7 @@
 ### 3.2.0 (UNRELEASED)
 * User name is now cached and stored in session. [#279]
 * Call records are displayed in your local browser timezone now [#282]
+* Better handling of abbreviations with some textual cues [#219]
 * Database user authentication for global administrators 
 
 ### 3.1.1 (April 24, 2018)
