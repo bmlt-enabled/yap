@@ -70,7 +70,6 @@ if (!isset($_REQUEST["SmsSid"])) {
     $results_counter = 0;
 for ($i = 0; $i < count($filtered_list); $i++) {
     $results = getResultsString($filtered_list[$i]);
-    $location_line = (has_setting('include_location_text') && json_decode(setting('include_location_text'))) ? $results[2] . $text_space . $results[3] : $results[3];
 
     if (!isset($_REQUEST["SmsSid"])) {
         echo "<Pause length=\"1\"/>";
@@ -78,8 +77,13 @@ for ($i = 0; $i < count($filtered_list); $i++) {
         echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results[0] . "</Say>";
         echo "<Pause length=\"1\"/>";
         echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . word('starts_at') . " " . $results[1] . "</Say>";
+        if (has_setting('include_location_text') && json_decode(setting('include_location_text'))) {
+            echo "<Pause length=\"1\"/>";
+            echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results[2] . "</Say>";
+        }
+
         echo "<Pause length=\"1\"/>";
-        echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $location_line . "</Say>";
+        echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results[3] . "</Say>";
 
         if (isset($_REQUEST["Debug"])) {
             echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . json_encode($filtered_list[$i]) . "</Say>";

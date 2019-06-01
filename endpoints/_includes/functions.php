@@ -1181,7 +1181,7 @@ function getVolunteerInfo($volunteers)
                 $volunteerInfo->weekday    = $GLOBALS['days_of_the_week'][ $vsi->day ];
                 $volunteerInfo->sequence   = $v;
                 $volunteerInfo->contact    = $volunteer->volunteer_phone_number;
-                $volunteerInfo->color      = "#" . getNameHashColorCode($volunteerInfo->title);
+                $volunteerInfo->color      = "#" . getNameHashColorCode(strval($v+1) . "-" . $volunteerInfo->title);
                 $volunteerInfo->gender     = isset($volunteer->volunteer_gender) ? $volunteer->volunteer_gender : VolunteerGender::UNSPECIFIED;
                 $volunteerInfo->shadow     = isset($volunteer->volunteer_shadow) ? $volunteer->volunteer_shadow : VolunteerShadowOption::UNSPECIFIED;
                 $volunteerInfo->responder  = isset($volunteer->volunteer_responder) ? $volunteer->volunteer_responder : VolunteerResponderOption::UNSPECIFIED;
