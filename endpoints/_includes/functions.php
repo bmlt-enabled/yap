@@ -105,6 +105,7 @@ class VolunteerInfo
     public $shadow = VolunteerShadowOption::UNSPECIFIED;
     public $responder = VolunteerResponderOption::UNSPECIFIED;
     public $type = VolunteerType::PHONE;
+    public $language;
 }
 
 class Volunteer
@@ -1171,7 +1172,7 @@ function getVolunteerInfo($volunteers)
             foreach ($volunteerShiftSchedule as $vsi) {
                 $volunteerInfo             = new VolunteerInfo();
                 $volunteerInfo->type       = isset($vsi->type) ? $vsi->type : $volunteerInfo->type;
-                $volunteerInfo->title      = strval($v+1) . "-" . $volunteer->volunteer_name . " (" . $volunteerInfo->type . ")"
+                $volunteerInfo->title      = $volunteer->volunteer_name . " (" . $volunteerInfo->type . ")"
                     . (isset($volunteer->volunteer_gender) ? " " . VolunteerGender::getGenderById($volunteer->volunteer_gender) : "")
                     . (isset($volunteer->volunteer_language) ? " " . json_encode($volunteer->volunteer_language) : "");
                 $volunteerInfo->time_zone  = $vsi->tz;
