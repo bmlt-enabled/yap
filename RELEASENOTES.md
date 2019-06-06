@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.2.0 (UNRELEASED)
+### 3.2.0 (June 5, 2019)
 * User name is now cached and stored in session. [#279]
 * Call records are displayed in your local browser timezone now [#282]
 * Better handling of abbreviations with some textual cues [#219]
