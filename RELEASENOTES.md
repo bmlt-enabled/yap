@@ -24,7 +24,7 @@
 * Fix for responder not working on some servers where the session cookie might be treated differently.
 
 ### 3.0.3 (April 8, 2019)
-* Fix for overriden Twilio credentials that weren't being utilized.
+* Fix for overridden Twilio credentials that were not being utilized.
 * Renamed "Add" to "Create" for creating new groups.
 * Fix for Twilio warnings messaging landlines. Added mobile_check option. [#171]
 
