@@ -1,9 +1,10 @@
 <?php
 require_once 'header.php';
-
 if ($_SERVER['REQUEST_URI'] == "/admin") {
     header('Location: /admin/', null, 301);
 };
+
+$state = UpgradeAdvisor::getState();
 ?>
 <div id="signin" class="container">
     <form class="form-signin" method="POST" action="auth_login.php">
@@ -28,6 +29,9 @@ if ($_SERVER['REQUEST_URI'] == "/admin") {
             }
             ?>
         </select>
+        <div id="version-info">
+            <?php echo "v" . $state['version'] ?>
+        </div>
     </form>
 </div>
 <?php

@@ -195,3 +195,9 @@ div#signin {
     padding-bottom: 10px;
     color: red;
 }
+
+#version-info {
+    padding-top: 10px;
+    margin: 0;
+    text-align: center;
+}
