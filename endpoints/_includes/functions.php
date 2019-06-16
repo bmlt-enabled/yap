@@ -6,7 +6,7 @@ session_start();
 require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
 require_once 'migrations.php';
 require_once 'logging.php';
-static $version  = "3.2.0";
+static $version  = "3.3.0-beta";
 class VolunteerLanguage
 {
     const UNSPECIFIED = 0;
