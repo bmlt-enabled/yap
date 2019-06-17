@@ -349,7 +349,7 @@ class UpgradeAdvisor
         return isset($GLOBALS[$setting]) && strlen($GLOBALS[$setting]) > 0;
     }
 
-    private static function getState($status, $message)
+    public static function getState($status = null, $message = null)
     {
         try {
             $build = file_get_contents("../build.txt", false);
