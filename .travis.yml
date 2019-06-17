@@ -15,7 +15,7 @@ jobs:
       - pip install --user awscli
       - export PATH=$PATH:$HOME/.local/bin
       install:
-      - composer install --no-dev
+      - composer install
       - yarn install
       script:
       - export ARTIFACT_FILENAME=yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}.zip

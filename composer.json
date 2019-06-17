@@ -1,10 +1,11 @@
 {
     "require": {
         "twilio/sdk": "^5.29",
-        "phpmailer/phpmailer": "^6.0",
-        "nvanheuverzwijn/monolog-logdna": "^2.1"
+        "phpmailer/phpmailer": "^6.0"
     },
     "require-dev": {
-            "squizlabs/php_codesniffer": "3.*"
+        "squizlabs/php_codesniffer": "3.*",
+        "nvanheuverzwijn/monolog-logdna": "^2.1",
+        "pusher/pusher-php-server": "^3.3"
     }
 }
