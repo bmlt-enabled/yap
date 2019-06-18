@@ -25,6 +25,7 @@ jobs:
       - aws s3 cp ${ARTIFACT_FILENAME} s3://archives.bmlt.app/yap/
     - stage: stable
       install:
+      - rm -rf vendor/
       - composer install --no-dev
       - yarn install
       before_deploy:
@@ -43,7 +44,7 @@ jobs:
 stages:
   - lint
   - name: unstable
-    if: tag IS blank AND branch = master AND type = push
+    if: branch = master AND type = push
   - name: stable
     if: tag IS present AND type = push
 notifications:

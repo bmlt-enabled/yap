@@ -1,26 +1,30 @@
 # Release Notes
 
+### 3.3.0 (June 18, 2019)
+* Logo header on the login screen and version number display
+* Packaging improvements to reduce the size of the deployment (always packaging mainline deps).
+
 ### 3.2.0 (June 5, 2019)
 * User name is now cached and stored in session. [#279]
-* Call records are displayed in your local browser timezone now [#282]
-* Better handling of abbreviations with some textual cues [#219]
-* Database user authentication for global administrators 
+* Call records are displayed in your local browser timezone now. [#282]
+* Better handling of abbreviations with some textual cues. [#219]
+* Database user authentication for global administrators.
 
 ### 3.1.1 (April 24, 2018)
 * Italian translation
-* Fix for bad XML encoding for Spanish JFT [#273]
-* Fix for non-working SMS volunteer routing [#274]
+* Fix for bad XML encoding for Spanish JFT. [#273]
+* Fix for non-working SMS volunteer routing. [#274]
 * Fix for an edge case to render schedule ordering correctly [#162]
 * Data point added to upgrade-advisor for getting the git hash for each build for QA and Beta users.
 * Fix for duration not displaying properly on volunteer records. [#275]
 * Fix for missing word in language files. [#276]
 
 ### 3.1.0 (April 18, 2019)
-* Support for different voices for each languages [#260]
-* Metrics drilldown by service body [#246]
-* Minor tweaks to es-US translation [#262]
-* Fix for prompts not being utilized from service body config overrides [#268]
-* Fix for mobile check caching (it was being called once for each lookup)
+* Support for different voices for each languages. [#260]
+* Metrics drilldown by service body. [#246]
+* Minor tweaks to es-US translation. [#262]
+* Fix for prompts not being utilized from service body config overrides. [#268]
+* Fix for mobile check caching (it was being called once for each lookup).
 * Fix for responder not working on some servers where the session cookie might be treated differently.
 
 ### 3.0.3 (April 8, 2019)

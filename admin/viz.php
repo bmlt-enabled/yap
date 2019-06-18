@@ -57,7 +57,7 @@
         startingPos = { lat: 0, lng: 0 };
         map = new google.maps.Map(document.getElementById('map'), {
             center: startingPos,
-            zoom: 8,
+            zoom: 10,
         });
         infoWindow = new google.maps.InfoWindow;
         getcoder = new google.maps.Geocoder;
