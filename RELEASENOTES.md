@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.3.1 (June 21, 2019)
+* Disable speech recognition menus by default
+
 ### 3.3.0 (June 18, 2019)
 * Logo header on the login screen and version number display
 * Packaging improvements to reduce the size of the deployment (always packaging mainline deps).
