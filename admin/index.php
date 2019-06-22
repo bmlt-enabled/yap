@@ -8,6 +8,8 @@ $state = UpgradeAdvisor::getState();
 ?>
 <div id="signin" class="container">
     <form class="form-signin" method="POST" action="auth_login.php">
+        <h2 class="form-signin-heading">Yap</h2>
+        <div id="admin_title"><?php echo isset($GLOBALS['admin_title']) ? $GLOBALS['admin_title'] : ""; ?></div>
         <div id="yap-logo">
             <img src="img/yap_logo.png" alt="Yap" width="310" height="100">
         </div>

@@ -4,6 +4,10 @@ div#signin {
     padding-bottom: 40px;
 }
 
+.admin-title {
+	text-align: center;
+	padding-top: 10px;
+}
 .form-signin {
     max-width: 330px;
     padding: 15px;
