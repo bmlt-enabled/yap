@@ -30,7 +30,7 @@ if ($searchType == "1") {
     }
 
     $searchDescription = word('meetings');
-} else if ($searchType == "3") { ?>
+} else if ($searchType == "3" && has_setting('jft_option') && json_decode(setting('jft_option'))) { ?>
         <Response>
         <Redirect method="GET">fetch-jft.php</Redirect>
         </Response>

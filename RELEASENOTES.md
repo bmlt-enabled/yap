@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.3.2 (UNRELEASED)
+* Fix for JFT Option not disabling JFT text or voice. (#287)
+
 ### 3.3.1 (June 21, 2019)
 * Disable speech recognition menus by default
 
