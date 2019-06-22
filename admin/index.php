@@ -1,14 +1,18 @@
 <?php
 require_once 'header.php';
-
 if ($_SERVER['REQUEST_URI'] == "/admin") {
     header('Location: /admin/', null, 301);
 };
+
+$state = UpgradeAdvisor::getState();
 ?>
 <div id="signin" class="container">
     <form class="form-signin" method="POST" action="auth_login.php">
         <h2 class="form-signin-heading">Yap</h2>
         <div id="admin_title"><?php echo isset($GLOBALS['admin_title']) ? $GLOBALS['admin_title'] : ""; ?></div>
+        <div id="yap-logo">
+            <img src="img/yap_logo.png" alt="Yap" width="310" height="100">
+        </div>
         <div id="no-auth-message">
             <?php echo isset($_REQUEST['auth']) ? $GLOBALS['not_authorized'] : "" ?>
             <?php echo isset($_REQUEST['expired']) ? $GLOBALS['session_expired'] : "" ?>
@@ -27,6 +31,9 @@ if ($_SERVER['REQUEST_URI'] == "/admin") {
             }
             ?>
         </select>
+        <div id="version-info">
+            <?php echo "v" . $state['version'] ?>
+        </div>
     </form>
 </div>
 <?php

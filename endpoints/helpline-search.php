@@ -16,6 +16,21 @@ if (!isset($_REQUEST['ForceNumber'])) {
             if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) {
                 throw new Exception("Couldn't find an address for that location.");
             }
+
+            if (isset($GLOBALS['pusher_auth_key']) && isset($GLOBALS['pusher_secret']) && isset($GLOBALS['pusher_app_id'])) {
+                require __DIR__ . '/../vendor/autoload.php';
+                $pusher = new Pusher\Pusher(
+                    $GLOBALS['pusher_auth_key'],
+                    $GLOBALS['pusher_secret'],
+                    $GLOBALS['pusher_app_id'],
+                    array(
+                        'cluster' => 'us2',
+                        'useTLS' => true
+                    )
+                );
+                $pusher->trigger('yap-viz', 'helpline-search', $coordinates);
+            }
+
             $service_body_obj = getServiceBodyCoverage($coordinates->latitude, $coordinates->longitude);
         } catch (Exception $e) { ?>
                 <Redirect method="GET">input-method.php?Digits=<?php echo urlencode($_REQUEST["SearchType"]) . "&amp;Retry=1&amp;RetryMessage=" . urlencode($e->getMessage()); ?></Redirect>

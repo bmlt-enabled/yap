@@ -120,7 +120,7 @@ function schedulePage() {
             for (eventSource of calendar.getEventSources()) {
                 eventSource.remove();
             }
-            calendar.addEventSource('../helpline-schedule.php?service_body_id=' + $('select#service_body_id').val());
+            calendar.addEventSource('helpline-schedule.php?service_body_id=' + $('select#service_body_id').val());
         }
     })
 }

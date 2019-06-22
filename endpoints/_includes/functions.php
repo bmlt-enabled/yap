@@ -6,7 +6,7 @@ session_start();
 require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
 require_once 'migrations.php';
 require_once 'logging.php';
-static $version  = "3.2.0";
+static $version  = "3.3.1";
 class VolunteerLanguage
 {
     const UNSPECIFIED = 0;
@@ -46,7 +46,7 @@ static $settings_whitelist = [
     'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_helpline_keyword' => ['description' => '', 'default' => 'talk', 'overridable' => true, 'hidden' => false],
     'sms_summary_page' => ['description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
-    'speech_gathering' => [ 'description' => '', 'default' => true, 'overridable' => true, 'hidden' => false],
+    'speech_gathering' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'title' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'tomato_helpline_routing' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
@@ -349,7 +349,7 @@ class UpgradeAdvisor
         return isset($GLOBALS[$setting]) && strlen($GLOBALS[$setting]) > 0;
     }
 
-    private static function getState($status, $message)
+    public static function getState($status = null, $message = null)
     {
         try {
             $build = file_get_contents("../build.txt", false);
