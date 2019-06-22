@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_URI'] == "/admin") {
 <div id="signin" class="container">
     <form class="form-signin" method="POST" action="auth_login.php">
         <h2 class="form-signin-heading">Yap</h2>
-        <div id="admin_title"><?php echo $admin_title; ?></div>
+        <div id="admin_title"><?php echo isset($GLOBALS['admin_title']) ? $GLOBALS['admin_title'] : ""; ?></div>
         <div id="no-auth-message">
             <?php echo isset($_REQUEST['auth']) ? $GLOBALS['not_authorized'] : "" ?>
             <?php echo isset($_REQUEST['expired']) ? $GLOBALS['session_expired'] : "" ?>
