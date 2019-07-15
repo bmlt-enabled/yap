@@ -4,6 +4,7 @@
 * Allow for customization of the login screen. 
 * Toll number bias [#291]
 * Fix for JFT Option not disabling JFT text or voice. [#287]
+* Query performance improvements [#284]
 
 ### 3.3.1 (June 21, 2019)
 * Disable speech recognition menus by default
