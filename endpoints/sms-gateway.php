@@ -25,7 +25,7 @@ if (str_exists(strtoupper($address), strtoupper($sms_helpline_keyword))) {
     }
 } else {
     ?>
-    <Redirect method="GET">meeting-search.php?SearchType=1&amp;Latitude=<?php echo strval($coordinates->latitude) ?>&amp;Longitude=<?php echo strval($coordinates->longitude) ?></Redirect>
+    <Redirect method="GET">meeting-search.php?SearchType=<?php echo getDigitForSearchType(SearchType::VOLUNTEERS)?>&amp;Latitude=<?php echo strval($coordinates->latitude) ?>&amp;Longitude=<?php echo strval($coordinates->longitude) ?></Redirect>
     <?php
 }
 ?>

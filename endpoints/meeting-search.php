@@ -140,6 +140,9 @@ if (has_setting('sms_summary_page') && json_decode(setting('sms_summary_page')))
 if (!isset($_REQUEST["SmsSid"]) && count($filtered_list) > 0) {
     echo "<Pause length=\"2\"/>";
     if (count($sms_messages) > 0) { ?>
+            <Gather numDigits="1" timeout="10" speechTimeout="auto" input="<?php echo getInputType() ?>"
+                    action="post-call-action.php?Payload=<?php echo urlencode(json_encode($sms_messages)) ?>"
+                    method="GET">
             <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
                 <?php echo getPressWord() ?> <?php echo word("one") ?> <?php echo word('if_you_would_like_these_results_texted_to_you') ?>
             </Say>
@@ -149,14 +152,13 @@ if (!isset($_REQUEST["SmsSid"]) && count($filtered_list) > 0) {
                     <?php echo getPressWord() ?> <?php echo word("three") ?> <?php echo word('if_you_would_like_to_do_both') ?>
                 </Say>
             <?php } ?>
-            <Gather numDigits="1" timeout="10" speechTimeout="auto" input="<?php echo getInputType() ?>"
-                    action="post-call-action.php?Payload=<?php echo urlencode(json_encode($sms_messages)) ?>"
-                    method="GET"/>
+            </Gather>
     <?php } elseif (json_decode(setting('infinite_searching'))) { ?>
+        <Gather numDigits="1" timeout="10" speechTimeout="auto" input="<?php echo getInputType() ?>" action="post-call-action.php" method="GET">
             <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
                 <?php echo getPressWord()?> <?php echo word("two")?> <?php echo word('if_you_would_like_to_search_again') ?>.
             </Say>
-            <Gather numDigits="1" timeout="10" speechTimeout="auto" input="<?php echo getInputType() ?>" action="post-call-action.php" method="GET"/>
+        </Gather>
     <?php } ?>
 
     <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">

@@ -2,15 +2,16 @@
     require_once '_includes/functions.php';
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-    $searchType = getIvrResponse("index.php", "", ["1", "2", "3"]);
+    getIvrResponse('index.php', null, array_keys(setting('digit_map_search_type')), array(), 'Digits');
+    $searchType = getSearchType('Digits');
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
 
 
-if ($searchType == "2" || $searchType == "3") {
+if ($searchType == SearchType::MEETINGS || $searchType == SearchType::JFT) {
     writeMetric(["searchType" => $searchType], setting('service_body_id'));
 }
 
-if ($searchType == "1") {
+if ($searchType == SearchType::VOLUNTEERS) {
     if (isset($_SESSION['override_service_body_id'])) { ?>
             <Response>
                 <Redirect method="GET">helpline-search.php?Called=<?php echo $_REQUEST["Called"] . getSessionLink(true)?></Redirect>
@@ -20,7 +21,7 @@ if ($searchType == "1") {
     }
 
     $searchDescription = word('someone_to_talk_to');
-} else if ($searchType == "2") {
+} else if ($searchType == SearchType::MEETINGS) {
     if (!strpos(setting('custom_query'), '{LATITUDE}') || !strpos(setting('custom_query'), '{LONGITUDE}')) { ?>
             <Response>
                 <Redirect method="GET">meeting-search.php?Called=<?php echo $_REQUEST["Called"]; ?></Redirect>
@@ -30,7 +31,7 @@ if ($searchType == "1") {
     }
 
     $searchDescription = word('meetings');
-} else if ($searchType == "3" && has_setting('jft_option') && json_decode(setting('jft_option'))) { ?>
+} else if ($searchType == SearchType::JFT && has_setting('jft_option') && json_decode(setting('jft_option'))) { ?>
         <Response>
         <Redirect method="GET">fetch-jft.php</Redirect>
         </Response>
@@ -40,7 +41,7 @@ if ($searchType == "1") {
 }
 ?>
 <Response>
-    <Gather language="<?php echo setting('gather_language') ?>" input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=<?php echo $searchType ?>" method="GET">
+    <Gather language="<?php echo setting('gather_language') ?>" input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=<?php echo $_REQUEST['Digits'] ?>" method="GET">
         <?php
         if ($playTitle == "1") { ?>
             <Say voice="<?php echo voice() ?>" language="<?php echo setting("language")?>"><?php echo setting("title")?></Say>
@@ -50,7 +51,7 @@ if ($searchType == "1") {
             <Say voice="<?php echo voice() ?>" language="<?php echo setting("language")?>"><?php echo $retry_message?></Say>
             <Pause length="1"/>
         <?php } ?>
-       
+
         <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
             <?php echo getPressWord() . " " . word('one') . " " . word('to_search_for') . " " . $searchDescription . " " . word('by') . " " . word('city_or_county') ?>
         </Say>
@@ -61,7 +62,7 @@ if ($searchType == "1") {
         <?php }?>
 
         <?php
-        if ($searchType == "2") {
+        if ($searchType == SearchType::MEETINGS) {
             if (has_setting('jft_option') && json_decode(setting('jft_option'))) { ?>
                     <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
                         <?php echo getPressWord() . " " . word('three') . " " . word('to_listen_to_the_just_for_today') ?>

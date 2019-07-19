@@ -40,6 +40,7 @@ static $settings_whitelist = [
     'postal_code_length' => [ 'description' => '' , 'default' => 5, 'overridable' => true, 'hidden' => false],
     'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'result_count_max' => [ 'description' => '' , 'default' => 5, 'overridable' => true, 'hidden' => false],
+    'digit_map_search_type' => [ 'description' => '', 'default' => ['1' => SearchType::VOLUNTEERS, '2' => SearchType::MEETINGS, '3' => SearchType::JFT], 'overridable' => true, 'hidden' => false],
     'service_body_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'service_body_config_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
@@ -90,6 +91,13 @@ $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?
 static $date_calculations_map = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 static $numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 static $tomato_url = "https://tomato.na-bmlt.org/main_server";
+
+class SearchType
+{
+    const VOLUNTEERS = 1;
+    const MEETINGS = 2;
+    const JFT = 3;
+}
 
 class VolunteerInfo
 {
@@ -570,6 +578,25 @@ function setting_source($name)
         return SettingSource::DEFAULT_SETTING;
     } else {
         return "NOT SET";
+    }
+}
+
+function getSearchType($field = 'SearchType') {
+    return setting('digit_map_search_type')[intval($_REQUEST[$field])];
+}
+
+function getSearchTypeSequence() {
+    $digitMapTypeSearch = setting('digit_map_search_type');
+    ksort($digitMapTypeSearch);
+    return $digitMapTypeSearch;
+}
+
+function getDigitForSearchType($searchType) {
+    $searchTypeSequence = getSearchTypeSequence();
+    foreach ($searchTypeSequence as $digit => $type) {
+        if ($type == $searchType) {
+            return $digit;
+        }
     }
 }
 
@@ -1539,12 +1566,12 @@ function get_jft($sms = false)
     }
 }
 
-function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_exacts = array(), $expected_likes = array())
+function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_exacts = array(), $expected_likes = array(), $field = 'Digits')
 {
     $response = "0";
 
-    if (isset($_REQUEST['Digits'])) {
-        $response = $_REQUEST['Digits'];
+    if (isset($_REQUEST[$field])) {
+        $response = $_REQUEST[$field];
     } elseif (isset($_REQUEST['SpeechResult'])) {
         $response = $_REQUEST['SpeechResult'];
     }
@@ -1568,7 +1595,7 @@ function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_
         if (!$found_at_least_once) {
             $qs = $prior_digit != null ? "?Digits=" . $prior_digit : "";
 
-            echo "<Response><Say voice=\"" . $GLOBALS['voice'] . "\" language=\"" . $GLOBALS['language'] . "\">" . word('you_might_have_invalid_entry') . "</Say><Redirect>" . $redirected_from . $qs . "</Redirect></Response>";
+            echo "<Response><Say voice=\"" . voice() . "\" language=\"" . $GLOBALS['language'] . "\">" . word('you_might_have_invalid_entry') . "</Say><Redirect>" . $redirected_from . $qs . "</Redirect></Response>";
             exit();
         }
     }
