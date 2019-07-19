@@ -16,7 +16,7 @@ if (($digits == 1 || $digits == 3) && count($sms_messages) > 0) {
 }
 
 if ($digits == 2 || $digits == 3) {
-    echo "<Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
+    echo "<Redirect method=\"GET\">index.php</Redirect>";
 } else {
     echo "<Say voice=\"" . voice() . "\" language=\"" . setting("language") . "\">" . word('thank_you_for_calling_goodbye') . "</Say>";
 }

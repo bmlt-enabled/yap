@@ -22,7 +22,7 @@ if (isset($_REQUEST["override_service_body_id"])) {
     getServiceBodyCallHandling($_REQUEST["override_service_body_id"]);
 }
 
-    $promptset_name = str_replace("-", "_", getWordLanguage()) . "_greeting";
+$promptset_name = str_replace("-", "_", getWordLanguage()) . "_greeting";
 ?>
 <Response>
     <Gather language="<?php echo setting('gather_language') ?>" input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">
@@ -34,19 +34,30 @@ if (isset($_REQUEST["override_service_body_id"])) {
                 <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
                     <?php echo setting('title') ?>
                 </Say>
-            <?php } ?>
-            <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
-                <?php echo getPressWord() . " " . word('one') . " " . word('to_find') . " " . word('someone_to_talk_to') ?>
-            </Say>
-            <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
-                <?php echo getPressWord() . " " . word('two') . " " . word('to_search_for') . " " . word('meetings') ?>
-            </Say>
-            <?php
-            if (has_setting('jft_option') && json_decode(setting('jft_option'))) { ?>
-                <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
-                    <?php echo getPressWord() . " " . word('three') . " " . word('to_listen_to_the_just_for_today') ?>
-                </Say>
             <?php }
+
+            $searchTypeSequence = getSearchTypeSequence();
+            foreach ($searchTypeSequence as $digit => $type) {
+                if ($type == SearchType::VOLUNTEERS) { ?>
+                    <Say voice = "<?php echo voice() ?>" language = "<?php echo setting('language') ?>" >
+                        <?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_find') . " " . word('someone_to_talk_to') ?>
+                    </Say>
+                <?php }
+
+                if ($type == SearchType::MEETINGS) { ?>
+                    <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
+                        <?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . word('meetings') ?>
+                    </Say>
+                <?php }
+
+                if ($type == SearchType::JFT) {
+                    if (has_setting('jft_option') && json_decode(setting('jft_option'))) { ?>
+                        <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
+                            <?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_listen_to_the_just_for_today') ?>
+                        </Say>
+                    <?php }
+                }
+            }
         }?>
     </Gather>
 </Response>

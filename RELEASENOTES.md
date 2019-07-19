@@ -1,6 +1,7 @@
 # Release Notes
 
 ### 3.4.0 (UNRELEASED)
+* Remappable digits for search types [#292]
 * Allow for customization of the login screen. 
 * Toll number bias [#291]
 * Fix for JFT Option not disabling JFT text or voice. [#287]
