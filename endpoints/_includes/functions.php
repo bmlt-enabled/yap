@@ -41,6 +41,7 @@ static $settings_whitelist = [
     'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'result_count_max' => [ 'description' => '' , 'default' => 5, 'overridable' => true, 'hidden' => false],
     'digit_map_search_type' => [ 'description' => '', 'default' => ['1' => SearchType::VOLUNTEERS, '2' => SearchType::MEETINGS, '3' => SearchType::JFT], 'overridable' => true, 'hidden' => false],
+    'digit_map_location_search_method' => [ 'description' => '', 'default' => ['1' => LocationSearchMethod::VOICE, '2' => LocationSearchMethod::DTMF, '3' => SearchType::JFT], 'overridable' => true, 'hidden' => false],
     'service_body_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'service_body_config_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
@@ -97,6 +98,13 @@ class SearchType
     const VOLUNTEERS = 1;
     const MEETINGS = 2;
     const JFT = 3;
+}
+
+class LocationSearchMethod
+{
+    const NONE = -1;
+    const VOICE = 4;
+    const DTMF = 5;
 }
 
 class VolunteerInfo
@@ -581,37 +589,41 @@ function setting_source($name)
     }
 }
 
-function getDigitMapSearchType() {
-    $digitMapTypeSearch = setting('digit_map_search_type');
+function getDigitMap($setting) {
+    $digitMapSetting = setting($setting);
     if (json_decode(setting('jft_option')) == false) {
-        if (($key = array_search(SearchType::JFT, $digitMapTypeSearch)) !== false) {
-            unset($digitMapTypeSearch[$key]);
+        if (($key = array_search(SearchType::JFT, $digitMapSetting)) !== false) {
+            unset($digitMapSetting[$key]);
+        }
+    } else if (json_decode(setting('disable_postal_code_gather'))) {
+        if (($key = array_search(LocationSearchMethod::DTMF, $digitMapSetting)) !== false) {
+            unset($digitMapSetting[$key]);
         }
     }
 
-    return $digitMapTypeSearch;
+    return $digitMapSetting;
 }
 
-function getSearchType($field = 'SearchType') {
-    $digitMapTypeSearch = getDigitMapSearchType();
+function getDigitResponse($setting, $field = 'SearchType') {
+    $digitMap = getDigitMap($setting);
     $digit = intval($_REQUEST[$field]);
-    if (array_key_exists($digit, $digitMapTypeSearch)) {
-        return $digitMapTypeSearch[$digit];
+    if (array_key_exists($digit, $digitMap)) {
+        return $digitMap[$digit];
     } else {
-        return SearchType::NONE;
+        return null;
     }
 }
 
-function getSearchTypeSequence() {
-    $digitMapTypeSearch = getDigitMapSearchType();
-    ksort($digitMapTypeSearch);
-    return $digitMapTypeSearch;
+function getDigitMapSequence($setting) {
+    $digitMap = getDigitMap($setting);
+    ksort($digitMap);
+    return $digitMap;
 }
 
-function getDigitForSearchType($searchType) {
-    $searchTypeSequence = getSearchTypeSequence();
+function getDigitForAction($setting, $action) {
+    $searchTypeSequence = getDigitMapSequence($setting);
     foreach ($searchTypeSequence as $digit => $type) {
-        if ($type == $searchType) {
+        if ($type == $action) {
             return $digit;
         }
     }

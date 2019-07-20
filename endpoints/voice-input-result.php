@@ -5,7 +5,7 @@
     
     $province = has_setting('province_lookup') && json_decode(setting('province_lookup')) ? $_REQUEST['Province'] : getProvince();
     $speechResult = $_REQUEST['SpeechResult'];
-    $searchType = getSearchType('SearchType');
+    $searchType = getDigitResponse('digit_map_search_type', 'SearchType');
     
 if ($searchType == SearchType::VOLUNTEERS) {
     $action = "helpline-search.php";

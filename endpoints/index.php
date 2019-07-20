@@ -36,7 +36,7 @@ $promptset_name = str_replace("-", "_", getWordLanguage()) . "_greeting";
                 </Say>
             <?php }
 
-            $searchTypeSequence = getSearchTypeSequence();
+            $searchTypeSequence = getDigitMapSequence('digit_map_search_type');
             foreach ($searchTypeSequence as $digit => $type) {
                 if ($type == SearchType::VOLUNTEERS) { ?>
                     <Say voice = "<?php echo voice() ?>" language = "<?php echo setting('language') ?>" >

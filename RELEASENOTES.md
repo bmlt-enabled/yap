@@ -1,17 +1,18 @@
 # Release Notes
 
 ### 3.4.0 (UNRELEASED)
-* Remappable digits for search types [#292]
+* Remappable digits for search types. [#292]
+* Remappable digits for location search method.
 * Allow for customization of the login screen. 
-* Toll number bias [#291]
+* Toll number bias. [#291]
 * Fix for JFT Option not disabling JFT text or voice. [#287]
-* Query performance improvements [#284]
+* Query performance improvements. [#284]
 
 ### 3.3.1 (June 21, 2019)
-* Disable speech recognition menus by default
+* Disable speech recognition menus by default.
 
 ### 3.3.0 (June 18, 2019)
-* Logo header on the login screen and version number display
+* Logo header on the login screen and version number display.
 * Packaging improvements to reduce the size of the deployment (always packaging mainline deps).
 
 ### 3.2.0 (June 5, 2019)

@@ -2,8 +2,8 @@
     require_once '_includes/functions.php';
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-    getIvrResponse('index.php', null, getSearchTypeSequence(), array(), 'Digits');
-    $searchType = getSearchType('Digits');
+    getIvrResponse('index.php', null, getDigitMapSequence('digit_map_search_type'), array(), 'Digits');
+    $searchType = getDigitResponse('digit_map_search_type', 'Digits');
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
 
 
@@ -50,25 +50,27 @@ if ($searchType == SearchType::VOLUNTEERS) {
             $retry_message = isset($_REQUEST["RetryMessage"]) ? $_REQUEST["RetryMessage"] : word("could_not_find_location_please_retry_your_entry");?>
             <Say voice="<?php echo voice() ?>" language="<?php echo setting("language")?>"><?php echo $retry_message?></Say>
             <Pause length="1"/>
-        <?php } ?>
+        <?php }
 
-        <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
-            <?php echo getPressWord() . " " . word('one') . " " . word('to_search_for') . " " . $searchDescription . " " . word('by') . " " . word('city_or_county') ?>
-        </Say>
-        <?php if (!has_setting("disable_postal_code_gather") || !setting("disable_postal_code_gather")) {?>
-            <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
-                <?php echo word('press') . " "  . word('two') . " " . word('to_search_for') . " " . $searchDescription . " " . word('by') . " " . word('zip_code') ?>
-            </Say>
-        <?php }?>
-
-        <?php
-        if ($searchType == SearchType::MEETINGS) {
-            if (json_decode(setting('jft_option'))) { ?>
-                    <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
-                        <?php echo getPressWord() . " " . word('three') . " " . word('to_listen_to_the_just_for_today') ?>
+        $locationSearchMethodSequence = getDigitMapSequence('digit_map_location_search_method');
+        foreach ($locationSearchMethodSequence as $digit => $method) {
+            if ($method == LocationSearchMethod::VOICE) { ?>
+                <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
+                    <?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . $searchDescription . " " . word('by') . " " . word('city_or_county') ?>
                 </Say>
             <?php }
-        }
-        ?>
+
+            if ($method == LocationSearchMethod::DTMF) { ?>
+                 <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
+                    <?php echo word('press') . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . $searchDescription . " " . word('by') . " " . word('zip_code') ?>
+                </Say>
+            <?php }
+
+            if ($method == SearchType::JFT && $searchType == SearchType::MEETINGS) { ?>
+                <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
+                    <?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_listen_to_the_just_for_today') ?>
+                </Say>
+            <?php }
+        } ?>
     </Gather>
 </Response>

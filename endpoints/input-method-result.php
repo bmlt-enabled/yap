@@ -2,17 +2,19 @@
     require_once '_includes/functions.php';
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-    $searchType = getSearchType('SearchType');
-    $inputMethod = getIvrResponse("input-method.php", $_REQUEST['Digits'], ["1", "2", "3"]);
+    getIvrResponse("index.php", null, getDigitMapSequence('digit_map_location_search_method'));
+    $locationSearchMethod = getDigitResponse('digit_map_location_search_method', 'Digits');
 
-if ($inputMethod == "3" && json_decode(setting('jft_option'))) {
-    ?>
+    if ($locationSearchMethod == SearchType::JFT) {
+        ?>
         <Response>
             <Redirect method="GET">fetch-jft.php</Redirect>
         </Response>
-    <?php
-    exit();
-}
+        <?php
+        exit();
+    }
+    $searchType = getDigitResponse('digit_map_search_type', 'SearchType');
+
 if (has_setting('province_lookup') && json_decode(setting('province_lookup'))) {
     $action = "province-voice-input.php";
 } else {
@@ -21,13 +23,13 @@ if (has_setting('province_lookup') && json_decode(setting('province_lookup'))) {
 ?>
 <Response>
 <?php
-if ($inputMethod == "1") { // city or county
+if ($locationSearchMethod == LocationSearchMethod::VOICE) { // voice based
     ?>
-    <Redirect method="GET"><?php echo $action; ?>?SearchType=<?php echo $_REQUEST['SearchType']; ?>&amp;InputMethod=<?php echo $inputMethod; ?></Redirect>
+    <Redirect method="GET"><?php echo $action; ?>?SearchType=<?php echo $_REQUEST['SearchType']; ?>&amp;InputMethod=<?php echo LocationSearchMethod::VOICE ?></Redirect>
     <?php
-} else { // zip
+} else if ($locationSearchMethod == LocationSearchMethod::DTMF) { // dtmf based
     ?>
-    <Redirect method="GET">zip-input.php?SearchType=<?php echo $_REQUEST['SearchType']; ?>&amp;InputMethod=<?php echo $inputMethod; ?></Redirect>
+    <Redirect method="GET">zip-input.php?SearchType=<?php echo $_REQUEST['SearchType']; ?>&amp;InputMethod=<?php echo LocationSearchMethod::DTMF ?></Redirect>
     <?php
 }
 ?>

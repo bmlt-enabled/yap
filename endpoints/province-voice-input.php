@@ -3,7 +3,7 @@
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     
-    $searchType = getSearchType('SearchType');
+    $searchType = getDigitResponse('digit_map_search_type', 'SearchType');
 ?>
 <Response>
     <Gather language="<?php echo setting('gather_language') ?>" hints="<?php echo setting('gather_hints') ?>" input="speech" timeout="5" speechTimeout="auto" action="city-or-county-voice-input.php?SearchType=<?php echo $_REQUEST['SearchType']; ?>" method="GET">
