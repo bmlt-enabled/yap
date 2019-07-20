@@ -5,7 +5,7 @@
     $searchType = getSearchType('SearchType');
     $inputMethod = getIvrResponse("input-method.php", $_REQUEST['Digits'], ["1", "2", "3"]);
 
-if ($inputMethod == "3" && has_setting('jft_option') && json_decode(setting('jft_option'))) {
+if ($inputMethod == "3" && json_decode(setting('jft_option'))) {
     ?>
         <Response>
             <Redirect method="GET">fetch-jft.php</Redirect>

@@ -2,7 +2,7 @@
     require_once '_includes/functions.php';
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-    getIvrResponse('index.php', null, array_keys(setting('digit_map_search_type')), array(), 'Digits');
+    getIvrResponse('index.php', null, getSearchTypeSequence(), array(), 'Digits');
     $searchType = getSearchType('Digits');
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
 
@@ -31,7 +31,7 @@ if ($searchType == SearchType::VOLUNTEERS) {
     }
 
     $searchDescription = word('meetings');
-} else if ($searchType == SearchType::JFT && has_setting('jft_option') && json_decode(setting('jft_option'))) { ?>
+} else if ($searchType == SearchType::JFT) { ?>
         <Response>
         <Redirect method="GET">fetch-jft.php</Redirect>
         </Response>
@@ -63,7 +63,7 @@ if ($searchType == SearchType::VOLUNTEERS) {
 
         <?php
         if ($searchType == SearchType::MEETINGS) {
-            if (has_setting('jft_option') && json_decode(setting('jft_option'))) { ?>
+            if (json_decode(setting('jft_option'))) { ?>
                     <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
                         <?php echo getPressWord() . " " . word('three') . " " . word('to_listen_to_the_just_for_today') ?>
                 </Say>

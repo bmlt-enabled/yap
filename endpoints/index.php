@@ -50,13 +50,11 @@ $promptset_name = str_replace("-", "_", getWordLanguage()) . "_greeting";
                     </Say>
                 <?php }
 
-                if ($type == SearchType::JFT) {
-                    if (has_setting('jft_option') && json_decode(setting('jft_option'))) { ?>
-                        <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
-                            <?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_listen_to_the_just_for_today') ?>
-                        </Say>
-                    <?php }
-                }
+                if ($type == SearchType::JFT) {?>
+                    <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
+                        <?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_listen_to_the_just_for_today') ?>
+                    </Say>
+                <?php }
             }
         }?>
     </Gather>

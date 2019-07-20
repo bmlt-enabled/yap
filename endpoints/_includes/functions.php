@@ -83,7 +83,6 @@ checkBlacklist();
 if (has_setting('config')) {
     include_once __DIR__ . '/../../config_'.setting('config').'.php';
 }
-
 include_once __DIR__ . '/../../lang/' .getWordLanguage().'.php';
 
 $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
@@ -94,6 +93,7 @@ static $tomato_url = "https://tomato.na-bmlt.org/main_server";
 
 class SearchType
 {
+    const NONE = -1;
     const VOLUNTEERS = 1;
     const MEETINGS = 2;
     const JFT = 3;
@@ -581,12 +581,29 @@ function setting_source($name)
     }
 }
 
+function getDigitMapSearchType() {
+    $digitMapTypeSearch = setting('digit_map_search_type');
+    if (json_decode(setting('jft_option')) == false) {
+        if (($key = array_search(SearchType::JFT, $digitMapTypeSearch)) !== false) {
+            unset($digitMapTypeSearch[$key]);
+        }
+    }
+
+    return $digitMapTypeSearch;
+}
+
 function getSearchType($field = 'SearchType') {
-    return setting('digit_map_search_type')[intval($_REQUEST[$field])];
+    $digitMapTypeSearch = getDigitMapSearchType();
+    $digit = intval($_REQUEST[$field]);
+    if (array_key_exists($digit, $digitMapTypeSearch)) {
+        return $digitMapTypeSearch[$digit];
+    } else {
+        return SearchType::NONE;
+    }
 }
 
 function getSearchTypeSequence() {
-    $digitMapTypeSearch = setting('digit_map_search_type');
+    $digitMapTypeSearch = getDigitMapSearchType();
     ksort($digitMapTypeSearch);
     return $digitMapTypeSearch;
 }
