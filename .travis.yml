@@ -1,6 +1,8 @@
 language: php
 php:
   - "7.1"
+python
+  - "3.6"
 jobs:
   include:
     - stage: lint
