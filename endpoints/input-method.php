@@ -2,7 +2,7 @@
     require_once '_includes/functions.php';
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-    getIvrResponse('index.php', null, getDigitMapSequence('digit_map_search_type'), array(), 'Digits');
+    getIvrResponse('index.php', null, getPossibleDigits('digit_map_search_type'), array(), 'Digits');
     $searchType = getDigitResponse('digit_map_search_type', 'Digits');
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
 

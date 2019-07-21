@@ -604,6 +604,10 @@ function getDigitMap($setting) {
     return $digitMapSetting;
 }
 
+function getPossibleDigits($setting) {
+    return array_keys(getDigitMap($setting));
+}
+
 function getDigitResponse($setting, $field = 'SearchType') {
     $digitMap = getDigitMap($setting);
     $digit = intval($_REQUEST[$field]);
