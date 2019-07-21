@@ -1624,7 +1624,7 @@ function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_
         if (!$found_at_least_once) {
             $qs = $prior_digit != null ? "?Digits=" . $prior_digit : "";?>
             <Response>
-                <Say voice="<?php echo voice() ?>" language="<?php echo setting('langugage') ?><?php echo word('you_might_have_invalid_entry') ?></Say>
+                <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>"><?php echo word('you_might_have_invalid_entry') ?></Say>
                 <Redirect><?php echo $redirected_from . $qs?></Redirect>
             </Response>
         <?php
