@@ -1,3 +1,4 @@
+
 language: php
 php:
   - "7.1"
@@ -14,7 +15,6 @@ jobs:
       - rm -rf vendor/
     - stage: unstable
       before_install:
-      - pip3 install --user awscli
       - export PATH=$PATH:$HOME/.local/bin
       install:
       - composer install
@@ -24,7 +24,6 @@ jobs:
       - git archive --format=zip --output=${ARTIFACT_FILENAME} HEAD
       - echo ${TRAVIS_COMMIT} > build.txt
       - zip -ur ${ARTIFACT_FILENAME} build.txt vendor admin/vendor
-      - aws s3 cp ${ARTIFACT_FILENAME} s3://archives.bmlt.app/yap/
     - stage: stable
       install:
       - rm -rf vendor/
@@ -35,14 +34,18 @@ jobs:
       - echo ${TRAVIS_COMMIT} > build.txt
       - zip -ur yap-${TRAVIS_TAG}.zip build.txt vendor admin/vendor
       deploy:
-        provider: releases
-        api_key:
-          secure: TvmwmGIIjYkvvoqETBN2Zv/UipL3ieFnE5N8eoZhXW16qeiw5uNzxzHkIABLLNh3cqtGD5CuIVyR7M6bZDig3Y98HZxToAW1Is1+2wsc29kURGT7Zbb9EVMJoFIj9P5L79UMXr1aSvabWl5oPHQsstwOWxU4onpT1Xe3AHkojc/cbIPLJBlFh+7VBEoi4RMamVf0te8gPxZ6qjbDhgTgLEcH2N7xyUtDgPMnZST3eJsFOPvEMpXLCciehWgZL1spzmaDD1bpOPFAYVqeeiLc5sz+cSFCWmyw3y+XT6G2pmVQfGzHyWJEBHYvYKBoaYw3ML/DuYXftu1BT1YhBS/6zqA0ORlWeyfYB5CM+ZT+3kPu36YHMQM5BLdUcXvY94mydiUzwX8qValVoK/19wXDk3JM57S527AjkEHcDNDWXgofftzxmWOM91VGI1xQXxZGTOdlH0kIIeJ1/Ybnwhmawb3oICQEIRdtNi8ru2cZsUDV3RLKJ0Apavbbu62yB2IBuZ/qLhJEU429t33KwJIWS7Ull2A59CKjQOyk2Qngt1lEyYs6Bo2O+iLfpLlXkZwYSbrE97CKrpd34DE5p5MusQl1njfCqkG8SD3cb+yzWEdKL0BVQGbNpNYD7MABagWdwzDvRroHF5N0RXp2xzz6JGpnlBhcgL515FFmCQNufwk=
-        file: yap-${TRAVIS_TAG}.zip
-        on:
-          repo: bmlt-enabled/yap
-          tags: true
-        skip_cleanup: true
+        - provider: releases
+          api_key:
+            secure: TvmwmGIIjYkvvoqETBN2Zv/UipL3ieFnE5N8eoZhXW16qeiw5uNzxzHkIABLLNh3cqtGD5CuIVyR7M6bZDig3Y98HZxToAW1Is1+2wsc29kURGT7Zbb9EVMJoFIj9P5L79UMXr1aSvabWl5oPHQsstwOWxU4onpT1Xe3AHkojc/cbIPLJBlFh+7VBEoi4RMamVf0te8gPxZ6qjbDhgTgLEcH2N7xyUtDgPMnZST3eJsFOPvEMpXLCciehWgZL1spzmaDD1bpOPFAYVqeeiLc5sz+cSFCWmyw3y+XT6G2pmVQfGzHyWJEBHYvYKBoaYw3ML/DuYXftu1BT1YhBS/6zqA0ORlWeyfYB5CM+ZT+3kPu36YHMQM5BLdUcXvY94mydiUzwX8qValVoK/19wXDk3JM57S527AjkEHcDNDWXgofftzxmWOM91VGI1xQXxZGTOdlH0kIIeJ1/Ybnwhmawb3oICQEIRdtNi8ru2cZsUDV3RLKJ0Apavbbu62yB2IBuZ/qLhJEU429t33KwJIWS7Ull2A59CKjQOyk2Qngt1lEyYs6Bo2O+iLfpLlXkZwYSbrE97CKrpd34DE5p5MusQl1njfCqkG8SD3cb+yzWEdKL0BVQGbNpNYD7MABagWdwzDvRroHF5N0RXp2xzz6JGpnlBhcgL515FFmCQNufwk=
+          file: yap-${TRAVIS_TAG}.zip
+          on:
+            repo: bmlt-enabled/yap
+            tags: true
+          skip_cleanup: true
+        - provider: s3
+          access_key_id: "YOUR AWS ACCESS KEY"
+          secret_access_key: "YOUR AWS SECRET KEY"
+          bucket: s3://archives.bmlt.app/yap/
 stages:
   - lint
   - name: unstable
