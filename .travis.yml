@@ -22,12 +22,15 @@ jobs:
       - git archive --format=zip --output=${ARTIFACT_FILENAME} HEAD
       - echo ${TRAVIS_COMMIT} > build.txt
       - zip -ur ${ARTIFACT_FILENAME} build.txt vendor admin/vendor
+      - mkdir artifacts/
+      - mv ${ARTIFACT_FILENAME} artifacts/
       deploy:
         - provider: s3
           access_key_id: $AWS_ACCESS_KEY_ID
           secret_access_key: $AWS_SECRET_ACCESS_KEY
           bucket: archives.bmlt.app
           upload-dir: yap
+          local-dir: artifacts
           skip_cleanup: true
           on:
             repo: bmlt-enabled/yap
