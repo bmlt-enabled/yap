@@ -12,7 +12,6 @@ jobs:
       - rm -rf vendor/
     - stage: unstable
       before_install:
-      - pip install --user awscli
       - export PATH=$PATH:$HOME/.local/bin
       install:
       - composer install
