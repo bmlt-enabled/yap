@@ -50,6 +50,8 @@ function sendEmailForVoicemail($recipients, $serviceBodyName, $callerNumber)
     }
 }
 
+hup($_REQUEST['CallSid']);
+
 $serviceBodyCallHandling = getServiceBodyCallHandling(setting("service_body_id"));
 $serviceBodyName = getServiceBody(setting("service_body_id"))->name;
 $callerNumber = $_REQUEST["caller_number"];

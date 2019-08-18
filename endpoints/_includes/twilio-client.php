@@ -7,3 +7,7 @@ try {
 } catch (\Twilio\Exceptions\ConfigurationException $e) {
     error_log("Missing Twilio Credentials");
 }
+
+function hup($callSid) {
+    $GLOBALS['twilioClient']->calls($callSid)->update(array('status' => 'completed'));
+}
