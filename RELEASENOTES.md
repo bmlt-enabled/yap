@@ -1,6 +1,7 @@
 # Release Notes
 
 ### 3.4.0 (UNRELEASED)
+* Service body direct dial by ID. [#302]
 * Remappable digits for search types. [#292]
 * Remappable digits for location search method.
 * Allow for a title customization of the login screen. 

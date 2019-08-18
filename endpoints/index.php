@@ -23,7 +23,13 @@ if (isset($_REQUEST["override_service_body_id"])) {
 }
 
 $promptset_name = str_replace("-", "_", getWordLanguage()) . "_greeting";
-?>
+if (has_setting("extension_dial") && json_decode(setting("extension_dial"))) {?>
+    <Response>
+        <Gather language="<?php echo setting('gather_language') ?>" input="dtmf" finishOnKey="#" timeout="10" action="service-body-ext-response.php" method="GET">
+            <Say>Enter the service body ID, followed by the pound sign.</Say>
+        </Gather>
+    </Response>
+<?php } else { ?>
 <Response>
     <Gather language="<?php echo setting('gather_language') ?>" input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">
         <Pause length="<?php echo setting('initial_pause') ?>"></Pause>
@@ -59,3 +65,4 @@ $promptset_name = str_replace("-", "_", getWordLanguage()) . "_greeting";
         }?>
     </Gather>
 </Response>
+<?php }
