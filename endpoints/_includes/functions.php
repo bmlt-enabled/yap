@@ -17,6 +17,8 @@ static $settings_whitelist = [
     'config' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => true],
     'custom_css' => [ 'description' => '' , 'default' => 'td { font-size: 36px; }', 'overridable' => true, 'hidden' => false],
     'custom_query' => ['description' => '', 'default' => '&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width={SETTING_MEETING_SEARCH_RADIUS}&weekdays={DAY}', 'overridable' => true, 'hidden' => false],
+    'digit_map_search_type' => [ 'description' => '', 'default' => ['1' => SearchType::VOLUNTEERS, '2' => SearchType::MEETINGS, '3' => SearchType::JFT], 'overridable' => true, 'hidden' => false],
+    'digit_map_location_search_method' => [ 'description' => '', 'default' => ['1' => LocationSearchMethod::VOICE, '2' => LocationSearchMethod::DTMF, '3' => SearchType::JFT], 'overridable' => true, 'hidden' => false],
     'fallback_number' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'gather_hints' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'gather_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true, 'hidden' => false],
@@ -40,8 +42,6 @@ static $settings_whitelist = [
     'postal_code_length' => [ 'description' => '' , 'default' => 5, 'overridable' => true, 'hidden' => false],
     'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'result_count_max' => [ 'description' => '' , 'default' => 5, 'overridable' => true, 'hidden' => false],
-    'digit_map_search_type' => [ 'description' => '', 'default' => ['1' => SearchType::VOLUNTEERS, '2' => SearchType::MEETINGS, '3' => SearchType::JFT], 'overridable' => true, 'hidden' => false],
-    'digit_map_location_search_method' => [ 'description' => '', 'default' => ['1' => LocationSearchMethod::VOICE, '2' => LocationSearchMethod::DTMF, '3' => SearchType::JFT], 'overridable' => true, 'hidden' => false],
     'service_body_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'service_body_config_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
@@ -1341,6 +1341,8 @@ function get_str_val($subject)
         } else {
             return "false";
         }
+    } else if (is_array($subject)) {
+        return strval(json_encode($subject));
     }
 
     return strval($subject);
