@@ -3,10 +3,11 @@
 ### 3.4.0 (UNRELEASED)
 * Remappable digits for search types. [#292]
 * Remappable digits for location search method.
-* Allow for customization of the login screen. 
+* Allow for a title customization of the login screen. 
 * Toll number bias. [#291]
-* Fix for JFT Option not disabling JFT text or voice. [#287]
 * Query performance improvements. [#284]
+* Fix for JFT Option not disabling JFT text or voice. [#287]
+* Fix for documentation deep link 404s [#303] 
 
 ### 3.3.1 (June 21, 2019)
 * Disable speech recognition menus by default.

@@ -116,7 +116,7 @@ sort_on_field($service_bodies, 'name');
                                                 </div>
 
                                                 <div class="service_bodies_field_container">
-                                                    <label for="moh">Music On Hold (<a target="_blank" href="https://yap.bmlt.app/docs/helpline/music-on-hold/">more</a>):</label>
+                                                    <label for="moh">Music On Hold (<a target="_blank" href="https://github.com/bmlt-enabled/yap/wiki/Music-On-Hold">more</a>):</label>
                                                     <input class="form-control form-control-sm" type="text" name="moh" id="moh"
                                                            data-volunteer_routing="volunteers,volunteers_and_sms">
                                                 </div>
@@ -151,7 +151,7 @@ sort_on_field($service_bodies, 'name');
                                             </button>
                                         </div>
                                         <div class="modal-body serviceBodyConfigurationItems">
-                                            <div>For more information on using this, see the documentation on <a href="https://yap.bmlt.app/docs/general/configuration-precedence/" target="_blank">Configuration Precedence</a>.</div>
+                                            <div>For more information on using this, see the documentation on <a href="https://github.com/bmlt-enabled/yap/wiki/Configuration-Precedence" target="_blank">Configuration Precedence</a>.</div>
                                             <form id="serviceBodyConfigurationForm" class="serviceBodyConfigurationForm">
                                                 <select class="form-control form-control-sm" name="serviceBodyConfigurationFields" id="serviceBodyConfigurationFields">
                                                     <?php foreach ($settings_whitelist as $setting => $value) { ?>
