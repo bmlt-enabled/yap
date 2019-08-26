@@ -91,7 +91,7 @@ $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key="
 $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key=" . trim($google_maps_api_key);
 static $date_calculations_map = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 static $numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-static $tomato_url = "https://tomato.na-bmlt.org/main_server";
+static $tomato_url = "https://tomato.bmltenabled.org/main_server";
 
 class SearchType
 {
