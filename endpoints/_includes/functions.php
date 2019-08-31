@@ -54,6 +54,7 @@ static $settings_whitelist = [
     'toll_province_bias' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => false],
     'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'tomato_helpline_routing' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
+    'tomato_url' => [ 'description' => '' , 'default' => 'https://tomato.na-bmlt.org/main_server', 'overridable' => true, 'hidden' => false],
     'twilio_account_sid' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
     'twilio_auth_token' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
     'voice' => [ 'description' => '', 'default' => 'woman', 'overridable' => true, 'hidden' => false],
@@ -91,7 +92,6 @@ $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key="
 $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key=" . trim($google_maps_api_key);
 static $date_calculations_map = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 static $numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-static $tomato_url = "https://tomato.na-bmlt.org/main_server";
 
 class SearchType
 {
@@ -1359,7 +1359,7 @@ function sort_on_field(&$objects, $on, $order = 'ASC')
 function getHelplineBMLTRootServer()
 {
     if (json_decode(setting('tomato_helpline_routing'))) {
-        return $GLOBALS['tomato_url'];
+        return setting('tomato_url');
     } else if (has_setting('helpline_bmlt_root_server')) {
         return setting('helpline_bmlt_root_server');
     } else {

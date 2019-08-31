@@ -7,6 +7,7 @@
 * Allow for a title customization of the login screen. 
 * Toll number bias. [#291]
 * Query performance improvements. [#284]
+* Tomato URL is overridable.
 * Fix looping voicemail recordings [#300]
 * Fix for JFT Option not disabling JFT text or voice. [#287]
 * Fix for documentation deep link 404s [#303] 
