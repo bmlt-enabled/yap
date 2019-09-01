@@ -40,7 +40,7 @@ if (!isset($_REQUEST['ForceNumber'])) {
         }
     }
     $location    = $service_body_obj->name;
-    $dial_string = $service_body_obj->helpline;
+    $dial_string = explode(":", $service_body_obj->helpline)[0];
     $waiting_message = true;
     $captcha = false;
 } else {
