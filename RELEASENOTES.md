@@ -10,7 +10,8 @@
 * Tomato URL is overridable.
 * Fix looping voicemail recordings [#300]
 * Fix for JFT Option not disabling JFT text or voice. [#287]
-* Fix for documentation deep link 404s [#303] 
+* Fix for documentation deep link 404s. [#303] 
+* Fix for Canadian French JFT not working.
 
 ### 3.3.1 (June 21, 2019)
 * Disable speech recognition menus by default.

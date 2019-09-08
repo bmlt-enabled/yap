@@ -1558,7 +1558,7 @@ function get_jft($sms = false)
         $copyright_info = 'Servicio del Foro Zonal Latinoamericano, Copyright 2017 NA World Services, Inc. Todos los Derechos Reservados.';
         $preg_search_lang = "\r\n\s";
         $preg_replace_lang = " ";
-    } else if (setting('word_language') == 'fr-FR' || setting('word_language') == 'ca-FR') {
+    } else if (setting('word_language') == 'fr-FR' || setting('word_language') == 'fr-CA') {
         $url = 'https://jpa.narcotiquesanonymes.org';
         $jft_language_dom_element = '*[@class=\'contenu-principal\']';
         $copyright_info = 'Copyright (c) 2007-'.date("Y").', NA World Services, Inc. All Rights Reserved';
