@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.4.0 (UNRELEASED)
+### 3.4.0 (September 8, 2019)
 * Service body direct dial by ID. [#302]
 * Remappable digits for search types. [#292]
 * Remappable digits for location search method.
