@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.5.0 (UNRELEASED)
+* Fix for SMS when Forced Caller ID is set. [#307]
+
 ### 3.4.0 (September 8, 2019)
 * Service body direct dial by ID. [#302]
 * Remappable digits for search types. [#292]

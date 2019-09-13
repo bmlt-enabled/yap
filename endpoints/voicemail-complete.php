@@ -6,13 +6,15 @@ use PHPMailer\PHPMailer\PHPMailer;
 header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
-function sendSmsForVoicemail($recipients, $serviceBodyName, $callerNumber)
+function sendSmsForVoicemail($recipients, $serviceBodyCallHandling, $serviceBodyName, $callerNumber)
 {
+    $caller_id = getOutboundDialingCallerId($serviceBodyCallHandling);
+
     foreach ($recipients as $recipient) {
         $GLOBALS['twilioClient']->messages->create(
             $recipient,
             array(
-                "from" => $_REQUEST["called_number"],
+                "from" => $caller_id,
                 "body" => "You have a message from the " . $serviceBodyName . " helpline from caller " . $callerNumber . ", " . $_REQUEST["RecordingUrl"] . ".mp3"
             )
         );
@@ -61,7 +63,7 @@ if (strpos(trim($callerNumber), "+") !== 0) {
 
 if ($serviceBodyCallHandling->primary_contact_number_enabled) {
     $recipients = explode(",", $serviceBodyCallHandling->primary_contact_number);
-    sendSmsForVoicemail($recipients, $serviceBodyName, $callerNumber);
+    sendSmsForVoicemail($recipients, $serviceBodyCallHandling, $serviceBodyName, $callerNumber);
 }
 
 if (isset($_SESSION["volunteer_routing_parameters"])) {
@@ -74,7 +76,7 @@ if (isset($_SESSION["volunteer_routing_parameters"])) {
         array_push($recipients, $volunteer->contact);
     }
     if (count($volunteers) > 0) {
-        sendSmsForVoicemail($recipients, $serviceBodyName, $callerNumber);
+        sendSmsForVoicemail($recipients, $serviceBodyCallHandling, $serviceBodyName, $callerNumber);
     }
 }
 

@@ -6,7 +6,7 @@ session_start();
 require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
 require_once 'migrations.php';
 require_once 'logging.php';
-static $version  = "3.4.0";
+static $version  = "3.5.0";
 class VolunteerLanguage
 {
     const UNSPECIFIED = 0;
@@ -631,6 +631,15 @@ function getDigitForAction($setting, $action) {
         if ($type == $action) {
             return $digit;
         }
+    }
+}
+
+function getOutboundDialingCallerId($serviceBodyCallHandling)
+{
+    if ($serviceBodyCallHandling->forced_caller_id_enabled) {
+        return $serviceBodyCallHandling->forced_caller_id_number;
+    } else {
+        return isset($_REQUEST["Caller"]) ? $_REQUEST["Caller"] : SpecialPhoneNumber::UNKNOWN;
     }
 }
 

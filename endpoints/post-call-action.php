@@ -10,7 +10,7 @@
     echo "<Response>";
 
 if (($digits == 1 || $digits == 3) && count($sms_messages) > 0) {
-    for ($i = 0; $i < count($sms_messages); $i ++) {
+    for ($i = 0; $i < count($sms_messages); $i++) {
         $message = $twilioClient->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $sms_messages[$i]));
     }
 }

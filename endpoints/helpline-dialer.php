@@ -9,11 +9,7 @@ function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = Volunt
 {
     $tracker            = !isset($_REQUEST["tracker"]) ? 0 : $_REQUEST["tracker"];
 
-    if ($serviceBodyCallHandling->forced_caller_id_enabled) {
-        $caller_id = $serviceBodyCallHandling->forced_caller_id_number;
-    } else {
-        $caller_id = isset($_REQUEST["Caller"]) ? $_REQUEST["Caller"] : SpecialPhoneNumber::UNKNOWN;
-    }
+    $caller_id = getOutboundDialingCallerId($serviceBodyCallHandling);
 
     if (isset($_REQUEST["OriginalCallerId"])) {
         $original_caller_id = $_REQUEST["OriginalCallerId"];
@@ -39,7 +35,6 @@ function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = Volunt
     $config->volunteer_routing_params = $volunteer_routing_parameters;
     $volunteer = getHelplineVolunteer($config->volunteer_routing_params);
     $config->volunteer = $volunteer;
-    $config->voicemail_url = getWebhookUrl() . '/voicemail.php?service_body_id=' . $serviceBodyCallHandling->service_body_id . '&caller_id=' . trim($caller_id) . getSessionLink();
     $config->options = array(
         'url'  => $tandem !== VolunteerShadowOption::TRAINEE
             ? (getWebhookUrl() . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'] . '&service_body_id=' . $serviceBodyCallHandling->service_body_id . getSessionLink())
@@ -57,6 +52,7 @@ function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = Volunt
         'callerId'             => $caller_id,
         'originalCallerId'     => $original_caller_id
     );
+    $config->voicemail_url = getWebhookUrl() . '/voicemail.php?service_body_id=' . $serviceBodyCallHandling->service_body_id . '&caller_id=' . trim($config->options['caller_id']) . getSessionLink();
     if (!isset($_SESSION['ActiveVolunteer'])) {
         $_SESSION['ActiveVolunteer'] = $volunteer;
     }
@@ -125,7 +121,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                                 $volunteer_number,
                                 array(
                                     "body" => $sms_body . $callerNumber,
-                                    "from" => $callConfig->options['originalCallerId']
+                                    "from" => $callConfig->options['callerId']
                                 )
                             );
                         }
