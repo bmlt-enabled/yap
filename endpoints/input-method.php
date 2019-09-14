@@ -37,7 +37,14 @@ if ($searchType == SearchType::VOLUNTEERS) {
         </Response>
         <?php
         exit();
+} else if ($searchType == SearchType::DIALBACK) { ?>
+        <Response>
+        <Redirect method="GET">dialback.php</Redirect>
+        </Response>
+        <?php
+        exit();
 } else {
+
 }
 ?>
 <Response>
