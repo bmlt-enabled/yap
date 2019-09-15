@@ -82,7 +82,7 @@ sort_on_field($service_bodies, 'name');
                                                         <option value="1">Linear Cycle Once, Then Voicemail</option>
                                                         <option value="2">Random Loop Forever</option>
                                                         <option value="3">Blasting</option>
-                                                        <option value="3">Random Loop Once, Then Voicemail</option>
+                                                        <option value="4">Random Loop Once, Then Voicemail</option>
                                                     </select>
                                                 </div>
 
@@ -107,13 +107,13 @@ sort_on_field($service_bodies, 'name');
                                                 <div class="service_bodies_field_container">
                                                     <label for="primary_contact">Primary Contact Number (typically the Chair/Coordinator):</label>
                                                     <input class="form-control form-control-sm" type="text" name="primary_contact" id="primary_contact"
-                                                           data-volunteer_routing="volunteers,volunteers_and_sms" data-call_strategy="1">
+                                                           data-volunteer_routing="volunteers,volunteers_and_sms" data-call_strategy="1,4">
                                                 </div>
 
                                                 <div class="service_bodies_field_container">
                                                     <label for="primary_contact_email">Primary Contact Email (typically the Chair/Coordinator):</label>
                                                     <input class="form-control form-control-sm" type="text" name="primary_contact_email" id="primary_contact_email"
-                                                           data-volunteer_routing="volunteers,volunteers_and_sms" data-call_strategy="1">
+                                                           data-volunteer_routing="volunteers,volunteers_and_sms" data-call_strategy="1,4">
                                                 </div>
 
                                                 <div class="service_bodies_field_container">
@@ -131,7 +131,7 @@ sort_on_field($service_bodies, 'name');
                                                 <div class="service_bodies_field_container">
                                                     <label for="override_en_US_voicemail_greeting">Voice Mail Greeting (URL to any MP3): (<a href="about:blank" onclick="return openUrl(this, 'override_en_US_voicemail_greeting');">Play</a>)</label>
                                                     <input class="form-control form-control-sm" type="text" name="override_en_US_voicemail_greeting" id="override_en_US_voicemail_greeting"
-                                                           data-volunteer_routing="volunteers,volunteers_and_sms" data-call_strategy="1">
+                                                           data-volunteer_routing="volunteers,volunteers_and_sms" data-call_strategy="1,4">
                                                 </div>
                                             </form>
                                         </div>
