@@ -1220,7 +1220,8 @@ function getHelplineVolunteer($volunteer_routing_params)
                 return new Volunteer($volunteer->contact, $volunteer);
             } else if ($volunteer_routing_params->cycle_algorithm == CycleAlgorithm::RANDOM_CYCLE_AND_VOICEMAIL) {
                 if (!isset($_SESSION['volunteers_randomized'])) {
-                    $_SESSION['volunteers_randomized'] = shuffle($volunteers);
+                    shuffle($volunteers);
+                    $_SESSION['volunteers_randomized'] = $volunteers;
                 }
 
                 $volunteers = $_SESSION['volunteers_randomized'];
