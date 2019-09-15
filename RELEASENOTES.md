@@ -1,7 +1,8 @@
 # Release Notes
 
 ### 3.5.0 (UNRELEASED)
-* Add the ability to "dialback". [#209]
+* Added the ability to "dialback". [#209]
+* Added the ability to random cycle once, and then go to voicemail [#310]
 * Fix for SMS when Forced Caller ID is set. [#307]
 
 ### 3.4.0 (September 8, 2019)

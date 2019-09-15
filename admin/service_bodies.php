@@ -78,10 +78,11 @@ sort_on_field($service_bodies, 'name');
                                                     <label for="call_strategy">Call Strategy:</label>
                                                     <select class="form-control form-control-sm" name="call_strategy" id="call_strategy"
                                                             data-volunteer_routing="volunteers,volunteers_and_sms">
-                                                        <option value="0">Loop Forever</option>
-                                                        <option value="1">Cycle Once, Then Voicemail</option>
-                                                        <option value="2">Random Forever</option>
+                                                        <option value="0">Linear Loop Forever</option>
+                                                        <option value="1">Linear Cycle Once, Then Voicemail</option>
+                                                        <option value="2">Random Loop Forever</option>
                                                         <option value="3">Blasting</option>
+                                                        <option value="3">Random Loop Once, Then Voicemail</option>
                                                     </select>
                                                 </div>
 

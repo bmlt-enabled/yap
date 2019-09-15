@@ -176,7 +176,7 @@ class ServiceBodyCallHandling
     public $call_timeout = 20;
     public $volunteer_sms_notification_enabled = false;
     public $gender_routing_enabled = false;
-    public $call_strategy = CycleAlgorithm::LOOP_FOREVER;
+    public $call_strategy = CycleAlgorithm::LINEAR_LOOP_FOREVER;
     public $primary_contact_number_enabled = false;
     public $primary_contact_number = SpecialPhoneNumber::UNKNOWN;
     public $primary_contact_email_enabled = false;
@@ -184,15 +184,16 @@ class ServiceBodyCallHandling
     public $moh = "https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical";
     public $moh_count = 1;
     public $sms_routing_enabled = false;
-    public $sms_strategy = CycleAlgorithm::RANDOMIZER;
+    public $sms_strategy = CycleAlgorithm::RANDOM_LOOP_FOREVER;
 }
 
 class CycleAlgorithm
 {
-    const LOOP_FOREVER = 0;
-    const CYCLE_AND_VOICEMAIL = 1;
-    const RANDOMIZER = 2;
+    const LINEAR_LOOP_FOREVER = 0;
+    const LINEAR_CYCLE_AND_VOICEMAIL = 1;
+    const RANDOM_LOOP_FOREVER = 2;
     const BLASTING = 3;
+    const RANDOM_CYCLE_AND_VOICEMAIL = 4;
 }
 
 class AuthMechanism
@@ -273,7 +274,7 @@ class VolunteerRoutingParameters
 {
     public $service_body_id;
     public $tracker;
-    public $cycle_algorithm = CycleAlgorithm::LOOP_FOREVER;
+    public $cycle_algorithm = CycleAlgorithm::LINEAR_LOOP_FOREVER;
     public $volunteer_type = VolunteerType::PHONE;
     public $volunteer_gender = VolunteerGender::UNSPECIFIED;
     public $volunteer_shadow = VolunteerShadowOption::UNSPECIFIED;
@@ -1205,18 +1206,30 @@ function getHelplineVolunteer($volunteer_routing_params)
         $volunteers = getHelplineVolunteersActiveNow($volunteer_routing_params);
         log_debug("getHelplineVolunteer():: activeVolunteers: " . var_export($volunteers, true));
         if (isset($volunteers) && count($volunteers) > 0) {
-            if ($volunteer_routing_params->cycle_algorithm == CycleAlgorithm::CYCLE_AND_VOICEMAIL) {
+            if ($volunteer_routing_params->cycle_algorithm == CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL) {
                 if ($volunteer_routing_params->tracker > count($volunteers) - 1) {
                     return new Volunteer(SpecialPhoneNumber::VOICE_MAIL);
                 }
 
                 return new Volunteer($volunteers[ $volunteer_routing_params->tracker ]->contact, $volunteers[$volunteer_routing_params->tracker]);
-            } else if ($volunteer_routing_params->cycle_algorithm == CycleAlgorithm::LOOP_FOREVER) {
+            } else if ($volunteer_routing_params->cycle_algorithm == CycleAlgorithm::LINEAR_LOOP_FOREVER) {
                 $volunteer = $volunteers[ $volunteer_routing_params->tracker % count($volunteers)];
                 return new Volunteer($volunteer->contact, $volunteer);
-            } else if ($volunteer_routing_params->cycle_algorithm == CycleAlgorithm::RANDOMIZER) {
+            } else if ($volunteer_routing_params->cycle_algorithm == CycleAlgorithm::RANDOM_LOOP_FOREVER) {
                 $volunteer = $volunteers[rand(0, count($volunteers) - 1)];
                 return new Volunteer($volunteer->contact, $volunteer);
+            } else if ($volunteer_routing_params->cycle_algorithm == CycleAlgorithm::RANDOM_CYCLE_AND_VOICEMAIL) {
+                if (!isset($_SESSION['volunteers_randomized'])) {
+                    $_SESSION['volunteers_randomized'] = shuffle($volunteers);
+                }
+
+                $volunteers = $_SESSION['volunteers_randomized'];
+
+                if ($volunteer_routing_params->tracker > count($volunteers) - 1) {
+                    return new Volunteer(SpecialPhoneNumber::VOICE_MAIL);
+                }
+
+                return new Volunteer($volunteers[ $volunteer_routing_params->tracker ]->contact, $volunteers[$volunteer_routing_params->tracker]);
             } else if ($volunteer_routing_params->cycle_algorithm == CycleAlgorithm::BLASTING) {
                 $volunteers_numbers = [];
 
