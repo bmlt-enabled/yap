@@ -14,4 +14,4 @@ For setup instructions and general documentation please visit [https://yap.bmlt.
 # Downloads
 
 * Latest Releases: [https://github.com/bmlt-enabled/yap/releases](https://github.com/bmlt-enabled/yap/releases)
-* Bleeding Edge: [https://archives.bmlt.app/index.html#yap/](https://archives.bmlt.app/index.html#yap/)
+* Bleeding Edge: [https://archives.bmlt.app/index.html#yap](https://archives.bmlt.app/index.html#yap)
