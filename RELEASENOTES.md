@@ -2,8 +2,10 @@
 
 ### 3.5.0 (UNRELEASED)
 * Added the ability to "dialback". [#209]
+* Added the ability to have custom filters for call routing [#314]
 * Added the ability to random cycle once, and then go to voicemail [#310]
-* Fix for SMS when Forced Caller ID is set. [#307]
+* Fix for SMS caller ID when Forced Caller ID is set. [#307]
+* Fix for Helpline Redirect not working on a stock installation.
 
 ### 3.4.0 (September 8, 2019)
 * Service body direct dial by ID. [#302]

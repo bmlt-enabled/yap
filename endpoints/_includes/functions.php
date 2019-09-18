@@ -14,6 +14,7 @@ class VolunteerLanguage
 static $settings_whitelist = [
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'bmlt_root_server' => [ 'description' => 'The root server to use.' , 'default' => '', 'overridable' => false, 'hidden' => false],
+    'call_routing_filter' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'config' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => true],
     'custom_css' => [ 'description' => '' , 'default' => 'td { font-size: 36px; }', 'overridable' => true, 'hidden' => false],
     'custom_query' => ['description' => '', 'default' => '&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width={SETTING_MEETING_SEARCH_RADIUS}&weekdays={DAY}', 'overridable' => true, 'hidden' => false],
@@ -694,9 +695,8 @@ function getProvince()
 
 function helplineSearch($latitude, $longitude)
 {
-    $helpline_search_radius = setting('helpline_search_radius');
-    $bmlt_search_endpoint = getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,service_body_bigint&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $helpline_search_radius;
-    $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
+    $search_url = getHelplineBMLTRootServer() . sprintf("/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,service_body_bigint&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s%s",
+            $latitude, $longitude, setting('helpline_search_radius'), setting('call_routing_filter'));
 
     if (has_setting('helpline_search_unpublished') && json_decode(setting('helpline_search_unpublished'))) {
         $search_url = $search_url . "&advanced_published=0";
@@ -1145,7 +1145,7 @@ function getServiceBodyCallHandlingData($helplineData)
 function getServiceBodyCallHandling($service_body_id)
 {
     $helplineData = getDbData($service_body_id, DataType::YAP_CALL_HANDLING_V2);
-    return getServiceBodyCallHandlingData($helplineData[0]);
+    return count($helplineData) > 0 ? getServiceBodyCallHandlingData($helplineData[0]) : getServiceBodyCallHandlingData(null);
 }
 
 function getNextShiftInstance($shift_day, $shift_time, $shift_tz)
