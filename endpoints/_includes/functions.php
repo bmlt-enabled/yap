@@ -1738,6 +1738,24 @@ function setConferenceParticipant($conferencesid, $callsid, $friendlyname)
     $db->close();
 }
 
+class CallRecord {
+    public $callSid;
+    public $start_time;
+    public $end_time;
+    public $from;
+    public $to;
+    public $duration;
+    public $payload;
+}
+
+function insertCallRecord($callRecord) {
+    $db = new Database();
+    $db->query("INSERT INTO `yap`.`records` (`callsid`,`from`,`to`,`duration`,`start_time`,`end_time`,`payload`) 
+        VALUES ('$callRecord->callSid','$callRecord->from','$callRecord->to',$callRecord->duration,'$callRecord->start_time','$callRecord->end_time','$callRecord->payload')");
+    $db->execute();
+    $db->close();
+}
+
 function setFlag($flag, $setting)
 {
     $db = new Database();

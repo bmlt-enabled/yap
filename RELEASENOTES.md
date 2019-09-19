@@ -1,6 +1,7 @@
 # Release Notes
 
 ### 3.5.0 (UNRELEASED)
+* Added database driven call detail records. [#289] [#285] [#301]
 * Added the ability to "dialback". [#209]
 * Added the ability to have custom filters for call routing [#314]
 * Added the ability to random cycle once, and then go to voicemail [#310]
