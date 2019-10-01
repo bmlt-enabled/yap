@@ -63,3 +63,8 @@ popper.js@^1.15.0:
   version "1.15.0"
   resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.15.0.tgz#5560b99bbad7647e9faa475c6b8056621f5a4ff2"
   integrity sha512-w010cY1oCUmI+9KwwlWki+r5jxKfTFDVoadl7MSrIujHU5MJ5OR6HTDj6Xo8aoR/QsA56x8jKjA59qGH4ELtrA==
+
+tabulator-tables@^4.4.3:
+  version "4.4.3"
+  resolved "https://registry.yarnpkg.com/tabulator-tables/-/tabulator-tables-4.4.3.tgz#44a435e3bc9ed8d6334a0ac491224f6341719641"
+  integrity sha512-wKQPsrY/PbY2hkDBJ5HSqS4VDmlKxafx1k+5uzwI6m1622yqFdu+hQhwi0WD38obvgmvtBJU4Nfu3YEtBHgAPA==

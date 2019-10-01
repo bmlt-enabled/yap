@@ -11,6 +11,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/spacelab.bootstrap.min.css">
+    <link rel="stylesheet" href="vendor/tabulator-tables/dist/css/tabulator.min.css">
     <link rel="stylesheet" href="css/yap.css?v=<?php echo time()?>">
     <title>Yap Admin</title>
 </head>

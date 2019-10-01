@@ -1750,10 +1750,18 @@ class CallRecord {
 
 function insertCallRecord($callRecord) {
     $db = new Database();
-    $db->query("INSERT INTO `yap`.`records` (`callsid`,`from`,`to`,`duration`,`start_time`,`end_time`,`payload`) 
+    $db->query("INSERT INTO `records` (`callsid`,`from`,`to`,`duration`,`start_time`,`end_time`,`payload`) 
         VALUES ('$callRecord->callSid','$callRecord->from','$callRecord->to',$callRecord->duration,'$callRecord->start_time','$callRecord->end_time','$callRecord->payload')");
     $db->execute();
     $db->close();
+}
+
+function getCallRecords() {
+    $db = new Database();
+    $db->query("SELECT `start_time`,`end_time`,`duration`,`from`,`to` FROM `records`");
+    $resultset = $db->resultset();
+    $db->resultset();
+    return $resultset;
 }
 
 function setFlag($flag, $setting)
