@@ -13,7 +13,7 @@
         addRowPos:"top",          //when adding a new row, add it to the top of the table
         history:true,             //allow undo and redo actions on the table
         pagination:"local",       //paginate the data
-        paginationSize:7,         //allow 7 rows per page of data
+        paginationSize:20,         //allow 7 rows per page of data
         movableColumns:true,      //allow column order to be changed
         resizableRows:true,       //allow row order to be changed
         initialSort:[             //set the initial sort order of the data
@@ -21,10 +21,10 @@
         ],
         columns:[                 //define the table columns
             {title:"Start Time", field:"start_time"},
-            {title:"End Time", field:"end_time", align:"left"},
-            {title:"Duration", field:"duration", width:95},
-            {title:"From", field:"from", align:"center", width:100},
-            {title:"To", field:"to", width:130},
+            {title:"End Time", field:"end_time"},
+            {title:"Duration", field:"duration"},
+            {title:"From", field:"from"},
+            {title:"To", field:"to"},
         ],
     });
 </script>
