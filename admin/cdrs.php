@@ -17,14 +17,14 @@
         movableColumns:true,      //allow column order to be changed
         resizableRows:true,       //allow row order to be changed
         initialSort:[             //set the initial sort order of the data
-            {column:"name", dir:"asc"},
+            {column:"start_time", dir:"desc"},
         ],
         columns:[                 //define the table columns
-            {title:"Start Time", field:"start_time", editor:"input"},
+            {title:"Start Time", field:"start_time"},
             {title:"End Time", field:"end_time", align:"left"},
-            {title:"Duration", field:"duration", width:95, editor:"select"},
+            {title:"Duration", field:"duration", width:95},
             {title:"From", field:"from", align:"center", width:100},
-            {title:"To", field:"to", width:130, editor:"input"},
+            {title:"To", field:"to", width:130},
         ],
     });
 </script>
