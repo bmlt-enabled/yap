@@ -1,4 +1,5 @@
 <?php require_once 'nav.php';?>
+<link rel="stylesheet" href="vendor/tabulator-tables/dist/css/tabulator.min.css">
 <div class="container">
     <div class="button-group" role="group" id="cdr-table-controls">
         <button class="btn-sm btn-warning" id="print-table">Print</button>
@@ -8,6 +9,7 @@
     <div id="cdr-table"></div>
 </div>
 <?php require_once 'footer.php';?>
+<script src="vendor/tabulator-tables/dist/js/tabulator.min.js"></script>
 <script type="text/javascript">
 
     var cdrs = <?php echo json_encode(getCallRecords());?>
