@@ -103,6 +103,13 @@ class SearchType
     const DIALBACK = 1000;
 }
 
+class EventId
+{
+    const VOLUNTEER_SEARCH = 1;
+    const MEETING_SEARCH = 2;
+    const JFT_LOOKUP = 3;
+}
+
 class LocationSearchMethod
 {
     const NONE = -1;
@@ -1746,6 +1753,18 @@ class CallRecord {
     public $to;
     public $duration;
     public $payload;
+}
+
+function insertCallEventRecord($callsid, $eventid, $service_body_id = NULL) {
+    if (in_array($eventid, [SearchType::VOLUNTEERS, SearchType::MEETINGS, SearchType::JFT])) {
+        writeMetric(["searchType" => $eventid], setting('service_body_id'));
+    }
+
+    $db = new Database();
+    $db->query("INSERT INTO `records_events` (`callsid`,`event_id`,`service_body_id`) 
+        VALUES ('$callsid','$eventid','$service_body_id')");
+    $db->execute();
+    $db->close();
 }
 
 function insertCallRecord($callRecord) {
