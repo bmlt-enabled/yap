@@ -19,16 +19,21 @@
                         <tr>
                             <td><?php echo $key ?></td>
                             <td><?php
-                            if (is_bool(setting($key))) {
-                                echo setting($key) ? "true" : "false";
+                            $setting = setting($key);
+                            if (is_bool($setting)) {
+                                echo $setting ? "true" : "false";
+                            } else if (is_array($setting)) {
+                                echo json_encode($setting);
                             } else {
-                                echo setting($key);
+                                echo $setting;
                             }?>
                             </td>
                             <td><?php echo setting_source($key)?></td>
                             <td><?php
                             if (is_bool($value['default'])) {
                                 echo $value['default'] ? "true" : "false";
+                            } else if (is_array($value['default'])) {
+                                echo json_encode($value['default']);
                             } else {
                                 echo $value['default'];
                             }?>
