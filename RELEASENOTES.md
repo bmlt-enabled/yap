@@ -7,6 +7,7 @@
 * Added the ability to random cycle once, and then go to voicemail [#310]
 * Fix for SMS caller ID when Forced Caller ID is set. [#307]
 * Fix for Helpline Redirect not working on a stock installation.
+* Fix for digit map display in Settings in administration portal.
 
 ### 3.4.0 (September 8, 2019)
 * Service body direct dial by ID. [#302]
