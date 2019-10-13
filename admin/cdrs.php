@@ -12,7 +12,7 @@
 <script src="vendor/tabulator-tables/dist/js/tabulator.min.js"></script>
 <script type="text/javascript">
 
-    var cdrs = <?php echo json_encode(getCallRecords());?>
+    var cdrs = <?php echo json_encode(adjustedCallRecords());?>
 
     $("#print-table").on("click", function(){
         table.print(false, true);
@@ -47,8 +47,35 @@
             {title:"Start Time", field:"start_time"},
             {title:"End Time", field:"end_time"},
             {title:"Duration (seconds)", field:"duration"},
-            {title:"From", field:"from"},
-            {title:"To", field:"to"},
+            {title:"From", field:"from_number"},
+            {title:"To", field:"to_number"},
         ],
+        rowFormatter:function(row) {
+            //create and style holder elements
+            var holderEl = document.createElement("div");
+            var tableEl = document.createElement("div");
+
+            holderEl.style.boxSizing = "border-box";
+            holderEl.style.padding = "10px 30px 10px 10px";
+            holderEl.style.borderTop = "1px solid #333";
+            holderEl.style.borderBotom = "1px solid #333";
+            holderEl.style.background = "#ddd";
+
+            tableEl.style.border = "1px solid #333";
+
+            holderEl.appendChild(tableEl);
+
+            row.getElement().appendChild(holderEl);
+
+            var subTable = new Tabulator(tableEl, {
+                layout: "fitColumns",
+                data: row.getData().call_events,
+                columns: [
+                    {title: "Event Time", field: "event_time"},
+                    {title: "Event", field: "event_id"},
+                    {title: "Service Body Id", field: "service_body_id"},
+                ]
+            })
+        }
     });
 </script>

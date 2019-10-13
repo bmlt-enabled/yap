@@ -6,8 +6,8 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
 $callRecord = new CallRecord();
 $callRecord->callSid = $_REQUEST['CallSid'];
-$callRecord->to = $_REQUEST['Called'];
-$callRecord->from = $_REQUEST['Caller'];
+$callRecord->to_number = $_REQUEST['Called'];
+$callRecord->from_number = $_REQUEST['Caller'];
 $callRecord->duration = intval($_REQUEST['CallDuration']);
 $twilioRecords = $twilioClient->calls($callRecord->callSid)->fetch();
 $callRecord->start_time = $twilioRecords->startTime->format("Y-m-d H:i:s A");

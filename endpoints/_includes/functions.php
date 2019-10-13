@@ -1769,18 +1769,30 @@ function insertCallEventRecord($callsid, $eventid, $service_body_id = NULL) {
 
 function insertCallRecord($callRecord) {
     $db = new Database();
-    $db->query("INSERT INTO `records` (`callsid`,`from`,`to`,`duration`,`start_time`,`end_time`,`payload`) 
-        VALUES ('$callRecord->callSid','$callRecord->from','$callRecord->to',$callRecord->duration,'$callRecord->start_time','$callRecord->end_time','$callRecord->payload')");
+    $db->query("INSERT INTO `records` (`callsid`,`from_number`,`to_number`,`duration`,`start_time`,`end_time`,`payload`) 
+        VALUES ('$callRecord->callSid','$callRecord->from_number','$callRecord->to_number',$callRecord->duration,'$callRecord->start_time','$callRecord->end_time','$callRecord->payload')");
     $db->execute();
     $db->close();
 }
 
 function getCallRecords() {
     $db = new Database();
-    $db->query("SELECT `start_time`,`end_time`,`duration`,`from`,`to` FROM `records`");
+    $db->query("SELECT r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,
+CONCAT('[', GROUP_CONCAT('{\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, '\",\"service_body_id\":', IFNULL(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
+FROM `records` r LEFT OUTER JOIN `records_events` re ON r.callsid = re.callsid GROUP BY r.callsid");
     $resultset = $db->resultset();
     $db->resultset();
     return $resultset;
+}
+
+function adjustedCallRecords() {
+    $callRecords = getCallRecords();
+
+    foreach ($callRecords as &$callRecord) {
+        $callRecord['call_events']  = isset($callRecord['call_events']) ? json_decode($callRecord['call_events']) : [];
+    }
+
+    return $callRecords;
 }
 
 function setFlag($flag, $setting)
