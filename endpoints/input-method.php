@@ -7,8 +7,8 @@
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
 
 
-if (isset($_REQUEST['CallSid']) && ($searchType == SearchType::MEETINGS || $searchType == SearchType::JFT)) {
-    insertCallEventRecord($_REQUEST['CallSid'], $searchType, setting('service_body_id'));
+if ($searchType == SearchType::MEETINGS || $searchType == SearchType::JFT) {
+    insertCallEventRecord($searchType, setting('service_body_id'));
 }
 
 if ($searchType == SearchType::VOLUNTEERS) {

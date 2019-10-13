@@ -1765,7 +1765,12 @@ class CallRecord {
     public $payload;
 }
 
-function insertCallEventRecord($callsid, $eventid, $service_body_id = NULL) {
+function insertCallEventRecord($eventid, $service_body_id = NULL) {
+    if (isset($_REQUEST['CallSid'])) {
+        $callsid = $_REQUEST['CallSid'];
+    } else {
+        return;
+    }
     if (in_array($eventid, [SearchType::VOLUNTEERS, SearchType::MEETINGS, SearchType::JFT])) {
         writeMetric(["searchType" => $eventid], setting('service_body_id'));
     }
