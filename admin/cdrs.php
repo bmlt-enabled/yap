@@ -49,6 +49,9 @@
             {title:"Duration (seconds)", field:"duration"},
             {title:"From", field:"from_number"},
             {title:"To", field:"to_number"},
+            {title:"Call Events", field:"call_events", visible: false, download: true, formatter: function(cell, formatterParams, onRendered) {
+                return JSON.stringify(cell.getValue());
+            }}
         ],
         rowFormatter:function(row) {
             //create and style holder elements
