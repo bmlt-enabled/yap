@@ -4,6 +4,7 @@ header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
 getServiceBodyCallHandling(setting("service_body_id"));
+insertCallEventRecord(EventId::VOICEMAIL, setting('service_body_id'));
 $promptset_name = str_replace("-", "_", getWordLanguage()) . "_voicemail_greeting";
 ?>
 <Response>
