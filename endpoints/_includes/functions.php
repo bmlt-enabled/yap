@@ -108,6 +108,16 @@ class EventId
     const VOLUNTEER_SEARCH = 1;
     const MEETING_SEARCH = 2;
     const JFT_LOOKUP = 3;
+    const VOICEMAIL = 4;
+
+    static function getEventById($id) {
+        switch($id) {
+            case 1: return "Volunteer Search";
+            case 2: return "Meeting Search";
+            case 3: return "JFT Lookup";
+            case 4: return "Voicemail";
+        }
+    }
 }
 
 class LocationSearchMethod
@@ -1789,7 +1799,11 @@ function adjustedCallRecords() {
     $callRecords = getCallRecords();
 
     foreach ($callRecords as &$callRecord) {
-        $callRecord['call_events']  = isset($callRecord['call_events']) ? json_decode($callRecord['call_events']) : [];
+        $callEvents = isset($callRecord['call_events']) ? json_decode($callRecord['call_events']) : [];
+        foreach ($callEvents as &$callEvent) {
+            $callEvent->event_id = EventId::getEventById($callEvent->event_id);
+        }
+        $callRecord['call_events'] = $callEvents;
     }
 
     return $callRecords;
