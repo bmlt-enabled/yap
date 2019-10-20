@@ -973,30 +973,42 @@ function admin_PersistDbConfig($service_body_id, $data, $data_type, $parent_id =
     $current_data_check = isset($parent_id) && $parent_id > 0 ? getDbDataByParentId($parent_id, $data_type) : getDbData($service_body_id, $data_type);
 
     if (count($current_data_check) == 0 || $data_type == DataType::YAP_GROUPS_V2) {
-        $db->query("INSERT INTO `config` (`service_body_id`,`data`,`data_type`,`parent_id`) VALUES ('$service_body_id','$data','$data_type'," . ($parent_id == 0 ? "NULL" : "'" . $parent_id . "'") . ")");
-        $db->execute();
+        $parent_id = $parent_id == 0 ? "NULL" : $parent_id;
+        $stmt = "INSERT INTO `config` (`service_body_id`,`data`,`data_type`,`parent_id`) VALUES (:service_body_id,:data,:data_type,:parent_id)";
+        $s = $db->prepare($stmt);
+        $s->bindParam(':service_body_id', $service_body_id);
+        $s->bindParam(':data', $data);
+        $s->bindParam(':data_type', $data_type);
+        $s->bindParam(':parent_id', $parent_id);
+        $s->execute();
         $db->query("SELECT MAX(id) as id FROM `config` WHERE service_body_id='$service_body_id' AND data_type='$data_type'");
         $resultset = $db->resultset();
         $db->close();
         return $resultset[0]['id'];
     } else {
-        $query = "UPDATE `config` SET `data`='$data' WHERE `service_body_id`=$service_body_id AND `data_type`='$data_type'";
+        $stmt = "UPDATE `config` SET `data`=:data WHERE `service_body_id`=:service_body_id AND `data_type`=:data_type";
         if (isset($parent_id) && $parent_id > 0) {
-            $query .= " AND `parent_id`='$parent_id'";
+            $stmt .= " AND `parent_id`=:parent_id";
         }
-        $db->query($query);
-        $db->execute();
-        $db->close();
+        $s = $db->prepare($stmt);
+        $s->bindParam(':data', $data);
+        $s->bindParam(':service_body_id', $service_body_id);
+        $s->bindParam(':data_type', $data_type);
+        if (isset($parent_id) && $parent_id > 0) {
+            $s->bindParam(':parent_id', $parent_id);
+        }
+        $s->execute();
     }
 }
 
 function admin_PersistDbConfigById($id, $data)
 {
     $db = new Database();
-    $query = "UPDATE `config` SET `data`='$data' WHERE `id`=$id";
-    $db->query($query);
-    $db->execute();
-    $db->close();
+    $stmt = "UPDATE `config` SET `data`=:data WHERE `id`=:id";
+    $s = $db->prepare($stmt);
+    $s->bindParam(':data', $data);
+    $s->bindParam(':id', $id);
+    $s->execute();
 }
 
 function getDbData($service_body_id, $data_type)

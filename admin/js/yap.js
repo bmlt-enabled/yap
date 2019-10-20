@@ -312,8 +312,7 @@ function clearVolunteerCards() {
 function loadVolunteers(serviceBodyId, callback) {
     loadFromAdminApi(null, serviceBodyId, '_YAP_VOLUNTEERS_V2_', function(data) {
         if (!$.isEmptyObject(data)) {
-            var data = JSON.parse(data['data'])
-            for (item of data) {
+            for (item of data['data']) {
                 if (item.hasOwnProperty('volunteer_name')) {
                     includeVolunteer(item)
                 } else if (item.hasOwnProperty('group_id')) {
@@ -328,8 +327,7 @@ function loadVolunteers(serviceBodyId, callback) {
 function loadGroupVolunteers(parent_id, service_body_id, callback) {
     loadFromAdminApi($("#group_id").val(), service_body_id,'_YAP_GROUP_VOLUNTEERS_V2_', function(data) {
         if (!$.isEmptyObject(data)) {
-            var data = JSON.parse(data['data'])
-            for (item of data) {
+            for (item of data['data']) {
                 includeVolunteer(item);
             }
         }
@@ -620,7 +618,7 @@ function openServiceBodyConfigure(service_body_id) {
         loadFromAdminApi(null, service_body_id, '_YAP_CONFIG_V2_', function(data) {
             if (!$.isEmptyObject(data)) {
                 clearServiceBodyFields(service_body_id);
-                var dataSet = JSON.parse(data['data'])[0];
+                var dataSet = data['data'][0];
                 for (var key in dataSet) {
                     if (key !== "serviceBodyConfigurationFields") {
                         addServiceBodyField(service_body_id, key);
@@ -663,7 +661,7 @@ function openServiceBodyCallHandling(service_body_id) {
         var serviceBodyCallHandling = $("#serviceBodyCallHandling_" + service_body_id);
         loadFromAdminApi(null, service_body_id, '_YAP_CALL_HANDLING_V2_', function(data) {
             if (!$.isEmptyObject(data)) {
-                var dataSet = JSON.parse(data['data'])[0];
+                var dataSet = data['data'][0];
                 for (var key in dataSet) {
                     if (dataSet[key]) {
                         serviceBodyCallHandling.find("#" + key).prop('checked', true);

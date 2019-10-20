@@ -25,4 +25,9 @@ if (isset($parent_id) || isset($_REQUEST['parent_id'])) {
     $data = getDbData($_REQUEST['service_body_id'], $_REQUEST['data_type']);
 }
 
-echo count($data) > 0 ? json_encode($data[0]) : json_encode(new StdClass());
+if (count($data) > 0) {
+    echo sprintf("{\"service_body_id\":%s,\"id\":%s,\"parent_id\":%s,\"data\":%s}",
+        $data[0]['service_body_id'], $data[0]['id'], $data[0]['parent_id'], $data[0]['data']);
+} else {
+    echo "{}";
+}

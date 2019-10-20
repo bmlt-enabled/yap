@@ -72,6 +72,11 @@ class Database
         return $this->stmt->execute();
     }
 
+    public function prepare($statement)
+    {
+        return $this->dbh->prepare($statement);
+    }
+
     public function resultset()
     {
         $this->execute();
