@@ -5,6 +5,7 @@
 * Added the ability to "dialback". [#209]
 * Added the ability to have custom filters for call routing [#314]
 * Added the ability to random cycle once, and then go to voicemail [#310]
+* Pointing to tomato.bmltenabled.org now for 🍅 things.
 * Fix for SMS caller ID when Forced Caller ID is set. [#307]
 * Fix for Helpline Redirect not working on a stock installation.
 * Fix for digit map display in Settings in administration portal.
