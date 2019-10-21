@@ -29,7 +29,7 @@
 <script type="text/javascript">
     var map, infoWindow, geocoder;
     var service_bodies = [];
-    var root = "https://tomato.na-bmlt.org/main_server/";
+    var root = "https://tomato.bmltenabled.org/main_server/";
     $(function() {
         $.getJSON(root + "client_interface/jsonp/?switcher=GetServiceBodies&callback=?", function(data) {
             service_bodies = data;
