@@ -973,13 +973,13 @@ function admin_PersistDbConfig($service_body_id, $data, $data_type, $parent_id =
     $current_data_check = isset($parent_id) && $parent_id > 0 ? getDbDataByParentId($parent_id, $data_type) : getDbData($service_body_id, $data_type);
 
     if (count($current_data_check) == 0 || $data_type == DataType::YAP_GROUPS_V2) {
-        $parent_id = $parent_id == 0 ? "NULL" : $parent_id;
+        $parent_id = $parent_id == 0 ? null : $parent_id;
         $stmt = "INSERT INTO `config` (`service_body_id`,`data`,`data_type`,`parent_id`) VALUES (:service_body_id,:data,:data_type,:parent_id)";
         $s = $db->prepare($stmt);
         $s->bindParam(':service_body_id', $service_body_id);
         $s->bindParam(':data', $data);
         $s->bindParam(':data_type', $data_type);
-        $s->bindParam(':parent_id', $parent_id);
+        $s->bindParam(':parent_id', $parent_id, PDO::PARAM_INT);
         $s->execute();
         $db->query("SELECT MAX(id) as id FROM `config` WHERE service_body_id='$service_body_id' AND data_type='$data_type'");
         $resultset = $db->resultset();
@@ -1858,5 +1858,4 @@ function getSessionLink($shouldUriEncode = false)
 
     return (isset($session_id) ? ($shouldUriEncode ? "&amp;" : "&") . ("ysk=" . $session_id) : "");
 }
-
 require_once "legacydata.php";
