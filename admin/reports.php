@@ -50,6 +50,9 @@
         printAsHtml:true,
         printHeader:"<h1>Call Detail Records<h1>",
         printFooter:"",
+        rowClick: function(e, row) {
+            $("#subTableId_" + row.getData().id).toggle();
+        },
         initialSort:[
             {column:"start_time", dir:"desc"},
         ],
@@ -73,11 +76,10 @@
             holderEl.style.borderTop = "1px solid #333";
             holderEl.style.borderBotom = "1px solid #333";
             holderEl.style.background = "#ddd";
-
+            holderEl.setAttribute('class', 'subTableHolder');
+            holderEl.setAttribute('id', 'subTableId_' + row.getData().id);
             tableEl.style.border = "1px solid #333";
-
             holderEl.appendChild(tableEl);
-
             row.getElement().appendChild(holderEl);
 
             var subTable = new Tabulator(tableEl, {

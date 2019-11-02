@@ -1819,9 +1819,9 @@ function insertCallRecord($callRecord) {
 
 function getCallRecords($service_body_id) {
     $db = new Database();
-    $sql = sprintf("SELECT r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,
+    $sql = sprintf("SELECT r.`id`,r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,
 CONCAT('[', GROUP_CONCAT('{\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, '\",\"service_body_id\":', IFNULL(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
-FROM `records` r LEFT OUTER JOIN `records_events` re ON r.callsid = re.callsid %s GROUP BY r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,r.callsid",
+FROM `records` r LEFT OUTER JOIN `records_events` re ON r.callsid = re.callsid %s GROUP BY r.`id`,r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,r.callsid",
         (isset($service_body_id) && $service_body_id > 0 ? "WHERE `service_body_id` = " . $service_body_id : ""));
     $db->query($sql);
     $resultset = $db->resultset();
