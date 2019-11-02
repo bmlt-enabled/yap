@@ -2,7 +2,7 @@ dayOfTheWeek = {1:"Sunday",2:"Monday",3:"Tuesday",4:"Wednesday",5:"Thursday",6:"
 var groups;
 var calendar;
 
-function reportsPage() {
+function getReports() {
     $("#service_body_id").on("change", function() {
         $.getJSON("metric_api.php?service_body_id=" + $("#service_body_id").val(), function (data) {
             var actions = ['Volunteer', 'Meetings', 'Just For Today'];
@@ -36,8 +36,8 @@ function reportsPage() {
                 }
             }
 
-            Plotly.newPlot("reports", datasets, {
-                title: 'Usage Report',
+            Plotly.newPlot("metrics", datasets, {
+                title: 'Usage Summary',
                 xaxis: {
                     title: 'Day',
                     type: 'date'

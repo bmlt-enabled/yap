@@ -1817,18 +1817,20 @@ function insertCallRecord($callRecord) {
     $db->close();
 }
 
-function getCallRecords() {
+function getCallRecords($service_body_id) {
     $db = new Database();
-    $db->query("SELECT r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,
+    $sql = sprintf("SELECT r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,
 CONCAT('[', GROUP_CONCAT('{\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, '\",\"service_body_id\":', IFNULL(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
-FROM `records` r LEFT OUTER JOIN `records_events` re ON r.callsid = re.callsid GROUP BY r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,`r.callsid`");
+FROM `records` r %s LEFT OUTER JOIN `records_events` re ON r.callsid = re.callsid GROUP BY r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,r.callsid",
+        (isset($service_body_id) && $service_body_id > 0 ? "WHERE `service_body_id` = " . $service_body_id : ""));
+    $db->query($sql);
     $resultset = $db->resultset();
     $db->resultset();
     return $resultset;
 }
 
-function adjustedCallRecords() {
-    $callRecords = getCallRecords();
+function adjustedCallRecords($service_body_id = null) {
+    $callRecords = getCallRecords($service_body_id);
 
     foreach ($callRecords as &$callRecord) {
         $callEvents = isset($callRecord['call_events']) ? json_decode($callRecord['call_events']) : [];
