@@ -24,11 +24,7 @@
 <script src="vendor/tabulator-tables/dist/js/tabulator.min.js"></script>
 <script type="text/javascript" src="vendor/moment/min/moment.min.js"></script>
 <script type="text/javascript" src="vendor/plotly.js-dist/plotly.js"></script>
-<script type="text/javascript">$(function(){getReports()})</script>
 <script type="text/javascript">
-
-    var cdrs = <?php echo json_encode(adjustedCallRecords(isset($_REQUEST['service_body_id']) ? $_REQUEST['service_body_id'] : null));?>
-
     $("#print-table").on("click", function(){
         table.print(false, true);
     });
@@ -42,7 +38,6 @@
     });
 
     var table = new Tabulator("#cdr-table", {
-        data: cdrs,
         layout:"fitColumns",
         responsiveLayout:"hide",
         tooltips:true,
@@ -97,3 +92,4 @@
         }
     });
 </script>
+<script type="text/javascript">$(function(){getReports()})</script>

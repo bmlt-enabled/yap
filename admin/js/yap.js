@@ -4,6 +4,10 @@ var calendar;
 
 function getReports() {
     $("#service_body_id").on("change", function() {
+        $.getJSON("cdr_api.php?service_body_id=" + $("#service_body_id").val(), function (data) {
+            table.replaceData(data);
+        });
+
         $.getJSON("metric_api.php?service_body_id=" + $("#service_body_id").val(), function (data) {
             var actions = ['Volunteer', 'Meetings', 'Just For Today'];
             var plots = {"1":[],"2":[],"3":[]};
