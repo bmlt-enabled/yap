@@ -1761,8 +1761,7 @@ function getConferences($service_body_id)
 function setConferenceParticipant($conferencesid, $callsid, $friendlyname)
 {
     $db = new Database();
-    $stmt = "INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`) 
-      VALUES (':conferencesid',':callsid',':friendlyname')";
+    $stmt = "INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`) VALUES (:conferencesid,:callsid,:friendlyname)";
     $s = $db->prepare($stmt);
     $s->bindParam(':conferencesid', $conferencesid);
     $s->bindParam(':callsid', $callsid);

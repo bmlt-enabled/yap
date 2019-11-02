@@ -3,6 +3,7 @@ require_once '_includes/functions.php';
 require_once '_includes/twilio-client.php';
 use PHPMailer\PHPMailer\PHPMailer;
 
+insertCallEventRecord(EventId::VOICEMAIL, setting('service_body_id'));
 header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
