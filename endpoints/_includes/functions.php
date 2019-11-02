@@ -1761,9 +1761,13 @@ function getConferences($service_body_id)
 function setConferenceParticipant($conferencesid, $callsid, $friendlyname)
 {
     $db = new Database();
-    $db->query("INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`) 
-      VALUES ('$conferencesid','$callsid','$friendlyname')");
-    $db->execute();
+    $stmt = "INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`) 
+      VALUES (':conferencesid',':callsid',':friendlyname')";
+    $s = $db->prepare($stmt);
+    $s->bindParam(':conferencesid', $conferencesid);
+    $s->bindParam(':callsid', $callsid);
+    $s->bindParam(':friendlyname', $friendlyname);
+    $s->execute();
     $db->close();
 }
 
@@ -1779,7 +1783,7 @@ class CallRecord {
 
 function insertCallEventRecord($eventid, $service_body_id = NULL) {
     if (isset($_REQUEST['CallSid'])) {
-        $callsid = $_REQUEST['CallSid'];
+        $callSid = $_REQUEST['CallSid'];
     } else {
         return;
     }
@@ -1788,17 +1792,28 @@ function insertCallEventRecord($eventid, $service_body_id = NULL) {
     }
 
     $db = new Database();
-    $db->query("INSERT INTO `records_events` (`callsid`,`event_id`,`service_body_id`) 
-        VALUES ('$callsid','$eventid','$service_body_id')");
-    $db->execute();
+    $stmt = "INSERT INTO `records_events` (`callsid`,`event_id`,`service_body_id`) VALUES (:callSid, :eventid, :service_body_id)";
+    $s = $db->prepare($stmt);
+    $s->bindParam(':callSid', $callSid);
+    $s->bindParam(':eventid', $eventid);
+    $s->bindParam(':service_body_id', $service_body_id);
+    $s->execute();
     $db->close();
 }
 
 function insertCallRecord($callRecord) {
     $db = new Database();
-    $db->query("INSERT INTO `records` (`callsid`,`from_number`,`to_number`,`duration`,`start_time`,`end_time`,`payload`) 
-        VALUES ('$callRecord->callSid','$callRecord->from_number','$callRecord->to_number',$callRecord->duration,'$callRecord->start_time','$callRecord->end_time','$callRecord->payload')");
-    $db->execute();
+    $stmt = "INSERT INTO `records` (`callsid`,`from_number`,`to_number`,`duration`,`start_time`,`end_time`,`payload`) 
+        VALUES (:callSid, :from_number, :to_number, :duration, :start_time, :end_time, :payload)";
+    $s = $db->prepare($stmt);
+    $s->bindParam(':callSid', $callRecord->callSid);
+    $s->bindParam(':from_number', $callRecord->from_number);
+    $s->bindParam(':to_number', $callRecord->to_number);
+    $s->bindParam(':duration', $callRecord->duration);
+    $s->bindParam(':start_time', $callRecord->start_time);
+    $s->bindParam(':end_time', $callRecord->end_time);
+    $s->bindParam(':payload', $callRecord->payload);
+    $s->execute();
     $db->close();
 }
 
@@ -1806,7 +1821,7 @@ function getCallRecords() {
     $db = new Database();
     $db->query("SELECT r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,
 CONCAT('[', GROUP_CONCAT('{\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, '\",\"service_body_id\":', IFNULL(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
-FROM `records` r LEFT OUTER JOIN `records_events` re ON r.callsid = re.callsid GROUP BY r.callsid");
+FROM `records` r LEFT OUTER JOIN `records_events` re ON r.callsid = re.callsid GROUP BY r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,`r.callsid`");
     $resultset = $db->resultset();
     $db->resultset();
     return $resultset;
