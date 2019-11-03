@@ -127,7 +127,7 @@ class EventId
             case self::VOLUNTEER_ANSWERED: return "Volunteer Answered";
             case self::VOLUNTEER_REJECTED: return "Volunteer Rejected Call";
             case self::VOLUNTEER_NOANSWER: return "Volunteer No Answer";
-            case self::CALLER_HUP: return "Caller Hungup";
+            case self::CALLER_HUP: return "Volunteer Answered but Caller Hungup";
             case self::CALLER_IN_CONFERENCE: return "Caller Waiting for Volunteer";
             case self::VOLUNTEER_HUP: return "Volunteer Hungup";
         }
@@ -1772,8 +1772,11 @@ function getConferences($service_body_id)
     return $resultset;
 }
 
-function setConferenceParticipant($conferencesid, $friendlyname)
+function setConferenceParticipant($friendlyname)
 {
+    require_once 'twilio-client.php';
+    $conferences = $GLOBALS['twilioClient']->conferences->read(array ("friendlyName" => $friendlyname ));
+    $conferencesid = $conferences[0]->sid;
     $callsid = $_REQUEST['CallSid'];
     $db = new Database();
     $stmt = "INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`) VALUES (:conferencesid,:callsid,:friendlyname)";

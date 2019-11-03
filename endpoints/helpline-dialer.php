@@ -36,6 +36,7 @@ function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = Volunt
     $volunteer = getHelplineVolunteer($config->volunteer_routing_params);
     $config->volunteer = $volunteer;
     $config->options = array(
+        'method' => 'GET',
         'url'  => $tandem !== VolunteerShadowOption::TRAINEE
             ? (getWebhookUrl() . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'] . '&service_body_id=' . $serviceBodyCallHandling->service_body_id . getSessionLink())
             : (getWebhookUrl() . '/tandem-answer-response.php?conference_name=' . $_REQUEST['FriendlyName'] . '&service_body_id=' . $serviceBodyCallHandling->service_body_id . getSessionLink()),
@@ -77,8 +78,8 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     $tandem = 0;
     $sms_body = "You have an incoming helpline call from ";
     if (isset($_REQUEST['StatusCallbackEvent']) && $_REQUEST['StatusCallbackEvent'] == 'participant-join') {
-        setConferenceParticipant($conferences[0]->sid, $_REQUEST['FriendlyName']);
-        insertCallEventRecord(EventId::CALLER_IN_CONFERENCE, $_REQUEST);
+        setConferenceParticipant($_REQUEST['FriendlyName']);
+        insertCallEventRecord(EventId::CALLER_IN_CONFERENCE);
 
         if (isset($_SESSION["ActiveVolunteer"])) {
             $volunteer = $_SESSION["ActiveVolunteer"];
@@ -98,8 +99,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
 
         if (isset($_REQUEST['CallStatus']) && $_REQUEST['CallStatus'] == 'no-answer' ) {
             insertCallEventRecord(EventId::VOLUNTEER_NOANSWER, (object)['to_number' => $_REQUEST['Called']]);
-            $conferences = $twilioClient->conferences->read(array ("friendlyName" => $_REQUEST['FriendlyName'] ));
-            setConferenceParticipant($conferences[0]->sid, $_REQUEST['FriendlyName']);
+            setConferenceParticipant($_REQUEST['FriendlyName']);
         }
 
         log_debug("Next volunteer to call " . $callConfig->volunteer->phoneNumber);
