@@ -6,8 +6,14 @@ if ($_SERVER['REQUEST_URI'] == "/admin") {
 
 $state = UpgradeAdvisor::getState();
 ?>
+<script type="text/javascript">
+    function onAuthenticate() {
+        $("#authenticateButton").attr("disabled", true);
+        $("#auth").submit();
+    }
+</script>
 <div id="signin" class="container">
-    <form class="form-signin" method="POST" action="auth_login.php">
+    <form id="auth" class="form-signin" method="POST" action="auth_login.php">
         <div id="admin_title"><?php echo isset($GLOBALS['admin_title']) ? $GLOBALS['admin_title'] : ""; ?></div>
         <div id="yap-logo">
             <img src="img/yap_logo.png" alt="Yap" width="310" height="100">
@@ -20,7 +26,7 @@ $state = UpgradeAdvisor::getState();
         <input name="username" type="username" id="inputUsername" class="form-control" placeholder="<?php echo $GLOBALS['username']?>" required autofocus>
         <label for="inputPassword" class="sr-only"><?php echo $GLOBALS['password']?></label>
         <input name="password" type="password" id="inputPassword" class="form-control" placeholder="<?php echo $GLOBALS['password']?>" required>
-        <button class="btn btn-lg btn-primary btn-block" type="submit"><?php echo $GLOBALS['authenticate']?></button>
+        <button id="authenticateButton" class="btn btn-lg btn-primary btn-block" onclick="onAuthenticate();"><?php echo $GLOBALS['authenticate']?></button>
         <select class="form-control" name="override_word_language" id="admin_language">
             <?php
             foreach ($available_languages as $key => $available_language) {
