@@ -95,8 +95,14 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     if (( isset($_REQUEST['SequenceNumber']) && intval($_REQUEST['SequenceNumber']) == 1 ) ||
          ( isset($_REQUEST['CallStatus']) && ( $_REQUEST['CallStatus'] == 'no-answer' || $_REQUEST['CallStatus'] == 'completed' ) ) ) {
         $callConfig = getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem);
-        log_debug("Next volunteer to call " . $callConfig->volunteer->phoneNumber);
 
+        if (isset($_REQUEST['CallStatus']) && $_REQUEST['CallStatus'] == 'no-answer' ) {
+            insertCallEventRecord(EventId::VOLUNTEER_NOANSWER, (object)['to_number' => $_REQUEST['Called']]);
+            $conferences = $twilioClient->conferences->read(array ("friendlyName" => $_REQUEST['FriendlyName'] ));
+            setConferenceParticipant($conferences[0]->sid, $_REQUEST['FriendlyName']);
+        }
+
+        log_debug("Next volunteer to call " . $callConfig->volunteer->phoneNumber);
         $participants = $twilioClient->conferences($conferences[0]->sid)->participants->read();
 
         // Do not call if the caller hung up.

@@ -6,5 +6,4 @@ class CallConfig
     public $volunteer_routing_params;
     public $options;
     public $volunteer;
-    public $caller_id;
 }
