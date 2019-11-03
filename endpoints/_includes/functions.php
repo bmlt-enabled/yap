@@ -116,6 +116,7 @@ class EventId
     const CALLER_HUP = 9;
     const CALLER_IN_CONFERENCE = 10;
     const VOLUNTEER_HUP = 11;
+    const VOLUNTEER_IN_CONFERENCE = 12;
 
     static function getEventById($id) {
         switch($id) {
@@ -130,6 +131,7 @@ class EventId
             case self::CALLER_HUP: return "Volunteer Answered but Caller Hungup";
             case self::CALLER_IN_CONFERENCE: return "Caller Waiting for Volunteer";
             case self::VOLUNTEER_HUP: return "Volunteer Hungup";
+            case self::VOLUNTEER_IN_CONFERENCE: return "Volunteer Connected To Caller";
         }
     }
 }
@@ -281,6 +283,13 @@ class VolunteerResponderOption
 {
     const UNSPECIFIED = 0;
     const ENABLED = 1;
+}
+
+class CallRole
+{
+    const CALLER = 1;
+    const VOLUNTEER = 2;
+    const TRAINER = 3;
 }
 
 class VolunteerGender
@@ -989,12 +998,12 @@ function admin_PersistDbConfig($service_body_id, $data, $data_type, $parent_id =
     if (count($current_data_check) == 0 || $data_type == DataType::YAP_GROUPS_V2) {
         $parent_id = $parent_id == 0 ? null : $parent_id;
         $stmt = "INSERT INTO `config` (`service_body_id`,`data`,`data_type`,`parent_id`) VALUES (:service_body_id,:data,:data_type,:parent_id)";
-        $s = $db->prepare($stmt);
-        $s->bindParam(':service_body_id', $service_body_id);
-        $s->bindParam(':data', $data);
-        $s->bindParam(':data_type', $data_type);
-        $s->bindParam(':parent_id', $parent_id, PDO::PARAM_INT);
-        $s->execute();
+        $db->query($stmt);
+        $db->bind(':service_body_id', $service_body_id);
+        $db->bind(':data', $data);
+        $db->bind(':data_type', $data_type);
+        $db->bind(':parent_id', $parent_id, PDO::PARAM_INT);
+        $db->execute();
         $db->query("SELECT MAX(id) as id FROM `config` WHERE service_body_id='$service_body_id' AND data_type='$data_type'");
         $resultset = $db->resultset();
         $db->close();
@@ -1004,14 +1013,14 @@ function admin_PersistDbConfig($service_body_id, $data, $data_type, $parent_id =
         if (isset($parent_id) && $parent_id > 0) {
             $stmt .= " AND `parent_id`=:parent_id";
         }
-        $s = $db->prepare($stmt);
-        $s->bindParam(':data', $data);
-        $s->bindParam(':service_body_id', $service_body_id);
-        $s->bindParam(':data_type', $data_type);
+        $db->query($stmt);
+        $db->bind(':data', $data);
+        $db->bind(':service_body_id', $service_body_id);
+        $db->bind(':data_type', $data_type);
         if (isset($parent_id) && $parent_id > 0) {
-            $s->bindParam(':parent_id', $parent_id);
+            $db->bind(':parent_id', $parent_id);
         }
-        $s->execute();
+        $db->execute();
     }
 }
 
@@ -1019,10 +1028,10 @@ function admin_PersistDbConfigById($id, $data)
 {
     $db = new Database();
     $stmt = "UPDATE `config` SET `data`=:data WHERE `id`=:id";
-    $s = $db->prepare($stmt);
-    $s->bindParam(':data', $data);
-    $s->bindParam(':id', $id);
-    $s->execute();
+    $db->query($stmt);
+    $db->bind(':data', $data);
+    $db->bind(':id', $id);
+    $db->execute();
 }
 
 function getDbData($service_body_id, $data_type)
@@ -1772,7 +1781,7 @@ function getConferences($service_body_id)
     return $resultset;
 }
 
-function setConferenceParticipant($friendlyname)
+function setConferenceParticipant($friendlyname, $role)
 {
     require_once 'twilio-client.php';
     $conferences = $GLOBALS['twilioClient']->conferences->read(array ("friendlyName" => $friendlyname ));
@@ -1780,12 +1789,21 @@ function setConferenceParticipant($friendlyname)
     $callsid = $_REQUEST['CallSid'];
     $db = new Database();
     $stmt = "INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`) VALUES (:conferencesid,:callsid,:friendlyname)";
-    $s = $db->prepare($stmt);
-    $s->bindParam(':conferencesid', $conferencesid);
-    $s->bindParam(':callsid', $callsid);
-    $s->bindParam(':friendlyname', $friendlyname);
-    $s->execute();
+    $db->query($stmt);
+    $db->bind(':conferencesid', $conferencesid);
+    $db->bind(':callsid', $callsid);
+    $db->bind(':friendlyname', $friendlyname);
+    $db->execute();
     $db->close();
+}
+
+function getConferenceParticipant($callsid) {
+    $db = new Database();
+    $db->query("SELECT DISTINCT callsid, role FROM conference_participants WHERE callsid = :callsid");
+    $db->bind(':callsid', $callsid);
+    $resultset = $db->single();
+    $db->close();
+    return $resultset;
 }
 
 class CallRecord {
@@ -1798,7 +1816,7 @@ class CallRecord {
     public $payload;
 }
 
-function insertCallEventRecord($eventid, $meta = NULL) {
+function insertCallEventRecord($eventid, $meta = null) {
     if (isset($_REQUEST['CallSid'])) {
         $callSid = $_REQUEST['CallSid'];
     } else {
@@ -1808,20 +1826,18 @@ function insertCallEventRecord($eventid, $meta = NULL) {
         writeMetric(["searchType" => $eventid], setting('service_body_id'));
     }
 
-    if (isset($meta)) {
-        $meta_as_json = json_encode($meta);
-    }
+    $meta_as_json = isset($meta) ? json_encode($meta) : null;
 
     $service_body_id = setting('service_body_id');
 
     $db = new Database();
     $stmt = "INSERT INTO `records_events` (`callsid`,`event_id`,`service_body_id`,`meta`) VALUES (:callSid, :eventid, :service_body_id, :meta)";
-    $s = $db->prepare($stmt);
-    $s->bindParam(':callSid', $callSid);
-    $s->bindParam(':eventid', $eventid);
-    $s->bindParam(':service_body_id', $service_body_id);
-    $s->bindParam(':meta', $meta_as_json);
-    $s->execute();
+    $db->query($stmt);
+    $db->bind(':callSid', $callSid);
+    $db->bind(':eventid', $eventid);
+    $db->bind(':service_body_id', $service_body_id);
+    $db->bind(':meta', $meta_as_json);
+    $db->execute();
     $db->close();
 }
 
@@ -1829,15 +1845,15 @@ function insertCallRecord($callRecord) {
     $db = new Database();
     $stmt = "INSERT INTO `records` (`callsid`,`from_number`,`to_number`,`duration`,`start_time`,`end_time`,`payload`) 
         VALUES (:callSid, :from_number, :to_number, :duration, :start_time, :end_time, :payload)";
-    $s = $db->prepare($stmt);
-    $s->bindParam(':callSid', $callRecord->callSid);
-    $s->bindParam(':from_number', $callRecord->from_number);
-    $s->bindParam(':to_number', $callRecord->to_number);
-    $s->bindParam(':duration', $callRecord->duration);
-    $s->bindParam(':start_time', $callRecord->start_time);
-    $s->bindParam(':end_time', $callRecord->end_time);
-    $s->bindParam(':payload', $callRecord->payload);
-    $s->execute();
+    $db->query($stmt);
+    $db->bind(':callSid', $callRecord->callSid);
+    $db->bind(':from_number', $callRecord->from_number);
+    $db->bind(':to_number', $callRecord->to_number);
+    $db->bind(':duration', $callRecord->duration);
+    $db->bind(':start_time', $callRecord->start_time);
+    $db->bind(':end_time', $callRecord->end_time);
+    $db->bind(':payload', $callRecord->payload);
+    $db->execute();
     $db->close();
 }
 

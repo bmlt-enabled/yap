@@ -64,17 +64,12 @@ class Database
             }
         }
 
-        $this->stmt->bindValue($param, $value, $type);
+        $this->stmt->bindParam($param, $value, $type);
     }
 
     public function execute()
     {
         return $this->stmt->execute();
-    }
-
-    public function prepare($statement)
-    {
-        return $this->dbh->prepare($statement);
     }
 
     public function resultset()

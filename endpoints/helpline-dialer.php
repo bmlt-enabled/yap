@@ -76,16 +76,16 @@ if (isset($_REQUEST['Debug']) && intval($_REQUEST['Debug']) == 1) {
 $conferences = $twilioClient->conferences->read(array ("friendlyName" => $_REQUEST['FriendlyName'] ));
 if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     $tandem = 0;
-    $sms_body = "You have an incoming helpline call from ";
+    $sms_body = "You have an incoming phoneline call from ";
     if (isset($_REQUEST['StatusCallbackEvent']) && $_REQUEST['StatusCallbackEvent'] == 'participant-join') {
-        setConferenceParticipant($_REQUEST['FriendlyName']);
+        setConferenceParticipant($_REQUEST['FriendlyName'], CallRole::VOLUNTEER);
         insertCallEventRecord(EventId::CALLER_IN_CONFERENCE);
 
         if (isset($_SESSION["ActiveVolunteer"])) {
             $volunteer = $_SESSION["ActiveVolunteer"];
             if (isset($volunteer->volunteerInfo) && $volunteer->volunteerInfo->shadow == VolunteerShadowOption::TRAINEE) {
                 $_REQUEST['SequenceNumber'] = 1;
-                $sms_body = "You have an incoming helpline trainee call.  The originating helpline call is from ";
+                $sms_body = "You have an incoming phoneline trainee call.  The originating phoneline call is from ";
                 $_SESSION["ActiveVolunteer"] = null;
                 $tandem = 1;
             }
@@ -97,9 +97,9 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
          ( isset($_REQUEST['CallStatus']) && ( $_REQUEST['CallStatus'] == 'no-answer' || $_REQUEST['CallStatus'] == 'completed' ) ) ) {
         $callConfig = getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem);
 
-        if (isset($_REQUEST['CallStatus']) && $_REQUEST['CallStatus'] == 'no-answer' ) {
+        if (isset($_REQUEST['CallStatus']) && $_REQUEST['CallStatus'] == 'no-answer') {
             insertCallEventRecord(EventId::VOLUNTEER_NOANSWER, (object)['to_number' => $_REQUEST['Called']]);
-            setConferenceParticipant($_REQUEST['FriendlyName']);
+            setConferenceParticipant($_REQUEST['FriendlyName'], CallRole::VOLUNTEER);
         }
 
         log_debug("Next volunteer to call " . $callConfig->volunteer->phoneNumber);
