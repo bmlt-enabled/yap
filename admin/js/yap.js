@@ -6,6 +6,7 @@ function getReports() {
     $("#service_body_id").on("change", function() {
         $.getJSON("cdr_api.php?service_body_id=" + $("#service_body_id").val(), function (data) {
             table.replaceData(data);
+            $(".subTableHolder").toggle();
         });
 
         $.getJSON("metric_api.php?service_body_id=" + $("#service_body_id").val(), function (data) {
