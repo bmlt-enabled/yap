@@ -113,10 +113,11 @@ class EventId
     const VOLUNTEER_ANSWERED = 6;
     const VOLUNTEER_REJECTED = 7;
     const VOLUNTEER_NOANSWER = 8;
-    const CALLER_HUP = 9;
+    const VOLUNTEER_ANSWERED_BUT_CALLER_HUP = 9;
     const CALLER_IN_CONFERENCE = 10;
     const VOLUNTEER_HUP = 11;
     const VOLUNTEER_IN_CONFERENCE = 12;
+    const CALLER_HUP = 13;
 
     static function getEventById($id) {
         switch($id) {
@@ -128,10 +129,11 @@ class EventId
             case self::VOLUNTEER_ANSWERED: return "Volunteer Answered";
             case self::VOLUNTEER_REJECTED: return "Volunteer Rejected Call";
             case self::VOLUNTEER_NOANSWER: return "Volunteer No Answer";
-            case self::CALLER_HUP: return "Volunteer Answered but Caller Hungup";
+            case self::VOLUNTEER_ANSWERED_BUT_CALLER_HUP: return "Volunteer Answered but Caller Hungup";
             case self::CALLER_IN_CONFERENCE: return "Caller Waiting for Volunteer";
             case self::VOLUNTEER_HUP: return "Volunteer Hungup";
             case self::VOLUNTEER_IN_CONFERENCE: return "Volunteer Connected To Caller";
+            case self::CALLER_HUP: return "Caller Hungup";
         }
     }
 }
@@ -1788,11 +1790,12 @@ function setConferenceParticipant($friendlyname, $role)
     $conferencesid = $conferences[0]->sid;
     $callsid = $_REQUEST['CallSid'];
     $db = new Database();
-    $stmt = "INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`) VALUES (:conferencesid,:callsid,:friendlyname)";
+    $stmt = "INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`,`role`) VALUES (:conferencesid,:callsid,:friendlyname,:role)";
     $db->query($stmt);
     $db->bind(':conferencesid', $conferencesid);
     $db->bind(':callsid', $callsid);
     $db->bind(':friendlyname', $friendlyname);
+    $db->bind(':role', $role);
     $db->execute();
     $db->close();
 }

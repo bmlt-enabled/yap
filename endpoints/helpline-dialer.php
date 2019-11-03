@@ -79,7 +79,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     $sms_body = "You have an incoming phoneline call from ";
     if (isset($_REQUEST['StatusCallbackEvent']) && $_REQUEST['StatusCallbackEvent'] == 'participant-join' &&
         ( isset($_REQUEST['SequenceNumber']) && intval($_REQUEST['SequenceNumber']) == 1 )) {
-        setConferenceParticipant($_REQUEST['FriendlyName'], CallRole::VOLUNTEER);
+        setConferenceParticipant($_REQUEST['FriendlyName'], CallRole::CALLER);
         insertCallEventRecord(EventId::CALLER_IN_CONFERENCE);
 
         if (isset($_SESSION["ActiveVolunteer"])) {
@@ -158,5 +158,12 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                 error_log($e);
             }
         }
+    }
+} elseif (isset($_REQUEST['StatusCallbackEvent']) && $_REQUEST['StatusCallbackEvent'] == 'participant-leave') {
+    $participant = getConferenceParticipant($_REQUEST['CallSid']);
+    if ($participant['role'] == CallRole::CALLER) {
+        insertCallEventRecord(EventId::CALLER_HUP);
+    } elseif ($participant['role'] == CallRole::VOLUNTEER) {
+        insertCallEventRecord(EventId::VOLUNTEER_HUP);
     }
 }

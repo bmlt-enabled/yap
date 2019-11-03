@@ -19,7 +19,7 @@ $participants = $twilioClient->conferences($conferences[0]->sid)->participants->
     </Gather>
 <?php } else {
     setConferenceParticipant($_REQUEST['conference_name'], CallRole::CALLER);
-    insertCallEventRecord(EventID::CALLER_HUP, (object)['to_number' => $_REQUEST['Called']]);
+    insertCallEventRecord(EventID::VOLUNTEER_ANSWERED_BUT_CALLER_HUP, (object)['to_number' => $_REQUEST['Called']]);
     error_log("The caller hungup.") ?>
     <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
         <?php echo word('the_caller_hungup') ?>
