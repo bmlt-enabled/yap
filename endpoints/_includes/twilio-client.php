@@ -4,6 +4,7 @@ use Twilio\Rest\Client;
 
 try {
     $twilioClient = new Client(setting("twilio_account_sid"), setting("twilio_auth_token"));
+    $GLOBALS['twilioClient'] = $twilioClient;
 } catch (\Twilio\Exceptions\ConfigurationException $e) {
     error_log("Missing Twilio Credentials");
 }
