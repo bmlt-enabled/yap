@@ -48,7 +48,7 @@
         movableColumns:true,
         resizableRows:true,
         printAsHtml:true,
-        printHeader:"<h1>Call Detail Records<h1>",
+        printHeader:"<h3>Call Detail Records<h3>",
         printFooter:"",
         rowClick: function(e, row) {
             $("#subTableId_" + row.getData().id).toggle();
