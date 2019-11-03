@@ -52,7 +52,7 @@ function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = Volunt
         'callerId'             => $caller_id,
         'originalCallerId'     => $original_caller_id
     );
-    $config->voicemail_url = getWebhookUrl() . '/voicemail.php?service_body_id=' . $serviceBodyCallHandling->service_body_id . '&caller_id=' . trim($config->options['caller_id']) . getSessionLink();
+    $config->voicemail_url = getWebhookUrl() . '/voicemail.php?service_body_id=' . $serviceBodyCallHandling->service_body_id . '&caller_id=' . trim($config->options['callerId']) . getSessionLink();
     if (!isset($_SESSION['ActiveVolunteer'])) {
         $_SESSION['ActiveVolunteer'] = $volunteer;
     }
