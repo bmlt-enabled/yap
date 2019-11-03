@@ -18,7 +18,9 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";?>
     </Dial>
 <?php } else {
     $conferences = $twilioClient->conferences->read(array ("friendlyName" => $_REQUEST['conference_name'] ));
-    insertCallEventRecord(EventId::VOLUNTEER_REJECTED, $_REQUEST);
+    insertCallEventRecord(EventId::VOLUNTEER_REJECTED,
+        (object)["digits" => $_REQUEST['Digits']]
+    );
     setConferenceParticipant($conferences[0]->sid, $_REQUEST['conference_name']);
     log_debug("They rejected the call.") ?>
     <Hangup/>

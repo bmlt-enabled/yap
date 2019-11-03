@@ -125,7 +125,7 @@ class EventId
             case self::VOICEMAIL: return "Voicemail";
             case self::VOLUNTEER_DIALED: return "Volunteer Dialed";
             case self::VOLUNTEER_ANSWERED: return "Volunteer Answered";
-            case self::VOLUNTEER_REJECTED: return "Volunteer Rejected";
+            case self::VOLUNTEER_REJECTED: return "Volunteer Rejected Call";
             case self::VOLUNTEER_NOANSWER: return "Volunteer No Answer";
             case self::CALLER_HUP: return "Caller Hungup";
             case self::CALLER_IN_CONFERENCE: return "Caller Waiting for Volunteer";
