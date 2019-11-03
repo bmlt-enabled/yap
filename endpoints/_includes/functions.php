@@ -451,7 +451,7 @@ class UpgradeAdvisor
 
         try {
             require_once 'twilio-client.php';
-            foreach ($twilioClient->incomingPhoneNumbers->read() as $number) {
+            foreach ($GLOBALS['twilioClient']->incomingPhoneNumbers->read() as $number) {
                 if (basename($number->voiceUrl)) {
                     if (!strpos($number->voiceUrl, '.php')
                         && !strpos($number->voiceUrl, 'twiml')
