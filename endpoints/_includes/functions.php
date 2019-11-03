@@ -109,13 +109,27 @@ class EventId
     const MEETING_SEARCH = 2;
     const JFT_LOOKUP = 3;
     const VOICEMAIL = 4;
+    const VOLUNTEER_DIALED = 5;
+    const VOLUNTEER_ANSWERED = 6;
+    const VOLUNTEER_REJECTED = 7;
+    const VOLUNTEER_NOANSWER = 8;
+    const CALLER_HUP = 9;
+    const CALLER_IN_CONFERENCE = 10;
+    const VOLUNTEER_HUP = 11;
 
     static function getEventById($id) {
         switch($id) {
-            case 1: return "Volunteer Search";
-            case 2: return "Meeting Search";
-            case 3: return "JFT Lookup";
-            case 4: return "Voicemail";
+            case self::VOLUNTEER_SEARCH: return "Volunteer Search";
+            case self::MEETING_SEARCH: return "Meeting Search";
+            case self::JFT_LOOKUP: return "JFT Lookup";
+            case self::VOICEMAIL: return "Voicemail";
+            case self::VOLUNTEER_DIALED: return "Volunteer Dialed";
+            case self::VOLUNTEER_ANSWERED: return "Volunteer Answered";
+            case self::VOLUNTEER_REJECTED: return "Volunteer Rejected";
+            case self::VOLUNTEER_NOANSWER: return "Volunteer No Answer";
+            case self::CALLER_HUP: return "Caller Hungup";
+            case self::CALLER_IN_CONFERENCE: return "Caller Waiting for Volunteer";
+            case self::VOLUNTEER_HUP: return "Volunteer Hungup";
         }
     }
 }
@@ -1758,8 +1772,9 @@ function getConferences($service_body_id)
     return $resultset;
 }
 
-function setConferenceParticipant($conferencesid, $callsid, $friendlyname)
+function setConferenceParticipant($conferencesid, $friendlyname)
 {
+    $callsid = $_REQUEST['CallSid'];
     $db = new Database();
     $stmt = "INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`) VALUES (:conferencesid,:callsid,:friendlyname)";
     $s = $db->prepare($stmt);
@@ -1780,7 +1795,7 @@ class CallRecord {
     public $payload;
 }
 
-function insertCallEventRecord($eventid, $service_body_id = NULL, $meta = NULL) {
+function insertCallEventRecord($eventid, $meta = NULL) {
     if (isset($_REQUEST['CallSid'])) {
         $callSid = $_REQUEST['CallSid'];
     } else {
@@ -1790,13 +1805,19 @@ function insertCallEventRecord($eventid, $service_body_id = NULL, $meta = NULL) 
         writeMetric(["searchType" => $eventid], setting('service_body_id'));
     }
 
+    if (isset($meta)) {
+        $meta_as_json = json_encode($meta);
+    }
+
+    $service_body_id = setting('service_body_id');
+
     $db = new Database();
     $stmt = "INSERT INTO `records_events` (`callsid`,`event_id`,`service_body_id`,`meta`) VALUES (:callSid, :eventid, :service_body_id, :meta)";
     $s = $db->prepare($stmt);
     $s->bindParam(':callSid', $callSid);
     $s->bindParam(':eventid', $eventid);
     $s->bindParam(':service_body_id', $service_body_id);
-    $s->bindParam(':meta', $meta);
+    $s->bindParam(':meta', $meta_as_json);
     $s->execute();
     $db->close();
 }
@@ -1820,8 +1841,11 @@ function insertCallRecord($callRecord) {
 function getCallRecords($service_body_id) {
     $db = new Database();
     $sql = sprintf("SELECT r.`id`,r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,
-CONCAT('[', GROUP_CONCAT('{\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, '\",\"service_body_id\":', IFNULL(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
-FROM `records` r LEFT OUTER JOIN `records_events` re ON r.callsid = re.callsid %s GROUP BY r.`id`,r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,r.callsid",
+CONCAT('[', GROUP_CONCAT('{\"meta\":', IFNULL(re.meta, '{}'), ',\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, '\",\"service_body_id\":', IFNULL(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
+FROM `records` r 
+LEFT OUTER JOIN conference_participants cp ON cp.callsid = r.callsid 
+LEFT OUTER JOIN conference_participants cp2 ON cp2.conferencesid = cp.conferencesid AND cp2.callsid <> cp.callsid
+INNER JOIN records_events re ON r.callsid = re.callsid OR cp2.callsid = re.callsid %s GROUP BY r.`id`,r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,r.callsid",
         (isset($service_body_id) && $service_body_id > 0 ? "WHERE `service_body_id` = " . $service_body_id : ""));
     $db->query($sql);
     $resultset = $db->resultset();
@@ -1841,12 +1865,13 @@ function getVoicemail($service_body_id) {
 
 
 function adjustedCallRecords($service_body_id = null) {
-    $callRecords = getCallRecords($service_body_id);
+    $callRecords = getCallRecords(intval($service_body_id));
 
     foreach ($callRecords as &$callRecord) {
         $callEvents = isset($callRecord['call_events']) ? json_decode($callRecord['call_events']) : [];
         foreach ($callEvents as &$callEvent) {
             $callEvent->event_id = EventId::getEventById($callEvent->event_id);
+            $callEvent->meta = json_encode($callEvent->meta);
         }
         $callRecord['call_events'] = $callEvents;
     }

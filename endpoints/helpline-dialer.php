@@ -77,7 +77,8 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     $tandem = 0;
     $sms_body = "You have an incoming helpline call from ";
     if (isset($_REQUEST['StatusCallbackEvent']) && $_REQUEST['StatusCallbackEvent'] == 'participant-join') {
-        setConferenceParticipant($conferences[0]->sid, $_REQUEST['CallSid'], $_REQUEST['FriendlyName']);
+        setConferenceParticipant($conferences[0]->sid, $_REQUEST['FriendlyName']);
+        insertCallEventRecord(EventId::CALLER_IN_CONFERENCE, $_REQUEST);
 
         if (isset($_SESSION["ActiveVolunteer"])) {
             $volunteer = $_SESSION["ActiveVolunteer"];
@@ -127,6 +128,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                         }
 
                         log_debug("Calling: " . $callConfig->volunteer->phoneNumber);
+                        insertCallEventRecord(EventId::VOLUNTEER_DIALED, (object)['to_number' => $volunteer_number]);
                         $twilioClient->calls->create(
                             $volunteer_number,
                             $callConfig->options['callerId'],

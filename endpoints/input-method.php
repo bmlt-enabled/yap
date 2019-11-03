@@ -8,7 +8,7 @@
 
 
 if ($searchType == SearchType::MEETINGS || $searchType == SearchType::JFT) {
-    insertCallEventRecord($searchType, setting('service_body_id'));
+    insertCallEventRecord($searchType);
 }
 
 if ($searchType == SearchType::VOLUNTEERS) {

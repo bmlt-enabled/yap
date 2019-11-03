@@ -89,6 +89,7 @@
                     {title: "Event Time", field: "event_time"},
                     {title: "Event", field: "event_id"},
                     {title: "Service Body Id", field: "service_body_id"},
+                    {title: "Metadata", field: "meta"},
                 ]
             })
         }

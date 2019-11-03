@@ -1,5 +1,6 @@
 <?php
 require_once '_includes/functions.php';
+require_once '_includes/twilio-client.php';
 header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";?>
 <Response>
@@ -16,6 +17,9 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";?>
         </Conference>
     </Dial>
 <?php } else {
+    $conferences = $twilioClient->conferences->read(array ("friendlyName" => $_REQUEST['conference_name'] ));
+    insertCallEventRecord(EventId::VOLUNTEER_REJECTED, $_REQUEST);
+    setConferenceParticipant($conferences[0]->sid, $_REQUEST['conference_name']);
     log_debug("They rejected the call.") ?>
     <Hangup/>
 <?php } ?>
