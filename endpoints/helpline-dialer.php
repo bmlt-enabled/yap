@@ -77,7 +77,8 @@ $conferences = $twilioClient->conferences->read(array ("friendlyName" => $_REQUE
 if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     $tandem = 0;
     $sms_body = "You have an incoming phoneline call from ";
-    if (isset($_REQUEST['StatusCallbackEvent']) && $_REQUEST['StatusCallbackEvent'] == 'participant-join') {
+    if (isset($_REQUEST['StatusCallbackEvent']) && $_REQUEST['StatusCallbackEvent'] == 'participant-join' &&
+        ( isset($_REQUEST['SequenceNumber']) && intval($_REQUEST['SequenceNumber']) == 1 )) {
         setConferenceParticipant($_REQUEST['FriendlyName'], CallRole::VOLUNTEER);
         insertCallEventRecord(EventId::CALLER_IN_CONFERENCE);
 
