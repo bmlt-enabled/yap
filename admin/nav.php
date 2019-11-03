@@ -3,7 +3,7 @@ require_once 'auth_verify.php';
 require_once 'header.php';
 ?>
 <script type="text/javascript">
-    var sessionTimeoutMinutes = 15;
+    var sessionTimeoutMinutes = 20;
     setInterval(function() { location.href='index.php?expired=true'; }, sessionTimeoutMinutes * 60000);
 </script>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
