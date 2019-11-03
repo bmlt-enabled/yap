@@ -32,6 +32,8 @@
             {title:"Action", field:"meta", formatter:"link",formatterParams:{
                 target:"_blank",
                 label:"Play",
+            }, mutator: function(value, data, type, params, component) {
+                return value != null ? JSON.parse(value)['url'] : null;
             }}
         ],
         rowFormatter:function(row) {
