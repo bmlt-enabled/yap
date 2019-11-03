@@ -98,3 +98,4 @@ $manage_groups = "Manage Groups";
 $create = "Create";
 $edit = "Edit";
 $delete = "Delete";
+$voicemail = "Voicemail";

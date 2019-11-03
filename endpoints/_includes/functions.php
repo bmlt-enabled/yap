@@ -1780,7 +1780,7 @@ class CallRecord {
     public $payload;
 }
 
-function insertCallEventRecord($eventid, $service_body_id = NULL) {
+function insertCallEventRecord($eventid, $service_body_id = NULL, $meta = NULL) {
     if (isset($_REQUEST['CallSid'])) {
         $callSid = $_REQUEST['CallSid'];
     } else {
@@ -1791,11 +1791,12 @@ function insertCallEventRecord($eventid, $service_body_id = NULL) {
     }
 
     $db = new Database();
-    $stmt = "INSERT INTO `records_events` (`callsid`,`event_id`,`service_body_id`) VALUES (:callSid, :eventid, :service_body_id)";
+    $stmt = "INSERT INTO `records_events` (`callsid`,`event_id`,`service_body_id`,`meta`) VALUES (:callSid, :eventid, :service_body_id, :meta)";
     $s = $db->prepare($stmt);
     $s->bindParam(':callSid', $callSid);
     $s->bindParam(':eventid', $eventid);
     $s->bindParam(':service_body_id', $service_body_id);
+    $s->bindParam(':meta', $meta);
     $s->execute();
     $db->close();
 }
@@ -1827,6 +1828,17 @@ FROM `records` r LEFT OUTER JOIN `records_events` re ON r.callsid = re.callsid %
     $db->resultset();
     return $resultset;
 }
+
+function getVoicemail($service_body_id) {
+    $db = new Database();
+    $sql = sprintf("SELECT r.`callsid`,r.`from_number`,r.`to_number`,re.`event_time`,re.`meta` FROM records_events re
+    LEFT OUTER JOIN records r ON re.callsid = r.callsid where event_id = %d and service_body_id = %s;", EventId::VOICEMAIL, $service_body_id);
+    $db->query($sql);
+    $resultset = $db->resultset();
+    $db->resultset();
+    return $resultset;
+}
+
 
 function adjustedCallRecords($service_body_id = null) {
     $callRecords = getCallRecords($service_body_id);

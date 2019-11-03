@@ -6,7 +6,7 @@ if (isset($GLOBALS['mysql_hostname'])) {
     try {
         $db = new Database();
         try {
-            $db->query("SELECT version FROM migrations ORDER BY version DESC LIMIT 1");
+            $db->query("SELECT version FROM migrations ORDER BY id DESC LIMIT 1");
             $migration_version_query = intval($db->single()["version"]);
         } catch (PDOException $e) {
             $migration_version_query = null;

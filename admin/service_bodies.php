@@ -25,7 +25,8 @@ sort_on_field($service_bodies, 'name');
                         <td><?php echo isset($service_body->helpline) ? $service_body->helpline : "" ?></td>
                         <td>
                             <button class="btn btn-sm btn-primary" onclick="openServiceBodyCallHandling(<?php echo $service_body->id ?>);"><?php echo word('call_handling')?></button>
-                            <button class="btn btn-sm btn-warning" onclick="openServiceBodyConfigure(<?php echo $service_body->id ?>);"><?php echo word('configure')?></button>
+                            <button class="btn btn-sm btn-success" onclick="openServiceBodyConfigure(<?php echo $service_body->id ?>);"><?php echo word('configure')?></button>
+                            <button class="btn btn-sm btn-warning" onclick="location.href='voicemail.php?service_body_id=<?php echo $service_body->id ?>';"><?php echo word('voicemail')?></button>
                             <div class="modal fade" id="serviceBodyCallHandling_<?php echo $service_body->id ?>" tabindex="-1" role="dialog" aria-labelledby="configureShiftDialog" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content">
