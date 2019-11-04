@@ -8,6 +8,7 @@
 <div id="voicemail-table"></div>
 <?php require_once 'footer.php';?>
 <script src="vendor/tabulator-tables/dist/js/tabulator.min.js"></script>
+<script type="text/javascript" src="vendor/moment/min/moment.min.js"></script>
 <script type="text/javascript">
     var data = <?php echo json_encode(getVoicemail($_REQUEST['service_body_id']))?>;
     var table = new Tabulator("#voicemail-table", {
@@ -25,7 +26,7 @@
             {column:"event_time", dir:"desc"},
         ],
         columns:[
-            {title:"Timestamp", field:"event_time"},
+            {title:"Timestamp", field:"event_time", mutator: toCurrentTimezone},
             {title:"CallSid", field:"callsid"},
             {title:"From", field:"from_number"},
             {title:"To", field:"to_number"},
@@ -43,13 +44,4 @@
             tableEl.style.border = "1px solid #333";
         }
     });
-</script>
-<script type="text/javascript" src="vendor/moment/min/moment.min.js"></script>
-<script type="text/javascript">
-    /*var timestamp = $(".timestamp");
-    for (var i = 0; i < timestamp.length; i++) {
-        timestamp[i].innerText = moment.utc(timestamp[i].innerText)
-            .utcOffset(moment().utcOffset())
-            .format("YYYY-MM-DD HH:mm:ss Z");
-    }*/
 </script>

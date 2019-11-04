@@ -827,6 +827,10 @@ function dataDecoder(dataString) {
     return JSON.parse(atob(dataString));
 }
 
+function toCurrentTimezone(dateTime) {
+    return moment.utc(dateTime).utcOffset(moment().utcOffset()).format("YYYY-MM-DD HH:mm:ss Z")
+}
+
 Object.prototype.hasOwnProperty = function(property) {
     return this[property] !== undefined;
 };

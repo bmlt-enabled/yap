@@ -57,8 +57,8 @@
             {column:"start_time", dir:"desc"},
         ],
         columns:[
-            {title:"Start Time", field:"start_time"},
-            {title:"End Time", field:"end_time"},
+            {title:"Start Time", field:"start_time", mutator: toCurrentTimezone },
+            {title:"End Time", field:"end_time", mutator: toCurrentTimezone },
             {title:"Duration (seconds)", field:"duration"},
             {title:"From", field:"from_number"},
             {title:"To", field:"to_number"},
@@ -86,7 +86,7 @@
                 layout: "fitColumns",
                 data: row.getData().call_events,
                 columns: [
-                    {title: "Event Time", field: "event_time"},
+                    {title: "Event Time", field: "event_time", mutator: toCurrentTimezone},
                     {title: "Event", field: "event_id"},
                     {title: "Service Body Id", field: "service_body_id"},
                     {title: "Metadata", field: "meta"},
