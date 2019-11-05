@@ -1877,7 +1877,7 @@ INNER JOIN records_events re ON r.callsid = re.callsid OR cp2.callsid = re.calls
 
 function getVoicemail($service_body_id) {
     $db = new Database();
-    $sql = sprintf("SELECT r.`callsid`,r.`from_number`,r.`to_number`,re.`event_time`,re.`meta` FROM records_events re
+    $sql = sprintf("SELECT r.`callsid`,r.`from_number`,r.`to_number`,CONCAT(re.`event_time`, 'Z') as event_time,re.`meta` FROM records_events re
     LEFT OUTER JOIN records r ON re.callsid = r.callsid where event_id = %d and service_body_id = %s;", EventId::VOICEMAIL, $service_body_id);
     $db->query($sql);
     $resultset = $db->resultset();
