@@ -16,14 +16,17 @@
     <div class="button-group" role="group" id="cdr-table-controls">
         <button class="btn btn-warning" id="print-table">Print</button>
         <button class="btn btn-success" id="download-csv">CSV</button>
-        <button class="btn btn-primary" id="download-json">JSON</button>
+        <button class="btn btn-primary" id="download-xlsx">XLSX</button>
+        <button class="btn btn-secondary" id="download-json">JSON</button>
     </div>
     <div id="cdr-table"></div>
+    <div id="events-table" style="display:none;"></div>
 </div>
 <?php require_once 'footer.php';?>
 <script src="vendor/tabulator-tables/dist/js/tabulator.min.js"></script>
 <script type="text/javascript" src="vendor/moment/min/moment.min.js"></script>
 <script type="text/javascript" src="vendor/plotly.js-dist/plotly.js"></script>
+<script type="text/javascript" src="vendor/xlsx/dist/xlsx.full.min.js"></script>
 <script type="text/javascript">
     $("#print-table").on("click", function(){
         table.print(false, true);
@@ -36,6 +39,23 @@
     $("#download-json").click(function(){
         table.download("json", "data.json");
     });
+
+    $("#download-xlsx").click(function() {
+        var sheets = {
+            "Calls": true,
+            "Events": "#events-table"
+        };
+
+        table.download("xlsx", "data.xlsx", {sheets:sheets});
+    });
+
+    var eventsTableColumns = [
+        {title: "Event Time", field: "event_time", mutator: toCurrentTimezone},
+        {title: "Event", field: "event_id"},
+        {title: "Service Body Id", field: "service_body_id"},
+        {title: "Metadata", field: "meta"},
+        {title: "Parent CallSid", field: "parent_callsid", visible: false, download: true}
+    ];
 
     var table = new Tabulator("#cdr-table", {
         layout:"fitColumns",
@@ -79,20 +99,23 @@
             holderEl.setAttribute('class', 'subTableHolder');
             holderEl.setAttribute('id', 'subTableId_' + row.getData().id);
             tableEl.style.border = "1px solid #333";
+            tableEl.setAttribute('class', 'eventsSubtable');
             holderEl.appendChild(tableEl);
             row.getElement().appendChild(holderEl);
 
             var subTable = new Tabulator(tableEl, {
                 layout: "fitColumns",
                 data: row.getData().call_events,
-                columns: [
-                    {title: "Event Time", field: "event_time", mutator: toCurrentTimezone},
-                    {title: "Event", field: "event_id"},
-                    {title: "Service Body Id", field: "service_body_id"},
-                    {title: "Metadata", field: "meta"},
-                ]
-            })
+                columns: eventsTableColumns
+            });
         }
+    });
+
+    var eventsTable = new Tabulator("#events-table", {
+        columns: eventsTableColumns,
+        initialSort:[
+            {column:"event_time", dir:"desc"},
+        ],
     });
 </script>
 <script type="text/javascript">$(function(){getReports()})</script>

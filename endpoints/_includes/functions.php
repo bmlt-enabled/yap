@@ -1862,8 +1862,8 @@ function insertCallRecord($callRecord) {
 
 function getCallRecords($service_body_id) {
     $db = new Database();
-    $sql = sprintf("SELECT r.`id`,r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,
-CONCAT('[', GROUP_CONCAT('{\"meta\":', IFNULL(re.meta, '{}'), ',\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, '\",\"service_body_id\":', IFNULL(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
+    $sql = sprintf("SELECT r.`id`,CONCAT(r.`start_time`, 'Z') as start_time,CONCAT(r.`end_time`, 'Z') as end_time,r.`duration`,r.`from_number`,r.`to_number`,r.`callsid`,
+CONCAT('[', GROUP_CONCAT('{\"meta\":', IFNULL(re.meta, '{}'), ',\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, 'Z\",\"service_body_id\":', IFNULL(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
 FROM `records` r 
 LEFT OUTER JOIN (SELECT DISTINCT conferencesid, callsid FROM conference_participants) cp ON cp.callsid = r.callsid 
 LEFT OUTER JOIN (SELECT DISTINCT conferencesid, callsid FROM conference_participants) cp2 ON cp2.conferencesid = cp.conferencesid AND cp2.callsid <> cp.callsid
@@ -1892,6 +1892,7 @@ function adjustedCallRecords($service_body_id = null) {
     foreach ($callRecords as &$callRecord) {
         $callEvents = isset($callRecord['call_events']) ? json_decode($callRecord['call_events']) : [];
         foreach ($callEvents as &$callEvent) {
+            $callEvent->parent_callsid = $callRecord['callsid'];
             $callEvent->event_id = EventId::getEventById($callEvent->event_id);
             $callEvent->meta = json_encode($callEvent->meta);
         }

@@ -6,7 +6,18 @@ function getReports() {
     $("#service_body_id").on("change", function() {
         $.getJSON("cdr_api.php?service_body_id=" + $("#service_body_id").val(), function (data) {
             table.replaceData(data);
+            var events = [];
+            for (var i = 0; i < data.length; i++) {
+                var callEvents = data[i]['call_events'];
+                for (var j = 0; j < callEvents.length; j++) {
+                    var callEvent = callEvents[j];
+                    events.push(callEvent);
+                }
+            }
+
             $(".subTableHolder").toggle();
+
+            eventsTable.replaceData(events);
         });
 
         $.getJSON("metric_api.php?service_body_id=" + $("#service_body_id").val(), function (data) {
@@ -828,7 +839,7 @@ function dataDecoder(dataString) {
 }
 
 function toCurrentTimezone(dateTime) {
-    return moment.utc(dateTime).utcOffset(moment().utcOffset()).format("YYYY-MM-DD HH:mm:ss Z")
+    return moment(dateTime).local().format("YYYY-MM-DD HH:mm:ss Z");
 }
 
 Object.prototype.hasOwnProperty = function(property) {
