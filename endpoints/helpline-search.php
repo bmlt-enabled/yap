@@ -59,7 +59,8 @@ if (!setting("tomato_helpline_routing") && !isset($_REQUEST['ForceNumber'])) {
     $serviceBodyCallHandling = getServiceBodyCallHandling($service_body_id);
 }
 
-insertCallEventRecord(EventId::VOLUNTEER_SEARCH);
+insertCallEventRecord(EventId::VOLUNTEER_SEARCH,
+    (object)['gather' => $address, 'coordinates' => isset($coordinates) ? $coordinates : null]);
 
 if ($service_body_id > 0 && isset($serviceBodyCallHandling) && $serviceBodyCallHandling->volunteer_routing_enabled) {
     if ($serviceBodyCallHandling->gender_routing_enabled && !isset($_SESSION['Gender'])) {

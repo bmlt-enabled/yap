@@ -118,6 +118,7 @@ class EventId
     const VOLUNTEER_HUP = 11;
     const VOLUNTEER_IN_CONFERENCE = 12;
     const CALLER_HUP = 13;
+    const MEETING_SEARCH_LOCATION_GATHERED = 14;
 
     static function getEventById($id) {
         switch($id) {
@@ -134,6 +135,7 @@ class EventId
             case self::VOLUNTEER_HUP: return "Volunteer Hungup";
             case self::VOLUNTEER_IN_CONFERENCE: return "Volunteer Connected To Caller";
             case self::CALLER_HUP: return "Caller Hungup";
+            case self::MEETING_SEARCH_LOCATION_GATHERED: return "Meeting Search Location Gathered";
         }
     }
 }
