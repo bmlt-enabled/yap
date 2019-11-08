@@ -14,10 +14,11 @@
     </select>
     <div id="metrics"></div>
     <div class="button-group" role="group" id="cdr-table-controls">
-        <button class="btn btn-warning" id="print-table">Print</button>
-        <button class="btn btn-success" id="download-csv">CSV</button>
-        <button class="btn btn-primary" id="download-xlsx">XLSX</button>
-        <button class="btn btn-secondary" id="download-json">JSON</button>
+        <button class="btn-sm btn-warning" id="print-table">Print</button>
+        <button class="btn-sm btn-success" id="download-records-csv">CSV (Records)</button>
+        <button class="btn-sm btn-success" id="download-events-csv">CSV (Events)</button>
+        <button class="btn-sm btn-primary" id="download-xlsx">XLSX</button>
+        <button class="btn-sm btn-secondary" id="download-json">JSON</button>
     </div>
     <div id="cdr-table"></div>
     <div id="events-table" style="display:none;"></div>
@@ -32,12 +33,16 @@
         table.print(false, true);
     });
 
-    $("#download-csv").click(function(){
-        table.download("csv", "data.csv");
+    $("#download-records-csv").click(function(){
+        table.download("csv", "yap-records.csv");
+    });
+
+    $("#download-events-csv").click(function(){
+        eventsTable.download("csv", "yap-events.csv");
     });
 
     $("#download-json").click(function(){
-        table.download("json", "data.json");
+        table.download("json", "yap.json");
     });
 
     $("#download-xlsx").click(function() {
@@ -65,6 +70,9 @@
         history:true,
         pagination:"local",
         paginationSize:20,
+        pageLoaded: function(pageno){
+            $(".subTableHolder").toggle();
+        },
         movableColumns:true,
         resizableRows:true,
         printAsHtml:true,

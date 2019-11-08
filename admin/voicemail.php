@@ -19,7 +19,7 @@
         addRowPos:"top",
         history: true,
         pagination:"local",
-        paginationSize:30,
+        paginationSize:20,
         movableColumns:true,
         resizableRows:true,
         initialSort:[
