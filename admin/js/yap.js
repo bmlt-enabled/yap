@@ -5,7 +5,7 @@ var calendar;
 function getReports() {
     $("#service_body_id").on("change", function() {
         $.getJSON("cdr_api.php?service_body_id=" + $("#service_body_id").val(), function (data) {
-            table.replaceData(data);
+            table.setData(data);
             var events = [];
             for (var i = 0; i < data.length; i++) {
                 var callEvents = data[i]['call_events'];
@@ -17,7 +17,7 @@ function getReports() {
 
             $(".subTableHolder").toggle();
 
-            eventsTable.replaceData(events);
+            eventsTable.setData(events);
         });
 
         $.getJSON("metric_api.php?service_body_id=" + $("#service_body_id").val(), function (data) {
@@ -839,7 +839,7 @@ function dataDecoder(dataString) {
 }
 
 function toCurrentTimezone(dateTime) {
-    return moment(dateTime).local().format("YYYY-MM-DD HH:mm:ss Z");
+    return moment(dateTime, "YYYY-MM-DD hh:mm:ssZ").local().format("YYYY-MM-DD hh:mm:ss A Z");
 }
 
 Object.prototype.hasOwnProperty = function(property) {
