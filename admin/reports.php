@@ -12,17 +12,19 @@
             <?php
         }?>
     </select>
-    <div id="metrics"></div>
-    <div class="button-group" role="group" id="cdr-table-controls">
-        <button class="btn-sm btn-warning" id="print-table">Print</button>
-        <button class="btn-sm btn-success" id="download-records-csv">CSV (Records)</button>
-        <button class="btn-sm btn-success" id="download-events-csv">CSV (Events)</button>
-        <button class="btn-sm btn-primary" id="download-xlsx">XLSX</button>
-        <button class="btn-sm btn-secondary" id="download-json">JSON</button>
-        <button class="btn-sm btn-dark" onclick="getReportData();">Refresh</button>
+    <div id="reports" style="display: none;">
+        <div id="metrics"></div>
+        <div class="button-group" role="group" id="cdr-table-controls">
+            <button class="btn-sm btn-warning" id="print-table">Print</button>
+            <button class="btn-sm btn-success" id="download-records-csv">CSV (Records)</button>
+            <button class="btn-sm btn-success" id="download-events-csv">CSV (Events)</button>
+            <button class="btn-sm btn-primary" id="download-xlsx">XLSX</button>
+            <button class="btn-sm btn-secondary" id="download-json">JSON</button>
+            <button class="btn-sm btn-dark" onclick="getReportData();">Refresh</button>
+        </div>
+        <div id="cdr-table"></div>
+        <div id="events-table" style="display:none;"></div>
     </div>
-    <div id="cdr-table"></div>
-    <div id="events-table" style="display:none;"></div>
 </div>
 <?php require_once 'footer.php';?>
 <script src="vendor/tabulator-tables/dist/js/tabulator.min.js"></script>

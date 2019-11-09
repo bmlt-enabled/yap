@@ -3,6 +3,7 @@ var groups;
 var calendar;
 
 function getReportData() {
+    $("#reports").show();
     $.getJSON("cdr_api.php?service_body_id=" + $("#service_body_id").val(), function (data) {
         table.setData(data);
         var events = [];
