@@ -6,6 +6,7 @@
 * Added the ability to have custom filters for call routing. [#314]
 * Added the ability to random cycle once, and then go to voicemail. [#310]
 * Added the ability to have a volunteer answer a call without pressing 1. [#321]
+* Added new and improved call blasting with volunteer detection. [#321]
 * Added support for custom campaigns to track metrics down to the phone number level. [#301]
 * Pointing to tomato.bmltenabled.org now for 🍅 things.
 * Fix for SMS not properly higlighting addresses for app maps. [#317]
