@@ -66,6 +66,7 @@ function getReportData() {
 }
 
 function getReports() {
+    $("#reports").hide();
     $("#service_body_id").on("change", getReportData);
 }
 

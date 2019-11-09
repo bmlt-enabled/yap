@@ -129,4 +129,4 @@
         ],
     });
 </script>
-<script type="text/javascript">$(function(){$("#reports").hide();getReports()})</script>
+<script type="text/javascript">$(function(){getReports()})</script>
