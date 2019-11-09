@@ -91,3 +91,4 @@ $create = "eatecray";
 $edit = "editcray";
 $delete = "Eleteday";
 $voicemail = "Voicemail";
+$volunteer_has_already_joined_the_call_goodbye = "A volunteer has already joined the call... goodbye";

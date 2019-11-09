@@ -8,7 +8,15 @@ $conferences = $twilioClient->conferences->read(array ("friendlyName" => $_REQUE
 $participants = $twilioClient->conferences($conferences[0]->sid)->participants->read();?>
 
 <Response>
-<?php if (count($participants) > 0) {
+<?php
+if (count($participants) == 2) {
+    setConferenceParticipant($_REQUEST['conference_name'], CallRole::VOLUNTEER);
+    error_log("Enough volunteers have joined.  Hanging up this volunteer.") ?>
+    <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
+        <?php echo word('volunteer_has_already_joined_the_call_goodbye'); ?>
+    </Say>
+    <Hangup/>
+<?php } else if (count($participants) > 0) {
     insertCallEventRecord(EventId::VOLUNTEER_ANSWERED, (object)['to_number' => $_REQUEST['Called']]);
     setConferenceParticipant($_REQUEST['conference_name'], CallRole::VOLUNTEER);
     error_log("Volunteer picked up or put to their voicemail, asking if they want to take the call, timing out after 15 seconds of no response.") ?>

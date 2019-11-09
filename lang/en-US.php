@@ -99,3 +99,4 @@ $create = "Create";
 $edit = "Edit";
 $delete = "Delete";
 $voicemail = "Voicemail";
+$volunteer_has_already_joined_the_call_goodbye = "A volunteer has already joined the call... goodbye";
