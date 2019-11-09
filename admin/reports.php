@@ -12,7 +12,7 @@
             <?php
         }?>
     </select>
-    <div id="reports" style="display: none;">
+    <div id="reports">
         <div id="metrics"></div>
         <div class="button-group" role="group" id="cdr-table-controls">
             <button class="btn-sm btn-warning" id="print-table">Print</button>
@@ -129,4 +129,4 @@
         ],
     });
 </script>
-<script type="text/javascript">$(function(){getReports()})</script>
+<script type="text/javascript">$(function(){$("#reports").hide();getReports()})</script>
