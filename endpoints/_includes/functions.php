@@ -35,7 +35,7 @@ static $settings_whitelist = [
     'infinite_searching' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'initial_pause' => [ 'description' => '' , 'default' => 2, 'overridable' => true, 'hidden' => false],
     'jft_option' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
-    'language' => [ 'description' => '' , 'default' =>  'en', 'overridable' => true, 'hidden' => false],
+    'language' => [ 'description' => '' , 'default' =>  'en-US', 'overridable' => true, 'hidden' => false],
     'language_selections' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'location_lookup_bias' => [ 'description' => '' , 'default' => 'country:us', 'overridable' => true, 'hidden' => false],
     'meeting_result_sort' => [ 'description' => '' , 'default' => MeetingResultSort::TODAY, 'overridable' => true, 'hidden' => false],
@@ -58,7 +58,7 @@ static $settings_whitelist = [
     'tomato_url' => [ 'description' => '' , 'default' => 'https://tomato.bmltenabled.org/main_server', 'overridable' => true, 'hidden' => false],
     'twilio_account_sid' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
     'twilio_auth_token' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
-    'voice' => [ 'description' => '', 'default' => 'woman', 'overridable' => true, 'hidden' => false],
+    'voice' => [ 'description' => '', 'default' => 'Polly.Kendra', 'overridable' => true, 'hidden' => false],
     'word_language' => [ 'description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false]
 ];
 static $available_languages = [
