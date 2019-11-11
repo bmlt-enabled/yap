@@ -28,7 +28,7 @@ function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = Volunt
     $volunteer_routing_parameters->volunteer_gender = isset($_SESSION['Gender']) ? $_SESSION['Gender'] : VolunteerGender::UNSPECIFIED;
     $volunteer_routing_parameters->volunteer_shadow = $tandem == VolunteerShadowOption::TRAINEE ? VolunteerShadowOption::TRAINER : VolunteerShadowOption::UNSPECIFIED;
     $volunteer_routing_parameters->volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
-    $volunteer_routing_parameters->volunteer_language = VolunteerLanguage::UNSPECIFIED;
+    $volunteer_routing_parameters->volunteer_language = setting('language');
     if ($tandem == VolunteerShadowOption::UNSPECIFIED) {
         $_SESSION["volunteer_routing_parameters"] = $volunteer_routing_parameters;
     }
