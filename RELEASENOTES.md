@@ -8,7 +8,9 @@
 * Added the ability to have a volunteer answer a call without pressing 1. [#321]
 * Added new and improved call blasting with volunteer detection. [#321]
 * Added support for custom campaigns to track metrics down to the phone number level. [#301]
+* Added a new setting for the default language for volunteers when none is set.
 * Pointing to tomato.bmltenabled.org now for 🍅 things.
+* Fix for Language Volunteer routing not working [#325]
 * Fix for SMS not properly higlighting addresses for app maps. [#317]
 * Fix for SMS caller ID when Forced Caller ID is set. [#307]
 * Fix for Helpline Redirect not working on a stock installation.
