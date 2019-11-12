@@ -974,6 +974,17 @@ function getServiceBodiesRights()
         }
     } elseif ($_SESSION['auth_mechanism'] == AuthMechanism::V2 && $_SESSION['auth_is_admin']) {
         return getServiceBodies();
+    } elseif ($_SESSION['auth_mechanism'] == AuthMechanism::V2) {
+        $service_bodies = getServiceBodies();
+        $service_body_rights = $_SESSION['auth_service_bodies'];
+        $service_bodies_for_user = array();
+        foreach ($service_bodies as $service_body) {
+            if (in_array($service_body->id, $service_body_rights)) {
+                array_push($service_bodies_for_user, $service_body);
+            }
+        }
+
+        return $service_bodies_for_user;
     }
 }
 
