@@ -7,10 +7,6 @@ require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . 
 require_once 'migrations.php';
 require_once 'logging.php';
 static $version  = "3.5.0";
-class VolunteerLanguage
-{
-    const UNSPECIFIED = 0;
-}
 static $settings_whitelist = [
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'bmlt_root_server' => [ 'description' => 'The root server to use.' , 'default' => '', 'overridable' => false, 'hidden' => false],
@@ -325,7 +321,7 @@ class VolunteerRoutingParameters
     public $volunteer_gender = VolunteerGender::UNSPECIFIED;
     public $volunteer_shadow = VolunteerShadowOption::UNSPECIFIED;
     public $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
-    public $volunteer_language = VolunteerLanguage::UNSPECIFIED;
+    public $volunteer_language;
 }
 
 class NoVolunteersException extends Exception
@@ -345,10 +341,7 @@ class VolunteerRoutingHelpers
 
     static function checkVolunteerRoutingLanguage($volunteer_routing_params, $volunteers, $v)
     {
-        return ($volunteer_routing_params->volunteer_language === VolunteerLanguage::UNSPECIFIED
-            || (($volunteer_routing_params->volunteer_language !== VolunteerLanguage::UNSPECIFIED
-                && isset($volunteers[$v]->language)
-                && in_array($volunteer_routing_params->volunteer_language, $volunteers[$v]->language))));
+        return in_array($volunteer_routing_params->volunteer_language, $volunteers[$v]->language);
     }
 
     static function checkVolunteerRoutingType($volunteer_routing_params, $volunteers, $v)
