@@ -15,12 +15,12 @@ jobs:
       - export PATH=$PATH:$HOME/.local/bin
       install:
       - composer install
-      - yarn install
       before_deploy:
       - export ARTIFACT_FILENAME=yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}.zip
       - git archive --format=zip --output=${ARTIFACT_FILENAME} HEAD
       - echo ${TRAVIS_COMMIT} > build.txt
-      - zip -ur ${ARTIFACT_FILENAME} build.txt vendor admin/vendor
+      - make deploy
+      - zip -ur ${ARTIFACT_FILENAME} build.txt vendor admin/dist/*
       - mkdir artifacts/
       - mv ${ARTIFACT_FILENAME} artifacts/
       deploy:
@@ -38,11 +38,11 @@ jobs:
       install:
       - rm -rf vendor/
       - composer install --no-dev
-      - yarn install
       before_deploy:
       - git archive --format=zip --output=yap-${TRAVIS_TAG}.zip ${TRAVIS_TAG}
       - echo ${TRAVIS_COMMIT} > build.txt
-      - zip -ur yap-${TRAVIS_TAG}.zip build.txt vendor admin/vendor
+      - make deploy
+      - zip -ur yap-${TRAVIS_TAG}.zip build.txt vendor admin/dist/*
       deploy:
         - provider: releases
           api_key:

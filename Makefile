@@ -24,3 +24,15 @@ debug:
 
 test:
 	composer test
+
+bundle-deps:
+	yarn install
+	yarn global add gulp-cli
+
+bundle:
+	gulp
+
+watch:
+	gulp watch
+
+deploy: bundle-deps bundle

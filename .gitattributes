@@ -16,3 +16,4 @@ yarn.lock export-ignore
 /docs export-ignore
 /tests export-ignore
 /resources export-ignore
+admin/vendor export-ignore

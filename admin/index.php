@@ -16,7 +16,7 @@ $state = UpgradeAdvisor::getState();
     <form id="auth" class="form-signin" method="POST" action="auth_login.php">
         <div id="admin_title"><?php echo isset($GLOBALS['admin_title']) ? $GLOBALS['admin_title'] : ""; ?></div>
         <div id="yap-logo">
-            <img src="img/yap_logo.png" alt="Yap" width="310" height="100">
+            <img src="dist/img/yap_logo.png" alt="Yap" width="310" height="100">
         </div>
         <div id="no-auth-message">
             <?php echo isset($_REQUEST['auth']) ? $GLOBALS['not_authorized'] : "" ?>

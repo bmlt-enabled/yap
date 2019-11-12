@@ -1,5 +1,5 @@
 <?php require_once 'nav.php';?>
-<link rel="stylesheet" href="vendor/tabulator-tables/dist/css/tabulator.min.css">
+<link rel="stylesheet" href="dist/css/yap-reports.min.css">
 <div class="container">
     <h3><?php
         $service_body = getServiceBody($_REQUEST['service_body_id']);
@@ -7,8 +7,7 @@
     </h3>
 <div id="voicemail-table"></div>
 <?php require_once 'footer.php';?>
-<script src="vendor/tabulator-tables/dist/js/tabulator.min.js"></script>
-<script type="text/javascript" src="vendor/moment/min/moment.min.js"></script>
+<script src="dist/js/yap-reports.min.js"></script>
 <script type="text/javascript">
     var data = <?php echo json_encode(getVoicemail($_REQUEST['service_body_id']))?>;
     var table = new Tabulator("#voicemail-table", {

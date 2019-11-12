@@ -1,5 +1,5 @@
 <?php require_once 'nav.php';?>
-<link rel="stylesheet" href="vendor/tabulator-tables/dist/css/tabulator.min.css">
+<link rel="stylesheet" href="dist/css/yap-reports.min.css">
 <div class="container">
     <select class="form-control form-control-sm" id="service_body_id" name="service_body_id">
         <option value="-1">-= Select A Service Body =-</option>
@@ -27,10 +27,7 @@
     </div>
 </div>
 <?php require_once 'footer.php';?>
-<script src="vendor/tabulator-tables/dist/js/tabulator.min.js"></script>
-<script type="text/javascript" src="vendor/moment/min/moment.min.js"></script>
-<script type="text/javascript" src="vendor/plotly.js-dist/plotly.js"></script>
-<script type="text/javascript" src="vendor/xlsx/dist/xlsx.full.min.js"></script>
+<script src="dist/js/yap-reports.min.js"></script>
 <script type="text/javascript">
     $("#print-table").on("click", function(){
         table.print(false, true);
