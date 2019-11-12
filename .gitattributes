@@ -8,12 +8,14 @@ composer.json export-ignore
 composer.lock export-ignore
 Dockerfile export-ignore
 docker-compose.yml export-ignore
+gulpfile.js export-ignore
 Makefile export-ignore
 package.json export-ignore
 phpunit.xml export-ignore
 yarn.lock export-ignore
 /.github export-ignore
+/admin/src export-ignore
 /docs export-ignore
+/node_modules export-ignore
 /tests export-ignore
 /resources export-ignore
-/node_modules export-ignore
