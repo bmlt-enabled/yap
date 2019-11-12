@@ -972,20 +972,20 @@ function getServiceBodiesRights()
         } else {
             return array();
         }
-    } elseif ($_SESSION['auth_mechanism'] == AuthMechanism::V2 && $_SESSION['is_admin']) {
+    } elseif ($_SESSION['auth_mechanism'] == AuthMechanism::V2 && $_SESSION['auth_is_admin']) {
         return getServiceBodies();
     }
 }
 
 function admin_GetUserName()
 {
-    if (!isset($_SESSION['user_name_string'])) {
+    if (!isset($_SESSION['auth_user_name_string'])) {
         $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_user_info";
         $get_user_info_response = json_decode(get($url, $_SESSION['username']));
         $user_name = isset($get_user_info_response->current_user) ? $get_user_info_response->current_user->name : $_SESSION['username'];
-        $_SESSION['user_name_string'] = $user_name;
+        $_SESSION['auth_user_name_string'] = $user_name;
     }
-    return $_SESSION['user_name_string'];
+    return $_SESSION['auth_user_name_string'];
 }
 
 function admin_PersistDbConfig($service_body_id, $data, $data_type, $parent_id = 0)
@@ -1466,7 +1466,7 @@ function auth_v1($username, $password, $master = false)
 function auth_v2($username, $password)
 {
     $db = new Database();
-    $db->query("SELECT name, username, password, is_admin, permissions FROM `users` WHERE `username` = :username AND `password` = SHA2(:password, 256)");
+    $db->query("SELECT name, username, password, is_admin, permissions, service_bodies FROM `users` WHERE `username` = :username AND `password` = SHA2(:password, 256)");
     $db->bind(':username', $username);
     $db->bind(':password', $password);
     $db->execute();
