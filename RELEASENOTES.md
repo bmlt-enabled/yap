@@ -9,6 +9,7 @@
 * Added new and improved call blasting with volunteer detection. [#321]
 * Added support for custom campaigns to track metrics down to the phone number level. [#301]
 * Added a new setting for the default language for volunteers when none is set.
+* Added support for non-BMLT non-admin users.
 * Pointing to tomato.bmltenabled.org now for 🍅 things.
 * Fix for Language Volunteer routing not working [#325]
 * Fix for SMS not properly higlighting addresses for app maps. [#317]
