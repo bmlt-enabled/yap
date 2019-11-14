@@ -51,6 +51,8 @@ static $settings_whitelist = [
     'toll_province_bias' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => false],
     'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'tomato_helpline_routing' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
+	'tomato_helpline_fallback' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
+	'tomato_meeting_search' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'tomato_url' => [ 'description' => '' , 'default' => 'https://tomato.bmltenabled.org/main_server', 'overridable' => true, 'hidden' => false],
     'twilio_account_sid' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
     'twilio_auth_token' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
@@ -733,7 +735,7 @@ function getProvince()
 
 function helplineSearch($latitude, $longitude)
 {
-    $search_url = getHelplineBMLTRootServer() . sprintf("/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,service_body_bigint&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s%s",
+    $search_url = getBMLTserver($latitude, $longitude, 1) . sprintf("/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,service_body_bigint&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s%s",
             $latitude, $longitude, setting('helpline_search_radius'), setting('call_routing_filter'));
 
     if (has_setting('helpline_search_unpublished') && json_decode(setting('helpline_search_unpublished'))) {
@@ -745,6 +747,30 @@ function helplineSearch($latitude, $longitude)
 
     return json_decode(get($search_url));
 }
+
+function getBMLTserver($latitude, $longitude, $search_state)
+{
+	$helpline_search_radius=setting('helpline_search_radius');
+	if ($search_state=="1") {
+		if (setting('tomato_helpline_fallback')) {
+			$bmlt_search_endpoint=setting('tomato_url')."/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,root_server_uri&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $helpline_search_radius;
+			$search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
+			$search_results=json_decode(get($search_url));
+			$pinged_BMLT_root=$search_results[0]->root_server_uri;
+			$bmlt_root=$GLOBALS['bmlt_root_server']."/";
+			if($pinged_BMLT_root!=$bmlt_root) { // If the rootserver handling the phonecall is not the local rootserver, enable tomato routing - otherwise handle call routing locally.
+				$GLOBALS['settings_whitelist']['tomato_helpline_routing']['default']=true;
+				} 			
+		}
+	} else if ($search_state=="2") {
+			if (setting('tomato_meeting_search')) {
+				return setting('tomato_url');
+			} else {
+				return $GLOBALS['bmlt_root_server'];
+			}
+		}
+	return getHelplineBMLTRootServer();
+}	
 
 function getFormatString($formats, $ignore = false, $helpline = false)
 {
@@ -759,7 +785,7 @@ function getFormatString($formats, $ignore = false, $helpline = false)
 
 function meetingSearch($meeting_results, $latitude, $longitude, $day)
 {
-    $bmlt_base_url = $GLOBALS['bmlt_root_server'] . "/client_interface/json/?switcher=GetSearchResults&data_field_key=meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km";
+    $bmlt_base_url = getBMLTserver($latitude, $longitude, 2) . "/client_interface/json/?switcher=GetSearchResults&data_field_key=meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km";
     $bmlt_search_endpoint = setting('custom_query');
     if (has_setting('ignore_formats')) {
         $bmlt_search_endpoint .= getFormatString(setting('ignore_formats'), true);
@@ -827,7 +853,8 @@ function getResultsString($filtered_list)
 
 function getServiceBodyCoverage($latitude, $longitude)
 {
-    $search_results = helplineSearch($latitude, $longitude);
+	getBMLTserver($latitude, $longitude, 1);
+	$search_results = helplineSearch($latitude, $longitude);
     $service_bodies = getServiceBodies();
     $already_checked = [];
 
