@@ -15,3 +15,5 @@ $callRecord->end_time = $twilioRecords->endTime->format("Y-m-d H:i:s");
 $callRecord->payload = json_encode($_REQUEST);
 
 insertCallRecord($callRecord);
+?>
+<Response></Response>
