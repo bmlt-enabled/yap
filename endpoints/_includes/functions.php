@@ -735,7 +735,7 @@ function getProvince()
 
 function helplineSearch($latitude, $longitude)
 {
-    $search_url = getBMLTServer($latitude, $longitude, SearchType:::VOLUNTEERS) . sprintf("/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,service_body_bigint&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s%s",
+    $search_url = getBMLTServer($latitude, $longitude, SearchType::VOLUNTEERS) . sprintf("/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,service_body_bigint&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s%s",
             $latitude, $longitude, setting('helpline_search_radius'), setting('call_routing_filter'));
 
     if (has_setting('helpline_search_unpublished') && json_decode(setting('helpline_search_unpublished'))) {
@@ -751,7 +751,7 @@ function helplineSearch($latitude, $longitude)
 function getBMLTServer($latitude, $longitude, $search_type)
 {
     $helpline_search_radius = setting('helpline_search_radius');
-    if ($search_type == SearchType:::VOLUNTEERS) {
+    if ($search_type == SearchType::VOLUNTEERS) {
         if (setting('tomato_helpline_fallback')) {
             $bmlt_search_endpoint = setting('tomato_url') . "/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $helpline_search_radius;
             $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
@@ -765,7 +765,7 @@ function getBMLTServer($latitude, $longitude, $search_type)
         } else {
             return getHelplineBMLTRootServer();
         }
-    } else if ($search_type == SearchType:::MEETINGS) {
+    } else if ($search_type == SearchType::MEETINGS) {
         if (setting('tomato_meeting_search')) {
             return setting('tomato_url');
         } else {
@@ -787,7 +787,7 @@ function getFormatString($formats, $ignore = false, $helpline = false)
 
 function meetingSearch($meeting_results, $latitude, $longitude, $day)
 {
-    $bmlt_base_url = getBMLTServer($latitude, $longitude, SearchType:::MEETINGS) . "/client_interface/json/?switcher=GetSearchResults&data_field_key=meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km";
+    $bmlt_base_url = getBMLTServer($latitude, $longitude, SearchType::MEETINGS) . "/client_interface/json/?switcher=GetSearchResults&data_field_key=meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km";
     $bmlt_search_endpoint = setting('custom_query');
     if (has_setting('ignore_formats')) {
         $bmlt_search_endpoint .= getFormatString(setting('ignore_formats'), true);
@@ -855,7 +855,7 @@ function getResultsString($filtered_list)
 
 function getServiceBodyCoverage($latitude, $longitude)
 {
-    getBMLTServer($latitude, $longitude, SearchType:::VOLUNTEERS);
+    getBMLTServer($latitude, $longitude, SearchType::VOLUNTEERS);
 	
     $search_results = helplineSearch($latitude, $longitude);
     $service_bodies = getServiceBodies();
