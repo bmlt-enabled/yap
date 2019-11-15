@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if (isset($_GET["ysk"])) {
     session_id($_GET["ysk"]);
 }
@@ -767,28 +767,30 @@ function getBMLTRootServer()
     return setting('bmlt_root_server');
 }
 
-function getBMLTserver($latitude, $longitude, $search_state)
+function getBMLTServer($latitude, $longitude, $search_type)
 {
-	$helpline_search_radius=setting('helpline_search_radius');
-	if ($search_state=="1") {
-		if (setting('tomato_helpline_fallback')) {
-			$bmlt_search_endpoint=setting('tomato_url')."/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,root_server_uri&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $helpline_search_radius;
-			$search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
-			$search_results=json_decode(get($search_url));
-			$pinged_BMLT_root=$search_results[0]->root_server_uri;
-			$bmlt_root=$GLOBALS['bmlt_root_server']."/";
-			if($pinged_BMLT_root!=$bmlt_root) { // If the rootserver handling the phonecall is not the local rootserver, enable tomato routing - otherwise handle call routing locally.
-				$GLOBALS['settings_whitelist']['tomato_helpline_routing']['default']=true;
-				} 			
-		}
-	} else if ($search_state=="2") {
-			if (setting('tomato_meeting_search')) {
-				return setting('tomato_url');
-			} else {
-				return $GLOBALS['bmlt_root_server'];
-			}
-		}
-	return getHelplineBMLTRootServer();
+    $helpline_search_radius = setting('helpline_search_radius');
+    if ($search_type == SearchType:::VOLUNTEERS) {
+        if (setting('tomato_helpline_fallback')) {
+            $bmlt_search_endpoint = setting('tomato_url') . "/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $helpline_search_radius;
+            $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
+            $search_results = json_decode(get($search_url));
+            $pinged_BMLT_root = $search_results[0] -> root_server_uri;
+            $bmlt_root = $GLOBALS['bmlt_root_server']."/";
+            if ($pinged_BMLT_root != $bmlt_root) { // If the rootserver handling the phonecall is not the local rootserver, enable tomato routing - otherwise handle call routing locally.
+                $GLOBALS['settings_whitelist']['tomato_helpline_routing']['default'] = true;
+            }
+            return getHelplineBMLTRootServer();
+        } else {
+            return getHelplineBMLTRootServer();
+        }
+    } else if ($search_type == SearchType:::MEETINGS) {
+        if (setting('tomato_meeting_search')) {
+            return setting('tomato_url');
+        } else {
+            return $GLOBALS['bmlt_root_server'];
+        }
+    }
 }	
 
 function getFormatString($formats, $ignore = false, $helpline = false)
@@ -872,10 +874,13 @@ function getResultsString($filtered_list)
 
 function getServiceBodyCoverage($latitude, $longitude)
 {
+    getBMLTServer($latitude, $longitude, SearchType:::VOLUNTEERS);
     $search_results = helplineSearch($latitude, $longitude);
     $service_bodies = getServiceBodiesForRouting($latitude, $longitude);
-	getBMLTserver($latitude, $longitude, 1);
 	$search_results = helplineSearch($latitude, $longitude);
+
+	
+    $search_results = helplineSearch($latitude, $longitude);
     $service_bodies = getServiceBodies();
     $already_checked = [];
 
