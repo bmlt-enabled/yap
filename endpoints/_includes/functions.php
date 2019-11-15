@@ -770,7 +770,7 @@ function getBMLTRootServer()
 function getBMLTServer($latitude, $longitude, $search_type)
 {
     $helpline_search_radius = setting('helpline_search_radius');
-    if ($search_type == SearchType:::VOLUNTEERS) {
+    if ($search_type == SearchType::VOLUNTEERS) {
         if (setting('tomato_helpline_fallback')) {
             $bmlt_search_endpoint = setting('tomato_url') . "/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $helpline_search_radius;
             $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
@@ -784,7 +784,7 @@ function getBMLTServer($latitude, $longitude, $search_type)
         } else {
             return getHelplineBMLTRootServer();
         }
-    } else if ($search_type == SearchType:::MEETINGS) {
+    } else if ($search_type == SearchType::MEETINGS) {
         if (setting('tomato_meeting_search')) {
             return setting('tomato_url');
         } else {
@@ -874,12 +874,7 @@ function getResultsString($filtered_list)
 
 function getServiceBodyCoverage($latitude, $longitude)
 {
-    getBMLTServer($latitude, $longitude, SearchType:::VOLUNTEERS);
-    $search_results = helplineSearch($latitude, $longitude);
-    $service_bodies = getServiceBodiesForRouting($latitude, $longitude);
-	$search_results = helplineSearch($latitude, $longitude);
-
-	
+    getBMLTServer($latitude, $longitude, SearchType::VOLUNTEERS);
     $search_results = helplineSearch($latitude, $longitude);
     $service_bodies = getServiceBodies();
     $already_checked = [];
