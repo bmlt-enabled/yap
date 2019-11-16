@@ -7,6 +7,7 @@
 * Added the ability to random cycle once, and then go to voicemail. [#310]
 * Added the ability to have a volunteer answer a call without pressing 1. [#321]
 * Added new and improved call blasting with volunteer detection. [#321]
+* Added improved routing logic for Tomato based helpling routing [#329]
 * Added support for custom campaigns to track metrics down to the phone number level. [#301]
 * Added a new setting for the default language for volunteers when none is set.
 * Added support for non-BMLT non-admin users.
