@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 if (isset($_GET["ysk"])) {
     session_id($_GET["ysk"]);
 }
@@ -24,7 +24,6 @@ static $settings_whitelist = [
     'helpline_bmlt_root_server' => [ 'description' => '' , 'default' => null, 'overridable' => false, 'hidden' => false],
     'helpline_fallback' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => false],
     'helpline_search_radius' => [ 'description' => '' , 'default' => 30, 'overridable' => true, 'hidden' => false],
-    'helpline_search_unpublished' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'ignore_formats' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => false],
     'include_location_text' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'include_map_link' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
@@ -52,7 +51,6 @@ static $settings_whitelist = [
     'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'tomato_helpline_routing' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'tomato_helpline_fallback' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
-    'tomato_meeting_search' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'tomato_url' => [ 'description' => '' , 'default' => 'https://tomato.bmltenabled.org/main_server', 'overridable' => true, 'hidden' => false],
     'twilio_account_sid' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
     'twilio_auth_token' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
@@ -428,9 +426,9 @@ class UpgradeAdvisor
             }
         }
 
-        $root_server_settings = json_decode(get(getHelplineBMLTRootServer() . "/client_interface/json/?switcher=GetServerInfo"));
+        $root_server_settings = json_decode(get(sprintf('%s/client_interface/json/?switcher=GetServerInfo', getAdminBMLTRootServer())));
 
-        if (strpos(getHelplineBMLTRootServer(), 'index.php')) {
+        if (strpos(getAdminBMLTRootServer(), 'index.php')) {
             return UpgradeAdvisor::getState(false, "Your root server points to index.php. Please make sure to set it to just the root directory.");
         }
 
@@ -731,58 +729,50 @@ function getProvince()
 
 function helplineSearch($latitude, $longitude)
 {
-    $search_url = getHelplineBMLTRootServer($latitude, $longitude, SearchType::VOLUNTEERS) . sprintf("/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,service_body_bigint&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s%s",
-            $latitude, $longitude, setting('helpline_search_radius'), setting('call_routing_filter'));
-
-    if (has_setting('helpline_search_unpublished') && json_decode(setting('helpline_search_unpublished'))) {
-        $search_url = $search_url . "&advanced_published=0";
-        if (isset($GLOBALS['bmlt_username']) && isset($GLOBALS['bmlt_password'])) {
-            auth_v1($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
-        }
-    }
+    $search_url = sprintf("%s/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,service_body_bigint&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s%s",
+        getHelplineRoutingBMLTServer($latitude, $longitude), $latitude, $longitude, setting('helpline_search_radius'), setting('call_routing_filter'));
 
     return json_decode(get($search_url));
 }
 
-function BMLTServerIsLocalConfig($latitude, $longitude)
+function isBMLTServerOwned($latitude, $longitude)
 {
-    $helpline_search_radius = setting('helpline_search_radius');
-    $bmlt_search_endpoint = setting('tomato_url') . "/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width=" . $helpline_search_radius;
-    $search_url = str_replace("{LONGITUDE}", $longitude, str_replace("{LATITUDE}", $latitude, $bmlt_search_endpoint));
-    $search_results = json_decode(get($search_url));
-    $pinged_BMLT_root = $search_results[0] -> root_server_uri;
-    $bmlt_root = $GLOBALS['bmlt_root_server']."/";
-    if ($pinged_BMLT_root == $bmlt_root) {
-        return true;
+    $bmlt_search_endpoint = sprintf('%s/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri&sort_results_by_distance=1&long_val=%s&lat_val=%s&geo_width=%s',
+        setting('tomato_url'), $latitude, $longitude, setting('helpline_search_radius'));
+    $search_results = json_decode(get($bmlt_search_endpoint));
+    $root_server_uri_from_first_result = $search_results[0]->root_server_uri;
+    return strpos(setting('helpline_bmlt_root_server'), $root_server_uri_from_first_result) == 0;
+}
+
+function getHelplineRoutingBMLTServer($latitude, $longitude) {
+    if (setting('tomato_helpline_fallback') & !isBMLTServerOwned($latitude, $longitude)) {
+        return setting('tomato_url');
+    } else if (json_decode(setting('tomato_helpline_routing'))) {
+        return setting('tomato_url');
+    } else if (has_setting('helpline_bmlt_root_server')) {
+        return setting('helpline_bmlt_root_server');
     } else {
-    return false;
+        return setting('bmlt_root_server');
     }
 }
 
-function getHelplineBMLTRootServer($latitude, $longitude, $search_type)
+function getAdminBMLTRootServer()
 {
-    if ($search_type == SearchType::VOLUNTEERS) {
-        if (setting('tomato_helpline_fallback') & !BMLTServerIsLocalConfig($latitude, $longitude)) {
-            return setting('tomato_url');
-        }
-    } else if (($search_type == SearchType::MEETINGS) && setting('tomato_meeting_search')) {
-        return setting('tomato_url');
-        } else {
-            return $GLOBALS['bmlt_root_server'];
-        }
-
-    if (json_decode(setting('tomato_helpline_routing'))) {
-            return setting('tomato_url');
-        } else if (has_setting('helpline_bmlt_root_server')) {
-            return setting('helpline_bmlt_root_server');
-        } else {
-            return $GLOBALS['bmlt_root_server'];
-        }
+    if (has_setting('helpline_bmlt_root_server')) {
+        return setting('helpline_bmlt_root_server');
+    } else {
+        return setting('bmlt_root_server');
+    }
 }
 
-function getFormatString($formats, $ignore = false, $helpline = false)
+function getBMLTRootServer()
 {
-    $formatsArray = getIdsFormats($formats, $helpline);
+    return setting('bmlt_root_server');
+}
+
+function getFormatString($formats, $ignore = false)
+{
+    $formatsArray = getIdsFormats($formats);
     $finalString = "";
     for ($i = 0; $i < count($formatsArray); $i++) {
         $finalString .= "&formats[]=" . ($ignore ? "-" : "") . $formatsArray[$i];
@@ -793,7 +783,7 @@ function getFormatString($formats, $ignore = false, $helpline = false)
 
 function meetingSearch($meeting_results, $latitude, $longitude, $day)
 {
-    $bmlt_base_url = getHelplineBMLTRootServer($latitude, $longitude, SearchType::MEETINGS) . "/client_interface/json/?switcher=GetSearchResults&data_field_key=meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km";
+    $bmlt_base_url = sprintf('%s/client_interface/json/?switcher=GetSearchResults&data_field_key=meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km', getBMLTRootServer());
     $bmlt_search_endpoint = setting('custom_query');
     if (has_setting('ignore_formats')) {
         $bmlt_search_endpoint .= getFormatString(setting('ignore_formats'), true);
@@ -862,7 +852,7 @@ function getResultsString($filtered_list)
 function getServiceBodyCoverage($latitude, $longitude)
 {
     $search_results = helplineSearch($latitude, $longitude);
-    $service_bodies = getServiceBodies($latitude, $longitude, SearchType::VOLUNTEERS);
+    $service_bodies = getServiceBodiesForRouting($latitude, $longitude);
     $already_checked = [];
 
     // Must do this because the BMLT returns an empty object instead of an empty array.
@@ -958,9 +948,14 @@ function getNextMeetingInstance($meeting_day, $meeting_time)
     return $mod_meeting_datetime;
 }
 
-function getServiceBodies($latitude, $longitude, $search_type)
+function getServiceBodiesForRouting($latitude, $longitude) {
+    $bmlt_search_endpoint = sprintf('%s/client_interface/json/?switcher=GetServiceBodies', getHelplineRoutingBMLTServer($latitude, $longitude));
+    return json_decode(get($bmlt_search_endpoint));
+}
+
+function getServiceBodies()
 {
-    $bmlt_search_endpoint = getHelplineBMLTRootServer($latitude, $longitude, $search_type) . "/client_interface/json/?switcher=GetServiceBodies";
+    $bmlt_search_endpoint = sprintf('%s/client_interface/json/?switcher=GetServiceBodies', getAdminBMLTRootServer());
     return json_decode(get($bmlt_search_endpoint));
 }
 
@@ -996,7 +991,7 @@ function getServiceBodyDetailForUser()
 function getServiceBodiesRights()
 {
     if ($_SESSION['auth_mechanism'] == AuthMechanism::V1) {
-        $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_permissions";
+        $url = sprintf('%s/local_server/server_admin/json.php?admin_action=get_permissions', getAdminBMLTRootServer());
         $service_bodies_for_user = json_decode(get($url, $_SESSION['username']));
 
         if (!is_array($service_bodies_for_user->service_body)) {
@@ -1025,7 +1020,7 @@ function getServiceBodiesRights()
 function admin_GetUserName()
 {
     if (!isset($_SESSION['auth_user_name_string'])) {
-        $url = getHelplineBMLTRootServer() . "/local_server/server_admin/json.php?admin_action=get_user_info";
+        $url = sprintf('%s/local_server/server_admin/json.php?admin_action=get_user_info', getAdminBMLTRootServer());
         $get_user_info_response = json_decode(get($url, $_SESSION['username']));
         $user_name = isset($get_user_info_response->current_user) ? $get_user_info_response->current_user->name : $_SESSION['username'];
         $_SESSION['auth_user_name_string'] = $user_name;
@@ -1252,11 +1247,11 @@ function getNextShiftInstance($shift_day, $shift_time, $shift_tz)
     return $mod_meeting_datetime;
 }
 
-function getIdsFormats($types, $helpline = false)
+function getIdsFormats($types)
 {
     $typesArray = explode(",", $types);
     $finalFormats = array();
-    $bmlt_search_endpoint = ($helpline ? getHelplineBMLTRootServer() : $GLOBALS['bmlt_root_server']) . "/client_interface/json/?switcher=GetFormats";
+    $bmlt_search_endpoint = sprintf('%s/client_interface/json/?switcher=GetFormats', getBMLTRootServer());
     $formats = json_decode(get($bmlt_search_endpoint));
     for ($t = 0; $t < count($typesArray); $t++) {
         for ($f = 0; $f < count($formats); $f ++) {
@@ -1484,7 +1479,7 @@ function auth_v1($username, $password, $master = false)
 {
     $ch = curl_init();
     $auth_endpoint = (isset($GLOBALS['alt_auth_method']) && $GLOBALS['alt_auth_method'] ? '/index.php' : '/local_server/server_admin/xml.php');
-    curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . $auth_endpoint);
+    curl_setopt($ch, CURLOPT_URL, getAdminBMLTRootServer() . $auth_endpoint);
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_COOKIEJAR, getCookiePath(($master ? 'master' : $username) . '_cookie.txt'));
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap');
@@ -1515,7 +1510,7 @@ function check_auth($username)
         $cookie_file = getCookiePath($username . '_cookie.txt');
         if (file_exists($cookie_file)) {
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=get_permissions');
+            curl_setopt($ch, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=get_permissions', getBMLTRootServer()));
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
             curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
@@ -1540,7 +1535,7 @@ function logout_auth($username)
         $cookie_file = getCookiePath($username . '_cookie.txt');
         if (file_exists($cookie_file)) {
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, getHelplineBMLTRootServer() . '/local_server/server_admin/xml.php?admin_action=logout');
+            curl_setopt($ch, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=logout', getAdminBMLTRootServer()));
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
             curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);

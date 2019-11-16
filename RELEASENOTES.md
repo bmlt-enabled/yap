@@ -18,6 +18,7 @@
 * Fix for digit map display in Settings in administration portal.
 * Fix for Yap 2.x import for single quoted characters. [#318]
 * Fix for some JFTs that had an ampersand.
+* Removed `helpline_search_unpublished` feature which was no longer in use.
 
 ### 3.4.0 (September 8, 2019)
 * Service body direct dial by ID. [#302]
