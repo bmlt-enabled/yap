@@ -436,10 +436,6 @@ class UpgradeAdvisor
             return UpgradeAdvisor::getState(false, "Your root server returned no server information.  Double-check that you have the right root server url.");
         }
 
-        if ($root_server_settings[0]->semanticAdmin != "1") {
-            return UpgradeAdvisor::getState(false, "Semantic Admin not enabled on your root server, be sure to set the variable mentioned here: https://bmlt.magshare.net/semantic/semantic-administration.");
-        }
-
         try {
             $googleapi_settings = json_decode(get($GLOBALS['google_maps_endpoint'] . "&address=91409"));
 
