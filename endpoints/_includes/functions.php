@@ -741,7 +741,7 @@ function isBMLTServerOwned($latitude, $longitude)
         setting('tomato_url'), $latitude, $longitude, setting('helpline_search_radius'));
     $search_results = json_decode(get($bmlt_search_endpoint));
     $root_server_uri_from_first_result = $search_results[0]->root_server_uri;
-    return strpos(setting('helpline_bmlt_root_server'), $root_server_uri_from_first_result) == 0;
+    return strpos(getAdminBMLTRootServer(), $root_server_uri_from_first_result) == 0;
 }
 
 function getHelplineRoutingBMLTServer($latitude, $longitude) {
