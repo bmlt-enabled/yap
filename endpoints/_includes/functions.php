@@ -730,40 +730,8 @@ function helplineSearch($latitude, $longitude)
 {
     $search_url = sprintf("%s/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,service_body_bigint&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s%s",
         getHelplineRoutingBMLTServer($latitude, $longitude), $latitude, $longitude, setting('helpline_search_radius'), setting('call_routing_filter'));
+
     return json_decode(get($search_url));
-}
-
-function isBMLTServerOwned($latitude, $longitude)
-{
-    $bmlt_search_endpoint = sprintf('%s/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri&sort_results_by_distance=1&long_val=%s&lat_val=%s&geo_width=%s',
-        setting('tomato_url'), $latitude, $longitude, setting('helpline_search_radius'));
-    $search_results = json_decode(get($bmlt_search_endpoint));
-    $root_server_uri_from_first_result = $search_results[0]->root_server_uri;
-    return strpos(getAdminBMLTRootServer(), $root_server_uri_from_first_result) == 0;
-}
-
-function getHelplineRoutingBMLTServer($latitude, $longitude) {
-    if (setting('tomato_helpline_routing') & !isBMLTServerOwned($latitude, $longitude)) {
-        return setting('tomato_url');
-    } else if (has_setting('helpline_bmlt_root_server')) {
-        return setting('helpline_bmlt_root_server');
-    } else {
-        return setting('bmlt_root_server');
-    }
-}
-
-function getAdminBMLTRootServer()
-{
-    if (has_setting('helpline_bmlt_root_server')) {
-        return setting('helpline_bmlt_root_server');
-    } else {
-        return setting('bmlt_root_server');
-    }
-}
-
-function getBMLTRootServer()
-{
-    return setting('bmlt_root_server');
 }
 
 function isBMLTServerOwned($latitude, $longitude)
@@ -882,7 +850,6 @@ function getResultsString($filtered_list)
 
 function getServiceBodyCoverage($latitude, $longitude)
 {
-    getBMLTServer($latitude, $longitude, SearchType::VOLUNTEERS);
     $search_results = helplineSearch($latitude, $longitude);
     $service_bodies = getServiceBodiesForRouting($latitude, $longitude);
     $already_checked = [];
