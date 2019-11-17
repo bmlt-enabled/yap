@@ -55,9 +55,7 @@ if (!isset($_REQUEST['ForceNumber'])) {
     $extension = isset($exploded_result[1]) ? $exploded_result[1] : "w";
     $service_body_id = isset($service_body_obj) ? $service_body_obj->id : 0;
 
-if (!setting("tomato_helpline_routing") && !isset($_REQUEST['ForceNumber'])) {
     $serviceBodyCallHandling = getServiceBodyCallHandling($service_body_id);
-}
 
 insertCallEventRecord(EventId::VOLUNTEER_SEARCH,
     (object)['gather' => $address, 'coordinates' => isset($coordinates) ? $coordinates : null]);
