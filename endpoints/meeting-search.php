@@ -107,7 +107,7 @@ if (has_setting('sms_summary_page') && json_decode(setting('sms_summary_page')))
         $webhook_url = $voice_url;
     }
 
-    $message = "Meeting Results, Click Here: " . $webhook_url . "/meeting-results.php?latitude=" . $latitude . "&longitude=" . $longitude;
+    $message = sprintf("Meeting Results, click here: %s/msr/%s/%s", $webhook_url, $latitude, $longitude);
 
     if (json_decode(setting("sms_ask")) && !isset($_REQUEST["SmsSid"])) {
         array_push($sms_messages, $message);
