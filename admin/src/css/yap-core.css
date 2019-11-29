@@ -210,3 +210,7 @@ div#signin {
     padding-top: 10px;
     padding-bottom: 10px;
 }
+#refresh-button{
+    float:right;
+    display:block;
+}
