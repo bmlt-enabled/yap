@@ -53,6 +53,7 @@ function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = Volunt
         'callerId'             => $caller_id,
         'originalCallerId'     => $original_caller_id
     );
+
     $config->voicemail_url = getWebhookUrl() . '/voicemail.php?service_body_id=' . $serviceBodyCallHandling->service_body_id . '&caller_id=' . trim($config->options['callerId']) . getSessionLink();
     if (!isset($_SESSION['ActiveVolunteer'])) {
         $_SESSION['ActiveVolunteer'] = $volunteer;
@@ -153,7 +154,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
         foreach ($conference_participants as $participant) {
             try {
                 log_debug("Someone left the conference: " . $participant->callSid);
-                $twilioClient->calls($participant->callSid)->update(array( $status => 'completed' ));
+                $twilioClient->calls($participant->callSid)->update(array( 'status' => 'completed' ));
             } catch (\Twilio\Exceptions\TwilioException $e) {
                 error_log($e);
             }
