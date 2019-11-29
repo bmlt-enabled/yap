@@ -1014,6 +1014,18 @@ function getServiceBodiesRights()
     }
 }
 
+function incrementNoAnswerCount()
+{
+    $_SESSION['no_answer_count'] = !isset($_SESSION['no_answer_count']) ? 1 : $_SESSION['no_answer_count'] + 1;
+    if ($_SESSION['no_answer_count'] == $_SESSION['no_answer_max']) {
+        log_debug("Call blasting no answer, calling voicemail.");
+        $GLOBALS['twilioClient']->calls($_SESSION['master_callersid'])->update(array(
+            "method" => "GET",
+            "url" => $_SESSION['voicemail_url']
+        ));
+    }
+}
+
 function admin_GetUserName()
 {
     if (!isset($_SESSION['auth_user_name_string'])) {

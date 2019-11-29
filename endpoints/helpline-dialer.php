@@ -5,7 +5,7 @@ use app\bmltenabled\yap\CallConfig;
 require_once '_includes/functions.php';
 require_once '_includes/twilio-client.php';
 
-function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = VolunteerShadowOption::UNSPECIFIED)
+function getCallConfig($serviceBodyCallHandling, $tandem = VolunteerShadowOption::UNSPECIFIED)
 {
     $tracker            = !isset($_REQUEST["tracker"]) ? 0 : $_REQUEST["tracker"];
 
@@ -59,15 +59,25 @@ function getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem = Volunt
         $_SESSION['ActiveVolunteer'] = $volunteer;
     }
 
+    if ($serviceBodyCallHandling->call_strategy == CycleAlgorithm::BLASTING) {
+        $_SESSION['no_answer_max'] = count(explode(",", $config->volunteer->phoneNumber));
+        $_SESSION['voicemail_url'] = $config->voicemail_url;
+    } else {
+        $_SESSION['no_answer_max'] = 0;
+    }
+
     return $config;
 }
 
 if (isset($_REQUEST['noop'])) {
+    if (isset($_REQUEST['CallStatus']) && $_REQUEST['CallStatus'] == 'no-answer') {
+        incrementNoAnswerCount();
+    }
+
     exit();
 }
 
-$service_body_id = setting('service_body_id');
-$serviceBodyCallHandling = getServiceBodyCallHandling($service_body_id);
+$serviceBodyCallHandling = getServiceBodyCallHandling(setting('service_body_id'));
 
 if (isset($_REQUEST['Debug']) && intval($_REQUEST['Debug']) == 1) {
     echo var_dump(getCallConfig($twilioClient, $serviceBodyCallHandling));
@@ -97,7 +107,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     // Make timeout configurable per volunteer
     if (( isset($_REQUEST['SequenceNumber']) && intval($_REQUEST['SequenceNumber']) == 1 ) ||
          ( isset($_REQUEST['CallStatus']) && ( $_REQUEST['CallStatus'] == 'no-answer' || $_REQUEST['CallStatus'] == 'completed' ) ) ) {
-        $callConfig = getCallConfig($twilioClient, $serviceBodyCallHandling, $tandem);
+        $callConfig = getCallConfig($serviceBodyCallHandling, $tandem);
 
         if (isset($_REQUEST['CallStatus']) && $_REQUEST['CallStatus'] == 'no-answer') {
             insertCallEventRecord(EventId::VOLUNTEER_NOANSWER, (object)['to_number' => $_REQUEST['Called']]);
@@ -111,6 +121,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
         if (count($participants) == 1 || (count($participants) > 0 && $tandem == VolunteerShadowOption::TRAINEE)) {
             try {
                 $callerSid = $participants[0]->callSid;
+                $_SESSION['master_callersid'] = $callerSid;
                 $callerNumber = $twilioClient->calls($callerSid)->fetch()->from;
                 if (strpos($callerNumber, "+") !== 0) {
                     $callerNumber .= "+" . trim($callerNumber);
