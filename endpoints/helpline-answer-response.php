@@ -30,7 +30,8 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";?>
         </Dial>
     <?php } ?>
 <?php } else {
-    insertCallEventRecord(EventId::VOLUNTEER_REJECTED, (object)["digits" => $_REQUEST['Digits']]);
+    insertCallEventRecord(EventId::VOLUNTEER_REJECTED,
+        (object)["digits" => $_REQUEST['Digits'], "to_number" => $_REQUEST['Called']]);
     setConferenceParticipant($_REQUEST['conference_name'], CallRole::VOLUNTEER);
     log_debug("They rejected the call.") ?>
     <Hangup/>
