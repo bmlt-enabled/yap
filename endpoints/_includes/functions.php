@@ -747,7 +747,7 @@ function getHelplineRoutingBMLTServer($latitude, $longitude) {
     if (json_decode(setting('tomato_helpline_routing')) && !isBMLTServerOwned($latitude, $longitude)) {
         return setting('tomato_url');
     } else {
-        getAdminBMLTRootServer();
+        return getAdminBMLTRootServer();
     }
 }
 
