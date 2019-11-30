@@ -740,16 +740,14 @@ function isBMLTServerOwned($latitude, $longitude)
         setting('tomato_url'), $latitude, $longitude, setting('helpline_search_radius'));
     $search_results = json_decode(get($bmlt_search_endpoint));
     $root_server_uri_from_first_result = $search_results[0]->root_server_uri;
-    return strpos(getAdminBMLTRootServer(), $root_server_uri_from_first_result) == 0;
+    return str_exists($root_server_uri_from_first_result, getAdminBMLTRootServer());
 }
 
 function getHelplineRoutingBMLTServer($latitude, $longitude) {
     if (json_decode(setting('tomato_helpline_routing')) && !isBMLTServerOwned($latitude, $longitude)) {
         return setting('tomato_url');
-    } else if (has_setting('helpline_bmlt_root_server')) {
-        return setting('helpline_bmlt_root_server');
     } else {
-        return setting('bmlt_root_server');
+        getAdminBMLTRootServer();
     }
 }
 
@@ -1519,7 +1517,7 @@ function check_auth($username)
         $cookie_file = getCookiePath($username . '_cookie.txt');
         if (file_exists($cookie_file)) {
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=get_permissions', getBMLTRootServer()));
+            curl_setopt($ch, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=get_permissions', getAdminBMLTRootServer()));
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
             curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
