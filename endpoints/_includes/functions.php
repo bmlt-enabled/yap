@@ -736,7 +736,7 @@ function helplineSearch($latitude, $longitude)
 
 function isBMLTServerOwned($latitude, $longitude)
 {
-    $bmlt_search_endpoint = sprintf('%s/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri&sort_results_by_distance=1&long_val=%s&lat_val=%s&geo_width=%s',
+    $bmlt_search_endpoint = sprintf('%s/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s',
         setting('tomato_url'), $latitude, $longitude, setting('helpline_search_radius'));
     $search_results = json_decode(get($bmlt_search_endpoint));
     $root_server_uri_from_first_result = $search_results[0]->root_server_uri;
