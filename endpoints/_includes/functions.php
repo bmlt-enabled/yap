@@ -674,8 +674,12 @@ function getOutboundDialingCallerId($serviceBodyCallHandling)
 {
     if ($serviceBodyCallHandling->forced_caller_id_enabled) {
         return $serviceBodyCallHandling->forced_caller_id_number;
+    } else if (isset($_REQUEST["Caller"])) {
+        return $_REQUEST["Caller"];
+    } else if (isset($_REQUEST['caller_id'])) {
+        return $_REQUEST['caller_id'];
     } else {
-        return isset($_REQUEST["Caller"]) ? $_REQUEST["Caller"] : SpecialPhoneNumber::UNKNOWN;
+        return SpecialPhoneNumber::UNKNOWN;
     }
 }
 

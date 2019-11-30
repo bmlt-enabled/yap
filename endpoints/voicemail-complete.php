@@ -87,3 +87,5 @@ if ($serviceBodyCallHandling->primary_contact_email_enabled && has_setting('smtp
     $recipients = explode(",", $serviceBodyCallHandling->primary_contact_email);
     sendEmailForVoicemail($recipients, $serviceBodyName, $callerNumber);
 }
+?>
+<Response></Response>
