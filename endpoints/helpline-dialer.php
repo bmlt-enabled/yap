@@ -80,7 +80,7 @@ if (isset($_REQUEST['noop'])) {
 $serviceBodyCallHandling = getServiceBodyCallHandling(setting('service_body_id'));
 
 if (isset($_REQUEST['Debug']) && intval($_REQUEST['Debug']) == 1) {
-    echo var_dump(getCallConfig($twilioClient, $serviceBodyCallHandling));
+    echo var_dump(getCallConfig($serviceBodyCallHandling));
     exit();
 }
 
