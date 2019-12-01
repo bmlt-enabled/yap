@@ -59,8 +59,12 @@ if (!isset($_REQUEST['ForceNumber'])) {
     $serviceBodyCallHandling = getServiceBodyCallHandling($service_body_id);
 }
 
-insertCallEventRecord(EventId::VOLUNTEER_SEARCH,
-    (object)['gather' => $address, 'coordinates' => isset($coordinates) ? $coordinates : null]);
+if (isset($address)) {
+    insertCallEventRecord(EventId::VOLUNTEER_SEARCH,
+        (object)['gather' => $address, 'coordinates' => isset($coordinates) ? $coordinates : null]);
+} else {
+    insertCallEventRecord(EventId::VOLUNTEER_SEARCH);
+}
 
 if ($service_body_id > 0 && isset($serviceBodyCallHandling) && $serviceBodyCallHandling->volunteer_routing_enabled) {
     if ($serviceBodyCallHandling->gender_routing_enabled && !isset($_SESSION['Gender'])) {
