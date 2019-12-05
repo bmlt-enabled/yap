@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.5.0 (UNRELEASED)
+### 3.5.0 (December 4, 2019)
 * Added database driven call detail records. [#289] [#285]
 * Added the ability to "dialback". [#209]
 * Added the ability to have custom filters for call routing. [#314]
