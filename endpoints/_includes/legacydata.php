@@ -26,7 +26,7 @@ function getHelplineData($service_body_id, $data_type)
 }
 
 if (intval($flag_setting) !== 1) {
-    if (setting("auth_bmlt")) {
+    if (setting("bmlt_auth")) {
         $v1Config = getHelplineData(0, DataType::YAP_CONFIG);
 
         foreach ($v1Config as $item) {
