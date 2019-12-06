@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.5.1 (UNRELEASED)
+* Added the ability to disable BMLT based authentication in favor of local auth [#339]
+
 ### 3.5.0 (December 4, 2019)
 * Added database driven call detail records. [#289] [#285]
 * Added the ability to "dialback". [#209]

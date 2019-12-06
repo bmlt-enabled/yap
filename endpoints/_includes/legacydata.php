@@ -26,17 +26,21 @@ function getHelplineData($service_body_id, $data_type)
 }
 
 if (intval($flag_setting) !== 1) {
-    $v1Config = getHelplineData(0, DataType::YAP_CONFIG);
+    if (setting("auth_bmlt")) {
+        $v1Config = getHelplineData(0, DataType::YAP_CONFIG);
 
-    foreach ($v1Config as $item) {
-        admin_PersistDbConfig($item['service_body_id'], json_encode($item['data']), DataType::YAP_CALL_HANDLING_V2);
+        foreach ($v1Config as $item) {
+            admin_PersistDbConfig($item['service_body_id'], json_encode($item['data']), DataType::YAP_CALL_HANDLING_V2);
+        }
+
+        $v1Volunteers = getHelplineData(0, DataType::YAP_DATA);
+
+        foreach ($v1Volunteers as $volunteer) {
+            admin_PersistDbConfig($volunteer['service_body_id'], json_encode($volunteer['data']), DataType::YAP_VOLUNTEERS_V2);
+        }
+
+        setFlag('root_server_data_migration', 1);
+    } else {
+        echo "Cannot migrate v2 to v3 data because bmlt_auth is disabled.  Must be enabled so the migration can occur, it can be disabled afterwards.";
     }
-
-    $v1Volunteers = getHelplineData(0, DataType::YAP_DATA);
-
-    foreach ($v1Volunteers as $volunteer) {
-        admin_PersistDbConfig($volunteer['service_body_id'], json_encode($volunteer['data']), DataType::YAP_VOLUNTEERS_V2);
-    }
-
-    setFlag('root_server_data_migration', 1);
 }

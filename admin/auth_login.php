@@ -11,7 +11,7 @@ if (count($auth_v2_result) == 1) {
     $_SESSION['auth_permissions'] = $auth_v2_result[0]['permissions'];
     header('Location: home.php');
     exit();
-} elseif (auth_v1($_POST['username'], $_POST['password'])) {
+} elseif (setting("bmlt_auth") && auth_v1($_POST['username'], $_POST['password'])) {
     $_SESSION['username'] = $_POST['username'];
     $_SESSION['auth_mechanism'] = AuthMechanism::V1;
     header('Location: home.php');
