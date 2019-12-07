@@ -1870,10 +1870,12 @@ function insertCallEventRecord($eventid, $meta = null) {
     $service_body_id = setting('service_body_id');
 
     $db = new Database();
-    $stmt = "INSERT INTO `records_events` (`callsid`,`event_id`,`service_body_id`,`meta`) VALUES (:callSid, :eventid, :service_body_id, :meta)";
+    $stmt = "INSERT INTO `records_events` (`callsid`,`event_id`,`event_time`,`service_body_id`,`meta`) VALUES (:callSid, :eventid, :event_time, :service_body_id, :meta)";
     $db->query($stmt);
     $db->bind(':callSid', $callSid);
     $db->bind(':eventid', $eventid);
+    date_default_timezone_set('UTC');
+    $db->bind(':event_time', gmdate("Y-m-d H:i:s"));
     $db->bind(':service_body_id', $service_body_id);
     $db->bind(':meta', $meta_as_json);
     $db->execute();
