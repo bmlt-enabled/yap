@@ -1913,7 +1913,7 @@ LEFT OUTER JOIN (SELECT DISTINCT conferencesid, callsid FROM conference_particip
 LEFT OUTER JOIN (SELECT DISTINCT conferencesid, callsid FROM conference_participants) cp2 ON cp2.conferencesid = cp.conferencesid AND cp2.callsid <> cp.callsid
 INNER JOIN records_events re ON r.callsid = re.callsid OR cp2.callsid = re.callsid %s GROUP BY r.`id`,r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,r.callsid", "WHERE `service_body_id` = " . $service_body_id);
     }
-    $db->query("SET @@group_concat_max_len = 10240;");
+    $db->exec("SET @@session.group_concat_max_len = 10240;");
     $db->query($sql);
     $resultset = $db->resultset();
     $db->resultset();
