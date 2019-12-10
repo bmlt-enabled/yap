@@ -1906,12 +1906,12 @@ CONCAT('[', GROUP_CONCAT('{\"meta\":', IFNULL(re.meta, '{}'), ',\"event_id\":', 
 FROM `records` r 
 LEFT OUTER JOIN records_events re ON r.callsid = re.callsid GROUP BY r.`id`,r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,r.callsid";
         } else {
-        $sql = sprintf("SELECT r.`id`,CONCAT(r.`start_time`, 'Z') as start_time,CONCAT(r.`end_time`, 'Z') as end_time,r.`duration`,r.`from_number`,r.`to_number`,r.`callsid`,
+        $sql = sprintf("SELECT confs.`id`,CONCAT(confs.`start_time`, 'Z') as start_time,CONCAT(confs.`end_time`, 'Z') as end_time,confs.`duration`,confs.`from_number`,confs.`to_number`,confs.`callsid`,
 CONCAT('[', GROUP_CONCAT('{\"meta\":', IFNULL(re.meta, '{}'), ',\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, 'Z\",\"service_body_id\":', COALESCE(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
-FROM `records` r 
-LEFT OUTER JOIN (SELECT DISTINCT conferencesid, callsid FROM conference_participants) cp ON cp.callsid = r.callsid 
-LEFT OUTER JOIN (SELECT DISTINCT conferencesid, callsid FROM conference_participants) cp2 ON cp2.conferencesid = cp.conferencesid AND cp2.callsid <> cp.callsid
-INNER JOIN records_events re ON r.callsid = re.callsid OR cp2.callsid = re.callsid %s GROUP BY r.`id`,r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,r.callsid", "WHERE `service_body_id` = " . $service_body_id);
+from conference_participants cp2 
+right outer join (select r.*,cp.conferencesid from records r
+left outer join conference_participants cp on r.callsid = cp.callsid or cp.callsid IS NULL) confs on cp2.conferencesid = confs.conferencesid OR cp2.conferencesid IS NULL
+inner join records_events re on re.callsid = cp2.callsid OR re.callsid = confs.callsid %s GROUP BY confs.`id`,confs.`start_time`,confs.`end_time`,confs.`duration`,confs.`from_number`,confs.`to_number`,confs.callsid", "WHERE `service_body_id` = " . $service_body_id);
     }
     $db->exec("SET @@session.group_concat_max_len = 10240;");
     $db->query($sql);
@@ -1930,12 +1930,17 @@ function getVoicemail($service_body_id) {
     return $resultset;
 }
 
+function unique_stdclass_array($array) {
+    $array = array_map('json_encode', $array);
+    $array = array_unique($array);
+    return array_map('json_decode', array_values($array));
+}
 
 function adjustedCallRecords($service_body_id = null) {
     $callRecords = getCallRecords(intval($service_body_id));
 
     foreach ($callRecords as &$callRecord) {
-        $callEvents = isset($callRecord['call_events']) ? json_decode($callRecord['call_events']) : [];
+        $callEvents = isset($callRecord['call_events']) ? unique_stdclass_array(json_decode($callRecord['call_events'])) : [];
 
         if (!isset($callEvents)) {
             log_debug("callEvents issue");
