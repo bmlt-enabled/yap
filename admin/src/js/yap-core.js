@@ -843,7 +843,7 @@ function dataDecoder(dataString) {
 }
 
 function toCurrentTimezone(dateTime) {
-    return moment(dateTime, "YYYY-MM-DD hh:mm:ssZ").local().format("YYYY-MM-DD hh:mm:ss A Z");
+    return moment(dateTime, "YYYY-MM-DD hh:mm:ssZ").local().format("YYYY-MM-DD HH:mm:ssZ");
 }
 
 Object.prototype.hasOwnProperty = function(property) {
