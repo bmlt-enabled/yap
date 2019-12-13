@@ -120,3 +120,12 @@ task('cssReports', () => {
 });
 
 task('default', series('jsCore', 'jsSchedule', 'jsReports', 'cssCore', 'cssSchedule', 'cssReports'));
+
+task('watch', () => {
+    watch(jsCoreFiles, series('jsCore'));
+    watch(jsScheduleFiles, series('jsSchedule'));
+    watch(jsReportsFiles, series('jsReports'));
+    watch(cssCoreFiles, series('cssCore'));
+    watch(cssScheduleFiles, series('cssSchedule'));
+    watch(cssReportsFiles, series('cssReports'));
+});
