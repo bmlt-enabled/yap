@@ -810,7 +810,7 @@ function confirmGroup() {
 }
 
 function openUrl(e, id) {
-    window.open($(e).parent().find("#" + id).val());
+    window.open($("#" + id).val());
     return false;
 }
 

@@ -3,6 +3,7 @@
 ### 3.5.1 (UNRELEASED)
 * Added the ability to disable BMLT based authentication in favor of local auth [#339]
 * Several reports fixes [#342] [#343] [#344] [#345]
+* Fix for Play link not working on Call Handling modal for service bodies [#347]
 
 ### 3.5.0 (December 4, 2019)
 * Added database driven call detail records. [#289] [#285]
