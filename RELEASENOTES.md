@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.5.1 (UNRELEASED)
+### 3.5.1 (December 14, 2019)
 * Added the ability to disable BMLT based authentication in favor of local auth [#339]
 * Added service body IDs in dropdowns on the admin UI. [#349]
 * Several reports fixes [#342] [#343] [#344] [#345] [#346] [#348]
