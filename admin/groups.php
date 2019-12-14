@@ -14,7 +14,7 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
             sort_on_field($serviceBodies, 'name');
             $selected_service_body_id = isset($_REQUEST['service_body_id']) ? $_REQUEST['service_body_id'] : 0;
             foreach ($serviceBodies as $item) {?>
-                <option value="<?php echo $item->id ?>" <?php echo $selected_service_body_id > 0 && $selected_service_body_id == $item->id ? "selected": ""?>><?php echo $item->name ?></option>
+                <option value="<?php echo $item->id ?>" <?php echo $selected_service_body_id > 0 && $selected_service_body_id == $item->id ? "selected": ""?>><?php echo $item->name ?> (<?php echo $item->id ?>)</option>
                 <?php
             }?>
         </select>

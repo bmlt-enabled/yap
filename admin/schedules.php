@@ -9,7 +9,7 @@
                 $helplineConfiguration = getVolunteerRoutingEnabledServiceBodies();
                 sort_on_field($helplineConfiguration, 'service_body_name');
                 foreach ($helplineConfiguration as $item) {?>
-                    <option value="<?php echo $item->service_body_id ?>"><?php echo $item->service_body_name ?></option>
+                    <option value="<?php echo $item->service_body_id ?>"><?php echo $item->service_body_name ?> (<?php echo $item->service_body_id ?>)</option>
                     <?php
                 }?>
             </select>

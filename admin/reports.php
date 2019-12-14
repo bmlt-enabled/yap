@@ -8,7 +8,7 @@
         $serviceBodies = getServiceBodyDetailForUser();
         sort_on_field($serviceBodies, 'name');
         foreach ($serviceBodies as $item) {?>
-            <option value="<?php echo $item->id ?>"><?php echo $item->name ?></option>
+            <option value="<?php echo $item->id ?>"><?php echo $item->name ?> (<?php echo $item->id ?>)</option>
             <?php
         }?>
     </select>
