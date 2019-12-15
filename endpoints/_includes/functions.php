@@ -6,7 +6,7 @@ session_start();
 require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
 require_once 'migrations.php';
 require_once 'logging.php';
-static $version  = "3.5.1";
+static $version  = "3.5.2";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'bmlt_root_server' => [ 'description' => 'The root server to use.' , 'default' => '', 'overridable' => false, 'hidden' => false],
@@ -1907,7 +1907,7 @@ right outer join (select r.*,cp.conferencesid from records r
 left outer join conference_participants cp on r.callsid = cp.callsid or cp.callsid IS NULL) confs on cp2.conferencesid = confs.conferencesid OR cp2.conferencesid IS NULL
 inner join records_events re on re.callsid = cp2.callsid OR re.callsid = confs.callsid %s GROUP BY confs.`id`,confs.`start_time`,confs.`end_time`,confs.`duration`,confs.`from_number`,confs.`to_number`,confs.callsid
 ORDER BY confs.`id`,CONCAT(confs.`start_time`, 'Z') DESC",$service_body_id == 0 ? "" : "WHERE `service_body_id` = " . $service_body_id);
-    $db->exec("SET @@session.group_concat_max_len = 10240;");
+    $db->exec("SET @@session.group_concat_max_len = 4294967295;");
     $db->query($sql);
     $resultset = $db->resultset();
     $db->resultset();

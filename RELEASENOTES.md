@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.5.2 (December 15, 2019)
+* Fix for large data responses being truncated by MySQL [#350]
+
 ### 3.5.1 (December 14, 2019)
 * Added the ability to disable BMLT based authentication in favor of local auth [#339]
 * Added service body IDs in dropdowns on the admin UI. [#349]
