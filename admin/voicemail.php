@@ -33,7 +33,7 @@
                 target:"_blank",
                 label:"Play",
             }, mutator: function(value) {
-                return value != null ? JSON.parse(value)['url'] : null;
+                return value != null ? JSON.parse(value)['url'].concat('.mp3') : null;
             }}
         ],
         rowFormatter:function(row) {
