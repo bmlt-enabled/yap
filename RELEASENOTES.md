@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.5.3 (UNRELEASED)
+* Voicemail play link is now an MP3 [#351]
+
 ### 3.5.2 (December 15, 2019)
 * Fix for large data responses being truncated by MySQL [#350]
 
