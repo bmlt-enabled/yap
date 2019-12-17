@@ -12,6 +12,9 @@ if (!isset($_REQUEST['ForceNumber'])) {
     } else {
         $address = isset($_SESSION['Address']) ? $_SESSION['Address'] : getIvrResponse();
         $coordinates  = getCoordinatesForAddress($address);
+            insertCallEventRecord(EventId::VOLUNTEER_SEARCH_LOCATION_GATHERED,
+        (object)['gather' => $address, 'coordinates' => isset($coordinates) ? $coordinates : null]);
+
         try {
             if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) {
                 throw new Exception("Couldn't find an address for that location.");
