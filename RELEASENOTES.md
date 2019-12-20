@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.5.3 (UNRELEASED)
+### 3.5.3 (December 19, 2019)
 * Voicemail play link is now an MP3 [#351]
 
 ### 3.5.2 (December 15, 2019)
