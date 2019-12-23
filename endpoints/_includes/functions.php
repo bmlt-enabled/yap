@@ -6,7 +6,7 @@ session_start();
 require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
 require_once 'migrations.php';
 require_once 'logging.php';
-static $version  = "3.5.3";
+static $version  = "3.5.4";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'bmlt_root_server' => [ 'description' => 'The root server to use.' , 'default' => '', 'overridable' => false, 'hidden' => false],
@@ -1900,13 +1900,17 @@ function insertCallRecord($callRecord) {
 
 function getCallRecords($service_body_id) {
     $db = new Database();
-    $sql = sprintf("SELECT confs.`id`,CONCAT(confs.`start_time`, 'Z') as start_time,CONCAT(confs.`end_time`, 'Z') as end_time,confs.`duration`,confs.`from_number`,confs.`to_number`,confs.`callsid`,
+    $sql = sprintf("SELECT r.`id`,CONCAT(r.`start_time`, 'Z') as start_time,CONCAT(r.`end_time`, 'Z') as end_time,r.`duration`,r.`from_number`,r.`to_number`,r.`callsid`,
 CONCAT('[', GROUP_CONCAT('{\"meta\":', IFNULL(re.meta, '{}'), ',\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, 'Z\",\"service_body_id\":', COALESCE(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
-from conference_participants cp2 
-right outer join (select r.*,cp.conferencesid from records r
-left outer join conference_participants cp on r.callsid = cp.callsid or cp.callsid IS NULL) confs on cp2.conferencesid = confs.conferencesid OR cp2.conferencesid IS NULL
-inner join records_events re on re.callsid = cp2.callsid OR re.callsid = confs.callsid %s GROUP BY confs.`id`,confs.`start_time`,confs.`end_time`,confs.`duration`,confs.`from_number`,confs.`to_number`,confs.callsid
-ORDER BY confs.`id`,CONCAT(confs.`start_time`, 'Z') DESC",$service_body_id == 0 ? "" : "WHERE `service_body_id` = " . $service_body_id);
+FROM records r
+INNER JOIN records_events re ON r.callsid = re.callsid
+WHERE re.callsid in (select distinct r.callsid from records r
+inner join records_events re on r.callsid = re.callsid
+left outer join conference_participants cp on r.callsid = cp.callsid or cp.callsid IS NULL %s) %s
+GROUP BY r.`id`,r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,r.callsid
+ORDER BY r.`id`,CONCAT(r.`start_time`, 'Z') DESC",
+        $service_body_id == 0 ? "" : "WHERE `service_body_id` = " . $service_body_id,
+        $service_body_id == 0 ? "" : " AND `service_body_id` = " . $service_body_id);
     $db->exec("SET @@session.group_concat_max_len = 4294967295;");
     $db->query($sql);
     $resultset = $db->resultset();
