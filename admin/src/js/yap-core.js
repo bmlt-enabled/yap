@@ -2,72 +2,69 @@ dayOfTheWeek = {1:"Sunday",2:"Monday",3:"Tuesday",4:"Wednesday",5:"Thursday",6:"
 var groups;
 var calendar;
 
-function getReportData() {
-    $("#reports").show();
-    $.getJSON("cdr_api.php?service_body_id=" + $("#service_body_id").val(), function (data) {
-        table.setData(data);
-        var events = [];
-        for (var i = 0; i < data.length; i++) {
-            var callEvents = data[i]['call_events'];
-            for (var j = 0; j < callEvents.length; j++) {
-                var callEvent = callEvents[j];
-                events.push(callEvent);
+function getMetricsData() {
+    $("#metrics").slideToggle(function() {
+        $.getJSON("metric_api.php?service_body_id=" + $("#service_body_id").val(), function (data) {
+            var actions = ['Volunteer', 'Meetings', 'Just For Today'];
+            var plots = {"1": [], "2": [], "3": []};
+            for (var item of data) {
+                plots[JSON.parse(item['data'])['searchType']].push({
+                    'x': item['timestamp'],
+                    'y': item['counts']
+                });
             }
-        }
 
-        $(".subTableHolder").toggle();
+            var datasets = [];
+            var colors = ['red', 'blue', 'green'];
+            for (var a = 0; a < actions.length; a++) {
+                var xAgg = [];
+                var yAgg = [];
+                if (plots[a + 1] !== undefined) {
+                    for (var p = 0; p < plots[a + 1].length; p++) {
+                        xAgg.push(plots[a + 1][p].x);
+                        yAgg.push(plots[a + 1][p].y);
+                    }
 
-        eventsTable.setData(events);
-    });
-
-    $.getJSON("metric_api.php?service_body_id=" + $("#service_body_id").val(), function (data) {
-        var actions = ['Volunteer', 'Meetings', 'Just For Today'];
-        var plots = {"1":[],"2":[],"3":[]};
-        for (var item of data) {
-            plots[JSON.parse(item['data'])['searchType']].push({
-                'x': item['timestamp'],
-                'y': item['counts']
-            });
-        }
-
-        var datasets = [];
-        var colors = ['red', 'blue', 'green'];
-        for (var a = 0; a < actions.length; a++) {
-            var xAgg = [];
-            var yAgg = [];
-            if (plots[a+1] !== undefined) {
-                for (var p = 0; p < plots[a + 1].length; p++) {
-                    xAgg.push(plots[a + 1][p].x);
-                    yAgg.push(plots[a + 1][p].y);
+                    datasets.push({
+                        type: 'scatter',
+                        mode: 'lines+markers',
+                        name: actions[a],
+                        x: xAgg,
+                        y: yAgg,
+                        line: {color: colors[a]}
+                    })
                 }
-
-                datasets.push({
-                    type: 'scatter',
-                    mode: 'lines+markers',
-                    name: actions[a],
-                    x: xAgg,
-                    y: yAgg,
-                    line: {color: colors[a]}
-                })
             }
-        }
 
-        Plotly.newPlot("metrics", datasets, {
-            title: 'Usage Summary',
-            xaxis: {
-                title: 'Day',
-                type: 'date'
-            },
-            yaxis: {
-                title: 'Occurrences'
-            }
+            $("#metrics").slideToggle(function() {
+                Plotly.newPlot("metrics", datasets, {
+                    title: 'Usage Summary',
+                    xaxis: {
+                        title: 'Day',
+                        type: 'date'
+                    },
+                    yaxis: {
+                        title: 'Occurrences'
+                    }
+                });
+            });
+
         });
     });
 }
 
+function updateCallRecords() {
+    table.setData();
+}
+
+function getMetrics() {
+    $("#service_body_id").on("change", getReports);
+    getMetricsData();
+}
+
 function getReports() {
-    $("#reports").hide();
-    $("#service_body_id").on("change", getReportData);
+    getMetricsData();
+    updateCallRecords();
 }
 
 function volunteerPage() {

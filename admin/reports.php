@@ -2,8 +2,7 @@
 <link rel="stylesheet" href="dist/css/yap-reports.min.css">
 <div class="container">
     <select class="form-control form-control-sm" id="service_body_id" name="service_body_id">
-        <option value="-1">-= Select A Service Body =-</option>
-        <option value="0">All</option>
+        <option selected value="0">All</option>
         <?php
         $serviceBodies = getServiceBodyDetailForUser();
         sort_on_field($serviceBodies, 'name');
@@ -65,28 +64,47 @@
     ];
 
     var table = new Tabulator("#cdr-table", {
-        layout:"fitColumns",
-        responsiveLayout:"hide",
-        tooltips:true,
-        addRowPos:"top",
-        history:true,
-        pagination:"local",
-        paginationSize:20,
-        pageLoaded: function(pageno){
+        layout: "fitColumns",
+        responsiveLayout: "hide",
+        tooltips: true,
+        addRowPos: "top",
+        history: true,
+        pagination: "remote",
+        paginationSize: 20,
+        ajaxURL: "cdr_api.php",
+        ajaxURLGenerator: function(url, config, params) {
+            return url + "?service_body_id=" + $("#service_body_id").val() + "&page=" + params['page'] + "&size=" + params['size'];
+        },
+        ajaxResponse: function(url, params, response) {
+            var events = [];
+            for (var i = 0; i < response['data'].length; i++) {
+                var callEvents = response['data'][i]['call_events'];
+                for (var j = 0; j < callEvents.length; j++) {
+                    var callEvent = callEvents[j];
+                    events.push(callEvent);
+                }
+            }
+
+            $(".subTableHolder").toggle();
+
+            eventsTable.setData(events);
+            return response;
+        },
+        pageLoaded: function(pageno) {
             $(".subTableHolder").toggle();
         },
-        movableColumns:true,
-        resizableRows:true,
-        printAsHtml:true,
-        printHeader:"<h3>Call Detail Records<h3>",
-        printFooter:"",
+        movableColumns: true,
+        resizableRows: true,
+        printAsHtml: true,
+        printHeader: "<h3>Call Detail Records<h3>",
+        printFooter: "",
         rowClick: function(e, row) {
             $("#subTableId_" + row.getData().id).toggle();
         },
-        initialSort:[
+        initialSort: [
             {column:"start_time", dir:"desc"},
         ],
-        columns:[
+        columns: [
             {title:"Start Time", field:"start_time", mutator: toCurrentTimezone },
             {title:"End Time", field:"end_time", mutator: toCurrentTimezone },
             {title:"Duration (seconds)", field:"duration"},
@@ -96,7 +114,7 @@
                 return JSON.stringify(cell.getValue());
             }}
         ],
-        rowFormatter:function(row) {
+        rowFormatter: function(row) {
             //create and style holder elements
             var holderEl = document.createElement("div");
             var tableEl = document.createElement("div");
@@ -128,4 +146,4 @@
         ],
     });
 </script>
-<script type="text/javascript">$(function(){getReports()})</script>
+<script type="text/javascript">$(function(){getMetrics()})</script>
