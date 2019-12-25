@@ -20,7 +20,7 @@
             <button class="btn-sm btn-primary" id="download-xlsx">XLSX</button>
             <button class="btn-sm btn-secondary" id="download-json">JSON</button>
             <div id="refresh-button">
-                <button class="btn-sm btn-dark" onclick="getReportData();">Refresh</button>
+                <button class="btn-sm btn-dark" onclick="getReports();">Refresh</button>
             </div>
         </div>
         <div id="cdr-table"></div>
