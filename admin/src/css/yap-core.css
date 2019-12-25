@@ -210,7 +210,12 @@ div#signin {
     padding-top: 10px;
     padding-bottom: 10px;
 }
+#page-size-dropdown {
+    float:right;
+    display:block;
+}
 #refresh-button{
+    padding-left: 5px;
     float:right;
     display:block;
 }

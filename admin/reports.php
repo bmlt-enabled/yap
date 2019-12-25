@@ -22,6 +22,17 @@
             <div id="refresh-button">
                 <button class="btn-sm btn-dark" onclick="getReports();">Refresh</button>
             </div>
+            <div id="page-size-dropdown" class="btn-group">
+                <button type="button" class="btn btn-sm btn-dark dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Page Size
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item page-size-dropdown-item active" href="#">20</a>
+                    <a class="dropdown-item page-size-dropdown-item" href="#">50</a>
+                    <a class="dropdown-item page-size-dropdown-item" href="#">100</a>
+                    <a class="dropdown-item page-size-dropdown-item" href="#">200</a>
+                </div>
+            </div>
         </div>
         <div id="cdr-table"></div>
         <div id="events-table" style="display:none;"></div>
@@ -30,6 +41,13 @@
 <?php require_once 'footer.php';?>
 <script src="dist/js/yap-reports.min.js"></script>
 <script type="text/javascript">
+    $(".page-size-dropdown-item").click(function(e) {
+        $(".page-size-dropdown-item").removeClass("active");
+        $(e.target).addClass("active");
+        var pageSize = parseInt(e.target.text);
+        table.setPageSize(pageSize);
+    });
+
     $("#print-table").on("click", function(){
         table.print(false, true);
     });
