@@ -1900,14 +1900,10 @@ function insertCallRecord($callRecord) {
 
 function getCallRecordsCount($service_body_id = 0, $size = 10) {
     $db = new Database();
-    $sql = sprintf("SELECT count(distinct r.`id`) as page_count
-FROM records r
-INNER JOIN records_events re ON r.callsid = re.callsid
-WHERE re.callsid in (select distinct r.callsid from records r
+    $sql = sprintf("select count(distinct r.callsid) as page_count from records r
 inner join records_events re on r.callsid = re.callsid
-left outer join conference_participants cp on r.callsid = cp.callsid or cp.callsid IS NULL %s) %s",
-        $service_body_id == 0 ? "" : "WHERE `service_body_id` = " . $service_body_id,
-        $service_body_id == 0 ? "" : " AND `service_body_id` = " . $service_body_id);
+left outer join conference_participants cp on r.callsid = cp.callsid or cp.callsid IS NULL %s",
+        $service_body_id == 0 ? "" : "WHERE `service_body_id` = " . $service_body_id);
     $db->query($sql);
     $resultset = $db->resultset();
     $db->resultset();
