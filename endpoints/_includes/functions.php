@@ -1914,15 +1914,12 @@ function getCallRecords($service_body_id = 0, $page = 1, $size = 10) {
     $db = new Database();
     $sql = sprintf("SELECT r.`id`,CONCAT(r.`start_time`, 'Z') as start_time,CONCAT(r.`end_time`, 'Z') as end_time,r.`duration`,r.`from_number`,r.`to_number`,r.`callsid`,
 CONCAT('[', GROUP_CONCAT('{\"meta\":', IFNULL(re.meta, '{}'), ',\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, 'Z\",\"service_body_id\":', COALESCE(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
-FROM records r
-INNER JOIN records_events re ON r.callsid = re.callsid
-WHERE re.callsid in (select distinct r.callsid from records r
-inner join records_events re on r.callsid = re.callsid
-left outer join conference_participants cp on r.callsid = cp.callsid or cp.callsid IS NULL %s) %s
-GROUP BY r.`id`,r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,r.callsid
+FROM (SELECT DISTINCT r.callsid as parent_callsid,cp2.callsid FROM records r INNER JOIN conference_participants cp ON r.callsid = cp.callsid OR cp.callsid IS NULL INNER JOIN conference_participants cp2 ON cp.conferencesid = cp2.conferencesid) cs
+LEFT OUTER JOIN records_events re ON cs.callsid = re.callsid
+INNER JOIN records r ON cs.parent_callsid = r.callsid %s
+GROUP BY r.callsid
 ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC %s",
         $service_body_id == 0 ? "" : "WHERE `service_body_id` = " . $service_body_id,
-        $service_body_id == 0 ? "" : " AND `service_body_id` = " . $service_body_id,
         " LIMIT " . $size . " OFFSET " .  ($page - 1) * $size);
     $db->exec("SET @@session.group_concat_max_len = 4294967295;");
     $db->query($sql);
