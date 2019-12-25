@@ -1924,7 +1924,7 @@ WHERE re.callsid in (select distinct r.callsid from records r
 inner join records_events re on r.callsid = re.callsid
 left outer join conference_participants cp on r.callsid = cp.callsid or cp.callsid IS NULL %s) %s
 GROUP BY r.`id`,r.`start_time`,r.`end_time`,r.`duration`,r.`from_number`,r.`to_number`,r.callsid
-ORDER BY r.`id`,CONCAT(r.`start_time`, 'Z') DESC %s",
+ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC %s",
         $service_body_id == 0 ? "" : "WHERE `service_body_id` = " . $service_body_id,
         $service_body_id == 0 ? "" : " AND `service_body_id` = " . $service_body_id,
         " LIMIT " . $size . " OFFSET " .  ($page - 1) * $size);
@@ -1952,7 +1952,7 @@ function unique_stdclass_array($array) {
 }
 
 function adjustedCallRecords($service_body_id = null, $page = 1, $size = 10) {
-    $callRecords = getCallRecords(intval($service_body_id));
+    $callRecords = getCallRecords(intval($service_body_id), $page, $size);
 
     foreach ($callRecords as &$callRecord) {
         $callEvents = isset($callRecord['call_events']) ? unique_stdclass_array(json_decode($callRecord['call_events'])) : [];

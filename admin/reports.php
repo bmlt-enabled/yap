@@ -23,6 +23,7 @@
                 <button class="btn-sm btn-dark" onclick="getReports();">Refresh</button>
             </div>
         </div>
+        <div id="cdr-table-filters"></div>
         <div id="cdr-table"></div>
         <div id="events-table" style="display:none;"></div>
     </div>
