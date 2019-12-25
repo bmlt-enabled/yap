@@ -12,8 +12,8 @@
     "moment": "^2.24.0",
     "plotly.js-dist": "^1.47.3",
     "popper.js": "^1.15.0",
-    "tabulator-tables": "^4.5.2",
-    "xlsx": "^0.15.1"
+    "tabulator-tables": "4.4.3",
+    "xlsx": "0.15.1"
   },
   "devDependencies": {
     "gulp": "^4.0.2",

@@ -91,7 +91,7 @@
             return response;
         },
         pageLoaded: function(pageno) {
-            $(".subTableHolder").toggle();
+            $(".subTableHolder").hide();
         },
         movableColumns: true,
         resizableRows: true,

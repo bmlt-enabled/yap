@@ -2626,10 +2626,10 @@ sver-compat@^1.5.0:
     es6-iterator "^2.0.1"
     es6-symbol "^3.1.1"
 
-tabulator-tables@^4.5.2:
-  version "4.5.2"
-  resolved "https://registry.yarnpkg.com/tabulator-tables/-/tabulator-tables-4.5.2.tgz#9dc2d0fd2b07ec43350a3a09017f9202455a2cd7"
-  integrity sha512-qiOSOTsa4KIr5twIM85juaP1qZcjIduyJsx7ww+V5fxO/bQb8gj8m1YbCxxucKc8c9QBbE2Xxr/3FAra8Zi6tA==
+tabulator-tables@4.4.3:
+  version "4.4.3"
+  resolved "https://registry.yarnpkg.com/tabulator-tables/-/tabulator-tables-4.4.3.tgz#44a435e3bc9ed8d6334a0ac491224f6341719641"
+  integrity sha512-wKQPsrY/PbY2hkDBJ5HSqS4VDmlKxafx1k+5uzwI6m1622yqFdu+hQhwi0WD38obvgmvtBJU4Nfu3YEtBHgAPA==
 
 tar@^4:
   version "4.4.13"
@@ -2956,7 +2956,7 @@ wrappy@1:
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
 
-xlsx@^0.15.1:
+xlsx@0.15.1:
   version "0.15.1"
   resolved "https://registry.yarnpkg.com/xlsx/-/xlsx-0.15.1.tgz#a767c4d412cbd0c95b30dbcd48bed7de428eb107"
   integrity sha512-z+o4+QPMc32EPboLCzJAz94o0Zyy+8jrmWTsVpfzwknFln9qDO6/HN1KrGGVC4//sGA7dh4R3HA4fhbGIKCDOA==
