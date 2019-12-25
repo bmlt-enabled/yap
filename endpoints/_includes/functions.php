@@ -1891,6 +1891,7 @@ function insertCallRecord($callRecord) {
     $db->bind(':from_number', $callRecord->from_number);
     $db->bind(':to_number', $callRecord->to_number);
     $db->bind(':duration', $callRecord->duration);
+    date_default_timezone_set('UTC');
     $db->bind(':start_time', $callRecord->start_time);
     $db->bind(':end_time', $callRecord->end_time);
     $db->bind(':payload', $callRecord->payload);
