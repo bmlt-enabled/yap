@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.5.4 (UNRELEASED)
+### 3.5.4 (December 25, 2019)
 * Call records are paginated now [#338]
 * Performance improvements for reports
 
