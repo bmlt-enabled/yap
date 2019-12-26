@@ -1923,6 +1923,7 @@ GROUP BY r.callsid
 ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC %s",
         $service_body_id == 0 ? "" : "AND `service_body_id` = " . $service_body_id,
         " LIMIT " . $size . " OFFSET " .  ($page - 1) * $size);
+    $db->exec("SET @@session.sql_mode = (SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
     $db->exec("SET @@session.group_concat_max_len = 4294967295;");
     $db->query($sql);
     $resultset = $db->resultset();
