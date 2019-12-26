@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.5.5 (December 25, 2019)
+* Fix in regression for status.php datetime formatting.
+
 ### 3.5.4 (December 25, 2019)
 * Call records are paginated now [#338]
 * Performance improvements for reports

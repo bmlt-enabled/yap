@@ -10,8 +10,8 @@ $callRecord->to_number = $_REQUEST['Called'];
 $callRecord->from_number = $_REQUEST['Caller'];
 $callRecord->duration = intval($_REQUEST['CallDuration']);
 $twilioRecords = $twilioClient->calls($callRecord->callSid)->fetch();
-$callRecord->start_time = $twilioRecords->startTime->format("c");
-$callRecord->end_time = $twilioRecords->endTime->format("c");
+$callRecord->start_time = $twilioRecords->startTime->format("Y-m-d H:i:s");
+$callRecord->end_time = $twilioRecords->endTime->format("Y-m-d H:i:s");
 $callRecord->payload = json_encode($_REQUEST);
 
 insertCallRecord($callRecord);
