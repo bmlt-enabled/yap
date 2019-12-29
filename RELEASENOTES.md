@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.6.0 (UNRELEASED)
+* Added call event for helpline routing.
+
 ### 3.5.5 (December 25, 2019)
 * Fix in regression for status.php datetime formatting.
 

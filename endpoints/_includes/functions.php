@@ -6,7 +6,7 @@ session_start();
 require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
 require_once 'migrations.php';
 require_once 'logging.php';
-static $version  = "3.5.5";
+static $version  = "3.6.0";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'bmlt_root_server' => [ 'description' => 'The root server to use.' , 'default' => '', 'overridable' => false, 'hidden' => false],
@@ -115,6 +115,7 @@ class EventId
     const VOLUNTEER_IN_CONFERENCE = 12;
     const CALLER_HUP = 13;
     const MEETING_SEARCH_LOCATION_GATHERED = 14;
+    const HELPLINE_ROUTE = 15;
 
     static function getEventById($id) {
         switch($id) {
@@ -132,6 +133,7 @@ class EventId
             case self::VOLUNTEER_IN_CONFERENCE: return "Volunteer Connected To Caller";
             case self::CALLER_HUP: return "Caller Hungup";
             case self::MEETING_SEARCH_LOCATION_GATHERED: return "Meeting Search Location Gathered";
+            case self::HELPLINE_ROUTE: return "Helpline Route";
         }
     }
 }
