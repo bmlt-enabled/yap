@@ -2,6 +2,7 @@
 
 ### 3.6.0 (UNRELEASED)
 * Added call event for helpline routing.
+* Added setting for using Tomato for meeting searches [#357]
 
 ### 3.5.5 (December 25, 2019)
 * Fix in regression for status.php datetime formatting.
