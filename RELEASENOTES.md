@@ -1,5 +1,21 @@
 # Release Notes
 
+### 3.6.0 (UNRELEASED)
+* Added call event for helpline routing.
+
+### 3.5.5 (December 25, 2019)
+* Fix in regression for status.php datetime formatting.
+
+### 3.5.4 (December 25, 2019)
+* Call records are paginated now [#338]
+* Performance improvements for reports
+
+### 3.5.3 (December 19, 2019)
+* Voicemail play link is now an MP3 [#351]
+
+### 3.5.2 (December 15, 2019)
+* Fix for large data responses being truncated by MySQL [#350]
+
 ### 3.5.1 (December 14, 2019)
 * Added the ability to disable BMLT based authentication in favor of local auth [#339]
 * Added service body IDs in dropdowns on the admin UI. [#349]

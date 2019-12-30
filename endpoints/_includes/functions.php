@@ -6,7 +6,7 @@ session_start();
 require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
 require_once 'migrations.php';
 require_once 'logging.php';
-static $version  = "3.5.1";
+static $version  = "3.6.0";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'bmlt_root_server' => [ 'description' => 'The root server to use.' , 'default' => '', 'overridable' => false, 'hidden' => false],
@@ -115,6 +115,7 @@ class EventId
     const VOLUNTEER_IN_CONFERENCE = 12;
     const CALLER_HUP = 13;
     const MEETING_SEARCH_LOCATION_GATHERED = 14;
+    const HELPLINE_ROUTE = 15;
 
     static function getEventById($id) {
         switch($id) {
@@ -132,6 +133,7 @@ class EventId
             case self::VOLUNTEER_IN_CONFERENCE: return "Volunteer Connected To Caller";
             case self::CALLER_HUP: return "Caller Hungup";
             case self::MEETING_SEARCH_LOCATION_GATHERED: return "Meeting Search Location Gathered";
+            case self::HELPLINE_ROUTE: return "Helpline Route";
         }
     }
 }
@@ -1891,6 +1893,7 @@ function insertCallRecord($callRecord) {
     $db->bind(':from_number', $callRecord->from_number);
     $db->bind(':to_number', $callRecord->to_number);
     $db->bind(':duration', $callRecord->duration);
+    date_default_timezone_set('UTC');
     $db->bind(':start_time', $callRecord->start_time);
     $db->bind(':end_time', $callRecord->end_time);
     $db->bind(':payload', $callRecord->payload);
@@ -1898,16 +1901,32 @@ function insertCallRecord($callRecord) {
     $db->close();
 }
 
-function getCallRecords($service_body_id) {
+function getCallRecordsCount($service_body_id = 0, $size = 10) {
     $db = new Database();
-    $sql = sprintf("SELECT confs.`id`,CONCAT(confs.`start_time`, 'Z') as start_time,CONCAT(confs.`end_time`, 'Z') as end_time,confs.`duration`,confs.`from_number`,confs.`to_number`,confs.`callsid`,
+    $sql = sprintf("select count(distinct r.callsid) as page_count from records r
+inner join records_events re on r.callsid = re.callsid
+left outer join conference_participants cp on r.callsid = cp.callsid or cp.callsid IS NULL %s",
+        $service_body_id == 0 ? "" : "WHERE `service_body_id` = " . $service_body_id);
+    $db->query($sql);
+    $resultset = $db->resultset();
+    $db->resultset();
+    return intval(ceil(intval($resultset[0]['page_count']) / $size));
+}
+
+function getCallRecords($service_body_id = 0, $page = 1, $size = 10) {
+    $db = new Database();
+    $sql = sprintf("SELECT r.`id`,CONCAT(r.`start_time`, 'Z') as start_time,CONCAT(r.`end_time`, 'Z') as end_time,r.`duration`,r.`from_number`,r.`to_number`,r.`callsid`,
 CONCAT('[', GROUP_CONCAT('{\"meta\":', IFNULL(re.meta, '{}'), ',\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, 'Z\",\"service_body_id\":', COALESCE(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
-from conference_participants cp2 
-right outer join (select r.*,cp.conferencesid from records r
-left outer join conference_participants cp on r.callsid = cp.callsid or cp.callsid IS NULL) confs on cp2.conferencesid = confs.conferencesid OR cp2.conferencesid IS NULL
-inner join records_events re on re.callsid = cp2.callsid OR re.callsid = confs.callsid %s GROUP BY confs.`id`,confs.`start_time`,confs.`end_time`,confs.`duration`,confs.`from_number`,confs.`to_number`,confs.callsid
-ORDER BY confs.`id`,CONCAT(confs.`start_time`, 'Z') DESC",$service_body_id == 0 ? "" : "WHERE `service_body_id` = " . $service_body_id);
-    $db->exec("SET @@session.group_concat_max_len = 10240;");
+FROM (SELECT DISTINCT r.callsid as parent_callsid,cp2.callsid FROM records r LEFT OUTER JOIN conference_participants cp ON r.callsid = cp.callsid OR cp.callsid IS NULL LEFT OUTER JOIN conference_participants cp2 ON cp.conferencesid = cp2.conferencesid) cs
+INNER JOIN records r ON cs.parent_callsid = r.callsid
+LEFT OUTER JOIN records_events re ON cs.callsid = re.callsid OR r.callsid = re.callsid 
+WHERE re.id IS NOT NULL %s
+GROUP BY r.callsid
+ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC %s",
+        $service_body_id == 0 ? "" : "AND `service_body_id` = " . $service_body_id,
+        " LIMIT " . $size . " OFFSET " .  ($page - 1) * $size);
+    $db->exec("SET @@session.sql_mode = (SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
+    $db->exec("SET @@session.group_concat_max_len = 4294967295;");
     $db->query($sql);
     $resultset = $db->resultset();
     $db->resultset();
@@ -1930,8 +1949,8 @@ function unique_stdclass_array($array) {
     return array_map('json_decode', array_values($array));
 }
 
-function adjustedCallRecords($service_body_id = null) {
-    $callRecords = getCallRecords(intval($service_body_id));
+function adjustedCallRecords($service_body_id = null, $page = 1, $size = 10) {
+    $callRecords = getCallRecords(intval($service_body_id), $page, $size);
 
     foreach ($callRecords as &$callRecord) {
         $callEvents = isset($callRecord['call_events']) ? unique_stdclass_array(json_decode($callRecord['call_events'])) : [];
@@ -1948,7 +1967,10 @@ function adjustedCallRecords($service_body_id = null) {
         $callRecord['call_events'] = $callEvents;
     }
 
-    return $callRecords;
+    $response['data'] = $callRecords;
+    $response['last_page'] = getCallRecordsCount($service_body_id, $size);
+
+    return $response;
 }
 
 function setFlag($flag, $setting)

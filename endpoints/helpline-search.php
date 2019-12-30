@@ -113,6 +113,7 @@ if ($service_body_id > 0 && isset($serviceBodyCallHandling) && $serviceBodyCallH
                 </Say>
         <?php }
     }?>
+        <?php insertCallEventRecord(EventId::HELPLINE_ROUTE,  (object)["helpline_number" => $phone_number, "extension" => $extension]); ?>
         <Dial>
             <Number sendDigits="<?php echo $extension ?>"><?php echo $phone_number ?></Number>
         </Dial>

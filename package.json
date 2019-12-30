@@ -12,17 +12,17 @@
     "moment": "^2.24.0",
     "plotly.js-dist": "^1.47.3",
     "popper.js": "^1.15.0",
-    "tabulator-tables": "^4.4.3",
-    "xlsx": "^0.15.1"
+    "tabulator-tables": "4.4.3",
+    "xlsx": "0.15.1"
   },
   "devDependencies": {
     "gulp": "^4.0.2",
     "gulp-clean-css": "^4.2.0",
     "gulp-concat": "^2.6.1",
+    "gulp-declare": "^0.3.0",
+    "gulp-handlebars": "^5.0.2",
     "gulp-minify": "^3.1.0",
     "gulp-rename": "^1.4.0",
-    "gulp-handlebars": "^5.0.2",
-    "gulp-declare": "^0.3.0",
     "gulp-uglify": "^3.0.2",
     "gulp-wrap": "^0.15.0"
   },
