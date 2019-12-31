@@ -5,6 +5,7 @@ const cleanCSS = require('gulp-clean-css');
 const rename = require('gulp-rename');
 const wrap = require('gulp-wrap');
 const declare = require('gulp-declare');
+const notify = require('gulp-notify');
 
 let jsCoreFiles = [
     'node_modules/jquery/dist/jquery.js',
@@ -59,7 +60,8 @@ task('jsCore', () => {
                 min:'.min.js'
             },
         }))
-        .pipe(dest(distJsDir));
+        .pipe(dest(distJsDir))
+        .pipe(notify("jsCore complete"));
 });
 
 task('jsSchedule', () => {
@@ -71,7 +73,8 @@ task('jsSchedule', () => {
                 min:'.min.js'
             },
         }))
-        .pipe(dest(distJsDir));
+        .pipe(dest(distJsDir))
+        .pipe(notify("jsSchedule complete"));
 });
 
 task('jsReports', () => {
@@ -83,7 +86,8 @@ task('jsReports', () => {
                 min:'.min.js'
             },
         }))
-        .pipe(dest(distJsDir));
+        .pipe(dest(distJsDir))
+        .pipe(notify("jsReport complete"));
 });
 
 task('cssCore', () => {
@@ -95,6 +99,7 @@ task('cssCore', () => {
             suffix: '.min'
         }))
         .pipe(dest(distCssDir))
+        .pipe(notify("cssCore complete"));
 });
 
 task('cssSchedule', () => {
@@ -106,6 +111,7 @@ task('cssSchedule', () => {
             suffix: '.min'
         }))
         .pipe(dest(distCssDir))
+        .pipe(notify("cssSchedule complete"));
 });
 
 task('cssReports', () => {
@@ -117,6 +123,7 @@ task('cssReports', () => {
             suffix: '.min'
         }))
         .pipe(dest(distCssDir))
+        .pipe(notify("cssReports complete"));
 });
 
 task('default', series('jsCore', 'jsSchedule', 'jsReports', 'cssCore', 'cssSchedule', 'cssReports'));
