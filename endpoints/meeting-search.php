@@ -120,6 +120,15 @@ if (has_setting('sms_summary_page') && json_decode(setting('sms_summary_page')))
         $results = getResultsString($filtered_list[$i]);
         $location_line = (has_setting('include_location_text') && json_decode(setting('include_location_text'))) ? $results[2] . $comma_space . $results[3] : $results[3];
         $message = $results[0] . $text_space . $results[1] . $comma_space . $location_line;
+        if (has_setting('include_distance_details')) {
+            if (setting('include_distance_details') == "mi") {
+                $distance_string = sprintf("(%s mi)", round($filtered_list[$i]->distance_in_miles));
+            } else if (setting('include_distance_details') == "km") {
+                $distance_string = sprintf("(%s km)", round($filtered_list[$i]->distance_in_km));
+            }
+
+            $message .= " " . $distance_string;
+        }
         if (has_setting('include_map_link') && json_decode(setting('include_map_link'))) {
             $message .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude;
         }

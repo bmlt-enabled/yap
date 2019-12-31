@@ -26,6 +26,7 @@ static $settings_whitelist = [
     'helpline_fallback' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => false],
     'helpline_search_radius' => [ 'description' => '' , 'default' => 30, 'overridable' => true, 'hidden' => false],
     'ignore_formats' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => false],
+    'include_distance_details'  => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => false],
     'include_location_text' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'include_map_link' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'infinite_searching' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
