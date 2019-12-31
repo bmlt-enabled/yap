@@ -9,3 +9,4 @@ vendor
 admin/dist/js
 admin/dist/css
 node_modules
+yap.iml

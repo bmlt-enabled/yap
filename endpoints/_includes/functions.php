@@ -51,6 +51,7 @@ static $settings_whitelist = [
     'toll_province_bias' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => false],
     'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'tomato_helpline_routing' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
+    'tomato_meeting_search' => [ 'description' => '', 'default' => true, 'overridable' => true, 'hidden' => false],
     'tomato_url' => [ 'description' => '' , 'default' => 'https://tomato.bmltenabled.org/main_server', 'overridable' => true, 'hidden' => false],
     'twilio_account_sid' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
     'twilio_auth_token' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
@@ -768,7 +769,11 @@ function getAdminBMLTRootServer()
 
 function getBMLTRootServer()
 {
-    return setting('bmlt_root_server');
+    if (json_decode(setting('tomato_meeting_search'))) {
+        return setting('tomato_url');
+    } else {
+        return setting('bmlt_root_server');
+    }
 }
 
 function getFormatString($formats, $ignore = false)
