@@ -1089,6 +1089,7 @@ function admin_PersistDbConfigById($id, $data)
     $db->bind(':data', $data);
     $db->bind(':id', $id);
     $db->execute();
+    $db->close();
 }
 
 function getDbData($service_body_id, $data_type)
@@ -1916,6 +1917,7 @@ left outer join conference_participants cp on r.callsid = cp.callsid or cp.calls
     $db->query($sql);
     $resultset = $db->resultset();
     $db->resultset();
+    $db->close();
     return intval(ceil(intval($resultset[0]['page_count']) / $size));
 }
 
@@ -1936,6 +1938,17 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC %s",
     $db->query($sql);
     $resultset = $db->resultset();
     $db->resultset();
+    $db->close();
+    return $resultset;
+}
+
+function getMapMetrics($service_body_id = 0) {
+    $db = new Database();
+    $sql = sprintf("select event_id, meta from records_events where event_id in (1,14) and meta is not null %s",
+        $service_body_id > 0 ? "WHERE service_body_id = $service_body_id" : "");
+    $db->query($sql);
+    $resultset = $db->resultset();
+    $db->close();
     return $resultset;
 }
 
@@ -1946,6 +1959,7 @@ function getVoicemail($service_body_id) {
     $db->query($sql);
     $resultset = $db->resultset();
     $db->resultset();
+    $db->close();
     return $resultset;
 }
 

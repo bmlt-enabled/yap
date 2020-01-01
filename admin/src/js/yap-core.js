@@ -1,6 +1,134 @@
 dayOfTheWeek = {1:"Sunday",2:"Monday",3:"Tuesday",4:"Wednesday",5:"Thursday",6:"Friday",7:"Saturday"};
 var groups;
 var calendar;
+var metrics_map = null;
+
+function initReports() {
+    $(".page-size-dropdown-item").click(function(e) {
+        $(".page-size-dropdown-item").removeClass("active");
+        $(e.target).addClass("active");
+        var pageSize = parseInt(e.target.text);
+        table.setPageSize(pageSize);
+    });
+
+    $("#print-table").on("click", function(){
+        table.print(false, true);
+    });
+
+    $("#download-records-csv").click(function(){
+        table.download("csv", "yap-records.csv");
+    });
+
+    $("#download-events-csv").click(function(){
+        eventsTable.download("csv", "yap-events.csv");
+    });
+
+    $("#download-json").click(function(){
+        table.download("json", "yap.json");
+    });
+
+    $("#download-xlsx").click(function() {
+        var sheets = {
+            "Calls": true,
+            "Events": "#events-table"
+        };
+
+        table.download("xlsx", "data.xlsx", {sheets:sheets});
+    });
+
+    var eventsTableColumns = [
+        {title: "Event Time", field: "event_time", mutator: toCurrentTimezone},
+        {title: "Event", field: "event_id"},
+        {title: "Service Body Id", field: "service_body_id"},
+        {title: "Metadata", field: "meta"},
+        {title: "Parent CallSid", field: "parent_callsid", visible: false, download: true}
+    ];
+
+    var table = new Tabulator("#cdr-table", {
+        layout: "fitColumns",
+        responsiveLayout: "hide",
+        tooltips: true,
+        addRowPos: "top",
+        history: true,
+        pagination: "remote",
+        paginationSize: 20,
+        ajaxURL: "cdr_api.php",
+        ajaxURLGenerator: function(url, config, params) {
+            return url + "?service_body_id=" + $("#service_body_id").val() + "&page=" + params['page'] + "&size=" + params['size'];
+        },
+        ajaxResponse: function(url, params, response) {
+            var events = [];
+            for (var i = 0; i < response['data'].length; i++) {
+                var callEvents = response['data'][i]['call_events'];
+                for (var j = 0; j < callEvents.length; j++) {
+                    var callEvent = callEvents[j];
+                    events.push(callEvent);
+                }
+            }
+
+            $(".subTableHolder").toggle();
+
+            eventsTable.setData(events);
+            return response;
+        },
+        pageLoaded: function(pageno) {
+            $(".subTableHolder").hide();
+        },
+        movableColumns: true,
+        resizableRows: true,
+        printAsHtml: true,
+        printHeader: "<h3>Call Detail Records<h3>",
+        printFooter: "",
+        rowClick: function(e, row) {
+            $("#subTableId_" + row.getData().id).toggle();
+        },
+        initialSort: [
+            {column:"start_time", dir:"desc"},
+        ],
+        columns: [
+            {title:"Start Time", field:"start_time", mutator: toCurrentTimezone },
+            {title:"End Time", field:"end_time", mutator: toCurrentTimezone },
+            {title:"Duration (seconds)", field:"duration"},
+            {title:"From", field:"from_number"},
+            {title:"To", field:"to_number"},
+            {title:"Call Events", field:"call_events", visible: false, download: true, formatter: function(cell, formatterParams, onRendered) {
+                    return JSON.stringify(cell.getValue());
+                }}
+        ],
+        rowFormatter: function(row) {
+            //create and style holder elements
+            var holderEl = document.createElement("div");
+            var tableEl = document.createElement("div");
+
+            holderEl.style.boxSizing = "border-box";
+            holderEl.style.padding = "10px 30px 10px 10px";
+            holderEl.style.borderTop = "1px solid #333";
+            holderEl.style.borderBotom = "1px solid #333";
+            holderEl.style.background = "#ddd";
+            holderEl.setAttribute('class', 'subTableHolder');
+            holderEl.setAttribute('id', 'subTableId_' + row.getData().id);
+            tableEl.style.border = "1px solid #333";
+            tableEl.setAttribute('class', 'eventsSubtable');
+            holderEl.appendChild(tableEl);
+            row.getElement().appendChild(holderEl);
+
+            var subTable = new Tabulator(tableEl, {
+                layout: "fitColumns",
+                data: row.getData().call_events,
+                columns: eventsTableColumns
+            });
+        }
+    });
+
+    var eventsTable = new Tabulator("#events-table", {
+        columns: eventsTableColumns,
+        initialSort:[
+            {column:"event_time", dir:"desc"},
+        ],
+    });
+
+    return table;
+}
 
 function getMetricsData() {
     $("#metrics").slideToggle(function() {
@@ -53,18 +181,61 @@ function getMetricsData() {
     });
 }
 
-function updateCallRecords() {
+function drawMetricsMap() {
+    if (metrics_map !== null) {
+        metrics_map.off();
+        metrics_map.remove();
+    }
+
+    metrics_map = L.map('metrics-map').setView([0, 0], 3);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(metrics_map);
+    $.getJSON('map_metric_api.php?service_body_id=' + $("#service_body_id").val(), function (data) {
+        var bounds = [];
+
+        for (var i = 0; i < data.length; i++) {
+            var location = JSON.parse(data[i]['meta'])['coordinates'];
+            var content = location['location'];
+            var myIcon = L.icon({
+                iconUrl: parseInt(data[i]['event_id']) === 1 ? 'dist/img/orange_marker.png' : 'dist/img/green_marker.png',
+                iconSize: [32, 32],
+            });
+
+            var latLng = [location['latitude'], location['longitude']];
+            var marker = L.marker(latLng, {icon: myIcon, title: content}).addTo(metrics_map);
+            marker.bindPopup(content);
+            bounds.push(latLng);
+        }
+
+        var legend = L.control({position: 'bottomleft'});
+        legend.onAdd = function (map) {
+
+            var div = L.DomUtil.create('div', 'info legend');
+            div.className = 'metrics-map-legend';
+            div.innerHTML += '<strong>Legend</strong><br/>';
+            div.innerHTML += '<img src="dist/img/green_marker.png" />Meeting Lookup<br/>';
+            div.innerHTML += '<img src="dist/img/orange_marker.png" />Volunteer Lookup';
+            return div;
+        };
+        legend.addTo(metrics_map);
+        metrics_map.fitBounds(bounds);
+    });
+}
+
+function updateCallRecords(table) {
     table.setData();
 }
 
-function getMetrics() {
-    $("#service_body_id").on("change", getReports);
-    getMetricsData();
-}
+function getMetrics(table) {
+    $("#service_body_id").on("change", function() {
+        updateCallRecords(table);
+        drawMetricsMap();
+    });
+    $("#refresh-button").on("click", function() {
+        getMetricsData();
+        updateCallRecords(table);
+    });
 
-function getReports() {
     getMetricsData();
-    updateCallRecords();
 }
 
 function volunteerPage() {

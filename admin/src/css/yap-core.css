@@ -214,8 +214,17 @@ div#signin {
     float:right;
     display:block;
 }
-#refresh-button{
+#refresh-button-holder {
     padding-left: 5px;
     float:right;
     display:block;
+}
+#metrics-map {
+    height: 300px;
+    display: block;
+}
+.metrics-map-legend {
+    background-color: #EEE;
+    opacity: 0.5;
+    padding: 5px;
 }

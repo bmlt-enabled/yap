@@ -1,6 +1,7 @@
 # Release Notes
 
 ### 3.6.0 (UNRELEASED)
+* Added mapping of call events [#358]
 * Added call event for helpline routing.
 * Added setting for using Tomato for meeting searches [#357]
 * Added the ability to add distance results to SMS [#358]

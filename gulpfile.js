@@ -30,6 +30,7 @@ let jsReportsFiles = [
     'node_modules/tabulator-tables/dist/js/tabulator.js',
     'node_modules/plotly.js-dist/plotly.js',
     'node_modules/xlsx/dist/xlsx.full.min.js',
+    'node_modules/leaflet/dist/leaflet.js',
 ];
 
 let cssScheduleFiles = [
@@ -41,6 +42,7 @@ let cssScheduleFiles = [
 
 let cssReportsFiles = [
     'node_modules/tabulator-tables/dist/css/tabulator.css',
+    'node_modules/leaflet/dist/leaflet.css',
 ];
 
 let cssCoreFiles = [
