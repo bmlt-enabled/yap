@@ -1945,7 +1945,7 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC %s",
 function getMapMetrics($service_body_id = 0) {
     $db = new Database();
     $sql = sprintf("select event_id, meta from records_events where event_id in (1,14) and meta is not null %s",
-        $service_body_id > 0 ? "WHERE service_body_id = $service_body_id" : "");
+        $service_body_id > 0 ? "and service_body_id = $service_body_id" : "");
     $db->query($sql);
     $resultset = $db->resultset();
     $db->close();
