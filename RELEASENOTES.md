@@ -5,6 +5,7 @@
 * Added call event for helpline routing.
 * Added setting for using Tomato for meeting searches. [#357]
 * Added the ability to add distance results to SMS. [#358]
+* Added alerting capability, implemented for cases where reporting webhook not set [#341]
 * Changed metrics legend to match map legend.
 
 ### 3.5.5 (December 25, 2019)
