@@ -1,6 +1,6 @@
 {
     "require": {
-        "twilio/sdk": "^5.29",
+        "twilio/sdk": "^5.41",
         "phpmailer/phpmailer": "^6.0"
     },
     "require-dev": {
