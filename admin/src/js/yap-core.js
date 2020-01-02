@@ -176,7 +176,6 @@ function getMetricsData() {
                     }
                 });
             });
-
         });
     });
 }
@@ -231,9 +230,11 @@ function updateCallRecords(table) {
 
 function getMetrics(table) {
     $("#service_body_id").on("change", function() {
+        getMetricsData();
         updateCallRecords(table);
         drawMetricsMap();
     });
+
     $("#refresh-button").on("click", function() {
         getMetricsData();
         updateCallRecords(table);
