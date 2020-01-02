@@ -143,7 +143,7 @@ function getMetricsData() {
             }
 
             var datasets = [];
-            var colors = ['red', 'blue', 'green'];
+            var colors = ['#87B63A', '#FF6600', 'indigo'];
             for (var a = 0; a < actions.length; a++) {
                 var xAgg = [];
                 var yAgg = [];
