@@ -220,7 +220,9 @@ function drawMetricsMap() {
             return div;
         };
         legend.addTo(metrics_map);
-        metrics_map.fitBounds(bounds);
+        if (bounds.length > 0) {
+            metrics_map.fitBounds(bounds);
+        }
     });
 }
 
