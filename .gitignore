@@ -7,6 +7,6 @@ config.*.php
 test.php
 vendor
 admin/dist/js
-admin/dist/css
+admin/dist/css/*.css
 node_modules
 yap.iml
