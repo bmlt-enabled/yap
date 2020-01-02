@@ -187,7 +187,11 @@ function drawMetricsMap() {
         metrics_map.remove();
     }
 
-    metrics_map = L.map('metrics-map').setView([0, 0], 3);
+    metrics_map = L.map('metrics-map', {
+        fullscreenControl: {
+            pseudoFullscreen: false
+        }
+    }).setView([0, 0], 3);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(metrics_map);
     $.getJSON('map_metric_api.php?service_body_id=' + $("#service_body_id").val(), function (data) {
         var bounds = [];
