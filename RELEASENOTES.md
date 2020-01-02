@@ -1,29 +1,30 @@
 # Release Notes
 
 ### 3.6.0 (UNRELEASED)
-* Added mapping of call events [#358]
+* Added mapping of call events. [#358]
 * Added call event for helpline routing.
-* Added setting for using Tomato for meeting searches [#357]
-* Added the ability to add distance results to SMS [#358]
+* Added setting for using Tomato for meeting searches. [#357]
+* Added the ability to add distance results to SMS. [#358]
+* Changed metrics legend to match map legend.
 
 ### 3.5.5 (December 25, 2019)
 * Fix in regression for status.php datetime formatting.
 
 ### 3.5.4 (December 25, 2019)
-* Call records are paginated now [#338]
-* Performance improvements for reports
+* Call records are paginated now. [#338]
+* Performance improvements for reports.
 
 ### 3.5.3 (December 19, 2019)
-* Voicemail play link is now an MP3 [#351]
+* Voicemail play link is now an MP3. [#351]
 
 ### 3.5.2 (December 15, 2019)
-* Fix for large data responses being truncated by MySQL [#350]
+* Fix for large data responses being truncated by MySQL. [#350]
 
 ### 3.5.1 (December 14, 2019)
-* Added the ability to disable BMLT based authentication in favor of local auth [#339]
+* Added the ability to disable BMLT based authentication in favor of local auth. [#339]
 * Added service body IDs in dropdowns on the admin UI. [#349]
-* Several reports fixes [#342] [#343] [#344] [#345] [#346] [#348]
-* Fix for Play link not working on Call Handling modal for service bodies [#347]
+* Several reports fixes. [#342] [#343] [#344] [#345] [#346] [#348]
+* Fix for Play link not working on Call Handling modal for service bodies. [#347]
 
 ### 3.5.0 (December 4, 2019)
 * Added database driven call detail records. [#289] [#285]
