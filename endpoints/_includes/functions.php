@@ -101,6 +101,11 @@ class SearchType
     const DIALBACK = 1000;
 }
 
+class AlertId
+{
+    const STATUS_CALLBACK_MISSING = 1;
+}
+
 class EventId
 {
     const VOLUNTEER_SEARCH = 1;
@@ -1864,6 +1869,18 @@ class CallRecord {
     public $payload;
 }
 
+function insertAlert($alertId, $payload) {
+    $db = new Database();
+    $stmt = "INSERT INTO `alerts` (`timestamp`,`alert_id`,`payload`) VALUES (:timestamp, :alertId, :payload)";
+    $db->query($stmt);
+    $db->bind(':alertId', $alertId);
+    date_default_timezone_set('UTC');
+    $db->bind(':timestamp', getCurrentTime());
+    $db->bind(':payload', json_encode($payload));
+    $db->execute();
+    $db->close();
+}
+
 function insertCallEventRecord($eventid, $meta = null) {
     if (isset($_REQUEST['CallSid'])) {
         $callSid = $_REQUEST['CallSid'];
@@ -1884,7 +1901,7 @@ function insertCallEventRecord($eventid, $meta = null) {
     $db->bind(':callSid', $callSid);
     $db->bind(':eventid', $eventid);
     date_default_timezone_set('UTC');
-    $db->bind(':event_time', gmdate("Y-m-d H:i:s"));
+    $db->bind(':event_time', getCurrentTime());
     $db->bind(':service_body_id', $service_body_id);
     $db->bind(':meta', $meta_as_json);
     $db->execute();
@@ -1961,6 +1978,11 @@ function getVoicemail($service_body_id) {
     $db->resultset();
     $db->close();
     return $resultset;
+}
+
+function getCurrentTime()
+{
+    return gmdate("Y-m-d H:i:s");
 }
 
 function unique_stdclass_array($array) {
