@@ -19,11 +19,13 @@ if (strlen(setting('language_selections')) > 0) {
     }
 }
 
-$phoneNumberSid = $twilioClient->calls($_REQUEST['CallSid'])->fetch()->phoneNumberSid;
-$incomingPhoneNumber = $twilioClient->incomingPhoneNumbers($phoneNumberSid)->fetch();
+if (isset($_REQUEST['CallSid'])) {
+    $phoneNumberSid = $twilioClient->calls($_REQUEST['CallSid'])->fetch()->phoneNumberSid;
+    $incomingPhoneNumber = $twilioClient->incomingPhoneNumbers($phoneNumberSid)->fetch();
 
-if ($incomingPhoneNumber->statusCallback == null || !str_exists($incomingPhoneNumber->statusCallback, "status.php")) {
-    insertAlert(AlertId::STATUS_CALLBACK_MISSING, (object)["phoneNumber"=>$incomingPhoneNumber->phoneNumber]);
+    if ($incomingPhoneNumber->statusCallback == null || !str_exists($incomingPhoneNumber->statusCallback, "status.php")) {
+        insertAlert(AlertId::STATUS_CALLBACK_MISSING, (object)["phoneNumber" => $incomingPhoneNumber->phoneNumber]);
+    }
 }
 
 if (isset($_REQUEST["override_service_body_id"])) {
