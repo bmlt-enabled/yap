@@ -207,6 +207,16 @@ class MeetingResults
     public $filteredList = [];
 }
 
+class CallRecord {
+    public $callSid;
+    public $start_time;
+    public $end_time;
+    public $from;
+    public $to;
+    public $duration;
+    public $payload;
+}
+
 class ServiceBodyCallHandling
 {
     public $service_body_id;
@@ -310,9 +320,9 @@ class VolunteerGender
     static function getGenderById($genderId)
     {
         switch ($genderId) {
-            case 1:
+            case VolunteerGender::MALE:
                 return "MALE";
-            case 2:
+            case VolunteerGender::FEMALE:
                 return "FEMALE";
             default:
                 return "";
@@ -1867,16 +1877,6 @@ function getConferenceParticipant($callsid) {
     $resultset = $db->single();
     $db->close();
     return $resultset;
-}
-
-class CallRecord {
-    public $callSid;
-    public $start_time;
-    public $end_time;
-    public $from;
-    public $to;
-    public $duration;
-    public $payload;
 }
 
 function insertAlert($alertId, $payload) {
