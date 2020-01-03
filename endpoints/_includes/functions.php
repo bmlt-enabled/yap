@@ -472,12 +472,12 @@ class UpgradeAdvisor
 
         $alerts = getMisconfiguredPhoneNumbersAlerts(AlertId::STATUS_CALLBACK_MISSING);
         if (count($alerts) > 0) {
-            $misconfiguredPhoneNumbers = "";
+            $misconfiguredPhoneNumbers = [];
             foreach ($alerts as $alert) {
-                $misconfiguredPhoneNumbers .= json_decode($alert['payload'])->phoneNumber;
+                array_push($misconfiguredPhoneNumbers, $alert['payload']);
             }
 
-            return UpgradeAdvisor::getState(false, sprintf("%s is/are phone numbers that are missing Twilio Call Status Changes Callback status.php webhook. This will not allow call reporting to work correctly.  For more information review the documentation page https://github.com/bmlt-enabled/yap/wiki/Call-Detail-Records.", $misconfiguredPhoneNumbers));
+            return UpgradeAdvisor::getState(false, sprintf("%s is/are phone numbers that are missing Twilio Call Status Changes Callback status.php webhook. This will not allow call reporting to work correctly.  For more information review the documentation page https://github.com/bmlt-enabled/yap/wiki/Call-Detail-Records.", implode(",", $misconfiguredPhoneNumbers)));
         }
 
         try {
@@ -1886,7 +1886,7 @@ function insertAlert($alertId, $payload) {
     $db->bind(':alertId', $alertId);
     date_default_timezone_set('UTC');
     $db->bind(':timestamp', getCurrentTime());
-    $db->bind(':payload', json_encode($payload));
+    $db->bind(':payload', $payload);
     $db->execute();
     $db->close();
 }
@@ -1937,7 +1937,15 @@ function insertCallRecord($callRecord) {
 
 function getMisconfiguredPhoneNumbersAlerts($alert_id) {
     $db = new Database();
-    $sql = sprintf("SELECT payload FROM alerts where alert_id = %s group by payload", $alert_id);
+    $sql = sprintf("SELECT a.payload FROM alerts a
+INNER JOIN (select to_number, max(start_time) as start_time FROM records GROUP BY to_number) b
+ON a.payload = b.to_number and a.timestamp > b.start_time
+where alert_id = %s
+group by a.payload
+UNION 
+SELECT a.payload FROM alerts a
+LEFT OUTER JOIN records b ON a.payload = b.to_number
+where alert_id = %s and b.to_number IS NULL", $alert_id, $alert_id);
     $db->query($sql);
     $resultset = $db->resultset();
     $db->close();

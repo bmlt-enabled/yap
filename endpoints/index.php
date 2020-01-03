@@ -24,7 +24,7 @@ if (isset($_REQUEST['CallSid'])) {
     $incomingPhoneNumber = $twilioClient->incomingPhoneNumbers($phoneNumberSid)->fetch();
 
     if ($incomingPhoneNumber->statusCallback == null || !str_exists($incomingPhoneNumber->statusCallback, "status.php")) {
-        insertAlert(AlertId::STATUS_CALLBACK_MISSING, (object)["phoneNumber" => $incomingPhoneNumber->phoneNumber]);
+        insertAlert(AlertId::STATUS_CALLBACK_MISSING, $incomingPhoneNumber->phoneNumber);
     }
 }
 
