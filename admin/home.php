@@ -8,13 +8,15 @@
             <div class="jumbotron">
                 <h1 class="display-5"><?php echo word('welcome')?>, <?php echo admin_GetUserName()?>...</h1>
                 <p class="lead">Yap (<?php echo $status['version']?>)</p>
-                <button class="btn btn-sm btn-<?php echo $status['status'] ? "success" : "danger" ?>"
+                <a class="btn btn-sm btn-<?php echo $status['status'] ? "success" : "danger" ?>"
                         id="upgrade-advisor-details"
                         data-toggle="tooltip"
                         data-placement="bottom"
+                        target="_blank"
+                        href="/upgrade-advisor.php"
                         title="<?php echo $status['message']?>">
                     <?php echo "Status: " . ($status['status'] ? "Operational" : "Problem"); ?>
-                </button>
+                </a>
                 <hr class="my-4">
                 <div class="btn-group-lg">
                     <a target="_blank" class="btn btn-info btn-md" href="https://yap.bmlt.app" role="button"><?php echo $GLOBALS['documentation']?></a>
