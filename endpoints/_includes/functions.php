@@ -460,6 +460,16 @@ class UpgradeAdvisor
             return UpgradeAdvisor::getState(false, "HTTP Error connecting to Google Maps API, check your network settings.");
         }
 
+        $alerts = getMisconfiguredPhoneNumbersAlerts(AlertId::STATUS_CALLBACK_MISSING);
+        if (count($alerts) > 0) {
+            $misconfiguredPhoneNumbers = "";
+            foreach ($alerts as $alert) {
+                $misconfiguredPhoneNumbers .= json_decode($alert['payload'])->phoneNumber;
+            }
+
+            return UpgradeAdvisor::getState(false, sprintf("%s is/are phone numbers that are missing Twilio Call Status Changes Callback status.php webhook. This will not allow call reporting to work correctly.  For more information review the documentation page https://github.com/bmlt-enabled/yap/wiki/Call-Detail-Records.", $misconfiguredPhoneNumbers));
+        }
+
         try {
             require_once 'twilio-client.php';
             foreach ($GLOBALS['twilioClient']->incomingPhoneNumbers->read() as $number) {
@@ -1925,6 +1935,15 @@ function insertCallRecord($callRecord) {
     $db->close();
 }
 
+function getMisconfiguredPhoneNumbersAlerts($alert_id) {
+    $db = new Database();
+    $sql = sprintf("SELECT payload FROM alerts where alert_id = %s group by payload", $alert_id);
+    $db->query($sql);
+    $resultset = $db->resultset();
+    $db->close();
+    return $resultset;
+}
+
 function getCallRecordsCount($service_body_id = 0, $size = 10) {
     $db = new Database();
     $sql = sprintf("select count(distinct r.callsid) as page_count from records r
@@ -1933,7 +1952,6 @@ left outer join conference_participants cp on r.callsid = cp.callsid or cp.calls
         $service_body_id == 0 ? "" : "WHERE `service_body_id` = " . $service_body_id);
     $db->query($sql);
     $resultset = $db->resultset();
-    $db->resultset();
     $db->close();
     return intval(ceil(intval($resultset[0]['page_count']) / $size));
 }
