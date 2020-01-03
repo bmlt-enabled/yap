@@ -2,7 +2,7 @@
 
 ### 3.6.0 (UNRELEASED)
 * Added favicon.
-* Added mapping of call events. [#358]
+* Added mapping of call events with POI CSV downloads. [#358]
 * Added call event for helpline routing.
 * Added setting for using Tomato for meeting searches. [#357]
 * Added the ability to add distance results to SMS. [#358]

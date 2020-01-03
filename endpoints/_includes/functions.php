@@ -1995,13 +1995,23 @@ function getMapMetrics($service_body_id = 0) {
     return $resultset;
 }
 
+function getMapMetricByType($service_body_id = 0, $eventId) {
+    $db = new Database();
+    $sql = sprintf("select event_id, meta from records_events where `event_id` = :eventId and meta is not null %s",
+        $service_body_id > 0 ? "and service_body_id = $service_body_id" : "");
+    $db->query($sql);
+    $db->bind(":eventId", $eventId);
+    $resultset = $db->resultset();
+    $db->close();
+    return $resultset;
+}
+
 function getVoicemail($service_body_id) {
     $db = new Database();
     $sql = sprintf("SELECT r.`callsid`,r.`from_number`,r.`to_number`,CONCAT(re.`event_time`, 'Z') as event_time,re.`meta` FROM records_events re
     LEFT OUTER JOIN records r ON re.callsid = r.callsid where event_id = %d and service_body_id = %s;", EventId::VOICEMAIL, $service_body_id);
     $db->query($sql);
     $resultset = $db->resultset();
-    $db->resultset();
     $db->close();
     return $resultset;
 }
