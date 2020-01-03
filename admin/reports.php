@@ -20,6 +20,8 @@
             <button class="btn-sm btn-success" id="download-events-csv">CSV (Events)</button>
             <button class="btn-sm btn-primary" id="download-xlsx">XLSX</button>
             <button class="btn-sm btn-secondary" id="download-json">JSON</button>
+            <a class="btn-sm btn-secondary" id="metrics-json" target="_blank" href="metric_api.php?service_body_id=0">MetricsJSON</a>
+            <a class="btn-sm btn-secondary" id="map-metrics-json" target="_blank" href="map_metric_api.php?service_body_id=0">CoordinatesJSON</a>
             <div id="refresh-button-holder">
                 <button id="refresh-button" class="btn-sm btn-dark">Refresh</button>
             </div>

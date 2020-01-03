@@ -231,10 +231,12 @@ function updateCallRecords(table) {
 }
 
 function getMetrics(table) {
-    $("#service_body_id").on("change", function() {
+    $("#service_body_id").on("change", function(e) {
         getMetricsData();
         updateCallRecords(table);
         drawMetricsMap();
+        $("#metrics-json").attr("href", "metric_api.php?service_body_id=" + $(this).val());
+        $("#map-metrics-json").attr("href", "map_metric_api.php?service_body_id=" + $(this).val());
     });
 
     $("#refresh-button").on("click", function() {
