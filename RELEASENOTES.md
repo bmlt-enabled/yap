@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.6.0 (UNRELEASED)
+### 3.6.0 (January 4, 2020)
 * Added favicon.
 * Added mapping of call events with POI CSV downloads. [#358]
 * Added call event for helpline routing.
