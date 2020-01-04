@@ -39,7 +39,11 @@ function initReports() {
     var eventsTableColumns = [
         {title: "Event Time", field: "event_time", mutator: toCurrentTimezone},
         {title: "Event", field: "event_id"},
-        {title: "Service Body Id", field: "service_body_id"},
+        {title: "Service Body Id", field: "service_body_id", mutator: function(id) {
+            if (isNaN(id)) return id;
+            var service_body = getServiceBodyById(id);
+            return service_body['name'] + " (" + service_body['id'] + ")"
+        }},
         {title: "Metadata", field: "meta"},
         {title: "Parent CallSid", field: "parent_callsid", visible: false, download: true}
     ];

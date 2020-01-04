@@ -11,6 +11,19 @@
             <?php
         }?>
     </select>
+    <script type="text/javascript">
+        var service_bodies = <?php echo json_encode($serviceBodies) ?>;
+        function getServiceBodyById(id) {
+            if (id === 0) return { id: "0", name: "General" };
+
+            for (var i = 0; i < service_bodies.length; i++) {
+                var service_body = service_bodies[i];
+                if (parseInt(service_body["id"]) === id) {
+                    return service_body;
+                }
+            }
+        }
+    </script>
     <div id="reports">
         <div id="metrics"></div>
         <div id="metrics-map"></div>

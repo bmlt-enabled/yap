@@ -7,6 +7,7 @@
 * Added setting for using Tomato for meeting searches. [#357]
 * Added the ability to add distance results to SMS. [#358]
 * Added alerting capability, implemented for cases where reporting webhook not set. [#341]
+* Added the service body name in the call events formatting.
 * Changed metrics legend to match map legend.
 
 ### 3.5.5 (December 25, 2019)
