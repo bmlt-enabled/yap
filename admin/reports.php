@@ -12,7 +12,7 @@
         }?>
     </select>
     <script type="text/javascript">
-        var service_bodies = <?php echo json_encode($serviceBodies) ?>;
+        var service_bodies = <?php echo json_encode(getServiceBodies()) ?>;
         function getServiceBodyById(id) {
             if (id === 0) return { id: "0", name: "General" };
 
