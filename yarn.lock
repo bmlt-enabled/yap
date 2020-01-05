@@ -574,6 +574,11 @@ d@1, d@^1.0.1:
     es5-ext "^0.10.50"
     type "^1.0.1"
 
+dark-mode-switch@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/dark-mode-switch/-/dark-mode-switch-1.0.0.tgz#527b63adfca7157728e99e90010a3fbc7e4d7b8c"
+  integrity sha512-wRoqYGmph7mwRbPcSNRR6DpRQe5wOK0lG6O3Hz7nIWWDyLAHSqje7PUI6c/acOYACiSPHc7sqysn57GSuklb6w==
+
 debug@^2.2.0, debug@^2.3.3:
   version "2.6.9"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"

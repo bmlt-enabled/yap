@@ -13,6 +13,7 @@ let jsCoreFiles = [
     'node_modules/popper.js/dist/umd/popper.js',
     'node_modules/bootstrap/dist/js/bootstrap.js',
     'node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.js',
+    'node_modules/dark-mode-switch/dark-mode-switch.min.js',
     'admin/src/js/yap-core.js',
 ];
 
@@ -49,6 +50,7 @@ let cssReportsFiles = [
 
 let cssCoreFiles = [
     'admin/src/css/spacelab.bootstrap.css',
+    'node_modules/dark-mode-switch/dark-mode.css',
     'admin/src/css/yap-core.css',
 ];
 
