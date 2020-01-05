@@ -28,12 +28,14 @@ require_once 'header.php';
             <?php }?>
         </ul>
         <ul class="nav justify-content-end">
+            <?php if (isset($GLOBALS['darkModeFeatureToggle'])) {?>
             <li class="nav-item nav-item-right">
                 <div class="custom-control custom-switch" style="height:50%;">
                     <input type="checkbox" class="custom-control-input" id="darkSwitch" />
                     <label class="custom-control-label" for="darkSwitch">🌙</label>
                 </div>
             </li>
+            <?php } ?>
             <li class="nav-item">
                 <button type="button"
                         class="btn btn-danger"
