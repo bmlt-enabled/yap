@@ -1,7 +1,7 @@
 # Release Notes
 
-### 3.6.next (UNRELEASED)
-* Dark mode.
+### 3.6.1 (UNRELEASED)
+* Fix for null coordinate responses in map data. [#363]
 
 ### 3.6.0 (January 4, 2020)
 * Added favicon.
