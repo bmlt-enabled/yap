@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.6.1 (UNRELEASED)
+### 3.6.1 (January 5, 2019)
 * Fix for null coordinate responses in map data. [#363]
 * Fix for service body name in reports.
 
