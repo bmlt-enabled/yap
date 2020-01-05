@@ -2,6 +2,7 @@
 
 ### 3.6.1 (UNRELEASED)
 * Fix for null coordinate responses in map data. [#363]
+* Fix for service body name in reports.
 
 ### 3.6.0 (January 4, 2020)
 * Added favicon.
