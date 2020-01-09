@@ -5,7 +5,11 @@ header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
 $address = $_REQUEST['Body'];
-$coordinates = getCoordinatesForAddress($address . "," . getProvince());
+if (str_exists(substr($address, -4), ',')) {
+    $coordinates = getCoordinatesForAddress($address);
+} else {
+    $coordinates = getCoordinatesForAddress($address . "," . getProvince());
+}
 ?>
 <Response>
 <?php
