@@ -8,19 +8,8 @@
 ### 3.6.0 (January 4, 2020)
 * Added favicon.
 * Added mapping of call events with POI CSV downloads. [#353]
-### 3.6.1 (January 5, 2019)
-* Fix for null coordinate responses in map data. [#363]
-* Fix for service body name in reports.
-
-### 3.6.0 (January 4, 2020)
-* Added favicon.
-* Added mapping of call events with POI CSV downloads. [#353]
 * Added call event for helpline routing.
-* Added setting for using Tomato for meeting searches. [#357]
-* Added the ability to add distance results to SMS. [#358]
-* Added alerting capability, implemented for cases where reporting webhook not set. [#341]
-* Added the service body name in the call events formatting.
-* Changed metrics legend to match map legend.
+* Added setting for using Tomato for meeting searches [#357]
 
 ### 3.5.5 (December 25, 2019)
 * Fix in regression for status.php datetime formatting.
