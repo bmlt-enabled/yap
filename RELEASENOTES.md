@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.6.2 (January 9, 2019)
+### 3.6.2 (UNRELEASED)
 * Added simple check for state/province in SMS meeting search. [#369]
 
 ### 3.6.1 (January 5, 2019)
