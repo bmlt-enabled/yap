@@ -3,6 +3,14 @@
 ### 3.6.1 (January 5, 2019)
 * Fix for null coordinate responses in map data. [#363]
 * Fix for service body name in reports.
+* Added simple check for state/province in SMS meeting search. [#367]
+
+### 3.6.0 (January 4, 2020)
+* Added favicon.
+* Added mapping of call events with POI CSV downloads. [#353]
+### 3.6.1 (January 5, 2019)
+* Fix for null coordinate responses in map data. [#363]
+* Fix for service body name in reports.
 
 ### 3.6.0 (January 4, 2020)
 * Added favicon.
