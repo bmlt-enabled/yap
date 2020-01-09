@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.6.2 (January 9, 2019)
+* Added simple check for state/province in SMS meeting search. [#369]
+
 ### 3.6.1 (January 5, 2019)
 * Fix for null coordinate responses in map data. [#363]
 * Fix for service body name in reports.
