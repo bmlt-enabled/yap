@@ -67,7 +67,7 @@ task('jsCore', () => {
             },
         }))
         .pipe(dest(distJsDir))
-        .pipe(notify("jsCore complete"));
+        .pipe(notify({message: "jsCore complete", wait: true}));
 });
 
 task('jsSchedule', () => {
@@ -80,7 +80,7 @@ task('jsSchedule', () => {
             },
         }))
         .pipe(dest(distJsDir))
-        .pipe(notify("jsSchedule complete"));
+        .pipe(notify({message: "jsSchedule complete", wait: true}));
 });
 
 task('jsReports', () => {
@@ -93,7 +93,7 @@ task('jsReports', () => {
             },
         }))
         .pipe(dest(distJsDir))
-        .pipe(notify("jsReport complete"));
+        .pipe(notify({message: "jsReport complete", wait: true}));
 });
 
 task('cssCore', () => {
@@ -105,7 +105,7 @@ task('cssCore', () => {
             suffix: '.min'
         }))
         .pipe(dest(distCssDir))
-        .pipe(notify("cssCore complete"));
+        .pipe(notify({message: "cssCore complete", wait: true}));
 });
 
 task('cssSchedule', () => {
@@ -117,7 +117,7 @@ task('cssSchedule', () => {
             suffix: '.min'
         }))
         .pipe(dest(distCssDir))
-        .pipe(notify("cssSchedule complete"));
+        .pipe(notify({message: "cssSchedule complete", wait: true}));
 });
 
 task('cssReports', () => {
@@ -129,7 +129,7 @@ task('cssReports', () => {
             suffix: '.min'
         }))
         .pipe(dest(distCssDir))
-        .pipe(notify("cssReports complete"));
+        .pipe(notify({message: "cssReports complete", wait: true}));
 });
 
 task('default', series('jsCore', 'jsSchedule', 'jsReports', 'cssCore', 'cssSchedule', 'cssReports'));
