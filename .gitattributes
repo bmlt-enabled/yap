@@ -7,6 +7,7 @@ CODEOWNERS export-ignore
 composer.json export-ignore
 composer.lock export-ignore
 Dockerfile export-ignore
+Dockerfile-php5.6 export-ignore
 docker-compose.yml export-ignore
 gulpfile.js export-ignore
 Makefile export-ignore

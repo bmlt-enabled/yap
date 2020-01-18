@@ -403,10 +403,7 @@ class UpgradeAdvisor
         'twilio_account_sid',
         'twilio_auth_token',
         'bmlt_username',
-        'bmlt_password'
-    ];
-
-    private static $database_settings = [
+        'bmlt_password',
         'mysql_hostname',
         'mysql_username',
         'mysql_password',
@@ -439,36 +436,36 @@ class UpgradeAdvisor
 
     public static function getStatus()
     {
-        foreach (UpgradeAdvisor::$settings as $setting) {
-            if (!UpgradeAdvisor::isThere($setting)) {
-                return UpgradeAdvisor::getState(false, "Missing required setting: " . $setting);
+        foreach (self::$settings as $setting) {
+            if (!self::isThere($setting)) {
+                return self::getState(false, "Missing required setting: " . $setting);
             }
         }
 
         $root_server_settings = json_decode(get(sprintf('%s/client_interface/json/?switcher=GetServerInfo', getAdminBMLTRootServer())));
 
         if (strpos(getAdminBMLTRootServer(), 'index.php')) {
-            return UpgradeAdvisor::getState(false, "Your root server points to index.php. Please make sure to set it to just the root directory.");
+            return self::getState(false, "Your root server points to index.php. Please make sure to set it to just the root directory.");
         }
 
         if (!isset($root_server_settings)) {
-            return UpgradeAdvisor::getState(false, "Your root server returned no server information.  Double-check that you have the right root server url.");
+            return self::getState(false, "Your root server returned no server information.  Double-check that you have the right root server url.");
         }
 
         try {
             $googleapi_settings = json_decode(get($GLOBALS['google_maps_endpoint'] . "&address=91409"));
 
             if ($googleapi_settings->status == "REQUEST_DENIED") {
-                return UpgradeAdvisor::getState(false, "Your Google Maps API key came back with the following error. " . $googleapi_settings->error_message. " Please make sure you have the 'Google Maps Geocoding API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
+                return self::getState(false, "Your Google Maps API key came back with the following error. " . $googleapi_settings->error_message. " Please make sure you have the 'Google Maps Geocoding API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
             }
 
             $timezone_settings = json_decode(get($GLOBALS['timezone_lookup_endpoint'] . "&location=34.2011137,-118.475058&timestamp=" . time()));
 
             if ($timezone_settings->status == "REQUEST_DENIED") {
-                return UpgradeAdvisor::getState(false, "Your Google Maps API key came back with the following error. " . $timezone_settings->errorMessage. " Please make sure you have the 'Google Time Zone API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
+                return self::getState(false, "Your Google Maps API key came back with the following error. " . $timezone_settings->errorMessage. " Please make sure you have the 'Google Time Zone API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
             }
         } catch (CurlException $e) {
-            return UpgradeAdvisor::getState(false, "HTTP Error connecting to Google Maps API, check your network settings.");
+            return self::getState(false, "HTTP Error connecting to Google Maps API, check your network settings.");
         }
 
         $alerts = getMisconfiguredPhoneNumbersAlerts(AlertId::STATUS_CALLBACK_MISSING);
@@ -478,7 +475,7 @@ class UpgradeAdvisor
                 array_push($misconfiguredPhoneNumbers, $alert['payload']);
             }
 
-            return UpgradeAdvisor::getState(false, sprintf("%s is/are phone numbers that are missing Twilio Call Status Changes Callback status.php webhook. This will not allow call reporting to work correctly.  For more information review the documentation page https://github.com/bmlt-enabled/yap/wiki/Call-Detail-Records.", implode(",", $misconfiguredPhoneNumbers)));
+            return self::getState(false, sprintf("%s is/are phone numbers that are missing Twilio Call Status Changes Callback status.php webhook. This will not allow call reporting to work correctly.  For more information review the documentation page https://github.com/bmlt-enabled/yap/wiki/Call-Detail-Records.", implode(",", $misconfiguredPhoneNumbers)));
         }
 
         try {
@@ -489,18 +486,18 @@ class UpgradeAdvisor
                         && !strpos($number->voiceUrl, 'twiml')
                         && !strpos($number->voiceUrl, '/?')
                         && substr($number->voiceUrl, -1) !== "/") {
-                        return UpgradeAdvisor::getState(false, $number->phoneNumber . " webhook should end either with `/` or `/index.php`");
+                        return self::getState(false, $number->phoneNumber . " webhook should end either with `/` or `/index.php`");
                     }
                 }
             }
-        } catch (\Twilio\Exceptions\ConfigurationException $e) {
-            log_debug("Missing Twilio Credentials");
+        } catch (\Twilio\Exceptions\RestException $e) {
+            return self::getState(false, "Twilio Rest Error: " . $e->getMessage());
         }
 
         if (has_setting('smtp_host')) {
-            foreach (UpgradeAdvisor::$email_settings as $setting) {
-                if (!UpgradeAdvisor::isThere($setting)) {
-                    return UpgradeAdvisor::getState(false, "Missing required email setting: " . $setting);
+            foreach (self::$email_settings as $setting) {
+                if (!self::isThere($setting)) {
+                    return self::getState(false, "Missing required email setting: " . $setting);
                 }
             }
         }
@@ -510,7 +507,7 @@ class UpgradeAdvisor
                 $db = new Database();
                 $db->close();
             } catch (PDOException $e) {
-                return UpgradeAdvisor::getState(false, $e->getMessage());
+                return self::getState(false, $e->getMessage());
             }
         }
 
