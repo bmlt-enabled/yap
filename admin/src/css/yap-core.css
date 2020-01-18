@@ -218,7 +218,11 @@ div#signin {
     float:right;
     display:block;
 }
+#metrics {
+    margin-top: 10px;
+}
 #metrics-map {
+    margin-top: 10px;
     height: 300px;
     display: block;
 }
