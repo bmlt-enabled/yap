@@ -235,3 +235,16 @@ div#signin {
     margin-right: 10px;
     margin-top: 5px;
 }
+.home-title {
+    font-size: 36px;
+}
+[data-theme="dark"] {
+    background-color: #333;
+}
+[data-theme="dark"] .jumbotron {
+    background-color: #555;
+    color: #aaa;
+}
+[data-theme="dark"] .btn {
+    color: #ddd;
+}

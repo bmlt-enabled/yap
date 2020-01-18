@@ -50,7 +50,6 @@ let cssReportsFiles = [
 
 let cssCoreFiles = [
     'admin/src/css/spacelab.bootstrap.css',
-    'node_modules/dark-mode-switch/dark-mode.css',
     'admin/src/css/yap-core.css',
 ];
 

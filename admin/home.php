@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-md">
             <div class="jumbotron">
-                <h1 class="display-5"><?php echo word('welcome')?>, <?php echo admin_GetUserName()?>...</h1>
+                <div class="home-title"><?php echo word('welcome')?>, <?php echo admin_GetUserName()?>...</div>
                 <p class="lead">Yap (<?php echo $status['version']?>)</p>
                 <a class="btn btn-sm btn-<?php echo $status['status'] ? "success" : "danger" ?>"
                         id="upgrade-advisor-details"
