@@ -2,8 +2,9 @@
 
 ### 3.6.2 (UNRELEASED)
 * Added simple check for state/province in SMS meeting search. [#369]
-* Fix for filtering out services bodies you don't have rights to in "All" mode for reports [#364]
+* Added toggle switch for recursively running reports [#365]
 * Added request caching to improve performance. 
+* Fix for filtering out services bodies you don't have rights to in "All" mode for reports [#364]
 
 ### 3.6.1 (January 5, 2020)
 * Fix for null coordinate responses in map data. [#363]

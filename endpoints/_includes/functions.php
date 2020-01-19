@@ -1780,17 +1780,14 @@ function unique_stdclass_array($array) {
 function getReportsServiceBodies() {
     if (intval($_REQUEST['service_body_id']) == 0) {
         return getServiceBodiesForUser(true);
-    } else if ($_REQUEST['recurse']) {
+    } else if (json_decode($_REQUEST['recurse'])) {
         return getServiceBodiesForUserRecursively($_REQUEST['service_body_id']);
     } else {
         return [$_REQUEST['service_body_id']];
     }
 }
 
-function adjustedCallRecords($service_body_ids, $page = 1, $size = 10, $recurse = false) {
-    if ($recurse) {
-        $service_body_ids = getServiceBodiesForUserRecursively($service_body_ids[0]);
-    }
+function adjustedCallRecords($service_body_ids, $page = 1, $size = 10) {
     $callRecords = getCallRecords($service_body_ids, $page, $size);
 
     foreach ($callRecords as &$callRecord) {

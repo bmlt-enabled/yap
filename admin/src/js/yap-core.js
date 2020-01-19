@@ -238,13 +238,21 @@ function updateCallRecords(table) {
     table.setData();
 }
 
+function updateAllReports(table) {
+    getMetricsData();
+    updateCallRecords(table);
+    drawMetricsMap();
+    $("#metrics-json").attr("href", "metric_api.php?service_body_id=" + $("#service_body_id").val() + "&recurse=" + recurseReports());
+    $("#map-metrics-json").attr("href", "map_metric_api.php?service_body_id=" + $("#service_body_id").val() + "&recurse=" + recurseReports());
+}
+
 function getMetrics(table) {
     $("#service_body_id").on("change", function(e) {
-        getMetricsData();
-        updateCallRecords(table);
-        drawMetricsMap();
-        $("#metrics-json").attr("href", "metric_api.php?service_body_id=" + $(this).val() + "&recurse=" + recurseReports());
-        $("#map-metrics-json").attr("href", "map_metric_api.php?service_body_id=" + $(this).val() + "&recurse=" + recurseReports());
+        updateAllReports(table);
+    });
+
+    $("#recursive-reports-switch").on("change", function(e) {
+        updateAllReports(table);
     });
 
     $("#refresh-button").on("click", function() {
