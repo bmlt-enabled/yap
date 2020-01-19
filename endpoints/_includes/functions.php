@@ -1033,6 +1033,24 @@ function getServiceBodiesForUser($include_general = false)
     return $service_body_ids;
 }
 
+function getServiceBodiesForUserRecursively($service_body_id, $service_body_rights = null) {
+    $service_bodies_results = [];
+
+    if ($service_body_rights == null) {
+        array_push($service_bodies_results, intval($service_body_id));
+        $service_body_rights = getServiceBodyDetailForUser();
+    }
+
+    foreach ($service_body_rights as $service_body) {
+        if ($service_body->parent_id == $service_body_id) {
+            array_push($service_bodies_results, intval($service_body->id));
+            getServiceBodiesForUserRecursively(intval($service_body->id), $service_body_rights);
+        }
+    }
+
+    return $service_bodies_results;
+}
+
 function getServiceBodiesRights()
 {
     if ($_SESSION['auth_mechanism'] == AuthMechanism::V1) {
@@ -1759,7 +1777,20 @@ function unique_stdclass_array($array) {
     return array_map('json_decode', array_values($array));
 }
 
-function adjustedCallRecords($service_body_ids, $page = 1, $size = 10) {
+function getReportsServiceBodies() {
+    if (intval($_REQUEST['service_body_id']) == 0) {
+        return getServiceBodiesForUser(true);
+    } else if ($_REQUEST['recurse']) {
+        return getServiceBodiesForUserRecursively($_REQUEST['service_body_id']);
+    } else {
+        return [$_REQUEST['service_body_id']];
+    }
+}
+
+function adjustedCallRecords($service_body_ids, $page = 1, $size = 10, $recurse = false) {
+    if ($recurse) {
+        $service_body_ids = getServiceBodiesForUserRecursively($service_body_ids[0]);
+    }
     $callRecords = getCallRecords($service_body_ids, $page, $size);
 
     foreach ($callRecords as &$callRecord) {

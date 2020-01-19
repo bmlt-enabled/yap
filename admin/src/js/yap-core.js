@@ -3,6 +3,10 @@ var groups;
 var calendar;
 var metrics_map = null;
 
+function recurseReports() {
+    return $("#recursive-reports-switch:checked").length > 0;
+}
+
 function initReports() {
     $(".page-size-dropdown-item").click(function(e) {
         $(".page-size-dropdown-item").removeClass("active");
@@ -58,7 +62,7 @@ function initReports() {
         paginationSize: 20,
         ajaxURL: "cdr_api.php",
         ajaxURLGenerator: function(url, config, params) {
-            return url + "?service_body_id=" + $("#service_body_id").val() + "&page=" + params['page'] + "&size=" + params['size'];
+            return url + "?service_body_id=" + $("#service_body_id").val() + "&page=" + params['page'] + "&size=" + params['size'] + "&recurse=" + recurseReports();
         },
         ajaxResponse: function(url, params, response) {
             var events = [];
@@ -136,7 +140,7 @@ function initReports() {
 
 function getMetricsData() {
     $("#metrics").slideToggle(function() {
-        $.getJSON("metric_api.php?service_body_id=" + $("#service_body_id").val(), function (data) {
+        $.getJSON("metric_api.php?service_body_id=" + $("#service_body_id").val() + "&recurse=" + recurseReports(), function (data) {
             var actions = ['Volunteer', 'Meetings', 'Just For Today'];
             var plots = {"1": [], "2": [], "3": []};
             for (var item of data) {
@@ -196,7 +200,7 @@ function drawMetricsMap() {
         }
     }).setView([0, 0], 3);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(metrics_map);
-    $.getJSON('map_metric_api.php?service_body_id=' + $("#service_body_id").val(), function (data) {
+    $.getJSON('map_metric_api.php?service_body_id=' + $("#service_body_id").val() + "&recurse=" + recurseReports(), function (data) {
         var bounds = [];
 
         for (var i = 0; i < data.length; i++) {
@@ -239,8 +243,8 @@ function getMetrics(table) {
         getMetricsData();
         updateCallRecords(table);
         drawMetricsMap();
-        $("#metrics-json").attr("href", "metric_api.php?service_body_id=" + $(this).val());
-        $("#map-metrics-json").attr("href", "map_metric_api.php?service_body_id=" + $(this).val());
+        $("#metrics-json").attr("href", "metric_api.php?service_body_id=" + $(this).val() + "&recurse=" + recurseReports());
+        $("#map-metrics-json").attr("href", "map_metric_api.php?service_body_id=" + $(this).val() + "&recurse=" + recurseReports());
     });
 
     $("#refresh-button").on("click", function() {

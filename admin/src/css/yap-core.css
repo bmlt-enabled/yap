@@ -238,6 +238,18 @@ div#signin {
 .home-title {
     font-size: 36px;
 }
+#reports-servicebodies-dropdown-container {
+    width: auto;
+    display: inline-block;
+}
+#reports-servicebodies-recursive-container {
+    float: right;
+    display: inline-block;
+    margin-top: 5px;
+}
+#reports-top-controls-container {
+    margin-bottom: 10px;
+}
 [data-theme="dark"] {
     background-color: #333;
 }

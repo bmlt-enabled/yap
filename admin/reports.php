@@ -1,16 +1,24 @@
 <?php require_once 'nav.php';?>
 <link rel="stylesheet" href="dist/css/yap-reports.min.css">
 <div class="container">
-    <select class="form-control form-control-sm" id="service_body_id" name="service_body_id">
-        <option selected value="0">All</option>
-        <?php
-        $serviceBodies = getServiceBodyDetailForUser();
-        sort_on_field($serviceBodies, 'name');
-        foreach ($serviceBodies as $item) {?>
-            <option value="<?php echo $item->id ?>"><?php echo $item->name ?> (<?php echo $item->id ?>)</option>
-            <?php
-        }?>
-    </select>
+    <div id="reports-top-controls-container">
+        <div id="reports-servicebodies-dropdown-container">
+            <select class="form-control form-control-sm" id="service_body_id" name="service_body_id">
+                <option selected value="0">All</option>
+                <?php
+                $serviceBodies = getServiceBodyDetailForUser();
+                sort_on_field($serviceBodies, 'name');
+                foreach ($serviceBodies as $item) {?>
+                    <option value="<?php echo $item->id ?>"><?php echo $item->name ?> (<?php echo $item->id ?>)</option>
+                    <?php
+                }?>
+            </select>
+        </div>
+        <div id="reports-servicebodies-recursive-container" class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="recursive-reports-switch" />
+            <label class="custom-control-label" for="recursive-reports-switch">Select Recursively</label>
+        </div>
+    </div>
     <script type="text/javascript">
         var service_bodies = <?php echo json_encode(getServiceBodies()) ?>;
         function getServiceBodyById(id) {
