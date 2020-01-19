@@ -151,7 +151,7 @@ function getMetricsData() {
             }
 
             var datasets = [];
-            var colors = ['#87B63A', '#FF6600', 'indigo'];
+            var colors = ['#FF6600', '#87B63A', 'indigo'];
             for (var a = 0; a < actions.length; a++) {
                 var xAgg = [];
                 var yAgg = [];

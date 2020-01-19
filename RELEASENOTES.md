@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.6.3 (UNRELEASED)
+* Fix for aligning metrics summary colors with map pins for reports. [#370]
+
 ### 3.6.2 (January 18, 2020)
 * Added simple check for state/province in SMS meeting search. [#369]
 * Added toggle switch for recursively running reports [#365]
