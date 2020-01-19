@@ -1,10 +1,11 @@
 # Release Notes
 
-### 3.6.2 (UNRELEASED)
+### 3.6.2 (January 18, 2020)
 * Added simple check for state/province in SMS meeting search. [#369]
 * Added toggle switch for recursively running reports [#365]
 * Added request caching to improve performance. 
 * Fix for filtering out services bodies you don't have rights to in "All" mode for reports [#364]
+* Fix for tomato meeting searches on by default.
 
 ### 3.6.1 (January 5, 2020)
 * Fix for null coordinate responses in map data. [#363]
