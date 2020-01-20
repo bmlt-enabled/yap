@@ -452,6 +452,12 @@ class UpgradeAdvisor
             return self::getState(false, "Your root server returned no server information.  Double-check that you have the right root server url.");
         }
 
+        foreach (setting("digit_map_search_type") as $digit => $value) {
+            if ($digit === 0) {
+                return self::getState(false, "You cannot use 0 as an option for `digit_map_search_type`.");
+            }
+        }
+
         try {
             $googleapi_settings = json_decode(get($GLOBALS['google_maps_endpoint'] . "&address=91409"));
 
