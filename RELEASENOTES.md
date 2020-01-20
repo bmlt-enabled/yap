@@ -1,6 +1,8 @@
 # Release Notes
 
 ### 3.6.3 (UNRELEASED)
+* Changed default menu option for dialback to 9.
+* Fix for speech gathering option [#372]
 * Fix for aligning metrics summary colors with map pins for reports. [#370]
 
 ### 3.6.2 (January 18, 2020)

@@ -7,7 +7,7 @@ require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . 
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-static $version  = "3.6.2";
+static $version  = "3.6.3";
 static $settings_whitelist = [
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'bmlt_root_server' => [ 'description' => 'The root server to use.' , 'default' => '', 'overridable' => false, 'hidden' => false],
@@ -16,7 +16,7 @@ static $settings_whitelist = [
     'config' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => true],
     'custom_css' => [ 'description' => '' , 'default' => 'td { font-size: 36px; }', 'overridable' => true, 'hidden' => false],
     'custom_query' => ['description' => '', 'default' => '&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width={SETTING_MEETING_SEARCH_RADIUS}&weekdays={DAY}', 'overridable' => true, 'hidden' => false],
-    'digit_map_search_type' => [ 'description' => '', 'default' => ['1' => SearchType::VOLUNTEERS, '2' => SearchType::MEETINGS, '3' => SearchType::JFT, '0' => SearchType::DIALBACK], 'overridable' => true, 'hidden' => false],
+    'digit_map_search_type' => [ 'description' => '', 'default' => ['1' => SearchType::VOLUNTEERS, '2' => SearchType::MEETINGS, '3' => SearchType::JFT, '9' => SearchType::DIALBACK], 'overridable' => true, 'hidden' => false],
     'digit_map_location_search_method' => [ 'description' => '', 'default' => ['1' => LocationSearchMethod::VOICE, '2' => LocationSearchMethod::DTMF, '3' => SearchType::JFT], 'overridable' => true, 'hidden' => false],
     'extension_dial' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'fallback_number' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -674,7 +674,15 @@ function getPossibleDigits($setting) {
 
 function getDigitResponse($setting, $field = 'SearchType') {
     $digitMap = getDigitMap($setting);
-    $digit = intval($_REQUEST[$field]);
+    if ($field === 'Digits'
+        && has_setting('speech_gathering')
+        && json_encode(setting('speech_gathering'))
+        && isset($_REQUEST['SpeechResult'])) {
+        $digit = intval($_REQUEST['SpeechResult']);
+    } else if (isset($_REQUEST[$field])) {
+        $digit = intval($_REQUEST[$field]);
+    }
+
     if (array_key_exists($digit, $digitMap)) {
         return $digitMap[$digit];
     } else {
@@ -1711,13 +1719,13 @@ function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_
     if (isset($_REQUEST[$field])) {
         $response = $_REQUEST[$field];
     } elseif (isset($_REQUEST['SpeechResult'])) {
-        $response = $_REQUEST['SpeechResult'];
+        $response = intval($_REQUEST['SpeechResult']);
     }
 
     if (count($expected_exacts) > 0 || count($expected_likes) > 0) {
         $found_at_least_once = false;
         foreach ($expected_exacts as $expected_exact) {
-            if ($expected_exact == $response) {
+            if ($expected_exact === intval($response)) {
                 $found_at_least_once = true;
             }
         }

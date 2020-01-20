@@ -48,7 +48,7 @@ if ($searchType == SearchType::VOLUNTEERS) {
 }
 ?>
 <Response>
-    <Gather language="<?php echo setting('gather_language') ?>" input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=<?php echo $_REQUEST['Digits'] ?>" method="GET">
+    <Gather language="<?php echo setting('gather_language') ?>" input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=<?php echo $searchType?>"  method="GET">
         <?php
         if ($playTitle == "1") { ?>
             <Say voice="<?php echo voice() ?>" language="<?php echo setting("language")?>"><?php echo setting("title")?></Say>
