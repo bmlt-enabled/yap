@@ -5,13 +5,15 @@
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
     log_debug("version: " . $GLOBALS['version']);
+    $digit = getDigitResponse('language_selections', 'Digits');
+
 if (strlen(setting('language_selections')) > 0) {
-    if (!isset($_REQUEST["Digits"])) {?>
+    if ($digit == null) {?>
             <Response><Redirect>lng-selector.php</Redirect></Response>
         <?php
         exit();
     } else {
-        $selected_language = explode(",", setting('language_selections'))[intval($_REQUEST["Digits"]) - 1];
+        $selected_language = explode(",", setting('language_selections'))[intval($digit) - 1];
         $_SESSION["override_word_language"] = $selected_language;
         $_SESSION["override_gather_language"] = $selected_language;
         $_SESSION["override_language"] = $selected_language;

@@ -661,6 +661,16 @@ function setting_source($name)
 
 function getDigitMap($setting) {
     $digitMapSetting = setting($setting);
+
+    if ($setting == 'language_selections') {
+        $language_selection_digit_map = [];
+        for ($i = 0; $i <= count(explode(",", setting('language_selections'))); $i++) {
+            array_push($language_selection_digit_map, $i);
+        }
+
+        return $language_selection_digit_map;
+    }
+
     if (json_decode(setting('jft_option')) == false) {
         if (($key = array_search(SearchType::JFT, $digitMapSetting)) !== false) {
             unset($digitMapSetting[$key]);
@@ -687,6 +697,8 @@ function getDigitResponse($setting, $field = 'SearchType') {
         $digit = intval($_REQUEST['SpeechResult']);
     } else if (isset($_REQUEST[$field])) {
         $digit = intval($_REQUEST[$field]);
+    } else {
+        return null;
     }
 
     if (array_key_exists($digit, $digitMap)) {
