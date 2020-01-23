@@ -12,10 +12,17 @@ if (!isset($_SESSION['override_service_body_id'])) {
 
         if (isset($service_body_config)) {
             foreach ($service_body_config as $item => $value) {
+                if (($item == "twilio_account_sid" || $item == "twilio_auth_token") && isset($_SESSION['call_state'])) {
+                    continue;
+                }
                 $_SESSION["override_" . $item] = $value;
             }
         }
     }
+}
+
+if (!isset($_SESSION['call_state'])) {
+    $_SESSION['call_state'] = "STARTED";
 }
 
 if (isset($_REQUEST)) {
