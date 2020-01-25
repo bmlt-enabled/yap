@@ -10,3 +10,4 @@ admin/dist/js
 admin/dist/css/*.css
 node_modules
 yap.iml
+package-lock.json

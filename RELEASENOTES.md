@@ -1,6 +1,7 @@
 # Release Notes
 
 ### 3.6.3 (UNRELEASED)
+* Added auto selecting of service body when only one is available to current user.
 * Changed default menu option for dialback to 9.
 * Fix for speech gathering option [#372]
 * Fix for aligning metrics summary colors with map pins for reports. [#370]
