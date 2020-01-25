@@ -264,6 +264,13 @@ function getMetrics(table) {
 }
 
 function volunteerPage() {
+    $( document ).ready(function() {
+        if ($('select#service_body_id option').length === 2) {
+            $('#service_body_id option:nth-child(2)').prop('selected', true)
+            $('#service_body_id').change();
+        }
+    });
+
     $("#service_body_id").on("change", function() {
         addNewVolunteerDialog($(this).val() > 0);
         addGroupVolunteersDialog($(this).val() >= 0);
@@ -327,6 +334,13 @@ function schedulePage() {
     });
 
     calendar.render();
+
+    $( document ).ready(function() {
+        if ($('select#service_body_id option').length === 2) {
+            $('#service_body_id option:nth-child(2)').prop('selected', true)
+            $('#service_body_id').change();
+        }
+    });
 
     $('select#service_body_id').change(function() {
         if (parseInt($('select#service_body_id').val()) > 0) {
