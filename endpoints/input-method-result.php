@@ -5,14 +5,14 @@
     getIvrResponse("index.php", null, getPossibleDigits('digit_map_location_search_method'));
     $locationSearchMethod = getDigitResponse('digit_map_location_search_method', 'Digits');
 
-    if ($locationSearchMethod == SearchType::JFT) {
-        ?>
+if ($locationSearchMethod == SearchType::JFT) {
+    ?>
         <Response>
             <Redirect method="GET">fetch-jft.php</Redirect>
         </Response>
-        <?php
-        exit();
-    }
+    <?php
+    exit();
+}
 
 if (has_setting('province_lookup') && json_decode(setting('province_lookup'))) {
     $action = "province-voice-input.php";

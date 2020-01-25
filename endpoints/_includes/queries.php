@@ -1,5 +1,6 @@
 <?php
-function getVoicemail($service_body_id) {
+function getVoicemail($service_body_id)
+{
     $db = new Database();
     $sql = sprintf("SELECT r.`callsid`,r.`from_number`,r.`to_number`,CONCAT(re.`event_time`, 'Z') as event_time,re.`meta` FROM records_events re
     LEFT OUTER JOIN records r ON re.callsid = r.callsid where event_id = %d and service_body_id = %s;", EventId::VOICEMAIL, $service_body_id);
@@ -29,20 +30,26 @@ function getFlag($flag)
     return isset($resultset[0]["flag_setting"]) ? $resultset[0]["flag_setting"] : -1;
 }
 
-function getMapMetrics($service_body_ids) {
+function getMapMetrics($service_body_ids)
+{
     $db = new Database();
-    $sql = sprintf("select event_id, meta from records_events where event_id in (1,14) and meta is not null %s",
-        "and service_body_id in (" . implode(", ", $service_body_ids) . ")");
+    $sql = sprintf(
+        "select event_id, meta from records_events where event_id in (1,14) and meta is not null %s",
+        "and service_body_id in (" . implode(", ", $service_body_ids) . ")"
+    );
     $db->query($sql);
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
 }
 
-function getMapMetricByType($service_body_ids, $eventId) {
+function getMapMetricByType($service_body_ids, $eventId)
+{
     $db = new Database();
-    $sql = sprintf("select event_id, meta from records_events where `event_id` = :eventId and meta is not null %s",
-        "and service_body_id in (" . implode(", ", $service_body_ids) . ")");
+    $sql = sprintf(
+        "select event_id, meta from records_events where `event_id` = :eventId and meta is not null %s",
+        "and service_body_id in (" . implode(", ", $service_body_ids) . ")"
+    );
     $db->query($sql);
     $db->bind(":eventId", $eventId);
     $resultset = $db->resultset();
@@ -50,12 +57,15 @@ function getMapMetricByType($service_body_ids, $eventId) {
     return $resultset;
 }
 
-function getCallRecordsCount($service_body_ids, $size) {
+function getCallRecordsCount($service_body_ids, $size)
+{
     $db = new Database();
-    $sql = sprintf("select count(distinct r.callsid) as page_count from records r
+    $sql = sprintf(
+        "select count(distinct r.callsid) as page_count from records r
 inner join records_events re on r.callsid = re.callsid
 left outer join conference_participants cp on r.callsid = cp.callsid or cp.callsid IS NULL %s",
-        "WHERE `service_body_id` in (" . implode(",", $service_body_ids) . ")");
+        "WHERE `service_body_id` in (" . implode(",", $service_body_ids) . ")"
+    );
     $db->query($sql);
     $resultset = $db->resultset();
     $db->close();
@@ -63,9 +73,11 @@ left outer join conference_participants cp on r.callsid = cp.callsid or cp.calls
 }
 
 // TODO: add show multiple service bodies options
-function getCallRecords($service_body_ids, $page, $size) {
+function getCallRecords($service_body_ids, $page, $size)
+{
     $db = new Database();
-    $sql = sprintf("SELECT r.`id`,CONCAT(r.`start_time`, 'Z') as start_time,CONCAT(r.`end_time`, 'Z') as end_time,r.`duration`,r.`from_number`,r.`to_number`,r.`callsid`,
+    $sql = sprintf(
+        "SELECT r.`id`,CONCAT(r.`start_time`, 'Z') as start_time,CONCAT(r.`end_time`, 'Z') as end_time,r.`duration`,r.`from_number`,r.`to_number`,r.`callsid`,
 CONCAT('[', GROUP_CONCAT('{\"meta\":', IFNULL(re.meta, '{}'), ',\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, 'Z\",\"service_body_id\":', COALESCE(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
 FROM (SELECT DISTINCT r.callsid as parent_callsid,cp2.callsid FROM records r LEFT OUTER JOIN conference_participants cp ON r.callsid = cp.callsid OR cp.callsid IS NULL LEFT OUTER JOIN conference_participants cp2 ON cp.conferencesid = cp2.conferencesid) cs
 INNER JOIN records r ON cs.parent_callsid = r.callsid
@@ -74,7 +86,8 @@ WHERE re.id IS NOT NULL %s
 GROUP BY r.callsid
 ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC %s",
         " AND `service_body_id` in (" . implode(",", $service_body_ids) . ")",
-        " LIMIT " . $size . " OFFSET " .  ($page - 1) * $size);
+        " LIMIT " . $size . " OFFSET " .  ($page - 1) * $size
+    );
     $db->exec("SET @@session.sql_mode = (SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
     $db->exec("SET @@session.group_concat_max_len = 4294967295;");
     $db->query($sql);
@@ -84,7 +97,8 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC %s",
     return $resultset;
 }
 
-function insertCallRecord($callRecord) {
+function insertCallRecord($callRecord)
+{
     $db = new Database();
     $stmt = "INSERT INTO `records` (`callsid`,`from_number`,`to_number`,`duration`,`start_time`,`end_time`,`payload`) 
         VALUES (:callSid, :from_number, :to_number, :duration, :start_time, :end_time, :payload)";
@@ -101,7 +115,8 @@ function insertCallRecord($callRecord) {
     $db->close();
 }
 
-function getMisconfiguredPhoneNumbersAlerts($alert_id) {
+function getMisconfiguredPhoneNumbersAlerts($alert_id)
+{
     $db = new Database();
     $sql = sprintf("SELECT a.payload FROM alerts a
 INNER JOIN (select to_number, max(start_time) as start_time FROM records GROUP BY to_number) b
@@ -118,7 +133,8 @@ where alert_id = %s and b.to_number IS NULL", $alert_id, $alert_id);
     return $resultset;
 }
 
-function insertCallEventRecord($eventid, $meta = null) {
+function insertCallEventRecord($eventid, $meta = null)
+{
     if (isset($_REQUEST['CallSid'])) {
         $callSid = $_REQUEST['CallSid'];
     } else {
@@ -163,10 +179,12 @@ function getMetric($service_body_ids, $general)
     $query = "SELECT DATE_FORMAT(timestamp, \"%Y-%m-%d\") as `timestamp`, 
                                         COUNT(DATE_FORMAT(`timestamp`, \"%Y-%m-%d\")) as counts,
                                         `data`
-                                        FROM `metrics`" . sprintf("%s %s %s",
-            "WHERE service_body_id in (" . implode(",", $service_body_ids) . ")",
-            $general ? "OR service_body_id is NULL" : "",
-            " GROUP BY DATE_FORMAT(`timestamp`, \"%Y-%m-%d\"), `data`");
+                                        FROM `metrics`" . sprintf(
+        "%s %s %s",
+        "WHERE service_body_id in (" . implode(",", $service_body_ids) . ")",
+        $general ? "OR service_body_id is NULL" : "",
+        " GROUP BY DATE_FORMAT(`timestamp`, \"%Y-%m-%d\"), `data`"
+    );
     $db->query($query);
     $resultset = $db->resultset();
     $db->close();
@@ -199,7 +217,8 @@ function setConferenceParticipant($friendlyname, $role)
     $db->close();
 }
 
-function getConferenceParticipant($callsid) {
+function getConferenceParticipant($callsid)
+{
     $db = new Database();
     $db->query("SELECT DISTINCT callsid, role FROM conference_participants WHERE callsid = :callsid");
     $db->bind(':callsid', $callsid);
@@ -208,7 +227,8 @@ function getConferenceParticipant($callsid) {
     return $resultset;
 }
 
-function insertAlert($alertId, $payload) {
+function insertAlert($alertId, $payload)
+{
     $db = new Database();
     $stmt = "INSERT INTO `alerts` (`timestamp`,`alert_id`,`payload`) VALUES (:timestamp, :alertId, :payload)";
     $db->query($stmt);

@@ -15,7 +15,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";?>
             <?php echo word('volunteer_has_already_joined_the_call_goodbye'); ?>
         </Say>
         <Hangup/>
-    <?php
+        <?php
     } else {
         insertCallEventRecord(EventId::VOLUNTEER_IN_CONFERENCE, (object)["to_number" => $_REQUEST['Called']]); ?>
         <Dial>
@@ -30,8 +30,10 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";?>
         </Dial>
     <?php } ?>
 <?php } else {
-    insertCallEventRecord(EventId::VOLUNTEER_REJECTED,
-        (object)["digits" => $_REQUEST['Digits'], "to_number" => $_REQUEST['Called']]);
+    insertCallEventRecord(
+        EventId::VOLUNTEER_REJECTED,
+        (object)["digits" => $_REQUEST['Digits'], "to_number" => $_REQUEST['Called']]
+    );
     incrementNoAnswerCount();
     setConferenceParticipant($_REQUEST['conference_name'], CallRole::VOLUNTEER);
     log_debug("They rejected the call.") ?>

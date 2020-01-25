@@ -60,8 +60,10 @@ if (!isset($_REQUEST['ForceNumber'])) {
 }
 
 if (isset($address)) {
-    insertCallEventRecord(EventId::VOLUNTEER_SEARCH,
-        (object)['gather' => $address, 'coordinates' => isset($coordinates) ? $coordinates : null]);
+    insertCallEventRecord(
+        EventId::VOLUNTEER_SEARCH,
+        (object)['gather' => $address, 'coordinates' => isset($coordinates) ? $coordinates : null]
+    );
 } else {
     insertCallEventRecord(EventId::VOLUNTEER_SEARCH);
 }
@@ -113,7 +115,7 @@ if ($service_body_id > 0 && isset($serviceBodyCallHandling) && $serviceBodyCallH
                 </Say>
         <?php }
     }?>
-        <?php insertCallEventRecord(EventId::HELPLINE_ROUTE,  (object)["helpline_number" => $phone_number, "extension" => $extension]); ?>
+        <?php insertCallEventRecord(EventId::HELPLINE_ROUTE, (object)["helpline_number" => $phone_number, "extension" => $extension]); ?>
         <Dial>
             <Number sendDigits="<?php echo $extension ?>"><?php echo $phone_number ?></Number>
         </Dial>
