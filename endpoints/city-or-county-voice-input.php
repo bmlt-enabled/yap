@@ -3,7 +3,6 @@ require_once '_includes/functions.php';
 header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
-$searchType = getDigitResponse('digit_map_search_type', 'SearchType');
 $province = json_decode(setting('province_lookup')) ? $_REQUEST['SpeechResult'] : "";
 ?>
 <Response>

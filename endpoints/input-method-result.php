@@ -13,7 +13,6 @@
         <?php
         exit();
     }
-    $searchType = getDigitResponse('digit_map_search_type', 'SearchType');
 
 if (has_setting('province_lookup') && json_decode(setting('province_lookup'))) {
     $action = "province-voice-input.php";

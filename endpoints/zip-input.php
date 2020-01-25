@@ -3,7 +3,7 @@
     header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     
-    $searchType = getDigitResponse('digit_map_search_type', 'SearchType');
+    $searchType = $_REQUEST['SearchType'];
     
 if ($searchType == SearchType::VOLUNTEERS) {
     $action = "helpline-search.php";
