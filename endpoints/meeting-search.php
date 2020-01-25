@@ -9,7 +9,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     $longitude = isset($_REQUEST['Longitude']) ? $_REQUEST['Longitude'] : null;
 
 try {
-    $results_count = has_setting('result_count_max') ? setting('result_count_max') : 5;
+    $results_count = has_setting('result_count_max') ? intval(setting('result_count_max')) : 5;
     $meeting_results = getMeetings($latitude, $longitude, $results_count, null, null);
     $results_count_num = count($meeting_results->filteredList) < $results_count ? count($meeting_results->filteredList) : $results_count;
 } catch (Exception $e) { ?>
