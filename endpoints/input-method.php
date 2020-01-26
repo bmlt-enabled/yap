@@ -43,7 +43,6 @@ if ($searchType == SearchType::VOLUNTEERS) {
         </Response>
         <?php
         exit();
-} else {
 }
 ?>
 <Response>
