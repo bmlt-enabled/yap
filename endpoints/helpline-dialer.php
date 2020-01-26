@@ -106,7 +106,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
 
     // Make timeout configurable per volunteer
     if (( isset($_REQUEST['SequenceNumber']) && intval($_REQUEST['SequenceNumber']) == 1 ) ||
-         ( isset($_REQUEST['CallStatus']) && ( $_REQUEST['CallStatus'] == 'no-answer' || $_REQUEST['CallStatus'] == 'completed' ) ) ) {
+         ( isset($_REQUEST['CallStatus']) && ( $_REQUEST['CallStatus'] == 'no-answer' || $_REQUEST['CallStatus'] == 'completed' ) )) {
         $callConfig = getCallConfig($serviceBodyCallHandling, $tandem);
 
         if (isset($_REQUEST['CallStatus']) && $_REQUEST['CallStatus'] == 'no-answer') {

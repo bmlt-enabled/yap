@@ -26,8 +26,13 @@ if (isset($parent_id) || isset($_REQUEST['parent_id'])) {
 }
 
 if (count($data) > 0) {
-    echo sprintf("{\"service_body_id\":%s,\"id\":%s,\"parent_id\":%s,\"data\":%s}",
-        $data[0]['service_body_id'], $data[0]['id'], isset($data[0]['parent_id']) ? $data[0]['parent_id'] : "null", $data[0]['data']);
+    echo sprintf(
+        "{\"service_body_id\":%s,\"id\":%s,\"parent_id\":%s,\"data\":%s}",
+        $data[0]['service_body_id'],
+        $data[0]['id'],
+        isset($data[0]['parent_id']) ? $data[0]['parent_id'] : "null",
+        $data[0]['data']
+    );
 } else {
     echo "{}";
 }

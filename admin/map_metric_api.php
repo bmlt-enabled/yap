@@ -7,7 +7,8 @@ if (isset($_REQUEST['format']) == "csv") {
     foreach ($metrics as $metric) {
         $coordinates = json_decode($metric['meta'])->coordinates;
         if ($coordinates->location != null) {
-            $data .= sprintf("%s,%s,\"%s\",\"%s\"\n",
+            $data .= sprintf(
+                "%s,%s,\"%s\",\"%s\"\n",
                 $coordinates->latitude,
                 $coordinates->longitude,
                 $coordinates->location,

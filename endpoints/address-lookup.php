@@ -5,8 +5,10 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
 $address = getIvrResponse();
 $coordinates = getCoordinatesForAddress($address);
-insertCallEventRecord(EventId::MEETING_SEARCH_LOCATION_GATHERED,
-    (object)['gather' => $address, 'coordinates' => isset($coordinates) ? $coordinates : null]);
+insertCallEventRecord(
+    EventId::MEETING_SEARCH_LOCATION_GATHERED,
+    (object)['gather' => $address, 'coordinates' => isset($coordinates) ? $coordinates : null]
+);
 
 if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) { ?>
     <Response>

@@ -1,5 +1,5 @@
 <?php
-$language_title = "italiano"; 
+$language_title = "italiano";
 $press = "premere";
 $press_or_say = "premere o dire";
 $zero = "zero";
@@ -15,7 +15,7 @@ $nine = "nove";
 $days_of_the_week = [1 => "domenica", "lunedì", "martedì", "mercoledì", "giovedì", "venerdì", "sabato"];
 $to_find = "per trovare";
 $to_search_for = "per cercare";
-$by = "da"; 
+$by = "da";
 $for = "per";
 $someone_to_talk_to = "qualcuno con cui parlare";
 $meetings = "riunioni";

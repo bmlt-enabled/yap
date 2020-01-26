@@ -5,7 +5,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 insertCallEventRecord(
     EventId::VOICEMAIL,
-    (object)['url' => isset($_REQUEST['RecordingUrl']) ? $_REQUEST['RecordingUrl'] : null]);
+    (object)['url' => isset($_REQUEST['RecordingUrl']) ? $_REQUEST['RecordingUrl'] : null]
+);
 header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 

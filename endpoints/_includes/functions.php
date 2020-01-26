@@ -93,6 +93,8 @@ $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?
 static $date_calculations_map = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 static $numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+// phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses
 class SearchType
 {
     const NONE = -1;
@@ -125,23 +127,39 @@ class EventId
     const MEETING_SEARCH_LOCATION_GATHERED = 14;
     const HELPLINE_ROUTE = 15;
 
-    static function getEventById($id) {
-        switch($id) {
-            case self::VOLUNTEER_SEARCH: return "Volunteer Search";
-            case self::MEETING_SEARCH: return "Meeting Search";
-            case self::JFT_LOOKUP: return "JFT Lookup";
-            case self::VOICEMAIL: return "Voicemail";
-            case self::VOLUNTEER_DIALED: return "Volunteer Dialed";
-            case self::VOLUNTEER_ANSWERED: return "Volunteer Answered";
-            case self::VOLUNTEER_REJECTED: return "Volunteer Rejected Call";
-            case self::VOLUNTEER_NOANSWER: return "Volunteer No Answer";
-            case self::VOLUNTEER_ANSWERED_BUT_CALLER_HUP: return "Volunteer Answered but Caller Hungup";
-            case self::CALLER_IN_CONFERENCE: return "Caller Waiting for Volunteer";
-            case self::VOLUNTEER_HUP: return "Volunteer Hungup";
-            case self::VOLUNTEER_IN_CONFERENCE: return "Volunteer Connected To Caller";
-            case self::CALLER_HUP: return "Caller Hungup";
-            case self::MEETING_SEARCH_LOCATION_GATHERED: return "Meeting Search Location Gathered";
-            case self::HELPLINE_ROUTE: return "Helpline Route";
+    public static function getEventById($id)
+    {
+        switch ($id) {
+            case self::VOLUNTEER_SEARCH:
+                return "Volunteer Search";
+            case self::MEETING_SEARCH:
+                return "Meeting Search";
+            case self::JFT_LOOKUP:
+                return "JFT Lookup";
+            case self::VOICEMAIL:
+                return "Voicemail";
+            case self::VOLUNTEER_DIALED:
+                return "Volunteer Dialed";
+            case self::VOLUNTEER_ANSWERED:
+                return "Volunteer Answered";
+            case self::VOLUNTEER_REJECTED:
+                return "Volunteer Rejected Call";
+            case self::VOLUNTEER_NOANSWER:
+                return "Volunteer No Answer";
+            case self::VOLUNTEER_ANSWERED_BUT_CALLER_HUP:
+                return "Volunteer Answered but Caller Hungup";
+            case self::CALLER_IN_CONFERENCE:
+                return "Caller Waiting for Volunteer";
+            case self::VOLUNTEER_HUP:
+                return "Volunteer Hungup";
+            case self::VOLUNTEER_IN_CONFERENCE:
+                return "Volunteer Connected To Caller";
+            case self::CALLER_HUP:
+                return "Caller Hungup";
+            case self::MEETING_SEARCH_LOCATION_GATHERED:
+                return "Meeting Search Location Gathered";
+            case self::HELPLINE_ROUTE:
+                return "Helpline Route";
         }
     }
 }
@@ -208,7 +226,8 @@ class MeetingResults
     public $filteredList = [];
 }
 
-class CallRecord {
+class CallRecord
+{
     public $callSid;
     public $start_time;
     public $end_time;
@@ -318,7 +337,7 @@ class VolunteerGender
     const MALE = 1;
     const FEMALE = 2;
 
-    static function getGenderById($genderId)
+    public static function getGenderById($genderId)
     {
         switch ($genderId) {
             case VolunteerGender::MALE:
@@ -352,23 +371,23 @@ class CurlException extends Exception
 
 class VolunteerRoutingHelpers
 {
-    static function checkVolunteerRoutingTime(DateTime $current_time, $volunteers, $v)
+    public static function checkVolunteerRoutingTime(DateTime $current_time, $volunteers, $v)
     {
         return ($current_time >= (new DateTime($volunteers[$v]->start))
             && $current_time <= (new DateTime($volunteers[$v]->end)));
     }
 
-    static function checkVolunteerRoutingLanguage($volunteer_routing_params, $volunteers, $v)
+    public static function checkVolunteerRoutingLanguage($volunteer_routing_params, $volunteers, $v)
     {
         return in_array($volunteer_routing_params->volunteer_language, $volunteers[$v]->language);
     }
 
-    static function checkVolunteerRoutingType($volunteer_routing_params, $volunteers, $v)
+    public static function checkVolunteerRoutingType($volunteer_routing_params, $volunteers, $v)
     {
         return (!isset($volunteers[$v]->type) || str_exists($volunteers[$v]->type, $volunteer_routing_params->volunteer_type));
     }
 
-    static function checkVolunteerRoutingResponder($volunteer_routing_params, $volunteers, $v)
+    public static function checkVolunteerRoutingResponder($volunteer_routing_params, $volunteers, $v)
     {
         return ($volunteer_routing_params->volunteer_responder == VolunteerResponderOption::UNSPECIFIED
             || (($volunteer_routing_params->volunteer_responder !== VolunteerResponderOption::UNSPECIFIED
@@ -376,7 +395,7 @@ class VolunteerRoutingHelpers
                 && $volunteer_routing_params->volunteer_responder == $volunteers[$v]->responder)));
     }
 
-    static function checkVolunteerRoutingShadow($volunteer_routing_params, $volunteers, $v)
+    public static function checkVolunteerRoutingShadow($volunteer_routing_params, $volunteers, $v)
     {
         return ($volunteer_routing_params->volunteer_shadow == VolunteerShadowOption::UNSPECIFIED
             || (($volunteer_routing_params->volunteer_shadow !== VolunteerShadowOption::UNSPECIFIED
@@ -384,7 +403,7 @@ class VolunteerRoutingHelpers
                 && $volunteer_routing_params->volunteer_shadow == $volunteers[$v]->shadow)));
     }
 
-    static function checkVolunteerRoutingGender($volunteer_routing_params, $volunteers, $v)
+    public static function checkVolunteerRoutingGender($volunteer_routing_params, $volunteers, $v)
     {
         return ($volunteer_routing_params->volunteer_gender == VolunteerGender::UNSPECIFIED
             || (($volunteer_routing_params->volunteer_gender !== VolunteerGender::UNSPECIFIED
@@ -424,7 +443,7 @@ class UpgradeAdvisor
         return isset($GLOBALS[$setting]) && strlen($GLOBALS[$setting]) > 0;
     }
 
-    public static function getState($status = null, $message = null)
+    private static function getState($status = null, $message = null)
     {
         try {
             $build = file_get_contents("../build.txt", false);
@@ -527,12 +546,12 @@ class ServiceBodyFinder
 {
     private $service_bodies;
 
-    function __construct()
+    public function __construct()
     {
         $this->service_bodies = getServiceBodies();
     }
 
-    function getServiceBody($service_body_id)
+    public function getServiceBody($service_body_id)
     {
         foreach ($this->service_bodies as $service_body) {
             if ($service_body->id == $service_body_id) {
@@ -546,12 +565,12 @@ class DbConfigFinder
 {
     private $config;
 
-    function __construct()
+    public function __construct()
     {
         $this->configs = getAllDbData(DataType::YAP_CONFIG_V2);
     }
 
-    function getConfig($service_body_id)
+    public function getConfig($service_body_id)
     {
         foreach ($this->configs as $config) {
             if ($config['service_body_id'] == $service_body_id) {
@@ -659,7 +678,8 @@ function setting_source($name)
     }
 }
 
-function getDigitMap($setting) {
+function getDigitMap($setting)
+{
     $digitMapSetting = setting($setting);
 
     if ($setting == 'language_selections') {
@@ -684,11 +704,13 @@ function getDigitMap($setting) {
     return $digitMapSetting;
 }
 
-function getPossibleDigits($setting) {
+function getPossibleDigits($setting)
+{
     return array_keys(getDigitMap($setting));
 }
 
-function getDigitResponse($setting, $field = 'SearchType') {
+function getDigitResponse($setting, $field = 'SearchType')
+{
     $digitMap = getDigitMap($setting);
     if ($field === 'Digits'
         && has_setting('speech_gathering')
@@ -708,13 +730,15 @@ function getDigitResponse($setting, $field = 'SearchType') {
     }
 }
 
-function getDigitMapSequence($setting) {
+function getDigitMapSequence($setting)
+{
     $digitMap = getDigitMap($setting);
     ksort($digitMap);
     return $digitMap;
 }
 
-function getDigitForAction($setting, $action) {
+function getDigitForAction($setting, $action)
+{
     $searchTypeSequence = getDigitMapSequence($setting);
     foreach ($searchTypeSequence as $digit => $type) {
         if ($type == $action) {
@@ -785,22 +809,34 @@ function getProvince()
 
 function helplineSearch($latitude, $longitude)
 {
-    $search_url = sprintf("%s/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,service_body_bigint&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s%s",
-        getHelplineRoutingBMLTServer($latitude, $longitude), $latitude, $longitude, setting('helpline_search_radius'), setting('call_routing_filter'));
+    $search_url = sprintf(
+        "%s/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,service_body_bigint&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s%s",
+        getHelplineRoutingBMLTServer($latitude, $longitude),
+        $latitude,
+        $longitude,
+        setting('helpline_search_radius'),
+        setting('call_routing_filter')
+    );
 
     return json_decode(get($search_url));
 }
 
 function isBMLTServerOwned($latitude, $longitude)
 {
-    $bmlt_search_endpoint = sprintf('%s/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s',
-        setting('tomato_url'), $latitude, $longitude, setting('helpline_search_radius'));
+    $bmlt_search_endpoint = sprintf(
+        '%s/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s',
+        setting('tomato_url'),
+        $latitude,
+        $longitude,
+        setting('helpline_search_radius')
+    );
     $search_results = json_decode(get($bmlt_search_endpoint));
     $root_server_uri_from_first_result = $search_results[0]->root_server_uri;
     return str_exists($root_server_uri_from_first_result, getAdminBMLTRootServer());
 }
 
-function getHelplineRoutingBMLTServer($latitude, $longitude) {
+function getHelplineRoutingBMLTServer($latitude, $longitude)
+{
     if (json_decode(setting('tomato_helpline_routing')) && !isBMLTServerOwned($latitude, $longitude)) {
         return setting('tomato_url');
     } else {
@@ -1004,7 +1040,8 @@ function getNextMeetingInstance($meeting_day, $meeting_time)
     return $mod_meeting_datetime;
 }
 
-function getServiceBodiesForRouting($latitude, $longitude) {
+function getServiceBodiesForRouting($latitude, $longitude)
+{
     $bmlt_search_endpoint = sprintf('%s/client_interface/json/?switcher=GetServiceBodies', getHelplineRoutingBMLTServer($latitude, $longitude));
     return json_decode(get($bmlt_search_endpoint));
 }
@@ -1059,7 +1096,8 @@ function getServiceBodiesForUser($include_general = false)
     return $service_body_ids;
 }
 
-function getServiceBodiesForUserRecursively($service_body_id, $service_body_rights = null) {
+function getServiceBodiesForUserRecursively($service_body_id, $service_body_rights = null)
+{
     $service_bodies_results = [];
 
     if ($service_body_rights == null) {
@@ -1556,7 +1594,8 @@ function logout_auth($username)
     }
 }
 
-function getCache($key) {
+function getCache($key)
+{
     $exists = isset($_SESSION[sprintf('cache_%s', $key)]);
     if ($exists) {
         date_default_timezone_set('UTC');
@@ -1570,7 +1609,8 @@ function getCache($key) {
     return null;
 }
 
-function setCache($key, $value, $timeout) {
+function setCache($key, $value, $timeout)
+{
     date_default_timezone_set('UTC');
     $expiry = strtotime(sprintf("+%s seconds", $timeout));
     $_SESSION[sprintf('cache_%s', $key)] = ["value" => $value, "expiry" => $expiry];
@@ -1762,7 +1802,7 @@ function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_
                 <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>"><?php echo word('you_might_have_invalid_entry') ?></Say>
                 <Redirect><?php echo $redirected_from . $qs?></Redirect>
             </Response>
-        <?php
+            <?php
             exit();
         }
     }
@@ -1772,7 +1812,7 @@ function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_
 
 function getWebhookUrl()
 {
-    $voice_url = str_replace("/endpoints",  "", "https://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']);
+    $voice_url = str_replace("/endpoints", "", "https://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']);
     if (strpos(basename($voice_url), ".php")) {
         return substr($voice_url, 0, strrpos($voice_url, "/"));
     } else if (strpos($voice_url, "?")) {
@@ -1797,13 +1837,15 @@ function getCurrentTime()
     return gmdate("Y-m-d H:i:s");
 }
 
-function unique_stdclass_array($array) {
+function unique_stdclass_array($array)
+{
     $array = array_map('json_encode', $array);
     $array = array_unique($array);
     return array_map('json_decode', array_values($array));
 }
 
-function getReportsServiceBodies() {
+function getReportsServiceBodies()
+{
     if (intval($_REQUEST['service_body_id']) == 0) {
         return getServiceBodiesForUser(true);
     } else if (json_decode($_REQUEST['recurse'])) {
@@ -1813,7 +1855,8 @@ function getReportsServiceBodies() {
     }
 }
 
-function adjustedCallRecords($service_body_ids, $page = 1, $size = 10) {
+function adjustedCallRecords($service_body_ids, $page = 1, $size = 10)
+{
     $callRecords = getCallRecords($service_body_ids, $page, $size);
 
     foreach ($callRecords as &$callRecord) {

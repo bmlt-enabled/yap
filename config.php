@@ -10,4 +10,3 @@ static $mysql_hostname = "";
 static $mysql_username = "";
 static $mysql_password = "";
 static $mysql_database = "";
-
