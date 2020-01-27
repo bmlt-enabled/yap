@@ -264,7 +264,7 @@ function getMetrics(table) {
 }
 
 function volunteerPage() {
-    $( document ).ready(function() {
+    $(function() {
         if ($('select#service_body_id option').length === 2) {
             $('#service_body_id option:nth-child(2)').prop('selected', true)
             $('#service_body_id').change();
@@ -335,7 +335,7 @@ function schedulePage() {
 
     calendar.render();
 
-    $( document ).ready(function() {
+    $(function() {
         if ($('select#service_body_id option').length === 2) {
             $('#service_body_id option:nth-child(2)').prop('selected', true)
             $('#service_body_id').change();

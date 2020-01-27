@@ -4,6 +4,7 @@ cookie.txt
 .DS_Store
 *_cookie.txt
 config.*.php
+config_*.php
 test.php
 vendor
 admin/dist/js
