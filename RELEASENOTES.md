@@ -2,11 +2,12 @@
 
 ### 3.6.3 (UNRELEASED)
 * Added auto selecting of service body when only one is available to current user. [#377]
+* Added service body announcement option for volunteer routing. [#382]
 * Changed default menu option for dialback to 9.
-* Fix for speech gathering option [#372]
+* Fix for speech gathering option. [#372]
 * Fix for aligning metrics summary colors with map pins for reports. [#370]
-* Fix to prevent Twilio credentials from being overridden mid-call [#375]
-* Fix for SMS summary page map link not working on some Android phones [#380]
+* Fix to prevent Twilio credentials from being overridden mid-call. [#375]
+* Fix for SMS summary page map link not working on some Android phones. [#380]
 
 ### 3.6.2 (January 18, 2020)
 * Added simple check for state/province in SMS meeting search. [#369]

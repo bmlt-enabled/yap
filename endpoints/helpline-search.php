@@ -81,7 +81,15 @@ if ($service_body_id > 0 && isset($serviceBodyCallHandling) && $serviceBodyCallH
         $calculated_service_body_id = $service_body_id;
     }
     ?>
-        <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>"><?php echo word('please_wait_while_we_connect_your_call') ?></Say>
+        <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
+            <?php
+            if (setting("announce_servicebody_volunteer_routing")) {
+                echo sprintf("%s... %s %s", word('please_stand_by'), word('relocating_your_call_to'), $location);
+            } else {
+                echo word('please_wait_while_we_connect_your_call');
+            }
+            ?>
+            </Say>
         <Dial>
             <Conference waitUrl="<?php echo $serviceBodyCallHandling->moh_count == 1 ? $serviceBodyCallHandling->moh : "playlist.php?items=" . $serviceBodyCallHandling->moh?>"
                         statusCallback="helpline-dialer.php?service_body_id=<?php echo $calculated_service_body_id ?>&amp;Caller=<?php echo $_REQUEST['Called'] . getSessionLink(true) ?>"
