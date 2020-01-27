@@ -6,6 +6,7 @@
 * Fix for speech gathering option [#372]
 * Fix for aligning metrics summary colors with map pins for reports. [#370]
 * Fix to prevent Twilio credentials from being overridden mid-call [#375]
+* Fix for SMS summary page map link not working on some Android phones [#380]
 
 ### 3.6.2 (January 18, 2020)
 * Added simple check for state/province in SMS meeting search. [#369]

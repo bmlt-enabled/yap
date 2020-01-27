@@ -16,7 +16,7 @@
                     <?php
                 }
                 ?>
-                <a href="https://google.com/maps?q=<?php echo $meeting->latitude?>,<?php echo $meeting->longitude?>" target="_blank">Map</a>
+                <a href="<?php echo sprintf("https://www.google.com/maps/search/?api=1&query=%s,%s&q=%s,%s", $meeting->latitude, $meeting->longitude, $meeting->latitude, $meeting->longitude); ?>" target="_blank">Map</a>
             </td></tr>
         <?php
     }
