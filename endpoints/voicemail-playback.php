@@ -12,13 +12,12 @@ insertCallEventRecord(EventId::VOICEMAIL_PLAYBACK);
 // TODO: Date and phone number formatting
 
 if (count($voicemails) > 0) {
-    $voicemail = $voicemails[0];
-?>
+    $voicemail = $voicemails[0];?>
 <Response>
     <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
         <?php echo sprintf("Voicemail received at %s, from phone number %s", $voicemail['event_time'], $voicemail['from_number'])?>
     </Say>
-    <Play><?php echo sprintf("%s.%s", json_decode($voicemail['meta'])->url,'mp3')?></Play>
+    <Play><?php echo sprintf("%s.%s", json_decode($voicemail['meta'])->url, 'mp3')?></Play>
     <Hangup/>
 </Response>
 <?php } else { ?>
