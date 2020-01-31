@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.6.3 (UNRELEASED)
+### 3.6.3 (January 30, 2020)
 * Added auto selecting of service body when only one is available to current user. [#377]
 * Added service body announcement option for volunteer routing. [#382]
 * Changed default menu option for dialback to 9.
