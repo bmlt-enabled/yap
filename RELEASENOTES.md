@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.7.0 (UNRELEASED)
+* Added voicemail playback feature.
+
 ### 3.6.3 (January 30, 2020)
 * Added auto selecting of service body when only one is available to current user. [#377]
 * Added service body announcement option for volunteer routing. [#382]

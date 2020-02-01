@@ -37,6 +37,12 @@ if ($searchType == SearchType::VOLUNTEERS) {
         </Response>
         <?php
         exit();
+} else if ($searchType == SearchType::VOICEMAIL_PLAYBACK) { ?>
+        <Response>
+        <Redirect method="GET">voicemail-playback.php</Redirect>
+        </Response>
+        <?php
+        exit();
 } else if ($searchType == SearchType::DIALBACK) { ?>
         <Response>
         <Redirect method="GET">dialback.php</Redirect>
