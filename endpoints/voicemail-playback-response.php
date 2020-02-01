@@ -16,7 +16,7 @@ $voicemail_grace_hrs = setting('voicemail_playback_grace_hours');
 $caller = $_REQUEST['Caller'];
 $found = false;
 foreach ($volunteers as $volunteer) {
-    if (strpos($caller, $volunteer->volunteer_phone_number) > 0) {
+    if (strpos($caller, str_replace(['(', ')', '-', ' '], ['','','',''], $volunteer->volunteer_phone_number)) > 0) {
         $found = true;
         break;
     }
