@@ -9,7 +9,7 @@ $service_body_obj = getServiceBodyCoverage($coordinates->latitude, $coordinates-
 $service_body_id = isset($service_body_obj) ? $service_body_obj->id : 0;
 $location = $service_body_obj->name;
 $voicemails = getVoicemail($service_body_id);
-$voicemail_grace_hrs = 600;  // TODO: hardcoded to 48 hrs, convert to a setting?
+$voicemail_grace_hrs = setting('voicemail_playback_grace_hours');
 insertCallEventRecord(EventId::VOICEMAIL_PLAYBACK);
 
 // TODO: Who can play voicemails play?

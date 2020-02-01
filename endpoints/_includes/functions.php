@@ -59,6 +59,7 @@ static $settings_whitelist = [
     'twilio_account_sid' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
     'twilio_auth_token' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
     'voice' => [ 'description' => '', 'default' => 'Polly.Kendra', 'overridable' => true, 'hidden' => false],
+    'voicemail_playback_grace_hours' => [ 'description' => '', 'default' => 48, 'overridable' => true, 'hidden' => false],
     'word_language' => [ 'description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false]
 ];
 static $available_languages = [
