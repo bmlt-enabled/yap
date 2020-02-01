@@ -1,4 +1,8 @@
 <?php
+if (!file_exists('../config.php')) {
+    header('Location: /admin/wizard.php');
+    exit();
+}
 if (isset($_GET["ysk"])) {
     session_id($_GET["ysk"]);
 }
