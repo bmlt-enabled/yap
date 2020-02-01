@@ -2,29 +2,11 @@
 require_once '_includes/functions.php';
 header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-// TODO: Service body ID hardcoded.
-$voicemails = getVoicemail(101);
-insertCallEventRecord(EventId::VOICEMAIL_PLAYBACK);
 
-// TODO: How to determine which service body ID to use?
-// TODO: Who can play voicemails play?
-// TODO: How many voicemails to play?
-// TODO: Date and phone number formatting
-
-if (count($voicemails) > 0) {
-    $voicemail = $voicemails[0];?>
+$province = json_decode(setting('province_lookup')) ? $_REQUEST['SpeechResult'] : "";
+?>
 <Response>
-    <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
-        <?php echo sprintf("Voicemail received at %s, from phone number %s", $voicemail['event_time'], $voicemail['from_number'])?>
-    </Say>
-    <Play><?php echo sprintf("%s.%s", json_decode($voicemail['meta'])->url, 'mp3')?></Play>
-    <Hangup/>
+    <Gather language="<?php echo setting('gather_language') ?>" hints="<?php echo setting('gather_hints') ?>" input="speech" timeout="5" speechTimeout="auto" action="voicemail-playback-response.php?Province=<?php echo urlencode($province)?>" method="GET">
+        <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>"><?php echo word('please_say_the_name_of_the')?> <?php echo word('city_or_county')?></Say>
+    </Gather>
 </Response>
-<?php } else { ?>
-<Response>
-    <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
-        There are no recent voicemail messages to play.
-    </Say>
-    <Hangup/>
-</Response>
-<?php }
