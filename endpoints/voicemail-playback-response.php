@@ -9,10 +9,11 @@ $service_body_obj = getServiceBodyCoverage($coordinates->latitude, $coordinates-
 $service_body_id = isset($service_body_obj) ? $service_body_obj->id : 0;
 $location = $service_body_obj->name;
 $voicemails = getVoicemail($service_body_id);
+$volunteer_routing_parameters = new VolunteerRoutingParameters();
+$volunteer_routing_parameters->service_body_id = $service_body_id;
+$volunteers = getHelplineVolunteersActiveNow($volunteer_routing_parameters);
 $voicemail_grace_hrs = setting('voicemail_playback_grace_hours');
 insertCallEventRecord(EventId::VOICEMAIL_PLAYBACK);
-
-// TODO: Who can play voicemails play?
 ?>
 <Response>
     <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
@@ -23,13 +24,13 @@ insertCallEventRecord(EventId::VOICEMAIL_PLAYBACK);
 if (count($voicemails) > 0) {
     foreach ($voicemails as $voicemail) {
         if (strtotime($voicemail['event_time']) > (new DateTime())->modify(sprintf("-%s hours", $voicemail_grace_hrs))->getTimestamp()) {?>
-    <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
-        <?php echo sprintf("Voicemail received at %s, from phone number %s", date("l, F dS, yy, h:m A", strtotime($voicemail['event_time'])), implode(' ', str_split(str_replace('+', '', $voicemail['from_number'])))) ?>
-    </Say>
-    <Pause length="2"/>
-    <Play><?php echo sprintf("%s.%s", json_decode($voicemail['meta'])->url, 'mp3') ?></Play>
-    <Pause length="2"/>
-    <?php
+            <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
+                <?php echo sprintf("Voicemail received at %s, from phone number %s", date("l, F dS, yy, h:m A", strtotime($voicemail['event_time'])), implode(' ', str_split(str_replace('+', '', $voicemail['from_number'])))) ?>
+            </Say>
+            <Pause length="2"/>
+            <Play><?php echo sprintf("%s.%s", json_decode($voicemail['meta'])->url, 'mp3') ?></Play>
+            <Pause length="2"/>
+            <?php
         }
     }
 } else { ?>
