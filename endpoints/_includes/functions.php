@@ -1328,7 +1328,7 @@ function getHelplineVolunteersActiveNow($volunteer_routing_params)
     try {
         $volunteers = json_decode(getHelplineSchedule($volunteer_routing_params->service_body_id));
         $activeNow  = [];
-        for ($v = 0; $v < count($volunteers); $v ++) {
+        for ($v = 0; $v < count($volunteers); $v++) {
             date_default_timezone_set($volunteers[ $v ]->time_zone);
             $current_time = new DateTime();
             if (VolunteerRoutingHelpers::checkVolunteerRoutingTime($current_time, $volunteers, $v)

@@ -11,8 +11,27 @@ $location = $service_body_obj->name;
 $voicemails = getVoicemail($service_body_id);
 $volunteer_routing_parameters = new VolunteerRoutingParameters();
 $volunteer_routing_parameters->service_body_id = $service_body_id;
-$volunteers = getHelplineVolunteersActiveNow($volunteer_routing_parameters);
+$volunteers = getVolunteers($service_body_id);
 $voicemail_grace_hrs = setting('voicemail_playback_grace_hours');
+$caller = $_REQUEST['Caller'];
+$found = false;
+foreach ($volunteers as $volunteer) {
+    if (strpos($caller, $volunteer->volunteer_phone_number) > 0) {
+        $found = true;
+        break;
+    }
+}
+if (!$found) { ?>
+    <Response>
+        <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
+            access denied
+        </Say>
+        <Pause length="2"/>
+        <Hangup/>
+    </Response>
+    <?php
+    exit();
+}
 insertCallEventRecord(EventId::VOICEMAIL_PLAYBACK);
 ?>
 <Response>
