@@ -15,6 +15,7 @@ $volunteers = getVolunteers($service_body_id);
 $voicemail_grace_hrs = setting('voicemail_playback_grace_hours');
 $caller = $_REQUEST['Caller'];
 $found = false;
+$playbacks = 0;
 foreach ($volunteers as $volunteer) {
     if (strpos($caller, str_replace(['(', ')', '-', ' '], ['','','',''], $volunteer->volunteer_phone_number)) > 0) {
         $found = true;
@@ -44,15 +45,18 @@ if (count($voicemails) > 0) {
     foreach ($voicemails as $voicemail) {
         if (strtotime($voicemail['event_time']) > (new DateTime())->modify(sprintf("-%s hours", $voicemail_grace_hrs))->getTimestamp()) {?>
             <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
-                <?php echo sprintf("Voicemail received at %s, from phone number %s", date("l, F dS, yy, h:m A", strtotime($voicemail['event_time'])), implode(' ', str_split(str_replace('+', '', $voicemail['from_number'])))) ?>
+                <?php echo sprintf("Voicemail received at %s, from phone number %s", date("l, F dS, Y, h:m A", strtotime($voicemail['event_time'])), implode(' ', str_split(str_replace('+', '', $voicemail['from_number'])))) ?>
             </Say>
             <Pause length="2"/>
             <Play><?php echo sprintf("%s.%s", json_decode($voicemail['meta'])->url, 'mp3') ?></Play>
             <Pause length="2"/>
             <?php
+            $playbacks++;
         }
     }
-} else { ?>
+}
+
+if ($playbacks == 0) {?>
     <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
         There are no recent voicemail messages to play.
     </Say>
