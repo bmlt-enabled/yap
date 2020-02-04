@@ -1,7 +1,7 @@
 # Release Notes
 
-### 3.7.0 (UNRELEASED)
-* Added voicemail playback feature.
+### 3.6.4 (February 4, 2020)
+* Fix for meeting playback being calculated as UTC timezone.
 
 ### 3.6.3 (January 30, 2020)
 * Added auto selecting of service body when only one is available to current user. [#377]

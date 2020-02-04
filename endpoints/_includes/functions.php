@@ -7,7 +7,7 @@ require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . 
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-static $version  = "3.7.0";
+static $version  = "3.6.4";
 static $settings_whitelist = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -1607,7 +1607,6 @@ function getCache($key)
 {
     $exists = isset($_SESSION[sprintf('cache_%s', $key)]);
     if ($exists) {
-        date_default_timezone_set('UTC');
         $current = strtotime(getCurrentTime());
         $cache = $_SESSION[sprintf('cache_%s', $key)];
         if ($current <= $cache['expiry']) {
@@ -1620,7 +1619,6 @@ function getCache($key)
 
 function setCache($key, $value, $timeout)
 {
-    date_default_timezone_set('UTC');
     $expiry = strtotime(sprintf("+%s seconds", $timeout));
     $_SESSION[sprintf('cache_%s', $key)] = ["value" => $value, "expiry" => $expiry];
 }
