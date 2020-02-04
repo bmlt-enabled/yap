@@ -1,6 +1,6 @@
 <?php
 if (!file_exists('../config.php')) {
-    header('Location: /admin/wizard.php');
+    header('Location: /admin/installer.php');
     exit();
 }
 if (isset($_GET["ysk"])) {
