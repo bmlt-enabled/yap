@@ -16,13 +16,18 @@ if (file_exists('../config.php')) {
     <title>Yap Admin</title>
 </head>
 <body>
-    <div id="signin" class="container">
-        <form id="auth" class="form-signin" method="POST" action="auth_login.php">
+    <div id="wizard" class="container">
+        <form id="wizardForm" class="wizardForm">
             <div id="yap-logo">
                 <img src="dist/img/yap_logo.png" alt="Yap" width="310" height="100">
             </div>
             <div id="no-auth-message"></div>
             <div id="wizardTitle">Wizard</div>
+            <div id="wizardInstructions">Welcome to the Yap Wizard.  This tool was developed to help quickly construct your configuration with the basic settings.  You should refer to the documentation (<a target="_blank" href="https://yap.bmlt.app">https://yap.bmlt.app</a>) for adding additional settings after you have completed this process.
+
+                Once you have completed filling out all the fields and they are confirmed to be correct, you will copy the text in the box below and paste into a file at the root of your yap folder called <pre>config.php</pre>
+
+                Note: This wizard will not allow for upgrading from Yap 1.x, instead copy over your original configuration and refresh this page.</div>
             <div id="configuration">
                     <?php foreach ($GLOBALS['settings'] as $setting) { ?>
                         <div class="installerFieldSet">
