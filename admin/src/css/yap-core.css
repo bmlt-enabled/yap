@@ -250,6 +250,14 @@ div#signin {
 #reports-top-controls-container {
     margin-bottom: 10px;
 }
+.installerFieldSet {
+    margin-bottom: 10px;
+}
+#wizardTitle {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+}
 [data-theme="dark"] {
     background-color: #333;
 }
