@@ -35,13 +35,18 @@ if (file_exists('../config.php')) {
                             <input name="<?php echo $setting ?>" type="text" id="input_<?php echo $setting ?>" class="form-control" placeholder="<?php echo $setting ?>" required autofocus>
                         </div>
                     <?php } ?>
-                    <button type="button" class="btn btn-primary" onclick="test(); return false;">Generate Config</button>
+                    <button type="submit" class="btn btn-primary" id="generateConfigButton">Generate Config</button>
             </div>
         </form>
     </div>
     <div id="result" style="font-family: courier; border-color: black, border-style: dot-dot-dash"></div>
     <script src="dist/js/yap.min.js<?php isset($_REQUEST['JSDEBUG']) ? sprintf("?v=%s", time()) : "";?>"></script>
     <script type="text/javascript">
+        jQuery(".wizardForm").on("submit", function(event) {
+            event.preventDefault();
+            test();
+        });
+
         function test() {
             var bmltRootServer = jQuery("#input_bmlt_root_server").val();
             jQuery.getJSON(bmltRootServer + "/client_interface/jsonp/?switcher=GetServerInfo&callback=?", function(data) {
