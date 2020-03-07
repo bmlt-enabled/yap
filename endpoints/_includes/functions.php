@@ -1,6 +1,6 @@
 <?php
 if (!file_exists('../config.php')) {
-    header('Location: /admin/wizard.php');
+    header('Location: /admin/installer.php');
     exit();
 }
 if (isset($_GET["ysk"])) {
@@ -455,7 +455,7 @@ class UpgradeAdvisor
 
     public static function getStatus()
     {
-        foreach ($GLOBALS['settings'] as $setting) {
+        foreach ($GLOBALS['required_config_settings'] as $setting) {
             if (!self::isThere($setting)) {
                 return self::getState(false, "Missing required setting: " . $setting);
             }

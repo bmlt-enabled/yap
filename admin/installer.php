@@ -23,15 +23,14 @@ if (file_exists('../config.php')) {
             <div id="yap-logo">
                 <img src="dist/img/yap_logo.png" alt="Yap" width="310" height="100">
             </div>
-            <div id="no-auth-message"></div>
-            <div id="wizardTitle">Wizard</div>
-            <div id="wizardInstructions">Welcome to the Yap Wizard.  This tool was developed to help quickly construct your configuration with the basic settings.  You should refer to the documentation (<a target="_blank" href="https://yap.bmlt.app">https://yap.bmlt.app</a>) for adding additional settings after you have completed this process.
+            <div id="wizardTitle">Installer</div>
+            <div id="wizardInstructions">Welcome to the Yap Installer.  This tool was developed to help quickly construct your configuration with the basic settings.  You should refer to the documentation (<a target="_blank" href="https://yap.bmlt.app">https://yap.bmlt.app</a>) for adding additional settings after you have completed this process.
 
                 Once you have completed filling out all the fields and they are confirmed to be correct, you will copy the text in the box below and paste into a file at the root of your yap folder called <pre>config.php</pre>
 
                 Note: This wizard will not allow for upgrading from Yap 1.x, instead copy over your original configuration and refresh this page.</div>
             <div id="configuration">
-                <?php foreach ($GLOBALS['settings'] as $setting) { ?>
+                <?php foreach ($GLOBALS['required_config_settings'] as $setting) { ?>
                     <div class="input-group installerFieldSet">
                         <div class="input-group-prepend">
                             <span class="input-group-text">
@@ -54,16 +53,27 @@ if (file_exists('../config.php')) {
                     spinnerDialog(false, '', function() {
                         jQuery("#result").html(config);
                         $("#wizardResultModal").modal('show');
+                        setInterval(checkForConfigFile, 3000);
                     });
                 });
             });
         });
 
+        function checkForConfigFile() {
+            jQuery.getJSON("/upgrade-advisor.php?status-check", function(data) {
+                if (!data['status'] && data['message'] !== null) {
+                    setErrorMessage(data['message'])
+                } else {
+                    window.location.href = '/admin';
+                }
+            });
+        }
+
         function generateConfig(callback) {
             var bmltRootServer = jQuery("#input_bmlt_root_server").val();
             jQuery.getJSON(bmltRootServer + "/client_interface/jsonp/?switcher=GetServerInfo&callback=?", function (data) {
                 if (data == null) {
-                    setError("Root server is incorrect or unavailable.");
+                    setErrorMessage("Root server is incorrect or unavailable.");
                     return;
                 }
 
@@ -80,8 +90,8 @@ if (file_exists('../config.php')) {
             });
         }
 
-        function setError(message) {
-            jQuery("#no-auth-message").html(message);
+        function setErrorMessage(message) {
+            jQuery("#config-error-message").html(message);
         }
     </script>
     <div class="modal fade" id="wizardResultModal" tabindex="-1" role="dialog" aria-labelledby="wizardResultModal" aria-hidden="true">
@@ -91,9 +101,10 @@ if (file_exists('../config.php')) {
                     Config
                 </div>
                 <div class="modal-body">
-                    <div id="result" style="font-family: courier; font-size: 10px; border-color: black; border-style: dot-dot-dash"></div>
+                    <div id="result" style="font-family: courier; font-size: 10px;"></div>
                 </div>
                 <div class="modal-footer">
+                    <div id="config-error-message"></div>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
