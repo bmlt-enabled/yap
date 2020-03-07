@@ -1,7 +1,7 @@
 <?php
 header("Content-Type: application/json");
 if (!file_exists('../config.php') && isset($_REQUEST['status-check'])) {
-    echo json_encode(["status"=>false]);
+    echo json_encode(["status"=>false,"message"=>"no configuration found."]);
     exit();
 }
 try {
