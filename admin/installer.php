@@ -1,10 +1,10 @@
 <?php
 require_once __DIR__ . '/../endpoints/_includes/constants.php';
-require_once 'spinner_dialog.php';
 if (file_exists('../config.php')) {
     header('Location: /admin');
     exit();
 }
+require_once 'spinner_dialog.php';
 ?>
 <!doctype html>
 <html lang="en">
@@ -95,16 +95,16 @@ if (file_exists('../config.php')) {
         }
     </script>
     <div class="modal fade" id="wizardResultModal" tabindex="-1" role="dialog" aria-labelledby="wizardResultModal" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     Config
                 </div>
                 <div class="modal-body">
-                    <div id="result" style="font-family: courier; font-size: 10px;"></div>
+                    <div id="result" class="wizardResult"></div>
+                    <div id="config-error-message"></div>
                 </div>
                 <div class="modal-footer">
-                    <div id="config-error-message"></div>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>

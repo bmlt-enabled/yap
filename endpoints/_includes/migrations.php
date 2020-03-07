@@ -28,9 +28,9 @@ if (isset($GLOBALS['mysql_hostname'])) {
             $db->execute();
             $next_version++;
         }
+
+        $db->close();
     } catch (PDOException $e) {
         throw $e;
-    } finally {
-        $db->close();
     }
 }
