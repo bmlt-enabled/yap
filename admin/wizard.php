@@ -1,4 +1,6 @@
-<?php require_once __DIR__ . '/../endpoints/_includes/constants.php';
+<?php
+require_once __DIR__ . '/../endpoints/_includes/constants.php';
+require_once 'spinner_dialog.php';
 if (file_exists('../config.php')) {
     header('Location: /admin');
     exit();
@@ -29,27 +31,33 @@ if (file_exists('../config.php')) {
 
                 Note: This wizard will not allow for upgrading from Yap 1.x, instead copy over your original configuration and refresh this page.</div>
             <div id="configuration">
-                    <?php foreach ($GLOBALS['settings'] as $setting) { ?>
-                        <div class="installerFieldSet">
-                            <label for="input_<?php echo $setting ?>" class="sr-only"><?php echo $setting ?></label>
-                            <input name="<?php echo $setting ?>" type="text" id="input_<?php echo $setting ?>" class="form-control" placeholder="<?php echo $setting ?>" required autofocus>
-                        </div>
-                    <?php } ?>
-                    <button type="submit" class="btn btn-primary" id="generateConfigButton">Generate Config</button>
+                <?php foreach ($GLOBALS['settings'] as $setting) { ?>
+                    <div class="installerFieldSet">
+                        <label for="input_<?php echo $setting ?>" class="sr-only"><?php echo $setting ?></label>
+                        <input value="https://bmlt.sezf.org/main_server" name="<?php echo $setting ?>" type="text" id="input_<?php echo $setting ?>" class="form-control" placeholder="<?php echo $setting ?>" required autofocus>
+                    </div>
+                <?php } ?>
+                <button type="submit" class="btn btn-primary" id="generateConfigButton">Generate Config</button>
             </div>
         </form>
     </div>
-    <div id="result" style="font-family: courier; border-color: black, border-style: dot-dot-dash"></div>
     <script src="dist/js/yap.min.js<?php isset($_REQUEST['JSDEBUG']) ? sprintf("?v=%s", time()) : "";?>"></script>
     <script type="text/javascript">
         jQuery(".wizardForm").on("submit", function(event) {
             event.preventDefault();
-            test();
+            spinnerDialog(true, "Validating configuration", function() {
+                generateConfig(function(config) {
+                    spinnerDialog(false, '', function() {
+                        jQuery("#result").html(config);
+                        $("#wizardResultModal").modal('show');
+                    });
+                });
+            });
         });
 
-        function test() {
+        function generateConfig(callback) {
             var bmltRootServer = jQuery("#input_bmlt_root_server").val();
-            jQuery.getJSON(bmltRootServer + "/client_interface/jsonp/?switcher=GetServerInfo&callback=?", function(data) {
+            jQuery.getJSON(bmltRootServer + "/client_interface/jsonp/?switcher=GetServerInfo&callback=?", function (data) {
                 if (data == null) {
                     setError("Root server is incorrect or unavailable.");
                     return;
@@ -62,8 +70,9 @@ if (file_exists('../config.php')) {
                         var field = fields[i];
                         configHtml += "static $" + field.id.replace("input_", "") + " = \"" + field.value + "\";<br/>";
                     }
-                    jQuery("#result").html(configHtml);
                 }
+
+                callback(configHtml);
             });
         }
 
@@ -71,6 +80,21 @@ if (file_exists('../config.php')) {
             jQuery("#no-auth-message").html(message);
         }
     </script>
+    <div class="modal fade" id="wizardResultModal" tabindex="-1" role="dialog" aria-labelledby="wizardResultModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    Config
+                </div>
+                <div class="modal-body">
+                    <div id="result" style="font-family: courier; font-size: 10px; border-color: black; border-style: dot-dot-dash"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
 
