@@ -32,8 +32,12 @@ if (file_exists('../config.php')) {
                 Note: This wizard will not allow for upgrading from Yap 1.x, instead copy over your original configuration and refresh this page.</div>
             <div id="configuration">
                 <?php foreach ($GLOBALS['settings'] as $setting) { ?>
-                    <div class="installerFieldSet">
-                        <label for="input_<?php echo $setting ?>" class="sr-only"><?php echo $setting ?></label>
+                    <div class="input-group installerFieldSet">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <?php echo $setting ?>
+                            </span>
+                        </div>
                         <input value="https://bmlt.sezf.org/main_server" name="<?php echo $setting ?>" type="text" id="input_<?php echo $setting ?>" class="form-control" placeholder="<?php echo $setting ?>" required autofocus>
                     </div>
                 <?php } ?>
