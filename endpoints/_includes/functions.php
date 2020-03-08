@@ -1,6 +1,6 @@
 <?php
 if (!file_exists('../config.php')) {
-    header('Location: /admin/installer.php');
+    header(sprintf('Location: %s', $_SERVER['REQUEST_URI'] == '/admin/' ? 'installer.php' : 'admin/installer.php'), true, 302);
     exit();
 }
 if (isset($_GET["ysk"])) {
