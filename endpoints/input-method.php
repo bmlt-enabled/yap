@@ -49,8 +49,13 @@ if ($searchType == SearchType::VOLUNTEERS) {
         </Response>
         <?php
         exit();
-}
-?>
+} else if ($searchType == SearchType::CUSTOM_EXTENSIONS && count(setting('custom_extensions')) > 0) { ?>
+        <Response>
+        <Redirect method="GET">custom-ext.php</Redirect>
+        </Response>
+        <?php
+        exit();
+} ?>
 <Response>
     <Gather language="<?php echo setting('gather_language') ?>" input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=<?php echo $searchType?>"  method="GET">
         <?php

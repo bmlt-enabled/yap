@@ -16,6 +16,7 @@ static $settings_whitelist = [
     'call_routing_filter' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'config' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => true],
     'custom_css' => [ 'description' => '' , 'default' => 'td { font-size: 36px; }', 'overridable' => true, 'hidden' => false],
+    'custom_extensions' => ['description' => '', 'default' => [0 => ''], 'overridable' => true, 'hidden' => false],
     'custom_query' => ['description' => '', 'default' => '&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width={SETTING_MEETING_SEARCH_RADIUS}&weekdays={DAY}', 'overridable' => true, 'hidden' => false],
     'digit_map_search_type' => [ 'description' => '', 'default' => ['1' => SearchType::VOLUNTEERS, '2' => SearchType::MEETINGS, '3' => SearchType::JFT, '8' => SearchType::VOICEMAIL_PLAYBACK, '9' => SearchType::DIALBACK], 'overridable' => true, 'hidden' => false],
     'digit_map_location_search_method' => [ 'description' => '', 'default' => ['1' => LocationSearchMethod::VOICE, '2' => LocationSearchMethod::DTMF, '3' => SearchType::JFT], 'overridable' => true, 'hidden' => false],
@@ -103,6 +104,7 @@ class SearchType
     const VOLUNTEERS = 1;
     const MEETINGS = 2;
     const JFT = 3;
+    const CUSTOM_EXTENSIONS = 998;
     const VOICEMAIL_PLAYBACK = 999;
     const DIALBACK = 1000;
 }
