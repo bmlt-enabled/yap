@@ -37,7 +37,7 @@ require_once 'spinner_dialog.php';
                                 <?php echo $setting ?>
                             </span>
                         </div>
-                        <input value="https://bmlt.sezf.org/main_server" name="<?php echo $setting ?>" type="text" id="input_<?php echo $setting ?>" class="form-control" placeholder="<?php echo $setting ?>" required autofocus>
+                        <input value="" name="<?php echo $setting ?>" type="text" id="input_<?php echo $setting ?>" class="form-control" required autofocus>
                     </div>
                 <?php } ?>
                 <button type="submit" class="btn btn-primary" id="generateConfigButton">Generate Config</button>
@@ -46,6 +46,8 @@ require_once 'spinner_dialog.php';
     </div>
     <script src="dist/js/yap.min.js<?php isset($_REQUEST['JSDEBUG']) ? sprintf("?v=%s", time()) : "";?>"></script>
     <script type="text/javascript">
+        var checkForConfigFileInterval;
+
         jQuery(".wizardForm").on("submit", function(event) {
             event.preventDefault();
             spinnerDialog(true, "Validating configuration", function() {
@@ -53,14 +55,20 @@ require_once 'spinner_dialog.php';
                     spinnerDialog(false, '', function() {
                         jQuery("#result").html(config);
                         $("#wizardResultModal").modal('show');
-                        setInterval(checkForConfigFile, 3000);
+                        checkForConfigFileInterval = setInterval(checkForConfigFile, 3000);
                     });
                 });
             });
         });
 
+        jQuery(function() {
+            jQuery("#wizardResultModal").on('hidden.bs.modal', function() {
+                clearInterval(checkForConfigFileInterval);
+            });
+        });
+
         function checkForConfigFile() {
-            jQuery.getJSON("/upgrade-advisor.php?status-check", function(data) {
+            jQuery.getJSON("/upgrade-advisor.php?status-check", function (data) {
                 if (!data['status'] && data['message'] !== null) {
                     setErrorMessage(data['message'])
                 } else {
