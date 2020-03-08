@@ -1049,7 +1049,6 @@ function generateConfig(callback) {
         alert.html("Root server is incorrect or unavailable.");
         alert.show();
         alert.fadeOut(10000);
-        spinnerDialog(false);
         $("#save-volunteers").removeClass('disabled');
     });
 }
