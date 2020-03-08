@@ -21,7 +21,7 @@ jobs:
       - export ARTIFACT_FILENAME=yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}.zip
       - git archive --format=zip --output=${ARTIFACT_FILENAME} HEAD
       - echo ${TRAVIS_COMMIT} > build.txt
-      - make deploy
+      - DISABLE_NOTIFIER=true make deploy
       - zip -ur ${ARTIFACT_FILENAME} build.txt vendor admin/dist/*
       - mkdir artifacts/
       - mv ${ARTIFACT_FILENAME} artifacts/
@@ -43,7 +43,7 @@ jobs:
       before_deploy:
       - git archive --format=zip --output=yap-${TRAVIS_TAG}.zip ${TRAVIS_TAG}
       - echo ${TRAVIS_COMMIT} > build.txt
-      - make deploy
+      - DISABLE_NOTIFIER=true make deploy
       - zip -ur yap-${TRAVIS_TAG}.zip build.txt vendor admin/dist/*
       - curl -LO https://raw.githubusercontent.com/bmlt-enabled/release-notes-tool/master/release-notes.sh
       - chmod +x release-notes.sh
