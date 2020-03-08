@@ -1,5 +1,10 @@
 # Release Notes
 
+### 3.7.0 (UNRELEASED)
+* Introducing Yap installer [#373]
+* Added the ability to call in an listen to voicemail [#384]
+* Dropping support for Internet Explorer 11 [#389]
+
 ### 3.6.4 (February 4, 2020)
 * Fix for meeting playback being calculated as UTC timezone.
 
