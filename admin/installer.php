@@ -38,7 +38,7 @@ require_once 'spinner_dialog.php';
                                 <?php echo $setting ?>
                             </span>
                         </div>
-                        <input value="https://asdfasdfasf/maasdfasdf" name="<?php echo $setting ?>" type="text" id="input_<?php echo $setting ?>" class="form-control" required autofocus>
+                        <input value="" name="<?php echo $setting ?>" type="text" id="input_<?php echo $setting ?>" class="form-control" required>
                     </div>
                 <?php } ?>
                 <button type="submit" class="btn btn-primary" id="generateConfigButton">Generate Config</button>
@@ -48,68 +48,8 @@ require_once 'spinner_dialog.php';
     <script src="dist/js/yap.min.js<?php isset($_REQUEST['JSDEBUG']) ? sprintf("?v=%s", time()) : "";?>"></script>
     <script type="text/javascript">
         var checkForConfigFileInterval;
-
-        jQuery(".wizardForm").on("submit", function(event) {
-            event.preventDefault();
-            spinnerDialog(true, "Validating configuration", function() {
-                generateConfig(function(config) {
-                    spinnerDialog(false, '', function() {
-                        jQuery("#result").html(config);
-                        $("#wizardResultModal").modal('show');
-                        checkForConfigFileInterval = setInterval(checkForConfigFile, 3000);
-                    });
-                });
-            });
-        });
-
-        jQuery(function() {
-            jQuery("#wizardResultModal").on('hidden.bs.modal', function() {
-                clearInterval(checkForConfigFileInterval);
-            });
-        });
-
-        function checkForConfigFile() {
-            jQuery.getJSON("/upgrade-advisor.php?status-check", function (data) {
-                if (!data['status'] && data['message'] !== null) {
-                    setErrorMessage(data['message'])
-                } else {
-                    window.location.href = '/admin';
-                }
-            });
-        }
-
-        function generateConfig(callback) {
-            var bmltRootServer = jQuery("#input_bmlt_root_server").val();
-            jQuery.getJSON(bmltRootServer + "/client_interface/jsonp/?switcher=GetServerInfo&callback=?", function (data) {
-                if (data == null) {
-                    setErrorMessage("Root server is incorrect or unavailable.");
-                    return;
-                }
-
-                var configHtml = "<?php echo htmlspecialchars("<?php") ?><br/>";
-                if (parseFloat(data[0]['version']) >= parseFloat("2.14")) {
-                    var fields = jQuery('[id*="input_"]');
-                    for (var i = 0; i < fields.length; i++) {
-                        var field = fields[i];
-                        configHtml += "static $" + field.id.replace("input_", "") + " = \"" + field.value + "\";<br/>";
-                    }
-                }
-
-                callback(configHtml);
-            }).fail(function(error) {
-                spinnerDialog(false);
-                var alert = $("#wizardAlert");
-                alert.html("Root server is incorrect or unavailable.");
-                alert.show();
-                alert.fadeOut(10000);
-                spinnerDialog(false);
-                $("#save-volunteers").removeClass('disabled');
-            });
-        }
-
-        function setErrorMessage(message) {
-            jQuery("#config-error-message").html(message);
-        }
+        var configHtml = "<?php echo htmlspecialchars("<?php") ?><br/>";
+        initInstaller();
     </script>
     <div class="modal fade" id="wizardResultModal" tabindex="-1" role="dialog" aria-labelledby="wizardResultModal" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered" role="document">

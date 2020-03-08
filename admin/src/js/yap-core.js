@@ -1016,6 +1016,68 @@ function confirmGroup() {
     });
 }
 
+function checkForConfigFile() {
+    jQuery.getJSON("/upgrade-advisor.php?status-check", function (data) {
+        if (!data['status'] && data['message'] !== null) {
+            setErrorMessage(data['message'])
+        } else {
+            window.location.href = '/admin';
+        }
+    });
+}
+
+function generateConfig(callback) {
+    var bmltRootServer = jQuery("#input_bmlt_root_server").val();
+    jQuery.getJSON(bmltRootServer + "/client_interface/jsonp/?switcher=GetServerInfo&callback=?", function (data) {
+        if (data == null) {
+            setErrorMessage("Root server is incorrect or unavailable.");
+            return;
+        }
+
+        if (parseFloat(data[0]['version']) >= parseFloat("2.14")) {
+            var fields = jQuery('[id*="input_"]');
+            for (var i = 0; i < fields.length; i++) {
+                var field = fields[i];
+                configHtml += "static $" + field.id.replace("input_", "") + " = \"" + field.value + "\";<br/>";
+            }
+        }
+
+        callback(configHtml);
+    }).fail(function(error) {
+        spinnerDialog(false);
+        var alert = $("#wizardAlert");
+        alert.html("Root server is incorrect or unavailable.");
+        alert.show();
+        alert.fadeOut(10000);
+        spinnerDialog(false);
+        $("#save-volunteers").removeClass('disabled');
+    });
+}
+
+function setErrorMessage(message) {
+    jQuery("#config-error-message").html(message);
+}
+
+function initInstaller() {
+    jQuery(function() {
+        jQuery(".wizardForm").on("submit", function(event) {
+            event.preventDefault();
+            spinnerDialog(true, "Validating configuration", function() {
+                generateConfig(function(config) {
+                    spinnerDialog(false, '', function() {
+                        jQuery("#result").html(config);
+                        $("#wizardResultModal").modal('show');
+                        checkForConfigFileInterval = setInterval(checkForConfigFile, 3000);
+                    });
+                });
+            });
+        });
+        jQuery("#wizardResultModal").on('hidden.bs.modal', function() {
+            clearInterval(checkForConfigFileInterval);
+        });
+    });
+}
+
 function openUrl(e, id) {
     window.open($("#" + id).val());
     return false;
