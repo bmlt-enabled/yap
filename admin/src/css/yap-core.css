@@ -50,7 +50,7 @@ div#signin {
 
 #config-error-message {
     color:red;
-    font-size: 10px;
+    font-size: 14px;
 }
 
 .navbar {
@@ -266,6 +266,14 @@ div#signin {
 .wizardResult {
     font-family: Courier, serif;
     font-size: 14px;
+}
+.codeFormat {
+    color:red;
+    font-size: 14px;
+    background-color: lightgrey;
+    font-family: Courier, serif;
+    font-style: italic;
+    border: lightgrey solid 1px;
 }
 [data-theme="dark"] {
     background-color: #333;
