@@ -24,6 +24,7 @@ require_once 'spinner_dialog.php';
                 <img src="dist/img/yap_logo.png" alt="Yap" width="310" height="100">
             </div>
             <div id="wizardTitle">Installer</div>
+            <div id="wizardAlert" class="alert alert-danger" role="alert"></div>
             <div id="wizardInstructions">Welcome to the Yap Installer.  This tool was developed to help quickly construct your configuration with the basic settings.  You should refer to the documentation (<a target="_blank" href="https://yap.bmlt.app">https://yap.bmlt.app</a>) for adding additional settings after you have completed this process.
 
                 Once you have completed filling out all the fields and they are confirmed to be correct, you will copy the text in the box below and paste into a file at the root of your yap folder called <pre>config.php</pre>
@@ -37,7 +38,7 @@ require_once 'spinner_dialog.php';
                                 <?php echo $setting ?>
                             </span>
                         </div>
-                        <input value="" name="<?php echo $setting ?>" type="text" id="input_<?php echo $setting ?>" class="form-control" required autofocus>
+                        <input value="https://asdfasdfasf/maasdfasdf" name="<?php echo $setting ?>" type="text" id="input_<?php echo $setting ?>" class="form-control" required autofocus>
                     </div>
                 <?php } ?>
                 <button type="submit" class="btn btn-primary" id="generateConfigButton">Generate Config</button>
@@ -95,6 +96,14 @@ require_once 'spinner_dialog.php';
                 }
 
                 callback(configHtml);
+            }).fail(function(error) {
+                spinnerDialog(false);
+                var alert = $("#wizardAlert");
+                alert.html("Root server is incorrect or unavailable.");
+                alert.show();
+                alert.fadeOut(10000);
+                spinnerDialog(false);
+                $("#save-volunteers").removeClass('disabled');
             });
         }
 

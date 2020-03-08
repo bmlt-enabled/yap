@@ -275,6 +275,9 @@ div#signin {
     font-style: italic;
     border: lightgrey solid 1px;
 }
+#wizardAlert {
+    display: none;
+}
 [data-theme="dark"] {
     background-color: #333;
 }
