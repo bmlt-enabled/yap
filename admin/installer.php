@@ -98,10 +98,15 @@ require_once 'spinner_dialog.php';
         <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    Config
+                    Configuration
                 </div>
                 <div class="modal-body">
-                    <div id="result" class="wizardResult"></div>
+                    <div class="card bg-light mb-3">
+                        <div class="card-header">Copy and paste the below text into a file called <span class="codeFormat">config.php</span> at the root of your yap folder.  Please note any errors in red below.  If configured correctly, the page will navigate automatically to the login page.</div>
+                        <div class="card-body">
+                            <div id="result" class="card-text wizardResult"></div>
+                        </div>
+                    </div>
                     <div id="config-error-message"></div>
                 </div>
                 <div class="modal-footer">
