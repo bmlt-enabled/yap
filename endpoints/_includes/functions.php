@@ -1,9 +1,14 @@
 <?php
+if (!file_exists('../config.php')) {
+    header(sprintf('Location: %s', $_SERVER['REQUEST_URI'] == '/admin/' ? 'installer.php' : 'admin/installer.php'), true, 302);
+    exit();
+}
 if (isset($_GET["ysk"])) {
     session_id($_GET["ysk"]);
 }
 session_start();
 require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
+require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
@@ -426,20 +431,6 @@ class VolunteerRoutingHelpers
 class UpgradeAdvisor
 {
     private static $all_good = true;
-    private static $settings = [
-        'title',
-        'bmlt_root_server',
-        'google_maps_api_key',
-        'twilio_account_sid',
-        'twilio_auth_token',
-        'bmlt_username',
-        'bmlt_password',
-        'mysql_hostname',
-        'mysql_username',
-        'mysql_password',
-        'mysql_database'
-    ];
-
     private static $email_settings = [
         'smtp_host',
         'smtp_username',
@@ -466,7 +457,7 @@ class UpgradeAdvisor
 
     public static function getStatus()
     {
-        foreach (self::$settings as $setting) {
+        foreach ($GLOBALS['required_config_settings'] as $setting) {
             if (!self::isThere($setting)) {
                 return self::getState(false, "Missing required setting: " . $setting);
             }

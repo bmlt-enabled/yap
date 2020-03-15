@@ -3,6 +3,7 @@ cookie.txt
 .idea
 .DS_Store
 *_cookie.txt
+config.php
 config.*.php
 config_*.php
 test.php
