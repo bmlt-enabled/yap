@@ -7,7 +7,7 @@ require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . 
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-static $version  = "3.6.4";
+static $version  = "3.6.5";
 static $settings_whitelist = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
