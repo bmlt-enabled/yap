@@ -7,26 +7,27 @@ jobs:
   include:
     - stage: lint
       install:
-      - composer install --dev
+        - composer install --dev
       script:
-      - find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l
-      - vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=6 --standard=PSR2 --ignore=vendor --extensions=php --report=summary ./
-      - rm -rf vendor/
+        - find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l
+        - vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=6 --standard=PSR2 --ignore=vendor --extensions=php --report=summary ./
+        - rm -rf vendor/
     - stage: unstable
       before_install:
-      - export PATH=$PATH:$HOME/.local/bin
+        - export PATH=$PATH:$HOME/.local/bin
       install:
-      - composer install
+        - composer install
       before_deploy:
-      - export ARTIFACT_FILENAME=yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}.zip
-      - git archive --format=zip --output=${ARTIFACT_FILENAME} HEAD
-      - echo ${TRAVIS_COMMIT} > build.txt
-      - make deploy
-      - zip -ur ${ARTIFACT_FILENAME} build.txt vendor admin/dist/*
-      - mkdir artifacts/
-      - mv ${ARTIFACT_FILENAME} artifacts/
+        - export ARTIFACT_FILENAME=yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}.zip
+        - git archive --format=zip --output=${ARTIFACT_FILENAME} HEAD
+        - echo ${TRAVIS_COMMIT} > build.txt
+        - make deploy
+        - zip -ur ${ARTIFACT_FILENAME} build.txt vendor admin/dist/*
+        - mkdir artifacts/
+        - mv ${ARTIFACT_FILENAME} artifacts/
       deploy:
         - provider: s3
+          edge: true
           access_key_id: $AWS_ACCESS_KEY_ID
           secret_access_key: $AWS_SECRET_ACCESS_KEY
           bucket: archives.bmlt.app
@@ -37,16 +38,16 @@ jobs:
             all_branches: true
     - stage: stable
       install:
-      - rm -rf vendor/
-      - composer install --no-dev
+        - rm -rf vendor/
+        - composer install --no-dev
       before_deploy:
-      - git archive --format=zip --output=yap-${TRAVIS_TAG}.zip ${TRAVIS_TAG}
-      - echo ${TRAVIS_COMMIT} > build.txt
-      - make deploy
-      - zip -ur yap-${TRAVIS_TAG}.zip build.txt vendor admin/dist/*
-      - curl -LO https://raw.githubusercontent.com/bmlt-enabled/release-notes-tool/master/release-notes.sh
-      - chmod +x release-notes.sh
-      - ./release-notes.sh RELEASENOTES.md "###"
+        - git archive --format=zip --output=yap-${TRAVIS_TAG}.zip ${TRAVIS_TAG}
+        - echo ${TRAVIS_COMMIT} > build.txt
+        - make deploy
+        - zip -ur yap-${TRAVIS_TAG}.zip build.txt vendor admin/dist/*
+        - curl -LO https://raw.githubusercontent.com/bmlt-enabled/release-notes-tool/master/release-notes.sh
+        - chmod +x release-notes.sh
+        - ./release-notes.sh RELEASENOTES.md "###"
       deploy:
         - provider: releases
           edge: true
@@ -76,6 +77,6 @@ stages:
 notifications:
   slack:
     rooms:
-    - secure: ZslruaPwvC9Eqr1AFPl/p82UyH0oMy9HBWKROF+z7E/N/nlItGjojAkTBbRRAJIzi58YOeJDVbmTjHvI2MYYeYWX1zawkcjVfJa4RDmeqTmj937hBQW/bKEVN3WqNnL0OewDFVXENETzWs3I63e7par7SO7/SR5gJrMKLtK9fTyGi74hgqVWyQSCLNBgZBMPkNmoZ9sfSCgijPxkXYMNJKTgxWYXvAMevWyfQXv+SoBCQ1hh1hsM4LgT5he5id54iEZY7yVEQZkzsZ0HRDnD+JcquJTuaN2B+PNaHL4RtxhWdNjvnkrHJoB0/F3OKuGs0++6T/25jCow0svfrOk9/dDKlH0R1+deCfH0AMj2QM022Ww10iZHDZffwBkUpFayXArCbmUsEdo0IT8Ra1EUx+7E+0+3f4ihlJez6/wwkWfkKfVwNfkhmu4SnwRzf9r0Ryex/xBngDcKerkQ6xsWr3lc6+wQDWZV60224716nMoFZdZIDAvKc+/fNAIc/PtSvZixawEERLV9XyglBMUwKFqyaQtyw1KENxGKbobP9HBkd5cVzGD29Eu7z3xQyN256/NacGu7vyUawyfh0czjkcvHkrrXbmOljmQOwDf1KB/cWFdASO3VFSKfTPE4zgBzjzgN9iEnKslwfHw/z8FRYuCBdXasST+ufln4/j5u3wE=
+      - secure: ZslruaPwvC9Eqr1AFPl/p82UyH0oMy9HBWKROF+z7E/N/nlItGjojAkTBbRRAJIzi58YOeJDVbmTjHvI2MYYeYWX1zawkcjVfJa4RDmeqTmj937hBQW/bKEVN3WqNnL0OewDFVXENETzWs3I63e7par7SO7/SR5gJrMKLtK9fTyGi74hgqVWyQSCLNBgZBMPkNmoZ9sfSCgijPxkXYMNJKTgxWYXvAMevWyfQXv+SoBCQ1hh1hsM4LgT5he5id54iEZY7yVEQZkzsZ0HRDnD+JcquJTuaN2B+PNaHL4RtxhWdNjvnkrHJoB0/F3OKuGs0++6T/25jCow0svfrOk9/dDKlH0R1+deCfH0AMj2QM022Ww10iZHDZffwBkUpFayXArCbmUsEdo0IT8Ra1EUx+7E+0+3f4ihlJez6/wwkWfkKfVwNfkhmu4SnwRzf9r0Ryex/xBngDcKerkQ6xsWr3lc6+wQDWZV60224716nMoFZdZIDAvKc+/fNAIc/PtSvZixawEERLV9XyglBMUwKFqyaQtyw1KENxGKbobP9HBkd5cVzGD29Eu7z3xQyN256/NacGu7vyUawyfh0czjkcvHkrrXbmOljmQOwDf1KB/cWFdASO3VFSKfTPE4zgBzjzgN9iEnKslwfHw/z8FRYuCBdXasST+ufln4/j5u3wE=
     on_success: change
   email: false
