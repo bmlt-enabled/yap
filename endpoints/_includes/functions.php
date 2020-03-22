@@ -7,7 +7,7 @@ require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . 
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-static $version  = "3.6.4";
+static $version  = "3.6.5";
 static $settings_whitelist = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -58,6 +58,7 @@ static $settings_whitelist = [
     'tomato_url' => [ 'description' => '' , 'default' => 'https://tomato.bmltenabled.org/main_server', 'overridable' => true, 'hidden' => false],
     'twilio_account_sid' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
     'twilio_auth_token' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
+    'virtual' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'voice' => [ 'description' => '', 'default' => 'Polly.Kendra', 'overridable' => true, 'hidden' => false],
     'voicemail_playback_grace_hours' => [ 'description' => '', 'default' => 48, 'overridable' => true, 'hidden' => false],
     'word_language' => [ 'description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false]
@@ -884,7 +885,7 @@ function getFormatString($formats, $ignore = false)
 
 function meetingSearch($meeting_results, $latitude, $longitude, $day)
 {
-    $bmlt_base_url = sprintf('%s/client_interface/json/?switcher=GetSearchResults&data_field_key=meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km', getBMLTRootServer());
+    $bmlt_base_url = sprintf('%s/client_interface/json/?switcher=GetSearchResults&data_field_key=meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km,comments', getBMLTRootServer());
     $bmlt_search_endpoint = setting('custom_query');
     if (has_setting('ignore_formats')) {
         $bmlt_search_endpoint .= getFormatString(setting('ignore_formats'), true);
@@ -919,11 +920,20 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day)
         return $meeting_results;
     }
 
+    if (json_encode(setting("virtual"))) {
+        date_default_timezone_set('UTC');
+    }
+
     $filteredList = $meeting_results->filteredList;
     if ($search_response !== "{}") {
         for ($i = 0; $i < count($search_results); $i++) {
             if (strpos($bmlt_search_endpoint, "{DAY}")) {
-                if (!isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time)) {
+                $past_time = isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time);
+                if (!$past_time['isIt']) {
+                    if (json_encode("virtual")) {
+                        $search_results[$i]->start_time = $past_time['nextMeetingTime']->modify("15 minutes")->format("h:i A");
+                    }
+
                     array_push($filteredList, $search_results[$i]);
                 }
             } else {
@@ -940,7 +950,7 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day)
 
 function getResultsString($filtered_list)
 {
-    return array(
+    $results_string = array(
         str_replace("&", "&amp;", $filtered_list->meeting_name),
         str_replace("&", "&amp;", $GLOBALS['days_of_the_week'][$filtered_list->weekday_tinyint]
                                         . ' ' . (new DateTime($filtered_list->start_time))->format('g:i A')),
@@ -948,6 +958,12 @@ function getResultsString($filtered_list)
         str_replace("&", "&amp;", $filtered_list->location_street
                                         . ($filtered_list->location_municipality !== "" ? ", " . $filtered_list->location_municipality : "")
                                         . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")));
+
+    if (json_encode(setting("virtual"))) {
+        $results_string[3] = str_replace("&", "&amp;", str_replace("https://", "", str_replace("tel:", "", $filtered_list->comments)));
+    }
+
+    return $results_string;
 }
 
 function getServiceBodyCoverage($latitude, $longitude)
@@ -992,7 +1008,13 @@ function setTimeZoneForLatitudeAndLongitude($latitude, $longitude)
 function getMeetings($latitude, $longitude, $results_count, $today = null, $tomorrow = null)
 {
     if ($latitude != null & $longitude != null) {
-        setTimeZoneForLatitudeAndLongitude($latitude, $longitude);
+        if (json_encode('virtual')) {
+            $timeZoneForCoordinates = getTimeZoneForCoordinates($latitude, $longitude);
+            $utc_offset = ($timeZoneForCoordinates->rawOffset+$timeZoneForCoordinates->dstOffset) / 60;
+            $GLOBALS['grace_minutes'] = intval(setting('grace_minutes')) + abs($utc_offset);
+        } else {
+            setTimeZoneForLatitudeAndLongitude($latitude, $longitude);
+        }
         $graced_date_time = (new DateTime())->modify(sprintf("-%s minutes", setting('grace_minutes')));
         if ($today == null) {
             $today = $graced_date_time->format("w") + 1;
@@ -1035,8 +1057,9 @@ function getMeetings($latitude, $longitude, $results_count, $today = null, $tomo
 function isItPastTime($meeting_day, $meeting_time)
 {
     $next_meeting_time = getNextMeetingInstance($meeting_day, $meeting_time);
-    $time_zone_time = new DateTime();
-    return $next_meeting_time <= $time_zone_time;
+    $time_zone_time = (new DateTime())
+        ->modify(sprintf("-%s minutes", setting('grace_minutes')));
+    return ['isIt' => $next_meeting_time <= $time_zone_time, 'nextMeetingTime' => $next_meeting_time];
 }
 
 function getNextMeetingInstance($meeting_day, $meeting_time)
@@ -1045,7 +1068,7 @@ function getNextMeetingInstance($meeting_day, $meeting_time)
         ->modify(sprintf("-%s minutes", setting('grace_minutes')))
         ->modify($GLOBALS['date_calculations_map'][$meeting_day])->format("Y-m-d");
     $mod_meeting_datetime = (new DateTime($mod_meeting_day . " " . $meeting_time))
-        ->modify(sprintf("+%s minutes", setting('grace_minutes')));
+        ->modify(sprintf("-%s minutes", setting('grace_minutes')));
     return $mod_meeting_datetime;
 }
 
