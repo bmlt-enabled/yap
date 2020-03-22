@@ -960,9 +960,7 @@ function getResultsString($filtered_list)
                                         . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")));
 
     if (json_encode(setting("virtual"))) {
-        $results_string[3] = str_replace("&", "&amp;",
-            str_replace("https://", "",
-                str_replace("tel:", "", $filtered_list->comments)));
+        $results_string[3] = str_replace("&", "&amp;", str_replace("https://", "", str_replace("tel:", "", $filtered_list->comments)));
     }
 
     return $results_string;
