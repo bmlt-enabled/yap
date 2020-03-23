@@ -50,6 +50,7 @@ static $settings_whitelist = [
     'sms_helpline_keyword' => ['description' => '', 'default' => 'talk', 'overridable' => true, 'hidden' => false],
     'sms_summary_page' => ['description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'speech_gathering' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
+    'time_format' => ['description' => '', 'default' => 'g:i A', 'overridable' => true, 'hidden' => false],
     'title' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'toll_province_bias' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => false],
     'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -924,6 +925,7 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day)
 
     $filteredList = $meeting_results->filteredList;
     if ($search_response !== "{}") {
+        $tz = new DateTimeZone(getTimeZoneForCoordinates($latitude, $longitude)->timeZoneId);
         for ($i = 0; $i < count($search_results); $i++) {
             if (strpos($bmlt_search_endpoint, "{DAY}")) {
                 $past_time = isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time);
@@ -931,7 +933,7 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day)
                     if (setting("virtual")) {
                         $nextMeetingTime = $past_time['nextMeetingTime']->modify("15 minutes");
                         $search_results[$i]->weekday_tinyint = $nextMeetingTime->format("N") + 1;
-                        $search_results[$i]->start_time = $nextMeetingTime->format("h:i A");
+                        $search_results[$i]->start_time = date_timezone_set($nextMeetingTime, $tz)->format("h:i A T");
                     }
 
                     array_push($filteredList, $search_results[$i]);
@@ -953,14 +955,16 @@ function getResultsString($filtered_list)
     $results_string = array(
         str_replace("&", "&amp;", $filtered_list->meeting_name),
         str_replace("&", "&amp;", $GLOBALS['days_of_the_week'][$filtered_list->weekday_tinyint]
-                                        . ' ' . (new DateTime($filtered_list->start_time))->format('g:i A')),
+                                        . ' ' . (new DateTime($filtered_list->start_time))->format(setting('time_format'))),
         str_replace("&", "&amp;", $filtered_list->location_text),
         str_replace("&", "&amp;", $filtered_list->location_street
                                         . ($filtered_list->location_municipality !== "" ? ", " . $filtered_list->location_municipality : "")
                                         . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")));
 
-    if (setting("virtual")) {
+    if (setting("virtual") && !isset($_GET['nocleanlink'])) {
         $results_string[3] = str_replace("&", "&amp;", str_replace("https://", "", str_replace("tel:", "", $filtered_list->comments)));
+    } else if (setting("virtual") && isset($_GET['nocleanlink'])) {
+        $results_string[3] = str_replace("&", "&amp;", $filtered_list->comments);
     }
 
     return $results_string;
