@@ -918,7 +918,7 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day)
         return $meeting_results;
     }
 
-    if (json_encode(setting("virtual"))) {
+    if (setting("virtual")) {
         date_default_timezone_set('UTC');
     }
 
@@ -928,7 +928,8 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day)
             if (strpos($bmlt_search_endpoint, "{DAY}")) {
                 $past_time = isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time);
                 if (!$past_time['isIt']) {
-                    if (json_encode("virtual")) {
+                    if (setting("virtual")) {
+                        $search_results[$i]->weekday_tinyint = $past_time['nextMeetingTime']->modify("15 minutes")->format("N") + 1;
                         $search_results[$i]->start_time = $past_time['nextMeetingTime']->modify("15 minutes")->format("h:i A");
                     }
 
@@ -957,7 +958,7 @@ function getResultsString($filtered_list)
                                         . ($filtered_list->location_municipality !== "" ? ", " . $filtered_list->location_municipality : "")
                                         . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")));
 
-    if (json_encode(setting("virtual"))) {
+    if (setting("virtual")) {
         $results_string[3] = str_replace("&", "&amp;", str_replace("https://", "", str_replace("tel:", "", $filtered_list->comments)));
     }
 
@@ -1006,7 +1007,7 @@ function setTimeZoneForLatitudeAndLongitude($latitude, $longitude)
 function getMeetings($latitude, $longitude, $results_count, $today = null, $tomorrow = null)
 {
     if ($latitude != null & $longitude != null) {
-        if (json_encode('virtual')) {
+        if (setting("virtual")) {
             $timeZoneForCoordinates = getTimeZoneForCoordinates($latitude, $longitude);
             $utc_offset = ($timeZoneForCoordinates->rawOffset+$timeZoneForCoordinates->dstOffset) / 60;
             $GLOBALS['grace_minutes'] = intval(setting('grace_minutes')) + abs($utc_offset);
