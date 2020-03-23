@@ -22,7 +22,7 @@ if ($searchType == SearchType::VOLUNTEERS) {
 
     $searchDescription = word('someone_to_talk_to');
 } else if ($searchType == SearchType::MEETINGS) {
-    if (!strpos(setting('custom_query'), '{LATITUDE}') || !strpos(setting('custom_query'), '{LONGITUDE}')) { ?>
+    if (!setting("virtual") && (!strpos(setting('custom_query'), '{LATITUDE}') || !strpos(setting('custom_query'), '{LONGITUDE}'))) { ?>
             <Response>
                 <Redirect method="GET">meeting-search.php?Called=<?php echo $_REQUEST["Called"]; ?></Redirect>
             </Response>
