@@ -963,7 +963,7 @@ function getResultsString($filtered_list)
 
     if (setting("virtual") && !isset($_GET['nocleanlink'])) {
         $results_string[3] = str_replace("&", "&amp;", str_replace("https://", "", str_replace("tel:", "", $filtered_list->comments)));
-    } else if (setting("virtual") && isset($_GET['nocleanlink'])){
+    } else if (setting("virtual") && isset($_GET['nocleanlink'])) {
         $results_string[3] = str_replace("&", "&amp;", $filtered_list->comments);
     }
 
