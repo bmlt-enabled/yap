@@ -929,6 +929,7 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day)
                 $past_time = isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time);
                 if (!$past_time['isIt']) {
                     if (setting("virtual")) {
+                        $search_results[$i]->weekday_tinyint = $past_time['nextMeetingTime']->modify("15 minutes")->format("N") + 1;
                         $search_results[$i]->start_time = $past_time['nextMeetingTime']->modify("15 minutes")->format("h:i A");
                     }
 
