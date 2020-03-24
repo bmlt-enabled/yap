@@ -46,6 +46,7 @@ static $settings_whitelist = [
     'service_body_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'service_body_config_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'sms_combine' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_helpline_keyword' => ['description' => '', 'default' => 'talk', 'overridable' => true, 'hidden' => false],
     'sms_summary_page' => ['description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
@@ -962,9 +963,7 @@ function getResultsString($filtered_list)
                                         . ($filtered_list->location_municipality !== "" ? ", " . $filtered_list->location_municipality : "")
                                         . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")));
 
-    if (setting("virtual") && !isset($_GET['nocleanlink'])) {
-        $results_string[3] = str_replace("&", "&amp;", str_replace("https://", "", str_replace("tel:", "", $filtered_list->comments)));
-    } else if (setting("virtual") && isset($_GET['nocleanlink'])) {
+    if (setting("virtual")) {
         $results_string[3] = str_replace("&", "&amp;", $filtered_list->comments);
     }
 

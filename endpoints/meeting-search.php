@@ -52,7 +52,8 @@ function sendSms($message)
 ?>
 <Response>
 <?php
-if (!isset($_REQUEST["SmsSid"])) {
+$isFromSmsGateway = isset($_REQUEST["SmsSid"]);
+if (!$isFromSmsGateway) {
     if ($meeting_results->originalListCount == 0) {
         echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . word('no_results_found') . "... " . word('you_might_have_invalid_entry') . "... " . word('try_again') . "</Say><Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
     } elseif (count($filtered_list) == 0) {
@@ -72,7 +73,7 @@ if (!isset($_REQUEST["SmsSid"])) {
 for ($i = 0; $i < count($filtered_list); $i++) {
     $results = getResultsString($filtered_list[$i]);
 
-    if (!isset($_REQUEST["SmsSid"])) {
+    if (!$isFromSmsGateway) {
         echo "<Pause length=\"1\"/>";
         echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . word('number') . " " . ($results_counter + 1) . "</Say>";
         echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results[0] . "</Say>";
@@ -109,7 +110,7 @@ if (has_setting('sms_summary_page') && json_decode(setting('sms_summary_page')))
 
     $message = sprintf("Meeting Results, click here: %s/msr/%s/%s", $webhook_url, $latitude, $longitude);
 
-    if (json_decode(setting("sms_ask")) && !isset($_REQUEST["SmsSid"])) {
+    if (json_decode(setting("sms_ask")) && !$isFromSmsGateway) {
         array_push($sms_messages, $message);
     } else {
         sendSms($message);
@@ -133,7 +134,7 @@ if (has_setting('sms_summary_page') && json_decode(setting('sms_summary_page')))
             $message .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude;
         }
 
-        if (json_decode(setting("sms_ask")) && !isset($_REQUEST["SmsSid"])) {
+        if (json_decode(setting("sms_combine")) || (json_decode(setting("sms_ask")) && !$isFromSmsGateway)) {
             array_push($sms_messages, $message);
         } else {
             sendSms($message);
@@ -144,10 +145,14 @@ if (has_setting('sms_summary_page') && json_decode(setting('sms_summary_page')))
             break;
         }
     }
+
+    if (json_decode(setting("sms_combine")) && $isFromSmsGateway) {
+        sendSms(implode("\n\n", $sms_messages));
+    }
 }
 
     // Do not handle for the SMS gateway
-if (!isset($_REQUEST["SmsSid"]) && count($filtered_list) > 0) {
+if (!$isFromSmsGateway && count($filtered_list) > 0) {
     echo "<Pause length=\"2\"/>";
     if (count($sms_messages) > 0) { ?>
             <Gather numDigits="1" timeout="10" speechTimeout="auto" input="<?php echo getInputType() ?>"
