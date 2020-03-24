@@ -931,7 +931,7 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day)
                 $past_time = isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time);
                 if (!$past_time['isIt']) {
                     if (setting("virtual")) {
-                        $nextMeetingTime = $past_time['nextMeetingTime']->modify("15 minutes");
+                        $nextMeetingTime = $past_time['nextMeetingTime']->modify(sprintf("-%s minutes", setting("grace_minutes")));
                         $search_results[$i]->weekday_tinyint = $nextMeetingTime->format("N") + 1;
                         $timezone_abbr = (new DateTime(null, $tz))->format("T");
                         $search_results[$i]->start_time = $nextMeetingTime->format("h:i A") . " " . $timezone_abbr;
@@ -1016,11 +1016,14 @@ function getMeetings($latitude, $longitude, $results_count, $today = null, $tomo
         if (setting("virtual")) {
             $timeZoneForCoordinates = getTimeZoneForCoordinates($latitude, $longitude);
             $utc_offset = ($timeZoneForCoordinates->rawOffset+$timeZoneForCoordinates->dstOffset) / 60;
-            $GLOBALS['grace_minutes'] = intval(setting('grace_minutes')) + abs($utc_offset);
+            $GLOBALS['utc_offset'] = $utc_offset;
         } else {
+            $GLOBALS['utc_offset'] = 0;
             setTimeZoneForLatitudeAndLongitude($latitude, $longitude);
         }
-        $graced_date_time = (new DateTime())->modify(sprintf("-%s minutes", setting('grace_minutes')));
+        $graced_date_time = (new DateTime())
+            ->modify(sprintf("-%s minutes", setting('grace_minutes')))
+            ->modify(sprintf("%s minutes", setting('utc_offset')));
         if ($today == null) {
             $today = $graced_date_time->format("w") + 1;
         }
@@ -1063,7 +1066,7 @@ function isItPastTime($meeting_day, $meeting_time)
 {
     $next_meeting_time = getNextMeetingInstance($meeting_day, $meeting_time);
     $time_zone_time = (new DateTime())
-        ->modify(sprintf("-%s minutes", setting('grace_minutes')));
+        ->modify(sprintf("%s minutes", setting('utc_offset')));
     return ['isIt' => $next_meeting_time <= $time_zone_time, 'nextMeetingTime' => $next_meeting_time];
 }
 
@@ -1071,9 +1074,11 @@ function getNextMeetingInstance($meeting_day, $meeting_time)
 {
     $mod_meeting_day = (new DateTime())
         ->modify(sprintf("-%s minutes", setting('grace_minutes')))
+        ->modify(sprintf("%s minutes", setting('utc_offset')))
         ->modify($GLOBALS['date_calculations_map'][$meeting_day])->format("Y-m-d");
     $mod_meeting_datetime = (new DateTime($mod_meeting_day . " " . $meeting_time))
-        ->modify(sprintf("-%s minutes", setting('grace_minutes')));
+        ->modify(sprintf("+%s minutes", setting('grace_minutes')))
+        ->modify(sprintf("%s minutes", setting('utc_offset')));
     return $mod_meeting_datetime;
 }
 
