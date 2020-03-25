@@ -146,7 +146,7 @@ if (has_setting('sms_summary_page') && json_decode(setting('sms_summary_page')))
         }
     }
 
-    if (json_decode(setting("sms_combine")) && $isFromSmsGateway) {
+    if (json_decode(setting("sms_combine")) && !json_decode(setting("sms_ask"))) {
         sendSms(implode("\n\n", $sms_messages));
     }
 }
