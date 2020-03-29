@@ -3,6 +3,7 @@
 ### 3.7.0 (UNRELEASED)
 * Introducing Yap installer. [#373]
 * Added custom extensions feature that allows for setting up arbitrary call forwards and/or prompt playbacks. (https://github.com/bmlt-enabled/yap/wiki/Custom-Extensions) [#355]
+* Added a feature to combine SMS messages into a single one.
 * Added the ability to call in and listen to voicemail messages. [#384]
 * Dropping support for Internet Explorer 11. [#389]
 
