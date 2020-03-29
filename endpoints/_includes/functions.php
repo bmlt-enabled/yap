@@ -933,7 +933,7 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day)
                 if (!$past_time['isIt']) {
                     if (setting("virtual")) {
                         $nextMeetingTime = $past_time['nextMeetingTime']->modify(sprintf("-%s minutes", setting("grace_minutes")));
-                        $search_results[$i]->weekday_tinyint = $nextMeetingTime->format("N") + 1;
+                        $search_results[$i]->weekday_tinyint = $nextMeetingTime->format("N") + 1 > 7 ? 1 : $nextMeetingTime->format("N") + 1;
                         $timezone_abbr = (new DateTime(null, $tz))->format("T");
                         $search_results[$i]->start_time = $nextMeetingTime->format("h:i A") . " " . $timezone_abbr;
                     }
