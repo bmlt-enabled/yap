@@ -57,6 +57,7 @@ static $settings_whitelist = [
     'sms_helpline_keyword' => ['description' => '', 'default' => 'talk', 'overridable' => true, 'hidden' => false],
     'sms_summary_page' => ['description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'speech_gathering' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
+    'time_format' => ['description' => '', 'default' => 'g:i A', 'overridable' => true, 'hidden' => false],
     'title' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'toll_province_bias' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => false],
     'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -937,7 +938,7 @@ function getResultsString($filtered_list)
     return array(
         str_replace("&", "&amp;", $filtered_list->meeting_name),
         str_replace("&", "&amp;", $GLOBALS['days_of_the_week'][$filtered_list->weekday_tinyint]
-                                        . ' ' . (new DateTime($filtered_list->start_time))->format('g:i A')),
+                                        . ' ' . (new DateTime($filtered_list->start_time))->format(setting('time_format'))),
         str_replace("&", "&amp;", $filtered_list->location_text),
         str_replace("&", "&amp;", $filtered_list->location_street
                                         . ($filtered_list->location_municipality !== "" ? ", " . $filtered_list->location_municipality : "")
