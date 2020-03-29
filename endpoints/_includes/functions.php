@@ -51,6 +51,7 @@ static $settings_whitelist = [
     'sms_helpline_keyword' => ['description' => '', 'default' => 'talk', 'overridable' => true, 'hidden' => false],
     'sms_summary_page' => ['description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'speech_gathering' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
+    'suppress_voice_results' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'time_format' => ['description' => '', 'default' => 'g:i A', 'overridable' => true, 'hidden' => false],
     'title' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'toll_province_bias' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => false],
