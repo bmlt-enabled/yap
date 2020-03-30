@@ -7,6 +7,10 @@ if ($_SERVER['REQUEST_URI'] == "/admin") {
 $state = UpgradeAdvisor::getState();
 ?>
 <script type="text/javascript">
+    if (!!window.MSInputMethodContext && !!document.documentMode) {
+        document.write("<div style='text-align:center;'>Internet Explorer 11 is not supported.</div>");
+    }
+
     function onAuthenticate() {
         $("#authenticateButton").attr("disabled", true);
         $("#auth").submit();

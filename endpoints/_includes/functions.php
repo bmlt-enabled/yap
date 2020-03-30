@@ -1,13 +1,18 @@
 <?php
+if (!file_exists('../config.php')) {
+    header(sprintf('Location: %s', $_SERVER['REQUEST_URI'] == '/admin/' ? 'installer.php' : 'admin/installer.php'), true, 302);
+    exit();
+}
 if (isset($_GET["ysk"])) {
     session_id($_GET["ysk"]);
 }
 session_start();
 require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
+require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-static $version  = "3.6.4";
+static $version  = "3.7.0";
 static $settings_whitelist = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -16,6 +21,7 @@ static $settings_whitelist = [
     'call_routing_filter' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'config' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => true],
     'custom_css' => [ 'description' => '' , 'default' => 'td { font-size: 36px; }', 'overridable' => true, 'hidden' => false],
+    'custom_extensions' => ['description' => '', 'default' => [0 => ''], 'overridable' => true, 'hidden' => false],
     'custom_query' => ['description' => '', 'default' => '&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width={SETTING_MEETING_SEARCH_RADIUS}&weekdays={DAY}', 'overridable' => true, 'hidden' => false],
     'digit_map_search_type' => [ 'description' => '', 'default' => ['1' => SearchType::VOLUNTEERS, '2' => SearchType::MEETINGS, '3' => SearchType::JFT, '8' => SearchType::VOICEMAIL_PLAYBACK, '9' => SearchType::DIALBACK], 'overridable' => true, 'hidden' => false],
     'digit_map_location_search_method' => [ 'description' => '', 'default' => ['1' => LocationSearchMethod::VOICE, '2' => LocationSearchMethod::DTMF, '3' => SearchType::JFT], 'overridable' => true, 'hidden' => false],
@@ -47,9 +53,11 @@ static $settings_whitelist = [
     'service_body_config_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'sms_combine' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_helpline_keyword' => ['description' => '', 'default' => 'talk', 'overridable' => true, 'hidden' => false],
     'sms_summary_page' => ['description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'speech_gathering' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
+    'time_format' => ['description' => '', 'default' => 'g:i A', 'overridable' => true, 'hidden' => false],
     'title' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'toll_province_bias' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => false],
     'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -103,6 +111,7 @@ class SearchType
     const VOLUNTEERS = 1;
     const MEETINGS = 2;
     const JFT = 3;
+    const CUSTOM_EXTENSIONS = 998;
     const VOICEMAIL_PLAYBACK = 999;
     const DIALBACK = 1000;
 }
@@ -424,20 +433,6 @@ class VolunteerRoutingHelpers
 class UpgradeAdvisor
 {
     private static $all_good = true;
-    private static $settings = [
-        'title',
-        'bmlt_root_server',
-        'google_maps_api_key',
-        'twilio_account_sid',
-        'twilio_auth_token',
-        'bmlt_username',
-        'bmlt_password',
-        'mysql_hostname',
-        'mysql_username',
-        'mysql_password',
-        'mysql_database'
-    ];
-
     private static $email_settings = [
         'smtp_host',
         'smtp_username',
@@ -464,7 +459,7 @@ class UpgradeAdvisor
 
     public static function getStatus()
     {
-        foreach (self::$settings as $setting) {
+        foreach ($GLOBALS['required_config_settings'] as $setting) {
             if (!self::isThere($setting)) {
                 return self::getState(false, "Missing required setting: " . $setting);
             }
@@ -943,7 +938,7 @@ function getResultsString($filtered_list)
     return array(
         str_replace("&", "&amp;", $filtered_list->meeting_name),
         str_replace("&", "&amp;", $GLOBALS['days_of_the_week'][$filtered_list->weekday_tinyint]
-                                        . ' ' . (new DateTime($filtered_list->start_time))->format('g:i A')),
+                                        . ' ' . (new DateTime($filtered_list->start_time))->format(setting('time_format'))),
         str_replace("&", "&amp;", $filtered_list->location_text),
         str_replace("&", "&amp;", $filtered_list->location_street
                                         . ($filtered_list->location_municipality !== "" ? ", " . $filtered_list->location_municipality : "")

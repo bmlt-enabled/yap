@@ -1,7 +1,7 @@
 <?php require_once 'nav.php';?>
 <link rel="stylesheet" href="dist/css/yap-reports.min.css">
 <div class="container">
-    <h3><?php
+    <h3 class="voicemail-title"><?php
         $service_body = getServiceBody($_REQUEST['service_body_id']);
         echo sprintf("%s for %s", word('voicemail'), $service_body->name) ;?>
     </h3>

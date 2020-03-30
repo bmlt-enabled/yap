@@ -3,9 +3,10 @@ const concat = require('gulp-concat');
 const minify = require('gulp-minify');
 const cleanCSS = require('gulp-clean-css');
 const rename = require('gulp-rename');
-const wrap = require('gulp-wrap');
-const declare = require('gulp-declare');
 const notify = require('gulp-notify');
+const less = require('gulp-less');
+const merge = require('merge-stream');
+const order = require('gulp-order');
 
 let jsCoreFiles = [
     'node_modules/jquery/dist/jquery.js',
@@ -48,9 +49,12 @@ let cssReportsFiles = [
     'node_modules/leaflet-fullscreen/dist/leaflet.fullscreen.css',
 ];
 
+let lessCoreFiles = [
+    'admin/src/css/yap-core.less',
+];
+
 let cssCoreFiles = [
     'admin/src/css/spacelab.bootstrap.css',
-    'admin/src/css/yap-core.css',
 ];
 
 let distJsDir = 'admin/dist/js';
@@ -96,7 +100,18 @@ task('jsReports', () => {
 });
 
 task('cssCore', () => {
-    return src(cssCoreFiles)
+    let lessStream =  src(lessCoreFiles)
+        .pipe(less())
+        .pipe(concat('less-files.less'));
+
+    let cssStream = src(cssCoreFiles)
+        .pipe(concat('css-files.css'));
+
+    return mergedStream = merge(cssStream, lessStream)
+        .pipe(order([
+            'css-files.css',
+            'less-files.less',
+        ]))
         .pipe(concat('yap.css'))
         .pipe(dest(distCssDir))
         .pipe(cleanCSS())
@@ -137,6 +152,7 @@ task('watch', () => {
     watch(jsCoreFiles, series('jsCore'));
     watch(jsScheduleFiles, series('jsSchedule'));
     watch(jsReportsFiles, series('jsReports'));
+    watch(lessCoreFiles, series('cssCore'));
     watch(cssCoreFiles, series('cssCore'));
     watch(cssScheduleFiles, series('cssSchedule'));
     watch(cssReportsFiles, series('cssReports'));

@@ -45,7 +45,12 @@ div#signin {
 
 #no-auth-message {
     color:red;
-    font-size:14px;
+    font-size: 14px;
+}
+
+#config-error-message {
+    color:red;
+    font-size: 14px;
 }
 
 .navbar {
@@ -250,6 +255,29 @@ div#signin {
 #reports-top-controls-container {
     margin-bottom: 10px;
 }
+.installerFieldSet {
+    margin-bottom: 10px;
+}
+#wizardTitle {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+.wizardResult {
+    font-family: Courier, serif;
+    font-size: 14px;
+}
+.codeFormat {
+    color:red;
+    font-size: 14px;
+    background-color: lightgrey;
+    font-family: Courier, serif;
+    font-style: italic;
+    border: lightgrey solid 1px;
+}
+#wizardAlert {
+    display: none;
+}
 [data-theme="dark"] {
     background-color: #333;
 }
@@ -269,4 +297,17 @@ div#signin {
 }
 [data-theme="dark"] .modal-title {
     color: #ddd;
+}
+[data-theme="dark"] .form-control {
+    background-color: #333;
+    color: #ddd;
+}
+[data-theme="dark"] select {
+    border-color: #333;
+}
+[data-theme="dark"] .voicemail-title {
+    color: #777;
+}
+[data-theme="dark"] .card-header {
+    background-color: #333;
 }
