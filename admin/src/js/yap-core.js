@@ -1034,6 +1034,7 @@ function generateConfig(callback) {
             return;
         }
 
+        var configHtml = "";
         if (parseFloat(data[0]['version']) >= parseFloat("2.14")) {
             var fields = jQuery('[id*="input_"]');
             for (var i = 0; i < fields.length; i++) {

@@ -8,7 +8,7 @@ sort_on_field($service_bodies, 'name');
     </div>
     <div class="row">
         <div class="col-md">
-            <table class="table table-striped table-bordered">
+            <table id="service-bodies-table" class="table table-striped table-borderless">
                 <thead>
                     <tr>
                         <th scope="col">ID</th>
