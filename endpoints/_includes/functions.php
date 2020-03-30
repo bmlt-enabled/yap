@@ -1198,7 +1198,11 @@ function getServiceBodyConfig($service_body_id)
             $config_obj = json_decode($config_from_db['data']);
             foreach ($GLOBALS['settings_whitelist'] as $setting => $value) {
                 if (isset($config_obj[0]->$setting)) {
-                    $config->$setting = $config_obj[0]->$setting;
+                    if (gettype($value['default']) === "array") {
+                        $config->$setting = (array) json_decode(str_replace("'", "\"", $config_obj[0]->$setting));
+                    } else {
+                        $config->$setting = $config_obj[0]->$setting;
+                    }
                 }
             }
         }
