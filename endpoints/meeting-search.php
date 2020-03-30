@@ -9,6 +9,7 @@ $latitude = isset($_REQUEST['Latitude']) ? $_REQUEST['Latitude'] : null;
 $longitude = isset($_REQUEST['Longitude']) ? $_REQUEST['Longitude'] : null;
 
 try {
+    $suppress_voice_results = has_setting('suppress_voice_results') && json_decode(setting('suppress_voice_results'));
     $results_count = has_setting('result_count_max') ? intval(setting('result_count_max')) : 5;
     $meeting_results = getMeetings($latitude, $longitude, $results_count, null, null);
     $results_count_num = count($meeting_results->filteredList) < $results_count ? count($meeting_results->filteredList) : $results_count;
@@ -58,6 +59,8 @@ function sendSms($message)
             echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . word('no_results_found') . "... " . word('you_might_have_invalid_entry') . "... " . word('try_again') . "</Say><Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
         } elseif (count($filtered_list) == 0) {
             echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . word('there_are_no_other_meetings_for_today') . ".... " . word('try_again') . "</Say><Redirect method=\"GET\">input-method.php?Digits=2</Redirect>";
+        } elseif ($suppress_voice_results) {
+            echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results_count_num  . " " . word('meetings_have_been_texted') . "</Say>";
         } else {
             echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . word('meeting_information_found_listing_the_top') . " " . $results_count_num . " " . word('results') . "</Say>";
         }
@@ -73,7 +76,7 @@ function sendSms($message)
     for ($i = 0; $i < count($filtered_list); $i++) {
         $results = getResultsString($filtered_list[$i]);
 
-        if (!$isFromSmsGateway) {
+        if (!$isFromSmsGateway && !$suppress_voice_results) {
             echo "<Pause length=\"1\"/>";
             echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . word('number') . " " . ($results_counter + 1) . "</Say>";
             echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results[0] . "</Say>";
@@ -154,7 +157,7 @@ function sendSms($message)
     // Do not handle for the SMS gateway
     if (!$isFromSmsGateway && count($filtered_list) > 0) {
         echo "<Pause length=\"2\"/>";
-        if (count($sms_messages) > 0) { ?>
+        if (!$suppress_voice_results && count($sms_messages) > 0) { ?>
             <Gather numDigits="1" timeout="10" speechTimeout="auto" input="<?php echo getInputType() ?>"
                     action="post-call-action.php?Payload=<?php echo urlencode(json_encode($sms_messages)) ?>"
                     method="GET">

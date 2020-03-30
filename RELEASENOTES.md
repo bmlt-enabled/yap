@@ -5,6 +5,7 @@
 * Added custom extensions feature that allows for setting up arbitrary call forwards and/or prompt playbacks. (https://github.com/bmlt-enabled/yap/wiki/Custom-Extensions) [#355]
 * Added an option to combine SMS messages into a single SMS versus individual ones.
 * Added time format customization option.
+* Added meeting results voice supression option.
 * Added the ability to call in and listen to voicemail messages. [#384]
 * Dropping support for Internet Explorer 11. [#389]
 
