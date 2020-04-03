@@ -73,6 +73,7 @@ function sendSms($message)
     }
 
     $results_counter = 0;
+    $extra_data_results_pos = 3;
     for ($i = 0; $i < count($filtered_list); $i++) {
         $results = getResultsString($filtered_list[$i]);
 
@@ -87,8 +88,10 @@ function sendSms($message)
                 echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results[2] . "</Say>";
             }
 
-            echo "<Pause length=\"1\"/>";
-            echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results[3] . "</Say>";
+            for ($fl = $extra_data_results_pos; $fl < count($results); $fl++) {
+                echo "<Pause length=\"1\"/>";
+                echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results[$fl] . "</Say>";
+            }
 
             if (isset($_REQUEST["Debug"])) {
                 echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . json_encode($filtered_list[$i]) . "</Say>";
@@ -119,6 +122,7 @@ function sendSms($message)
             sendSms($message);
         }
     } else {
+        $virtual_array_links_pos = 4;
         $results_counter = 0;
         for ($i = 0; $i < count($filtered_list); $i++) {
             $results = getResultsString($filtered_list[$i]);
@@ -135,6 +139,10 @@ function sendSms($message)
             }
             if (has_setting('include_map_link') && json_decode(setting('include_map_link'))) {
                 $message .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude;
+            }
+
+            for ($fl = $virtual_array_links_pos; $fl < count($results); $fl++) {
+                $message .= "\n" . $results[$fl];
             }
 
             if (json_decode(setting("sms_combine")) || (json_decode(setting("sms_ask")) && !$isFromSmsGateway)) {

@@ -880,7 +880,7 @@ function getFormatString($formats, $ignore = false)
 
 function meetingSearch($meeting_results, $latitude, $longitude, $day)
 {
-    $bmlt_base_url = sprintf('%s/client_interface/json/?switcher=GetSearchResults&data_field_key=meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km', getBMLTRootServer());
+    $bmlt_base_url = sprintf('%s/client_interface/json/?switcher=GetSearchResults&data_field_key=meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km,formats,virtual_meeting_link,phone_meeting_number', getBMLTRootServer());
     $bmlt_search_endpoint = setting('custom_query');
     if (has_setting('ignore_formats')) {
         $bmlt_search_endpoint .= getFormatString(setting('ignore_formats'), true);
@@ -936,7 +936,7 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day)
 
 function getResultsString($filtered_list)
 {
-    return array(
+    $results_string = array(
         str_replace("&", "&amp;", $filtered_list->meeting_name),
         str_replace("&", "&amp;", $GLOBALS['days_of_the_week'][$filtered_list->weekday_tinyint]
                                         . ' ' . (new DateTime($filtered_list->start_time))->format(setting('time_format'))),
@@ -944,6 +944,18 @@ function getResultsString($filtered_list)
         str_replace("&", "&amp;", $filtered_list->location_street
                                         . ($filtered_list->location_municipality !== "" ? ", " . $filtered_list->location_municipality : "")
                                         . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")));
+
+    if (in_array("VM", explode(",", $filtered_list->formats))) {
+        if (isset($filtered_list->virtual_meeting_link) && strlen($filtered_list->virtual_meeting_link) > 0) {
+            array_push($results_string, str_replace("&", "&amp;", $filtered_list->virtual_meeting_link));
+        }
+
+        if (isset($filtered_list->phone_meeting_number) && strlen($filtered_list->phone_meeting_number) > 0) {
+            array_push($results_string, str_replace("&", "&amp;", $filtered_list->phone_meeting_number));
+        }
+    }
+
+    return $results_string;
 }
 
 function getServiceBodyCoverage($latitude, $longitude)
