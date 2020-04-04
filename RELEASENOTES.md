@@ -7,6 +7,7 @@
 * Added virtual links for those meetings tagged with VM for location-centric virtual meetings.
 * Added time format customization option.
 * Added meeting results voice suppression option.
+* Added croutonjs as meeting summary page for SMS.
 * Added the ability to call in and listen to voicemail messages. [#384]
 * Dropping support for Internet Explorer 11. [#389]
 
