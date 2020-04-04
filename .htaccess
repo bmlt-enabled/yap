@@ -4,5 +4,8 @@ RewriteEngine on
 RewriteCond %{REQUEST_URI} .*\/msr\/([0-9.\-]*)\/([0-9.\-]*)$
 RewriteRule ([^/]+)/([^/]+)$ endpoints/meeting-results.php?latitude=$1&longitude=$2 [NC,L]
 
+RewriteCond %{REQUEST_URI} .*croutonjs(.*)
+RewriteRule ".*croutonjs/(.*)$" endpoints/croutonjs/$1 [NC,L]
+
 RewriteCond %{REQUEST_URI} !.*(?:api|admin|lang).*
 RewriteRule ([^/]+)/?$ endpoints/$1 [NC]

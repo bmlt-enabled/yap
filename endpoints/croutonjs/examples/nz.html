@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../crouton.min.css" />
+    <script type="text/javascript" src="../crouton.min.js"></script>
+    <script type="text/javascript">
+        var crouton = new Crouton({
+            "root_server": "https://nzna.org/bmlt/main_server",
+            "service_body": [ 2 ],
+            "recurse_service_bodies": true,
+            "language": "en-NZ",
+            "meeting_data_template": "<div class=\"meeting-name\">{{this.meeting_name}}</div><div class=\"location-text\">{{this.location_text}}</div><div class=\"location-text\">{{this.location_neighborhood}}</div><div class=\"meeting-address\">{{this.formatted_address}}</div><div class=\"location-information\">{{this.formatted_location_info}}</div>"
+        });
+        crouton.render();
+        crouton.meetingCount(function(res) {
+            document.getElementById("meeting-count").innerHTML = "Meeting count: " + res;
+        });
+        crouton.groupCount(function(res) {
+            document.getElementById("group-count").innerHTML = "Group count: " + res;
+        });
+    </script>
+</head>
+<body>
+<span id="meeting-count"></span>, <span id="group-count"></span>
+<div id="bmlt-tabs"></div>
+</body>
+</html>
