@@ -73,24 +73,24 @@ function sendSms($message)
     }
 
     $results_counter = 0;
-    $extra_data_results_pos = 3;
     for ($i = 0; $i < count($filtered_list); $i++) {
         $results = getResultsString($filtered_list[$i]);
 
         if (!$isFromSmsGateway && !$suppress_voice_results) {
             echo "<Pause length=\"1\"/>";
             echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . word('number') . " " . ($results_counter + 1) . "</Say>";
-            echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results[0] . "</Say>";
+            echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results['meeting_name'] . "</Say>";
             echo "<Pause length=\"1\"/>";
-            echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . word('starts_at') . " " . $results[1] . "</Say>";
-            if (has_setting('include_location_text') && json_decode(setting('include_location_text'))) {
+            echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . word('starts_at') . " " . $results['timestamp'] . "</Say>";
+
+            for ($ll = 0; $ll < count($results['location']); $ll++) {
                 echo "<Pause length=\"1\"/>";
-                echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results[2] . "</Say>";
+                echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results['location'][$ll] . "</Say>";
             }
 
-            for ($fl = $extra_data_results_pos; $fl < count($results); $fl++) {
+            for ($fl = 0; $fl < count($results['links']); $fl++) {
                 echo "<Pause length=\"1\"/>";
-                echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results[$fl] . "</Say>";
+                echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results['links'][$fl] . "</Say>";
             }
 
             if (isset($_REQUEST["Debug"])) {
@@ -122,12 +122,11 @@ function sendSms($message)
             sendSms($message);
         }
     } else {
-        $virtual_array_links_pos = 4;
         $results_counter = 0;
         for ($i = 0; $i < count($filtered_list); $i++) {
             $results = getResultsString($filtered_list[$i]);
-            $location_line = (has_setting('include_location_text') && json_decode(setting('include_location_text'))) ? $results[2] . $comma_space . $results[3] : $results[3];
-            $message = $results[0] . $text_space . $results[1] . $comma_space . $location_line;
+            $location_line = implode(", ", $results['location']);
+            $message = $results['meeting_name'] . $text_space . $results['timestamp'] . $comma_space . $location_line;
             if (has_setting('include_distance_details')) {
                 if (setting('include_distance_details') == "mi") {
                     $distance_string = sprintf("(%s mi)", round($filtered_list[$i]->distance_in_miles));
@@ -141,8 +140,8 @@ function sendSms($message)
                 $message .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude;
             }
 
-            for ($fl = $virtual_array_links_pos; $fl < count($results); $fl++) {
-                $message .= "\n" . $results[$fl];
+            for ($fl = 0; $fl < count($results['links']); $fl++) {
+                $message .= "\n" . $results['links'][$fl];
             }
 
             if (json_decode(setting("sms_combine")) || (json_decode(setting("sms_ask")) && !$isFromSmsGateway)) {

@@ -5,6 +5,7 @@
 * Added custom extensions feature that allows for setting up arbitrary call forwards and/or prompt playbacks. (https://github.com/bmlt-enabled/yap/wiki/Custom-Extensions) [#355]
 * Added an option to combine SMS messages into a single SMS versus individual ones.
 * Added virtual links for those meetings tagged with VM for location-centric virtual meetings.
+* Added support for temporary closures.
 * Added time format customization option.
 * Added meeting results voice suppression option.
 * Added croutonjs as meeting summary page for SMS.

@@ -917,6 +917,12 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day)
     $filteredList = $meeting_results->filteredList;
     if ($search_response !== "{}") {
         for ($i = 0; $i < count($search_results); $i++) {
+            // Hide meetings if they are TC and don't have a VM link.
+            if (!in_array("VM", explode(",", $search_results[$i]->formats))
+                && in_array("TC", explode(",", $search_results[$i]->formats))) {
+                continue;
+            }
+
             if (strpos($bmlt_search_endpoint, "{DAY}")) {
                 if (!isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time)) {
                     array_push($filteredList, $search_results[$i]);
@@ -936,25 +942,30 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day)
 function getResultsString($filtered_list)
 {
     $results_string = array(
-        str_replace("&", "&amp;", $filtered_list->meeting_name),
-        str_replace("&", "&amp;", $GLOBALS['days_of_the_week'][$filtered_list->weekday_tinyint]
+        "meeting_name" => str_replace("&", "&amp;", $filtered_list->meeting_name),
+        "timestamp" => str_replace("&", "&amp;", $GLOBALS['days_of_the_week'][$filtered_list->weekday_tinyint]
                                         . ' ' . (new DateTime($filtered_list->start_time))->format(setting('time_format'))),
-        str_replace("&", "&amp;", $filtered_list->location_text),
-        str_replace("&", "&amp;", $filtered_list->location_street
-                                        . ($filtered_list->location_municipality !== "" ? ", " . $filtered_list->location_municipality : "")
-                                        . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")));
+        "location" => array(),
+        "links" => array()
+    );
 
-    /*if (in_array("TC", explode(",", $filtered_list->formats))) {
+    if (!in_array("TC", explode(",", $filtered_list->formats))) {
+        if (has_setting('include_location_text') && json_decode(setting('include_location_text'))) {
+            array_push($results_string["location"], str_replace("&", "&amp;", $filtered_list->location_text));
+        }
 
-    }*/
+        array_push($results_string["location"], str_replace("&", "&amp;", $filtered_list->location_street
+            . ($filtered_list->location_municipality !== "" ? ", " . $filtered_list->location_municipality : "")
+            . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")));
+    }
 
     if (in_array("VM", explode(",", $filtered_list->formats))) {
         if (isset($filtered_list->virtual_meeting_link) && strlen($filtered_list->virtual_meeting_link) > 0) {
-            array_push($results_string, str_replace("&", "&amp;", $filtered_list->virtual_meeting_link));
+            array_push($results_string["links"], str_replace("&", "&amp;", $filtered_list->virtual_meeting_link));
         }
 
         if (isset($filtered_list->phone_meeting_number) && strlen($filtered_list->phone_meeting_number) > 0) {
-            array_push($results_string, str_replace("&", "&amp;", $filtered_list->phone_meeting_number));
+            array_push($results_string["links"], str_replace("&", "&amp;", $filtered_list->phone_meeting_number));
         }
     }
 
