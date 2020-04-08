@@ -4,7 +4,6 @@ $flag_setting = getFlag('root_server_data_migration');
 function getHelplineData($service_body_id, $data_type)
 {
     $helpline_data_items = [];
-    auth_v1($GLOBALS['bmlt_username'], $GLOBALS['bmlt_password'], true);
     $helpline_data = json_decode(get(getAdminBMLTRootServer()
         . "/client_interface/json/?switcher=GetSearchResults"
         . (($service_body_id != 0) ? "&services=" . $service_body_id : "")

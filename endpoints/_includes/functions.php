@@ -36,6 +36,7 @@ static $settings_whitelist = [
     'include_distance_details'  => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => false],
     'include_location_text' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'include_map_link' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'include_unpublished' => [ 'description' => '' , 'default' => 0, 'overridable' => true, 'hidden' => false],
     'infinite_searching' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'initial_pause' => [ 'description' => '' , 'default' => 2, 'overridable' => true, 'hidden' => false],
     'jft_option' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
@@ -883,6 +884,10 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day)
     $bmlt_search_endpoint = setting('custom_query');
     if (has_setting('ignore_formats')) {
         $bmlt_search_endpoint .= getFormatString(setting('ignore_formats'), true);
+    }
+
+    if (json_decode(setting('include_unpublished'))) {
+        $bmlt_search_endpoint .= "&advanced_published=0";
     }
 
     $magic_vars = ["{LATITUDE}", "{LONGITUDE}", "{DAY}"];
