@@ -1017,11 +1017,11 @@ function confirmGroup() {
 }
 
 function checkForConfigFile() {
-    jQuery.getJSON("/upgrade-advisor.php?status-check", function (data) {
+    jQuery.getJSON("../upgrade-advisor.php?status-check", function (data) {
         if (!data['status'] && data['message'] !== null) {
             setErrorMessage(data['message'])
         } else {
-            window.location.href = '/admin';
+            window.location.href = 'index.php';
         }
     });
 }
