@@ -23,7 +23,7 @@ jobs:
       - git archive --format=zip --output=${ARTIFACT_FILENAME} HEAD
       - echo ${TRAVIS_COMMIT} > build.txt
       - DISABLE_NOTIFIER=true make deploy
-      - zip -ur ${ARTIFACT_FILENAME} build.txt vendor admin/dist/*
+      - zip -ur ${ARTIFACT_FILENAME} build.txt vendor admin/dist/* endpoints/croutonjs/*
       - mkdir artifacts/
       - mv ${ARTIFACT_FILENAME} artifacts/
       deploy:
@@ -46,7 +46,7 @@ jobs:
       - git archive --format=zip --output=yap-${TRAVIS_TAG}.zip ${TRAVIS_TAG}
       - echo ${TRAVIS_COMMIT} > build.txt
       - DISABLE_NOTIFIER=true make deploy
-      - zip -ur yap-${TRAVIS_TAG}.zip build.txt vendor admin/dist/*
+      - zip -ur yap-${TRAVIS_TAG}.zip build.txt vendor admin/dist/* endpoints/croutonjs/*
       - curl -LO https://raw.githubusercontent.com/bmlt-enabled/release-notes-tool/master/release-notes.sh
       - chmod +x release-notes.sh
       - ./release-notes.sh RELEASENOTES.md "###"
