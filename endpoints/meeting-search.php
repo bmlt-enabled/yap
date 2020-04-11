@@ -127,21 +127,17 @@ function sendSms($message)
             $results = getResultsString($filtered_list[$i]);
             $location_line = implode(", ", $results['location']);
             $message = $results['meeting_name'] . $text_space . $results['timestamp'] . $comma_space . $location_line;
-            if (has_setting('include_distance_details')) {
-                if (setting('include_distance_details') == "mi") {
-                    $distance_string = sprintf("(%s mi)", round($filtered_list[$i]->distance_in_miles));
-                } else if (setting('include_distance_details') == "km") {
-                    $distance_string = sprintf("(%s km)", round($filtered_list[$i]->distance_in_km));
-                }
 
-                $message .= " " . $distance_string;
-            }
-            if (has_setting('include_map_link') && json_decode(setting('include_map_link'))) {
-                $message .= " https://google.com/maps?q=" . $filtered_list[$i]->latitude . "," . $filtered_list[$i]->longitude;
+            if (strlen($results['distance_details']) > 0) {
+                $message .= " " . $results['distance_details'];
             }
 
-            for ($fl = 0; $fl < count($results['links']); $fl++) {
-                $message .= "\n" . $results['links'][$fl];
+            foreach ($results['location_links'] as $location_link) {
+                $message .= " " . $location_link;
+            }
+
+            foreach ($results['links'] as $link) {
+                $message .= "\n" . $link;
             }
 
             if (json_decode(setting("sms_combine")) || (json_decode(setting("sms_ask")) && !$isFromSmsGateway)) {

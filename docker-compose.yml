@@ -7,7 +7,7 @@ services:
       ports:
         - 3100:80
       volumes:
-        - .:/var/www/html/
+        - .:/var/www/html/yap/
       environment:
         ENVIRONMENT: dev
     yap_db:

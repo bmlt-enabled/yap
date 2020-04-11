@@ -951,7 +951,9 @@ function getResultsString($filtered_list)
         "timestamp" => str_replace("&", "&amp;", $GLOBALS['days_of_the_week'][$filtered_list->weekday_tinyint]
                                         . ' ' . (new DateTime($filtered_list->start_time))->format(setting('time_format'))),
         "location" => array(),
-        "links" => array()
+        "distance_details" => "",
+        "location_links" => array(),
+        "links" => array(),
     );
 
     if (!in_array("TC", explode(",", $filtered_list->formats))) {
@@ -962,6 +964,18 @@ function getResultsString($filtered_list)
         array_push($results_string["location"], str_replace("&", "&amp;", $filtered_list->location_street
             . ($filtered_list->location_municipality !== "" ? ", " . $filtered_list->location_municipality : "")
             . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")));
+
+        if (has_setting('include_distance_details')) {
+            if (setting('include_distance_details') == "mi") {
+                $results_string["distance_details"] = sprintf("(%s mi)", round($filtered_list->distance_in_miles));
+            } else if (setting('include_distance_details') == "km") {
+                $results_string["distance_details"] = sprintf("(%s km)", round($filtered_list->distance_in_km));
+            }
+        }
+
+        if (has_setting('include_map_link') && json_decode(setting('include_map_link'))) {
+            array_push($results_string["location_links"], "https://google.com/maps?q=" . $filtered_list->latitude . "," . $filtered_list->longitude);
+        }
     }
 
     if (in_array("VM", explode(",", $filtered_list->formats))) {
