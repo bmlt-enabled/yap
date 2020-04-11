@@ -984,7 +984,7 @@ function getResultsString($filtered_list)
         }
 
         if (isset($filtered_list->phone_meeting_number) && strlen($filtered_list->phone_meeting_number) > 0) {
-            array_push($results_string["links"], str_replace("&", "&amp;", $filtered_list->phone_meeting_number));
+            array_push($results_string["links"], sprintf("tel:%s", str_replace("&", "&amp;", $filtered_list->phone_meeting_number)));
         }
     }
 
