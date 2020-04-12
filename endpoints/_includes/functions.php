@@ -98,6 +98,7 @@ if (has_setting('config')) {
     include_once __DIR__ . '/../../config_'.setting('config').'.php';
 }
 include_once __DIR__ . '/../../lang/' .getWordLanguage().'.php';
+$GLOBALS['short_language'] = getWordLanguage() === "da-DK" ? "dk" : explode("-", getWordLanguage())[0];
 
 $google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
 $timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key=" . trim($google_maps_api_key);
@@ -974,7 +975,7 @@ function getResultsString($filtered_list)
         }
 
         if (has_setting('include_map_link') && json_decode(setting('include_map_link'))) {
-            array_push($results_string["location_links"], "https://google.com/maps?q=" . $filtered_list->latitude . "," . $filtered_list->longitude);
+            array_push($results_string["location_links"], sprintf("https://maps.google.com/maps?q=%s,%s&hl=%s", $filtered_list->latitude, $filtered_list->longitude, $GLOBALS['short_language']));
         }
     }
 

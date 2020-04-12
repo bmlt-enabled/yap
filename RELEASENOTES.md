@@ -11,6 +11,7 @@
 * Added meeting results voice suppression option.
 * Added croutonjs as meeting summary page for SMS.
 * Added the ability to call in and listen to voicemail messages. [#384]
+* Added map link language support.
 * Dropping support for Internet Explorer 11. [#389]
 
 ### 3.6.4 (February 4, 2020)
