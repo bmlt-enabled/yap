@@ -1789,7 +1789,7 @@ function get_jft($sms = false)
 
     $jft = new DOMDocument;
     libxml_use_internal_errors(true);
-    $d->loadHTML(get($url));
+    $d->loadHTML(mb_convert_encoding(get($url), 'HTML-ENTITIES', 'UTF-8'));
     libxml_clear_errors();
     libxml_use_internal_errors(false);
     $xpath = new DOMXpath($d);

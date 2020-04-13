@@ -1,6 +1,7 @@
 # Release Notes
 
 ### 3.7.0 (UNRELEASED)
+* Fixed encoding issues with JFT. [#414]
 * Introducing Yap installer. [#373]
 * Added custom extensions feature that allows for setting up arbitrary call forwards and/or prompt playbacks. (https://github.com/bmlt-enabled/yap/wiki/Custom-Extensions) [#355]
 * Added an option to combine SMS messages into a single SMS versus individual ones.
