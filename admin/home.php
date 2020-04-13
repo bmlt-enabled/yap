@@ -13,7 +13,7 @@
                         data-toggle="tooltip"
                         data-placement="bottom"
                         target="_blank"
-                        href="/upgrade-advisor.php"
+                        href="../upgrade-advisor.php"
                         title="<?php echo $status['message']?>">
                     <?php echo "Status: " . ($status['status'] ? "Operational" : "Problem"); ?>
                 </a>
