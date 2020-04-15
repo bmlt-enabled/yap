@@ -59,7 +59,7 @@ function initReports() {
         addRowPos: "top",
         history: true,
         pagination: "remote",
-        paginationSize: 20,
+        paginationSize: 50,
         ajaxURL: "cdr_api.php",
         ajaxURLGenerator: function(url, config, params) {
             return url + "?service_body_id=" + $("#service_body_id").val() + "&page=" + params['page'] + "&size=" + params['size'] + "&recurse=" + recurseReports();

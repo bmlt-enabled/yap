@@ -52,10 +52,10 @@
                     Page Size
                 </button>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item page-size-dropdown-item active" href="#">20</a>
-                    <a class="dropdown-item page-size-dropdown-item" href="#">50</a>
+                    <a class="dropdown-item page-size-dropdown-item active" href="#">50</a>
                     <a class="dropdown-item page-size-dropdown-item" href="#">100</a>
                     <a class="dropdown-item page-size-dropdown-item" href="#">200</a>
+                    <a class="dropdown-item page-size-dropdown-item" href="#">500</a>
                 </div>
             </div>
         </div>
