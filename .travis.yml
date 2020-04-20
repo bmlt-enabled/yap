@@ -19,11 +19,16 @@ jobs:
       - composer install
       before_deploy:
       - (cd endpoints && curl -LO https://github.com/bmlt-enabled/crouton/releases/download/3.9.5/croutonjs.zip && unzip croutonjs.zip -d croutonjs && rm croutonjs.zip)
-      - export ARTIFACT_FILENAME=yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}.zip
-      - git archive -9 --format=zip --output=${ARTIFACT_FILENAME} --prefix=yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}/ HEAD
-      - echo ${TRAVIS_COMMIT} > build.txt
+      - export ARTIFACT_FILE=yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}
+      - export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
+      - git archive -9 --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
       - DISABLE_NOTIFIER=true make deploy
-      - zip -ur -9 -b yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}/ ${ARTIFACT_FILENAME} build.txt vendor admin/dist/* endpoints/croutonjs/*
+      - mkdir ${ARTIFACT_FILE}
+      - echo ${TRAVIS_COMMIT} > ${ARTIFACT_FILE}/build.txt
+      - mv vendor ${ARTIFACT_FILE}/
+      - mv admin/dist ${ARTIFACT_FILE}/
+      - mv endpoints/croutonjs ${ARTIFACT_FILE}/
+      - zip -ur -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}/*
       - mkdir artifacts/
       - mv ${ARTIFACT_FILENAME} artifacts/
       deploy:
@@ -43,10 +48,16 @@ jobs:
       - composer install --no-dev
       before_deploy:
       - (cd endpoints && curl -LO https://github.com/bmlt-enabled/crouton/releases/download/3.9.5/croutonjs.zip && unzip croutonjs.zip -d croutonjs && rm croutonjs.zip)
-      - git archive -9 --format=zip --output=yap-${TRAVIS_TAG}.zip --prefix=yap-${TRAVIS_TAG}/ ${TRAVIS_TAG}
-      - echo ${TRAVIS_COMMIT} > build.txt
+      - export ARTIFACT_FILE=yap-${TRAVIS_TAG}
+      - export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
+      - git archive -9 --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
       - DISABLE_NOTIFIER=true make deploy
-      - zip -ur -9 -b yap-${TRAVIS_TAG}/ yap-${TRAVIS_TAG}.zip build.txt vendor admin/dist/* endpoints/croutonjs/*
+      - mkdir ${ARTIFACT_FILE}
+      - echo ${TRAVIS_COMMIT} > ${ARTIFACT_FILE}/build.txt
+      - mv vendor ${ARTIFACT_FILE}/
+      - mv admin/dist ${ARTIFACT_FILE}/
+      - mv endpoints/croutonjs ${ARTIFACT_FILE}/
+      - zip -ur -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}/*
       - curl -LO https://raw.githubusercontent.com/bmlt-enabled/release-notes-tool/master/release-notes.sh
       - chmod +x release-notes.sh
       - ./release-notes.sh RELEASENOTES.md "###"
