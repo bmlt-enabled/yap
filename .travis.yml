@@ -26,8 +26,8 @@ jobs:
       - mkdir ${ARTIFACT_FILE}
       - echo ${TRAVIS_COMMIT} > ${ARTIFACT_FILE}/build.txt
       - mv vendor ${ARTIFACT_FILE}/
-      - mv admin/dist/* ${ARTIFACT_FILE}
-      - mv endpoints/croutonjs/* ${ARTIFACT_FILE}
+      - mv admin/dist/* ${ARTIFACT_FILE}/admin/dist
+      - mv endpoints/croutonjs/* ${ARTIFACT_FILE}/endpoints/croutonjs
       - zip -ur -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}/*
       - mkdir artifacts/
       - mv ${ARTIFACT_FILENAME} artifacts/
