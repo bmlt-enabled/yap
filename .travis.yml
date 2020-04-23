@@ -21,14 +21,15 @@ jobs:
       - (cd endpoints && curl -LO https://github.com/bmlt-enabled/crouton/releases/download/3.9.5/croutonjs.zip && unzip croutonjs.zip -d croutonjs && rm croutonjs.zip)
       - export ARTIFACT_FILE=yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}
       - export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
-      - git archive -9 --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
+      - git archive --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
       - DISABLE_NOTIFIER=true make deploy
-      - mkdir ${ARTIFACT_FILE}
+      - unzip ${ARTIFACT_FILENAME}
+      - rm ${ARTIFACT_FILENAME}
       - echo ${TRAVIS_COMMIT} > ${ARTIFACT_FILE}/build.txt
-      - mv vendor ${ARTIFACT_FILE}/
-      - mv admin/dist/* ${ARTIFACT_FILE}/admin/dist
-      - mv endpoints/croutonjs/* ${ARTIFACT_FILE}/endpoints/croutonjs
-      - zip -ur -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}/*
+      - cp -R vendor ${ARTIFACT_FILE}/
+      - mkdir -p ${ARTIFACT_FILE}/admin/dist && cp -R admin/dist/. ${ARTIFACT_FILE}/admin/dist
+      - mkdir -p ${ARTIFACT_FILE}/endpoints/croutonjs && cp -R endpoints/croutonjs/. ${ARTIFACT_FILE}/endpoints/croutonjs
+      - zip -r -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}
       - mkdir artifacts/
       - mv ${ARTIFACT_FILENAME} artifacts/
       deploy:
@@ -50,14 +51,15 @@ jobs:
       - (cd endpoints && curl -LO https://github.com/bmlt-enabled/crouton/releases/download/3.9.5/croutonjs.zip && unzip croutonjs.zip -d croutonjs && rm croutonjs.zip)
       - export ARTIFACT_FILE=yap-${TRAVIS_TAG}
       - export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
-      - git archive -9 --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
+      - git archive --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
       - DISABLE_NOTIFIER=true make deploy
-      - mkdir ${ARTIFACT_FILE}
+      - unzip ${ARTIFACT_FILENAME}
+      - rm ${ARTIFACT_FILENAME}
       - echo ${TRAVIS_COMMIT} > ${ARTIFACT_FILE}/build.txt
-      - mv vendor ${ARTIFACT_FILE}/
-      - mv admin/dist ${ARTIFACT_FILE}/
-      - mv endpoints/croutonjs ${ARTIFACT_FILE}/
-      - zip -ur -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}/*
+      - cp -R vendor ${ARTIFACT_FILE}/
+      - mkdir -p ${ARTIFACT_FILE}/admin/dist && cp -R admin/dist/. ${ARTIFACT_FILE}/admin/dist
+      - mkdir -p ${ARTIFACT_FILE}/endpoints/croutonjs && cp -R endpoints/croutonjs/. ${ARTIFACT_FILE}/endpoints/croutonjs
+      - zip -r -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}
       - curl -LO https://raw.githubusercontent.com/bmlt-enabled/release-notes-tool/master/release-notes.sh
       - chmod +x release-notes.sh
       - ./release-notes.sh RELEASENOTES.md "###"

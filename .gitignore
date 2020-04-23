@@ -13,3 +13,4 @@ admin/dist/css/*.css
 node_modules
 yap.iml
 package-lock.json
+endpoints/croutonjs
