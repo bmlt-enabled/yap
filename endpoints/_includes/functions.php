@@ -489,13 +489,13 @@ class UpgradeAdvisor
         }
 
         try {
-            $googleapi_settings = json_decode(get($GLOBALS['google_maps_endpoint'] . "&address=91409"));
+            $googleapi_settings = json_decode(get($GLOBALS['google_maps_endpoint'] . "&address=91409", 'master', 3600));
 
             if ($googleapi_settings->status == "REQUEST_DENIED") {
                 return self::getState(false, "Your Google Maps API key came back with the following error. " . $googleapi_settings->error_message. " Please make sure you have the 'Google Maps Geocoding API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
             }
 
-            $timezone_settings = json_decode(get($GLOBALS['timezone_lookup_endpoint'] . "&location=34.2011137,-118.475058&timestamp=" . time()));
+            $timezone_settings = json_decode(get($GLOBALS['timezone_lookup_endpoint'] . "&location=34.2011137,-118.475058&timestamp=" . time(), 'master', 3600));
 
             if ($timezone_settings->status == "REQUEST_DENIED") {
                 return self::getState(false, "Your Google Maps API key came back with the following error. " . $timezone_settings->errorMessage. " Please make sure you have the 'Google Time Zone API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
@@ -784,7 +784,7 @@ function getCoordinatesForAddress($address)
         $map_details_response = get($GLOBALS['google_maps_endpoint']
             . "&address="
             . urlencode($address)
-            . "&components=" . urlencode(setting('location_lookup_bias')));
+            . "&components=" . urlencode(setting('location_lookup_bias')), 'master', 3600);
         $map_details = json_decode($map_details_response);
         if (count($map_details->results) > 0) {
             $coordinates->location  = $map_details->results[0]->formatted_address;
@@ -799,7 +799,7 @@ function getCoordinatesForAddress($address)
 
 function getTimeZoneForCoordinates($latitude, $longitude)
 {
-    $time_zone = get($GLOBALS['timezone_lookup_endpoint'] . "&location=" . $latitude . "," . $longitude . "&timestamp=" . time());
+    $time_zone = get($GLOBALS['timezone_lookup_endpoint'] . "&location=" . $latitude . "," . $longitude . "&timestamp=" . time(), 'master', 3600);
     return json_decode($time_zone);
 }
 
@@ -1656,7 +1656,7 @@ function setCache($key, $value, $timeout)
     $_SESSION[sprintf('cache_%s', $key)] = ["value" => $value, "expiry" => $expiry];
 }
 
-function get($url, $username = 'master')
+function get($url, $username = 'master', $cache_expiry = 60)
 {
     log_debug($url);
     $data = getCache($url);
@@ -1673,7 +1673,7 @@ function get($url, $username = 'master')
         if ($errorno > 0) {
             throw new CurlException(curl_strerror($errorno));
         } else {
-            setCache($url, $data, 60);
+            setCache($url, $data, $cache_expiry);
         }
     }
 
