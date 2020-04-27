@@ -1677,9 +1677,9 @@ function setCache($key, $value, $timeout, $cache_type = CacheType::SESSION)
 
 function get($url, $username = 'master', $cache_expiry = 60, $cache_type = CacheType::SESSION)
 {
-    log_debug($url);
     $data = getCache($url, $cache_type);
     if ($data == null) {
+        log_debug($url);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_COOKIEFILE, getCookiePath($username . '_cookie.txt'));
