@@ -116,6 +116,12 @@ class AlertId
     const STATUS_CALLBACK_MISSING = 1;
 }
 
+class CacheType
+{
+    const SESSION = 1;
+    const DATABASE = 2;
+}
+
 class EventId
 {
     const VOLUNTEER_SEARCH = 1;
@@ -297,6 +303,7 @@ class DataType
     const YAP_VOLUNTEERS_V2 = "_YAP_VOLUNTEERS_V2_";
     const YAP_GROUPS_V2 = "_YAP_GROUPS_V2_";
     const YAP_GROUP_VOLUNTEERS_V2 = "_YAP_GROUP_VOLUNTEERS_V2_";
+    const YAP_CACHE = "_YAP_CACHE_";
 }
 
 class SpecialPhoneNumber
@@ -489,13 +496,13 @@ class UpgradeAdvisor
         }
 
         try {
-            $googleapi_settings = json_decode(get($GLOBALS['google_maps_endpoint'] . "&address=91409", 'master', 3600));
+            $googleapi_settings = json_decode(get(sprintf("%s&address=91409", $GLOBALS['google_maps_endpoint']), 'master', 3600, CacheType::DATABASE));
 
             if ($googleapi_settings->status == "REQUEST_DENIED") {
                 return self::getState(false, "Your Google Maps API key came back with the following error. " . $googleapi_settings->error_message. " Please make sure you have the 'Google Maps Geocoding API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
             }
 
-            $timezone_settings = json_decode(get($GLOBALS['timezone_lookup_endpoint'] . "&location=34.2011137,-118.475058&timestamp=" . time(), 'master', 3600));
+            $timezone_settings = json_decode(get(sprintf("%s&location=34.2011137,-118.475058&timestamp=%d", $GLOBALS['timezone_lookup_endpoint'], time() - (time() % 1800)), 'master', 3600, CacheType::DATABASE));
 
             if ($timezone_settings->status == "REQUEST_DENIED") {
                 return self::getState(false, "Your Google Maps API key came back with the following error. " . $timezone_settings->errorMessage. " Please make sure you have the 'Google Time Zone API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
@@ -784,7 +791,7 @@ function getCoordinatesForAddress($address)
         $map_details_response = get($GLOBALS['google_maps_endpoint']
             . "&address="
             . urlencode($address)
-            . "&components=" . urlencode(setting('location_lookup_bias')), 'master', 3600);
+            . "&components=" . urlencode(setting('location_lookup_bias')), 'master', 3600, CacheType::DATABASE);
         $map_details = json_decode($map_details_response);
         if (count($map_details->results) > 0) {
             $coordinates->location  = $map_details->results[0]->formatted_address;
@@ -799,7 +806,7 @@ function getCoordinatesForAddress($address)
 
 function getTimeZoneForCoordinates($latitude, $longitude)
 {
-    $time_zone = get($GLOBALS['timezone_lookup_endpoint'] . "&location=" . $latitude . "," . $longitude . "&timestamp=" . time(), 'master', 3600);
+    $time_zone = get(sprintf("%s&location=%s,%s&timestamp=%d", $GLOBALS['timezone_lookup_endpoint'], $latitude, $longitude, time() - (time() % 1800)), 'master', 3600, CacheType::DATABASE);
     return json_decode($time_zone);
 }
 
@@ -1636,30 +1643,42 @@ function logout_auth($username)
     }
 }
 
-function getCache($key)
+function getCache($key, $cache_type = CacheType::SESSION)
 {
-    $exists = isset($_SESSION[sprintf('cache_%s', $key)]);
-    if ($exists) {
-        $current = strtotime(getCurrentTime());
-        $cache = $_SESSION[sprintf('cache_%s', $key)];
-        if ($current <= $cache['expiry']) {
-            return $cache['value'];
+    $cache = null;
+    $cache_key = sprintf('cache_%s', $key);
+    if ($cache_type == CacheType::SESSION) {
+        if (isset($_SESSION[$cache_key])) {
+            $value = $_SESSION[$cache_key];
+        }
+    } else if ($cache_type == CacheType::DATABASE) {
+        if (count(getDatabaseCacheValue($cache_key)) > 0) {
+            $value = json_decode(getDatabaseCacheValue($cache_key)[0]['value'], true);
         }
     }
 
-    return null;
+    if (isset($value['value']) && strtotime(getCurrentTime()) <= $value['expiry']) {
+        return $value['value'];
+    } else {
+        return null;
+    }
 }
 
-function setCache($key, $value, $timeout)
+function setCache($key, $value, $timeout, $cache_type = CacheType::SESSION)
 {
-    $expiry = strtotime(sprintf("+%s seconds", $timeout));
-    $_SESSION[sprintf('cache_%s', $key)] = ["value" => $value, "expiry" => $expiry];
+    $cache_key = sprintf('cache_%s', $key);
+    $cache_value = ["value" => $value, "expiry" => strtotime(sprintf("+%s seconds", $timeout))];
+    if ($cache_type == CacheType::SESSION) {
+        $_SESSION[$cache_key] = $cache_value;
+    } else if ($cache_type == CacheType::DATABASE) {
+        setDatabaseCacheValue($cache_key, json_encode($cache_value));
+    }
 }
 
-function get($url, $username = 'master', $cache_expiry = 60)
+function get($url, $username = 'master', $cache_expiry = 60, $cache_type = CacheType::SESSION)
 {
     log_debug($url);
-    $data = getCache($url);
+    $data = getCache($url, $cache_type);
     if ($data == null) {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -1673,7 +1692,7 @@ function get($url, $username = 'master', $cache_expiry = 60)
         if ($errorno > 0) {
             throw new CurlException(curl_strerror($errorno));
         } else {
-            setCache($url, $data, $cache_expiry);
+            setCache($url, $data, $cache_expiry, $cache_type);
         }
     }
 

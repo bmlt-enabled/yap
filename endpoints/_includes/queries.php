@@ -285,6 +285,26 @@ function admin_PersistDbConfigById($id, $data)
     $db->close();
 }
 
+function setDatabaseCacheValue($key, $value) {
+    $db = new Database();
+    $stmt = "INSERT INTO `cache` (`key`, `value`) VALUES (:key, :value)";
+    $db->query($stmt);
+    $db->bind(':key', $key);
+    $db->bind(':value', $value);
+    $db->execute();
+    $db->close();
+}
+
+function getDatabaseCacheValue($key) {
+    $db = new Database();
+    $stmt = "SELECT `value` FROM `cache` WHERE `key`=:key ORDER BY 1 DESC";
+    $db->query($stmt);
+    $db->bind(':key', $key);
+    $resultset = $db->resultset();
+    $db->close();
+    return $resultset;
+}
+
 function getDbData($service_body_id, $data_type)
 {
     $db = new Database();
