@@ -1657,9 +1657,12 @@ function getCache($key, $cache_type = CacheType::SESSION)
         }
     }
 
-    if (isset($value['value']) && strtotime(getCurrentTime()) <= $value['expiry']) {
+    $current_time = strtotime(getCurrentTime());
+    if (isset($value['value']) && $current_time <= $value['expiry']) {
+        log_debug(sprintf("CACHE::STATUS:HIT, TYPE:%d, KEY:%s, EXPIRES:%d", $cache_type, $key, $value['expiry'] - $current_time));
         return $value['value'];
     } else {
+        log_debug(sprintf("CACHE::STATUS:MISS, TYPE:%d, KEY:%s, EXPIRES:%d", $cache_type, $key, 0));
         return null;
     }
 }
