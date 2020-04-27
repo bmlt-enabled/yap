@@ -1652,8 +1652,9 @@ function getCache($key, $cache_type = CacheType::SESSION)
             $value = $_SESSION[$cache_key];
         }
     } else if ($cache_type == CacheType::DATABASE) {
-        if (count(getDatabaseCacheValue($cache_key)) > 0) {
-            $value = json_decode(getDatabaseCacheValue($cache_key)[0]['value'], true);
+        $database_cache_value = getDatabaseCacheValue($cache_key);
+        if (count($database_cache_value) > 0) {
+            $value = json_decode($database_cache_value[0]['value'], true);
         }
     }
 
