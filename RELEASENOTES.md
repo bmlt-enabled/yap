@@ -1,5 +1,10 @@
 # Release Notes
 
+### 3.7.1 (UNRELEASED)
+* Added database caching for externals HTTPS request for improving performance.
+* Added a simple ping page for load balancer health checks.
+* Zip package now extracts into a folder.
+
 ### 3.7.0 (April 16, 2020)
 * Introducing Yap installer. [#373]
 * Added custom extensions feature that allows for setting up arbitrary call forwards and/or prompt playbacks. (https://github.com/bmlt-enabled/yap/wiki/Custom-Extensions) [#355]
