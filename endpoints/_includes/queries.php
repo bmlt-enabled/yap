@@ -299,7 +299,7 @@ function setDatabaseCacheValue($key, $value)
 function getDatabaseCacheValue($key)
 {
     $db = new Database();
-    $stmt = "SELECT `value` FROM `cache` WHERE `key`=:key ORDER BY 1 DESC";
+    $stmt = "SELECT `value` FROM `cache` WHERE `key`=:key ORDER BY id DESC";
     $db->query($stmt);
     $db->bind(':key', $key);
     $resultset = $db->resultset();
