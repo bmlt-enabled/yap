@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.7.1 (UNRELEASED)
+### 3.7.1 (May 1, 2020)
 * Added database caching for externals HTTPS request for improving performance.
 * Added a simple ping page for load balancer health checks.
 * Zip package now extracts into a folder.
