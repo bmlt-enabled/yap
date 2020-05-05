@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.7.2 (UNRELEASED)
+* Normalize timeouts for prompts. [#418]
+
 ### 3.7.1 (May 1, 2020)
 * Added database caching for externals HTTPS request for improving performance.
 * Added a simple ping page for load balancer health checks.
