@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.7.2 (UNRELEASED)
+### 3.7.2 (May 5, 2020)
 * Normalize timeouts for prompts. [#418]
 
 ### 3.7.1 (May 1, 2020)
