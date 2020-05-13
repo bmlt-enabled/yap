@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.7.3 (May 12, 2020)
+* Fix for hamburger menu not working on admin UI [#419]
+
 ### 3.7.2 (May 5, 2020)
 * Normalize timeouts for prompts. [#418]
 
