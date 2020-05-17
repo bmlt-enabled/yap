@@ -934,7 +934,7 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day)
 
     $filteredList = $meeting_results->filteredList;
     if ($search_response !== "{}") {
-        $tz = new DateTimeZone(getTimeZoneForCoordinates($latitude, $longitude)->timeZoneId);
+        $tz = new DateTimeZone(isset($_REQUEST['timezone_id']) ? $_REQUEST['timezone_id'] : getTimeZoneForCoordinates($latitude, $longitude)->timeZoneId);
         for ($i = 0; $i < count($search_results); $i++) {
             if (strpos($bmlt_search_endpoint, "{DAY}")) {
                 $past_time = isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time);
@@ -1021,9 +1021,15 @@ function getMeetings($latitude, $longitude, $results_count, $today = null, $tomo
 {
     if ($latitude != null & $longitude != null) {
         if (setting("virtual")) {
-            $timeZoneForCoordinates = getTimeZoneForCoordinates($latitude, $longitude);
-            $utc_offset = ($timeZoneForCoordinates->rawOffset+$timeZoneForCoordinates->dstOffset) / 60;
-            $GLOBALS['utc_offset'] = $utc_offset;
+            if (!isset($_REQUEST['timezone_id'])) {
+                $timeZoneForCoordinates = getTimeZoneForCoordinates($latitude, $longitude);
+                $utc_offset = ($timeZoneForCoordinates->rawOffset + $timeZoneForCoordinates->dstOffset) / 60;
+                $GLOBALS['utc_offset'] = $utc_offset;
+            } else {
+                $tz = timezone_open($_REQUEST['timezone_id']);
+                $utc = date_create("now", timezone_open("UTC"));
+                $GLOBALS['utc_offset'] = timezone_offset_get($tz, $utc) / 60;
+            }
         } else {
             $GLOBALS['utc_offset'] = 0;
             setTimeZoneForLatitudeAndLongitude($latitude, $longitude);
