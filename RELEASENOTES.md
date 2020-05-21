@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.7.4 (May 20, 2020)
+* Support for HY format.
+
 ### 3.7.3 (May 12, 2020)
 * Fix for hamburger menu not working on admin UI [#419]
 

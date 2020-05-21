@@ -12,7 +12,7 @@ require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-static $version  = "3.7.3";
+static $version  = "3.7.4";
 static $settings_whitelist = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -986,7 +986,7 @@ function getResultsString($filtered_list)
         }
     }
 
-    if (in_array("VM", explode(",", $filtered_list->formats))) {
+    if (in_array("VM", explode(",", $filtered_list->formats)) || in_array("HY", explode(",", $filtered_list->formats))) {
         if (isset($filtered_list->virtual_meeting_link) && strlen($filtered_list->virtual_meeting_link) > 0) {
             array_push($results_string["links"], str_replace("&", "&amp;", $filtered_list->virtual_meeting_link));
         }
