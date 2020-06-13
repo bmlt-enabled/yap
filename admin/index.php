@@ -17,6 +17,9 @@ $state = UpgradeAdvisor::getState();
     }
 </script>
 <div id="signin" class="container">
+    <div class="custom-control custom-switch" style="display: none;">
+        <input type="checkbox" class="custom-control-input" id="darkSwitch" />
+    </div>
     <form id="auth" class="form-signin" method="POST" action="auth_login.php">
         <div id="admin_title"><?php echo isset($GLOBALS['admin_title']) ? $GLOBALS['admin_title'] : ""; ?></div>
         <div id="yap-logo">
