@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md">
-                <table class="table table-striped table-borderless">
+                <table class="table table-striped table-borderless table-responsive">
                     <thead>
                     <tr>
                         <th scope="col">Setting</th>
