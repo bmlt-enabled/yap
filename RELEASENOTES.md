@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.8.0 (UNRELEASED)
+* Dark mode.
+
 ### 3.7.4 (May 20, 2020)
 * Support for HY format.
 
