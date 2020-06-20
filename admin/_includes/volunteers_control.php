@@ -170,11 +170,11 @@
                 <div class="volunteer-name-label">
                     Volunteer Name:
                 </div>
-                <div class="col-xs-4" style="float: left;">
+                <div class="col-xs-4 volunteer-name-text" style="float: left;">
                     <input type="text" class="form-control form-control-sm" id="volunteer_name" name="volunteer_name">
                 </div>
-                <div class="col-xs-4">
-                    <button class="btn btn-sm btn-info volunteerCardBodyToggleButton" type="button" onclick="toggleCardDetails(this);return false;">+</button>
+                <div class="col-xs-4 expand-button">
+                    <button class="btn btn-sm btn-outline-info volunteerCardBodyToggleButton" type="button" onclick="toggleCardDetails(this);return false;">+</button>
                 </div>
             </div>
             <span id="volunteerSequence" class="float-right"></span>
