@@ -29,7 +29,7 @@
             <td><?php echo $user['service_bodies']?></td>
             <td><?php echo $user['created_on']?></td>
         </tr>
-    <? } ?>
+    <?php } ?>
                 </tbody>
             </table>
         </div>
