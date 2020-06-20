@@ -511,6 +511,19 @@ function saveToAdminApi(service_body_id, data, data_type, parent_id, id, callbac
     });
 }
 
+function saveToUserApi(data, callback) {
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "users_api.php",
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: "application/json",
+        complete: callback,
+        timeout: 60000
+    });
+}
+
 function loadFromAdminApi(parent_id, service_body_id, data_type, callback) {
     $.getJSON("api.php?service_body_id=" + service_body_id
         + "&data_type=" + data_type
@@ -632,6 +645,28 @@ function includeVolunteer(volunteerData) {
 
 function manageGroups(e) {
     location.href='groups.php?service_body_id=' + $("#service_body_id").val();
+}
+
+function showAddUsersModal() {
+    $("#addUserModal").modal('show');
+}
+
+function addUserHandling() {
+    var userForm = $("#addUserForm");
+    var formData = userForm.serializeArray();
+    console.log(formData);
+    var dataObj = {};
+    for (var formItem of formData) {
+         dataObj[formItem["name"]] = userForm.find("#" + formItem["name"]).val();
+    }
+
+    $("#addUserModal").modal('hide');
+    spinnerDialog(true, "Saving User...", function () {
+        saveToUserApi(dataObj, function() {
+            spinnerDialog(false);
+            location.reload();
+        });
+    });
 }
 
 function showGroupsModal() {
