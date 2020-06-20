@@ -21,6 +21,7 @@ let jsCoreFiles = [
 let jsScheduleFiles = [
     'node_modules/moment/moment.js',
     'node_modules/@fullcalendar/core/main.js',
+    'node_modules/@fullcalendar/bootstrap/main.js',
     'node_modules/@fullcalendar/daygrid/main.js',
     'node_modules/@fullcalendar/timegrid/main.js',
     'node_modules/@fullcalendar/interaction/main.js',
@@ -37,6 +38,7 @@ let jsReportsFiles = [
 ];
 
 let cssScheduleFiles = [
+    'node_modules/@fullcalendar/bootstrap/main.css',
     'node_modules/@fullcalendar/core/main.css',
     'node_modules/@fullcalendar/daygrid/main.css',
     'node_modules/@fullcalendar/timegrid/main.css',
@@ -44,9 +46,16 @@ let cssScheduleFiles = [
 ];
 
 let cssReportsFiles = [
-    'node_modules/tabulator-tables/dist/css/tabulator.css',
     'node_modules/leaflet/dist/leaflet.css',
     'node_modules/leaflet-fullscreen/dist/leaflet.fullscreen.css',
+];
+
+let cssTabulatorLightFiles = [
+    'node_modules/tabulator-tables/dist/css/tabulator.css',
+];
+
+let cssTabulatorDarkFiles = [
+    'node_modules/tabulator-tables/dist/css/tabulator_midnight.css',
 ];
 
 let lessCoreFiles = [
@@ -146,7 +155,41 @@ task('cssReports', () => {
         .pipe(notify({message: "cssReports complete", wait: true}));
 });
 
-task('default', series('jsCore', 'jsSchedule', 'jsReports', 'cssCore', 'cssSchedule', 'cssReports'));
+task('cssTabulatorLight', () => {
+    return src(cssTabulatorLightFiles)
+        .pipe(concat('yap-tabulator-light.css'))
+        .pipe(dest(distCssDir))
+        .pipe(cleanCSS())
+        .pipe(rename({
+            suffix: '.min'
+        }))
+        .pipe(dest(distCssDir))
+        .pipe(notify({message: "cssTabulatorLight complete", wait: true}));
+});
+
+task('cssTabulatorDark', () => {
+    return src(cssTabulatorDarkFiles)
+        .pipe(concat('yap-tabulator-dark.css'))
+        .pipe(dest(distCssDir))
+        .pipe(cleanCSS())
+        .pipe(rename({
+            suffix: '.min'
+        }))
+        .pipe(dest(distCssDir))
+        .pipe(notify({message: "cssTabulatorDark complete", wait: true}));
+});
+
+
+task('default', series(
+    'jsCore',
+    'jsSchedule',
+    'jsReports',
+    'cssCore',
+    'cssSchedule',
+    'cssReports',
+    'cssTabulatorLight',
+    'cssTabulatorDark'
+));
 
 task('watch', () => {
     watch(jsCoreFiles, series('jsCore'));
@@ -156,4 +199,6 @@ task('watch', () => {
     watch(cssCoreFiles, series('cssCore'));
     watch(cssScheduleFiles, series('cssSchedule'));
     watch(cssReportsFiles, series('cssReports'));
+    watch(cssTabulatorLightFiles, series('cssTabulatorLight'));
+    watch(cssTabulatorDarkFiles, series('cssTabulatorDark'));
 });

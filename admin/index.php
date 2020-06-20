@@ -17,11 +17,12 @@ $state = UpgradeAdvisor::getState();
     }
 </script>
 <div id="signin" class="container">
+    <div class="custom-control custom-switch" style="display: none;">
+        <input type="checkbox" class="custom-control-input" id="darkSwitch" />
+    </div>
     <form id="auth" class="form-signin" method="POST" action="auth_login.php">
         <div id="admin_title"><?php echo isset($GLOBALS['admin_title']) ? $GLOBALS['admin_title'] : ""; ?></div>
-        <div id="yap-logo">
-            <img src="dist/img/yap_logo.png" alt="Yap" width="310" height="100">
-        </div>
+        <div id="yap-logo"></div>
         <div id="no-auth-message">
             <?php echo isset($_REQUEST['auth']) ? $GLOBALS['not_authorized'] : "" ?>
             <?php echo isset($_REQUEST['expired']) ? $GLOBALS['session_expired'] : "" ?>

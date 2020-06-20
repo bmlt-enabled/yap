@@ -67,6 +67,7 @@
 <script src="dist/js/yap-reports.min.js"></script>
 <script type="text/javascript">
     $(function() {
+        loadTabulatorTheme();
         var table = initReports();
         getMetrics(table);
         drawMetricsMap();

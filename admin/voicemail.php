@@ -9,6 +9,7 @@
 <?php require_once 'footer.php';?>
 <script src="dist/js/yap-reports.min.js"></script>
 <script type="text/javascript">
+    loadTabulatorTheme();
     var data = <?php echo json_encode(getVoicemail($_REQUEST['service_body_id']))?>;
     var table = new Tabulator("#voicemail-table", {
         data: data,

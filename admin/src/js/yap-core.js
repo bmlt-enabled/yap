@@ -310,7 +310,7 @@ function schedulePage() {
         nowIndicator: true,
         editable: true,
         firstDay: (new Date()).getDay(),
-        themeSystem: 'bootstrap4',
+        themeSystem: 'bootstrap',
         header: {
             left: null,
             center: null,
@@ -326,10 +326,11 @@ function schedulePage() {
             return moment(dropLocation.start).day() === moment(dropLocation.end).day();
         },
         slotEventOverlap: false,
-        plugins: ['timeGrid','list','interaction'],
-        viewRender: function() {
-            $(".fa-chevron-left").html("<");
-            $(".fa-chevron-right").html(">");
+        plugins: ['timeGrid','list','interaction','bootstrap'],
+        bootstrapFontAwesome: false,
+        buttonText: {
+            prev: "<",
+            next: ">"
         }
     });
 
@@ -1113,6 +1114,24 @@ function dataDecoder(dataString) {
 
 function toCurrentTimezone(dateTime) {
     return moment(dateTime, "YYYY-MM-DD hh:mm:ssZ").local().format("YYYY-MM-DD HH:mm:ssZ");
+}
+
+function loadCssFile(cssFilePath) {
+    $('head').append(
+        $('<link>', {
+            rel:  'stylesheet',
+            type: 'text/css',
+            href: cssFilePath
+        })
+    );
+}
+
+function loadTabulatorTheme() {
+    $(function() {
+        loadCssFile($("body").attr("data-theme") === "dark"
+            ? "dist/css/yap-tabulator-dark.min.css"
+            : "dist/css/yap-tabulator-light.min.css")
+    });
 }
 
 Object.prototype.hasOwnProperty = function(property) {

@@ -165,14 +165,25 @@
 <div class="card volunteerCard border-dark" id="volunteerCardTemplate" style="display:none;">
     <form id="volunteersForm">
         <div class="card-header">
-            <div class="volunteer-sort-icon"></div>
-            Volunteer Name: <input type="text" id="volunteer_name" name="volunteer_name">
-            <button class="btn btn-sm btn-info volunteerCardBodyToggleButton" type="button" onclick="toggleCardDetails(this);return false;">+</button>
-            <span id="volunteerSequence" class="float-right"></span>
+            <div class="form-group row">
+                <div class="volunteer-sort-icon"></div>
+                <div class="volunteer-name-label">
+                    Volunteer Name:
+                </div>
+                <div class="col-xs-4 volunteer-name-text" style="float: left;">
+                    <input type="text" class="form-control form-control-sm" id="volunteer_name" name="volunteer_name">
+                </div>
+                <div class="col-xs-4 expand-button">
+                    <button class="btn btn-sm btn-outline-info volunteerCardBodyToggleButton" type="button" onclick="toggleCardDetails(this);return false;">+</button>
+                </div>
+                <div class="col">
+                    <div id="volunteerSequence" class="float-right"></div>
+                </div>
+            </div>
         </div>
         <div class="card-body volunteerCardBody collapse">
             <div class="form-group form-row form-inline">
-                Phone Number: <input type="text" id="volunteer_phone_number" name="volunteer_phone_number">
+                Phone Number:  <input type="text" class="form-control form-control-sm" id="volunteer_phone_number" name="volunteer_phone_number">
             </div>
             <div class="form-group form-row form-inline">
                 Gender: <select class="form-control form-control-sm" name="volunteer_gender" id="volunteer_gender">
@@ -201,7 +212,7 @@
                 } ?>
                 </select>
             </div>
-            <table id="volunteer_schedule" class="table table-striped table-bordered">
+            <table id="volunteer_schedule" class="table table-striped table-borderless">
                 <tr>
                     <th>
                         Shifts

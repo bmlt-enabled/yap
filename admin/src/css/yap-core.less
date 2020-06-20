@@ -111,14 +111,23 @@ div#signin {
 .spinnerImage {
     height: 45px;
     width: 45px;
-    background: url('../img/loader3.gif') no-repeat;
+    background: url('../img/loader_light.gif') no-repeat;
     display: inline;
     float: left;
     padding-right: 50px;
 }
 
 #spinnerDialogText {
-    padding-top: 3px;
+    padding-top: 10px;
+}
+
+.volunteer-name-label {
+    padding-top: 5px;
+    padding-right: 5px;
+}
+
+.expand-button {
+    padding-left: 5px;
 }
 
 #admin_language {
@@ -278,6 +287,16 @@ div#signin {
 #wizardAlert {
     display: none;
 }
+#yap-logo {
+    background: url("../img/yap_logo_light.png") no-repeat;
+    width: 310px;
+    height: 100px;
+}
+[data-theme="dark"] #yap-logo {
+    background: url("../img/yap_logo_dark.png") no-repeat;
+    width: 310px;
+    height: 100px;
+}
 [data-theme="dark"] {
     background-color: #333;
 }
@@ -290,24 +309,77 @@ div#signin {
 }
 [data-theme="dark"] select {
     background-color: #555;
+    border-color: #666;
     color: #ddd;
 }
-[data-theme="dark"] .modal-content {
-    background-color: #333;
+[data-theme="dark"] input {
+    background-color: #555;
+    border-color: #666;
+    color: #ddd;
+}
+[data-theme="dark"] textarea{
+    background-color: #555;
+    border-color: #666;
+    color: #ddd;
 }
 [data-theme="dark"] .modal-title {
     color: #ddd;
 }
+[data-theme="dark"] .modal-header {
+    border-bottom: #555 1px solid;
+}
+[data-theme="dark"] .modal-content {
+    background-color: #333;
+}
+[data-theme="dark"] .modal-footer {
+    border-top: #555 1px solid;
+}
 [data-theme="dark"] .form-control {
     background-color: #333;
     color: #ddd;
-}
-[data-theme="dark"] select {
-    border-color: #333;
 }
 [data-theme="dark"] .voicemail-title {
     color: #777;
 }
 [data-theme="dark"] .card-header {
     background-color: #333;
+    border: #555 1px outset;
+}
+[data-theme="dark"] .card-body {
+    background-color: #444;
+    border: #555 1px solid;
+}
+[data-theme="dark"] .card-footer {
+    background-color: #444;
+}
+[data-theme="dark"] tr {
+    border-bottom: #555 1px inset;
+}
+[data-theme="dark"] #volunteer_schedule {
+    border: #333 1px inset;
+}
+[data-theme="dark"] .fc-today {
+    background-color: #444;
+}
+[data-theme="dark"] .fc-listWeek-view {
+    background-color: #333;
+}
+[data-theme="dark"] .input-group-text {
+    background-color: #333;
+    color: #666;
+    border: #555 1px solid;
+}
+[data-theme="dark"] .volunteerCard {
+    background-color: #444;
+}
+[data-theme="dark"] .spinnerImage {
+    height: 45px;
+    width: 45px;
+    background: url('../img/loader_dark.gif') no-repeat;
+    display: inline;
+    float: left;
+    padding-right: 50px;
+}
+#volunteer_name {
+    float: left;
 }
