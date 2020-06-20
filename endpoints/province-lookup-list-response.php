@@ -3,7 +3,7 @@ require_once '_includes/functions.php';
 header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
-$province_lookup_item = intval($_REQUEST['Digits']);
+$province_lookup_item = getIvrResponse(sprintf("province-voice-input.php?SearchType=%s", $_REQUEST['SearchType']), null, range(1, count(setting('province_lookup_list'))));
 insertCallEventRecord(EventId::PROVINCE_LOOKUP_LIST, (object)['province_lookup_list' => setting('province_lookup_list')[$province_lookup_item - 1]]);
 ?>
 
