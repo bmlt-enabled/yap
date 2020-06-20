@@ -29,8 +29,8 @@ jobs:
       - cp -R vendor ${ARTIFACT_FILE}/
       - mkdir -p ${ARTIFACT_FILE}/admin/dist && cp -R admin/dist/. ${ARTIFACT_FILE}/admin/dist
       - mkdir -p ${ARTIFACT_FILE}/endpoints/croutonjs && cp -R endpoints/croutonjs/. ${ARTIFACT_FILE}/endpoints/croutonjs
-      - find ./${ARTIFACT_FILENAME} -type d | xargs chmod 755
-      - find ./${ARTIFACT_FILENAME} '*.php' | xargs chmod 644
+      - find ./${ARTIFACT_FILE} -type d | xargs chmod 755
+      - find ./${ARTIFACT_FILE} '*.php' | xargs chmod 644
       - zip -r -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}
       - mkdir artifacts/
       - mv ${ARTIFACT_FILENAME} artifacts/
@@ -61,8 +61,8 @@ jobs:
       - cp -R vendor ${ARTIFACT_FILE}/
       - mkdir -p ${ARTIFACT_FILE}/admin/dist && cp -R admin/dist/. ${ARTIFACT_FILE}/admin/dist
       - mkdir -p ${ARTIFACT_FILE}/endpoints/croutonjs && cp -R endpoints/croutonjs/. ${ARTIFACT_FILE}/endpoints/croutonjs
-      - find ./${ARTIFACT_FILENAME} -type d | xargs chmod 755
-      - find ./${ARTIFACT_FILENAME} '*.php' | xargs chmod 644
+      - find ./${ARTIFACT_FILE} -type d | xargs chmod 755
+      - find ./${ARTIFACT_FILE} '*.php' | xargs chmod 644
       - zip -r -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}
       - curl -LO https://raw.githubusercontent.com/bmlt-enabled/release-notes-tool/master/release-notes.sh
       - chmod +x release-notes.sh
