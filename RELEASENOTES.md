@@ -2,6 +2,7 @@
 
 ### 3.8.0 (UNRELEASED)
 * Dark mode.
+* Admin UI for users. [#340]
 * State/province lookup by menu. [#422]
 
 ### 3.7.4 (May 20, 2020)
