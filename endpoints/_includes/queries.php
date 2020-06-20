@@ -352,6 +352,25 @@ function getDbGroupsForServiceBody($service_body_id)
     return $resultset;
 }
 
+function getUsers() {
+    $db = new Database();
+    $db->query("SELECT name, username, is_admin, permissions, service_bodies, created_on FROM `users`");
+    $resultset = $db->resultset();
+    $db->close();
+    return $resultset;
+}
+
+function saveUser($data) {
+    $db = new Database();
+    $stmt = "INSERT INTO `users` (`name`, `username`, `password`, `permissions`, `service_bodies`, `is_admin`) VALUES (:name, :username, SHA2(:password, 256), 0, '', 0)";
+    $db->query($stmt);
+    $db->bind(':name', $data->name);
+    $db->bind(':username', $data->username);
+    $db->bind(':password', $data->password);
+    $db->execute();
+    $db->close();
+}
+
 function auth_v2($username, $password)
 {
     $db = new Database();
