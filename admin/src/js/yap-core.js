@@ -310,7 +310,7 @@ function schedulePage() {
         nowIndicator: true,
         editable: true,
         firstDay: (new Date()).getDay(),
-        themeSystem: 'bootstrap4',
+        themeSystem: 'bootstrap',
         header: {
             left: null,
             center: null,
@@ -326,10 +326,11 @@ function schedulePage() {
             return moment(dropLocation.start).day() === moment(dropLocation.end).day();
         },
         slotEventOverlap: false,
-        plugins: ['timeGrid','list','interaction'],
-        viewRender: function() {
-            $(".fa-chevron-left").html("<");
-            $(".fa-chevron-right").html(">");
+        plugins: ['timeGrid','list','interaction','bootstrap'],
+        bootstrapFontAwesome: false,
+        buttonText: {
+            prev: "<",
+            next: ">"
         }
     });
 

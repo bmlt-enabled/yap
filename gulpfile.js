@@ -21,6 +21,7 @@ let jsCoreFiles = [
 let jsScheduleFiles = [
     'node_modules/moment/moment.js',
     'node_modules/@fullcalendar/core/main.js',
+    'node_modules/@fullcalendar/bootstrap/main.js',
     'node_modules/@fullcalendar/daygrid/main.js',
     'node_modules/@fullcalendar/timegrid/main.js',
     'node_modules/@fullcalendar/interaction/main.js',
@@ -37,6 +38,7 @@ let jsReportsFiles = [
 ];
 
 let cssScheduleFiles = [
+    'node_modules/@fullcalendar/bootstrap/main.css',
     'node_modules/@fullcalendar/core/main.css',
     'node_modules/@fullcalendar/daygrid/main.css',
     'node_modules/@fullcalendar/timegrid/main.css',
