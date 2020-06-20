@@ -1115,6 +1115,24 @@ function toCurrentTimezone(dateTime) {
     return moment(dateTime, "YYYY-MM-DD hh:mm:ssZ").local().format("YYYY-MM-DD HH:mm:ssZ");
 }
 
+function loadCssFile(cssFilePath) {
+    $('head').append(
+        $('<link>', {
+            rel:  'stylesheet',
+            type: 'text/css',
+            href: cssFilePath
+        })
+    );
+}
+
+function loadTabulatorTheme() {
+    $(function() {
+        loadCssFile($("body").attr("data-theme") === "dark"
+            ? "dist/css/yap-tabulator-dark.min.css"
+            : "dist/css/yap-tabulator-light.min.css")
+    });
+}
+
 Object.prototype.hasOwnProperty = function(property) {
     return this[property] !== undefined;
 };
