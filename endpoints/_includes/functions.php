@@ -48,6 +48,7 @@ static $settings_whitelist = [
     'mobile_check' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'postal_code_length' => [ 'description' => '' , 'default' => 5, 'overridable' => true, 'hidden' => false],
     'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'province_lookup_list' => [ 'description' => '' , 'default' => [], 'overridable' => true, 'hidden' => false],
     'result_count_max' => [ 'description' => '' , 'default' => 5, 'overridable' => true, 'hidden' => false],
     'service_body_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'service_body_config_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
@@ -148,6 +149,7 @@ class EventId
     const HELPLINE_ROUTE = 15;
     const VOICEMAIL_PLAYBACK = 16;
     const DIALBACK = 17;
+    const PROVINCE_LOOKUP_LIST = 18;
 
     public static function getEventById($id)
     {
@@ -186,6 +188,8 @@ class EventId
                 return "Voicemail Playback";
             case self::DIALBACK:
                 return "Dialback";
+            case self::PROVINCE_LOOKUP_LIST:
+                return "Province Lookup List";
         }
     }
 }
