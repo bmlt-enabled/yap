@@ -176,8 +176,10 @@
                 <div class="col-xs-4 expand-button">
                     <button class="btn btn-sm btn-outline-info volunteerCardBodyToggleButton" type="button" onclick="toggleCardDetails(this);return false;">+</button>
                 </div>
+                <div class="col">
+                    <div id="volunteerSequence" class="float-right"></div>
+                </div>
             </div>
-            <span id="volunteerSequence" class="float-right"></span>
         </div>
         <div class="card-body volunteerCardBody collapse">
             <div class="form-group form-row form-inline">
