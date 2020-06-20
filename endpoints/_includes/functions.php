@@ -149,6 +149,7 @@ class EventId
     const HELPLINE_ROUTE = 15;
     const VOICEMAIL_PLAYBACK = 16;
     const DIALBACK = 17;
+    const PROVINCE_LOOKUP_LIST = 18;
 
     public static function getEventById($id)
     {
@@ -187,6 +188,8 @@ class EventId
                 return "Voicemail Playback";
             case self::DIALBACK:
                 return "Dialback";
+            case self::PROVINCE_LOOKUP_LIST:
+                return "Province Lookup List";
         }
     }
 }
