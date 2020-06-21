@@ -486,6 +486,10 @@ class UpgradeAdvisor
 
         if (!isset($root_server_settings)) {
             return self::getState(false, "Your root server returned no server information.  Double-check that you have the right root server url.");
+        } else {
+            if ($root_server_settings[0]->semanticAdmin === "0") {
+                return self::getState(false, "Your root server has semanticAdmin disabled, please enable it.  https://bmlt.app/semantic/semantic-administration/");
+            }
         }
 
         foreach (setting("digit_map_search_type") as $digit => $value) {
