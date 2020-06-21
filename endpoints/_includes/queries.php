@@ -361,7 +361,8 @@ function getUsers()
     return $resultset;
 }
 
-function deleteUser($id) {
+function deleteUser($id)
+{
     $db = new Database();
     $stmt = "UPDATE `users` SET `deleted`=1 WHERE `id`=:id";
     $db->query($stmt);
