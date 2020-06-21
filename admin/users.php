@@ -22,7 +22,7 @@
         <tr>
             <td>
                 <button class="btn btn-sm btn-warning">Edit</button>
-                <button class="btn btn-sm btn-danger">Delete</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteUserHandling(<?php echo $user['id']?>)">Delete</button>
             </td>
             <td><?php echo $user['name']?></td>
             <td><?php echo $user['username']?></td>

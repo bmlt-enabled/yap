@@ -355,16 +355,25 @@ function getDbGroupsForServiceBody($service_body_id)
 function getUsers()
 {
     $db = new Database();
-    $db->query("SELECT name, username, is_admin, permissions, service_bodies, created_on FROM `users`");
+    $db->query("SELECT id, name, username, is_admin, permissions, service_bodies, created_on FROM `users` WHERE IFNULL(`deleted`, 0) = 0");
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
 }
 
+function deleteUser($id) {
+    $db = new Database();
+    $stmt = "UPDATE `users` SET `deleted`=1 WHERE `id`=:id";
+    $db->query($stmt);
+    $db->bind(':id', $id);
+    $db->execute();
+    $db->close();
+}
+
 function saveUser($data)
 {
     $db = new Database();
-    $stmt = "INSERT INTO `users` (`name`, `username`, `password`, `permissions`, `service_bodies`, `is_admin`) VALUES (:name, :username, SHA2(:password, 256), 0, '', 0)";
+    $stmt = "INSERT INTO `users` (`name`, `username`, `password`, `permissions`, `service_bodies`, `is_admin`, `deleted`) VALUES (:name, :username, SHA2(:password, 256), 0, '', 0, 0)";
     $db->query($stmt);
     $db->bind(':name', $data->name);
     $db->bind(':username', $data->username);

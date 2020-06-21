@@ -511,11 +511,11 @@ function saveToAdminApi(service_body_id, data, data_type, parent_id, id, callbac
     });
 }
 
-function saveToUserApi(data, callback) {
+function usersApi(data, action, callback) {
     $.ajax({
         async: false,
         type: "POST",
-        url: "users_api.php",
+        url: "users_api.php?action=" + action,
         data: JSON.stringify(data),
         dataType: "json",
         contentType: "application/json",
@@ -662,7 +662,17 @@ function addUserHandling() {
 
     $("#addUserModal").modal('hide');
     spinnerDialog(true, "Saving User...", function () {
-        saveToUserApi(dataObj, function() {
+        usersApi(dataObj, "save",function() {
+            spinnerDialog(false);
+            location.reload();
+        });
+    });
+}
+
+function deleteUserHandling(id) {
+    $("#addUserModal").modal('hide');
+    spinnerDialog(true, "Deleting User...", function () {
+        usersApi({id: id}, "delete", function() {
             spinnerDialog(false);
             location.reload();
         });
