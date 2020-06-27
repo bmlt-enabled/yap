@@ -17,15 +17,19 @@ require_once 'header.php';
     </button>
     <div class="collapse navbar-collapse" id="top-navbar">
         <ul class="navbar-nav mr-auto">
-            <?php
-                $pages = array("Home", "Reports", "Service Bodies", "Schedules", "Settings", "Volunteers", "Groups", "Users");
+        <?php
+            $pages = array("Home", "Reports", "Service Bodies", "Schedules", "Settings", "Volunteers", "Groups");
+            if (boolval($_SESSION['auth_is_admin'])) {
+                array_push($pages, "Users");
+            }
+
             foreach ($pages as $page) {
                 $slug = str_replace(" ", "_", strtolower($page))
                 ?>
             <li class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == $slug.".php" ? "active" : ""?>">
                 <a class="nav-link" href="<?php echo $slug?>.php"><?php echo $GLOBALS[$slug]?></a>
             </li>
-            <?php }?>
+        <?php }?>
         </ul>
         <ul class="nav justify-content-end">
             <li class="nav-item nav-item-right">

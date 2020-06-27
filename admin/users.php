@@ -1,4 +1,9 @@
-<?php require_once 'nav.php';?>
+<?php require_once 'nav.php';
+if (!boolval($_SESSION['auth_is_admin'])) {
+    echo("Access Denied");
+    exit();
+}
+?>
 <div class="container">
     <div class="row">
         <button class="btn btn-sm btn-primary" onclick="showAddUsersModal();">Add User</button>
