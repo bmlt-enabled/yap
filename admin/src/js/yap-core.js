@@ -683,7 +683,6 @@ function saveUserData(action) {
     var formData = userForm.serializeArray();
     var dataObj = {};
     for (var formItem of formData) {
-        var fieldVal = userForm.find("#" + formItem["name"]).val();
         dataObj[formItem["name"]] = userForm.find("#" + formItem["name"]).val();
     }
 
@@ -728,13 +727,14 @@ function editUser(id, name, username, service_bodies) {
 }
 
 function deleteUserHandling(id) {
-    $("#addUserModal").modal('hide');
-    spinnerDialog(true, "Deleting User...", function () {
-        usersApi({id: id}, "delete", function() {
-            spinnerDialog(false);
-            location.reload();
+    if (confirm("Are you sure you want to delete this user?")) {
+        spinnerDialog(true, "Deleting User...", function () {
+            usersApi({id: id}, "delete", function () {
+                spinnerDialog(false);
+                location.reload();
+            });
         });
-    });
+    }
 }
 
 function showGroupsModal() {
