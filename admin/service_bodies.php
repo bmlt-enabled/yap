@@ -66,7 +66,7 @@ sort_on_field($service_bodies, 'name');
                                                 </div>
 
                                                 <div class="service_bodies_field_container">
-                                                    <label for="call_timeout">Gender Routing:</label>
+                                                    <label for="gender_routing">Gender Routing:</label>
                                                     <select class="form-control form-control-sm" name="gender_routing" id="gender_routing"
                                                             data-volunteer_routing="volunteers,volunteers_and_sms">
                                                         <option value="0">Disabled</option>

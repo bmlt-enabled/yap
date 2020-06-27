@@ -1026,6 +1026,10 @@ function openServiceBodyCallHandling(service_body_id) {
                         $(match).closest(".service_bodies_field_container").hide();
                     }
                 }
+
+                if (trigger !== "call_strategy") {
+                    serviceBodyCallHandling.find("#call_strategy").change();
+                }
             });
 
             serviceBodyCallHandling.find("select").change();
