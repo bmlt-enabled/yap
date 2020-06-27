@@ -706,22 +706,38 @@ function resetUsersValidation() {
 
 function showAddUsersModal() {
     resetUsersValidation();
+    adminOnlyFields(true);
     $("#usersSaveButton").off('click').on('click', function() {
         addUserHandling("save");
     });
     $("#addUserModal").modal('show');
 }
 
-function editUser(id, name, username, service_bodies) {
+function adminOnlyFields(show) {
+    if (show) {
+        $(".users_username").show();
+        $(".users_service_bodies").show();
+    } else {
+        $(".users_username").hide();
+        $(".users_service_bodies").hide();
+    }
+}
+
+function editUser(id, username, name, service_bodies, type) {
     resetUsersValidation();
     $("#id").val(id);
     $("#username").val(username);
     $("#name").val(name);
-    $.each(service_bodies.split(","), function(i,e){
-        $("#service_bodies option[value='" + e + "']").prop("selected", true);
-    });
+    if (type !== undefined && type === "profile") {
+        adminOnlyFields(false);
+    } else {
+        adminOnlyFields(true);
+        $.each(service_bodies.split(","), function (i, e) {
+            $("#service_bodies option[value='" + e + "']").prop("selected", true);
+        });
+    }
     $("#usersSaveButton").off('click').on('click', function() {
-        addUserHandling("edit");
+        addUserHandling(type);
     });
     $("#addUserModal").modal('show');
 }

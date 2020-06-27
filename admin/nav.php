@@ -40,6 +40,10 @@ require_once 'header.php';
             </li>
             <li class="nav-item">
                 <button type="button"
+                        class="btn btn-info"
+                        id="profile-button"
+                        onclick="editUser('<?php echo $_SESSION['auth_id']?>','<?php echo $_SESSION['username']?>','<?php echo $_SESSION['auth_user_name_string']?>', '', 'profile') ">Profile</button>
+                <button type="button"
                         class="btn btn-danger"
                         id="log-out-button"
                         onclick="location.href='logout.php';"><?php echo $GLOBALS['log_out']?> <?php echo admin_GetUserName()?></button>
