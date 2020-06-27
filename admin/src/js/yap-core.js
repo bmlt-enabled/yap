@@ -647,26 +647,84 @@ function manageGroups(e) {
     location.href='groups.php?service_body_id=' + $("#service_body_id").val();
 }
 
-function showAddUsersModal() {
-    $("#addUserModal").modal('show');
+function addUserHandling(action) {
+    var rules = {
+        name: {
+            minlength: 5,
+            required: true
+        },
+        username: {
+            minlength: 5,
+            required: true
+        },
+    };
+
+    if (action === "save") {
+        rules['password'] = {
+            minlength: 10,
+            required: true,
+        }
+    }
+
+    $("#addUserForm").validate({
+        rules: rules,
+        highlight: function (element) {
+            $(element).closest('.control-group').addClass('text-danger');
+        },
+        success: function (element) {
+            element.closest('.control-group').removeClass('text-danger');
+            saveUserData(action);
+        }
+    }).form();
 }
 
-function addUserHandling() {
+function saveUserData(action) {
     var userForm = $("#addUserForm");
     var formData = userForm.serializeArray();
-    console.log(formData);
     var dataObj = {};
     for (var formItem of formData) {
-         dataObj[formItem["name"]] = userForm.find("#" + formItem["name"]).val();
+        var fieldVal = userForm.find("#" + formItem["name"]).val();
+        dataObj[formItem["name"]] = userForm.find("#" + formItem["name"]).val();
     }
 
     $("#addUserModal").modal('hide');
     spinnerDialog(true, "Saving User...", function () {
-        usersApi(dataObj, "save",function() {
+        usersApi(dataObj, action,function() {
             spinnerDialog(false);
             location.reload();
         });
     });
+}
+
+function resetUsersValidation() {
+    var form = $("#addUserForm")
+    if (form.data('validator')) {
+        form.validate().destroy();
+    }
+    form.trigger("reset");
+    $(".text-danger").removeClass('text-danger');
+}
+
+function showAddUsersModal() {
+    resetUsersValidation();
+    $("#usersSaveButton").off('click').on('click', function() {
+        addUserHandling("save");
+    });
+    $("#addUserModal").modal('show');
+}
+
+function editUser(id, name, username, service_bodies) {
+    resetUsersValidation();
+    $("#id").val(id);
+    $("#username").val(username);
+    $("#name").val(name);
+    $.each(service_bodies.split(","), function(i,e){
+        $("#service_bodies option[value='" + e + "']").prop("selected", true);
+    });
+    $("#usersSaveButton").off('click').on('click', function() {
+        addUserHandling("edit");
+    });
+    $("#addUserModal").modal('show');
 }
 
 function deleteUserHandling(id) {

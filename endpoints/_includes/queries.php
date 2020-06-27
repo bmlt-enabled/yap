@@ -355,7 +355,7 @@ function getDbGroupsForServiceBody($service_body_id)
 function getUsers()
 {
     $db = new Database();
-    $db->query("SELECT id, name, username, is_admin, permissions, service_bodies, created_on FROM `users` WHERE IFNULL(`deleted`, 0) = 0");
+    $db->query("SELECT id, name, username, is_admin, permissions, service_bodies, created_on FROM `users`");
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
@@ -364,9 +364,29 @@ function getUsers()
 function deleteUser($id)
 {
     $db = new Database();
-    $stmt = "UPDATE `users` SET `deleted`=1 WHERE `id`=:id";
+    $stmt = "DELETE FROM `users` WHERE `id`=:id";
     $db->query($stmt);
     $db->bind(':id', $id);
+    $db->execute();
+    $db->close();
+}
+
+function editUser($data)
+{
+    $db = new Database();
+    if (strlen($data->password) > 0) {
+        $stmt = "UPDATE `users` SET `name` = :name, `username` = :username, `service_bodies` = :service_bodies, `password` = SHA2(:password, 256) where `id` = :id";
+        $db->query($stmt);
+        $db->bind(':password', $data->password);
+    } else {
+        $stmt = "UPDATE `users` SET `name` = :name, `username` = :username, `service_bodies` = :service_bodies where `id` = :id";
+        $db->query($stmt);
+    }
+
+    $db->bind(':id', $data->id);
+    $db->bind(':name', $data->name);
+    $db->bind(':username', $data->username);
+    $db->bind(':service_bodies', implode(",", $data->service_bodies));
     $db->execute();
     $db->close();
 }
@@ -374,11 +394,12 @@ function deleteUser($id)
 function saveUser($data)
 {
     $db = new Database();
-    $stmt = "INSERT INTO `users` (`name`, `username`, `password`, `permissions`, `service_bodies`, `is_admin`, `deleted`) VALUES (:name, :username, SHA2(:password, 256), 0, '', 0, 0)";
+    $stmt = "INSERT INTO `users` (`name`, `username`, `password`, `permissions`, `service_bodies`, `is_admin`) VALUES (:name, :username, SHA2(:password, 256), 0, :service_bodies, 0)";
     $db->query($stmt);
     $db->bind(':name', $data->name);
     $db->bind(':username', $data->username);
     $db->bind(':password', $data->password);
+    $db->bind(':service_bodies', implode(",", $data->service_bodies));
     $db->execute();
     $db->close();
 }

@@ -15,6 +15,7 @@ let jsCoreFiles = [
     'node_modules/bootstrap/dist/js/bootstrap.js',
     'node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.js',
     'node_modules/dark-mode-switch/dark-mode-switch.min.js',
+    'node_modules/jquery-validation/dist/jquery.validate.min.js',
     'admin/src/js/yap-core.js',
 ];
 

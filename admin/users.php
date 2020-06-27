@@ -26,7 +26,7 @@ if (!boolval($_SESSION['auth_is_admin'])) {
     foreach ($users as $user) {?>
         <tr>
             <td>
-                <button class="btn btn-sm btn-warning">Edit</button>
+                <button class="btn btn-sm btn-warning" onclick="editUser(<?php echo $user['id']?>, '<?php echo $user['name']?>', '<?php echo $user['username']?>', '<?php echo $user['service_bodies']?>')">Edit</button>
                 <button class="btn btn-sm btn-danger" onclick="deleteUserHandling(<?php echo $user['id']?>)">Delete</button>
             </td>
             <td><?php echo $user['name']?></td>
@@ -52,25 +52,40 @@ if (!boolval($_SESSION['auth_is_admin'])) {
                 <div class="modal-body serviceBodyCallHandlingItems">
                     <form id="addUserForm" class="addUserForm">
                         <div id="serviceBodyCallHandlingValidation"></div>
-                        <div class="users_username">
+                        <div class="users_username control-group">
                             <label for="username">Username:</label>
                             <input class="form-control form-control-sm" type="text" name="username" id="username">
                         </div>
 
-                        <div class="users_name">
-                            <label for="name">Name:</label>
+                        <div class="users_name control-group">
+                            <label for="name">Display Name:</label>
                             <input class="form-control form-control-sm" type="text" name="name" id="name">
                         </div>
 
-                        <div class="users_password">
+                        <div class="users_password control-group">
                             <label for="password">Password:</label>
                             <input class="form-control form-control-sm" type="password" name="password" id="password">
+                        </div>
+
+                        <input class="form-control form-control-sm" type="hidden" name="id" id="id">
+
+                        <div class="users_service_bodies control-group">
+                            <?php
+                            $shareable_service_bodies = getServiceBodies();
+                            sort_on_field($shareable_service_bodies, 'name')
+                            ?>
+                            Service Bodies Access: <select size="10" multiple class="form-control form-control-sm" name="service_bodies" id="service_bodies">
+                                <?php
+                                foreach ($shareable_service_bodies as $service_body) { ?>
+                                    <option value="<?php echo $service_body->id; ?>"><?php echo $service_body->name; ?></option>
+                                <?php } ?>
+                            </select>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-sm btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button class="btn btn-sm btn-primary" onclick="addUserHandling()">Add User</button>
+                    <button id="usersSaveButton" class="btn btn-sm btn-primary">Save</button>
                 </div>
             </div>
         </div>
