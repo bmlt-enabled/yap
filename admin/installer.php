@@ -1,7 +1,8 @@
 <?php
 require_once __DIR__ . '/../endpoints/_includes/constants.php';
 if (file_exists('../config.php')) {
-    header('Location: /admin');
+    define('URL', str_replace('installer.php', '', $_SERVER['REQUEST_URI']));
+    header("Location: " . URL);
     exit();
 }
 require_once 'spinner_dialog.php';
@@ -20,9 +21,7 @@ require_once 'spinner_dialog.php';
 <body>
     <div id="wizard" class="container">
         <form id="wizardForm" class="wizardForm">
-            <div id="yap-logo">
-                <img src="dist/img/yap_logo.png" alt="Yap" width="310" height="100">
-            </div>
+            <div id="yap-logo"></div>
             <div id="wizardTitle">Installer</div>
             <div id="wizardAlert" class="alert alert-danger" role="alert"></div>
             <div id="wizardInstructions">Welcome to the Yap Installer.  This tool was developed to help quickly construct your configuration with the basic settings.  You should refer to the documentation (<a target="_blank" href="https://yap.bmlt.app">https://yap.bmlt.app</a>) for adding additional settings after you have completed this process.
