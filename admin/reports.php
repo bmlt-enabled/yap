@@ -4,7 +4,8 @@
     <div id="reports-top-controls-container">
         <div id="reports-servicebodies-dropdown-container">
             <select class="form-control form-control-sm" id="service_body_id" name="service_body_id">
-                <option selected value="0">All</option>
+                <option selected value="-1">-= Select A Service Body =-</option>
+                <option value="0">All</option>
                 <?php
                 $serviceBodies = getServiceBodyDetailForUser();
                 sort_on_field($serviceBodies, 'name');
