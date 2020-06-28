@@ -17,7 +17,9 @@ if (!boolval($_SESSION['auth_is_admin'])) {
                     <th scope="col">Username</th>
                     <th scope="col">Name</th>
                     <th scope="col">Service Bodies</th>
-                    <th scope="col">Admin</th>
+                    <?php if (boolval($_SESSION['auth_is_admin'])) { ?>
+                        <th scope="col">Admin</th>
+                    <?php } ?>
                     <th scope="col">Date Created</th>
                 </tr>
                 </thead>
@@ -35,7 +37,9 @@ if (!boolval($_SESSION['auth_is_admin'])) {
             <td><?php echo $user['username']?></td>
             <td><?php echo $user['name']?></td>
             <td><?php echo $user['service_bodies']?></td>
-            <td><input type="checkbox" <?php echo boolval($user['is_admin']) ? "checked" : "" ?> disabled="true"></td>
+            <?php if (boolval($_SESSION['auth_is_admin'])) { ?>
+                <td><input type="checkbox" <?php echo boolval($user['is_admin']) ? "checked" : "" ?> disabled="true"></td>
+            <?php } ?>
             <td><?php echo $user['created_on']?></td>
         </tr>
     <?php } ?>
