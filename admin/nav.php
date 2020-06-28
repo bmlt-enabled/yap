@@ -19,7 +19,7 @@ require_once 'header.php';
         <ul class="navbar-nav mr-auto">
         <?php
         $pages = array("Home", "Reports", "Service Bodies", "Schedules", "Settings", "Volunteers", "Groups");
-        if (boolval($_SESSION['auth_is_admin'])) {
+        if (isset($_SESSION['auth_is_admin']) && boolval($_SESSION['auth_is_admin'])) {
             array_push($pages, "Users");
         }
 
@@ -39,10 +39,12 @@ require_once 'header.php';
                 </div>
             </li>
             <li class="nav-item">
+                <?php if (isset($_SESSION['auth_id'])) { ?>
                 <button type="button"
                         class="btn btn-info"
                         id="profile-button"
                         onclick="editUser('<?php echo $_SESSION['auth_id']?>','<?php echo $_SESSION['username']?>','<?php echo $_SESSION['auth_user_name_string']?>', '', 'profile') ">Profile</button>
+                <?php } ?>
                 <button type="button"
                         class="btn btn-danger"
                         id="log-out-button"
