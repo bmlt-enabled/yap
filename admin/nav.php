@@ -17,15 +17,19 @@ require_once 'header.php';
     </button>
     <div class="collapse navbar-collapse" id="top-navbar">
         <ul class="navbar-nav mr-auto">
-            <?php
-                $pages = array("Home", "Reports", "Service Bodies", "Schedules", "Settings", "Volunteers", "Groups");
-            foreach ($pages as $page) {
-                $slug = str_replace(" ", "_", strtolower($page))
-                ?>
+        <?php
+        $pages = array("Home", "Reports", "Service Bodies", "Schedules", "Settings", "Volunteers", "Groups");
+        if (isset($_SESSION['auth_is_admin']) && boolval($_SESSION['auth_is_admin'])) {
+            array_push($pages, "Users");
+        }
+
+        foreach ($pages as $page) {
+            $slug = str_replace(" ", "_", strtolower($page))
+            ?>
             <li class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == $slug.".php" ? "active" : ""?>">
                 <a class="nav-link" href="<?php echo $slug?>.php"><?php echo $GLOBALS[$slug]?></a>
             </li>
-            <?php }?>
+        <?php }?>
         </ul>
         <ul class="nav justify-content-end">
             <li class="nav-item nav-item-right">
@@ -35,6 +39,12 @@ require_once 'header.php';
                 </div>
             </li>
             <li class="nav-item">
+                <?php if (isset($_SESSION['auth_id'])) { ?>
+                <button type="button"
+                        class="btn btn-info"
+                        id="profile-button"
+                        onclick="editUser('<?php echo $_SESSION['auth_id']?>','<?php echo $_SESSION['username']?>','<?php echo $_SESSION['auth_user_name_string']?>', '', 'profile') ">Profile</button>
+                <?php } ?>
                 <button type="button"
                         class="btn btn-danger"
                         id="log-out-button"

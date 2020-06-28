@@ -352,10 +352,72 @@ function getDbGroupsForServiceBody($service_body_id)
     return $resultset;
 }
 
+function getUsers()
+{
+    $db = new Database();
+    $db->query("SELECT id, name, username, is_admin, permissions, service_bodies, created_on FROM `users`");
+    $resultset = $db->resultset();
+    $db->close();
+    return $resultset;
+}
+
+function deleteUser($id)
+{
+    $db = new Database();
+    $stmt = "DELETE FROM `users` WHERE `id`=:id";
+    $db->query($stmt);
+    $db->bind(':id', $id);
+    $db->execute();
+    $db->close();
+}
+
+function editUser($data, $role)
+{
+    $stmt = "UPDATE `users` SET `name` = :name";
+    if (strlen($data->password) > 0) {
+        $stmt = $stmt . ", `password` = SHA2(:password, 256)";
+    }
+
+    if ($role === 'admin') {
+        $stmt = $stmt . ", `username` = :username, `service_bodies` = :service_bodies";
+    }
+
+    $stmt = $stmt . " where `id` = :id";
+    $db = new Database();
+    $db->query($stmt);
+    $db->bind(':id', $data->id);
+    $db->bind(':name', $data->name);
+
+    if (strlen($data->password) > 0) {
+        $db->bind(':password', $data->password);
+    }
+
+    if ($role === 'admin') {
+        $db->bind(':username', $data->username);
+        $db->bind(':service_bodies', implode(",", $data->service_bodies));
+    }
+
+    $db->execute();
+    $db->close();
+}
+
+function saveUser($data)
+{
+    $db = new Database();
+    $stmt = "INSERT INTO `users` (`name`, `username`, `password`, `permissions`, `service_bodies`, `is_admin`) VALUES (:name, :username, SHA2(:password, 256), 0, :service_bodies, 0)";
+    $db->query($stmt);
+    $db->bind(':name', $data->name);
+    $db->bind(':username', $data->username);
+    $db->bind(':password', $data->password);
+    $db->bind(':service_bodies', implode(",", $data->service_bodies));
+    $db->execute();
+    $db->close();
+}
+
 function auth_v2($username, $password)
 {
     $db = new Database();
-    $db->query("SELECT name, username, password, is_admin, permissions, service_bodies FROM `users` WHERE `username` = :username AND `password` = SHA2(:password, 256)");
+    $db->query("SELECT id, name, username, password, is_admin, permissions, service_bodies FROM `users` WHERE `username` = :username AND `password` = SHA2(:password, 256)");
     $db->bind(':username', $username);
     $db->bind(':password', $password);
     $db->execute();

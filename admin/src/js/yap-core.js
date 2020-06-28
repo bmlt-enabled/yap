@@ -511,6 +511,19 @@ function saveToAdminApi(service_body_id, data, data_type, parent_id, id, callbac
     });
 }
 
+function usersApi(data, action, callback) {
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "users_api.php?action=" + action,
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: "application/json",
+        complete: callback,
+        timeout: 60000
+    });
+}
+
 function loadFromAdminApi(parent_id, service_body_id, data_type, callback) {
     $.getJSON("api.php?service_body_id=" + service_body_id
         + "&data_type=" + data_type
@@ -632,6 +645,112 @@ function includeVolunteer(volunteerData) {
 
 function manageGroups(e) {
     location.href='groups.php?service_body_id=' + $("#service_body_id").val();
+}
+
+function addUserHandling(action) {
+    var rules = {
+        name: {
+            minlength: 5,
+            required: true
+        },
+        username: {
+            minlength: 5,
+            required: true
+        },
+    };
+
+    if (action === "save") {
+        rules['password'] = {
+            minlength: 10,
+            required: true,
+        }
+    }
+
+    $("#addUserForm").validate({
+        rules: rules,
+        highlight: function (element) {
+            $(element).closest('.control-group').addClass('text-danger');
+        },
+        success: function (element) {
+            element.closest('.control-group').removeClass('text-danger');
+            saveUserData(action);
+        }
+    }).form();
+}
+
+function saveUserData(action) {
+    var userForm = $("#addUserForm");
+    var formData = userForm.serializeArray();
+    var dataObj = {};
+    for (var formItem of formData) {
+        dataObj[formItem["name"]] = userForm.find("#" + formItem["name"]).val();
+    }
+
+    $("#addUserModal").modal('hide');
+    spinnerDialog(true, "Saving User...", function () {
+        usersApi(dataObj, action,function() {
+            spinnerDialog(false);
+            location.reload();
+        });
+    });
+}
+
+function resetUsersValidation() {
+    var form = $("#addUserForm")
+    if (form.data('validator')) {
+        form.validate().destroy();
+    }
+    form.trigger("reset");
+    $(".text-danger").removeClass('text-danger');
+}
+
+function showAddUsersModal() {
+    resetUsersValidation();
+    adminOnlyFields(true);
+    $("#usersSaveButton").off('click').on('click', function() {
+        addUserHandling("save");
+    });
+    $("#addUserModal").modal('show');
+}
+
+function adminOnlyFields(show) {
+    if (show) {
+        $(".users_username").show();
+        $(".users_service_bodies").show();
+    } else {
+        $(".users_username").hide();
+        $(".users_service_bodies").hide();
+    }
+}
+
+function editUser(id, username, name, service_bodies, type) {
+    resetUsersValidation();
+    $("#id").val(id);
+    $("#username").val(username);
+    $("#name").val(name);
+    if (type !== undefined && type === "profile") {
+        adminOnlyFields(false);
+    } else {
+        adminOnlyFields(true);
+        $.each(service_bodies.split(","), function (i, e) {
+            $("#service_bodies option[value='" + e + "']").prop("selected", true);
+        });
+    }
+    $("#usersSaveButton").off('click').on('click', function() {
+        addUserHandling(type);
+    });
+    $("#addUserModal").modal('show');
+}
+
+function deleteUserHandling(id) {
+    if (confirm("Are you sure you want to delete this user?")) {
+        spinnerDialog(true, "Deleting User...", function () {
+            usersApi({id: id}, "delete", function () {
+                spinnerDialog(false);
+                location.reload();
+            });
+        });
+    }
 }
 
 function showGroupsModal() {
@@ -906,6 +1025,10 @@ function openServiceBodyCallHandling(service_body_id) {
                     } else {
                         $(match).closest(".service_bodies_field_container").hide();
                     }
+                }
+
+                if (trigger !== "call_strategy") {
+                    serviceBodyCallHandling.find("#call_strategy").change();
                 }
             });
 
