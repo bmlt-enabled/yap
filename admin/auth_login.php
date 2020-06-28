@@ -11,14 +11,12 @@ if (count($auth_v2_result) == 1) {
     $_SESSION['auth_permissions'] = $auth_v2_result[0]['permissions'];
     $_SESSION['auth_id'] = $auth_v2_result[0]['id'];
     header('Location: home.php');
-    exit();
 } elseif (setting("bmlt_auth") && auth_v1($_POST['username'], $_POST['password'])) {
     $_SESSION['username'] = $_POST['username'];
     $_SESSION['auth_mechanism'] = AuthMechanism::V1;
     header('Location: home.php');
-    exit();
 } else {
     logout_auth($_POST['username']);
     header('Location: index.php?auth=false');
-    exit();
 }
+exit();
