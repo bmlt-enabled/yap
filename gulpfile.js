@@ -38,6 +38,10 @@ let jsReportsFiles = [
     'node_modules/leaflet-fullscreen/dist/Leaflet.fullscreen.js',
 ];
 
+let jsMeetingResultsFiles = [
+    'node_modules/@bmlt-enabled/croutonjs/crouton.js'
+];
+
 let cssScheduleFiles = [
     'node_modules/@fullcalendar/bootstrap/main.css',
     'node_modules/@fullcalendar/core/main.css',
@@ -66,6 +70,19 @@ let lessCoreFiles = [
 let cssCoreFiles = [
     'admin/src/css/spacelab.bootstrap.css',
 ];
+
+let cssMeetingResultsFiles = [
+    'node_modules/@bmlt-enabled/croutonjs/crouton.css'
+];
+
+let templatesMeetingResultsFiles = [
+    './node_modules/@bmlt-enabled/croutonjs/templates/**/*'
+];
+
+let fontsMeetingResultsFiles = [
+    './node_modules/@bmlt-enabled/croutonjs/fonts/**/*'
+];
+
 
 let distJsDir = 'admin/dist/js';
 let distCssDir = 'admin/dist/css';
@@ -107,6 +124,19 @@ task('jsReports', () => {
         }))
         .pipe(dest(distJsDir))
         .pipe(notify({message: "jsReport complete", wait: true}));
+});
+
+task('jsMeetingResults', () => {
+    return src(jsMeetingResultsFiles)
+        .pipe(concat('yap-meeting-results.js'))
+        .pipe(dest('endpoints/croutonjs'))
+        .pipe(minify({
+            ext: {
+                min:'.min.js'
+            },
+        }))
+        .pipe(dest('endpoints/croutonjs'))
+        .pipe(notify({message: "jsMeetingResults complete", wait: true}));
 });
 
 task('cssCore', () => {
@@ -180,26 +210,55 @@ task('cssTabulatorDark', () => {
         .pipe(notify({message: "cssTabulatorDark complete", wait: true}));
 });
 
+task('cssMeetingResults', () => {
+    return src(cssMeetingResultsFiles)
+        .pipe(concat('yap-meeting-results.css'))
+        .pipe(dest('endpoints/croutonjs'))
+        .pipe(cleanCSS())
+        .pipe(rename({
+            suffix: '.min'
+        }))
+        .pipe(dest('endpoints/croutonjs'))
+        .pipe(notify({message: "cssMeetingResults complete", wait: true}));
+});
+
+task('templatesMeetingResults', function () {
+    return src(templatesMeetingResultsFiles)
+        .pipe(dest('endpoints/croutonjs/templates'));
+});
+
+task('fontsMeetingResults', function () {
+    return src(fontsMeetingResultsFiles)
+        .pipe(dest('endpoints/croutonjs/fonts'));
+});
 
 task('default', series(
     'jsCore',
     'jsSchedule',
     'jsReports',
+    'jsMeetingResults',
     'cssCore',
     'cssSchedule',
     'cssReports',
     'cssTabulatorLight',
-    'cssTabulatorDark'
+    'cssTabulatorDark',
+    'cssMeetingResults',
+    'templatesMeetingResults',
+    'fontsMeetingResults',
 ));
 
 task('watch', () => {
     watch(jsCoreFiles, series('jsCore'));
     watch(jsScheduleFiles, series('jsSchedule'));
     watch(jsReportsFiles, series('jsReports'));
+    watch(jsMeetingResultsFiles, series('jsMeetingResults'));
     watch(lessCoreFiles, series('cssCore'));
     watch(cssCoreFiles, series('cssCore'));
     watch(cssScheduleFiles, series('cssSchedule'));
     watch(cssReportsFiles, series('cssReports'));
     watch(cssTabulatorLightFiles, series('cssTabulatorLight'));
     watch(cssTabulatorDarkFiles, series('cssTabulatorDark'));
+    watch(cssMeetingResultsFiles, series('cssMeetingResults'));
+    watch(templatesMeetingResultsFiles, series('templatesMeetingResults'));
+    watch(fontsMeetingResultsFiles, series('fontsMeetingResults'));
 });
