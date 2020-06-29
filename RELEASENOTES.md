@@ -5,6 +5,7 @@
 * Admin UI for users. [#340]
 * State/province lookup by menu. [#422]
 * Added check for semanticAdmin in the upgrade advisor. [#431]
+* Bundles croutonjs from npmjs.
 
 ### 3.7.4 (May 20, 2020)
 * Support for HY format.

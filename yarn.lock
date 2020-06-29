@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@bmlt-enabled/croutonjs@^3.11.1":
+  version "3.11.1"
+  resolved "https://registry.yarnpkg.com/@bmlt-enabled/croutonjs/-/croutonjs-3.11.1.tgz#ab13b9d0071989a457f4c76a7acaf3d939a8176f"
+  integrity sha512-r0IASZQUs6OUGyzInpUTkgYiaT7nVga/b10+SnBLtiKuUftNvzwAuT8734u6foDliDuJZwvYEspKILFzQHhNOA==
+
 "@fullcalendar/bootstrap@^4.4.2":
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/@fullcalendar/bootstrap/-/bootstrap-4.4.2.tgz#b396aa39fd2e49c1bfb68deb677df5a5544bb924"
