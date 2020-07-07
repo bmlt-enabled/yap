@@ -94,7 +94,7 @@ foreach ($available_languages as $available_language_key => $available_language_
     }
 }
 require_once 'session.php';
-checkBlacklist();
+checkBlocklist();
 if (has_setting('config')) {
     include_once __DIR__ . '/../../config_'.setting('config').'.php';
 }
@@ -603,7 +603,7 @@ class DbConfigFinder
     }
 }
 
-function checkBlacklist()
+function checkBlocklist()
 {
     if (has_setting('blocklist') && strlen(setting('blocklist')) > 0 && isset($_REQUEST['Caller'])) {
         $blocklist_items = explode(",", setting('blocklist'));
