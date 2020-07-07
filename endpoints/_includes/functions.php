@@ -13,7 +13,7 @@ require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
 static $version  = "3.8.0";
-static $settings_whitelist = [
+static $settings_allowlist = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'bmlt_root_server' => [ 'description' => 'The root server to use.' , 'default' => '', 'overridable' => false, 'hidden' => false],
@@ -89,8 +89,8 @@ static $available_prompts = [
 
 foreach ($available_languages as $available_language_key => $available_language_value) {
     foreach ($available_prompts as $available_prompt) {
-        $settings_whitelist[str_replace("-", "_", $available_language_key) . "_" . $available_prompt] = [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false];
-        $settings_whitelist[str_replace("-", "_", $available_language_key) . "_voice"] = [ 'description' => '', 'default' => 'alice', 'overridable' => true, 'hidden' => false];
+        $settings_allowlist[str_replace("-", "_", $available_language_key) . "_" . $available_prompt] = [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false];
+        $settings_allowlist[str_replace("-", "_", $available_language_key) . "_voice"] = [ 'description' => '', 'default' => 'alice', 'overridable' => true, 'hidden' => false];
     }
 }
 require_once 'session.php';
@@ -654,8 +654,8 @@ function has_setting($name)
 }
 function setting($name)
 {
-    if (isset($GLOBALS['settings_whitelist'][$name]) && $GLOBALS['settings_whitelist'][$name]['overridable']) {
-        if (isset($_REQUEST[$name]) && $GLOBALS['settings_whitelist'][$name]['hidden'] !== true) {
+    if (isset($GLOBALS['settings_allowlist'][$name]) && $GLOBALS['settings_allowlist'][$name]['overridable']) {
+        if (isset($_REQUEST[$name]) && $GLOBALS['settings_allowlist'][$name]['hidden'] !== true) {
             return $_REQUEST[$name];
         } else if (isset($_SESSION["override_" . $name])) {
             return $_SESSION["override_" . $name];
@@ -664,8 +664,8 @@ function setting($name)
 
     if (isset($GLOBALS[$name])) {
         return $GLOBALS[$name];
-    } else if (isset($GLOBALS['settings_whitelist'][$name]['default'])) {
-        return $GLOBALS['settings_whitelist'][$name]['default'];
+    } else if (isset($GLOBALS['settings_allowlist'][$name]['default'])) {
+        return $GLOBALS['settings_allowlist'][$name]['default'];
     }
 
     return null;
@@ -692,7 +692,7 @@ function setting_source($name)
         return SettingSource::SESSION;
     } else if (isset($GLOBALS[$name])) {
         return SettingSource::CONFIG;
-    } else if (isset($GLOBALS['settings_whitelist'][$name]['default'])) {
+    } else if (isset($GLOBALS['settings_allowlist'][$name]['default'])) {
         return SettingSource::DEFAULT_SETTING;
     } else {
         return "NOT SET";
@@ -1258,7 +1258,7 @@ function getServiceBodyConfig($service_body_id)
         $config_from_db = $db_config_finder->getConfig($lookup_id);
         if (isset($config_from_db)) {
             $config_obj = json_decode($config_from_db['data']);
-            foreach ($GLOBALS['settings_whitelist'] as $setting => $value) {
+            foreach ($GLOBALS['settings_allowlist'] as $setting => $value) {
                 if (isset($config_obj[0]->$setting)) {
                     if (gettype($value['default']) === "array") {
                         $config->$setting = (array) json_decode(str_replace("'", "\"", $config_obj[0]->$setting));
