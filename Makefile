@@ -7,7 +7,7 @@ run:
 
 lint:
 	find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l
-	composer install --dev
+	composer install
 	vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=6 --standard=PSR2 --ignore=vendor --extensions=php ./
 
 lint-fix: lint
