@@ -165,27 +165,32 @@ function writeMetric($data, $service_body_id = 0)
 {
     $db = new Database();
     if ($service_body_id > 0) {
-        $db->query("INSERT INTO `metrics` (`data`, `service_body_id`) VALUES ('" . json_encode($data) . "', " . $service_body_id . ")");
+        $db->query("INSERT INTO `metrics` (`data`, `service_body_id`) VALUES (:data, :service_body_id)");
+        $db->bind(':service_body_id', $service_body_id);
     } else {
-        $db->query("INSERT INTO `metrics` (`data`) VALUES ('" . json_encode($data) . "')");
+        $db->query("INSERT INTO `metrics` (`data`) VALUES (:data)");
     }
+    $db->bind(':data', json_encode($data));
     $db->execute();
     $db->close();
 }
 
 function getMetric($service_body_ids, $general)
 {
+    Rollbar::log(Level::info(), 'Test info message');
+    throw new Exception('Test exception');
     $db = new Database();
     $query = "SELECT DATE_FORMAT(timestamp, \"%Y-%m-%d\") as `timestamp`, 
                                         COUNT(DATE_FORMAT(`timestamp`, \"%Y-%m-%d\")) as counts,
                                         `data`
                                         FROM `metrics`" . sprintf(
         "%s %s %s",
-        "WHERE service_body_id in (" . implode(",", $service_body_ids) . ")",
+        "WHERE service_body_id in (:service_body_ids)",
         $general ? "OR service_body_id is NULL" : "",
         " GROUP BY DATE_FORMAT(`timestamp`, \"%Y-%m-%d\"), `data`"
     );
     $db->query($query);
+    $db->bind(':service_body_ids', implode(",", $service_body_ids));
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
@@ -194,7 +199,8 @@ function getMetric($service_body_ids, $general)
 function getConferences($service_body_id)
 {
     $db = new Database();
-    $db->query("SELECT * FROM `conference_participants` WHERE `friendlyname` LIKE '" . strval(intval($service_body_id)) . "_%';");
+    $db->query("SELECT * FROM `conference_participants` WHERE `friendlyname` LIKE ':service_body_id_%';");
+    $db->bind(':service_body_id', strval(intval($service_body_id)));
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
@@ -254,7 +260,9 @@ function admin_PersistDbConfig($service_body_id, $data, $data_type, $parent_id =
         $db->bind(':data_type', $data_type);
         $db->bind(':parent_id', $parent_id, PDO::PARAM_INT);
         $db->execute();
-        $db->query("SELECT MAX(id) as id FROM `config` WHERE service_body_id='$service_body_id' AND data_type='$data_type'");
+        $db->query("SELECT MAX(id) as id FROM `config` WHERE `service_body_id`=:service_body_id AND `data_type`=:data_type");
+        $db->bind(':service_body_id', $service_body_id);
+        $db->bind(':data_type', $data_type);
         $resultset = $db->resultset();
         $db->close();
         return $resultset[0]['id'];
@@ -310,7 +318,9 @@ function getDatabaseCacheValue($key)
 function getDbData($service_body_id, $data_type)
 {
     $db = new Database();
-    $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `service_body_id`=$service_body_id AND `data_type`='$data_type'");
+    $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `service_body_id`=:service_body_id AND `data_type`=:data_type");
+    $db->bind(':service_body_id', $service_body_id);
+    $db->bind(':data_type', $data_type);
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
@@ -319,7 +329,9 @@ function getDbData($service_body_id, $data_type)
 function getDbDataById($id, $data_type)
 {
     $db = new Database();
-    $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `id`=$id AND `data_type`='$data_type'");
+    $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `id`=:id AND `data_type`=:data_type");
+    $db->bind(':id', $id);
+    $db->bind(':data_type', $data_type);
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
@@ -328,7 +340,9 @@ function getDbDataById($id, $data_type)
 function getDbDataByParentId($parent_id, $data_type)
 {
     $db = new Database();
-    $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `parent_id`=$parent_id AND `data_type`='$data_type'");
+    $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `parent_id`=:parent_id AND `data_type`=:data_type");
+    $db->bind(':parent_id', $parent_id);
+    $db->bind(':data_type', $data_type);
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
@@ -337,7 +351,8 @@ function getDbDataByParentId($parent_id, $data_type)
 function getAllDbData($data_type)
 {
     $db = new Database();
-    $db->query("SELECT `id`,`data`,`service_body_id`,`parent_id` FROM `config` WHERE `data_type`='$data_type'");
+    $db->query("SELECT `id`,`data`,`service_body_id`,`parent_id` FROM `config` WHERE `data_type`=:data_type");
+    $db->bind(':data_type', $data_type);
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
@@ -346,7 +361,9 @@ function getAllDbData($data_type)
 function getDbGroupsForServiceBody($service_body_id)
 {
     $db = new Database();
-    $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `service_body_id`=$service_body_id AND `data_type`='" . DataType::YAP_GROUPS_V2 . "'");
+    $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `service_body_id`=:service_body_id AND `data_type`=:data_type");
+    $db->bind(':service_body_id', $service_body_id);
+    $db->bind(':data_type', DataType::YAP_GROUPS_V2);
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
