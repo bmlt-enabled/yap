@@ -19,7 +19,7 @@ require_once 'header.php';
         <ul class="navbar-nav mr-auto">
         <?php
         $pages = array("Home", "Reports", "Service Bodies", "Schedules", "Settings", "Volunteers", "Groups");
-        if (isset($_SESSION['auth_is_admin']) && boolval($_SESSION['auth_is_admin'])) {
+        if (canManageUsers()) {
             array_push($pages, "Users");
         }
 

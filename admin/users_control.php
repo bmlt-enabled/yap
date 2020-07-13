@@ -29,8 +29,9 @@
 
                     <div class="users_service_bodies control-group">
                         <?php
-                        $shareable_service_bodies = getServiceBodies();
-                        sort_on_field($shareable_service_bodies, 'name')
+                        $shareable_service_bodies = getServiceBodiesRights();
+                        if (count($shareable_service_bodies) > 0) {
+                            sort_on_field($shareable_service_bodies, 'name')
                         ?>
                         Service Bodies Access: <select size="10" multiple class="form-control form-control-sm" name="service_bodies" id="service_bodies">
                             <?php
@@ -38,6 +39,7 @@
                                 <option value="<?php echo $service_body->id; ?>"><?php echo $service_body->name; ?></option>
                             <?php } ?>
                         </select>
+                        <?php } ?>
                     </div>
                 </form>
             </div>

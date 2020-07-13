@@ -369,10 +369,22 @@ function getDbGroupsForServiceBody($service_body_id)
     return $resultset;
 }
 
-function getUsers()
+function getUsers($service_bodies = null)
 {
     $db = new Database();
-    $db->query("SELECT id, name, username, is_admin, permissions, service_bodies, created_on FROM `users`");
+    if ($service_bodies === null) {
+        $db->query("SELECT id, name, username, is_admin, permissions, service_bodies, created_on FROM `users`");
+    } else {
+        if (count($service_bodies) > 0) {
+            $query = "SELECT id, name, username, permissions, service_bodies, created_on FROM `users` WHERE";
+            foreach ($service_bodies as $service_body) {
+                $query .= " FIND_IN_SET('$service_body', `service_bodies`) AND";
+            }
+            $query .= " id <> " . $_SESSION['auth_id'];
+            $db->query($query);
+        }
+    }
+
     $resultset = $db->resultset();
     $db->close();
     return $resultset;

@@ -1,5 +1,5 @@
 <?php require_once 'nav.php';
-if (!boolval($_SESSION['auth_is_admin'])) {
+if (!canManageUsers()) {
     echo("Access Denied");
     exit();
 }
@@ -26,7 +26,7 @@ if (!boolval($_SESSION['auth_is_admin'])) {
                 </thead>
                 <tbody>
     <?php
-    $users = getUsers();
+    $users = getUsers(boolval($_SESSION['auth_is_admin']) ? null : $_SESSION['auth_service_bodies']);
     foreach ($users as $user) {?>
         <tr>
             <td>
