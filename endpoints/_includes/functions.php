@@ -1186,7 +1186,8 @@ function getServiceBodiesForUserRecursively($service_body_id, $service_body_righ
     return $service_bodies_results;
 }
 
-function canManageUsers() {
+function canManageUsers()
+{
     return (isset($_SESSION['auth_is_admin']) && boolval($_SESSION['auth_is_admin'])) ||
         (isset($_SESSION['auth_permissions']) && (intval($_SESSION['auth_permissions']) & AdminInterfaceRights::MANAGE_USERS));
 }

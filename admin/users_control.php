@@ -31,8 +31,7 @@
                         <?php
                         $shareable_service_bodies = getServiceBodiesRights();
                         if (count($shareable_service_bodies) > 0) {
-                            sort_on_field($shareable_service_bodies, 'name')
-                        ?>
+                            sort_on_field($shareable_service_bodies, 'name') ?>
                         Service Bodies Access: <select size="10" multiple class="form-control form-control-sm" name="service_bodies" id="service_bodies">
                             <?php
                             foreach ($shareable_service_bodies as $service_body) { ?>
