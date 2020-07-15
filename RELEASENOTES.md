@@ -7,8 +7,8 @@
 * Added check for semanticAdmin in the upgrade advisor. [#431]
 * Bundles croutonjs from npmjs.
 
-* Fix for infinite Searching option which did not consider initial webhook. [#446] 
 ### 3.7.5 (July 14, 2020)
+* Fix for infinite Searching option which did not consider initial webhook. [#446]
 
 ### 3.7.4 (May 20, 2020)
 * Support for HY format.
