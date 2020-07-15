@@ -746,8 +746,7 @@ function editUser(id, username, name, permissions, service_bodies, type) {
         adminOnlyFields(false);
     } else {
         adminOnlyFields(true);
-        // TODO: bitwise split versus comma split
-        $.each(permissions.split(","), function (i, e) {
+        $.each(bitwiseSplit(permissions), function (i, e) {
             $("#permissions option[value='" + e + "']").prop("selected", true);
         });
 
@@ -1252,6 +1251,41 @@ function dataEncoder(dataObject) {
 
 function dataDecoder(dataString) {
     return JSON.parse(atob(dataString));
+}
+
+function dec2bin(dec) {
+    return (dec >>> 0).toString(2);
+}
+
+function bin2dec(bin) {
+    return parseInt(bin, 2).toString(10);
+}
+
+function bitwiseSplit(x) {
+    let counter = 0;
+    let seeds = [];
+    let decimal_bits = [];
+    let binary_string = "";
+
+    while (true) {
+        binary_string = "1" + binary_string.replace("1", "0");
+        let decimal_equiv = bin2dec(binary_string)
+        if (decimal_equiv <= x) {
+            seeds.push(parseInt(decimal_equiv))
+        } else {
+            break;
+        }
+    }
+
+    while (x > 0) {
+        if ((x & seeds[counter]) === seeds[counter]) {
+            decimal_bits.push(seeds[counter])
+            x -= seeds[counter];
+        }
+        counter++;
+    }
+
+    return decimal_bits;
 }
 
 function toCurrentTimezone(dateTime) {
