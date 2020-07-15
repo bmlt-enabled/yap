@@ -20,7 +20,7 @@ if (($digits == 1 || $digits == 3) && count($sms_messages) > 0) {
 }
 
 if ($digits == 2 || $digits == 3) {
-    echo "<Redirect method=\"GET\">index.php</Redirect>";
+    echo "<Redirect method=\"GET\">" . str_replace("&", "&amp;", $_SESSION['initial_webhook']) . "</Redirect>";
 } else {
     echo "<Say voice=\"" . voice() . "\" language=\"" . setting("language") . "\">" . word('thank_you_for_calling_goodbye') . "</Say>";
 }

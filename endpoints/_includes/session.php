@@ -25,6 +25,11 @@ if (!isset($_SESSION['call_state'])) {
     $_SESSION['call_state'] = "STARTED";
 }
 
+if (!isset($_SESSION['initial_webhook'])) {
+    $webhook_array = explode("/", $_SERVER['REQUEST_URI']);
+    $_SESSION['initial_webhook'] = str_replace("&", "&amp;", $webhook_array[count($webhook_array) - 1]);
+}
+
 if (isset($_REQUEST)) {
     foreach ($_REQUEST as $key => $value) {
         if (str_exists($key, "override_")) {
