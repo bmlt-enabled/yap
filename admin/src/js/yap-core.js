@@ -3,6 +3,14 @@ var groups;
 var calendar;
 var metrics_map = null;
 
+Array.prototype.getArrayItemByObjectKeyValue = function(key, value) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i][key] === value) {
+            return this[i];
+        }
+    }
+};
+
 function recurseReports() {
     return $("#recursive-reports-switch:checked").length > 0;
 }
@@ -681,6 +689,12 @@ function addUserHandling(action) {
 function saveUserData(action) {
     var userForm = $("#addUserForm");
     var formData = userForm.serializeArray();
+    if (formData.getArrayItemByObjectKeyValue("name", "permissions") === undefined) {
+        formData.push({"name":"permissions", "value":[]})
+    }
+    if (formData.getArrayItemByObjectKeyValue("name", "service_bodies") === undefined) {
+        formData.push({"name":"service_bodies", "value":[]})
+    }
     var dataObj = {};
     for (var formItem of formData) {
         dataObj[formItem["name"]] = userForm.find("#" + formItem["name"]).val();
@@ -723,7 +737,7 @@ function adminOnlyFields(show) {
     }
 }
 
-function editUser(id, username, name, service_bodies, type) {
+function editUser(id, username, name, permissions, service_bodies, type) {
     resetUsersValidation();
     $("#id").val(id);
     $("#username").val(username);
@@ -732,6 +746,11 @@ function editUser(id, username, name, service_bodies, type) {
         adminOnlyFields(false);
     } else {
         adminOnlyFields(true);
+        // TODO: bitwise split versus comma split
+        $.each(permissions.split(","), function (i, e) {
+            $("#permissions option[value='" + e + "']").prop("selected", true);
+        });
+
         $.each(service_bodies.split(","), function (i, e) {
             $("#service_bodies option[value='" + e + "']").prop("selected", true);
         });

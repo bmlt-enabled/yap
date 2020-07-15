@@ -81,7 +81,7 @@ function getCallRecords($service_body_ids, $page, $size)
 CONCAT('[', GROUP_CONCAT('{\"meta\":', IFNULL(re.meta, '{}'), ',\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, 'Z\",\"service_body_id\":', COALESCE(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
 FROM (SELECT DISTINCT r.callsid as parent_callsid,cp2.callsid FROM records r LEFT OUTER JOIN conference_participants cp ON r.callsid = cp.callsid OR cp.callsid IS NULL LEFT OUTER JOIN conference_participants cp2 ON cp.conferencesid = cp2.conferencesid) cs
 INNER JOIN records r ON cs.parent_callsid = r.callsid
-LEFT OUTER JOIN records_events re ON cs.callsid = re.callsid OR r.callsid = re.callsid 
+LEFT OUTER JOIN records_events re ON cs.callsid = re.callsid OR r.callsid = re.callsid
 WHERE re.id IS NOT NULL %s
 GROUP BY r.callsid
 ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC %s",
@@ -100,7 +100,7 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC %s",
 function insertCallRecord($callRecord)
 {
     $db = new Database();
-    $stmt = "INSERT INTO `records` (`callsid`,`from_number`,`to_number`,`duration`,`start_time`,`end_time`,`payload`) 
+    $stmt = "INSERT INTO `records` (`callsid`,`from_number`,`to_number`,`duration`,`start_time`,`end_time`,`payload`)
         VALUES (:callSid, :from_number, :to_number, :duration, :start_time, :end_time, :payload)";
     $db->query($stmt);
     $db->bind(':callSid', $callRecord->callSid);
@@ -123,7 +123,7 @@ INNER JOIN (select to_number, max(start_time) as start_time FROM records GROUP B
 ON a.payload = b.to_number and a.timestamp > b.start_time
 where alert_id = %s
 group by a.payload
-UNION 
+UNION
 SELECT a.payload FROM alerts a
 LEFT OUTER JOIN records b ON a.payload = b.to_number
 where alert_id = %s and b.to_number IS NULL", $alert_id, $alert_id);
@@ -180,7 +180,7 @@ function getMetric($service_body_ids, $general)
     Rollbar::log(Level::info(), 'Test info message');
     throw new Exception('Test exception');
     $db = new Database();
-    $query = "SELECT DATE_FORMAT(timestamp, \"%Y-%m-%d\") as `timestamp`, 
+    $query = "SELECT DATE_FORMAT(timestamp, \"%Y-%m-%d\") as `timestamp`,
                                         COUNT(DATE_FORMAT(`timestamp`, \"%Y-%m-%d\")) as counts,
                                         `data`
                                         FROM `metrics`" . sprintf(
@@ -377,10 +377,14 @@ function getUsers($service_bodies = null)
     } else {
         if (count($service_bodies) > 0) {
             $query = "SELECT id, name, username, permissions, service_bodies, created_on FROM `users` WHERE";
+            $service_bodies_query = "";
             foreach ($service_bodies as $service_body) {
-                $query .= " FIND_IN_SET('$service_body', `service_bodies`) AND";
+                if ($service_bodies_query !== "") {
+                    $service_bodies_query .= " OR";
+                }
+                $service_bodies_query .= " FIND_IN_SET('$service_body', `service_bodies`)";
             }
-            $query .= " id <> " . $_SESSION['auth_id'];
+            $query .= "(" . $service_bodies_query . ") AND id <> " . $_SESSION['auth_id'];
             $db->query($query);
         }
     }
@@ -411,11 +415,12 @@ function editUser($data, $role)
         $stmt = $stmt . ", `username` = :username, `service_bodies` = :service_bodies";
     }
 
-    $stmt = $stmt . " where `id` = :id";
+    $stmt = $stmt . ", `permissions` = :permissions where `id` = :id";
     $db = new Database();
     $db->query($stmt);
     $db->bind(':id', $data->id);
     $db->bind(':name', $data->name);
+    $db->bind(':permissions', array_sum($data->permissions));
 
     if (strlen($data->password) > 0) {
         $db->bind(':password', $data->password);
@@ -433,11 +438,12 @@ function editUser($data, $role)
 function saveUser($data)
 {
     $db = new Database();
-    $stmt = "INSERT INTO `users` (`name`, `username`, `password`, `permissions`, `service_bodies`, `is_admin`) VALUES (:name, :username, SHA2(:password, 256), 0, :service_bodies, 0)";
+    $stmt = "INSERT INTO `users` (`name`, `username`, `password`, `permissions`, `service_bodies`, `is_admin`) VALUES (:name, :username, SHA2(:password, 256), :permissions, :service_bodies, 0)";
     $db->query($stmt);
     $db->bind(':name', $data->name);
     $db->bind(':username', $data->username);
     $db->bind(':password', $data->password);
+    $db->bind(":permissions", array_sum($data->permissions));
     $db->bind(':service_bodies', implode(",", $data->service_bodies));
     $db->execute();
     $db->close();

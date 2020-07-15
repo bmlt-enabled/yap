@@ -27,6 +27,12 @@
 
                     <input class="form-control form-control-sm" type="hidden" name="id" id="id">
 
+                    <div class="users_permissions control-group">
+                        Permissions: <select size="5" multiple class="form-control form-control-sm" name="permissions" id="permissions">
+                            <option value="1">Manage Users</option>
+                        </select>
+                    </div>
+
                     <div class="users_service_bodies control-group">
                         <?php
                         $shareable_service_bodies = getServiceBodiesRights();
