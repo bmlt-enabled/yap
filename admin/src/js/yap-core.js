@@ -3,6 +3,14 @@ var groups;
 var calendar;
 var metrics_map = null;
 
+Array.prototype.getArrayItemByObjectKeyValue = function(key, value) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i][key] === value) {
+            return this[i];
+        }
+    }
+};
+
 function recurseReports() {
     return $("#recursive-reports-switch:checked").length > 0;
 }
@@ -681,6 +689,12 @@ function addUserHandling(action) {
 function saveUserData(action) {
     var userForm = $("#addUserForm");
     var formData = userForm.serializeArray();
+    if (formData.getArrayItemByObjectKeyValue("name", "permissions") === undefined) {
+        formData.push({"name":"permissions", "value":[]})
+    }
+    if (formData.getArrayItemByObjectKeyValue("name", "service_bodies") === undefined) {
+        formData.push({"name":"service_bodies", "value":[]})
+    }
     var dataObj = {};
     for (var formItem of formData) {
         dataObj[formItem["name"]] = userForm.find("#" + formItem["name"]).val();
@@ -716,14 +730,16 @@ function showAddUsersModal() {
 function adminOnlyFields(show) {
     if (show) {
         $(".users_username").show();
+        $(".users_permissions").show();
         $(".users_service_bodies").show();
     } else {
         $(".users_username").hide();
+        $(".users_permissions").hide();
         $(".users_service_bodies").hide();
     }
 }
 
-function editUser(id, username, name, service_bodies, type) {
+function editUser(id, username, name, permissions, service_bodies, type) {
     resetUsersValidation();
     $("#id").val(id);
     $("#username").val(username);
@@ -732,6 +748,10 @@ function editUser(id, username, name, service_bodies, type) {
         adminOnlyFields(false);
     } else {
         adminOnlyFields(true);
+        $.each(bitwiseSplit(permissions), function (i, e) {
+            $("#permissions option[value='" + e + "']").prop("selected", true);
+        });
+
         $.each(service_bodies.split(","), function (i, e) {
             $("#service_bodies option[value='" + e + "']").prop("selected", true);
         });
@@ -1233,6 +1253,41 @@ function dataEncoder(dataObject) {
 
 function dataDecoder(dataString) {
     return JSON.parse(atob(dataString));
+}
+
+function dec2bin(dec) {
+    return (dec >>> 0).toString(2);
+}
+
+function bin2dec(bin) {
+    return parseInt(bin, 2).toString(10);
+}
+
+function bitwiseSplit(x) {
+    let counter = 0;
+    let seeds = [];
+    let decimal_bits = [];
+    let binary_string = "";
+
+    while (true) {
+        binary_string = "1" + binary_string.replace("1", "0");
+        let decimal_equiv = bin2dec(binary_string)
+        if (decimal_equiv <= x) {
+            seeds.push(parseInt(decimal_equiv))
+        } else {
+            break;
+        }
+    }
+
+    while (x > 0) {
+        if ((x & seeds[counter]) === seeds[counter]) {
+            decimal_bits.push(seeds[counter])
+            x -= seeds[counter];
+        }
+        counter++;
+    }
+
+    return decimal_bits;
 }
 
 function toCurrentTimezone(dateTime) {

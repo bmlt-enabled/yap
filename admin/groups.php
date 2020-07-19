@@ -13,7 +13,7 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
             $serviceBodies = getServiceBodyDetailForUser();
             sort_on_field($serviceBodies, 'name');
             if (count($serviceBodies) === 1) {
-                $selected_service_body_id  = intval($serviceBodies{0}->id);
+                $selected_service_body_id  = intval($serviceBodies[0]->id);
             } else {
                 $selected_service_body_id = isset($_REQUEST['service_body_id']) ? $_REQUEST['service_body_id'] : 0;
             }

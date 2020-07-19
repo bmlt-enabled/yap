@@ -1,5 +1,5 @@
 <?php require_once 'nav.php';
-if (!boolval($_SESSION['auth_is_admin'])) {
+if (!canManageUsers()) {
     echo("Access Denied");
     exit();
 }
@@ -17,16 +17,20 @@ if (!boolval($_SESSION['auth_is_admin'])) {
                     <th scope="col">Username</th>
                     <th scope="col">Name</th>
                     <th scope="col">Service Bodies</th>
+                    <th scope="col">Permissions</th>
+                    <?php if (boolval($_SESSION['auth_is_admin'])) { ?>
+                        <th scope="col">Admin</th>
+                    <?php } ?>
                     <th scope="col">Date Created</th>
                 </tr>
                 </thead>
                 <tbody>
     <?php
-    $users = getUsers();
+    $users = getUsers(boolval($_SESSION['auth_is_admin']) ? null : $_SESSION['auth_service_bodies']);
     foreach ($users as $user) {?>
         <tr>
             <td>
-                <button class="btn btn-sm btn-warning" onclick="editUser(<?php echo $user['id']?>, '<?php echo $user['username']?>', '<?php echo $user['name']?>', '<?php echo $user['service_bodies']?>', 'edit')">Edit</button>
+                <button class="btn btn-sm btn-warning" onclick="editUser(<?php echo $user['id']?>, '<?php echo $user['username']?>', '<?php echo $user['name']?>', '<?php echo $user['permissions']?>', '<?php echo $user['service_bodies']?>', 'edit')">Edit</button>
                 <?php if ($user['id'] !== $_SESSION['auth_id']) { ?>
                 <button class="btn btn-sm btn-danger" onclick="deleteUserHandling(<?php echo $user['id']?>)">Delete</button>
                 <?php } ?>
@@ -34,6 +38,10 @@ if (!boolval($_SESSION['auth_is_admin'])) {
             <td><?php echo $user['username']?></td>
             <td><?php echo $user['name']?></td>
             <td><?php echo $user['service_bodies']?></td>
+            <td><?php echo $user['permissions']?></td>
+            <?php if (boolval($_SESSION['auth_is_admin'])) { ?>
+                <td><input type="checkbox" <?php echo boolval($user['is_admin']) ? "checked" : "" ?> disabled="true"></td>
+            <?php } ?>
             <td><?php echo $user['created_on']?></td>
         </tr>
     <?php } ?>
