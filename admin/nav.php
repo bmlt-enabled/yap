@@ -43,7 +43,7 @@ require_once 'header.php';
                 <button type="button"
                         class="btn btn-info"
                         id="profile-button"
-                        onclick="editUser('<?php echo $_SESSION['auth_id']?>','<?php echo $_SESSION['username']?>','<?php echo $_SESSION['auth_user_name_string']?>', '', 'profile') ">Profile</button>
+                        onclick="editUser('<?php echo $_SESSION['auth_id']?>','<?php echo $_SESSION['username']?>','<?php echo $_SESSION['auth_user_name_string']?>', '', '', 'profile') ">Profile</button>
                 <?php } ?>
                 <button type="button"
                         class="btn btn-danger"

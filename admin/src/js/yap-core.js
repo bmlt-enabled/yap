@@ -730,9 +730,11 @@ function showAddUsersModal() {
 function adminOnlyFields(show) {
     if (show) {
         $(".users_username").show();
+        $(".users_permissions").show();
         $(".users_service_bodies").show();
     } else {
         $(".users_username").hide();
+        $(".users_permissions").hide();
         $(".users_service_bodies").hide();
     }
 }
