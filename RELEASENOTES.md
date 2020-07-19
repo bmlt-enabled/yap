@@ -1,11 +1,14 @@
 # Release Notes
 
-### 3.8.0 (UNRELEASED)
-* Dark mode.
-* Admin UI for users. [#340]
-* State/province lookup by menu. [#422]
+### 3.8.0 (July 19,2020)
+* Dark mode theme for Admin UI.
+* Admin UI for management of non-BMLT users. [#340]
+* State/province lookup by digit menu. [#422]
 * Added check for semanticAdmin in the upgrade advisor. [#431]
 * Bundles croutonjs from npmjs.
+
+### 3.7.5 (July 14, 2020)
+* Fix for infinite Searching option which did not consider initial webhook. [#446]
 
 ### 3.7.4 (May 20, 2020)
 * Support for HY format.
