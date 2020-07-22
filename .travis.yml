@@ -27,6 +27,7 @@ jobs:
       - echo ${TRAVIS_COMMIT} > ${ARTIFACT_FILE}/build.txt
       - cp -R vendor ${ARTIFACT_FILE}/
       - mkdir -p ${ARTIFACT_FILE}/admin/dist && cp -R admin/dist/. ${ARTIFACT_FILE}/admin/dist
+      - mkdir -p ${ARTIFACT_FILE}/endpoints/croutonjs && cp -R endpoints/croutonjs/. ${ARTIFACT_FILE}/endpoints/croutonjs
       - find ./${ARTIFACT_FILE} -type d | xargs chmod 755
       - find ./${ARTIFACT_FILE} -name '*.php' | xargs chmod 644
       - zip -r -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}
@@ -57,6 +58,7 @@ jobs:
       - echo ${TRAVIS_COMMIT} > ${ARTIFACT_FILE}/build.txt
       - cp -R vendor ${ARTIFACT_FILE}/
       - mkdir -p ${ARTIFACT_FILE}/admin/dist && cp -R admin/dist/. ${ARTIFACT_FILE}/admin/dist
+      - mkdir -p ${ARTIFACT_FILE}/endpoints/croutonjs && cp -R endpoints/croutonjs/. ${ARTIFACT_FILE}/endpoints/croutonjs
       - find ./${ARTIFACT_FILE} -type d | xargs chmod 755
       - find ./${ARTIFACT_FILE} -name '*.php' | xargs chmod 644
       - zip -r -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}
