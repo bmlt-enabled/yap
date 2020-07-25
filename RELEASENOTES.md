@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.8.2 (UNRELEASED)
+### 3.8.2 (July 25, 2020)
 * Fixes for terminology refractor. [#451]
 
 ### 3.8.1 (July 21, 2020)
