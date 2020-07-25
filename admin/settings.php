@@ -14,7 +14,7 @@
                     </thead>
                     <tbody>
                     <?php
-                    foreach ($settings_whitelist as $key => $value) {
+                    foreach ($settings_allowlist as $key => $value) {
                         if (!$value['hidden']) { ?>
                         <tr>
                             <td><?php echo $key ?></td>

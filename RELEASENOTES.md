@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.8.2 (July 25, 2020)
+* Fixes for terminology refactor. [#451]
+
 ### 3.8.1 (July 21, 2020)
 * Fix for SMS summary page javascript issue. [#449]
 
