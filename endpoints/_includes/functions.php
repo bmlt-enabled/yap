@@ -1032,7 +1032,6 @@ function getResultsString($filtered_list)
                     array_push($results_string["format_details"], $format_detail);
                 }
             }
-
         }
     }
 
