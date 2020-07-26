@@ -50,6 +50,7 @@ static $settings_allowlist = [
     'province_lookup' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'province_lookup_list' => [ 'description' => '' , 'default' => [], 'overridable' => true, 'hidden' => false],
     'result_count_max' => [ 'description' => '' , 'default' => 5, 'overridable' => true, 'hidden' => false],
+    'say_links' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'service_body_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'service_body_config_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],

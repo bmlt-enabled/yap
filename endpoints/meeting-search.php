@@ -88,9 +88,11 @@ function sendSms($message)
                 echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results['location'][$ll] . "</Say>";
             }
 
-            for ($fl = 0; $fl < count($results['links']); $fl++) {
-                echo "<Pause length=\"1\"/>";
-                echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results['links'][$fl] . "</Say>";
+            if (has_setting("say_links") && json_encode(setting("say_links"))) {
+                for ($fl = 0; $fl < count($results['links']); $fl++) {
+                    echo "<Pause length=\"1\"/>";
+                    echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results['links'][$fl] . "</Say>";
+                }
             }
 
             if (isset($_REQUEST["Debug"])) {
