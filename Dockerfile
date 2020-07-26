@@ -14,7 +14,7 @@ RUN pecl install xdebug-2.9.1 && docker-php-ext-enable xdebug \
     && echo "xdebug.remote_enable=1" >> ${PHP_INI_PATH} \
     && echo "xdebug.remote_connect_back=0" >> ${PHP_INI_PATH} \
     && echo "xdebug.remote_host=docker.for.mac.localhost" >> ${PHP_INI_PATH} \
-    && echo "xdebug.idekey=IDEA_DEBUG" >> ${PHP_INI_PATH} \
+    && echo "xdebug.idekey=YAP_IDEA_DEBUG" >> ${PHP_INI_PATH} \
     && echo "xdebug.remote_autostart=1" >> ${PHP_INI_PATH} \
     && echo "xdebug.remote_log=/tmp/xdebug.log" >> ${PHP_INI_PATH}
 

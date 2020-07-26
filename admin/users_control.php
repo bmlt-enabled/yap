@@ -41,7 +41,7 @@
                         Service Bodies Access: <select size="10" multiple class="form-control form-control-sm" name="service_bodies" id="service_bodies">
                             <?php
                             foreach ($shareable_service_bodies as $service_body) { ?>
-                                <option value="<?php echo $service_body->id; ?>"><?php echo $service_body->name; ?></option>
+                                <option value="<?php echo $service_body->id; ?>"><?php echo $service_body->name ?> (<?php echo $service_body->id ?>) / <?php echo $service_body->parent_name ?> (<?php echo $service_body->parent_id ?>)</option>
                             <?php } ?>
                         </select>
                         <?php } ?>
