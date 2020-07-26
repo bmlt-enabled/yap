@@ -1,5 +1,5 @@
 <?php require_once 'nav.php';
-$service_bodies = getServiceBodyDetailForUser();
+$service_bodies = getServiceBodiesForUser();
 sort_on_field($service_bodies, 'name');
 ?>
 <div class="container">

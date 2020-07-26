@@ -13,7 +13,7 @@ function getVoicemail($service_body_id)
 function setFlag($flag, $setting)
 {
     $db = new Database();
-    $db->query("INSERT INTO `flags` (`flag_name`,`flag_setting`) 
+    $db->query("INSERT INTO `flags` (`flag_name`,`flag_setting`)
       VALUES ('$flag'," . intval($setting) . ")");
     $db->execute();
     $db->close();
@@ -177,8 +177,6 @@ function writeMetric($data, $service_body_id = 0)
 
 function getMetric($service_body_ids, $general)
 {
-    Rollbar::log(Level::info(), 'Test info message');
-    throw new Exception('Test exception');
     $db = new Database();
     $query = "SELECT DATE_FORMAT(timestamp, \"%Y-%m-%d\") as `timestamp`,
                                         COUNT(DATE_FORMAT(`timestamp`, \"%Y-%m-%d\")) as counts,

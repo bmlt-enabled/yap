@@ -12,7 +12,7 @@ require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-static $version  = "3.8.2";
+static $version  = "3.8.3";
 static $settings_allowlist = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -1135,36 +1135,17 @@ function getServiceBody($service_body_id)
     return null;
 }
 
-function getServiceBodyDetailForUser()
-{
-    $service_bodies = getServiceBodiesRights();
-    $service_body_detail = getServiceBodies();
-    $user_service_bodies = [];
-
-    foreach ($service_bodies as $service_body) {
-        foreach ($service_body_detail as $service_body_detail_item) {
-            if ($service_body->id == $service_body_detail_item->id) {
-                array_push($user_service_bodies, $service_body_detail_item);
-            }
-        }
-    }
-
-    return $user_service_bodies;
-}
-
 function getServiceBodiesForUser($include_general = false)
 {
-    $service_body_ids = [];
     $service_bodies = getServiceBodiesRights();
-    foreach ($service_bodies as $service_body) {
-        array_push($service_body_ids, $service_body->id);
-    }
 
     if ($include_general) {
-        array_push($service_body_ids, 0);
+        array_push($service_bodies, (object) [
+            "id" => "0"
+        ]);
     }
 
-    return $service_body_ids;
+    return $service_bodies;
 }
 
 function getServiceBodiesForUserRecursively($service_body_id, $service_body_rights = null)
@@ -1173,7 +1154,7 @@ function getServiceBodiesForUserRecursively($service_body_id, $service_body_righ
 
     if ($service_body_rights == null) {
         array_push($service_bodies_results, intval($service_body_id));
-        $service_body_rights = getServiceBodyDetailForUser();
+        $service_body_rights = getServiceBodiesForUser();
     }
 
     foreach ($service_body_rights as $service_body) {
@@ -1294,7 +1275,7 @@ function getServiceBodyConfig($service_body_id)
 function getVolunteerRoutingEnabledServiceBodies()
 {
     $all_helpline_data = getAllDbData(DataType::YAP_CALL_HANDLING_V2);
-    $service_bodies = getServiceBodyDetailForUser();
+    $service_bodies = getServiceBodiesForUser();
     $helpline_enabled = array();
 
     for ($x = 0; $x < count($all_helpline_data); $x++) {
@@ -1942,7 +1923,7 @@ function unique_stdclass_array($array)
 function getReportsServiceBodies()
 {
     if (intval($_REQUEST['service_body_id']) == 0) {
-        return getServiceBodiesForUser(true);
+        return array_column(getServiceBodiesForUser(true), "id");
     } else if (json_decode($_REQUEST['recurse'])) {
         return getServiceBodiesForUserRecursively($_REQUEST['service_body_id']);
     } else {

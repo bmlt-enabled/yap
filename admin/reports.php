@@ -7,7 +7,7 @@
                 <option selected value="-1">-= Select A Service Body =-</option>
                 <option value="0">All</option>
                 <?php
-                $serviceBodies = getServiceBodyDetailForUser();
+                $serviceBodies = getServiceBodiesForUser();
                 sort_on_field($serviceBodies, 'name');
                 foreach ($serviceBodies as $item) {?>
                     <option value="<?php echo $item->id ?>"><?php echo $item->name ?> (<?php echo $item->id ?>)</option>

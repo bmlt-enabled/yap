@@ -10,7 +10,7 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
         <select class="form-control form-control-sm" id="service_body_id" name="service_body_id">
             <option>-= Select A Service Body =-</option>
             <?php
-            $serviceBodies = getServiceBodyDetailForUser();
+            $serviceBodies = getServiceBodiesForUser();
             sort_on_field($serviceBodies, 'name');
             if (count($serviceBodies) === 1) {
                 $selected_service_body_id  = intval($serviceBodies[0]->id);
