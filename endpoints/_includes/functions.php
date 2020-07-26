@@ -276,6 +276,8 @@ class ServiceBodyCallHandling
 {
     public $service_body_id;
     public $service_body_name;
+    public $service_body_parent_id;
+    public $service_body_parent_name;
     public $volunteer_routing_enabled = false;
     public $volunteer_routing_redirect = false;
     public $volunteer_routing_redirect_id = 0;
@@ -1139,6 +1141,11 @@ function getServiceBodiesForUser($include_general = false)
 {
     $service_bodies = getServiceBodiesRights();
 
+    foreach ($service_bodies as $service_body) {
+        $parent_service_body = getServiceBody($service_body->parent_id);
+        $service_body->parent_name = isset($parent_service_body) ? $parent_service_body->name : "None";
+    }
+
     if ($include_general) {
         array_push($service_bodies, (object) [
             "id" => "0"
@@ -1284,6 +1291,8 @@ function getVolunteerRoutingEnabledServiceBodies()
             for ($y = 0; $y < count($service_bodies); $y++) {
                 if ($config->service_body_id == intval($service_bodies[$y]->id)) {
                     $config->service_body_name = $service_bodies[$y]->name;
+                    $config->service_body_parent_id = $service_bodies[$y]->parent_id;
+                    $config->service_body_parent_name = $service_bodies[$y]->parent_name;
                     array_push($helpline_enabled, $config);
                 }
             }

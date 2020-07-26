@@ -11,7 +11,6 @@ sort_on_field($service_bodies, 'name');
             <table id="service-bodies-table" class="table table-striped table-borderless">
                 <thead>
                     <tr>
-                        <th scope="col">ID</th>
                         <th scope="col"><?php echo word("service_body")?></th>
                         <th scope="col"><?php echo word("helpline")?></th>
                         <th scope="col"><?php echo word("action")?></th>
@@ -20,8 +19,7 @@ sort_on_field($service_bodies, 'name');
                 <tbody>
                 <?php foreach ($service_bodies as $service_body) { ?>
                     <tr>
-                        <td><?php echo $service_body->id ?></td>
-                        <td><?php echo $service_body->name ?></td>
+                        <td><?php echo $service_body->name ?> (<?php echo $service_body->id ?>)
                         <td><?php echo isset($service_body->helpline) ? $service_body->helpline : "" ?></td>
                         <td>
                             <button class="btn btn-sm btn-primary" onclick="openServiceBodyCallHandling(<?php echo $service_body->id ?>);"><?php echo word('call_handling')?></button>

@@ -18,7 +18,7 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
                 $selected_service_body_id = isset($_REQUEST['service_body_id']) ? $_REQUEST['service_body_id'] : 0;
             }
             foreach ($serviceBodies as $item) {?>
-                <option value="<?php echo $item->id ?>" <?php echo $selected_service_body_id > 0 && $selected_service_body_id == $item->id ? "selected": ""?>><?php echo $item->name ?> (<?php echo $item->id ?>)</option>
+                <option value="<?php echo $item->id ?>" <?php echo $selected_service_body_id > 0 && $selected_service_body_id == $item->id ? "selected": ""?>><?php echo $item->name ?> (<?php echo $item->id ?>) / <?php echo $item->parent_name ?> (<?php echo $item->parent_id ?>)</option>
                 <?php
             }?>
         </select>
