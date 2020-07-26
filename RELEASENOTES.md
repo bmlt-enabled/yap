@@ -1,7 +1,7 @@
 # Release Notes
 
 ### 3.8.3 (UNRELEASED)
-* Add parent service body for service body selection.
+* Added parent service body names and IDs for service body selection.
 * Fixes for metrics reports and performance improvements.
 
 ### 3.8.2 (July 25, 2020)
