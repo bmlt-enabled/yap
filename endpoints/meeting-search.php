@@ -83,12 +83,19 @@ function sendSms($message)
             echo "<Pause length=\"1\"/>";
             echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . word('starts_at') . " " . $results['timestamp'] . "</Say>";
 
+            if (has_setting('include_format_details') && count(setting('include_format_details')) > 0) {
+                for ($fd = 0; $fd < count($results['format_details']); $fd++) {
+                    echo "<Pause length=\"1\"/>";
+                    echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results['format_details'][$fd]->description_string . "</Say>";
+                }
+            }
+
             for ($ll = 0; $ll < count($results['location']); $ll++) {
                 echo "<Pause length=\"1\"/>";
                 echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results['location'][$ll] . "</Say>";
             }
 
-            if (has_setting("say_links") && json_encode(setting("say_links"))) {
+            if (has_setting("say_links") && json_decode(setting("say_links"))) {
                 for ($fl = 0; $fl < count($results['links']); $fl++) {
                     echo "<Pause length=\"1\"/>";
                     echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results['links'][$fl] . "</Say>";
@@ -132,6 +139,10 @@ function sendSms($message)
 
             if (strlen($results['distance_details']) > 0) {
                 $message .= " " . $results['distance_details'];
+            }
+
+            foreach ($results['format_details'] as $format_detail) {
+                $message .= "\n" . $format_detail->description_string;
             }
 
             foreach ($results['location_links'] as $location_link) {

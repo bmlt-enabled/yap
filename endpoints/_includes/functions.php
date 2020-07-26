@@ -12,7 +12,7 @@ require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-static $version  = "3.8.3";
+static $version  = "3.9.0";
 static $settings_allowlist = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -33,6 +33,7 @@ static $settings_allowlist = [
     'helpline_fallback' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => false],
     'helpline_search_radius' => [ 'description' => '' , 'default' => 30, 'overridable' => true, 'hidden' => false],
     'ignore_formats' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => false],
+    'include_format_details' => [ 'description' => '' , 'default' => [], 'overridable' => true, 'hidden' => false],
     'include_distance_details'  => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => false],
     'include_location_text' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'include_map_link' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
@@ -904,7 +905,7 @@ function getFormatString($formats, $ignore = false)
 
 function meetingSearch($meeting_results, $latitude, $longitude, $day)
 {
-    $bmlt_base_url = sprintf('%s/client_interface/json/?switcher=GetSearchResults&data_field_key=id_bigint,meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km,formats,virtual_meeting_link,phone_meeting_number', getBMLTRootServer());
+    $bmlt_base_url = sprintf('%s/client_interface/json/?switcher=GetSearchResults&get_used_formats&data_field_key=id_bigint,meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km,formats,virtual_meeting_link,phone_meeting_number', getBMLTRootServer());
     $bmlt_search_endpoint = setting('custom_query');
     if (has_setting('ignore_formats')) {
         $bmlt_search_endpoint .= getFormatString(setting('ignore_formats'), true);
@@ -937,27 +938,37 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day)
     }
 
     $search_results = json_decode($search_response);
-    if (is_array($search_results) || $search_results instanceof Countable) {
-        $meeting_results->originalListCount += count($search_results);
+    if (is_array($search_results->meetings) || $search_results->meetings instanceof Countable) {
+        $meeting_results->originalListCount += count($search_results->meetings);
     } else {
         return $meeting_results;
     }
 
     $filteredList = $meeting_results->filteredList;
     if ($search_response !== "{}") {
-        for ($i = 0; $i < count($search_results); $i++) {
-            // Hide meetings if they are TC and don't have a VM link.
-            if (!in_array("VM", explode(",", $search_results[$i]->formats))
-                && in_array("TC", explode(",", $search_results[$i]->formats))) {
+        for ($i = 0; $i < count($search_results->meetings); $i++) {
+            // Hide meetings if they are TC and are not VM formats.
+            if (!in_array("VM", explode(",", $search_results->meetings[$i]->formats))
+                && in_array("TC", explode(",", $search_results->meetings[$i]->formats))) {
                 continue;
             }
 
             if (strpos($bmlt_search_endpoint, "{DAY}")) {
-                if (!isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time)) {
-                    array_push($filteredList, $search_results[$i]);
+                if (!isItPastTime($search_results->meetings[$i]->weekday_tinyint, $search_results->meetings[$i]->start_time)) {
+                    array_push($filteredList, $search_results->meetings[$i]);
                 }
             } else {
-                array_push($filteredList, $search_results[$i]);
+                array_push($filteredList, $search_results->meetings[$i]);
+            }
+
+            $formats = explode(",", $search_results->meetings[$i]->formats);
+            $search_results->meetings[$i]->format_details = [];
+            foreach ($formats as $format) {
+                foreach ($search_results->formats as $search_result_format) {
+                    if ($format === $search_result_format->key_string) {
+                        array_push($search_results->meetings[$i]->format_details, $search_result_format);
+                    }
+                }
             }
         }
     } else {
@@ -978,6 +989,7 @@ function getResultsString($filtered_list)
         "distance_details" => "",
         "location_links" => array(),
         "links" => array(),
+        "format_details" => array(),
     );
 
     if (!in_array("TC", explode(",", $filtered_list->formats))) {
@@ -1009,6 +1021,17 @@ function getResultsString($filtered_list)
 
         if (isset($filtered_list->phone_meeting_number) && strlen($filtered_list->phone_meeting_number) > 0) {
             array_push($results_string["links"], sprintf("tel:%s", str_replace("&", "&amp;", $filtered_list->phone_meeting_number)));
+        }
+    }
+
+    if (has_setting('include_format_details') && count(setting('include_format_details')) > 0) {
+        $include_format_details = setting('include_format_details');
+        foreach ($include_format_details as $include_format_detail) {
+            foreach ($filtered_list->format_details as $format_detail) {
+                if ($format_detail->key_string === $include_format_detail) {
+                    array_push($results_string["format_details"], $format_detail);
+                }
+            }
         }
     }
 

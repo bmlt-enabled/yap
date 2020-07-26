@@ -1,7 +1,9 @@
 # Release Notes
 
-### 3.8.3 (UNRELEASED)
+### 3.9.0 (UNRELEASED)
+* Added the `include_format_details` option which can returr details such as information about meetings being Virtual, Hybrid, and/or Facility is Temporarily Closed.
 * Added parent service body names and IDs for service body selection.
+* Saying links (`say_links`) is now an option which is disabled by default.
 * User modal titling fixes.
 * Fixes for metrics reports and performance improvements.
 
