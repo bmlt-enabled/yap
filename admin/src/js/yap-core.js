@@ -720,14 +720,14 @@ function resetUsersValidation() {
 
 function showAddUsersModal() {
     resetUsersValidation();
-    adminOnlyFields(true);
+    adminOnlyFields(true, "Add User");
     $("#usersSaveButton").off('click').on('click', function() {
         addUserHandling("save");
     });
     $("#addUserModal").modal('show');
 }
 
-function adminOnlyFields(show) {
+function adminOnlyFields(show, title) {
     if (show) {
         $(".users_username").show();
         $(".users_permissions").show();
@@ -737,6 +737,7 @@ function adminOnlyFields(show) {
         $(".users_permissions").hide();
         $(".users_service_bodies").hide();
     }
+    $(".users_modal_title").text(title);
 }
 
 function editUser(id, username, name, permissions, service_bodies, type) {
@@ -745,9 +746,9 @@ function editUser(id, username, name, permissions, service_bodies, type) {
     $("#username").val(username);
     $("#name").val(name);
     if (type !== undefined && type === "profile") {
-        adminOnlyFields(false);
+        adminOnlyFields(false, "Edit Profile");
     } else {
-        adminOnlyFields(true);
+        adminOnlyFields(true, "Edit User");
         $.each(bitwiseSplit(permissions), function (i, e) {
             $("#permissions option[value='" + e + "']").prop("selected", true);
         });

@@ -2,6 +2,7 @@
 
 ### 3.8.3 (UNRELEASED)
 * Added parent service body names and IDs for service body selection.
+* User modal titling fixes.
 * Fixes for metrics reports and performance improvements.
 
 ### 3.8.2 (July 25, 2020)
