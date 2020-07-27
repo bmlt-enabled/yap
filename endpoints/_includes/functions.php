@@ -1211,12 +1211,24 @@ function getServiceBodiesRights()
         $service_bodies_for_user = json_decode(get($url, $_SESSION['username']));
 
         if (!is_array($service_bodies_for_user->service_body)) {
-            return array($service_bodies_for_user->service_body);
+            $service_bodies_for_user = array($service_bodies_for_user->service_body);
         } else if (isset($service_bodies_for_user->service_body)) {
-            return $service_bodies_for_user->service_body;
+            $service_bodies_for_user = $service_bodies_for_user->service_body;
         } else {
-            return array();
+            $service_bodies_for_user = array();
         }
+
+        $service_bodies = getServiceBodies();
+        $enriched_service_bodies_for_user = array();
+        foreach ($service_bodies_for_user as $service_body_for_user) {
+            foreach ($service_bodies as $service_body) {
+                if (intval($service_body->id) === $service_body_for_user->id) {
+                    array_push($enriched_service_bodies_for_user, $service_body);
+                }
+            }
+        }
+
+        return $enriched_service_bodies_for_user;
     } elseif ($_SESSION['auth_mechanism'] == AuthMechanism::V2 && $_SESSION['auth_is_admin']) {
         return getServiceBodies();
     } elseif ($_SESSION['auth_mechanism'] == AuthMechanism::V2) {
