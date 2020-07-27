@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.9.1 (UNRELEASED)
+* Fix for some webservers which were not rendering meeting search results page correctly. [#457]
+
 ### 3.9.0 (July 27, 2020)
 * Added the `include_format_details` option which can return details such as information about meetings being Virtual, Hybrid, and/or Facility is Temporarily Closed.
 * Added parent service body names and IDs for service body selection.
