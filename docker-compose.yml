@@ -5,9 +5,9 @@ services:
       build: .
       restart: always
       ports:
-        - 3100:80
+        - 3100:8201
       volumes:
-        - .:/var/www/html/yap/
+        - .:/app
       environment:
         ENVIRONMENT: dev
     yap_db:
