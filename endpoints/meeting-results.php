@@ -16,7 +16,7 @@ $filePath = str_replace(basename($_SERVER['PHP_SELF']), "", $_SERVER['PHP_SELF']
         var crouton = new Crouton({
             root_server: "<?php echo getBMLTRootServer(); ?>",
             theme: "sezf",
-            template_path: "croutonjs/templates",
+            template_path: "<?php echo sprintf("%scroutonjs/templates", $filePath) ?>",
             has_languages: "1",
             time_format: "H:mm (h:mma) z",
             filter_tabs: 0,
