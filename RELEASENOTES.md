@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.9.2 (UNRELEASED)
+### 3.9.2 (August 8, 2020)
 * Fix for issue where service body configuration precedence was only considering one level [#460]
 * Added cache clearing endpoint.
 
