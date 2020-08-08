@@ -1,6 +1,10 @@
 # Release Notes
 
-### 3.9.1 (UNRELEASED)
+### 3.9.2 (UNRELEASED)
+* Fix for issue where service body configuration precedence was only considering one level [#460]
+* Added cache clearing endpoint.
+
+### 3.9.1 (July 29, 2020)
 * Fix for some webservers which were not rendering meeting search results page correctly. [#457]
 
 ### 3.9.0 (July 27, 2020)

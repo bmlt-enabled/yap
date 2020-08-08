@@ -12,7 +12,7 @@ require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-static $version  = "3.9.1";
+static $version  = "3.9.2";
 static $settings_allowlist = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -1294,7 +1294,7 @@ function getServiceBodyConfig($service_body_id)
         if (isset($config_from_db)) {
             $config_obj = json_decode($config_from_db['data']);
             foreach ($GLOBALS['settings_allowlist'] as $setting => $value) {
-                if (isset($config_obj[0]->$setting)) {
+                if (isset($config_obj[0]->$setting) && !isset($config->$setting)) {
                     if (gettype($value['default']) === "array") {
                         $config->$setting = (array) json_decode(str_replace("'", "\"", $config_obj[0]->$setting));
                     } else {
