@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.9.3 (UNRELEASED)
+* Fix for missing `<?php` tag on installer. [#463]
+
 ### 3.9.2 (August 8, 2020)
 * Fix for issue where service body configuration precedence was only considering one level [#460]
 * Added cache clearing endpoint.
