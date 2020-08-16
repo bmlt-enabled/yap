@@ -47,7 +47,6 @@ require_once 'spinner_dialog.php';
     <script src="dist/js/yap.min.js<?php isset($_REQUEST['JSDEBUG']) ? sprintf("?v=%s", time()) : "";?>"></script>
     <script type="text/javascript">
         var checkForConfigFileInterval;
-        var configHtml = "<?php echo htmlspecialchars("<?php") ?><br/>";
         initInstaller();
     </script>
     <div class="modal fade" id="wizardResultModal" tabindex="-1" role="dialog" aria-labelledby="wizardResultModal" aria-hidden="true">
