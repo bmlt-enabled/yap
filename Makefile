@@ -1,4 +1,4 @@
-.PHONY: upgrade
+.PHONY: run lint lint-fix upgrade simulate debug test bundle bundle-deps watch debug
 
 run:
 	composer install

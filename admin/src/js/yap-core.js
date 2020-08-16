@@ -1179,7 +1179,7 @@ function generateConfig(callback) {
             return;
         }
 
-        var configHtml = "";
+        var configHtml = "&lt;?php<br/>";
         if (parseFloat(data[0]['version']) >= parseFloat("2.14")) {
             var fields = jQuery('[id*="input_"]');
             for (var i = 0; i < fields.length; i++) {
