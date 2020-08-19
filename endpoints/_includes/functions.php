@@ -1025,7 +1025,7 @@ function getResultsString($filtered_list)
         }
 
         if (isset($filtered_list->virtual_meeting_additional_info) && strlen($filtered_list->virtual_meeting_additional_info) > 0) {
-            array_push($results_string["virtual_meeting_additional_info"],  str_replace("&", "&amp;", $filtered_list->virtual_meeting_additional_info));
+            array_push($results_string["virtual_meeting_additional_info"], str_replace("&", "&amp;", $filtered_list->virtual_meeting_additional_info));
         }
     }
 
