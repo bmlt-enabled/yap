@@ -102,6 +102,11 @@ function sendSms($message)
                 }
             }
 
+            for ($vmai = 0; $vmai < count($results['virtual_meeting_additional_info']); $vmai++) {
+                echo "<Pause length=\"1\"/>";
+                echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . $results['virtual_meeting_additional_info'][$vmai] . "</Say>";
+            }
+
             if (isset($_REQUEST["Debug"])) {
                 echo "<Say voice=\"" . voice() . "\" language=\"" . setting('language') . "\">" . json_encode($filtered_list[$i]) . "</Say>";
             }
@@ -151,6 +156,10 @@ function sendSms($message)
 
             foreach ($results['links'] as $link) {
                 $message .= "\n" . $link;
+            }
+
+            foreach ($results['virtual_meeting_additional_info'] as $additional_info) {
+                $message .= "\n" . $additional_info;
             }
 
             if (json_decode(setting("sms_combine")) || (json_decode(setting("sms_ask")) && !$isFromSmsGateway)) {

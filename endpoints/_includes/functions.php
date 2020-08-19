@@ -905,7 +905,7 @@ function getFormatString($formats, $ignore = false)
 
 function meetingSearch($meeting_results, $latitude, $longitude, $day)
 {
-    $bmlt_base_url = sprintf('%s/client_interface/json/?switcher=GetSearchResults&get_used_formats&data_field_key=id_bigint,meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km,formats,virtual_meeting_link,phone_meeting_number', getBMLTRootServer());
+    $bmlt_base_url = sprintf('%s/client_interface/json/?switcher=GetSearchResults&get_used_formats&data_field_key=id_bigint,meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km,formats,virtual_meeting_link,phone_meeting_number,virtual_meeting_additional_info', getBMLTRootServer());
     $bmlt_search_endpoint = setting('custom_query');
     if (has_setting('ignore_formats')) {
         $bmlt_search_endpoint .= getFormatString(setting('ignore_formats'), true);
@@ -990,6 +990,7 @@ function getResultsString($filtered_list)
         "location_links" => array(),
         "links" => array(),
         "format_details" => array(),
+        "virtual_meeting_additional_info" => array()
     );
 
     if (!in_array("TC", explode(",", $filtered_list->formats))) {
@@ -1021,6 +1022,10 @@ function getResultsString($filtered_list)
 
         if (isset($filtered_list->phone_meeting_number) && strlen($filtered_list->phone_meeting_number) > 0) {
             array_push($results_string["links"], sprintf("tel:%s", str_replace("&", "&amp;", $filtered_list->phone_meeting_number)));
+        }
+
+        if (isset($filtered_list->virtual_meeting_additional_info) && strlen($filtered_list->virtual_meeting_additional_info) > 0) {
+            array_push($results_string["virtual_meeting_additional_info"], str_replace("&", "&amp;", $filtered_list->virtual_meeting_additional_info));
         }
     }
 
