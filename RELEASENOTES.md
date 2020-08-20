@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.9.3 (UNRELEASED)
+### 3.9.3 (August 19, 2020)
 * Added `virtual_meeting_additional_info` as part of spoken response for meetings searches with formats `TC` and `VM` or `HY`.  [#465]
 * Fix for missing `<?php` tag on installer. [#463]
 
