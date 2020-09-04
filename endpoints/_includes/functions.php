@@ -725,7 +725,9 @@ function getDigitMap($setting)
         if (($key = array_search(SearchType::JFT, $digitMapSetting)) !== false) {
             unset($digitMapSetting[$key]);
         }
-    } else if (json_decode(setting('disable_postal_code_gather'))) {
+    }
+
+    if (json_decode(setting('disable_postal_code_gather'))) {
         if (($key = array_search(LocationSearchMethod::DTMF, $digitMapSetting)) !== false) {
             unset($digitMapSetting[$key]);
         }
