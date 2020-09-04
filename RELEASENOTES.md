@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.9.3 (Septmeber 4, 2020)
+### 3.9.3 (September 4, 2020)
 * Added `virtual_meeting_additional_info` as part of spoken response for meetings searches with formats `TC` and `VM` or `HY`.  [#465]
 * Added a fix for `disable_postal_code_gather` which allows it to work independent of `jft_option` settings.
 * Fix for missing `<?php` tag on installer. [#463]
