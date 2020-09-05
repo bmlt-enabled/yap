@@ -1,6 +1,8 @@
 # Release Notes
 
 ### 3.9.4 (UNRELEASED)
+* Performance tuning for reports.
+* Documentation url fixes.
 
 ### 3.9.3 (September 4, 2020)
 * Added `virtual_meeting_additional_info` as part of spoken response for meetings searches with formats `TC` and `VM` or `HY`.  [#465]

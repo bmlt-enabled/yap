@@ -72,7 +72,8 @@ left outer join conference_participants cp on r.callsid = cp.callsid or cp.calls
     return intval(ceil(intval($resultset[0]['page_count']) / $size));
 }
 
-function quickExec($sql) {
+function quickExec($sql)
+{
     $db = new Database();
     $db->query($sql);
     $db->execute();
