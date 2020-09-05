@@ -72,16 +72,27 @@ left outer join conference_participants cp on r.callsid = cp.callsid or cp.calls
     return intval(ceil(intval($resultset[0]['page_count']) / $size));
 }
 
+function quickExec($sql) {
+    $db = new Database();
+    $db->query($sql);
+    $db->execute();
+    $db->close();
+}
+
 // TODO: add show multiple service bodies options
 function getCallRecords($service_body_ids, $page, $size)
 {
+    $guid = uniqid();
+    quickExec("INSERT INTO `cache_records_conference_participants` SELECT DISTINCT r.callsid as parent_callsid,cp2.callsid,'".$guid."' as guid FROM records r LEFT OUTER JOIN conference_participants cp ON r.callsid = cp.callsid OR cp.callsid IS NULL LEFT OUTER JOIN conference_participants cp2 ON cp.conferencesid = cp2.conferencesid;");
+    quickExec("INSERT INTO `cache_records_records_conference_participants` SELECT r.id,r.callsid,r.start_time,r.end_time,r.from_number,r.to_number,r.duration,rcp.parent_callsid,'".$guid."' as guid FROM records r INNER JOIN cache_records_conference_participants rcp ON rcp.parent_callsid = r.callsid;");
+    quickExec("DELETE FROM `cache_records_conference_participants` WHERE guid = '".$guid."'");
+
     $db = new Database();
     $sql = sprintf(
         "SELECT r.`id`,CONCAT(r.`start_time`, 'Z') as start_time,CONCAT(r.`end_time`, 'Z') as end_time,r.`duration`,r.`from_number`,r.`to_number`,r.`callsid`,
 CONCAT('[', GROUP_CONCAT('{\"meta\":', IFNULL(re.meta, '{}'), ',\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, 'Z\",\"service_body_id\":', COALESCE(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
-FROM (SELECT DISTINCT r.callsid as parent_callsid,cp2.callsid FROM records r LEFT OUTER JOIN conference_participants cp ON r.callsid = cp.callsid OR cp.callsid IS NULL LEFT OUTER JOIN conference_participants cp2 ON cp.conferencesid = cp2.conferencesid) cs
-INNER JOIN records r ON cs.parent_callsid = r.callsid
-LEFT OUTER JOIN records_events re ON cs.callsid = re.callsid OR r.callsid = re.callsid
+FROM cache_records_records_conference_participants r
+LEFT OUTER JOIN records_events re ON r.callsid = re.callsid
 WHERE re.id IS NOT NULL %s
 GROUP BY r.callsid
 ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC %s",
@@ -92,8 +103,10 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC %s",
     $db->exec("SET @@session.group_concat_max_len = 4294967295;");
     $db->query($sql);
     $resultset = $db->resultset();
-    $db->resultset();
     $db->close();
+    
+    quickExec("DELETE FROM `cache_records_records_conference_participants` WHERE guid = '".$guid."'");
+    
     return $resultset;
 }
 
