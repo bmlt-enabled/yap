@@ -24,7 +24,7 @@ require_once 'spinner_dialog.php';
             <div id="yap-logo"></div>
             <div id="wizardTitle">Installer</div>
             <div id="wizardAlert" class="alert alert-danger" role="alert"></div>
-            <div id="wizardInstructions">Welcome to the Yap Installer.  This tool was developed to help quickly construct your configuration with the basic settings.  You should refer to the documentation (<a target="_blank" href="https://yap.bmlt.app">https://yap.bmlt.app</a>) for adding additional settings after you have completed this process.
+            <div id="wizardInstructions">Welcome to the Yap Installer.  This tool was developed to help quickly construct your configuration with the basic settings.  You should refer to the documentation (<a target="_blank" href="https://bmlt.app/yap">https://bmlt.app/yap</a>) for adding additional settings after you have completed this process.
 
                 Once you have completed filling out all the fields and they are confirmed to be correct, you will copy the text in the box below and paste into a file at the root of your yap folder called <pre>config.php</pre>
 
