@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.9.4 (UNRELEASED)
+### 3.9.4 (September 16, 2020)
 * Performance tuning for reports.
 * Documentation url fixes.
 
