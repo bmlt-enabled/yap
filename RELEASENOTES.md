@@ -1,6 +1,6 @@
 # Release Notes
 
-### 3.9.5 (September 17, 2020)
+### 3.9.5 (September 27, 2020)
 * Fix for regression in some call events. [#478]
 * Fix for caching response times. [#474]
 
