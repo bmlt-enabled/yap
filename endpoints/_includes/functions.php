@@ -1071,7 +1071,7 @@ function isItPastTime($meeting, $targetTimeZone)
 function getNextMeetingInstance($meeting, $targetTimeZone)
 {
     // Create a datetime object for the meeting's own time zone
-    date_default_timezone_set(($meeting->time_zone ? $meeting->time_zone ? "UTC"));
+    date_default_timezone_set(($meeting->time_zone ? $meeting->time_zone : "UTC"));
     $meeting_date_time = new DateTime($meeting->start_time);
     $meeting_date_time->modify($GLOBALS['date_calculations_map'][$meeting->weekday_tinyint]);
 
