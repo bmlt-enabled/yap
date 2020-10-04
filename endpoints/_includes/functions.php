@@ -891,9 +891,9 @@ function getFormatString($formats, $ignore = false)
     return $finalString;
 }
 
-function meetingSearch($meeting_results, $latitude, $longitude, $day)
+function meetingSearch($meeting_results, $latitude, $longitude, $day, $targetTimeZoneName)
 {
-    $bmlt_base_url = sprintf('%s/client_interface/json/?switcher=GetSearchResults&data_field_key=id_bigint,meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km,comments', getBMLTRootServer());
+    $bmlt_base_url = sprintf('%s/client_interface/json/?switcher=GetSearchResults&data_field_key=id_bigint,meeting_name,weekday_tinyint,start_time,time_zone,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km,comments', getBMLTRootServer());
     $bmlt_search_endpoint = setting('custom_query');
     if (has_setting('ignore_formats')) {
         $bmlt_search_endpoint .= getFormatString(setting('ignore_formats'), true);
@@ -928,28 +928,25 @@ function meetingSearch($meeting_results, $latitude, $longitude, $day)
         return $meeting_results;
     }
 
-    if (setting("virtual")) {
-        date_default_timezone_set('UTC');
-    }
-
     $filteredList = $meeting_results->filteredList;
     if ($search_response !== "{}") {
-        $tz = new DateTimeZone(getTimeZoneForCoordinates($latitude, $longitude)->timeZoneId);
         for ($i = 0; $i < count($search_results); $i++) {
+            $meeting = $search_results[$i];
             if (strpos($bmlt_search_endpoint, "{DAY}")) {
-                $past_time = isItPastTime($search_results[$i]->weekday_tinyint, $search_results[$i]->start_time);
+                $past_time = isItPastTime($meeting, $targetTimeZoneName);
                 if (!$past_time['isIt']) {
                     if (setting("virtual")) {
-                        $nextMeetingTime = $past_time['nextMeetingTime']->modify(sprintf("-%s minutes", setting("grace_minutes")));
-                        $search_results[$i]->weekday_tinyint = $nextMeetingTime->format("N") + 1 > 7 ? 1 : $nextMeetingTime->format("N") + 1;
-                        $timezone_abbr = (new DateTime(null, $tz))->format("T");
-                        $search_results[$i]->start_time = $nextMeetingTime->format("h:i A") . " " . $timezone_abbr;
+                        $nextMeetingTime = $past_time['nextMeetingTime'];
+                        $meeting->weekday_tinyint = $nextMeetingTime->format("N") + 1 > 7 ? 1 : $nextMeetingTime->format("N") + 1;
+                        $timezone_abbr = (new DateTime(null, new DateTimeZone($targetTimeZoneName)))->format("T");
+                        $meeting->start_time = $nextMeetingTime->format("h:i A") . " " . $timezone_abbr;
+                        $meeting->sort_field = $nextMeetingTime;
                     }
 
-                    array_push($filteredList, $search_results[$i]);
+                    array_push($filteredList, $meeting);
                 }
             } else {
-                array_push($filteredList, $search_results[$i]);
+                array_push($filteredList, $meeting);
             }
         }
     } else {
@@ -1019,42 +1016,23 @@ function setTimeZoneForLatitudeAndLongitude($latitude, $longitude)
 
 function getMeetings($latitude, $longitude, $results_count, $today = null, $tomorrow = null)
 {
-    if ($latitude != null & $longitude != null) {
-        if (setting("virtual")) {
-            $timeZoneForCoordinates = getTimeZoneForCoordinates($latitude, $longitude);
-            $utc_offset = ($timeZoneForCoordinates->rawOffset+$timeZoneForCoordinates->dstOffset) / 60;
-            $GLOBALS['utc_offset'] = $utc_offset;
-        } else {
-            $GLOBALS['utc_offset'] = 0;
-            setTimeZoneForLatitudeAndLongitude($latitude, $longitude);
-        }
-        $graced_date_time = (new DateTime())
-            ->modify(sprintf("-%s minutes", setting('grace_minutes')))
-            ->modify(sprintf("%s minutes", setting('utc_offset')));
-        if ($today == null) {
-            $today = $graced_date_time->format("w") + 1;
-        }
-        if ($tomorrow == null) {
-            $tomorrow = $graced_date_time->modify("+24 hours")->format("w") + 1;
-        }
+    $targetTimeZoneName = getTimeZoneForCoordinates($latitude, $longitude)->timeZoneId;
+
+    if ($latitude != null && $longitude != null) {
+        date_default_timezone_set($targetTimeZoneName);
+        $now = new DateTime();
+        $today = intval($now->format("w"));
+        $today = ($today == 7 ? 1 : $today + 1);
+        $tomorrow = ($today == 7 ? 1 : $today + 1);
     }
 
     $meeting_results = new MeetingResults();
-    $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $today);
+    $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $today, $targetTimeZoneName);
     if (count($meeting_results->filteredList) < $results_count) {
-        $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $tomorrow);
+        $meeting_results = meetingSearch($meeting_results, $latitude, $longitude, $tomorrow, $targetTimeZoneName);
     }
 
     if ($meeting_results->originalListCount > 0) {
-        if ($today == null) {
-            setTimeZoneForLatitudeAndLongitude(
-                $meeting_results->filteredList[0]->latitude,
-                $meeting_results->filteredList[0]->longitude
-            );
-
-            $today = (new DateTime())->format("w") + 1;
-        }
-
         $sort_day_start = setting('meeting_result_sort') == MeetingResultSort::TODAY
             ? $today : setting('meeting_result_sort');
 
@@ -1064,29 +1042,50 @@ function getMeetings($latitude, $longitude, $results_count, $today = null, $tomo
             array_splice($meeting_results->filteredList, array_search($today_str, $days)),
             array_splice($meeting_results->filteredList, 0)
         );
+        usort($meeting_results->filteredList, function ($a, $b) {
+            if ($a->sort_field < $b->sort_field) {
+                return -1;
+            }
+            if ($a->sort_field > $b->sort_field) {
+                return 1;
+            }
+            return 0;
+        });
     }
 
     return $meeting_results;
 }
 
-function isItPastTime($meeting_day, $meeting_time)
+function isItPastTime($meeting, $targetTimeZoneName)
 {
-    $next_meeting_time = getNextMeetingInstance($meeting_day, $meeting_time);
-    $time_zone_time = (new DateTime())
-        ->modify(sprintf("%s minutes", setting('utc_offset')));
-    return ['isIt' => $next_meeting_time <= $time_zone_time, 'nextMeetingTime' => $next_meeting_time];
+    $next_meeting_time = getNextMeetingInstance($meeting, $targetTimeZoneName);
+
+    // Clone the object, because it's mutable, and add the grace period
+    // Note it is already in the target time zone
+    $next_meeting_time_with_grace = clone $next_meeting_time;
+    $next_meeting_time_with_grace->modify(sprintf("+%s minutes", setting('grace_minutes')));
+
+    // Get the current time in the target time zone
+    date_default_timezone_set($targetTimeZoneName);
+    $now = new DateTime();
+
+    // Return an object with both the next meeting time in the target time zone and whether
+    // or not it is past time (including grace period)
+    return ['isIt' => $now > $next_meeting_time_with_grace, 'nextMeetingTime' => $next_meeting_time];
 }
 
-function getNextMeetingInstance($meeting_day, $meeting_time)
+function getNextMeetingInstance($meeting, $targetTimeZoneName)
 {
-    $mod_meeting_day = (new DateTime())
-        ->modify(sprintf("-%s minutes", setting('grace_minutes')))
-        ->modify(sprintf("%s minutes", setting('utc_offset')))
-        ->modify($GLOBALS['date_calculations_map'][$meeting_day])->format("Y-m-d");
-    $mod_meeting_datetime = (new DateTime($mod_meeting_day . " " . $meeting_time))
-        ->modify(sprintf("+%s minutes", setting('grace_minutes')))
-        ->modify(sprintf("%s minutes", setting('utc_offset')));
-    return $mod_meeting_datetime;
+    // Create a datetime object for the meeting's own time zone, and convert it to the target time
+    date_default_timezone_set(($meeting->time_zone ? $meeting->time_zone : "UTC"));
+    $meeting_date_time = new DateTime($GLOBALS['date_calculations_map'][$meeting->weekday_tinyint] . " " . $meeting->start_time);
+    $meeting_date_time->setTimezone(new DateTimeZone($targetTimeZoneName));
+
+    // Remake the meeting in the target time zone to make sure same day meetings are still same day
+    date_default_timezone_set($targetTimeZoneName);
+    $meeting_date_time = new DateTime($meeting_date_time->format("l H:i:s"));
+
+    return $meeting_date_time;
 }
 
 function getServiceBodiesForRouting($latitude, $longitude)
