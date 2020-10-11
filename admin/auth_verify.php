@@ -3,7 +3,7 @@ require_once __DIR__ . '/../endpoints/_includes/functions.php';
 
 function session_expired()
 {
-    if (!isset($_SESSION['username']) || !check_auth($_SESSION['username'])) {
+    if (!isset($_SESSION['username']) || !check_auth()) {
         session_unset();
         return true;
     } else {
@@ -19,7 +19,7 @@ if (isset($_REQUEST["service_body_id"])) {
             continue;
         }
     }
-
+    
     if (!$found) {
         session_unset();
     }

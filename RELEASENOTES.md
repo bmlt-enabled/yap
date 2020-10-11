@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.9.6 (UNRELEASED)
+* BMLT auth (yap auth v1) session cookies no longer stored on disk. [#309]
+
 ### 3.9.5 (September 27, 2020)
 * Fix for regression in some call events. [#478]
 * Fix for caching response times. [#474]

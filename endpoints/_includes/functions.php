@@ -12,7 +12,7 @@ require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-static $version  = "3.9.5";
+static $version  = "3.9.6";
 static $settings_allowlist = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -487,7 +487,7 @@ class UpgradeAdvisor
             }
         }
 
-        $root_server_settings = json_decode(get(sprintf('%s/client_interface/json/?switcher=GetServerInfo', getAdminBMLTRootServer())));
+        $root_server_settings = json_decode(get(sprintf('%s/client_interface/json/?switcher=GetServerInfo', getAdminBMLTRootServer()), false, 3600));
 
         if (strpos(getAdminBMLTRootServer(), 'index.php')) {
             return self::getState(false, "Your root server points to index.php. Please make sure to set it to just the root directory.");
@@ -508,13 +508,13 @@ class UpgradeAdvisor
         }
 
         try {
-            $googleapi_settings = json_decode(get(sprintf("%s&address=91409", $GLOBALS['google_maps_endpoint']), 'master', 3600));
+            $googleapi_settings = json_decode(get(sprintf("%s&address=91409", $GLOBALS['google_maps_endpoint']), false, 3600));
 
             if ($googleapi_settings->status == "REQUEST_DENIED") {
                 return self::getState(false, "Your Google Maps API key came back with the following error. " . $googleapi_settings->error_message. " Please make sure you have the 'Google Maps Geocoding API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
             }
 
-            $timezone_settings = json_decode(get(sprintf("%s&location=34.2011137,-118.475058&timestamp=%d", $GLOBALS['timezone_lookup_endpoint'], time() - (time() % 1800)), 'master', 3600));
+            $timezone_settings = json_decode(get(sprintf("%s&location=34.2011137,-118.475058&timestamp=%d", $GLOBALS['timezone_lookup_endpoint'], time() - (time() % 1800)), false, 3600));
 
             if ($timezone_settings->status == "REQUEST_DENIED") {
                 return self::getState(false, "Your Google Maps API key came back with the following error. " . $timezone_settings->errorMessage. " Please make sure you have the 'Google Time Zone API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
@@ -805,7 +805,7 @@ function getCoordinatesForAddress($address)
         $map_details_response = get($GLOBALS['google_maps_endpoint']
             . "&address="
             . urlencode($address)
-            . "&components=" . urlencode(setting('location_lookup_bias')), 'master', 3600);
+            . "&components=" . urlencode(setting('location_lookup_bias')), false, 3600);
         $map_details = json_decode($map_details_response);
         if (count($map_details->results) > 0) {
             $coordinates->location  = $map_details->results[0]->formatted_address;
@@ -820,7 +820,7 @@ function getCoordinatesForAddress($address)
 
 function getTimeZoneForCoordinates($latitude, $longitude)
 {
-    $time_zone = get(sprintf("%s&location=%s,%s&timestamp=%d", $GLOBALS['timezone_lookup_endpoint'], $latitude, $longitude, time() - (time() % 1800)), 'master', 3600);
+    $time_zone = get(sprintf("%s&location=%s,%s&timestamp=%d", $GLOBALS['timezone_lookup_endpoint'], $latitude, $longitude, time() - (time() % 1800)), false, 3600);
     return json_decode($time_zone);
 }
 
@@ -850,7 +850,7 @@ function helplineSearch($latitude, $longitude)
         setting('call_routing_filter')
     );
 
-    return json_decode(get($search_url));
+    return json_decode(get($search_url, false, 60));
 }
 
 function isBMLTServerOwned($latitude, $longitude)
@@ -862,7 +862,7 @@ function isBMLTServerOwned($latitude, $longitude)
         $longitude,
         setting('helpline_search_radius')
     );
-    $search_results = json_decode(get($bmlt_search_endpoint));
+    $search_results = json_decode(get($bmlt_search_endpoint, false, 60));
     $root_server_uri_from_first_result = $search_results[0]->root_server_uri;
     return str_exists($root_server_uri_from_first_result, getAdminBMLTRootServer());
 }
@@ -1147,13 +1147,13 @@ function getNextMeetingInstance($meeting_day, $meeting_time)
 function getServiceBodiesForRouting($latitude, $longitude)
 {
     $bmlt_search_endpoint = sprintf('%s/client_interface/json/?switcher=GetServiceBodies', getHelplineRoutingBMLTServer($latitude, $longitude));
-    return json_decode(get($bmlt_search_endpoint));
+    return json_decode(get($bmlt_search_endpoint, false, 3600));
 }
 
 function getServiceBodies()
 {
     $bmlt_search_endpoint = sprintf('%s/client_interface/json/?switcher=GetServiceBodies', getAdminBMLTRootServer());
-    return json_decode(get($bmlt_search_endpoint));
+    return json_decode(get($bmlt_search_endpoint, false, 3600));
 }
 
 function getServiceBody($service_body_id)
@@ -1213,43 +1213,47 @@ function canManageUsers()
 
 function getServiceBodiesRights()
 {
-    if ($_SESSION['auth_mechanism'] == AuthMechanism::V1) {
-        $url = sprintf('%s/local_server/server_admin/json.php?admin_action=get_permissions', getAdminBMLTRootServer());
-        $service_bodies_for_user = json_decode(get($url, $_SESSION['username']));
+    if (isset($_SESSION['auth_mechanism'])) {
+        if ($_SESSION['auth_mechanism'] == AuthMechanism::V1) {
+            $url = sprintf('%s/local_server/server_admin/json.php?admin_action=get_permissions', getAdminBMLTRootServer());
+            $service_bodies_for_user = json_decode(get($url, true));
 
-        if (!is_array($service_bodies_for_user->service_body)) {
-            $service_bodies_for_user = array($service_bodies_for_user->service_body);
-        } else if (isset($service_bodies_for_user->service_body)) {
-            $service_bodies_for_user = $service_bodies_for_user->service_body;
-        } else {
-            $service_bodies_for_user = array();
-        }
+            if (!is_array($service_bodies_for_user->service_body)) {
+                $service_bodies_for_user = array($service_bodies_for_user->service_body);
+            } else if (isset($service_bodies_for_user->service_body)) {
+                $service_bodies_for_user = $service_bodies_for_user->service_body;
+            } else {
+                $service_bodies_for_user = array();
+            }
 
-        $service_bodies = getServiceBodies();
-        $enriched_service_bodies_for_user = array();
-        foreach ($service_bodies_for_user as $service_body_for_user) {
-            foreach ($service_bodies as $service_body) {
-                if (intval($service_body->id) === $service_body_for_user->id) {
-                    array_push($enriched_service_bodies_for_user, $service_body);
+            $service_bodies = getServiceBodies();
+            $enriched_service_bodies_for_user = array();
+            foreach ($service_bodies_for_user as $service_body_for_user) {
+                foreach ($service_bodies as $service_body) {
+                    if (intval($service_body->id) === $service_body_for_user->id) {
+                        array_push($enriched_service_bodies_for_user, $service_body);
+                    }
                 }
             }
-        }
 
-        return $enriched_service_bodies_for_user;
-    } elseif ($_SESSION['auth_mechanism'] == AuthMechanism::V2 && $_SESSION['auth_is_admin']) {
-        return getServiceBodies();
-    } elseif ($_SESSION['auth_mechanism'] == AuthMechanism::V2) {
-        $service_bodies = getServiceBodies();
-        $service_body_rights = $_SESSION['auth_service_bodies'];
-        $service_bodies_for_user = array();
-        foreach ($service_bodies as $service_body) {
-            if (in_array($service_body->id, $service_body_rights)) {
-                array_push($service_bodies_for_user, $service_body);
+            return $enriched_service_bodies_for_user;
+        } elseif ($_SESSION['auth_mechanism'] == AuthMechanism::V2 && $_SESSION['auth_is_admin']) {
+            return getServiceBodies();
+        } elseif ($_SESSION['auth_mechanism'] == AuthMechanism::V2) {
+            $service_bodies = getServiceBodies();
+            $service_body_rights = $_SESSION['auth_service_bodies'];
+            $service_bodies_for_user = array();
+            foreach ($service_bodies as $service_body) {
+                if (in_array($service_body->id, $service_body_rights)) {
+                    array_push($service_bodies_for_user, $service_body);
+                }
             }
-        }
 
-        return $service_bodies_for_user;
+            return $service_bodies_for_user;
+        }
     }
+
+    return null;
 }
 
 function incrementNoAnswerCount()
@@ -1268,7 +1272,7 @@ function admin_GetUserName()
 {
     if (!isset($_SESSION['auth_user_name_string'])) {
         $url = sprintf('%s/local_server/server_admin/json.php?admin_action=get_user_info', getAdminBMLTRootServer());
-        $get_user_info_response = json_decode(get($url, $_SESSION['username']));
+        $get_user_info_response = json_decode(get($url, true, 3600));
         $user_name = isset($get_user_info_response->current_user) ? $get_user_info_response->current_user->name : $_SESSION['username'];
         $_SESSION['auth_user_name_string'] = $user_name;
     }
@@ -1416,7 +1420,7 @@ function getIdsFormats($types)
     $typesArray = explode(",", $types);
     $finalFormats = array();
     $bmlt_search_endpoint = sprintf('%s/client_interface/json/?switcher=GetFormats', getBMLTRootServer());
-    $formats = json_decode(get($bmlt_search_endpoint));
+    $formats = json_decode(get($bmlt_search_endpoint, false, 3600));
     for ($t = 0; $t < count($typesArray); $t++) {
         for ($f = 0; $f < count($formats); $f ++) {
             if ($formats[ $f ]->key_string == $typesArray[$t]) {
@@ -1634,45 +1638,86 @@ function sort_on_field(&$objects, $on, $order = 'ASC')
     });
 }
 
-function getCookiePath($cookieName)
+function starts_with($string, $startString)
 {
-    return __DIR__ . '/../../' . $cookieName;
+    return (substr($string, 0, strlen($startString)) === $startString);
 }
 
-function auth_v1($username, $password, $master = false)
+function getResponse($ch, $exec)
 {
-    $ch = curl_init();
+    $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+    return ['header' => substr($exec, 0, $header_size),
+        'body' => substr($exec, $header_size)];
+}
+
+$curlResponseHeaders = [];
+function getHeaders($curl, $header)
+{
+    $len = strlen($header);
+    $header = explode(':', $header, 2);
+    if (count($header) < 2) // ignore invalid headers
+        return $len;
+
+    $GLOBALS['curlResponseHeaders'][strtolower(trim($header[0]))][] = trim($header[1]);
+
+    return $len;
+}
+
+function getUserAgent() {
+    return 'User-Agent: Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap';
+}
+
+function getBMLTAuthSessionCookies() {
+    return isset($_SESSION['bmlt_auth_session']) ? implode(";", $_SESSION['bmlt_auth_session']) : "";
+}
+
+function getCookiesFromHeaders() {
+    $cookies = [];
+
+    foreach ($GLOBALS['curlResponseHeaders']['set-cookie'] as $cookie)
+    {
+        array_push($cookies, explode(";", $cookie)[0]);
+    }
+
+    return $cookies;
+}
+
+function auth_v1($username, $password)
+{
+    session_destroy();
+    session_start();
+    $curl_handler = curl_init();
     $auth_endpoint = (isset($GLOBALS['alt_auth_method']) && $GLOBALS['alt_auth_method'] ? '/index.php' : '/local_server/server_admin/xml.php');
-    curl_setopt($ch, CURLOPT_URL, getAdminBMLTRootServer() . $auth_endpoint);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_COOKIEJAR, getCookiePath(($master ? 'master' : $username) . '_cookie.txt'));
-    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap');
-    curl_setopt($ch, CURLOPT_POSTFIELDS, 'admin_action=login&c_comdef_admin_login='.$username.'&c_comdef_admin_password='.urlencode($password));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_HEADER, false);
-    $res = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    return preg_match('/^OK$/', str_replace(array("\r", "\n"), '', $res)) == 1;
+    curl_setopt($curl_handler, CURLOPT_URL, getAdminBMLTRootServer() . $auth_endpoint);
+    curl_setopt($curl_handler, CURLOPT_POST, true);
+    curl_setopt($curl_handler, CURLOPT_USERAGENT, getUserAgent());
+    curl_setopt($curl_handler, CURLOPT_POSTFIELDS, 'admin_action=login&c_comdef_admin_login='.$username.'&c_comdef_admin_password='.urlencode($password));
+    curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl_handler, CURLOPT_HEADER, true);
+    curl_setopt($curl_handler, CURLOPT_HEADERFUNCTION, "getHeaders");
+    $exec = curl_exec($curl_handler);
+    $res = getResponse($curl_handler, $exec);
+    curl_close($curl_handler);
+    $is_authed = preg_match('/^OK$/', str_replace(array("\r", "\n"), '', $res['body'])) == 1;
+    $_SESSION["bmlt_auth_session"] = $is_authed ? getCookiesFromHeaders() : null;
+    return $is_authed;
 }
 
-function check_auth($username)
+function check_auth()
 {
     if ($_SESSION['auth_mechanism'] == AuthMechanism::V1) {
-        $cookie_file = getCookiePath($username . '_cookie.txt');
-        if (file_exists($cookie_file)) {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=get_permissions', getAdminBMLTRootServer()));
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
-            curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
-            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap');
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_HEADER, false);
-            $res = curl_exec($ch);
-            curl_close($ch);
+        if (isset($_SESSION['bmlt_auth_session']) && $_SESSION['bmlt_auth_session'] != null) {
+            $curl_handler = curl_init();
+            curl_setopt($curl_handler, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=get_permissions', getAdminBMLTRootServer()));
+            curl_setopt($curl_handler, CURLOPT_POST, true);
+            curl_setopt($curl_handler, CURLOPT_USERAGENT, getUserAgent());
+            curl_setopt($curl_handler, CURLOPT_COOKIE, getBMLTAuthSessionCookies());
+            curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl_handler, CURLOPT_HEADER, false);
+            $res = curl_exec($curl_handler);
+            curl_close($curl_handler);
         } else {
-            $res = "NOT AUTHORIZED";
+            $res['body'] = "NOT AUTHORIZED";
         }
 
         return !preg_match('/NOT AUTHORIZED/', $res);
@@ -1681,21 +1726,18 @@ function check_auth($username)
     }
 }
 
-function logout_auth($username)
+function logout_auth()
 {
     if (isset($_SESSION['auth_mechanism']) && $_SESSION['auth_mechanism'] == AuthMechanism::V1) {
-        $cookie_file = getCookiePath($username . '_cookie.txt');
-        if (file_exists($cookie_file)) {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=logout', getAdminBMLTRootServer()));
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
-            curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
-            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap');
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_HEADER, false);
-            $res = curl_exec($ch);
-            curl_close($ch);
+        if (isset($_SESSION['bmlt_auth_session']) && $_SESSION['bmlt_auth_session'] != null) {
+            $curl_handler = curl_init();
+            curl_setopt($curl_handler, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=logout', getAdminBMLTRootServer()));
+            curl_setopt($curl_handler, CURLOPT_POST, true);
+            curl_setopt($curl_handler, CURLOPT_USERAGENT, getUserAgent());
+            curl_setopt($curl_handler, CURLOPT_COOKIE, getBMLTAuthSessionCookies());
+            curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, true);
+            $res = curl_exec($curl_handler);
+            curl_close($curl_handler);
         } else {
             $res = "BYE;";
         }
@@ -1744,83 +1786,30 @@ function setCache($key, $value, $timeout, $cache_type = CacheType::DATABASE)
     }
 }
 
-function get($url, $username = 'master', $cache_expiry = 60, $cache_type = CacheType::DATABASE)
+function get($url, $bmltAuth = false, $cache_expiry = 0, $cache_type = CacheType::DATABASE)
 {
-    $data = getCache($url);
+    $data = $cache_expiry > 0 ? getCache($url) : null;
     if ($data == null) {
         log_debug($url);
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_COOKIEFILE, getCookiePath($username . '_cookie.txt'));
-        curl_setopt($ch, CURLOPT_COOKIEJAR, getCookiePath($username . '_cookie.txt'));
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $data = curl_exec($ch);
-        $errorno = curl_errno($ch);
-        curl_close($ch);
+        $curl_handler = curl_init();
+        curl_setopt($curl_handler, CURLOPT_URL, $url);
+        curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl_handler, CURLOPT_USERAGENT, getUserAgent());
+        if ($bmltAuth) {
+            curl_setopt($curl_handler, CURLOPT_COOKIE, getBMLTAuthSessionCookies());
+        }
+        $data = curl_exec($curl_handler);
+        error_log($data);
+        $errorno = curl_errno($curl_handler);
+        curl_close($curl_handler);
         if ($errorno > 0) {
             throw new CurlException(curl_strerror($errorno));
-        } else {
+        } else if ($cache_expiry > 0) {
             setCache($url, $data, $cache_expiry, $cache_type);
         }
     }
 
     return $data;
-}
-
-function post($url, $payload, $is_json = true, $username = 'master')
-{
-    log_debug($url);
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_COOKIEFILE, getCookiePath($username . '_cookie.txt'));
-    curl_setopt($ch, CURLOPT_COOKIEJAR, getCookiePath($username . '_cookie.txt'));
-    $post_field_count = $is_json ? 1 : substr_count($payload, '=');
-    curl_setopt($ch, CURLOPT_POST, $post_field_count);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $is_json ? json_encode($payload) : $payload);
-    if ($is_json) {
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-    }
-    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap");
-    $data = curl_exec($ch);
-    $errorno = curl_errno($ch);
-    curl_close($ch);
-    if ($errorno > 0) {
-        throw new CurlException(curl_strerror($errorno));
-    }
-    return $data;
-}
-
-function async_post($url, $payload)
-{
-    log_debug($url);
-    $parts = parse_url($url);
-
-    if (isset($parts['port'])) {
-        $port = $parts['port'];
-    } else if ($parts['scheme'] == 'https') {
-        $port = 443;
-    } else {
-        $port = 80;
-    }
-
-    $host = ($parts['scheme'] == 'https' ? "ssl://" : "") . $parts['host'];
-    $fp = fsockopen($host, $port, $errno, $errstr, 30);
-    assert(($fp!=0), "Couldn’t open a socket to ".$url." (".$errstr.")");
-    $post_data = json_encode($payload);
-
-    $out = "POST ".$parts['path']." HTTP/1.1\r\n";
-    $out.= "Host: ".$parts['host']."\r\n";
-    $out.= "User-Agent: Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap\r\n";
-    $out.= "Content-Type: application/json\r\n";
-    $out.= "Content-Length: ".strlen($post_data)."\r\n";
-    $out.= "Connection: Close\r\n\r\n";
-    if (isset($post_data)) {
-        $out.= $post_data;
-    }
-
-    fwrite($fp, $out);
-    fclose($fp);
 }
 
 function sms_chunk_split($msg)
@@ -1864,7 +1853,7 @@ function get_jft($sms = false)
 
     $jft = new DOMDocument;
     libxml_use_internal_errors(true);
-    $d->loadHTML(mb_convert_encoding(get($url), 'HTML-ENTITIES', 'UTF-8'));
+    $d->loadHTML(mb_convert_encoding(get($url, false, 3600), 'HTML-ENTITIES', 'UTF-8'));
     libxml_clear_errors();
     libxml_use_internal_errors(false);
     $xpath = new DOMXpath($d);
