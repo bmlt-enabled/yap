@@ -1655,27 +1655,30 @@ function getHeaders($curl, $header)
 {
     $len = strlen($header);
     $header = explode(':', $header, 2);
-    if (count($header) < 2) // ignore invalid headers
+    if (count($header) < 2) {
         return $len;
+    }
 
     $GLOBALS['curlResponseHeaders'][strtolower(trim($header[0]))][] = trim($header[1]);
 
     return $len;
 }
 
-function getUserAgent() {
+function getUserAgent()
+{
     return 'User-Agent: Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap';
 }
 
-function getBMLTAuthSessionCookies() {
+function getBMLTAuthSessionCookies()
+{
     return isset($_SESSION['bmlt_auth_session']) ? implode(";", $_SESSION['bmlt_auth_session']) : "";
 }
 
-function getCookiesFromHeaders() {
+function getCookiesFromHeaders()
+{
     $cookies = [];
 
-    foreach ($GLOBALS['curlResponseHeaders']['set-cookie'] as $cookie)
-    {
+    foreach ($GLOBALS['curlResponseHeaders']['set-cookie'] as $cookie) {
         array_push($cookies, explode(";", $cookie)[0]);
     }
 
