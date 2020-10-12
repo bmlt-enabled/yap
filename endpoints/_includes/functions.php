@@ -1797,7 +1797,6 @@ function get($url, $bmltAuth = false, $cache_expiry = 0, $cache_type = CacheType
             curl_setopt($curl_handler, CURLOPT_COOKIE, getBMLTAuthSessionCookies());
         }
         $data = curl_exec($curl_handler);
-        error_log($data);
         $errorno = curl_errno($curl_handler);
         curl_close($curl_handler);
         if ($errorno > 0) {
