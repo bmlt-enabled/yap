@@ -1684,18 +1684,18 @@ function auth_v1($username, $password)
 {
     session_destroy();
     session_start();
-    $curl_handler = curl_init();
+    $ch = curl_init();
     $auth_endpoint = (isset($GLOBALS['alt_auth_method']) && $GLOBALS['alt_auth_method'] ? '/index.php' : '/local_server/server_admin/xml.php');
-    curl_setopt($curl_handler, CURLOPT_URL, getAdminBMLTRootServer() . $auth_endpoint);
-    curl_setopt($curl_handler, CURLOPT_POST, true);
-    curl_setopt($curl_handler, CURLOPT_USERAGENT, getUserAgent());
-    curl_setopt($curl_handler, CURLOPT_POSTFIELDS, 'admin_action=login&c_comdef_admin_login='.$username.'&c_comdef_admin_password='.urlencode($password));
-    curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl_handler, CURLOPT_HEADER, true);
-    curl_setopt($curl_handler, CURLOPT_HEADERFUNCTION, "getHeaders");
-    $exec = curl_exec($curl_handler);
-    $res = getResponse($curl_handler, $exec);
-    curl_close($curl_handler);
+    curl_setopt($ch, CURLOPT_URL, getAdminBMLTRootServer() . $auth_endpoint);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_USERAGENT, getUserAgent());
+    curl_setopt($ch, CURLOPT_POSTFIELDS, 'admin_action=login&c_comdef_admin_login='.$username.'&c_comdef_admin_password='.urlencode($password));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HEADER, true);
+    curl_setopt($ch, CURLOPT_HEADERFUNCTION, "getHeaders");
+    $exec = curl_exec($ch);
+    $res = getResponse($ch, $exec);
+    curl_close($ch);
     $is_authed = preg_match('/^OK$/', str_replace(array("\r", "\n"), '', $res['body'])) == 1;
     $_SESSION["bmlt_auth_session"] = $is_authed ? getCookiesFromHeaders() : null;
     return $is_authed;
@@ -1705,15 +1705,15 @@ function check_auth()
 {
     if ($_SESSION['auth_mechanism'] == AuthMechanism::V1) {
         if (isset($_SESSION['bmlt_auth_session']) && $_SESSION['bmlt_auth_session'] != null) {
-            $curl_handler = curl_init();
-            curl_setopt($curl_handler, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=get_permissions', getAdminBMLTRootServer()));
-            curl_setopt($curl_handler, CURLOPT_POST, true);
-            curl_setopt($curl_handler, CURLOPT_USERAGENT, getUserAgent());
-            curl_setopt($curl_handler, CURLOPT_COOKIE, getBMLTAuthSessionCookies());
-            curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl_handler, CURLOPT_HEADER, false);
-            $res = curl_exec($curl_handler);
-            curl_close($curl_handler);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=get_permissions', getAdminBMLTRootServer()));
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_USERAGENT, getUserAgent());
+            curl_setopt($ch, CURLOPT_COOKIE, getBMLTAuthSessionCookies());
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HEADER, false);
+            $res = curl_exec($ch);
+            curl_close($ch);
         } else {
             $res['body'] = "NOT AUTHORIZED";
         }
@@ -1728,14 +1728,14 @@ function logout_auth()
 {
     if (isset($_SESSION['auth_mechanism']) && $_SESSION['auth_mechanism'] == AuthMechanism::V1) {
         if (isset($_SESSION['bmlt_auth_session']) && $_SESSION['bmlt_auth_session'] != null) {
-            $curl_handler = curl_init();
-            curl_setopt($curl_handler, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=logout', getAdminBMLTRootServer()));
-            curl_setopt($curl_handler, CURLOPT_POST, true);
-            curl_setopt($curl_handler, CURLOPT_USERAGENT, getUserAgent());
-            curl_setopt($curl_handler, CURLOPT_COOKIE, getBMLTAuthSessionCookies());
-            curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, true);
-            $res = curl_exec($curl_handler);
-            curl_close($curl_handler);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=logout', getAdminBMLTRootServer()));
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_USERAGENT, getUserAgent());
+            curl_setopt($ch, CURLOPT_COOKIE, getBMLTAuthSessionCookies());
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $res = curl_exec($ch);
+            curl_close($ch);
         } else {
             $res = "BYE;";
         }
@@ -1789,16 +1789,16 @@ function get($url, $bmltAuth = false, $cache_expiry = 0, $cache_type = CacheType
     $data = $cache_expiry > 0 ? getCache($url) : null;
     if ($data == null) {
         log_debug($url);
-        $curl_handler = curl_init();
-        curl_setopt($curl_handler, CURLOPT_URL, $url);
-        curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl_handler, CURLOPT_USERAGENT, getUserAgent());
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, getUserAgent());
         if ($bmltAuth) {
-            curl_setopt($curl_handler, CURLOPT_COOKIE, getBMLTAuthSessionCookies());
+            curl_setopt($ch, CURLOPT_COOKIE, getBMLTAuthSessionCookies());
         }
-        $data = curl_exec($curl_handler);
-        $errorno = curl_errno($curl_handler);
-        curl_close($curl_handler);
+        $data = curl_exec($ch);
+        $errorno = curl_errno($ch);
+        curl_close($ch);
         if ($errorno > 0) {
             throw new CurlException(curl_strerror($errorno));
         } else if ($cache_expiry > 0) {
