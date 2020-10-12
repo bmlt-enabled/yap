@@ -514,7 +514,7 @@ class UpgradeAdvisor
                 return self::getState(false, "Your Google Maps API key came back with the following error. " . $googleapi_settings->error_message. " Please make sure you have the 'Google Maps Geocoding API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
             }
 
-            $timezone_settings = json_decode(get(sprintf("%s&location=34.2011137,-118.475058&timestamp=%d", $GLOBALS['timezone_lookup_endpoint'], time() - (time() % 1800)), false, 3600));
+            $timezone_settings = json_decode(get(sprintf("%s&location=34.2011137,-118.475058&timestamp=%d", $GLOBALS['timezone_lookup_endpoint'], time() - (time() % 1800)), false));
 
             if ($timezone_settings->status == "REQUEST_DENIED") {
                 return self::getState(false, "Your Google Maps API key came back with the following error. " . $timezone_settings->errorMessage. " Please make sure you have the 'Google Time Zone API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
@@ -1272,7 +1272,7 @@ function admin_GetUserName()
 {
     if (!isset($_SESSION['auth_user_name_string'])) {
         $url = sprintf('%s/local_server/server_admin/json.php?admin_action=get_user_info', getAdminBMLTRootServer());
-        $get_user_info_response = json_decode(get($url, true, 3600));
+        $get_user_info_response = json_decode(get($url, true));
         $user_name = isset($get_user_info_response->current_user) ? $get_user_info_response->current_user->name : $_SESSION['username'];
         $_SESSION['auth_user_name_string'] = $user_name;
     }
@@ -1636,11 +1636,6 @@ function sort_on_field(&$objects, $on, $order = 'ASC')
     usort($objects, function ($a, $b) use ($on, $order) {
         return $order === 'DESC' ? -strcoll($a->{$on}, $b->{$on}) : strcoll($a->{$on}, $b->{$on});
     });
-}
-
-function starts_with($string, $startString)
-{
-    return (substr($string, 0, strlen($startString)) === $startString);
 }
 
 function getResponse($ch, $exec)
