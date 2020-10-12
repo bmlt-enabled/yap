@@ -1715,7 +1715,7 @@ function check_auth()
             $res = curl_exec($ch);
             curl_close($ch);
         } else {
-            $res['body'] = "NOT AUTHORIZED";
+            $res = "NOT AUTHORIZED";
         }
 
         return !preg_match('/NOT AUTHORIZED/', $res);
