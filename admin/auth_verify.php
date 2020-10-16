@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../endpoints/_includes/functions.php';
 
-function session_expired()
+function is_session_expired()
 {
     if (!isset($_SESSION['username']) || !check_auth()) {
         session_unset();
@@ -25,7 +25,7 @@ if (isset($_REQUEST["service_body_id"])) {
     }
 }
 
-$expired = session_expired();
+$expired = is_session_expired();
 
 if (isset($_REQUEST["format"]) && $_REQUEST["format"] === "json") {
     header('Content-Type: application/json');
