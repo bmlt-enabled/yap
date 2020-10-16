@@ -1703,7 +1703,7 @@ function auth_v1($username, $password)
 
 function check_auth()
 {
-    if ($_SESSION['auth_mechanism'] == AuthMechanism::V1) {
+    if (isset($_SESSION['auth_mechanism']) && $_SESSION['auth_mechanism'] == AuthMechanism::V1) {
         if (isset($_SESSION['bmlt_auth_session']) && $_SESSION['bmlt_auth_session'] != null) {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=get_permissions', getAdminBMLTRootServer()));
