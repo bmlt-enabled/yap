@@ -1707,7 +1707,6 @@ function check_auth()
         if (isset($_SESSION['bmlt_auth_session']) && $_SESSION['bmlt_auth_session'] != null) {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=get_permissions', getAdminBMLTRootServer()));
-            curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_USERAGENT, getUserAgent());
             curl_setopt($ch, CURLOPT_COOKIE, getBMLTAuthSessionCookies());
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -1730,7 +1729,6 @@ function logout_auth()
         if (isset($_SESSION['bmlt_auth_session']) && $_SESSION['bmlt_auth_session'] != null) {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=logout', getAdminBMLTRootServer()));
-            curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_USERAGENT, getUserAgent());
             curl_setopt($ch, CURLOPT_COOKIE, getBMLTAuthSessionCookies());
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
