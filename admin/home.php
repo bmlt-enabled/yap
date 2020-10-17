@@ -7,7 +7,7 @@
         <div class="col-md">
             <div class="jumbotron">
                 <div class="home-title"><?php echo word('welcome')?>, <?php echo admin_GetUserName()?>...</div>
-                <p class="lead">Yap (<?php echo $status['version']?>)</p>
+                <p class="lead">Yap v<?php echo $status['version']?></p>
                 <a class="btn btn-sm btn-<?php echo $status['status'] ? "success" : "danger" ?>"
                         id="upgrade-advisor-details"
                         data-toggle="tooltip"

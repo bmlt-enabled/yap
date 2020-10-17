@@ -16,7 +16,7 @@ if (count($auth_v2_result) == 1) {
     $_SESSION['auth_mechanism'] = AuthMechanism::V1;
     header('Location: home.php');
 } else {
-    logout_auth($_POST['username']);
+    logout_auth();
     header('Location: index.php?auth=false');
 }
 exit();
