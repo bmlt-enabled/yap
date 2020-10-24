@@ -319,7 +319,7 @@ function setDatabaseCacheValue($key, $value, $expiry)
 function getDatabaseCacheValue($key)
 {
     $db = new Database();
-    $stmt = "SELECT `id`,`value` FROM `cache` WHERE `key`=:key ORDER BY id DESC LIMIT 1";
+    $stmt = "SELECT `value` FROM `cache` WHERE `key`=:key ORDER BY id DESC LIMIT 1";
     $db->query($stmt);
     $db->bind(':key', $key);
     $resultset = $db->resultset();
