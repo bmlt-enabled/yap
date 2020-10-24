@@ -1172,15 +1172,19 @@ function getServiceBodiesForUser($include_general = false)
 {
     $service_bodies = getServiceBodiesRights();
 
-    foreach ($service_bodies as $service_body) {
-        $parent_service_body = getServiceBody($service_body->parent_id);
-        $service_body->parent_name = isset($parent_service_body) ? $parent_service_body->name : "None";
-    }
+    if (isset($service_bodies)) {
+        foreach ($service_bodies as $service_body) {
+            $parent_service_body = getServiceBody($service_body->parent_id);
+            $service_body->parent_name = isset($parent_service_body) ? $parent_service_body->name : "None";
+        }
 
-    if ($include_general) {
-        array_push($service_bodies, (object) [
-            "id" => "0"
-        ]);
+        if ($include_general) {
+            array_push($service_bodies, (object)[
+                "id" => "0"
+            ]);
+        }
+    } else {
+        $service_bodies = [];
     }
 
     return $service_bodies;
@@ -1272,7 +1276,7 @@ function admin_GetUserName()
 {
     if (!isset($_SESSION['auth_user_name_string'])) {
         $url = sprintf('%s/local_server/server_admin/json.php?admin_action=get_user_info', getAdminBMLTRootServer());
-        $get_user_info_response = json_decode(get($url, true));
+        $get_user_info_response = json_decode(get($url, true), 3600, CacheType::SESSION);
         $user_name = isset($get_user_info_response->current_user) ? $get_user_info_response->current_user->name : $_SESSION['username'];
         $_SESSION['auth_user_name_string'] = $user_name;
     }
@@ -1762,9 +1766,15 @@ function getCache($key, $cache_type = CacheType::DATABASE)
     }
 
     $current_time = gmdate('U');
-    if (isset($value['value']) && $current_time <= $value['expiry']) {
-        log_debug(sprintf("CACHE::STATUS:HIT, TYPE:%d, KEY:%s, EPOCH: %d, EXPIRES:%d", $cache_type, $key, $current_time, $value['expiry'] - $current_time));
-        return $value['value'];
+    if (isset($value['value'])) {
+        if ($current_time <= $value['expiry']) {
+            log_debug(sprintf("CACHE::STATUS:HIT, TYPE:%d, KEY:%s, EPOCH: %d, EXPIRES:%d", $cache_type, $key, $current_time, $value['expiry'] - $current_time));
+            return $value['value'];
+        } else {
+            log_debug(sprintf("CACHE::STATUS:EXPIRED, TYPE:%d, KEY:%s, EPOCH: %d, EXPIRES:%d", $cache_type, $key, $current_time, $value['expiry'] - $current_time));
+            deleteExpiredCacheValues($current_time);
+            return null;
+        }
     } else {
         log_debug(sprintf("CACHE::STATUS:MISS, TYPE:%d, KEY:%s, EPOCH: %d, EXPIRES:%d", $cache_type, $key, $current_time, isset($value) ? $value['expiry'] - $current_time: 0));
         return null;
@@ -1774,11 +1784,12 @@ function getCache($key, $cache_type = CacheType::DATABASE)
 function setCache($key, $value, $timeout, $cache_type = CacheType::DATABASE)
 {
     $cache_key = sprintf('cache_%s', $key);
-    $cache_value = ["value" => $value, "expiry" => gmdate('U') + $timeout];
+    $cache_expiry = gmdate('U') + $timeout;
+    $cache_value = ["value" => $value, "expiry" => $cache_expiry];
     if ($cache_type == CacheType::SESSION) {
         $_SESSION[$cache_key] = $cache_value;
     } else if ($cache_type == CacheType::DATABASE) {
-        setDatabaseCacheValue($cache_key, json_encode($cache_value));
+        setDatabaseCacheValue($cache_key, json_encode($cache_value), $cache_expiry);
     }
 }
 

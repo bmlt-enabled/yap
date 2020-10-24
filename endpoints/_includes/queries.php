@@ -304,13 +304,14 @@ function admin_PersistDbConfigById($id, $data)
     $db->close();
 }
 
-function setDatabaseCacheValue($key, $value)
+function setDatabaseCacheValue($key, $value, $expiry)
 {
     $db = new Database();
-    $stmt = "INSERT INTO `cache` (`key`, `value`) VALUES (:key, :value)";
+    $stmt = "INSERT INTO `cache` (`key`, `value`, `expiry`) VALUES (:key, :value, :expiry)";
     $db->query($stmt);
     $db->bind(':key', $key);
     $db->bind(':value', $value);
+    $db->bind(':expiry', $expiry);
     $db->execute();
     $db->close();
 }
@@ -324,6 +325,24 @@ function getDatabaseCacheValue($key)
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
+}
+
+function deleteExpiredCacheValues($currentEpoch)
+{
+    $db = new Database();
+    $db->query("DELETE FROM `cache` WHERE `expiry` <= :currentEpoch");
+    $db->bind(":currentEpoch", $currentEpoch);
+    $db->execute();
+    $db->close();
+}
+
+function clearCache()
+{
+    $db = new Database();
+    $stmt = "TRUNCATE TABLE `cache`";
+    $db->query($stmt);
+    $db->execute();
+    $db->close();
 }
 
 function getDbData($service_body_id, $data_type)
