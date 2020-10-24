@@ -1173,7 +1173,6 @@ function getServiceBodiesForUser($include_general = false)
     $service_bodies = getServiceBodiesRights();
 
     if (isset($service_bodies)) {
-
         foreach ($service_bodies as $service_body) {
             $parent_service_body = getServiceBody($service_body->parent_id);
             $service_body->parent_name = isset($parent_service_body) ? $parent_service_body->name : "None";
