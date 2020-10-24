@@ -1753,6 +1753,7 @@ function logout_auth()
 function getCache($key, $cache_type = CacheType::DATABASE)
 {
     $cache = null;
+    $expiry = null;
     $cache_key = sprintf('cache_%s', $key);
     if ($cache_type == CacheType::SESSION) {
         if (isset($_SESSION[$cache_key])) {
@@ -1762,21 +1763,22 @@ function getCache($key, $cache_type = CacheType::DATABASE)
         $database_cache_value = getDatabaseCacheValue($cache_key);
         if (count($database_cache_value) > 0) {
             $value = json_decode($database_cache_value[0]['value'], true);
+            $expiry = $database_cache_value[0]['expiry'];
         }
     }
 
     $current_time = gmdate('U');
     if (isset($value['value'])) {
         if ($current_time <= $value['expiry']) {
-            log_debug(sprintf("CACHE::STATUS:HIT, TYPE:%d, KEY:%s, EPOCH: %d, EXPIRES:%d", $cache_type, $key, $current_time, $value['expiry'] - $current_time));
+            log_debug(sprintf("CACHE::STATUS:HIT, TYPE:%d, KEY:%s, EPOCH: %d, EXPIRES:%d", $cache_type, $key, $current_time, $expiry - $current_time));
             return $value['value'];
         } else {
-            log_debug(sprintf("CACHE::STATUS:EXPIRED, TYPE:%d, KEY:%s, EPOCH: %d, EXPIRES:%d", $cache_type, $key, $current_time, $value['expiry'] - $current_time));
+            log_debug(sprintf("CACHE::STATUS:EXPIRED, TYPE:%d, KEY:%s, EPOCH: %d, EXPIRES:%d", $cache_type, $key, $current_time, $expiry - $current_time));
             deleteExpiredCacheValues($current_time);
             return null;
         }
     } else {
-        log_debug(sprintf("CACHE::STATUS:MISS, TYPE:%d, KEY:%s, EPOCH: %d, EXPIRES:%d", $cache_type, $key, $current_time, isset($value) ? $value['expiry'] - $current_time: 0));
+        log_debug(sprintf("CACHE::STATUS:MISS, TYPE:%d, KEY:%s, EPOCH: %d, EXPIRES:%d", $cache_type, $key, $current_time, isset($value) ? $expiry - $current_time: 0));
         return null;
     }
 }
