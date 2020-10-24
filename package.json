@@ -1,40 +1,19 @@
 {
-  "dependencies": {
-    "@bmlt-enabled/croutonjs": "^3.11.4",
-    "@fullcalendar/bootstrap": "^4.4.2",
-    "@fullcalendar/core": "^4.1.0",
-    "@fullcalendar/daygrid": "^4.0.1",
-    "@fullcalendar/interaction": "^4.0.1",
-    "@fullcalendar/list": "^4.0.1",
-    "@fullcalendar/timegrid": "^4.0.1",
-    "bootstrap": "^4.3.1",
-    "dark-mode-switch": "^1.0.0",
-    "jquery": "~3.4.1",
-    "jquery-ui-dist": "^1.12.1",
-    "jquery-ui-touch-punch": "^0.2.3",
-    "jquery-validation": "^1.19.2",
-    "leaflet": "^1.6.0",
-    "leaflet-fullscreen": "^1.0.2",
-    "moment": "^2.24.0",
-    "plotly.js-dist": "^1.47.3",
-    "popper.js": "^1.15.0",
-    "tabulator-tables": "4.5.3",
-    "xlsx": "0.15.1"
-  },
-  "devDependencies": {
-    "gulp": "^4.0.2",
-    "gulp-clean-css": "^4.2.0",
-    "gulp-concat": "^2.6.1",
-    "gulp-declare": "^0.3.0",
-    "gulp-handlebars": "^5.0.2",
-    "gulp-less": "^4.0.1",
-    "gulp-minify": "^3.1.0",
-    "gulp-notify": "^3.2.0",
-    "gulp-order": "^1.2.0",
-    "gulp-rename": "^1.4.0",
-    "gulp-uglify": "^3.0.2",
-    "gulp-wrap": "^0.15.0",
-    "merge-stream": "^2.0.0"
-  },
-  "main": "gulpfile.js"
+    "private": true,
+    "scripts": {
+        "dev": "npm run development",
+        "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "watch": "npm run development -- --watch",
+        "watch-poll": "npm run watch -- --watch-poll",
+        "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --disable-host-check --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "prod": "npm run production",
+        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+    },
+    "devDependencies": {
+        "axios": "^0.19",
+        "cross-env": "^7.0",
+        "laravel-mix": "^5.0.1",
+        "lodash": "^4.17.19",
+        "resolve-url-loader": "^3.1.0"
+    }
 }
