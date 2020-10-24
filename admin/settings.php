@@ -2,6 +2,10 @@
     <div class="container">
         <div class="row">
             <div class="col-md">
+                <?php
+                    if (isset($_SESSION['auth_is_admin']) && $_SESSION['auth_is_admin'] == 1) {?>
+                    <button class="btn btn-danger" onclick="location.href='clear-cache.php'">Clear Database Cache</button>
+                <?php } ?>
                 <table class="table table-striped table-borderless table-responsive">
                     <thead>
                     <tr>
