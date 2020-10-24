@@ -1,2 +1,0 @@
-ALTER TABLE `records` MODIFY `start_time` TIMESTAMP NULL;
-ALTER TABLE `records` MODIFY `end_time` TIMESTAMP NULL;
