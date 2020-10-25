@@ -28,7 +28,7 @@
                     <input class="form-control form-control-sm" type="hidden" name="id" id="id">
 
                     <div class="users_permissions control-group">
-                        Permissions: <select size="5" multiple class="form-control form-control-sm" name="permissions" id="permissions">
+                        Permissions: (press and hold Command/Control (macOS/Windows) and click to deselect an option) <select size="5" multiple class="form-control form-control-sm" name="permissions" id="permissions">
                             <option value="1">Manage Users</option>
                         </select>
                     </div>
@@ -38,7 +38,7 @@
                         $shareable_service_bodies = getServiceBodiesForUser();
                         if (count($shareable_service_bodies) > 0) {
                             sort_on_field($shareable_service_bodies, 'name') ?>
-                        Service Bodies Access: <select size="10" multiple class="form-control form-control-sm" name="service_bodies" id="service_bodies">
+                        Service Bodies Access: (press and hold Command/Control (macOS/Windows) and click to deselect an option) <select size="10" multiple class="form-control form-control-sm" name="service_bodies" id="service_bodies">
                             <?php
                             foreach ($shareable_service_bodies as $service_body) { ?>
                                 <option value="<?php echo $service_body->id; ?>"><?php echo $service_body->name ?> (<?php echo $service_body->id ?>) / <?php echo $service_body->parent_name ?> (<?php echo $service_body->parent_id ?>)</option>
