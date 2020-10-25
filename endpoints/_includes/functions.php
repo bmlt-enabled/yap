@@ -12,7 +12,7 @@ require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-static $version  = "3.9.9";
+static $version  = "4.0.0";
 static $settings_allowlist = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
