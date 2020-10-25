@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.9.8 (UNRELEASED)
+* Instructions for de-selecting items in the Users management modal. 
+
 ### 3.9.7 (October 24, 2020)
 * Bug fix for incorrect user-agent header.
 
