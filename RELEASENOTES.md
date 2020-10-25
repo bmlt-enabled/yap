@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.9.7 (October 24, 2020)
+* Bug fix for incorrect user-agent header.
+
 ### 3.9.6 (October 24, 2020)
 * BMLT auth (yap auth v1) session cookies no longer stored on disk. [#309]
 * Use GET requests instead of POST requests for BMLT user auth verification and logouts [#485]

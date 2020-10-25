@@ -12,7 +12,7 @@ require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-static $version  = "3.9.6";
+static $version  = "3.9.7";
 static $settings_allowlist = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -1665,7 +1665,7 @@ function getHeaders($curl, $header)
 
 function getUserAgent()
 {
-    return 'User-Agent: Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap';
+    return 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0) +yap';
 }
 
 function getBMLTAuthSessionCookies()
