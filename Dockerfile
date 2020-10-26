@@ -1,4 +1,4 @@
-FROM php:7.1-apache
+FROM php:7.3-apache
 
 ENV PHP_INI_PATH "/usr/local/etc/php/php.ini"
 
@@ -8,7 +8,7 @@ RUN echo "log_errors = On" >> ${PHP_INI_PATH} \
   && echo "error_reporting = E_ALL" >> ${PHP_INI_PATH} \
   && echo "error_log=/var/www/php_error.log" >> ${PHP_INI_PATH}
 
-RUN pecl install xdebug-2.9.1 && docker-php-ext-enable xdebug \
+RUN pecl install xdebug-2.9.8 && docker-php-ext-enable xdebug \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" >> ${PHP_INI_PATH} \
     && echo "xdebug.remote_port=9000" >> ${PHP_INI_PATH} \
     && echo "xdebug.remote_enable=1" >> ${PHP_INI_PATH} \
