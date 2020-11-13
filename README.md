@@ -15,3 +15,9 @@ For setup instructions and general documentation please visit [https://bmlt.app/
 
 * Latest Releases: [https://github.com/bmlt-enabled/yap/releases](https://github.com/bmlt-enabled/yap/releases)
 * Bleeding Edge: [https://archives.bmlt.app/index.html#yap](https://archives.bmlt.app/index.html#yap)
+
+# Migration to Laravel
+
+Yap is currently undergoing a side-by-side migration to Laravel using the recommended guide below.
+
+https://www.phparch.com/2019/03/migrating-legacy-web-applications-to-laravel/

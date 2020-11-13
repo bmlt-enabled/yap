@@ -84,8 +84,8 @@ let fontsMeetingResultsFiles = [
 ];
 
 
-let distJsDir = 'admin/dist/js';
-let distCssDir = 'admin/dist/css';
+let distJsDir = 'public/dist/js';
+let distCssDir = 'public/dist/css';
 
 task('jsCore', () => {
     return src(jsCoreFiles)
