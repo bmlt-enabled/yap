@@ -7,8 +7,8 @@ config.php
 config.*.php
 config_*.php
 test.php
-admin/dist/js
-admin/dist/css/*.css
+public/dist/js
+public/dist/css/*.css
 yap.iml
 package-lock.json
 endpoints/croutonjs
