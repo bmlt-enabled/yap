@@ -15,4 +15,3 @@ use Illuminate\Support\Facades\Route;
 
 Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])
     ->where('all', '^(?!api).*$');
-

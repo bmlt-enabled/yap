@@ -1,1 +1,1 @@
-<?php require_once $includePath; ?>
+<?php require_once $includePath;
