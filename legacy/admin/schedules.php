@@ -18,6 +18,6 @@
     </div>
 </div>
 <?php require_once 'footer.php';?>
-<link rel='stylesheet' href='dist/css/yap-schedule.min.css' />
-<script src='dist/js/yap-schedule.min.js'></script>
+<link rel='stylesheet' href='/dist/css/yap-schedule.min.css' />
+<script src='/dist/js/yap-schedule.min.js'></script>
 <script type="text/javascript">$(function(){schedulePage()})</script>

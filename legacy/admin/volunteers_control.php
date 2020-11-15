@@ -87,8 +87,8 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="save7DayShifts(this)">Save changes</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning" onclick="save7DayShifts(this)">Save changes</button>
             </div>
         </div>
     </div>
@@ -216,9 +216,9 @@
                 <tr>
                     <th>
                         Shifts
-                        <button class="btn btn-sm btn-info" onclick="addShift(this);return false;"><?php echo word('add_shift')?></button>
-                        <button class="btn btn-sm btn-info" onclick="add7DayShifts(this);return false;"><?php echo word('add_7_day_shifts')?></button>
-                        <button class="btn btn-sm btn-info" onclick="add24by7Shifts(this);return false;"><?php echo word('add_24by7_shifts')?></button>
+                        <button class="btn btn-sm btn-primary" onclick="addShift(this);return false;"><?php echo word('add_shift')?></button>
+                        <button class="btn btn-sm btn-primary" onclick="add7DayShifts(this);return false;"><?php echo word('add_7_day_shifts')?></button>
+                        <button class="btn btn-sm btn-primary" onclick="add24by7Shifts(this);return false;"><?php echo word('add_24by7_shifts')?></button>
                         <button class="btn btn-sm btn-danger" onclick="removeAllShifts(this);return false;"><?php echo word('remove_all_shifts')?></button>
                     </th>
                 </tr>

@@ -1,6 +1,6 @@
 <?php
 require_once 'auth_verify.php';
-require_once '../_includes/functions.php';
+require_once __DIR__ . '/../_includes/functions.php';
 header("content-type: application/json");
 try {
     echo filterOut(getHelplineSchedule(setting("service_body_id")));
