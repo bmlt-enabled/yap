@@ -32,7 +32,7 @@ $data_type = DataType::YAP_VOLUNTEERS_V2;
             </div>
             <div class="modal-footer">
                 <div id="group_dialog_message"></div>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" onclick="confirmIncludeGroup(this)">OK</button>
             </div>
         </div>

@@ -41,7 +41,7 @@ require_once 'header.php';
             <li class="nav-item">
                 <?php if (isset($_SESSION['auth_id'])) { ?>
                 <button type="button"
-                        class="btn btn-info"
+                        class="btn btn-warning"
                         id="profile-button"
                         onclick="editUser('<?php echo $_SESSION['auth_id']?>','<?php echo $_SESSION['username']?>','<?php echo $_SESSION['auth_user_name_string']?>', '', '', 'profile') ">Profile</button>
                 <?php } ?>

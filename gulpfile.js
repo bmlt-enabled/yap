@@ -68,7 +68,7 @@ let lessCoreFiles = [
 ];
 
 let cssCoreFiles = [
-    'public/src/css/spacelab.bootstrap.css',
+    'public/src/css/yeti.bootstrap.css',
 ];
 
 let cssMeetingResultsFiles = [

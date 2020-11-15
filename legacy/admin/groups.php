@@ -40,7 +40,7 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
         </form>
         <script type="text/javascript">var groups=<?php echo json_encode($groups); ?></script>
         <button class="btn btn-sm btn-primary volunteer-manage-buttons" id="addGroupButton" onclick="addGroup();"><?php echo word('create') ?></button>
-        <button class="btn btn-sm btn-secondary volunteer-manage-buttons" id="editGroupButton" onclick="editGroup();"
+        <button class="btn btn-sm btn-warning volunteer-manage-buttons" id="editGroupButton" onclick="editGroup();"
                 style="display:none;"><?php echo word('edit') ?>
         </button>
         <button class="btn btm-sm btn-warning volunteer-manage-buttons" id="deleteGroupButton" onclick="deleteGroup();"
@@ -77,7 +77,7 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
             </div>
             <div class="modal-footer">
                 <div id="group_dialog_message"></div>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" onclick="confirmGroup(this)">OK</button>
             </div>
         </div>

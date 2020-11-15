@@ -134,7 +134,7 @@ sort_on_field($service_bodies, 'name');
                                             </form>
                                         </div>
                                         <div class="modal-footer">
-                                            <button class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                                            <button class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
                                             <button class="btn btn-sm btn-primary" onclick="saveServiceBodyCallHandling(<?php echo $service_body->id ?>)">Save Changes</button>
                                         </div>
                                     </div>
@@ -166,7 +166,7 @@ sort_on_field($service_bodies, 'name');
                                             </form>
                                         </div>
                                         <div class="modal-footer">
-                                            <button class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                                            <button class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
                                             <button class="btn btn-sm btn-primary" onclick="saveServiceBodyConfig(<?php echo $service_body->id ?>)">Save Changes</button>
                                         </div>
                                     </div>
