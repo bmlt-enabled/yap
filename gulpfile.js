@@ -16,7 +16,7 @@ let jsCoreFiles = [
     'node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.js',
     'node_modules/dark-mode-switch/dark-mode-switch.min.js',
     'node_modules/jquery-validation/dist/jquery.validate.min.js',
-    'admin/src/js/yap-core.js',
+    'public/src/js/yap-core.js',
 ];
 
 let jsScheduleFiles = [
@@ -64,11 +64,11 @@ let cssTabulatorDarkFiles = [
 ];
 
 let lessCoreFiles = [
-    'admin/src/css/yap-core.less',
+    'public/src/css/yap-core.less',
 ];
 
 let cssCoreFiles = [
-    'admin/src/css/spacelab.bootstrap.css',
+    'public/src/css/spacelab.bootstrap.css',
 ];
 
 let cssMeetingResultsFiles = [
@@ -129,13 +129,13 @@ task('jsReports', () => {
 task('jsMeetingResults', () => {
     return src(jsMeetingResultsFiles)
         .pipe(concat('yap-meeting-results.js'))
-        .pipe(dest('endpoints/croutonjs'))
+        .pipe(dest('legacy/croutonjs'))
         .pipe(minify({
             ext: {
                 min:'.min.js'
             },
         }))
-        .pipe(dest('endpoints/croutonjs'))
+        .pipe(dest('legacy/croutonjs'))
         .pipe(notify({message: "jsMeetingResults complete", wait: true}));
 });
 
@@ -213,23 +213,23 @@ task('cssTabulatorDark', () => {
 task('cssMeetingResults', () => {
     return src(cssMeetingResultsFiles)
         .pipe(concat('yap-meeting-results.css'))
-        .pipe(dest('endpoints/croutonjs'))
+        .pipe(dest('legacy/croutonjs'))
         .pipe(cleanCSS())
         .pipe(rename({
             suffix: '.min'
         }))
-        .pipe(dest('endpoints/croutonjs'))
+        .pipe(dest('legacy/croutonjs'))
         .pipe(notify({message: "cssMeetingResults complete", wait: true}));
 });
 
 task('templatesMeetingResults', function () {
     return src(templatesMeetingResultsFiles)
-        .pipe(dest('endpoints/croutonjs/templates'));
+        .pipe(dest('legacy/croutonjs/templates'));
 });
 
 task('fontsMeetingResults', function () {
     return src(fontsMeetingResultsFiles)
-        .pipe(dest('endpoints/croutonjs/fonts'));
+        .pipe(dest('legacy/croutonjs/fonts'));
 });
 
 task('default', series(

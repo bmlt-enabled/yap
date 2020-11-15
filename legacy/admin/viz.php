@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . '/../endpoints/_includes/functions.php'; ?>
+<?php require_once __DIR__ . '/../_includes/functions.php'; ?>
 <!DOCTYPE html>
 <html>
 <head>

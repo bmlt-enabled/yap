@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../endpoints/_includes/functions.php';
+require_once __DIR__ . '/../_includes/functions.php';
 if (isset($_REQUEST['format']) == "csv") {
     $data = "lat,lon,name,desc\n";
     $metrics = getMapMetricByType(getReportsServiceBodies(), $_REQUEST['event_id']);

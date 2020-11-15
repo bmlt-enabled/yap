@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../endpoints/_includes/functions.php';
+require_once __DIR__ . '/../_includes/functions.php';
 
 $auth_v2_result = auth_v2($_POST['username'], $_POST['password']);
 if (count($auth_v2_result) == 1) {

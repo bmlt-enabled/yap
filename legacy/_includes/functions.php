@@ -7,7 +7,7 @@ if (isset($_GET["ysk"])) {
     session_id($_GET["ysk"]);
 }
 session_start();
-require_once(!getenv("ENVIRONMENT") ? __DIR__ . '/../../config.php' : __DIR__ . '/../../config.' . getenv("ENVIRONMENT") . '.php');
+require_once(!getenv("ENVIRONMENT") ? base_path() . '/config.php' : base_path() . '/config.' . getenv("ENVIRONMENT") . '.php');
 require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
@@ -103,8 +103,8 @@ if (has_setting('config')) {
 include_once __DIR__ . '/../../lang/' .getWordLanguage().'.php';
 $GLOBALS['short_language'] = getWordLanguage() === "da-DK" ? "dk" : explode("-", getWordLanguage())[0];
 
-$google_maps_endpoint = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($google_maps_api_key);
-$timezone_lookup_endpoint = "https://maps.googleapis.com/maps/api/timezone/json?key=" . trim($google_maps_api_key);
+$GLOBALS['google_maps_endpoint'] = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($GLOBALS['google_maps_api_key']);
+$GLOBALS['timezone_lookup_endpoint'] = "https://maps.googleapis.com/maps/api/timezone/json?key=" . trim($GLOBALS['google_maps_api_key']);
 $GLOBALS['date_calculations_map'] = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 $GLOBALS['numbers'] = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 
@@ -481,11 +481,11 @@ class UpgradeAdvisor
 
     public static function getStatus()
     {
-        foreach ($GLOBALS['required_config_settings'] as $setting) {
-            if (!self::isThere($setting)) {
-                return self::getState(false, "Missing required setting: " . $setting);
-            }
-        }
+//        foreach ($GLOBALS['required_config_settings'] as $setting) {
+//            if (!self::isThere($setting)) {
+//                return self::getState(false, "Missing required setting: " . $setting);
+//            }
+//        }
 
         $root_server_settings = json_decode(get(sprintf('%s/client_interface/json/?switcher=GetServerInfo', getAdminBMLTRootServer()), false, 3600));
 

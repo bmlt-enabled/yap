@@ -16,7 +16,7 @@ $data_type = DataType::YAP_VOLUNTEERS_V2;
             <?php
         }?>
     </select>
-    <?php require_once '_includes/volunteers_control.php';?>
+    <?php require_once 'volunteers_control.php';?>
 </div>
 <div class="modal fade" id="includeGroupDialog" tabindex="-1" role="dialog" aria-labelledby="includeGroupDialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
