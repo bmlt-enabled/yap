@@ -1,6 +1,7 @@
 # Release Notes
 
-### 3.9.8 (UNRELEASED)
+### 3.9.8 (November 21, 2020)
+* Fix for gender selected voice menu.
 * Instructions for de-selecting items in the Users management modal. 
 
 ### 3.9.7 (October 24, 2020)
