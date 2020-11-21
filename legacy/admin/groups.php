@@ -46,7 +46,7 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
         <button class="btn btm-sm btn-warning volunteer-manage-buttons" id="deleteGroupButton" onclick="deleteGroup();"
                 style="display:none;"><?php echo word('delete') ?>
         </button>
-        <?php require_once '_includes/volunteers_control.php';
+        <?php require_once 'volunteers_control.php';
     } else {
         require_once 'footer.php';
     }?>
