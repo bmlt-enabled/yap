@@ -1,5 +1,8 @@
 # Release Notes
 
+### 3.9.9 (November 23, 2020)
+* Fix for is_admin db column on some systems not being set as PHP boolean. [#486]
+
 ### 3.9.8 (November 21, 2020)
 * Fix for gender selected voice menu.
 * Instructions for de-selecting items in the Users management modal. 

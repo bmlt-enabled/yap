@@ -24,7 +24,6 @@ function getFlag($flag)
     $db = new Database();
     $db->query("SELECT flag_setting FROM `flags` WHERE `flag_name`=:flag");
     $db->bind(':flag', $flag);
-    $db->execute();
     $resultset = $db->resultset();
     $db->close();
     return isset($resultset[0]["flag_setting"]) ? $resultset[0]["flag_setting"] : -1;
@@ -485,7 +484,6 @@ function auth_v2($username, $password)
     $db->query("SELECT id, name, username, password, is_admin, permissions, service_bodies FROM `users` WHERE `username` = :username AND `password` = SHA2(:password, 256)");
     $db->bind(':username', $username);
     $db->bind(':password', $password);
-    $db->execute();
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
