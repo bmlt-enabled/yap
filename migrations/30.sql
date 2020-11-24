@@ -1,0 +1,1 @@
+ALTER TABLE users MODIFY COLUMN is_admin INT(11);
