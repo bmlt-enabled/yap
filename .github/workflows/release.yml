@@ -2,7 +2,7 @@ name: 'unstable'
 
 on:
   push:
-    branches: [ 'laravel-migration' ]
+    tags: [ '*' ]
 
 jobs:
   lint:
@@ -63,16 +63,42 @@ jobs:
           find ./${ARTIFACT_FILE} -type d | xargs chmod 755
           find ./${ARTIFACT_FILE} -name '*.php' | xargs chmod 644
           zip -r -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}
-          mkdir artifacts/
-          mv ${ARTIFACT_FILENAME} artifacts/
+          curl -LO https://raw.githubusercontent.com/bmlt-enabled/release-notes-tool/master/release-notes.sh
+          chmod +x release-notes.sh
+          ./release-notes.sh RELEASENOTES.md "###"
 
-      - name: Upload artifact to S3
-        uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --acl public-read --follow-symlinks
+      - name: Release beta
+        if: contains('beta', github.ref)
+        id: create_release
+        uses: actions/create-release@v1
         env:
-          AWS_S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE_DIR: artifacts/
-          DEST_DIR: yap
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          prerelease: true
+          draft: false
+
+      - name: Release stable
+        if: !contains('beta', github.ref)
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body_path: "changelog.txt"
+          prerelease: false
+          draft: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${ARTIFACT_FILENAME}
+          asset_name: ${ARTIFACT_FILENAME}
+          asset_content_type: application/zip
