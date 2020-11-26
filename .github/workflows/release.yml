@@ -81,7 +81,7 @@ jobs:
 
       - name: Upload Beta Asset
         if: contains('beta', github.ref)
-        id: upload-release-asset
+        id: beta-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -106,7 +106,7 @@ jobs:
 
       - name: Upload Stable Asset
         if: "!contains('beta', github.ref)"
-        id: upload-release-asset
+        id: stable-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
