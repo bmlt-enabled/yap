@@ -50,7 +50,7 @@ jobs:
 
       - name: Build package
         run: |
-          export ARTIFACT_FILE=yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}
+          export ARTIFACT_FILE=yap-${GITHUB_RUN_NUMBER}-${GITHUB_SHA}
           export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
           git archive --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
           DISABLE_NOTIFIER=true make deploy
