@@ -63,9 +63,9 @@ jobs:
           find ./${ARTIFACT_FILE} -type d | xargs chmod 755
           find ./${ARTIFACT_FILE} -name '*.php' | xargs chmod 644
           zip -r -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}
-          curl -LO https://raw.githubusercontent.com/bmlt-enabled/release-notes-tool/master/release-notes.sh
-          chmod +x release-notes.sh
-          ./release-notes.sh RELEASENOTES.md "###"
+          curl -LO https://raw.githubusercontent.com/bmlt-enabled/release-notes-tool/master/gh-release-notes.sh
+          chmod +x gh-release-notes.sh
+          ./gh-release-notes.sh RELEASENOTES.md "###"
 
       - name: Release beta
         if: contains('beta', github.ref)
