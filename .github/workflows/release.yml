@@ -80,7 +80,7 @@ jobs:
           draft: false
 
       - name: Release stable
-        if: !contains('beta', github.ref)
+        if: "!contains('beta', github.ref)"
         id: create_release
         uses: actions/create-release@v1
         env:
