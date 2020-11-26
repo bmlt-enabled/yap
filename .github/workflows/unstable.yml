@@ -1,0 +1,42 @@
+name: 'unstable'
+
+on:
+  push:
+    branches: ['laravel-migration']
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Build package
+        run: |
+          export ARTIFACT_FILE=yap-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT}
+          export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
+          git archive --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
+          DISABLE_NOTIFIER=true make deploy
+          unzip ${ARTIFACT_FILENAME}
+          rm ${ARTIFACT_FILENAME}
+          echo ${TRAVIS_COMMIT} > ${ARTIFACT_FILE}/build.txt
+          cp -R vendor ${ARTIFACT_FILE}/
+          mkdir -p ${ARTIFACT_FILE}/admin/dist && cp -R admin/dist/. ${ARTIFACT_FILE}/admin/dist
+          mkdir -p ${ARTIFACT_FILE}/endpoints/croutonjs && cp -R endpoints/croutonjs/. ${ARTIFACT_FILE}/endpoints/croutonjs
+          find ./${ARTIFACT_FILE} -type d | xargs chmod 755
+          find ./${ARTIFACT_FILE} -name '*.php' | xargs chmod 644
+          zip -r -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}
+          mkdir artifacts/
+          mv ${ARTIFACT_FILENAME} artifacts/
