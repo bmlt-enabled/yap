@@ -33,7 +33,7 @@ jobs:
           rm ${ARTIFACT_FILENAME}
           echo ${TRAVIS_COMMIT} > ${ARTIFACT_FILE}/build.txt
           cp -R vendor ${ARTIFACT_FILE}/
-          mkdir -p ${ARTIFACT_FILE}/legacy/admin/dist && cp -R legacy/admin/dist/. ${ARTIFACT_FILE}/legacy/admin/dist
+          mkdir -p ${ARTIFACT_FILE}/public/dist && cp -R public/dist/. ${ARTIFACT_FILE}/public/dist
           mkdir -p ${ARTIFACT_FILE}/legacy/croutonjs && cp -R legacy/croutonjs/. ${ARTIFACT_FILE}/legacy/croutonjs
           find ./${ARTIFACT_FILE} -type d | xargs chmod 755
           find ./${ARTIFACT_FILE} -name '*.php' | xargs chmod 644
