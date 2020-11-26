@@ -54,5 +54,8 @@
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
         ]
-    }
+    },
+    "name": "bmlt-enabled/yap",
+    "description": "dependencies for yap",
+    "license": "MIT"
 }
