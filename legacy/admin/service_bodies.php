@@ -153,7 +153,7 @@ sort_on_field($service_bodies, 'name');
                                             <div>For more information on using this, see the documentation on <a href="https://github.com/bmlt-enabled/yap/wiki/Configuration-Precedence" target="_blank">Configuration Precedence</a>.</div>
                                             <form id="serviceBodyConfigurationForm" class="serviceBodyConfigurationForm">
                                                 <select class="form-control form-control-sm" name="serviceBodyConfigurationFields" id="serviceBodyConfigurationFields">
-                                                    <?php foreach ($settings_allowlist as $setting => $value) {
+                                                    <?php foreach ($GLOBALS['settings_allowlist'] as $setting => $value) {
                                                         if (gettype($value["default"]) === "array") {?>
                                                             <option data-default="<?php echo str_replace("\"", "'", json_encode($value["default"])) ?>" value="<?php echo $setting?>"><?php echo $setting?></option>
                                                         <?php } else { ?>
