@@ -8,7 +8,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: bmlt-enabled/composite-actions/php-linter
+      - uses: bmlt-enabled/composite-actions/php-linter@HEAD
 
   package:
     runs-on: ubuntu-latest
