@@ -8,6 +8,10 @@ if (isset($_GET["ysk"])) {
 }
 session_start();
 require_once(!getenv("ENVIRONMENT") ? base_path() . '/config.php' : base_path() . '/config.' . getenv("ENVIRONMENT") . '.php');
+$ignored_vars = ['__path', '__env', '__data', 'includePath', 'ignored_vars', 'app', 'errors', 'key', 'value'];
+foreach (get_defined_vars() as $key => $value) {
+    if (!in_array($key, $ignored_vars)) $GLOBALS[$key] = $value;
+}
 require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';

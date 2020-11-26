@@ -11,7 +11,7 @@ public/dist/js
 public/dist/css/*.css
 yap.iml
 package-lock.json
-endpoints/croutonjs
+legacy/croutonjs
 yarn-error.log
 /node_modules
 /public/hot

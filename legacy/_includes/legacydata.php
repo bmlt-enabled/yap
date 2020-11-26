@@ -1,5 +1,5 @@
 <?php
-$flag_setting = getFlag('root_server_data_migration');
+$flag_setting = 1; //getFlag('root_server_data_migration');
 
 function getHelplineData($service_body_id, $data_type)
 {
