@@ -32,7 +32,6 @@ jobs:
         run: vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=6 --standard=PSR2 --ignore=vendor,bootstrap,database --extensions=php --report=summary ./
 
       - uses: act10ns/slack@v1
-        env:
         with:
           status: ${{ job.status }}
           steps: ${{ toJson(steps) }}
@@ -90,7 +89,6 @@ jobs:
           DEST_DIR: yap
 
       - uses: act10ns/slack@v1
-        env:
         with:
           status: ${{ job.status }}
           steps: ${{ toJson(steps) }}
