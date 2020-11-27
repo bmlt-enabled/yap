@@ -30,7 +30,7 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-suggest
 
       - name: PHPCS checker
-        if: php-codesniffer
+        id: php-codesniffer
         run: vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=6 --standard=PSR2 --ignore=vendor,bootstrap,database --extensions=php --report=summary ./
 
       - uses: act10ns/slack@v1
