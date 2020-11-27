@@ -26,9 +26,11 @@ jobs:
 
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
+        id: install-dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
 
       - name: PHPCS checker
+        if: php-codesniffer
         run: vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=6 --standard=PSR2 --ignore=vendor,bootstrap,database --extensions=php --report=summary ./
 
       - uses: act10ns/slack@v1
@@ -57,9 +59,11 @@ jobs:
 
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
+        id: install-dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
 
       - name: Build package
+        id: build-package
         run: |
           export ARTIFACT_FILE=yap-${GITHUB_RUN_NUMBER}-${GITHUB_SHA}
           export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
@@ -78,6 +82,7 @@ jobs:
           mv ${ARTIFACT_FILENAME} artifacts/
 
       - name: Upload artifact to S3
+        id: upload-artifact-to-s3
         uses: jakejarvis/s3-sync-action@master
         with:
           args: --acl public-read --follow-symlinks
