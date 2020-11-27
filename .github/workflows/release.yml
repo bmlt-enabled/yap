@@ -87,7 +87,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.beta_release.outputs.upload_url }}
-          asset_path: "./${ARTIFACT_FILENAME}"
+          asset_path: ${ARTIFACT_FILENAME}
           asset_name: ${ARTIFACT_FILENAME}
           asset_content_type: application/zip
 
@@ -112,6 +112,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.stable_release.outputs.upload_url }}
-          asset_path: "./${ARTIFACT_FILENAME}"
+          asset_path: ${ARTIFACT_FILENAME}
           asset_name: ${ARTIFACT_FILENAME}
           asset_content_type: application/zip
