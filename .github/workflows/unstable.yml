@@ -2,7 +2,7 @@ name: 'unstable'
 
 on:
   push:
-    branches: [ 'laravel-migration' ]
+    branches: [ 'master' ]
 
 jobs:
   lint:
@@ -11,8 +11,10 @@ jobs:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
       - uses: actions/checkout@v2
+        id: code-checkout
 
       - name: Validate composer.json and composer.lock
+        id: composer-validate
         run: composer validate
 
       - name: Cache Composer packages
@@ -38,7 +40,7 @@ jobs:
           status: ${{ job.status }}
           steps: ${{ toJson(steps) }}
           channel: '#yap'
-        if: always()
+        if: failure()
 
   package:
     runs-on: ubuntu-latest
@@ -47,6 +49,7 @@ jobs:
     needs: [ lint ]
     steps:
       - uses: actions/checkout@v2
+        id: code-checkout
 
       - name: Cache Composer packages
         id: composer-cache
@@ -98,4 +101,4 @@ jobs:
           status: ${{ job.status }}
           steps: ${{ toJson(steps) }}
           channel: '#yap'
-        if: always()
+        if: failure()
