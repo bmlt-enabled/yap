@@ -50,7 +50,7 @@ jobs:
 
       - name: Build package
         run: |
-          export ARTIFACT_FILE=yap-${GITHUB_RUN_NUMBER}-${GITHUB_SHA}
+          export ARTIFACT_FILE=yap-${GITHUB_RUN_NUMBER}-${GITHUB_REF##*/}
           export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
           git archive --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
           DISABLE_NOTIFIER=true make deploy
@@ -63,7 +63,6 @@ jobs:
           find ./${ARTIFACT_FILE} -type d | xargs chmod 755
           find ./${ARTIFACT_FILE} -name '*.php' | xargs chmod 644
           zip -r -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}
-          ls -alR
           curl -LO https://raw.githubusercontent.com/bmlt-enabled/release-notes-tool/master/gh-release-notes.sh
           chmod +x gh-release-notes.sh
           ./gh-release-notes.sh RELEASENOTES.md "###"
@@ -88,8 +87,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.beta_release.outputs.upload_url }}
-          asset_path: ${ARTIFACT_FILENAME}
-          asset_name: ${ARTIFACT_FILENAME}
+          asset_path: "./yap-${GITHUB_RUN_NUMBER}-${GITHUB_REF##*/}.zip"
+          asset_name: "yap-${GITHUB_RUN_NUMBER}-${GITHUB_REF##*/}.zip"
           asset_content_type: application/zip
 
       - name: Release stable
@@ -113,6 +112,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.stable_release.outputs.upload_url }}
-          asset_path: ${ARTIFACT_FILENAME}
-          asset_name: ${ARTIFACT_FILENAME}
+          asset_path: "./yap-${GITHUB_RUN_NUMBER}-${GITHUB_REF##*/}.zip"
+          asset_name: "yap-${GITHUB_RUN_NUMBER}-${GITHUB_REF##*/}.zip"
           asset_content_type: application/zip
