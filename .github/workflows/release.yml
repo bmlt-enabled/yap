@@ -1,0 +1,146 @@
+name: 'unstable'
+
+on:
+  push:
+    tags: [ '*' ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - uses: actions/checkout@v2
+        id: code-checkout
+
+      - name: Validate composer.json and composer.lock
+        id: composer-validate
+        run: composer validate
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        id: install-dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: PHPCS checker
+        id: php-codesniffer
+        run: vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=6 --standard=PSR2 --ignore=vendor,bootstrap,database --extensions=php --report=summary ./
+
+      - uses: act10ns/slack@v1
+        with:
+          status: ${{ job.status }}
+          steps: ${{ toJson(steps) }}
+          channel: '#yap'
+        if: failure()
+
+  package:
+    runs-on: ubuntu-latest
+    needs: [ lint ]
+    steps:
+      - uses: actions/checkout@v2
+        id: code-checkout
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        id: install-dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Build package
+        id: build-package
+        run: |
+          export ARTIFACT_FILE=yap-${GITHUB_REF##*/}
+          export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
+          git archive --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
+          DISABLE_NOTIFIER=true make deploy
+          unzip ${ARTIFACT_FILENAME}
+          rm ${ARTIFACT_FILENAME}
+          echo ${GITHUB_SHA} > ${ARTIFACT_FILE}/build.txt
+          cp -R vendor ${ARTIFACT_FILE}/
+          mkdir -p ${ARTIFACT_FILE}/public/dist && cp -R public/dist/. ${ARTIFACT_FILE}/public/dist
+          mkdir -p ${ARTIFACT_FILE}/legacy/croutonjs && cp -R legacy/croutonjs/. ${ARTIFACT_FILE}/legacy/croutonjs
+          find ./${ARTIFACT_FILE} -type d | xargs chmod 755
+          find ./${ARTIFACT_FILE} -name '*.php' | xargs chmod 644
+          zip -r -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}
+          curl -LO https://raw.githubusercontent.com/bmlt-enabled/release-notes-tool/master/gh-release-notes.sh
+          chmod +x gh-release-notes.sh
+          ./gh-release-notes.sh RELEASENOTES.md "###"
+
+      - name: Prepare artifact metadata
+        id: prepare_artifact_metadata
+        run: |
+          echo ::set-output name=ARTIFACT_PATH::./yap-${GITHUB_REF##*/}.zip
+          echo ::set-output name=ARTIFACT_NAME::yap-${GITHUB_REF##*/}.zip
+
+      - name: Release beta
+        if: contains(github.ref, 'beta')
+        id: beta_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          prerelease: true
+          draft: false
+
+      - name: Upload Beta Asset
+        if: contains(github.ref, 'beta')
+        id: beta-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.beta_release.outputs.upload_url }}
+          asset_path: ${{ steps.prepare_artifact_metadata.outputs.ARTIFACT_PATH }}
+          asset_name: ${{ steps.prepare_artifact_metadata.outputs.ARTIFACT_NAME }}
+          asset_content_type: application/zip
+
+      - name: Release stable
+        if: "!contains(github.ref, 'beta')"
+        id: stable_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body_path: "changelog.txt"
+          prerelease: false
+          draft: false
+
+      - name: Upload Stable Asset
+        if: "!contains(github.ref, 'beta')"
+        id: stable-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.stable_release.outputs.upload_url }}
+          asset_path: ${{ steps.prepare_artifact_metadata.outputs.ARTIFACT_PATH }}
+          asset_name: ${{ steps.prepare_artifact_metadata.outputs.ARTIFACT_NAME }}
+          asset_content_type: application/zip
+
+      - uses: act10ns/slack@v1
+        with:
+          status: ${{ job.status }}
+          steps: ${{ toJson(steps) }}
+          channel: '#yap'
+        if: failure()

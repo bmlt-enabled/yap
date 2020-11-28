@@ -7,5 +7,5 @@ RewriteRule ([^/]+)/([^/]+)$ endpoints/meeting-results.php?latitude=$1&longitude
 RewriteCond %{REQUEST_URI} .*croutonjs(.*)
 RewriteRule ".*croutonjs/(.*)$" endpoints/croutonjs/$1 [NC,L]
 
-RewriteCond %{REQUEST_URI} !.*(?:api|admin|lang).*
-RewriteRule ([^/]+)/?$ endpoints/$1 [NC]
+#RewriteCond %{REQUEST_URI} !.*(?:api|admin|lang).*
+#RewriteRule ([^/]+)/?$ public/$1 [NC]
