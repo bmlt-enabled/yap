@@ -1,5 +1,5 @@
 <?php require_once 'nav.php';?>
-<link rel="stylesheet" href="/dist/css/yap-reports.min.css">
+<link rel="stylesheet" href="/public/dist/css/yap-reports.min.css">
 <div class="container">
     <div id="reports-top-controls-container">
         <div id="reports-servicebodies-dropdown-container">
@@ -65,7 +65,7 @@
     </div>
 </div>
 <?php require_once 'footer.php';?>
-<script src="/dist/js/yap-reports.min.js"></script>
+<script src="/public/dist/js/yap-reports.min.js"></script>
 <script type="text/javascript">
     $(function() {
         loadTabulatorTheme();

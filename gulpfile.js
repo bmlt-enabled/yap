@@ -129,13 +129,13 @@ task('jsReports', () => {
 task('jsMeetingResults', () => {
     return src(jsMeetingResultsFiles)
         .pipe(concat('yap-meeting-results.js'))
-        .pipe(dest('legacy/croutonjs'))
+        .pipe(dest('public/dist/croutonjs'))
         .pipe(minify({
             ext: {
                 min:'.min.js'
             },
         }))
-        .pipe(dest('legacy/croutonjs'))
+        .pipe(dest('public/dist/croutonjs'))
         .pipe(notify({message: "jsMeetingResults complete", wait: true}));
 });
 
@@ -213,23 +213,23 @@ task('cssTabulatorDark', () => {
 task('cssMeetingResults', () => {
     return src(cssMeetingResultsFiles)
         .pipe(concat('yap-meeting-results.css'))
-        .pipe(dest('legacy/croutonjs'))
+        .pipe(dest('public/dist/croutonjs'))
         .pipe(cleanCSS())
         .pipe(rename({
             suffix: '.min'
         }))
-        .pipe(dest('legacy/croutonjs'))
+        .pipe(dest('public/dist/croutonjs'))
         .pipe(notify({message: "cssMeetingResults complete", wait: true}));
 });
 
 task('templatesMeetingResults', function () {
     return src(templatesMeetingResultsFiles)
-        .pipe(dest('legacy/croutonjs/templates'));
+        .pipe(dest('public/dist/croutonjs/templates'));
 });
 
 task('fontsMeetingResults', function () {
     return src(fontsMeetingResultsFiles)
-        .pipe(dest('legacy/croutonjs/fonts'));
+        .pipe(dest('public/dist/croutonjs/fonts'));
 });
 
 task('default', series(

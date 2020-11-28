@@ -7,11 +7,11 @@ config.php
 config.*.php
 config_*.php
 test.php
+public/dist/croutonjs
 public/dist/js
 public/dist/css/*.css
 yap.iml
 package-lock.json
-legacy/croutonjs
 yarn-error.log
 /node_modules
 /public/hot
