@@ -17,11 +17,10 @@ phpunit.xml export-ignore
 webpack.mix.js export-ignore
 yarn.lock export-ignore
 /.github export-ignore
-/admin/src export-ignore
+/public/src export-ignore
 /docs export-ignore
 /node_modules export-ignore
 /tests export-ignore
-/resources export-ignore
 * text=auto
 *.css linguist-vendored
 *.scss linguist-vendored
