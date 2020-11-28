@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+Route::get("/auth/logout", 'App\Http\Controllers\AuthController@logout');
+Route::get("/auth/invalid", 'App\Http\Controllers\AuthController@invalid');
 Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])
     ->where('all', '^(?!api).*$');

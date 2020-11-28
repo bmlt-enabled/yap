@@ -48,7 +48,7 @@ require_once 'header.php';
                 <button type="button"
                         class="btn btn-danger"
                         id="log-out-button"
-                        onclick="location.href='logout.php';"><?php echo $GLOBALS['log_out']?> <?php echo admin_GetUserName()?></button>
+                        onclick="location.href='/auth/logout';"><?php echo $GLOBALS['log_out']?> <?php echo admin_GetUserName()?></button>
             </li>
         </ul>
     </div>
