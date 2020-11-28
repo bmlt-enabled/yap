@@ -1,9 +1,9 @@
 <?php
 // Define database configuration
-define("DB_HOST", env("DB_HOST"));
-define("DB_USER", env("DB_USERNAME"));
-define("DB_PASS", env("DB_PASSWORD"));
-define("DB_NAME", env("DB_DATABASE"));
+define("DB_HOST", $GLOBALS['mysql_hostname']);
+define("DB_USER", $GLOBALS['mysql_username']);
+define("DB_PASS", $GLOBALS['mysql_password']);
+define("DB_NAME", $GLOBALS['mysql_database']);
 
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 class Database

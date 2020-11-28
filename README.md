@@ -16,8 +16,6 @@ For setup instructions and general documentation please visit [https://bmlt.app/
 * Latest Releases: [https://github.com/bmlt-enabled/yap/releases](https://github.com/bmlt-enabled/yap/releases)
 * Bleeding Edge: [https://archives.bmlt.app/index.html#yap](https://archives.bmlt.app/index.html#yap)
 
-# Migration to Laravel
+# Upgrading to Yap 4.x
 
-Yap is currently undergoing a side-by-side migration to Laravel using the recommended guide below.
-
-https://www.phparch.com/2019/03/migrating-legacy-web-applications-to-laravel/
+You will need to in addition to copying `config.php` over make a new file called `.env` and set `APP_KEY=base64:<secret>`.  You can generate your unique secret here, setting the length to 32: https://generate.plus/en/base64.  
