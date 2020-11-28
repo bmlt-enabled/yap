@@ -11,7 +11,7 @@
     <link rel="shortcut icon" href="favicon.ico">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="/dist/css/yap.min.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="/public/dist/css/yap.min.css?v=<?php echo time()?>">
     <title>Yap Admin</title>
 </head>
 <body>

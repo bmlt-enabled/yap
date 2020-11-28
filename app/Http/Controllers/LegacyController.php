@@ -18,6 +18,16 @@ class LegacyController extends Controller
         return $this->renderPath($path, str_starts_with($request->path(), 'admin') ? 'text/html' : 'text/xml');
     }
 
+    public function msr($latitude, $longitude)
+    {
+        $path = base_path('/legacy/meeting-results.php');
+        $_REQUEST['latitude'] = $latitude;
+        $_REQUEST['longitude'] = $longitude;
+
+        return response()->view('legacy', ['includePath' => $path])
+            ->header('Content-Type', 'text/html');
+    }
+
     protected function renderPath($path, $content_type)
     {
         // view()->addNamespace('legacy', base_path('endpoints/'));

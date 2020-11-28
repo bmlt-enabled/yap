@@ -1,11 +1,21 @@
-Options +FollowSymLinks
-RewriteEngine on
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
 
-RewriteCond %{REQUEST_URI} .*\/msr\/([0-9.\-]*)\/([0-9.\-]*)$
-RewriteRule ([^/]+)/([^/]+)$ endpoints/meeting-results.php?latitude=$1&longitude=$2 [NC,L]
+    RewriteEngine On
 
-RewriteCond %{REQUEST_URI} .*croutonjs(.*)
-RewriteRule ".*croutonjs/(.*)$" endpoints/croutonjs/$1 [NC,L]
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-#RewriteCond %{REQUEST_URI} !.*(?:api|admin|lang).*
-#RewriteRule ([^/]+)/?$ public/$1 [NC]
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
