@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.0.0 (UNRELEASED)
+* New admin UI theme.
+
 ### 3.9.9 (November 23, 2020)
 * Fix for is_admin db column on some systems not being set as PHP boolean. [#486]
 
