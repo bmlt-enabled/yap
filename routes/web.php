@@ -15,8 +15,9 @@ use Illuminate\Support\Facades\Route;
 //Route::get("/storage/{extra}", function ($extra) {
 //    return redirect("/public/storage/$extra");
 //})->where("extra", ".*");
-Route::get("/auth/logout", 'App\Http\Controllers\AuthController@logout');
-Route::get("/auth/invalid", 'App\Http\Controllers\AuthController@invalid');
+Route::get("/admin/auth/logout", 'App\Http\Controllers\AuthController@logout');
+Route::get("/admin/auth/timeout", 'App\Http\Controllers\AuthController@timeout');
+Route::get("/admin/auth/invalid", 'App\Http\Controllers\AuthController@invalid');
 Route::get("/msr/{latitude}/{longitude}", ['uses' => 'App\Http\Controllers\LegacyController@msr'])
     ->where(['latitude' => '.*', 'longitude' => '.*']);
 Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])
