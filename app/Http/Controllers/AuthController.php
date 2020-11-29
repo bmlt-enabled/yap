@@ -8,6 +8,23 @@ class AuthController extends Controller
 {
     public function logout($auth = true)
     {
+        $this->clearSession();
+        return redirect(!$auth ? "/admin?auth=false" : "/admin");
+    }
+
+    public function timeout()
+    {
+        $this->clearSession();
+        return redirect("/admin?expired=true");
+    }
+
+    public function invalid()
+    {
+        return self::logout(false);
+    }
+
+    private function clearSession()
+    {
         if (isset($_SESSION['auth_mechanism']) && $_SESSION['auth_mechanism'] == AuthMechanism::V1) {
             if (isset($_SESSION['bmlt_auth_session']) && $_SESSION['bmlt_auth_session'] != null) {
                 require_once __DIR__ . '/../../../legacy/_includes/functions.php';
@@ -26,13 +43,6 @@ class AuthController extends Controller
         } else {
             session_unset();
         }
-
-        return redirect(!$auth ? "/admin?auth=false" : "/admin");
-    }
-
-    public function invalid()
-    {
-        return self::logout(false);
     }
 
     private function getBMLTAuthSessionCookies()

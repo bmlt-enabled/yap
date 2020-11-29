@@ -1,4 +1,4 @@
 <?php require_once 'users_control.php'; ?>
-<script src="/public/dist/js/yap.min.js<?php isset($_REQUEST['JSDEBUG']) ? sprintf("?v=%s", time()) : "";?>"></script>
+<script src="<?php echo url("/public/dist/js/yap.min.js")?>"></script>
 </body>
 </html>

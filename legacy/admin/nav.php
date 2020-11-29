@@ -4,7 +4,7 @@ require_once 'header.php';
 ?>
 <script type="text/javascript">
     var sessionTimeoutMinutes = 20;
-    setInterval(function() { location.href='index.php?expired=true'; }, sessionTimeoutMinutes * 60000);
+    setInterval(function() { location.href='<?php echo ("auth/timeout")?>'; }, sessionTimeoutMinutes * 60000);
 </script>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <a class="navbar-brand" href="#">Yap</a>
@@ -48,7 +48,7 @@ require_once 'header.php';
                 <button type="button"
                         class="btn btn-danger"
                         id="log-out-button"
-                        onclick="location.href='/auth/logout';"><?php echo $GLOBALS['log_out']?> <?php echo admin_GetUserName()?></button>
+                        onclick="location.href='<?php echo ("auth/logout")?>';"><?php echo $GLOBALS['log_out']?> <?php echo admin_GetUserName()?></button>
             </li>
         </ul>
     </div>

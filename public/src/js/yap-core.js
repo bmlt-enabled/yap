@@ -215,7 +215,7 @@ function drawMetricsMap() {
             var location = JSON.parse(data[i]['meta'])['coordinates'];
             var content = location['location'];
             var myIcon = L.icon({
-                iconUrl: parseInt(data[i]['event_id']) === 1 ? '/public/dist/img/orange_marker.png' : '/public/dist/img/green_marker.png',
+                iconUrl: parseInt(data[i]['event_id']) === 1 ? volunteersMarker : meetingsMarker,
                 iconSize: [32, 32],
             });
 
@@ -231,8 +231,8 @@ function drawMetricsMap() {
             var div = L.DomUtil.create('div', 'info legend');
             div.className = 'metrics-map-legend';
             div.innerHTML += '<strong>Legend</strong><br/>';
-            div.innerHTML += '<img src="/public/dist/img/green_marker.png" />Meeting Lookup<br/>';
-            div.innerHTML += '<img src="/public/dist/img/orange_marker.png" />Volunteer Lookup';
+            div.innerHTML += '<img src="' + meetingsMarker + '" />Meeting Lookup<br/>';
+            div.innerHTML += '<img src="' + volunteersMarker + '" />Volunteer Lookup';
             return div;
         };
         legend.addTo(metrics_map);
@@ -1307,9 +1307,7 @@ function loadCssFile(cssFilePath) {
 
 function loadTabulatorTheme() {
     $(function() {
-        loadCssFile($("body").attr("data-theme") === "dark"
-            ? "/public/dist/css/yap-tabulator-dark.min.css"
-            : "/public/dist/css/yap-tabulator-light.min.css")
+        loadCssFile($("body").attr("data-theme") === "dark" ? darkTheme : lightTheme)
     });
 }
 

@@ -1,5 +1,5 @@
 <?php require_once 'nav.php';?>
-<link rel="stylesheet" href="/public/dist/css/yap-reports.min.css">
+<link rel="stylesheet" href="<?php echo url("/public/dist/css/yap-reports.min.css")?>">
 <div class="container">
     <div id="reports-top-controls-container">
         <div id="reports-servicebodies-dropdown-container">
@@ -65,8 +65,13 @@
     </div>
 </div>
 <?php require_once 'footer.php';?>
-<script src="/public/dist/js/yap-reports.min.js"></script>
+<script src="<?php echo url("/public/dist/js/yap-reports.min.js")?>"></script>
 <script type="text/javascript">
+    var darkTheme = "<?php echo url("/public/dist/css/yap-tabulator-dark.min.css")?>";
+    var lightTheme = "<?php echo url("/public/dist/css/yap-tabulator-dark.min.css")?>";
+    var meetingsMarker = "<?php echo url("/public/dist/img/green_marker.png") ?>";
+    var volunteersMarker = "<?php echo url("/public/dist/img/orange_marker.png") ?>";
+
     $(function() {
         loadTabulatorTheme();
         var table = initReports();
