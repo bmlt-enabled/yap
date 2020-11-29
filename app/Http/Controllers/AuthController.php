@@ -8,12 +8,13 @@ class AuthController extends Controller
 {
     public function logout($auth = true)
     {
-        $this->clear_session();
+        $this->clearSession();
         return redirect(!$auth ? "/admin?auth=false" : "/admin");
     }
 
-    public function timeout() {
-        $this->clear_session();
+    public function timeout()
+    {
+        $this->clearSession();
         return redirect("/admin?expired=true");
     }
 
@@ -22,7 +23,8 @@ class AuthController extends Controller
         return self::logout(false);
     }
 
-    private function clear_session() {
+    private function clearSession()
+    {
         if (isset($_SESSION['auth_mechanism']) && $_SESSION['auth_mechanism'] == AuthMechanism::V1) {
             if (isset($_SESSION['bmlt_auth_session']) && $_SESSION['bmlt_auth_session'] != null) {
                 require_once __DIR__ . '/../../../legacy/_includes/functions.php';
