@@ -1,5 +1,5 @@
 <?php
-static $required_config_settings = [
+$GLOBALS['required_config_settings'] = [
     'title',
     'bmlt_root_server',
     'google_maps_api_key',

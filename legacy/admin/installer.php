@@ -15,7 +15,7 @@ require_once 'spinner_dialog.php';
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="dist/css/yap.min.css?v=<?php echo time()?>">
+    <link rel="stylesheet" href="<?php echo url("/public/dist/css/yap.min.css")?>">
     <title>Yap Admin</title>
 </head>
 <body>
@@ -44,7 +44,7 @@ require_once 'spinner_dialog.php';
             </div>
         </form>
     </div>
-    <script src="dist/js/yap.min.js<?php isset($_REQUEST['JSDEBUG']) ? sprintf("?v=%s", time()) : "";?>"></script>
+    <script src="<?php echo url("/public/dist/js/yap.min.js")?>"></script>
     <script type="text/javascript">
         var checkForConfigFileInterval;
         initInstaller();
