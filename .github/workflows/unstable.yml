@@ -63,7 +63,10 @@ jobs:
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
         id: install-dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+        uses: php-actions/composer@v5
+        with:
+          php_version: 7.3
+          args: --prefer-dist --no-progress --no-suggest
 
       - name: Build package
         id: build-package
