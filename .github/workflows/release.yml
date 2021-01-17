@@ -1,4 +1,4 @@
-name: 'unstable'
+name: 'release'
 
 on:
   push:
