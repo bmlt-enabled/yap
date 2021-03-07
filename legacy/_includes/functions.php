@@ -127,6 +127,14 @@ class SearchType
     const DIALBACK = 1000;
 }
 
+class CallConfig
+{
+    public $voicemail_url;
+    public $volunteer_routing_params;
+    public $options;
+    public $volunteer;
+}
+
 class AlertId
 {
     const STATUS_CALLBACK_MISSING = 1;

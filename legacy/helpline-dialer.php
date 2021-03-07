@@ -2,14 +2,6 @@
 require_once '_includes/functions.php';
 require_once '_includes/twilio-client.php';
 
-class CallConfig
-{
-    public $voicemail_url;
-    public $volunteer_routing_params;
-    public $options;
-    public $volunteer;
-}
-
 function getCallConfig($serviceBodyCallHandling, $tandem = VolunteerShadowOption::UNSPECIFIED)
 {
     $tracker            = !isset($_REQUEST["tracker"]) ? 0 : $_REQUEST["tracker"];
