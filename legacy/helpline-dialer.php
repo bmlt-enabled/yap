@@ -1,7 +1,4 @@
 <?php
-require_once '../lib/CallConfig.php';
-use app\bmltenabled\yap\CallConfig;
-
 require_once '_includes/functions.php';
 require_once '_includes/twilio-client.php';
 
