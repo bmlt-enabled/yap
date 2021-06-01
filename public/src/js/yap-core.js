@@ -584,6 +584,14 @@ function loadGroupVolunteers(parent_id, service_body_id, callback) {
     });
 }
 
+function onGroupServiceBodyChange(e) {
+    if (parseInt(e.value) !== 0) {
+        document.getElementById("loadGroupsButton").removeAttribute('disabled')
+    } else {
+        document.getElementById("loadGroupsButton").setAttribute('disabled', '')
+    }
+}
+
 function loadGroups(service_body_id, callback) {
     if (groups === undefined) {
         $.getJSON("groups_api.php?service_body_id=" + service_body_id, function (data) {
