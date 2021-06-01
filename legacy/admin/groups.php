@@ -7,8 +7,8 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
     </div>
     <label for="service_body_id"><?php echo word('service_bodies')?></label>
     <form id="serviceBodyForm" method="POST" action="groups.php">
-        <select class="form-control form-control-sm" id="service_body_id" name="service_body_id">
-            <option>-= Select A Service Body =-</option>
+        <select class="form-control form-control-sm" id="service_body_id" name="service_body_id" onchange="onGroupServiceBodyChange(this)">
+            <option value="0">-= Select A Service Body =-</option>
             <?php
             $serviceBodies = getServiceBodiesForUser();
             sort_on_field($serviceBodies, 'name');
@@ -22,7 +22,7 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
                 <?php
             }?>
         </select>
-        <button id="loadGroupsButton" type="submit" class="btn btn-sm btn-primary">Load</button>
+        <button id="loadGroupsButton" type="submit" class="btn btn-sm btn-primary" disabled>Load</button>
     </form>
     <?php if (isset($_REQUEST['service_body_id'])) { ?>
         <label for="group_id"><?php echo word('groups')?></label>
