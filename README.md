@@ -19,3 +19,5 @@ For setup instructions and general documentation please visit [https://bmlt.app/
 # Upgrading to Yap 4.x
 
 You will need to in addition to copying `config.php` over make a new file called `.env` and set `APP_KEY=base64:<secret>`.  You can generate your unique secret here, setting the length to 32: https://generate.plus/en/base64.  
+
+If you do not set one a default one will be used.  
