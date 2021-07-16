@@ -11,7 +11,14 @@ if ($searchType == SearchType::MEETINGS || $searchType == SearchType::JFT) {
     insertCallEventRecord($searchType);
 }
 
-if ($searchType == SearchType::VOLUNTEERS) {
+if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETINGS)
+    && json_decode(setting('disable_postal_code_gather'))) { ?>
+    <Response>
+        <Redirect method="GET">input-method-result.php?SearchType=2&amp;Digits=1</Redirect>
+    </Response>
+    <?php
+    exit();
+} elseif ($searchType == SearchType::VOLUNTEERS) {
     if (isset($_SESSION['override_service_body_id'])) { ?>
             <Response>
                 <Redirect method="GET">helpline-search.php?Called=<?php echo $_REQUEST["Called"] . getSessionLink(true)?></Redirect>
@@ -21,7 +28,7 @@ if ($searchType == SearchType::VOLUNTEERS) {
     }
 
     $searchDescription = word('someone_to_talk_to');
-} else if ($searchType == SearchType::MEETINGS) {
+} elseif ($searchType == SearchType::MEETINGS) {
     if (!strpos(setting('custom_query'), '{LATITUDE}') || !strpos(setting('custom_query'), '{LONGITUDE}')) { ?>
             <Response>
                 <Redirect method="GET">meeting-search.php?Called=<?php echo $_REQUEST["Called"]; ?></Redirect>
@@ -31,25 +38,25 @@ if ($searchType == SearchType::VOLUNTEERS) {
     }
 
     $searchDescription = word('meetings');
-} else if ($searchType == SearchType::JFT) { ?>
+} elseif ($searchType == SearchType::JFT) { ?>
         <Response>
         <Redirect method="GET">fetch-jft.php</Redirect>
         </Response>
         <?php
         exit();
-} else if ($searchType == SearchType::VOICEMAIL_PLAYBACK) { ?>
+} elseif ($searchType == SearchType::VOICEMAIL_PLAYBACK) { ?>
         <Response>
         <Redirect method="GET">voicemail-playback.php</Redirect>
         </Response>
         <?php
         exit();
-} else if ($searchType == SearchType::DIALBACK) { ?>
+} elseif ($searchType == SearchType::DIALBACK) { ?>
         <Response>
         <Redirect method="GET">dialback.php</Redirect>
         </Response>
         <?php
         exit();
-} else if ($searchType == SearchType::CUSTOM_EXTENSIONS && count(setting('custom_extensions')) > 0) { ?>
+} elseif ($searchType == SearchType::CUSTOM_EXTENSIONS && count(setting('custom_extensions')) > 0) { ?>
         <Response>
         <Redirect method="GET">custom-ext.php</Redirect>
         </Response>
