@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../_includes/constants.php';
-if (file_exists('../config.php')) {
+if (file_exists('config.php')) {
     define('URL', str_replace('installer.php', '', $_SERVER['REQUEST_URI']));
     header("Location: " . URL);
     exit();

@@ -13,15 +13,15 @@ if (isset($GLOBALS['mysql_hostname'])) {
         }
 
         if (!isset($migration_version_query)) {
-            $commands = file_get_contents("../migrations/0.sql");
+            $commands = file_get_contents("migrations/0.sql");
             $db->exec($commands);
             $next_version = 1;
         } else {
             $next_version = intval($db->single()["version"]) + 1;
         }
 
-        while (file_exists("../migrations/$next_version.sql")) {
-            $commands = file_get_contents("../migrations/$next_version.sql");
+        while (file_exists("migrations/$next_version.sql")) {
+            $commands = file_get_contents("migrations/$next_version.sql");
             $db->exec($commands);
             $next_version_str = strval($next_version);
             $db->query("INSERT INTO migrations (version) VALUES ('$next_version_str')");
