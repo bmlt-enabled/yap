@@ -102,3 +102,5 @@ $GLOBALS['voicemail'] = "Boite vocale";
 $GLOBALS['volunteer_has_already_joined_the_call_goodbye'] = "Un volontaire a déjà rejoins cet appel... au revoir!";
 $GLOBALS['meetings_have_been_texted'] = "Les réunions vous ont été envoyées par textos";
 $GLOBALS['users'] = "Utilisateurs";
+$GLOBALS['to speak to a man'] = "to talk to a man";
+$GLOBALS['to speak to a woman'] = "to talk to a woman";

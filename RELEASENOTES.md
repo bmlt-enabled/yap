@@ -1,8 +1,9 @@
 # Release Notes
 
 ### 4.0.0 (UNRELEASED)
-* Migration to Laravel Framework. [#483]
 * Fix for groups page dropdown when no service body is selected. [#505]
+* Fix for gender selection response always in English [#506]
+* Migration to Laravel Framework. [#483]
 
 ### 3.9.9 (November 23, 2020)
 * Fix for is_admin db column on some systems not being set as PHP boolean. [#486]
