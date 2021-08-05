@@ -1,7 +1,8 @@
 <?php
 require_once 'header.php';
 if (stripos($_SERVER['REQUEST_URI'], '/admin/index.php') == true) {
-    header('Location: /admin', null, 301);
+    header(sprintf('Location: %s', str_replace('index.php', '', $_SERVER['REQUEST_URI'])), false, 301);
+    die();
 }
 
 $state = UpgradeAdvisor::getState();
@@ -20,7 +21,7 @@ $state = UpgradeAdvisor::getState();
     <div class="custom-control custom-switch" style="display: none;">
         <input type="checkbox" class="custom-control-input" id="darkSwitch" />
     </div>
-    <form id="auth" class="form-signin" method="POST" action="auth_login.php">
+    <form id="auth" class="form-signin" method="POST" action="<?php echo strtok($_SERVER["REQUEST_URI"], '?') . '/auth_login.php' ?>">
         <div id="admin_title"><?php echo isset($GLOBALS['admin_title']) ? $GLOBALS['admin_title'] : ""; ?></div>
         <div id="yap-logo"></div>
         <div id="no-auth-message">
