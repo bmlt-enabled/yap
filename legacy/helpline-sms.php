@@ -32,16 +32,23 @@ try {
                 $phone_number = $serviceBodyCallHandling->primary_contact_number;
             }
 
-            $twilioClient->messages->create(
-                $phone_number,
-                array(
-                    "body" => word('helpline') . ": " . word('someone_is_requesting_sms_help_from') . " " . $original_caller_id . ", " . word('please_call_or_text_them_back'),
-                    "from" => $_REQUEST['To']
-                )
-            );
+            if ($phone_number != "") {
+                $twilioClient->messages->create(
+                    $phone_number,
+                    array(
+                        "body" => sprintf("%s: %s %s %s", word('helpline'), word('someone_is_requesting_sms_help_from'), $original_caller_id, word('please_call_or_text_them_back')),
+                        "from" => $_REQUEST['To']
+                    )
+                );
+            } else {
+                log_debug("No phone number was found and no fallback number in primary_contact_number was found.");
+            }
         }
+    } else {
+        log_debug(sprintf("SMS Helpline capability not enabled for service body id: %s", $service_body->id));
     }
 } catch (Exception $e) {
+    log_debug($e);
     $twilioClient->messages->create(
         $original_caller_id,
         array(

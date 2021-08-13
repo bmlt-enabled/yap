@@ -1452,6 +1452,7 @@ function getIdsFormats($types)
 
 function getHelplineVolunteersActiveNow($volunteer_routing_params)
 {
+    # TODO: this does not consider language at the time, we need to think through how to handle things like Gender + Language
     try {
         $volunteers = json_decode(getHelplineSchedule($volunteer_routing_params->service_body_id));
         $activeNow  = [];
@@ -1462,8 +1463,7 @@ function getHelplineVolunteersActiveNow($volunteer_routing_params)
                  && VolunteerRoutingHelpers::checkVolunteerRoutingType($volunteer_routing_params, $volunteers, $v)
                  && VolunteerRoutingHelpers::checkVolunteerRoutingGender($volunteer_routing_params, $volunteers, $v)
                  && VolunteerRoutingHelpers::checkVolunteerRoutingShadow($volunteer_routing_params, $volunteers, $v)
-                 && VolunteerRoutingHelpers::checkVolunteerRoutingResponder($volunteer_routing_params, $volunteers, $v)
-                 && VolunteerRoutingHelpers::checkVolunteerRoutingLanguage($volunteer_routing_params, $volunteers, $v)) {
+                 && VolunteerRoutingHelpers::checkVolunteerRoutingResponder($volunteer_routing_params, $volunteers, $v)) {
                 array_push($activeNow, $volunteers[ $v ]);
             }
         }
