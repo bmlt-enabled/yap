@@ -77,6 +77,7 @@ if ($service_body_id > 0 && isset($serviceBodyCallHandling) && $serviceBodyCallH
             exit();
     } else if ($serviceBodyCallHandling->volunteer_routing_redirect && $serviceBodyCallHandling->volunteer_routing_redirect_id > 0) {
         $calculated_service_body_id = $serviceBodyCallHandling->volunteer_routing_redirect_id;
+        $serviceBodyCallHandling = getServiceBodyCallHandling($calculated_service_body_id);
     } else {
         $calculated_service_body_id = $service_body_id;
     }
