@@ -105,7 +105,7 @@ sort_on_field($service_bodies, 'name');
                                                 <div class="service_bodies_field_container">
                                                     <label for="primary_contact">Primary Contact Number (typically the Chair/Coordinator):</label>
                                                     <input class="form-control form-control-sm" type="text" name="primary_contact" id="primary_contact"
-                                                           data-volunteer_routing="volunteers,volunteers_and_sms" data-call_strategy="1,3,4">
+                                                           data-volunteer_routing="volunteers,volunteers_and_sms" data-call_strategy="1,3,4" data-sms_strategy="2,3">
                                                 </div>
 
                                                 <div class="service_bodies_field_container">
