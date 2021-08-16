@@ -1056,8 +1056,9 @@ function openServiceBodyCallHandling(service_body_id) {
                     }
                 }
 
-                if (trigger !== "call_strategy") {
+                if (trigger !== "call_strategy" && trigger !== "sms_strategy") {
                     serviceBodyCallHandling.find("#call_strategy").change();
+                    serviceBodyCallHandling.find("#sms_strategy").change();
                 }
             });
 
