@@ -1,11 +1,13 @@
 # Release Notes
 
 ### 4.0.0 (UNRELEASED)
+* Fix for unspecified language volunteers not correctly using fallback language setting. [#507]
 * Fix for music on hold not inheriting from redirected service body volunteer routing. [#532]
 * Fix for groups page dropdown when no service body is selected. [#505]
 * Fix for gender selection response always in English. [#506]
 * Fix for volunteer SMS routing (no support for Gender or Language options at this time). [#508]
 * Fix for primary contact number not being shown on service body configuration screens for SMS volunteer routing. [#509]
+* Fix for database related edge case for null values in service body configuration.
 * Fix for recursive metrics not being shown. [#511]
 * Migration to Laravel Framework. [#483]
 
