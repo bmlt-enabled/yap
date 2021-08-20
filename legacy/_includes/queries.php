@@ -194,13 +194,12 @@ function getMetric($service_body_ids, $general)
                                         COUNT(DATE_FORMAT(`timestamp`, \"%Y-%m-%d\")) as counts,
                                         `data`
                                         FROM `metrics`" . sprintf(
-        "%s %s %s",
-        "WHERE service_body_id in (:service_body_ids)",
+        "WHERE service_body_id in (%s) %s %s",
+        implode(",", $service_body_ids),
         $general ? "OR service_body_id is NULL" : "",
         " GROUP BY DATE_FORMAT(`timestamp`, \"%Y-%m-%d\"), `data`"
     );
     $db->query($query);
-    $db->bind(':service_body_ids', implode(",", $service_body_ids));
     $resultset = $db->resultset();
     $db->close();
     return $resultset;

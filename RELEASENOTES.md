@@ -5,7 +5,8 @@
 * Fix for groups page dropdown when no service body is selected. [#505]
 * Fix for gender selection response always in English. [#506]
 * Fix for volunteer SMS routing (no support for Gender or Language options at this time). [#508]
-* Fix for primary contact number not being shown on service body configuration screens for SMS volunteer routing. [#509] 
+* Fix for primary contact number not being shown on service body configuration screens for SMS volunteer routing. [#509]
+* Fix for recursive metrics not being shown. [#511]
 * Migration to Laravel Framework. [#483]
 
 ### 3.9.9 (November 23, 2020)
