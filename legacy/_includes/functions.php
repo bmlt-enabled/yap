@@ -1557,7 +1557,11 @@ function getVolunteerInfo($volunteers)
                 $volunteerInfo->gender     = isset($volunteer->volunteer_gender) ? $volunteer->volunteer_gender : VolunteerGender::UNSPECIFIED;
                 $volunteerInfo->shadow     = isset($volunteer->volunteer_shadow) ? $volunteer->volunteer_shadow : VolunteerShadowOption::UNSPECIFIED;
                 $volunteerInfo->responder  = isset($volunteer->volunteer_responder) ? $volunteer->volunteer_responder : VolunteerResponderOption::UNSPECIFIED;
-                $volunteerInfo->language   = isset($volunteer->volunteer_language) && strlen(setting('language_selections')) > 0 ? $volunteer->volunteer_language : array(setting("language"));
+                if (strlen(setting('language_selections')) > 0) {
+                    $volunteerInfo->language = $volunteer->volunteer_language ?? explode(',', setting('language_selections')[0]);
+                } else {
+                    $volunteerInfo->language = array(setting("language"));
+                }
                 array_push($finalSchedule, $volunteerInfo);
             }
         }
