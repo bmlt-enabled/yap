@@ -1,7 +1,7 @@
 # Release Notes
 
 ### 4.0.0 (UNRELEASED)
-* Fix for unspecified language volunteers not correctly using fallback language setting. [#507]
+* Fix for unspecified language volunteers not correctly using fallback language setting.  The new fallback is whatever the first setting is in the `language_selections` setting.  [#507]
 * Fix for music on hold not inheriting from redirected service body volunteer routing. [#532]
 * Fix for groups page dropdown when no service body is selected. [#505]
 * Fix for gender selection response always in English. [#506]
