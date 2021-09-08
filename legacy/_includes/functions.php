@@ -97,8 +97,8 @@ static $available_prompts = [
 
 foreach ($GLOBALS['available_languages'] as $available_language_key => $available_language_value) {
     foreach ($available_prompts as $available_prompt) {
-        $settings_allowlist[str_replace("-", "_", $available_language_key) . "_" . $available_prompt] = [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false];
-        $settings_allowlist[str_replace("-", "_", $available_language_key) . "_voice"] = [ 'description' => '', 'default' => 'alice', 'overridable' => true, 'hidden' => false];
+        $GLOBALS['settings_allowlist'][str_replace("-", "_", $available_language_key) . "_" . $available_prompt] = [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false];
+        $GLOBALS['settings_allowlist'][str_replace("-", "_", $available_language_key) . "_voice"] = [ 'description' => '', 'default' => 'alice', 'overridable' => true, 'hidden' => false];
     }
 }
 require_once 'session.php';
@@ -1240,6 +1240,10 @@ function getServiceBodiesRights()
         if ($_SESSION['auth_mechanism'] == AuthMechanism::V1) {
             $url = sprintf('%s/local_server/server_admin/json.php?admin_action=get_permissions', getAdminBMLTRootServer());
             $service_bodies_for_user = json_decode(get($url, true));
+
+            if ($service_bodies_for_user == null) {
+                return null;
+            }
 
             if (!is_array($service_bodies_for_user->service_body)) {
                 $service_bodies_for_user = array($service_bodies_for_user->service_body);
