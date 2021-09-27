@@ -9,7 +9,7 @@ class EventStatusController extends Controller
 {
     public function index()
     {
-        return EventStatus::get
+        return EventStatus::all();
     }
 
     public function set(Request $request)
