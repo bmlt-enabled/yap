@@ -151,6 +151,11 @@ class AdminInterfaceRights
     const MANAGE_USERS = 1;
 }
 
+class EventStatusId
+{
+    const VOICEMAIL_DELETED = 1;
+}
+
 class EventId
 {
     const VOLUNTEER_SEARCH = 1;

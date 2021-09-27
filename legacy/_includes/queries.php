@@ -3,7 +3,8 @@ function getVoicemail($service_body_id)
 {
     $db = new Database();
     $sql = sprintf("SELECT r.`callsid`,r.`from_number`,r.`to_number`,CONCAT(re.`event_time`, 'Z') as event_time,re.`meta` FROM records_events re
-    LEFT OUTER JOIN records r ON re.callsid = r.callsid where event_id = %d and service_body_id = %s;", EventId::VOICEMAIL, $service_body_id);
+    LEFT OUTER JOIN records r ON re.callsid = r.callsid
+    LEFT OUTER JOIN event_status es ON re.callsid = es.callsid where re.event_id = %d and service_body_id = %s and (es.event_id = %s and es.status <> %s OR es.id IS NULL);", EventId::VOICEMAIL, $service_body_id, EventId::VOICEMAIL, EventStatusId::VOICEMAIL_DELETED);
     $db->query($sql);
     $resultset = $db->resultset();
     $db->close();
@@ -103,9 +104,9 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC %s",
     $db->query($sql);
     $resultset = $db->resultset();
     $db->close();
-    
+
     quickExec("DELETE FROM `cache_records_conference_participants` WHERE guid = '".$guid."'");
-    
+
     return $resultset;
 }
 

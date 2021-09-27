@@ -1071,17 +1071,23 @@ function openServiceBodyCallHandling(service_body_id) {
     });
 }
 
-function deleteVoicemail(callsid, callback) {
-    $.ajax({
-        async: false,
-        type: "POST",
-        url: "../v1/events/status",
-        data: {
-            "callsid": callsid,
-            "status": 1,
-        },
-        complete: callback,
-        timeout: 60000
+function deleteVoicemail(callsid) {
+    spinnerDialog(true, "Marking voicemail as deleted...", function () {
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "../v1/events/status",
+            data: {
+                "callsid": callsid,
+                "status": 1,
+                "event_id": 4 // VOICEMAIL
+            },
+            complete: function() {
+                spinnerDialog(false);
+                location.reload();
+            },
+            timeout: 60000
+        });
     });
 
     return false;
