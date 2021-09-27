@@ -1071,6 +1071,22 @@ function openServiceBodyCallHandling(service_body_id) {
     });
 }
 
+function deleteVoicemail(callsid, callback) {
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "../v1/events/status",
+        data: {
+            "callsid": callsid,
+            "status": 1,
+        },
+        complete: callback,
+        timeout: 60000
+    });
+
+    return false;
+}
+
 function groupsPage() {
     $("#group_id").on("change", function() {
         addNewVolunteerDialog($(this).val() >= 0);

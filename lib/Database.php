@@ -1,18 +1,18 @@
 <?php
 // Define database configuration
 define("DB_HOST", $GLOBALS['mysql_hostname']);
-define("DB_USER", $GLOBALS['mysql_username']);
-define("DB_PASS", $GLOBALS['mysql_password']);
-define("DB_NAME", $GLOBALS['mysql_database']);
+define("DB_USERNAME", $GLOBALS['mysql_username']);
+define("DB_PASSWORD", $GLOBALS['mysql_password']);
+define("DB_DATABASE", $GLOBALS['mysql_database']);
 
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 class Database
 {
     // phpcs:enable PSR1.Classes.ClassDeclaration.MissingNamespace
     private $host      = DB_HOST;
-    private $user      = DB_USER;
-    private $pass      = DB_PASS;
-    private $dbname    = DB_NAME;
+    private $user      = DB_USERNAME;
+    private $pass      = DB_PASSWORD;
+    private $dbname    = DB_DATABASE;
     private $dbh;
     private $error;
     private $stmt;

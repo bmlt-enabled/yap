@@ -32,12 +32,15 @@
             {title:"CallSid", field:"callsid"},
             {title:"From", field:"from_number"},
             {title:"To", field:"to_number"},
-            {title:"Action", field:"meta", formatter:"link",formatterParams:{
+            {title:"Play", field:"meta", formatter:"link",formatterParams:{
                 target:"_blank",
                 label:"Play",
             }, mutator: function(value) {
                 return value != null ? JSON.parse(value)['url'].concat('.mp3') : null;
-            }}
+            }},
+            {formatter:function(cell, formatterParams) {
+                return "<button onclick='deleteVoicemail(\"abc\", function() {})'>Delete</button>"
+            }},
         ],
         rowFormatter:function(row) {
             //create and style holder elements
