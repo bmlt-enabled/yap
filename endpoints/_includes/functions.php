@@ -12,7 +12,7 @@ require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-static $version  = "3.9.9";
+static $version  = "3.10.0";
 static $settings_allowlist = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -874,6 +874,11 @@ function getHelplineRoutingBMLTServer($latitude, $longitude)
     } else {
         return getAdminBMLTRootServer();
     }
+}
+
+function isServiceBodyHelplingCallInternallyRoutable($latitude, $longitude)
+{
+    return !json_decode(setting('tomato_helpline_routing')) || isBMLTServerOwned($latitude, $longitude);
 }
 
 function getAdminBMLTRootServer()
