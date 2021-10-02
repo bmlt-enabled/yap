@@ -76,7 +76,8 @@ jobs:
           on:
             repo: bmlt-enabled/yap
             tags: true
-            condition: $TRAVIS_TAG != *beta*
+            condition: $TRAVIS_TAG != *beta* && $TRAVIS_BRANCH =~ ^(master|3.x)$
+            all_branches: true
         - provider: releases
           edge: true
           token:
@@ -87,7 +88,8 @@ jobs:
           on:
             repo: bmlt-enabled/yap
             tags: true
-            condition: $TRAVIS_TAG =~ "beta"
+            condition: $TRAVIS_TAG =~ "beta" && $TRAVIS_BRANCH =~ ^(master|3.x)$
+            all_branches: true
 stages:
   - lint
   - name: unstable
