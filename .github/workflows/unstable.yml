@@ -1,0 +1,110 @@
+name: 'unstable'
+
+on:
+  push:
+    branches: [ '3.x' ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - uses: actions/checkout@v2
+        id: code-checkout
+
+      - name: Validate composer.json and composer.lock
+        id: composer-validate
+        run: composer validate
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        id: install-dependencies
+        uses: php-actions/composer@v5
+        with:
+          php_version: 7.3
+          args: --prefer-dist --no-progress --no-suggest
+
+      - name: PHPCS checker
+        id: php-codesniffer
+        run: vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=6 --standard=PSR2 --ignore=vendor,bootstrap,database --extensions=php --report=summary ./
+
+      - uses: act10ns/slack@v1
+        with:
+          status: ${{ job.status }}
+          steps: ${{ toJson(steps) }}
+          channel: '#yap'
+        if: failure()
+
+  package:
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    needs: [ lint ]
+    steps:
+      - uses: actions/checkout@v2
+        id: code-checkout
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        id: install-dependencies
+        uses: php-actions/composer@v5
+        with:
+          php_version: 7.3
+          args: --prefer-dist --no-progress --no-suggest
+
+      - name: Build package
+        id: build-package
+        run: |
+          export ARTIFACT_FILE=yap-${GITHUB_RUN_NUMBER}-${GITHUB_SHA}
+          export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
+          git archive --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
+          DISABLE_NOTIFIER=true make deploy
+          unzip ${ARTIFACT_FILENAME}
+          rm ${ARTIFACT_FILENAME}
+          echo ${GITHUB_SHA} > ${ARTIFACT_FILE}/build.txt
+          cp -R vendor ${ARTIFACT_FILE}/
+          mkdir -p ${ARTIFACT_FILE}/admin/dist && cp -R admin/dist/. ${ARTIFACT_FILE}/admin/dist
+          mkdir -p ${ARTIFACT_FILE}/endpoints/croutonjs && cp -R endpoints/croutonjs/. ${ARTIFACT_FILE}/endpoints/croutonjs
+          find ./${ARTIFACT_FILE} -type d | xargs chmod 755
+          find ./${ARTIFACT_FILE} -name '*.php' | xargs chmod 644
+          zip -r -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}
+          mkdir artifacts/
+          mv ${ARTIFACT_FILENAME} artifacts/
+
+      - name: Upload artifact to S3
+        id: upload-artifact-to-s3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks
+        env:
+          AWS_S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOURCE_DIR: artifacts/
+          DEST_DIR: yap
+
+      - uses: act10ns/slack@v1
+        with:
+          status: ${{ job.status }}
+          steps: ${{ toJson(steps) }}
+          channel: '#yap'
+        if: failure()

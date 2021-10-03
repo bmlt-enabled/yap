@@ -8,5 +8,8 @@
         "nvanheuverzwijn/monolog-logdna": "^2.1",
         "pusher/pusher-php-server": "^4.0",
         "rollbar/rollbar": "~1.5"
-    }
+    },
+    "name": "bmlt-enabled/yap",
+    "description": "dependencies for yap",
+    "license": "MIT"
 }
