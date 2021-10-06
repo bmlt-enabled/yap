@@ -1239,6 +1239,17 @@ function canManageUsers()
         (isset($_SESSION['auth_permissions']) && (intval($_SESSION['auth_permissions']) & AdminInterfaceRights::MANAGE_USERS));
 }
 
+function getServiceBodiesRightsIds()
+{
+    $ids = [];
+
+    foreach (getServiceBodiesRights() as $service_body) {
+        array_push($ids, $service_body->id);
+    }
+
+    return $ids;
+}
+
 function getServiceBodiesRights()
 {
     if (isset($_SESSION['auth_mechanism'])) {

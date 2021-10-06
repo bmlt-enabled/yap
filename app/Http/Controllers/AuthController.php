@@ -3,9 +3,17 @@ namespace App\Http\Controllers;
 
 use App\Constants\AuthMechanism;
 use App\Constants\Http;
+use App\Services\PermissionService;
 
 class AuthController extends Controller
 {
+    private $permissionService;
+
+    public function __construct(PermissionService $permissionService)
+    {
+        $this->permissionService = $permissionService;
+    }
+
     public function logout($auth = true)
     {
         $this->clearSession();
@@ -43,6 +51,12 @@ class AuthController extends Controller
         } else {
             session_unset();
         }
+    }
+
+    public function rights()
+    {
+        $rights = $this->permissionService->getServiceBodyRights();
+        return $rights ?? response()->json(['error' => 'Unauthorized'], 403);
     }
 
     private function getBMLTAuthSessionCookies()

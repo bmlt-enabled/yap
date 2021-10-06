@@ -1,5 +1,5 @@
 <?php
-if (strpos($_SERVER['REQUEST_URI'], "/v1/")) {
+if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], "/v1/")) {
     require_once(!getenv("ENVIRONMENT") ? base_path() . '/config.php' : base_path() . '/config.' . getenv("ENVIRONMENT") . '.php');
     putenv('DB_HOSTNAME=' . $mysql_hostname);
     putenv('DB_USERNAME=' . $mysql_username);
