@@ -900,6 +900,11 @@ function getHelplineRoutingBMLTServer($latitude, $longitude)
     }
 }
 
+function isServiceBodyHelplingCallInternallyRoutable($latitude, $longitude)
+{
+    return !json_decode(setting('tomato_helpline_routing')) || isBMLTServerOwned($latitude, $longitude);
+}
+
 function getAdminBMLTRootServer()
 {
     if (has_setting('helpline_bmlt_root_server')) {
