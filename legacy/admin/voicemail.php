@@ -32,12 +32,18 @@
             {title:"CallSid", field:"callsid"},
             {title:"From", field:"from_number"},
             {title:"To", field:"to_number"},
-            {title:"Action", field:"meta", formatter:"link",formatterParams:{
-                target:"_blank",
-                label:"Play",
-            }, mutator: function(value) {
-                return value != null ? JSON.parse(value)['url'].concat('.mp3') : null;
-            }}
+            {formatter:function(cell, formatterParams) {
+                var actionString = "";
+                var row = cell.getRow();
+                var callsid = row.getData().callsid
+                var meta = row.getData().meta
+                if (meta != null) {
+                    var voicemailLink = JSON.parse(meta)['url'].concat('.mp3');
+                    actionString = "<button class=\"btn btn-sm btn-primary\" onclick=\"location.href='" + voicemailLink + "'\">Play</button> "
+                }
+                actionString += "<button class=\"btn btn-sm btn-danger\" onclick=\"deleteVoicemail('" + callsid + "')\">Delete</button>";
+                return actionString;
+            }},
         ],
         rowFormatter:function(row) {
             //create and style holder elements

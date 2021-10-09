@@ -1,6 +1,7 @@
 # Release Notes
 
 ### 4.0.0 (UNRELEASED)
+* Voicemail deletion feature. [#528]
 * Fix for unspecified language volunteers not correctly using fallback language setting.  The new fallback is whatever the first setting is in the `language_selections` setting.  [#507]
 * Fix for music on hold not inheriting from redirected service body volunteer routing. [#532]
 * Fix for groups page dropdown when no service body is selected. [#505]
@@ -10,6 +11,9 @@
 * Fix for database related edge case for null values in service body configuration.
 * Fix for recursive metrics not being shown. [#511]
 * Migration to Laravel Framework. [#483]
+
+### 3.10.0 (October 3, 2021)
+* Fix for faulty tomato helpline routing when service body ID collisions occur between local root server and tomato. [#546]
 
 ### 3.9.9 (November 23, 2020)
 * Fix for is_admin db column on some systems not being set as PHP boolean. [#486]

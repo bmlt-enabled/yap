@@ -151,6 +151,11 @@ class AdminInterfaceRights
     const MANAGE_USERS = 1;
 }
 
+class EventStatusId
+{
+    const VOICEMAIL_DELETED = 1;
+}
+
 class EventId
 {
     const VOLUNTEER_SEARCH = 1;
@@ -895,6 +900,11 @@ function getHelplineRoutingBMLTServer($latitude, $longitude)
     }
 }
 
+function isServiceBodyHelplingCallInternallyRoutable($latitude, $longitude)
+{
+    return !json_decode(setting('tomato_helpline_routing')) || isBMLTServerOwned($latitude, $longitude);
+}
+
 function getAdminBMLTRootServer()
 {
     if (has_setting('helpline_bmlt_root_server')) {
@@ -1232,6 +1242,17 @@ function canManageUsers()
 {
     return (isset($_SESSION['auth_is_admin']) && boolval($_SESSION['auth_is_admin'])) ||
         (isset($_SESSION['auth_permissions']) && (intval($_SESSION['auth_permissions']) & AdminInterfaceRights::MANAGE_USERS));
+}
+
+function getServiceBodiesRightsIds()
+{
+    $ids = [];
+
+    foreach (getServiceBodiesRights() as $service_body) {
+        array_push($ids, $service_body->id);
+    }
+
+    return $ids;
 }
 
 function getServiceBodiesRights()
