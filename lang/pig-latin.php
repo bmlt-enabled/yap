@@ -96,3 +96,4 @@ $GLOBALS['meetings_have_been_texted'] = "eetingsmay avehay eenbay extedtay otay 
 $GLOBALS['users'] = "Usersay";
 $GLOBALS['to speak to a man'] = "otay alktay otay ayay anmay";
 $GLOBALS['to speak to a woman'] = "otay alktay otay ayay omanway";
+$GLOBALS['speak no preference'] = "otay eakspay otay eitheryay";
