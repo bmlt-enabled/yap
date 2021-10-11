@@ -85,7 +85,7 @@ if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETING
 
             if ($method == LocationSearchMethod::DTMF) { ?>
                  <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
-                    <?php echo word('press') . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . $searchDescription . " " . word('by') . " " . word('zip_code') ?>
+                    <?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . $searchDescription . " " . word('by') . " " . word('zip_code') ?>
                 </Say>
             <?php }
 
