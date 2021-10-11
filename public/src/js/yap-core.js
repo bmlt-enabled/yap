@@ -56,7 +56,7 @@ function initReports() {
             var service_body = getServiceBodyById(id);
             return service_body['name'] + " (" + service_body['id'] + ")"
         }},
-        {title: "Metadata", field: "meta"},
+        {title: "Metadata", field: "meta", formatter: "textarea"},
         {title: "Parent CallSid", field: "parent_callsid", visible: false, download: true}
     ];
 
@@ -130,6 +130,7 @@ function initReports() {
 
             var subTable = new Tabulator(tableEl, {
                 layout: "fitColumns",
+                tooltips: true,
                 data: row.getData().call_events,
                 columns: eventsTableColumns
             });
