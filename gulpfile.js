@@ -97,7 +97,7 @@ task('jsCore', () => {
             },
         }))
         .pipe(dest(distJsDir))
-        .pipe(notify({message: "jsCore complete", wait: true}));
+        .pipe(notify({"message": "jsCore complete", "wait": true}));
 });
 
 task('jsSchedule', () => {
@@ -110,7 +110,7 @@ task('jsSchedule', () => {
             },
         }))
         .pipe(dest(distJsDir))
-        .pipe(notify({message: "jsSchedule complete", wait: true}));
+        .pipe(notify({"message": "jsSchedule complete", "wait": true}));
 });
 
 task('jsReports', () => {
@@ -123,7 +123,7 @@ task('jsReports', () => {
             },
         }))
         .pipe(dest(distJsDir))
-        .pipe(notify({message: "jsReport complete", wait: true}));
+        .pipe(notify({"message": "jsReport complete", "wait": true}));
 });
 
 task('jsMeetingResults', () => {
@@ -136,7 +136,7 @@ task('jsMeetingResults', () => {
             },
         }))
         .pipe(dest('public/dist/croutonjs'))
-        .pipe(notify({message: "jsMeetingResults complete", wait: true}));
+        .pipe(notify({"message": "jsMeetingResults complete", "wait": true}));
 });
 
 task('cssCore', () => {
@@ -159,7 +159,7 @@ task('cssCore', () => {
             suffix: '.min'
         }))
         .pipe(dest(distCssDir))
-        .pipe(notify({message: "cssCore complete", wait: true}));
+        .pipe(notify({"message": "cssCore complete", "wait": true}));
 });
 
 task('cssSchedule', () => {
@@ -171,7 +171,7 @@ task('cssSchedule', () => {
             suffix: '.min'
         }))
         .pipe(dest(distCssDir))
-        .pipe(notify({message: "cssSchedule complete", wait: true}));
+        .pipe(notify({"message": "cssSchedule complete", "wait": true}));
 });
 
 task('cssReports', () => {
@@ -183,7 +183,7 @@ task('cssReports', () => {
             suffix: '.min'
         }))
         .pipe(dest(distCssDir))
-        .pipe(notify({message: "cssReports complete", wait: true}));
+        .pipe(notify({"message": "cssReports complete", "wait": true}));
 });
 
 task('cssTabulatorLight', () => {
@@ -195,7 +195,7 @@ task('cssTabulatorLight', () => {
             suffix: '.min'
         }))
         .pipe(dest(distCssDir))
-        .pipe(notify({message: "cssTabulatorLight complete", wait: true}));
+        .pipe(notify({"message": "cssTabulatorLight complete", "wait": true}));
 });
 
 task('cssTabulatorDark', () => {
@@ -207,7 +207,7 @@ task('cssTabulatorDark', () => {
             suffix: '.min'
         }))
         .pipe(dest(distCssDir))
-        .pipe(notify({message: "cssTabulatorDark complete", wait: true}));
+        .pipe(notify({"message": "cssTabulatorDark complete", "wait": true}));
 });
 
 task('cssMeetingResults', () => {
@@ -219,7 +219,7 @@ task('cssMeetingResults', () => {
             suffix: '.min'
         }))
         .pipe(dest('public/dist/croutonjs'))
-        .pipe(notify({message: "cssMeetingResults complete", wait: true}));
+        .pipe(notify({"message": "cssMeetingResults complete", "wait": true}));
 });
 
 task('templatesMeetingResults', function () {
