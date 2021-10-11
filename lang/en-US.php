@@ -104,3 +104,4 @@ $GLOBALS['meetings_have_been_texted'] = "meetings have been texted to you";
 $GLOBALS['users'] = "Users";
 $GLOBALS['to speak to a man'] = "to talk to a man";
 $GLOBALS['to speak to a woman'] = "to talk to a woman";
+$GLOBALS['speak no preference'] = "to speak to either";

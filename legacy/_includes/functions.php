@@ -34,6 +34,7 @@ $GLOBALS['settings_allowlist'] = [
     'fallback_number' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'gather_hints' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'gather_language' => [ 'description' => '' , 'default' => 'en-US', 'overridable' => true, 'hidden' => false],
+    'gender_no_preference' => ['description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'grace_minutes' => [ 'description' => '' , 'default' => 15, 'overridable' => true, 'hidden' => false],
     'helpline_bmlt_root_server' => [ 'description' => '' , 'default' => null, 'overridable' => false, 'hidden' => false],
     'helpline_fallback' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -395,6 +396,7 @@ class VolunteerGender
     const UNSPECIFIED = 0;
     const MALE = 1;
     const FEMALE = 2;
+    const NO_PREFERENCE = 3;
 
     public static function getGenderById($genderId)
     {

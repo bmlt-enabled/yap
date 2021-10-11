@@ -22,7 +22,7 @@ function getCallConfig($serviceBodyCallHandling, $tandem = VolunteerShadowOption
     $volunteer_routing_parameters->tracker = $tracker;
     $volunteer_routing_parameters->cycle_algorithm = $tandem == VolunteerShadowOption::TRAINEE ? CycleAlgorithm::BLASTING : $serviceBodyCallHandling->call_strategy;
     $volunteer_routing_parameters->volunteer_type = VolunteerType::PHONE;
-    $volunteer_routing_parameters->volunteer_gender = isset($_SESSION['Gender']) ? $_SESSION['Gender'] : VolunteerGender::UNSPECIFIED;
+    $volunteer_routing_parameters->volunteer_gender = isset($_SESSION['Gender']) && $_SESSION['Gender'] !== VolunteerGender::NO_PREFERENCE ? $_SESSION['Gender'] : VolunteerGender::UNSPECIFIED;
     $volunteer_routing_parameters->volunteer_shadow = $tandem == VolunteerShadowOption::TRAINEE ? VolunteerShadowOption::TRAINER : VolunteerShadowOption::UNSPECIFIED;
     $volunteer_routing_parameters->volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
     $volunteer_routing_parameters->volunteer_language = setting('language');
