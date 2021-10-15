@@ -3,6 +3,7 @@
 ### 4.0.0 (UNRELEASED)
 * Voicemail deletion feature. [#528]
 * Gender routing with no preference option. [#523]
+* Geocoding overriding feature allows for specifying locations with latitude and longitude to override Google Geocoding lookups [#552]
 * Minor report formatting enhancements including some Metadata column text wrapping and using tooltips.
 * Fix for unspecified language volunteers not correctly using fallback language setting.  The new fallback is whatever the first setting is in the `language_selections` setting.  [#507]
 * Fix for music on hold not inheriting from redirected service body volunteer routing. [#532]
