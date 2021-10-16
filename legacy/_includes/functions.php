@@ -472,10 +472,8 @@ class VolunteerRoutingHelpers
 
     public static function checkVolunteerRoutingGender($volunteer_routing_params, $volunteers, $v)
     {
-        return ($volunteer_routing_params->volunteer_gender == VolunteerGender::UNSPECIFIED
-            || (($volunteer_routing_params->volunteer_gender !== VolunteerGender::UNSPECIFIED
-                && isset($volunteers[$v]->gender)
-                && $volunteer_routing_params->volunteer_gender == $volunteers[$v]->gender)));
+        return (($volunteer_routing_params->volunteer_gender == VolunteerGender::UNSPECIFIED || $volunteer_routing_params->volunteer_gender == VolunteerGender::NO_PREFERENCE )
+            || isset($volunteers[$v]->gender) && $volunteer_routing_params->volunteer_gender == $volunteers[$v]->gender);
     }
 }
 
@@ -1506,7 +1504,6 @@ function getHelplineVolunteersActiveNow($volunteer_routing_params)
             if (VolunteerRoutingHelpers::checkVolunteerRoutingTime($current_time, $volunteers, $v)
                  && VolunteerRoutingHelpers::checkVolunteerRoutingType($volunteer_routing_params, $volunteers, $v)
                  && VolunteerRoutingHelpers::checkVolunteerRoutingGender($volunteer_routing_params, $volunteers, $v)
-                 && VolunteerRoutingHelpers::checkVolunteerRoutingShadow($volunteer_routing_params, $volunteers, $v)
                  && VolunteerRoutingHelpers::checkVolunteerRoutingLanguage($volunteer_routing_params, $volunteers, $v)
                  && VolunteerRoutingHelpers::checkVolunteerRoutingResponder($volunteer_routing_params, $volunteers, $v)) {
                 array_push($activeNow, $volunteers[ $v ]);
