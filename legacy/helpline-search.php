@@ -103,6 +103,7 @@ if ($service_body_id > 0 && isset($serviceBodyCallHandling) && $serviceBodyCallH
                         endConferenceOnExit="true"
                         statusCallbackMethod="GET"
                         statusCallbackEvent="start join end leave"
+                        waitMethod="GET"
                         beep="false">
             <?php echo getConferenceName($calculated_service_body_id); ?>
             </Conference>
