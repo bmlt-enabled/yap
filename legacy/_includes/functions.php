@@ -829,27 +829,26 @@ function getCoordinatesForAddress($address)
     $coordinates = new Coordinates();
 
     if (strlen($address) > 0) {
-        if (has_setting("custom_geocoding")) {
-            foreach (setting("custom_geocoding") as $item) {
-                if ($item['location'] == $address) {
-                    $coordinates->location = $item['location'];
-                    $coordinates->latitude = $item['latitude'];
-                    $coordinates->longitude = $item['longitude'];
-                    break;
-                }
+        foreach (setting("custom_geocoding") as $item) {
+            if ($item['location'] == $address) {
+                $coordinates->location = $item['location'];
+                $coordinates->latitude = $item['latitude'];
+                $coordinates->longitude = $item['longitude'];
+
+                return $coordinates;
             }
-        } else {
-            $map_details_response = get($GLOBALS['google_maps_endpoint']
-                . "&address="
-                . urlencode($address)
-                . "&components=" . urlencode(setting('location_lookup_bias')), false, 3600);
-            $map_details = json_decode($map_details_response);
-            if (count($map_details->results) > 0) {
-                $coordinates->location = $map_details->results[0]->formatted_address;
-                $geometry = $map_details->results[0]->geometry->location;
-                $coordinates->latitude = $geometry->lat;
-                $coordinates->longitude = $geometry->lng;
-            }
+        }
+
+        $map_details_response = get($GLOBALS['google_maps_endpoint']
+            . "&address="
+            . urlencode($address)
+            . "&components=" . urlencode(setting('location_lookup_bias')), false, 3600);
+        $map_details = json_decode($map_details_response);
+        if (count($map_details->results) > 0) {
+            $coordinates->location = $map_details->results[0]->formatted_address;
+            $geometry = $map_details->results[0]->geometry->location;
+            $coordinates->latitude = $geometry->lat;
+            $coordinates->longitude = $geometry->lng;
         }
     }
 
