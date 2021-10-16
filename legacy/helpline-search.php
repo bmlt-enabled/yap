@@ -55,7 +55,7 @@ if (!isset($_REQUEST['ForceNumber'])) {
     $extension = isset($exploded_result[1]) ? $exploded_result[1] : "w";
     $service_body_id = isset($service_body_obj) ? $service_body_obj->id : 0;
 
-if (!isset($_REQUEST['ForceNumber']) && isServiceBodyHelplingCallInternallyRoutable($coordinates->latitude, $coordinates->longitude)) {
+if (!isset($_REQUEST['ForceNumber']) && (isset($_SESSION["override_service_body_id"]) || isServiceBodyHelplingCallInternallyRoutable($coordinates->latitude, $coordinates->longitude))) {
     $serviceBodyCallHandling = getServiceBodyCallHandling($service_body_id);
 }
 
@@ -70,8 +70,13 @@ if (isset($address)) {
 
 if ($service_body_id > 0 && isset($serviceBodyCallHandling) && $serviceBodyCallHandling->volunteer_routing_enabled) {
     if ($serviceBodyCallHandling->gender_routing_enabled && !isset($_SESSION['Gender'])) {
-        $_SESSION['Address'] = $address; ?>
-                <Redirect method="GET">gender-routing.php?SearchType=<?php echo urlencode($_REQUEST["SearchType"])?></Redirect>
+        if (isset($address)) {
+            $_SESSION["Address"] = $address;
+        }
+
+        $searchType = $_REQUEST["SearchType"] ?? "-1";
+        ?>
+                <Redirect method="GET">gender-routing.php?SearchType=<?php echo urlencode($searchType)?></Redirect>
             </Response>
             <?php
             exit();
