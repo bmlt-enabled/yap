@@ -828,10 +828,11 @@ function getCoordinatesForAddress($address)
 
     if (strlen($address) > 0) {
         foreach (setting("custom_geocoding") as $item) {
-            if ($item['location'] == $address) {
-                $coordinates->location = $item['location'];
-                $coordinates->latitude = $item['latitude'];
-                $coordinates->longitude = $item['longitude'];
+            $arr_item = (array) $item;
+            if ($arr_item["location"] == $address) {
+                $coordinates->location = $arr_item["location"];
+                $coordinates->latitude = $arr_item["latitude"];
+                $coordinates->longitude = $arr_item["longitude"];
 
                 return $coordinates;
             }
