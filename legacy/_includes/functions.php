@@ -26,6 +26,7 @@ $GLOBALS['settings_allowlist'] = [
     'bmlt_auth' => [ 'description' => '' , 'default' => true, 'overridable' => false, 'hidden' => false ],
     'call_routing_filter' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'config' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => true],
+    'custom_geocoding' => ['description' => '', 'default' => [], 'overridable' => true, 'hidden' => false],
     'custom_extensions' => ['description' => '', 'default' => [0 => ''], 'overridable' => true, 'hidden' => false],
     'custom_query' => ['description' => '', 'default' => '&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width={SETTING_MEETING_SEARCH_RADIUS}&weekdays={DAY}', 'overridable' => true, 'hidden' => false],
     'digit_map_search_type' => [ 'description' => '', 'default' => ['1' => SearchType::VOLUNTEERS, '2' => SearchType::MEETINGS, '3' => SearchType::JFT, '8' => SearchType::VOICEMAIL_PLAYBACK, '9' => SearchType::DIALBACK], 'overridable' => true, 'hidden' => false],
@@ -828,16 +829,27 @@ function getCoordinatesForAddress($address)
     $coordinates = new Coordinates();
 
     if (strlen($address) > 0) {
-        $map_details_response = get($GLOBALS['google_maps_endpoint']
-            . "&address="
-            . urlencode($address)
-            . "&components=" . urlencode(setting('location_lookup_bias')), false, 3600);
-        $map_details = json_decode($map_details_response);
-        if (count($map_details->results) > 0) {
-            $coordinates->location  = $map_details->results[0]->formatted_address;
-            $geometry               = $map_details->results[0]->geometry->location;
-            $coordinates->latitude  = $geometry->lat;
-            $coordinates->longitude = $geometry->lng;
+        if (has_setting("custom_geocoding")) {
+            foreach (setting("custom_geocoding") as $item) {
+                if ($item['location'] == $address) {
+                    $coordinates->location = $item['location'];
+                    $coordinates->latitude = $item['latitude'];
+                    $coordinates->longitude = $item['longitude'];
+                    break;
+                }
+            }
+        } else {
+            $map_details_response = get($GLOBALS['google_maps_endpoint']
+                . "&address="
+                . urlencode($address)
+                . "&components=" . urlencode(setting('location_lookup_bias')), false, 3600);
+            $map_details = json_decode($map_details_response);
+            if (count($map_details->results) > 0) {
+                $coordinates->location = $map_details->results[0]->formatted_address;
+                $geometry = $map_details->results[0]->geometry->location;
+                $coordinates->latitude = $geometry->lat;
+                $coordinates->longitude = $geometry->lng;
+            }
         }
     }
 
