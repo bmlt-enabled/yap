@@ -1,6 +1,6 @@
 # Release Notes
 
-### 4.0.0 (UNRELEASED)
+### 4.0.0 (October 16, 2021)
 * Voicemail deletion feature. [#528]
 * Gender routing with no preference option. [#523]
 * Geocoding overriding feature allows for specifying locations with latitude and longitude to override Google Geocoding lookups [#552]
