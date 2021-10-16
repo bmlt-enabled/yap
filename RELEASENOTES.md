@@ -11,6 +11,7 @@
 * Fix for gender selection for service body overrides.
 * Fix for gender selection response always in English. [#506]
 * Fix for volunteer SMS routing (no support for Gender or Language options at this time). [#508]
+* Fix for servers that would not accept POST for Music On Hold, now requires GET.
 * Fix for primary contact number not being shown on service body configuration screens for SMS volunteer routing. [#509]
 * Fix for database related edge case for null values in service body configuration.
 * Fix for recursive metrics not being shown. [#511]
