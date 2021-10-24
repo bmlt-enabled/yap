@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.0.1 (UNRELEASED)
+* Translations for gender prompts were not overridable.
+
 ### 4.0.0 (October 16, 2021)
 * Voicemail deletion feature. [#528]
 * Gender routing with no preference option. [#523]
