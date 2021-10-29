@@ -6,7 +6,7 @@ if (!file_exists('config.php')) {
 if (isset($_GET["ysk"])) {
     session_id($_GET["ysk"]);
 }
-session_start();
+@session_start();
 require_once(!getenv("ENVIRONMENT") ? base_path() . '/config.php' : base_path() . '/config.' . getenv("ENVIRONMENT") . '.php');
 $ignored_vars = ['__path', '__env', '__data', 'includePath', 'ignored_vars', 'app', 'errors', 'key', 'value'];
 foreach (get_defined_vars() as $key => $value) {
