@@ -12,7 +12,7 @@
                     <div id="serviceBodyCallHandlingValidation"></div>
                     <div class="users_username control-group">
                         <label for="username">Username:</label>
-                        <input class="form-control form-control-sm" type="text" name="username" id="username">
+                        <input class="form-control form-control-sm" type="text" name="username" id="username" autocomplete="username">
                     </div>
 
                     <div class="users_name control-group">
@@ -22,7 +22,7 @@
 
                     <div class="users_password control-group">
                         <label for="password">Password:</label>
-                        <input class="form-control form-control-sm" type="password" name="password" id="password">
+                        <input class="form-control form-control-sm" type="password" name="password" id="password" autocomplete="new-password">
                     </div>
 
                     <input class="form-control form-control-sm" type="hidden" name="id" id="id">

@@ -29,9 +29,9 @@ $state = UpgradeAdvisor::getState();
             <?php echo isset($_REQUEST['expired']) ? $GLOBALS['session_expired'] : "" ?>
         </div>
         <label for="inputEmail" class="sr-only"><?php echo $GLOBALS['username']?></label>
-        <input name="username" type="username" id="inputUsername" class="form-control" placeholder="<?php echo $GLOBALS['username']?>" required autofocus>
+        <input autocomplete="username" name="username" type="username" id="inputUsername" class="form-control" placeholder="<?php echo $GLOBALS['username']?>" required autofocus>
         <label for="inputPassword" class="sr-only"><?php echo $GLOBALS['password']?></label>
-        <input name="password" type="password" id="inputPassword" class="form-control" placeholder="<?php echo $GLOBALS['password']?>" required>
+        <input autocomplete="current-password" name="password" type="password" id="inputPassword" class="form-control" placeholder="<?php echo $GLOBALS['password']?>" required>
         <button id="authenticateButton" class="btn btn-lg btn-primary btn-block" onclick="onAuthenticate();"><?php echo $GLOBALS['authenticate']?></button>
         <select class="form-control" name="override_word_language" id="admin_language">
             <?php

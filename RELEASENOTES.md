@@ -3,6 +3,7 @@
 ### 4.0.1 (UNRELEASED)
 * Fix logouts now completing for BMLT based users. [#563]  
 * Translations for gender prompts were not overridable.
+* Autocomplete for username / password forms.
 
 ### 4.0.0 (October 16, 2021)
 * Voicemail deletion feature. [#528]
