@@ -1419,7 +1419,7 @@ function getGroups($service_body_id)
         array_push($groupsArray, (object)[
             'name' => $groupsDataObj->group_name,
             'id' => $group['id'],
-            'shares' => json_encode($groupsDataObj->group_shared_service_bodies)
+            'shares' => json_encode(isset($groupsDataObj->group_shared_service_bodies) ? $groupsDataObj->group_shared_service_bodies : [])
         ]);
     }
 
