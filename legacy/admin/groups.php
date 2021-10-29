@@ -12,45 +12,26 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
             <?php
             $serviceBodies = getServiceBodiesForUser();
             sort_on_field($serviceBodies, 'name');
-            if (count($serviceBodies) === 1) {
-                $selected_service_body_id  = intval($serviceBodies[0]->id);
-            } else {
-                $selected_service_body_id = isset($_REQUEST['service_body_id']) ? $_REQUEST['service_body_id'] : 0;
-            }
             foreach ($serviceBodies as $item) {?>
-                <option value="<?php echo $item->id ?>" <?php echo $selected_service_body_id > 0 && $selected_service_body_id == $item->id ? "selected": ""?>><?php echo $item->name ?> (<?php echo $item->id ?>) / <?php echo $item->parent_name ?> (<?php echo $item->parent_id ?>)</option>
+                <option value="<?php echo $item->id ?>"><?php echo $item->name ?> (<?php echo $item->id ?>) / <?php echo $item->parent_name ?> (<?php echo $item->parent_id ?>)</option>
                 <?php
             }?>
         </select>
-        <button id="loadGroupsButton" type="submit" class="btn btn-sm btn-primary" disabled>Load</button>
     </form>
-    <?php if (isset($_REQUEST['service_body_id'])) { ?>
-        <label for="group_id"><?php echo word('groups')?></label>
-        <form id="groupsForm">
-            <select class="form-control form-control-sm dropdown_next_to_another_field" id="group_id">
-                <option value="0">-= Select A Group =-</option>
-                <?php
-                $groups = getGroups($_REQUEST['service_body_id']);
-                sort_on_field($groups, 'name');
-                foreach ($groups as $item) { ?>
-                    <option value="<?php echo $item->id ?>"><?php echo $item->name ?></option>
-                    <?php
-                } ?>
-            </select>
-        </form>
-        <script type="text/javascript">var groups=<?php echo json_encode($groups); ?></script>
-        <button class="btn btn-sm btn-primary volunteer-manage-buttons" id="addGroupButton" onclick="addGroup();"><?php echo word('create') ?></button>
-        <button class="btn btn-sm btn-warning volunteer-manage-buttons" id="editGroupButton" onclick="editGroup();"
-                style="display:none;"><?php echo word('edit') ?>
-        </button>
-        <button class="btn btm-sm btn-warning volunteer-manage-buttons" id="deleteGroupButton" onclick="deleteGroup();"
-                style="display:none;"><?php echo word('delete') ?>
-        </button>
-        <?php require_once 'volunteers_control.php';
-    } else {
-        require_once 'footer.php';
-    }?>
 
+    <label for="group_id"><?php echo word('groups')?></label>
+    <form id="groupsForm">
+        <select class="form-control form-control-sm dropdown_next_to_another_field" id="group_id" disabled></select>
+    </form>
+    <script type="text/javascript"></script>
+    <button class="btn btn-sm btn-primary volunteer-manage-buttons" id="addGroupButton" onclick="addGroup();"><?php echo word('create') ?></button>
+    <button class="btn btn-sm btn-warning volunteer-manage-buttons" id="editGroupButton" onclick="editGroup();"
+            style="display:none;"><?php echo word('edit') ?>
+    </button>
+    <button class="btn btm-sm btn-warning volunteer-manage-buttons" id="deleteGroupButton" onclick="deleteGroup();"
+            style="display:none;"><?php echo word('delete') ?>
+    </button>
+    <?php require_once 'volunteers_control.php';?>
 </div>
 <div class="modal fade" id="addGroupDialog" tabindex="-1" role="dialog" aria-labelledby="addGroupDialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -78,7 +59,7 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
             <div class="modal-footer">
                 <div id="group_dialog_message"></div>
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="confirmGroup(this)">OK</button>
+                <button type="button" class="btn btn-primary" onclick="return confirmGroup(this)">OK</button>
             </div>
         </div>
     </div>

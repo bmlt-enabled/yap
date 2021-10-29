@@ -586,11 +586,18 @@ function loadGroupVolunteers(parent_id, service_body_id, callback) {
 }
 
 function onGroupServiceBodyChange(e) {
-    if (parseInt(e.value) !== 0) {
-        document.getElementById("loadGroupsButton").removeAttribute('disabled')
-    } else {
-        document.getElementById("loadGroupsButton").setAttribute('disabled', '')
+    if (groups !== undefined) {
+        groups = undefined
     }
+    loadGroups(e[e.selectedIndex].value, function(data) {
+        $("#group_id").html($('<option>', { value: 0, text: '-= Select A Group =-' }));
+        for (var i = 0; i < data.length; i++) {
+            $("#group_id").append($('<option>', {
+                value: data[i].id,
+                text: JSON.parse(data[i].data)[0]['group_name']
+            }));
+        }
+    })
 }
 
 function loadGroups(service_body_id, callback) {
@@ -1138,10 +1145,12 @@ function editGroup() {
     $("#groupEditorHeader").html("Edit Group");
 
     $("#group_name").val($("#group_id option:selected").text());
-    for (group of groups) {
-        if (group['id'] == $("#group_id").val()) {
-            $("#group_shared_service_bodies").val(JSON.parse(group['shares']));
-            break;
+    for (var group of groups) {
+        if (group['id'] === $("#group_id").val()) {
+            if (group.hasOwnProperty("shares")) {
+                $("#group_shared_service_bodies").val(JSON.parse(group['shares']));
+                break;
+            }
         }
     }
 
@@ -1151,6 +1160,7 @@ function editGroup() {
 function confirmGroup() {
     if ($("#group_name").val() == "") {
         $("#group_dialog_message").html("A name is required.");
+        return false;
     }
 
     $("#addGroupDialog").modal('hide');
