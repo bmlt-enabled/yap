@@ -5,8 +5,8 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
     <div class="alert alert-success" role="alert" style="display:none;" id="volunteer_saved_alert">
         Saved.
     </div>
-    <label for="service_body_id"><?php echo word('service_bodies')?></label>
     <form id="serviceBodyForm" method="POST" action="groups.php">
+        <label for="service_body_id"><?php echo word('service_bodies')?></label>
         <select class="form-control form-control-sm" id="service_body_id" name="service_body_id" onchange="onGroupServiceBodyChange(this)">
             <option value="0">-= Select A Service Body =-</option>
             <?php
@@ -19,18 +19,17 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
         </select>
     </form>
 
-    <label for="group_id"><?php echo word('groups')?></label>
-    <form id="groupsForm">
-        <select class="form-control form-control-sm dropdown_next_to_another_field" id="group_id" disabled></select>
+    <form id="groupsForm" style="display: none">
+        <label for="group_id"><?php echo word('groups')?></label>
+        <select class="form-control form-control-sm dropdown_next_to_another_field" id="group_id"></select>
+        <button class="btn btn-sm btn-primary volunteer-manage-buttons" id="addGroupButton" onclick="addGroup();"><?php echo word('create') ?></button>
+        <button class="btn btn-sm btn-warning volunteer-manage-buttons" id="editGroupButton" onclick="editGroup();"
+                style="display:none;"><?php echo word('edit') ?>
+        </button>
+        <button class="btn btm-sm btn-warning volunteer-manage-buttons" id="deleteGroupButton" onclick="deleteGroup();"
+                style="display:none;"><?php echo word('delete') ?>
+        </button>
     </form>
-    <script type="text/javascript"></script>
-    <button class="btn btn-sm btn-primary volunteer-manage-buttons" id="addGroupButton" onclick="addGroup();"><?php echo word('create') ?></button>
-    <button class="btn btn-sm btn-warning volunteer-manage-buttons" id="editGroupButton" onclick="editGroup();"
-            style="display:none;"><?php echo word('edit') ?>
-    </button>
-    <button class="btn btm-sm btn-warning volunteer-manage-buttons" id="deleteGroupButton" onclick="deleteGroup();"
-            style="display:none;"><?php echo word('delete') ?>
-    </button>
     <?php require_once 'volunteers_control.php';?>
 </div>
 <div class="modal fade" id="addGroupDialog" tabindex="-1" role="dialog" aria-labelledby="addGroupDialog" aria-hidden="true">

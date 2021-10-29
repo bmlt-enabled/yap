@@ -588,16 +588,34 @@ function loadGroupVolunteers(parent_id, service_body_id, callback) {
 function onGroupServiceBodyChange(e) {
     if (groups !== undefined) {
         groups = undefined
+        $("#group_id").html("");
     }
-    loadGroups(e[e.selectedIndex].value, function(data) {
-        $("#group_id").html($('<option>', { value: 0, text: '-= Select A Group =-' }));
-        for (var i = 0; i < data.length; i++) {
-            $("#group_id").append($('<option>', {
-                value: data[i].id,
-                text: JSON.parse(data[i].data)[0]['group_name']
-            }));
-        }
-    })
+
+    if (parseInt(e[e.selectedIndex].value) === 0) {
+        $("#groupsForm").hide();
+        addNewVolunteerDialog(false);
+        return;
+    }
+
+    spinnerDialog(true, "Loading Groups...", function () {
+        loadGroups(e[e.selectedIndex].value, function (data) {
+            if (data.length > 0) {
+                $("#groupsForm").show();
+
+                $("#group_id").html($('<option>', {value: 0, text: '-= Select A Group =-'}));
+                for (var i = 0; i < data.length; i++) {
+                    $("#group_id").append($('<option>', {
+                        value: data[i].id,
+                        text: JSON.parse(data[i].data)[0]['group_name']
+                    }));
+                }
+            } else {
+                $("#group_id").prop("disabled", true);
+            }
+
+            spinnerDialog(false);
+        })
+    });
 }
 
 function loadGroups(service_body_id, callback) {
@@ -1103,9 +1121,9 @@ function deleteVoicemail(callsid) {
 
 function groupsPage() {
     $("#group_id").on("change", function() {
-        addNewVolunteerDialog($(this).val() >= 0);
+        addNewVolunteerDialog($(this).val() > 0);
         clearVolunteerCards();
-        if ($(this).val() >= 0) {
+        if ($(this).val() > 0) {
             spinnerDialog(true, "Retrieving Group Volunteers...", function () {
                 loadGroupVolunteers($("#group_id").val(), $("#service_body_id").val(), function () {
                     $("#editGroupButton").show();
