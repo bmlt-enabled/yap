@@ -2,6 +2,7 @@
 
 ### 4.0.1 (UNRELEASED)
 * Fix logouts now completing for BMLT based users. [#563]  
+* Fix for extra prompt bypass when disabling postal code gathering. [#568]
 * Translations for gender prompts were not overridable.
 * Autocomplete for username / password forms.
 

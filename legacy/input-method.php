@@ -14,7 +14,7 @@ if ($searchType == SearchType::MEETINGS || $searchType == SearchType::JFT) {
 if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETINGS)
     && json_decode(setting('disable_postal_code_gather'))) { ?>
     <Response>
-        <Redirect method="GET">input-method-result.php?SearchType=2&amp;Digits=1</Redirect>
+        <Redirect method="GET">input-method-result.php?SearchType=<?php echo $searchType ?>&amp;Digits=1</Redirect>
     </Response>
     <?php
     exit();
