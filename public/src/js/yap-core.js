@@ -1212,7 +1212,7 @@ function confirmGroup() {
                     spinnerDialog(false);
                 } else {
                     var new_group_id = xhr.responseJSON['id'];
-                    if (new_group_id === $("#group_id").val()) {
+                    if (new_group_id === parseInt($("#group_id").val())) {
                         $("#group_id option:selected").text(dataObj["group_name"]);
                         spinnerDialog(false);
                     } else {

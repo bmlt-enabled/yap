@@ -26,7 +26,7 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
         <button class="btn btn-sm btn-warning volunteer-manage-buttons" id="editGroupButton" onclick="return editGroup();"
                 style="display:none;"><?php echo word('edit') ?>
         </button>
-        <button class="btn btm-sm btn-warning volunteer-manage-buttons" id="deleteGroupButton" onclick="deleteGroup();"
+        <button class="btn btm-sm btn-danger volunteer-manage-buttons" id="deleteGroupButton" onclick="return deleteGroup();"
                 style="display:none;"><?php echo word('delete') ?>
         </button>
     </form>
