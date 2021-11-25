@@ -22,8 +22,8 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
     <form id="groupsForm" style="display: none">
         <label for="group_id"><?php echo word('groups')?></label>
         <select class="form-control form-control-sm dropdown_next_to_another_field" id="group_id"></select>
-        <button class="btn btn-sm btn-primary volunteer-manage-buttons" id="addGroupButton" onclick="addGroup();"><?php echo word('create') ?></button>
-        <button class="btn btn-sm btn-warning volunteer-manage-buttons" id="editGroupButton" onclick="editGroup();"
+        <button class="btn btn-sm btn-primary volunteer-manage-buttons" id="addGroupButton" onclick="return addGroup();"><?php echo word('create') ?></button>
+        <button class="btn btn-sm btn-warning volunteer-manage-buttons" id="editGroupButton" onclick="return editGroup();"
                 style="display:none;"><?php echo word('edit') ?>
         </button>
         <button class="btn btm-sm btn-warning volunteer-manage-buttons" id="deleteGroupButton" onclick="deleteGroup();"

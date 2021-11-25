@@ -599,9 +599,8 @@ function onGroupServiceBodyChange(e) {
 
     spinnerDialog(true, "Loading Groups...", function () {
         loadGroups(e[e.selectedIndex].value, function (data) {
+            $("#groupsForm").show()
             if (data.length > 0) {
-                $("#groupsForm").show();
-
                 $("#group_id").html($('<option>', {value: 0, text: '-= Select A Group =-'}));
                 for (var i = 0; i < data.length; i++) {
                     $("#group_id").append($('<option>', {
@@ -609,6 +608,8 @@ function onGroupServiceBodyChange(e) {
                         text: JSON.parse(data[i].data)[0]['group_name']
                     }));
                 }
+
+                $("#group_id").prop("disabled", false);
             } else {
                 $("#group_id").prop("disabled", true);
             }
@@ -1121,9 +1122,10 @@ function deleteVoicemail(callsid) {
 
 function groupsPage() {
     $("#group_id").on("change", function() {
-        addNewVolunteerDialog($(this).val() > 0);
+        console.log("groupsPage");
+        addNewVolunteerDialog(parseInt($(this).val()) > 0);
         clearVolunteerCards();
-        if ($(this).val() > 0) {
+        if (parseInt($(this).val()) > 0) {
             spinnerDialog(true, "Retrieving Group Volunteers...", function () {
                 loadGroupVolunteers($("#group_id").val(), $("#service_body_id").val(), function () {
                     $("#editGroupButton").show();
@@ -1154,13 +1156,17 @@ function addGroup() {
     $("#group_dialog_message").html("");
     $("#groupEditorHeader").html("Add Group");
     $("#group_name").val("");
+    $("#group_name").prop("disabled", false)
     $("#group_shared_service_bodies").val("");
     $("#addGroupDialog").modal('show');
+
+    return false;
 }
 
 function editGroup() {
     $("#group_dialog_message").html("");
     $("#groupEditorHeader").html("Edit Group");
+    $("#group_name").prop("disabled", true)
 
     $("#group_name").val($("#group_id option:selected").text());
     for (var group of groups) {
@@ -1173,6 +1179,8 @@ function editGroup() {
     }
 
     $("#addGroupDialog").modal('show');
+
+    return false;
 }
 
 function confirmGroup() {
@@ -1201,13 +1209,17 @@ function confirmGroup() {
                     alert.addClass("alert-danger");
                     alert.html("Could not save.");
                     $("#addGroupButton").show();
+                    spinnerDialog(false);
                 } else {
                     var new_group_id = xhr.responseJSON['id'];
                     if (new_group_id === $("#group_id").val()) {
                         $("#group_id option:selected").text(dataObj["group_name"]);
+                        spinnerDialog(false);
                     } else {
                         $("#group_id").append(new Option($("#group_name").val(), new_group_id, true, true));
-                        $("#group_id").trigger('change');
+                        spinnerDialog(false, "", function() {
+                            $("#group_id").trigger('change');
+                        });
                     }
                     alert.addClass("alert-success");
                     alert.html("Saved.");
@@ -1215,7 +1227,6 @@ function confirmGroup() {
 
                 alert.show();
                 alert.fadeOut(3000);
-                spinnerDialog(false);
             }
         );
     });
