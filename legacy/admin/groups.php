@@ -7,7 +7,7 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
     </div>
     <form id="serviceBodyForm" method="POST" action="groups.php">
         <label for="service_body_id"><?php echo word('service_bodies')?></label>
-        <select class="form-control form-control-sm" id="service_body_id" name="service_body_id" onchange="onGroupServiceBodyChange(this)">
+        <select class="form-control form-control-sm" id="service_body_id" name="service_body_id" onchange="onGroupServiceBodyChange()">
             <option value="0">-= Select A Service Body =-</option>
             <?php
             $serviceBodies = getServiceBodiesForUser();

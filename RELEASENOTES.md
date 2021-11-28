@@ -1,6 +1,6 @@
 # Release Notes
 
-### 4.0.1 (UNRELEASED)
+### 4.0.1 (November 28, 2021)
 * Fix logouts there were not completing for BMLT based users. [#563]  
 * Fix for extra prompt bypass when disabling postal code gathering. [#568]
 * Group management page optimizations and fixes.

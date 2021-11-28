@@ -585,20 +585,20 @@ function loadGroupVolunteers(parent_id, service_body_id, callback) {
     });
 }
 
-function onGroupServiceBodyChange(e) {
+function onGroupServiceBodyChange(callback) {
     if (groups !== undefined) {
         groups = undefined
         $("#group_id").html("");
     }
 
-    if (parseInt(e[e.selectedIndex].value) === 0) {
+    if (parseInt(document.getElementById("service_body_id").value) === 0) {
         $("#groupsForm").hide();
         addNewVolunteerDialog(false);
         return;
     }
 
     spinnerDialog(true, "Loading Groups...", function () {
-        loadGroups(e[e.selectedIndex].value, function (data) {
+        loadGroups(document.getElementById("service_body_id").value, function (data) {
             $("#groupsForm").show()
             if (data.length > 0) {
                 $("#group_id").html($('<option>', {value: 0, text: '-= Select A Group =-'}));
@@ -614,7 +614,7 @@ function onGroupServiceBodyChange(e) {
                 $("#group_id").prop("disabled", true);
             }
 
-            spinnerDialog(false);
+            spinnerDialog(false, null, callback);
         })
     });
 }
@@ -1122,7 +1122,6 @@ function deleteVoicemail(callsid) {
 
 function groupsPage() {
     $("#group_id").on("change", function() {
-        console.log("groupsPage");
         addNewVolunteerDialog(parseInt($(this).val()) > 0);
         clearVolunteerCards();
         if (parseInt($(this).val()) > 0) {
@@ -1156,7 +1155,6 @@ function addGroup() {
     $("#group_dialog_message").html("");
     $("#groupEditorHeader").html("Add Group");
     $("#group_name").val("");
-    $("#group_name").prop("disabled", false)
     $("#group_shared_service_bodies").val("");
     $("#addGroupDialog").modal('show');
 
@@ -1166,13 +1164,12 @@ function addGroup() {
 function editGroup() {
     $("#group_dialog_message").html("");
     $("#groupEditorHeader").html("Edit Group");
-    $("#group_name").prop("disabled", true)
-
     $("#group_name").val($("#group_id option:selected").text());
     for (var group of groups) {
         if (group['id'] === $("#group_id").val()) {
-            if (group.hasOwnProperty("shares")) {
-                $("#group_shared_service_bodies").val(JSON.parse(group['shares']));
+            var data = JSON.parse(group.data)[0];
+            if (data.hasOwnProperty("group_shared_service_bodies")) {
+                $("#group_shared_service_bodies").val(data['group_shared_service_bodies']);
                 break;
             }
         }
@@ -1202,7 +1199,7 @@ function confirmGroup() {
             [dataObj],
             '_YAP_GROUPS_V2_',
             0,
-            $("#group_id").val(),
+            $("#groupEditorHeader").text().indexOf("Add") !== 0 ? $("#group_id").val() : 0,
             function(xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
@@ -1211,22 +1208,20 @@ function confirmGroup() {
                     $("#addGroupButton").show();
                     spinnerDialog(false);
                 } else {
-                    var new_group_id = xhr.responseJSON['id'];
-                    if (new_group_id === parseInt($("#group_id").val())) {
-                        $("#group_id option:selected").text(dataObj["group_name"]);
-                        spinnerDialog(false);
-                    } else {
-                        $("#group_id").append(new Option($("#group_name").val(), new_group_id, true, true));
-                        spinnerDialog(false, "", function() {
+                    spinnerDialog(false, null, function() {
+                        onGroupServiceBodyChange(function() {
+                            var group_id = xhr.responseJSON["id"];
+                            $("#group_id option").removeAttr("selected");
+                            $("#group_id option[value='" + group_id + "']").attr("selected", "selected");
                             $("#group_id").trigger('change');
-                        });
-                    }
-                    alert.addClass("alert-success");
-                    alert.html("Saved.");
-                }
 
-                alert.show();
-                alert.fadeOut(3000);
+                            alert.addClass("alert-success");
+                            alert.html("Saved.");
+                            alert.show();
+                            alert.fadeOut(3000);
+                        })
+                    });
+                }
             }
         );
     });
