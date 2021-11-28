@@ -598,7 +598,7 @@ function onGroupServiceBodyChange(callback) {
     }
 
     spinnerDialog(true, "Loading Groups...", function () {
-        loadGroups(document.getElementById("service_body_id").value, function (data) {
+        loadGroups(document.getElementById("service_body_id").value + "&manage=1", function (data) {
             $("#groupsForm").show()
             if (data.length > 0) {
                 $("#group_id").html($('<option>', {value: 0, text: '-= Select A Group =-'}));

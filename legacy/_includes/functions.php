@@ -1340,13 +1340,13 @@ function admin_GetUserName()
     return $_SESSION['auth_user_name_string'];
 }
 
-function getGroupsForServiceBody($service_body_id)
+function getGroupsForServiceBody($service_body_id, $manage = false)
 {
     $all_groups = getAllDbData(DataType::YAP_GROUPS_V2);
     $final_groups = array();
     foreach ($all_groups as $all_group) {
         if ($all_group['service_body_id'] === $service_body_id
-            || (isset(json_decode($all_group['data'])[0]->group_shared_service_bodies) && in_array($service_body_id, json_decode($all_group['data'])[0]->group_shared_service_bodies))) {
+            || (!$manage && isset(json_decode($all_group['data'])[0]->group_shared_service_bodies) && in_array($service_body_id, json_decode($all_group['data'])[0]->group_shared_service_bodies))) {
             array_push($final_groups, $all_group);
         }
     }
