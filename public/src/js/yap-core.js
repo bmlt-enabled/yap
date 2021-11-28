@@ -585,12 +585,38 @@ function loadGroupVolunteers(parent_id, service_body_id, callback) {
     });
 }
 
-function onGroupServiceBodyChange(e) {
-    if (parseInt(e.value) !== 0) {
-        document.getElementById("loadGroupsButton").removeAttribute('disabled')
-    } else {
-        document.getElementById("loadGroupsButton").setAttribute('disabled', '')
+function onGroupServiceBodyChange(callback) {
+    if (groups !== undefined) {
+        groups = undefined
+        $("#group_id").html("");
     }
+
+    if (parseInt(document.getElementById("service_body_id").value) === 0) {
+        $("#groupsForm").hide();
+        addNewVolunteerDialog(false);
+        return;
+    }
+
+    spinnerDialog(true, "Loading Groups...", function () {
+        loadGroups(document.getElementById("service_body_id").value + "&manage=1", function (data) {
+            $("#groupsForm").show()
+            if (data.length > 0) {
+                $("#group_id").html($('<option>', {value: 0, text: '-= Select A Group =-'}));
+                for (var i = 0; i < data.length; i++) {
+                    $("#group_id").append($('<option>', {
+                        value: data[i].id,
+                        text: JSON.parse(data[i].data)[0]['group_name']
+                    }));
+                }
+
+                $("#group_id").prop("disabled", false);
+            } else {
+                $("#group_id").prop("disabled", true);
+            }
+
+            spinnerDialog(false, null, callback);
+        })
+    });
 }
 
 function loadGroups(service_body_id, callback) {
@@ -1096,9 +1122,9 @@ function deleteVoicemail(callsid) {
 
 function groupsPage() {
     $("#group_id").on("change", function() {
-        addNewVolunteerDialog($(this).val() >= 0);
+        addNewVolunteerDialog(parseInt($(this).val()) > 0);
         clearVolunteerCards();
-        if ($(this).val() >= 0) {
+        if (parseInt($(this).val()) > 0) {
             spinnerDialog(true, "Retrieving Group Volunteers...", function () {
                 loadGroupVolunteers($("#group_id").val(), $("#service_body_id").val(), function () {
                     $("#editGroupButton").show();
@@ -1131,26 +1157,33 @@ function addGroup() {
     $("#group_name").val("");
     $("#group_shared_service_bodies").val("");
     $("#addGroupDialog").modal('show');
+
+    return false;
 }
 
 function editGroup() {
     $("#group_dialog_message").html("");
     $("#groupEditorHeader").html("Edit Group");
-
     $("#group_name").val($("#group_id option:selected").text());
-    for (group of groups) {
-        if (group['id'] == $("#group_id").val()) {
-            $("#group_shared_service_bodies").val(JSON.parse(group['shares']));
-            break;
+    for (var group of groups) {
+        if (group['id'] === $("#group_id").val()) {
+            var data = JSON.parse(group.data)[0];
+            if (data.hasOwnProperty("group_shared_service_bodies")) {
+                $("#group_shared_service_bodies").val(data['group_shared_service_bodies']);
+                break;
+            }
         }
     }
 
     $("#addGroupDialog").modal('show');
+
+    return false;
 }
 
 function confirmGroup() {
     if ($("#group_name").val() == "") {
         $("#group_dialog_message").html("A name is required.");
+        return false;
     }
 
     $("#addGroupDialog").modal('hide');
@@ -1166,28 +1199,29 @@ function confirmGroup() {
             [dataObj],
             '_YAP_GROUPS_V2_',
             0,
-            $("#group_id").val(),
+            $("#groupEditorHeader").text().indexOf("Add") !== 0 ? $("#group_id").val() : 0,
             function(xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
                     alert.addClass("alert-danger");
                     alert.html("Could not save.");
                     $("#addGroupButton").show();
+                    spinnerDialog(false);
                 } else {
-                    var new_group_id = xhr.responseJSON['id'];
-                    if (new_group_id === $("#group_id").val()) {
-                        $("#group_id option:selected").text(dataObj["group_name"]);
-                    } else {
-                        $("#group_id").append(new Option($("#group_name").val(), new_group_id, true, true));
-                        $("#group_id").trigger('change');
-                    }
-                    alert.addClass("alert-success");
-                    alert.html("Saved.");
-                }
+                    spinnerDialog(false, null, function() {
+                        onGroupServiceBodyChange(function() {
+                            var group_id = xhr.responseJSON["id"];
+                            $("#group_id option").removeAttr("selected");
+                            $("#group_id option[value='" + group_id + "']").attr("selected", "selected");
+                            $("#group_id").trigger('change');
 
-                alert.show();
-                alert.fadeOut(3000);
-                spinnerDialog(false);
+                            alert.addClass("alert-success");
+                            alert.html("Saved.");
+                            alert.show();
+                            alert.fadeOut(3000);
+                        })
+                    });
+                }
             }
         );
     });
