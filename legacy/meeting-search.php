@@ -46,7 +46,8 @@ function mobileCheck()
 
 function sendSms($message)
 {
-    if (isset($_REQUEST['From']) && isset($_REQUEST['To']) && mobileCheck()) {
+    $anonymous_number = "266696687";
+    if (isset($_REQUEST['From']) && isset($_REQUEST['To']) && str_replace("+", "", $_REQUEST["From"]) != $anonymous_number && mobileCheck()) {
         $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
     }
 }

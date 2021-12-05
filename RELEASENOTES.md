@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.0.2 (UNRELEASED)
+* Fix for anonymous numbers (+266696687) that are attemping to receive SMS, they will not be able to per Twilio's API rules. [#571]  
+
 ### 4.0.1 (November 28, 2021)
 * Fix logouts there were not completing for BMLT based users. [#563]  
 * Fix for extra prompt bypass when disabling postal code gathering. [#568]
