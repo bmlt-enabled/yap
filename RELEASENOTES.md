@@ -2,6 +2,7 @@
 
 ### 4.0.2 (UNRELEASED)
 * Fix for anonymous numbers (+266696687) that are attemping to receive SMS, they will not be able to per Twilio's API rules. [#571]  
+* Added note to explain the limitation in using greetings with Call Handling vs Service Body Configuration and Precedence. 
 
 ### 4.0.1 (November 28, 2021)
 * Fix logouts there were not completing for BMLT based users. [#563]  
