@@ -122,12 +122,14 @@ sort_on_field($service_bodies, 'name');
 
                                                 <div class="service_bodies_field_container">
                                                     <label for="override_en_US_greeting">Recorded Greeting (URL to any MP3): (<a href="javascript:openUrl(this, 'override_en_US_greeting');">Play</a>)</label>
+                                                    <div class="help-text-call-handling">This setting is not usable with <a href="https://bmlt.app/yap/#configurationprecedence" target="_blank">Configuration Precedence</a>, like the options under "Configure" button.  If you want to use configuration overrides, use the setting "en_US_greeting" (or the equivalent language code you want to set).</div>
                                                     <input class="form-control form-control-sm" type="text" name="override_en_US_greeting" id="override_en_US_greeting"
                                                            data-volunteer_routing="helpline_field,volunteers,volunteers_and_sms">
                                                 </div>
 
                                                 <div class="service_bodies_field_container">
                                                     <label for="override_en_US_voicemail_greeting">Voice Mail Greeting (URL to any MP3): (<a href="javascript:openUrl(this, 'override_en_US_voicemail_greeting');">Play</a>)</label>
+                                                    <div class="help-text-call-handling">This setting is not usable with <a href="https://bmlt.app/yap/#configurationprecedence" target="_blank">Configuration Precedence</a>, like the options under "Configure" button.  If you want to use configuration overrides, use the setting "en_US_voicemail_greeting" (or the equivalent language code you want to set).</div>
                                                     <input class="form-control form-control-sm" type="text" name="override_en_US_voicemail_greeting" id="override_en_US_voicemail_greeting"
                                                            data-volunteer_routing="volunteers,volunteers_and_sms" data-call_strategy="1,3,4">
                                                 </div>
