@@ -1,6 +1,9 @@
 <?php require_once 'nav.php';?>
 <link rel="stylesheet" href="<?php echo url("/public/dist/css/yap-reports.min.css")?>">
 <div class="container">
+    <div class="alert alert-success" role="alert" style="display:none;" id="voicemail-deleted-alert">
+        Saved.
+    </div>
     <h3 class="voicemail-title"><?php
         $service_body = getServiceBody($_REQUEST['service_body_id']);
         echo sprintf("%s for %s", word('voicemail'), $service_body->name) ;?>
