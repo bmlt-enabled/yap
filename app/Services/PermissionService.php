@@ -20,10 +20,10 @@ class PermissionService
         return $this->serviceBodyRights;
     }
 
-    public function callsid($callsid)
+    public function callsid($callsid, $event_id)
     {
-        $recordEvent = RecordsEvents::where('callsid', $callsid)->first();
+        $recordEvent = RecordsEvents::where('callsid', $callsid)->where('event_id', $event_id)->first();
         $serviceBodyId = $recordEvent->service_body_id;
-        return in_array($serviceBodyId, $this->serviceBodyRights);
+        return boolval($_SESSION['auth_is_admin']) || in_array($serviceBodyId, $this->serviceBodyRights);
     }
 }

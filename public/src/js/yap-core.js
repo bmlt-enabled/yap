@@ -1109,9 +1109,17 @@ function deleteVoicemail(callsid) {
                 "status": 1,
                 "event_id": 4 // VOICEMAIL
             },
-            complete: function() {
-                spinnerDialog(false);
-                location.reload();
+            complete: function(res) {
+                if (res['status'] === 403) {
+                    spinnerDialog(false);
+                    var alert = $("#voicemail-deleted-alert");
+                    alert.addClass("alert-danger");
+                    alert.html(res['responseJSON']['error']);
+                    alert.show();
+                    alert.fadeOut(7000);
+                } else {
+                    location.reload();
+                }
             },
             timeout: 60000
         });

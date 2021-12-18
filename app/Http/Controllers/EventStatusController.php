@@ -22,7 +22,7 @@ class EventStatusController extends Controller
 
     public function set(Request $request)
     {
-        if ($this->permissionService->callsid($request->callsid)) {
+        if ($this->permissionService->callsid($request->callsid, $request->event_id)) {
             $eventStatus = EventStatus::create($request->all());
             return response()->json($eventStatus, 201);
         } else {
