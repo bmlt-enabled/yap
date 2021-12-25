@@ -24,6 +24,6 @@ class PermissionService
     {
         $recordEvent = RecordsEvents::where('callsid', $callsid)->where('event_id', $event_id)->first();
         $serviceBodyId = $recordEvent->service_body_id;
-        return boolval($_SESSION['auth_is_admin']) || in_array($serviceBodyId, $this->serviceBodyRights);
+        return in_array($serviceBodyId, $this->serviceBodyRights);
     }
 }
