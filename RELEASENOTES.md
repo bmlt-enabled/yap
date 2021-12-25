@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.0.3 (UNRELEASED)
+* Fix for additional scenarios where voicemail deletion would not complete sucessfully. [#576]
+
 ### 4.0.2 (December 18, 2021)
 * Fix for allowing deletions of voicemail for native admin users. [#576]   
 * Fix for anonymous numbers (+266696687) that are attemping to receive SMS, they will not be able to per Twilio's API rules. [#571]  

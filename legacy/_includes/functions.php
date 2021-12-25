@@ -18,7 +18,7 @@ require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-$GLOBALS['version']  = "4.0.2";
+$GLOBALS['version']  = "4.0.3";
 $GLOBALS['settings_allowlist'] = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -119,16 +119,6 @@ $GLOBALS['numbers'] = ["zero", "one", "two", "three", "four", "five", "six", "se
 
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 // phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses
-class SearchType
-{
-    const NONE = -1;
-    const VOLUNTEERS = 1;
-    const MEETINGS = 2;
-    const JFT = 3;
-    const CUSTOM_EXTENSIONS = 998;
-    const VOICEMAIL_PLAYBACK = 999;
-    const DIALBACK = 1000;
-}
 
 class CallConfig
 {
@@ -221,13 +211,6 @@ class EventId
                 return "Province Lookup List";
         }
     }
-}
-
-class LocationSearchMethod
-{
-    const NONE = -1;
-    const VOICE = 4;
-    const DTMF = 5;
 }
 
 class VolunteerInfo
@@ -366,11 +349,6 @@ class VolunteerType
 {
     const PHONE = "PHONE";
     const SMS = "SMS";
-}
-
-class MeetingResultSort
-{
-    const TODAY = 0;
 }
 
 class VolunteerShadowOption

@@ -1,4 +1,28 @@
 <?php
+
+class SearchType
+{
+    const NONE = -1;
+    const VOLUNTEERS = 1;
+    const MEETINGS = 2;
+    const JFT = 3;
+    const CUSTOM_EXTENSIONS = 998;
+    const VOICEMAIL_PLAYBACK = 999;
+    const DIALBACK = 1000;
+}
+
+class LocationSearchMethod
+{
+    const NONE = -1;
+    const VOICE = 4;
+    const DTMF = 5;
+}
+
+class MeetingResultSort
+{
+    const TODAY = 0;
+}
+
 if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], "/v1/")) {
     require_once(!getenv("ENVIRONMENT") ? base_path() . '/config.php' : base_path() . '/config.' . getenv("ENVIRONMENT") . '.php');
     putenv('DB_HOSTNAME=' . $mysql_hostname);
