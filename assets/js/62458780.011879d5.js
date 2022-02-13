@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkyapdocs=self.webpackChunkyapdocs||[]).push([[2789],{6970:function(a){a.exports=JSON.parse('{"allTagsPath":"/blog/tags","slug":"yap","name":"yap","count":1,"permalink":"/blog/tags/yap"}')}}]);

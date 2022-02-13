@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkyapdocs=self.webpackChunkyapdocs||[]).push([[2535],{5641:function(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Excluding a custom format from a Yap query","permalink":"/blog/excluding-format-post"}]}')}}]);
