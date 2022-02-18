@@ -1573,7 +1573,7 @@ function getVolunteerInfo($volunteers)
                 $volunteerInfo->shadow     = isset($volunteer->volunteer_shadow) ? $volunteer->volunteer_shadow : VolunteerShadowOption::UNSPECIFIED;
                 $volunteerInfo->responder  = isset($volunteer->volunteer_responder) ? $volunteer->volunteer_responder : VolunteerResponderOption::UNSPECIFIED;
                 if (strlen(setting('language_selections')) > 0) {
-                    $volunteerInfo->language = property_exists($volunteer,'volunteer_language') ? $volunteer->volunteer_language : array(explode(',', setting('language_selections'))[0]);
+                    $volunteerInfo->language = property_exists($volunteer, 'volunteer_language') ? $volunteer->volunteer_language : array(explode(',', setting('language_selections'))[0]);
                 } else {
                     $volunteerInfo->language = array(setting("language"));
                 }
