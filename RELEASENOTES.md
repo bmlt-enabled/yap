@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.0.4 (February 18, 2021)
+* Fix for language fallback for volunteers.  It will now correctly use the first language in `language_selections` if none are selected for each volunteer.  Otherwise it will use `language`.
+
 ### 4.0.3 (December 25, 2021)
 * Fix for additional scenarios where voicemail deletion would not complete sucessfully. [#576]
 
