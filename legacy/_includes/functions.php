@@ -18,7 +18,7 @@ require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-$GLOBALS['version']  = "4.0.3";
+$GLOBALS['version']  = "4.0.4";
 $GLOBALS['settings_allowlist'] = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -1573,7 +1573,7 @@ function getVolunteerInfo($volunteers)
                 $volunteerInfo->shadow     = isset($volunteer->volunteer_shadow) ? $volunteer->volunteer_shadow : VolunteerShadowOption::UNSPECIFIED;
                 $volunteerInfo->responder  = isset($volunteer->volunteer_responder) ? $volunteer->volunteer_responder : VolunteerResponderOption::UNSPECIFIED;
                 if (strlen(setting('language_selections')) > 0) {
-                    $volunteerInfo->language = $volunteer->volunteer_language ?? explode(',', setting('language_selections')[0]);
+                    $volunteerInfo->language = property_exists($volunteer,'volunteer_language') ? $volunteer->volunteer_language : array(explode(',', setting('language_selections'))[0]);
                 } else {
                     $volunteerInfo->language = array(setting("language"));
                 }
