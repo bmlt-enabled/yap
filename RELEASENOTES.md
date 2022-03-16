@@ -1,6 +1,9 @@
 # Release Notes
 
-### 4.0.4 (February 18, 2021)
+### 4.0.5 (March 15, 2022)
+* Added metrics points for when there is no data. [#530]
+
+### 4.0.4 (February 18, 2022)
 * Fix for language fallback for volunteers.  It will now correctly use the first language in `language_selections` if none are selected for each volunteer.  Otherwise it will use `language`.
 
 ### 4.0.3 (December 25, 2021)
