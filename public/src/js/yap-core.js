@@ -148,7 +148,7 @@ function initReports() {
 }
 
 function getMetricsData() {
-    $("#metrics").slideToggle(function() {
+    $("#metrics").slideUp(function() {
         $.getJSON("metric_api.php?service_body_id=" + $("#service_body_id").val() + "&recurse=" + recurseReports(), function (data) {
             var actions = ['Volunteer', 'Meetings', 'Just For Today'];
             var plots = {"1": [], "2": [], "3": []};
@@ -181,7 +181,7 @@ function getMetricsData() {
                 }
             }
 
-            $("#metrics").slideToggle(function() {
+            $("#metrics").slideDown(function() {
                 Plotly.newPlot("metrics", datasets, {
                     title: 'Usage Summary',
                     xaxis: {
