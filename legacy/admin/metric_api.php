@@ -3,7 +3,8 @@ require_once __DIR__ . '/../_includes/functions.php';
 header("content-type: application/json");
 $GLOBALS["metrics"] = getMetric(getReportsServiceBodies(), intval($_REQUEST['service_body_id']) == 0);
 
-function findMetric($date, $type) {
+function findMetric($date, $type)
+{
     foreach ($GLOBALS['metrics'] as $metric) {
         if ($metric['timestamp'] == $date && ($metric['data'] == '{"searchType":"'.$type.'"}'
                 || $metric['data'] == '{"searchType":'.$type.'}')) {
