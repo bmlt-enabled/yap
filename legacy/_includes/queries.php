@@ -96,7 +96,7 @@ LEFT OUTER JOIN records r ON r.callsid = rcp.parent_callsid
 WHERE r.id IS NOT NULL %s
 GROUP BY rcp.parent_callsid
 ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC %s",
-        " AND `service_body_id` in (" . implode(",", $service_body_ids) . ")",
+        " AND re.callsid IN (SELECT DISTINCT callsid FROM records_events WHERE `service_body_id` in (" . implode(",", $service_body_ids) . "))",
         " LIMIT " . $size . " OFFSET " .  ($page - 1) * $size
     );
     $db->exec("SET @@session.sql_mode = (SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
