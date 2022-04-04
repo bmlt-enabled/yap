@@ -54,6 +54,7 @@ if (!isset($_REQUEST['ForceNumber'])) {
     $phone_number = isset($exploded_result[0]) ? $exploded_result[0] : "";
     $extension = isset($exploded_result[1]) ? $exploded_result[1] : "w";
     $service_body_id = isset($service_body_obj) ? $service_body_obj->id : 0;
+    $GLOBALS['service_body_id'] = $service_body_id;
 
 if (!isset($_REQUEST['ForceNumber']) && (isset($_SESSION["override_service_body_id"]) || isServiceBodyHelplingCallInternallyRoutable($coordinates->latitude, $coordinates->longitude))) {
     $serviceBodyCallHandling = getServiceBodyCallHandling($service_body_id);

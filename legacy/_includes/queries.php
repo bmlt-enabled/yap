@@ -96,7 +96,7 @@ LEFT OUTER JOIN records r ON r.callsid = rcp.parent_callsid
 WHERE r.id IS NOT NULL %s
 GROUP BY rcp.parent_callsid
 ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC %s",
-        " AND `service_body_id` in (" . implode(",", $service_body_ids) . ")",
+        " AND re.callsid IN (SELECT DISTINCT callsid FROM records_events WHERE `service_body_id` in (" . implode(",", $service_body_ids) . "))",
         " LIMIT " . $size . " OFFSET " .  ($page - 1) * $size
     );
     $db->exec("SET @@session.sql_mode = (SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
@@ -153,9 +153,6 @@ function insertCallEventRecord($eventid, $meta = null)
     } else {
         return;
     }
-    if (in_array($eventid, [SearchType::VOLUNTEERS, SearchType::MEETINGS, SearchType::JFT])) {
-        writeMetric(["searchType" => $eventid], setting('service_body_id'));
-    }
 
     $meta_as_json = isset($meta) ? json_encode($meta) : null;
 
@@ -174,31 +171,20 @@ function insertCallEventRecord($eventid, $meta = null)
     $db->close();
 }
 
-function writeMetric($data, $service_body_id = 0)
-{
-    $db = new Database();
-    if ($service_body_id > 0) {
-        $db->query("INSERT INTO `metrics` (`data`, `service_body_id`) VALUES (:data, :service_body_id)");
-        $db->bind(':service_body_id', $service_body_id);
-    } else {
-        $db->query("INSERT INTO `metrics` (`data`) VALUES (:data)");
-    }
-    $db->bind(':data', json_encode($data));
-    $db->execute();
-    $db->close();
-}
-
 function getMetric($service_body_ids, $general)
 {
     $db = new Database();
-    $query = "SELECT DATE_FORMAT(timestamp, \"%Y-%m-%d\") as `timestamp`,
-                                        COUNT(DATE_FORMAT(`timestamp`, \"%Y-%m-%d\")) as counts,
-                                        `data`
-                                        FROM `metrics`" . sprintf(
-        "WHERE service_body_id in (%s) %s %s",
+    $query = "select DATE_FORMAT(a.event_time, \"%Y-%m-%d\") as timestamp,
+       COUNT(DATE_FORMAT(a.event_time, \"%Y-%m-%d\")) as counts,
+       CONCAT('{\"searchType\":\"',a.event_id,'\"}') as data, b.service_body_id from records_events a
+INNER JOIN (select callsid, service_body_id from records_events
+            where service_body_id is not NULL
+            group by callsid, service_body_id) b on a.callsid = b.callsid " .
+    sprintf(
+        "WHERE a.event_id in (1,2,3) and b.service_body_id in (%s) %s %s",
         implode(",", $service_body_ids),
-        $general ? "OR service_body_id is NULL" : "",
-        " GROUP BY DATE_FORMAT(`timestamp`, \"%Y-%m-%d\"), `data`"
+        $general ? "OR b.service_body_id is NULL" : "",
+        "GROUP BY DATE_FORMAT(a.event_time, \"%Y-%m-%d\"), a.event_id"
     );
     $db->query($query);
     $resultset = $db->resultset();
