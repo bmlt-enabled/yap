@@ -2,7 +2,7 @@
 
 ### 4.0.5 (UNRELEASED)
 * Added metrics points for when there is no data. [#530]
-* Fix to deal with metrics and reporting bugs for when service body tracking fails [#530] 
+* Fix to handle metrics and reporting bugs for when service body tracking fails [#530]
 * Fix for how metrics service body id lookup happens. [#530] 
 
 ### 4.0.4 (February 18, 2022)
