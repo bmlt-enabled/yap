@@ -15,7 +15,7 @@ class LegacyController extends Controller
             $path .= '/index.php';
         }
 
-        return $this->renderPath($path, str_starts_with($request->path(), 'admin') || str_ends_with($request->path(), 'clear-session.php') ? 'text/html' : 'text/xml');
+        return $this->renderPath($path, str_starts_with($request->path(), 'admin') || str_ends_with($request->path(), 'clear-session.php') ? 'text/html' : str_ends_with($request->path(), 'upgrade-advisor.php') ? 'application/json' : 'text/xml');
     }
 
     public function msr($latitude, $longitude)

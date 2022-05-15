@@ -476,7 +476,7 @@ class UpgradeAdvisor
     public static function getState($status = null, $message = null)
     {
         try {
-            $build = file_get_contents("../build.txt", false);
+            $build = file_get_contents("build.txt", false);
         } catch (Exception $e) {
             $build = $e->getMessage();
         }
