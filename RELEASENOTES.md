@@ -5,6 +5,7 @@
 * Fix to handle metrics and reporting bugs for when service body tracking fails [#530]
 * Fix for how metrics service body id lookup happens. [#530] 
 * Fix for upgrade advisor regression. [#589]
+* Fallback routing for when helpline field was never set and volunteer routing is disabled.
 
 ### 4.0.4 (February 18, 2022)
 * Fix for language fallback for volunteers.  It will now correctly use the first language in `language_selections` if none are selected for each volunteer.  Otherwise it will use `language`.
