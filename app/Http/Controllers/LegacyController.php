@@ -10,12 +10,21 @@ class LegacyController extends Controller
     {
         $path = base_path('/legacy/') . $request->path();
 
+
         // If the path does not end with PHP, assume we're requesting an index file
         if (substr($path, -3) != 'php') {
             $path .= '/index.php';
         }
 
-        return $this->renderPath($path, str_starts_with($request->path(), 'admin') || str_ends_with($request->path(), 'clear-session.php') ? 'text/html' : str_ends_with($request->path(), 'upgrade-advisor.php') ? 'application/json' : 'text/xml');
+        if (str_starts_with($request->path(), 'admin') || str_ends_with($request->path(), 'clear-session.php')) {
+            $content_type = 'text/html';
+        } elseif (str_ends_with($request->path(), 'upgrade-advisor.php')) {
+            $content_type = 'application/json';
+        } else {
+            $content_type = 'text/xml';
+        }
+
+        return $this->renderPath($path, $content_type);
     }
 
     public function msr($latitude, $longitude)
