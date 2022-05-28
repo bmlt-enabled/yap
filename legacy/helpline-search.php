@@ -40,7 +40,12 @@ if (!isset($_REQUEST['ForceNumber'])) {
         }
     }
     $location    = $service_body_obj->name;
-    $dial_string = explode(":", $service_body_obj->helpline)[0];
+    if (isset($service_body_obj->helpline)) {
+        $dial_string = explode(":", $service_body_obj->helpline)[0];
+    } else {
+        $dial_string = has_setting("fallback_number") ? setting("fallback_number") : "0000000000";
+    }
+
     $waiting_message = true;
     $captcha = false;
 } else {
