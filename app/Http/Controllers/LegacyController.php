@@ -10,7 +10,6 @@ class LegacyController extends Controller
     {
         $path = base_path('/legacy/') . $request->path();
 
-
         // If the path does not end with PHP, assume we're requesting an index file
         if (substr($path, -3) != 'php') {
             $path .= '/index.php';
