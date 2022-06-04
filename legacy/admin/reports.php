@@ -17,7 +17,13 @@
         </div>
         <div id="reports-servicebodies-recursive-container" class="custom-control custom-switch">
             <input type="checkbox" class="custom-control-input" id="recursive-reports-switch" />
-            <label class="custom-control-label" for="recursive-reports-switch">Select Recursively</label>
+            <label class="custom-control-label" for="recursive-reports-switch">Recurse</label>
+        </div>
+        <div id="reports-daterange-container">
+            <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                🗓&nbsp;
+                <span></span> ↓
+            </div>
         </div>
     </div>
     <script type="text/javascript">
@@ -48,29 +54,46 @@
             <div id="refresh-button-holder">
                 <button id="refresh-button" class="btn-sm btn-dark">Refresh</button>
             </div>
-            <div id="page-size-dropdown" class="btn-group">
-                <button type="button" class="btn btn-sm btn-dark dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Page Size
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item page-size-dropdown-item active" href="#">50</a>
-                    <a class="dropdown-item page-size-dropdown-item" href="#">100</a>
-                    <a class="dropdown-item page-size-dropdown-item" href="#">200</a>
-                    <a class="dropdown-item page-size-dropdown-item" href="#">500</a>
-                </div>
-            </div>
         </div>
         <div id="cdr-table"></div>
         <div id="events-table" style="display:none;"></div>
     </div>
 </div>
-<script src="<?php echo url("/public/dist/js/yap-reports.min.js")?>"></script>
+<script src="<?php echo url("/public/dist/js/yap-reports.js")?>"></script>
 <?php require_once 'footer.php';?>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <script type="text/javascript">
     var darkTheme = "<?php echo url("/public/dist/css/yap-tabulator-dark.min.css")?>";
     var lightTheme = "<?php echo url("/public/dist/css/yap-tabulator-dark.min.css")?>";
     var meetingsMarker = "<?php echo url("/public/dist/img/green_marker.png") ?>";
     var volunteersMarker = "<?php echo url("/public/dist/img/orange_marker.png") ?>";
+
+    var start = moment().subtract(29, 'days');
+    var end = moment();
+
+    function cb(start, end, label, init) {
+        console.log(init)
+        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+        if (!init) updateAllReports();
+    }
+
+    $('#reportrange').daterangepicker({
+        startDate: start,
+        endDate: end,
+        ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+            'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+    }, cb);
+
+    cb(start, end, "", true);
 
     $(function() {
         loadTabulatorTheme();

@@ -1,6 +1,7 @@
 # Release Notes
 
-### 4.0.5 (UNRELEASED)
+### 4.1.0 (UNRELEASED)
+* Added date picker for reports. [#574]
 * Added metrics points for when there is no data. [#530]
 * Fix to handle metrics and reporting bugs for when service body tracking fails [#530]
 * Fix for how metrics service body id lookup happens. [#530] 

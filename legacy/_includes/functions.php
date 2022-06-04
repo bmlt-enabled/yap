@@ -18,7 +18,7 @@ require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-$GLOBALS['version']  = "4.0.5";
+$GLOBALS['version']  = "4.1.0";
 $GLOBALS['settings_allowlist'] = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -1997,9 +1997,9 @@ function getReportsServiceBodies()
     }
 }
 
-function adjustedCallRecords($service_body_ids, $page = 1, $size = 10)
+function adjustedCallRecords($service_body_ids, $date_range_start, $date_range_end)
 {
-    $callRecords = getCallRecords($service_body_ids, $page, $size);
+    $callRecords = getCallRecords($service_body_ids, $date_range_start, $date_range_end);
 
     foreach ($callRecords as &$callRecord) {
         $callEvents = isset($callRecord['call_events']) ? unique_stdclass_array(json_decode($callRecord['call_events'])) : [];
@@ -2017,7 +2017,6 @@ function adjustedCallRecords($service_body_ids, $page = 1, $size = 10)
     }
 
     $response['data'] = $callRecords;
-    $response['last_page'] = getCallRecordsCount($service_body_ids, $size);
 
     return $response;
 }

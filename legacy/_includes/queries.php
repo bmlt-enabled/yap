@@ -30,11 +30,11 @@ function getFlag($flag)
     return isset($resultset[0]["flag_setting"]) ? $resultset[0]["flag_setting"] : -1;
 }
 
-function getMapMetrics($service_body_ids)
+function getMapMetrics($service_body_ids, $date_range_start, $date_range_end)
 {
     $db = new Database();
     $sql = sprintf(
-        "select event_id, meta from records_events where event_id in (1,14) and meta is not null %s",
+        "select event_id, meta from records_events where event_time >= '$date_range_start' AND event_time <= '$date_range_end' and event_id in (1,14) and meta is not null %s",
         "and service_body_id in (" . implode(", ", $service_body_ids) . ")"
     );
     $db->query($sql);
@@ -43,11 +43,11 @@ function getMapMetrics($service_body_ids)
     return $resultset;
 }
 
-function getMapMetricByType($service_body_ids, $eventId)
+function getMapMetricByType($service_body_ids, $eventId, $date_range_start, $date_range_end)
 {
     $db = new Database();
     $sql = sprintf(
-        "select event_id, meta from records_events where `event_id` = :eventId and meta is not null %s",
+        "select event_id, meta from records_events where event_time >= '$date_range_start' AND event_time <= '$date_range_end' and `event_id` = :eventId and meta is not null %s",
         "and service_body_id in (" . implode(", ", $service_body_ids) . ")"
     );
     $db->query($sql);
@@ -55,21 +55,6 @@ function getMapMetricByType($service_body_ids, $eventId)
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
-}
-
-function getCallRecordsCount($service_body_ids, $size)
-{
-    $db = new Database();
-    $sql = sprintf(
-        "select count(distinct r.callsid) as page_count from records r
-inner join records_events re on r.callsid = re.callsid
-left outer join conference_participants cp on r.callsid = cp.callsid or cp.callsid IS NULL %s",
-        "WHERE `service_body_id` in (" . implode(",", $service_body_ids) . ")"
-    );
-    $db->query($sql);
-    $resultset = $db->resultset();
-    $db->close();
-    return intval(ceil(intval($resultset[0]['page_count']) / $size));
 }
 
 function quickExec($sql)
@@ -81,10 +66,10 @@ function quickExec($sql)
 }
 
 // TODO: add show multiple service bodies options
-function getCallRecords($service_body_ids, $page, $size)
+function getCallRecords($service_body_ids, $date_range_start, $date_range_end)
 {
     $guid = uniqid();
-    quickExec("INSERT INTO `cache_records_conference_participants` SELECT DISTINCT r.callsid as parent_callsid,cp2.callsid,'".$guid."' as guid FROM records r LEFT OUTER JOIN conference_participants cp ON r.callsid = cp.callsid OR cp.callsid IS NULL LEFT OUTER JOIN conference_participants cp2 ON cp.conferencesid = cp2.conferencesid;");
+    quickExec("INSERT INTO `cache_records_conference_participants` SELECT DISTINCT r.callsid as parent_callsid,cp2.callsid,'".$guid."' as guid FROM records r LEFT OUTER JOIN conference_participants cp ON r.callsid = cp.callsid OR cp.callsid IS NULL LEFT OUTER JOIN conference_participants cp2 ON cp.conferencesid = cp2.conferencesid WHERE r.start_time >= '$date_range_start' AND r.start_time <= '$date_range_end';");
 
     $db = new Database();
     $sql = sprintf(
@@ -93,11 +78,10 @@ CONCAT('[', GROUP_CONCAT('{\"meta\":', IFNULL(re.meta, '{}'), ',\"event_id\":', 
 FROM records_events re
 LEFT OUTER JOIN cache_records_conference_participants rcp ON rcp.callsid = re.callsid
 LEFT OUTER JOIN records r ON r.callsid = rcp.parent_callsid
-WHERE r.id IS NOT NULL %s
+WHERE r.start_time >= '$date_range_start' AND r.start_time <= '$date_range_end' AND r.id IS NOT NULL %s
 GROUP BY rcp.parent_callsid
-ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC %s",
-        " AND re.callsid IN (SELECT DISTINCT callsid FROM records_events WHERE `service_body_id` in (" . implode(",", $service_body_ids) . "))",
-        " LIMIT " . $size . " OFFSET " .  ($page - 1) * $size
+ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC",
+        " AND re.callsid IN (SELECT DISTINCT callsid FROM records_events WHERE event_time >= '$date_range_start' AND event_time <= '$date_range_end' AND `service_body_id` in (" . implode(",", $service_body_ids) . "))"
     );
     $db->exec("SET @@session.sql_mode = (SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
     $db->exec("SET @@session.group_concat_max_len = 4294967295;");
@@ -171,14 +155,14 @@ function insertCallEventRecord($eventid, $meta = null)
     $db->close();
 }
 
-function getMetric($service_body_ids, $general)
+function getMetric($service_body_ids, $general, $date_range_start, $date_range_end)
 {
     $db = new Database();
     $query = "select DATE_FORMAT(a.event_time, \"%Y-%m-%d\") as timestamp,
        COUNT(DATE_FORMAT(a.event_time, \"%Y-%m-%d\")) as counts,
        CONCAT('{\"searchType\":\"',a.event_id,'\"}') as data, b.service_body_id from records_events a
 INNER JOIN (select callsid, service_body_id from records_events
-            where service_body_id is not NULL
+            where event_time >= '$date_range_start' AND event_time <= '$date_range_end' and service_body_id is not NULL
             group by callsid, service_body_id) b on a.callsid = b.callsid " .
     sprintf(
         "WHERE a.event_id in (1,2,3) and b.service_body_id in (%s) %s %s",

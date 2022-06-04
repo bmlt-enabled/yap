@@ -11,6 +11,11 @@ Array.prototype.getArrayItemByObjectKeyValue = function(key, value) {
     }
 };
 
+function getDateRanges() {
+    var daterangepicker = $("#reportrange").data('daterangepicker')
+    return "&date_range_start=" + daterangepicker.startDate.format("YYYY-MM-DD 00:00:00") + "&date_range_end=" + daterangepicker.endDate.format("YYYY-MM-DD 00:00:00");
+}
+
 function recurseReports() {
     return $("#recursive-reports-switch:checked").length > 0;
 }
@@ -67,10 +72,9 @@ function initReports() {
         addRowPos: "top",
         history: true,
         pagination: "remote",
-        paginationSize: 50,
         ajaxURL: "cdr_api.php",
         ajaxURLGenerator: function(url, config, params) {
-            return url + "?service_body_id=" + $("#service_body_id").val() + "&page=" + params['page'] + "&size=" + params['size'] + "&recurse=" + recurseReports();
+            return url + "?service_body_id=" + $("#service_body_id").val() + "&page=1&size=1" + getDateRanges() + "&recurse=" + recurseReports();
         },
         ajaxResponse: function(url, params, response) {
             var events = [];
@@ -149,7 +153,7 @@ function initReports() {
 
 function getMetricsData() {
     $("#metrics").slideUp(function() {
-        $.getJSON("metric_api.php?service_body_id=" + $("#service_body_id").val() + "&recurse=" + recurseReports(), function (data) {
+        $.getJSON("metric_api.php?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports(), function (data) {
             var actions = ['Volunteer', 'Meetings', 'Just For Today'];
             var plots = {"1": [], "2": [], "3": []};
             for (var item of data) {
@@ -209,7 +213,7 @@ function drawMetricsMap() {
         }
     }).setView([0, 0], 3);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(metrics_map);
-    $.getJSON('map_metric_api.php?service_body_id=' + $("#service_body_id").val() + "&recurse=" + recurseReports(), function (data) {
+    $.getJSON('map_metric_api.php?service_body_id=' + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports(), function (data) {
         var bounds = [];
 
         for (var i = 0; i < data.length; i++) {
@@ -243,30 +247,30 @@ function drawMetricsMap() {
     });
 }
 
-function updateCallRecords(table) {
-    table.setData();
+function updateCallRecords() {
+    Tabulator.prototype.findTable("#cdr-table")[0].setData();
 }
 
-function updateAllReports(table) {
+function updateAllReports() {
     getMetricsData();
-    updateCallRecords(table);
     drawMetricsMap();
-    $("#metrics-json").attr("href", "metric_api.php?service_body_id=" + $("#service_body_id").val() + "&recurse=" + recurseReports());
-    $("#map-metrics-json").attr("href", "map_metric_api.php?service_body_id=" + $("#service_body_id").val() + "&recurse=" + recurseReports());
+    updateCallRecords();
+    //var dateRange = getDateRanges();
+    //$("#metrics-json").attr("href", "metric_api.php?service_body_id=" + $("#service_body_id").val() + "&date_range_start=" + dateRange.start + "&date_range_end=" + dateRange.end + "&recurse=" + recurseReports());
+    //$("#map-metrics-json").attr("href", "map_metric_api.php?service_body_id=" + $("#service_body_id").val() + "&date_range_start=" + dateRange.start + "&date_range_end=" + dateRange.end + "&recurse=" + recurseReports());
 }
 
 function getMetrics(table) {
     $("#service_body_id").on("change", function(e) {
-        updateAllReports(table);
+        updateAllReports();
     });
 
     $("#recursive-reports-switch").on("change", function(e) {
-        updateAllReports(table);
+        updateAllReports();
     });
 
     $("#refresh-button").on("click", function() {
-        getMetricsData();
-        updateCallRecords(table);
+        updateAllReports();
     });
 
     getMetricsData();
