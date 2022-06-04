@@ -1997,9 +1997,9 @@ function getReportsServiceBodies()
     }
 }
 
-function adjustedCallRecords($service_body_ids, $page = 1, $size = 10, $date_range_start, $date_range_end)
+function adjustedCallRecords($service_body_ids, $date_range_start, $date_range_end)
 {
-    $callRecords = getCallRecords($service_body_ids, $page, $size, $date_range_start, $date_range_end);
+    $callRecords = getCallRecords($service_body_ids, $date_range_start, $date_range_end);
 
     foreach ($callRecords as &$callRecord) {
         $callEvents = isset($callRecord['call_events']) ? unique_stdclass_array(json_decode($callRecord['call_events'])) : [];
@@ -2017,7 +2017,6 @@ function adjustedCallRecords($service_body_ids, $page = 1, $size = 10, $date_ran
     }
 
     $response['data'] = $callRecords;
-    //$response['last_page'] = getCallRecordsCount($service_body_ids, $size);
 
     return $response;
 }
