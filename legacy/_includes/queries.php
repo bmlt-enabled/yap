@@ -57,21 +57,6 @@ function getMapMetricByType($service_body_ids, $eventId, $date_range_start, $dat
     return $resultset;
 }
 
-function getCallRecordsCount($service_body_ids, $size)
-{
-    $db = new Database();
-    $sql = sprintf(
-        "select count(distinct r.callsid) as page_count from records r
-inner join records_events re on r.callsid = re.callsid
-left outer join conference_participants cp on r.callsid = cp.callsid or cp.callsid IS NULL %s",
-        "WHERE `service_body_id` in (" . implode(",", $service_body_ids) . ")"
-    );
-    $db->query($sql);
-    $resultset = $db->resultset();
-    $db->close();
-    return intval(ceil(intval($resultset[0]['page_count']) / $size));
-}
-
 function quickExec($sql)
 {
     $db = new Database();
