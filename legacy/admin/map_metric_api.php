@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../_includes/functions.php';
 if (isset($_REQUEST['format']) == "csv") {
     $data = "lat,lon,name,desc\n";
-    $metrics = getMapMetricByType(getReportsServiceBodies(), $_REQUEST['event_id']);
+    $metrics = getMapMetricByType(getReportsServiceBodies(), $_REQUEST['event_id'], $_REQUEST['date_range_start'], $_REQUEST['date_range_end']);
     $event_id = intval($_REQUEST['event_id']);
     foreach ($metrics as $metric) {
         $coordinates = json_decode($metric['meta'])->coordinates;
@@ -23,7 +23,7 @@ if (isset($_REQUEST['format']) == "csv") {
     echo $data;
 } else {
     $results = [];
-    $metrics = getMapMetrics(getReportsServiceBodies());
+    $metrics = getMapMetrics(getReportsServiceBodies(), $_REQUEST['date_range_start'], $_REQUEST['date_range_end']);
     foreach ($metrics as $metric) {
         $coordinates = json_decode($metric['meta'])->coordinates;
         if ($coordinates->location != null) {
