@@ -20,7 +20,7 @@ function recurseReports() {
     return $("#recursive-reports-switch:checked").length > 0;
 }
 
-function initReports() {
+function initReports(dataLoadedCallback) {
     $(".page-size-dropdown-item").click(function(e) {
         $(".page-size-dropdown-item").removeClass("active");
         $(e.target).addClass("active");
@@ -55,7 +55,7 @@ function initReports() {
 
     var eventsTableColumns = [
         {title: "Event Time", field: "event_time", mutator: toCurrentTimezone},
-        {title: "Event", field: "event_id"},
+        {title: "Event", field: "event_name"},
         {title: "Service Body Id", field: "service_body_id", mutator: function(id) {
             if (isNaN(id)) return id;
             var service_body = getServiceBodyById(id);
@@ -89,7 +89,11 @@ function initReports() {
             $(".subTableHolder").toggle();
 
             eventsTable.setData(events);
+
             return response;
+        },
+        dataLoaded: function(data) {
+            dataLoadedCallback(data)
         },
         pageLoaded: function(pageno) {
             $(".subTableHolder").hide();
@@ -201,7 +205,7 @@ function getMetricsData() {
     });
 }
 
-function drawMetricsMap() {
+function drawMetricsMap(data) {
     if (metrics_map !== null) {
         metrics_map.off();
         metrics_map.remove();
@@ -213,38 +217,42 @@ function drawMetricsMap() {
         }
     }).setView([0, 0], 3);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(metrics_map);
-    $.getJSON('map_metric_api.php?service_body_id=' + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports(), function (data) {
-        var bounds = [];
+    var bounds = [];
 
+    if (data !== undefined) {
         for (var i = 0; i < data.length; i++) {
-            var location = JSON.parse(data[i]['meta'])['coordinates'];
-            var content = location['location'];
-            var myIcon = L.icon({
-                iconUrl: parseInt(data[i]['event_id']) === 1 ? volunteersMarker : meetingsMarker,
-                iconSize: [32, 32],
-            });
+            for (var j = 0; j < data[i].call_events.length; j++) {
+                var call_events = data[i].call_events[j];
+                if (JSON.parse(call_events['meta'])['coordinates'] !== undefined && (call_events['event_id'] === 1 || call_events['event_id'] === 14)) {
+                    var location = JSON.parse(call_events['meta'])['coordinates'];
+                    var content = location['location'];
+                    var myIcon = L.icon({
+                        iconUrl: parseInt(call_events['event_id']) === 1 ? volunteersMarker : meetingsMarker,
+                        iconSize: [32, 32],
+                    });
 
-            var latLng = [location['latitude'], location['longitude']];
-            var marker = L.marker(latLng, {icon: myIcon, title: content}).addTo(metrics_map);
-            marker.bindPopup(content);
-            bounds.push(latLng);
+                    var latLng = [location['latitude'], location['longitude']];
+                    var marker = L.marker(latLng, {icon: myIcon, title: content}).addTo(metrics_map);
+                    marker.bindPopup(content);
+                    bounds.push(latLng);
+                }
+            }
         }
+    }
 
-        var legend = L.control({position: 'bottomleft'});
-        legend.onAdd = function (map) {
-
-            var div = L.DomUtil.create('div', 'info legend');
-            div.className = 'metrics-map-legend';
-            div.innerHTML += '<strong>Legend</strong><br/>';
-            div.innerHTML += '<img src="' + meetingsMarker + '" />Meeting Lookup<br/>';
-            div.innerHTML += '<img src="' + volunteersMarker + '" />Volunteer Lookup';
-            return div;
-        };
-        legend.addTo(metrics_map);
-        if (bounds.length > 0) {
-            metrics_map.fitBounds(bounds);
-        }
-    });
+    var legend = L.control({position: 'bottomleft'});
+    legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'info legend');
+        div.className = 'metrics-map-legend';
+        div.innerHTML += '<strong>Legend</strong><br/>';
+        div.innerHTML += '<img src="' + meetingsMarker + '" />Meeting Lookup<br/>';
+        div.innerHTML += '<img src="' + volunteersMarker + '" />Volunteer Lookup';
+        return div;
+    };
+    legend.addTo(metrics_map);
+    if (bounds.length > 0) {
+        metrics_map.fitBounds(bounds);
+    }
 }
 
 function updateCallRecords() {

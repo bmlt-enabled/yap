@@ -97,8 +97,9 @@
 
     $(function() {
         loadTabulatorTheme();
-        var table = initReports();
+        var table = initReports(function(data) {
+            drawMetricsMap(data);
+        });
         getMetrics(table);
-        drawMetricsMap();
     });
 </script>
