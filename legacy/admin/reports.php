@@ -39,7 +39,7 @@
             }
         }
     </script>
-    <div id="reports">
+    <div id="reports" style="display: none;">
         <div id="metrics"></div>
         <div id="metrics-map"></div>
         <div class="button-group" role="group" id="cdr-table-controls">
@@ -97,8 +97,9 @@
 
     $(function() {
         loadTabulatorTheme();
-        var table = initReports();
+        var table = initReports(function(data) {
+            drawMetricsMap(data);
+        });
         getMetrics(table);
-        drawMetricsMap();
     });
 </script>
