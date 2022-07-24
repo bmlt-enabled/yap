@@ -260,6 +260,7 @@ function updateCallRecords() {
 }
 
 function updateAllReports() {
+    $("#reports").show();
     getMetricsData();
     drawMetricsMap();
     updateCallRecords();
