@@ -2010,7 +2010,7 @@ function adjustedCallRecords($service_body_ids, $date_range_start, $date_range_e
 
         foreach ($callEvents as &$callEvent) {
             $callEvent->parent_callsid = $callRecord['callsid'];
-            $callEvent->event_id = EventId::getEventById($callEvent->event_id);
+            $callEvent->event_name = EventId::getEventById($callEvent->event_id);
             $callEvent->meta = json_encode($callEvent->meta);
         }
         $callRecord['call_events'] = $callEvents;
