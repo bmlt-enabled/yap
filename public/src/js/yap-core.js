@@ -160,11 +160,19 @@ function getMetricsData() {
         $.getJSON("metric_api.php?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports(), function (data) {
             var actions = ['Volunteer', 'Meetings', 'Just For Today'];
             var plots = {"1": [], "2": [], "3": []};
-            for (var item of data) {
+            for (var item of data['metrics']) {
                 plots[JSON.parse(item['data'])['searchType']].push({
                     'x': item['timestamp'],
                     'y': item['counts']
                 });
+            }
+
+            for (var item of data['summary']) {
+                if (item['event_id'] === "1") {
+                    $("#summary-volunteer-calls").html(item['counts'])
+                } else if (item['event_id'] === "2") {
+                    $("#summary-meetingsearch-calls").html(item['counts'])
+                }
             }
 
             var datasets = [];
