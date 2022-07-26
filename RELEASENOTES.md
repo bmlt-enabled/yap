@@ -2,11 +2,12 @@
 
 ### 4.1.0 (UNRELEASED)
 * Added date picker for reports. [#574]
+* Added support for SMS reporting and metrics. [#574]
 * Added metrics points for when there is no data. [#530]
-* Added reporting metrics summary feature with some basic metrics [#574]
-* Fix for data missing for meeting lookups [#594] [#586]
+* Added reporting metrics summary feature with some basic metrics. [#574]
+* Fix for data missing for meeting lookups. [#594] [#586]
 * Fix for loading map points on reports.  Rendering enhanced.
-* Fix to handle metrics and reporting bugs for when service body tracking fails [#530]
+* Fix to handle metrics and reporting bugs for when service body tracking fails. [#530]
 * Fix for how metrics service body id lookup happens. [#530] 
 * Fix for upgrade advisor regression. [#589]
 * Fallback routing for when helpline field was never set and volunteer routing is disabled.

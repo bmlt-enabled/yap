@@ -4,6 +4,18 @@ require_once '_includes/twilio-client.php';
 header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
+$callRecord = new CallRecord();
+$callRecord->callSid = $_REQUEST['SmsSid'];
+$callRecord->to_number = $_REQUEST['To'];
+$callRecord->from_number = $_REQUEST['From'];
+$callRecord->duration = intval(0);
+$callRecord->start_time = date("Y-m-d H:i:s");
+$callRecord->end_time = date("Y-m-d H:i:s");
+$callRecord->type = RecordType::SMS;
+$callRecord->payload = json_encode($_REQUEST);
+
+insertCallRecord($callRecord);
+
 $address = $_REQUEST['Body'];
 if (str_exists($address, ',')) {
     $coordinates = getCoordinatesForAddress($address);
@@ -28,6 +40,11 @@ if (str_exists(strtoupper($address), strtoupper($sms_helpline_keyword))) {
         $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $jft_chunks[$i]));
     }
 } else {
+    insertCallEventRecord(EventId::MEETING_SEARCH_SMS);
+    insertCallEventRecord(
+        EventId::MEETING_SEARCH_LOCATION_GATHERED,
+        (object)['gather' => $address, 'coordinates' => isset($coordinates) ? $coordinates : null]
+    );
     ?>
     <Redirect method="GET">meeting-search.php?SearchType=<?php echo getDigitForAction('digit_map_search_type', SearchType::VOLUNTEERS)?>&amp;Latitude=<?php echo strval($coordinates->latitude) ?>&amp;Longitude=<?php echo strval($coordinates->longitude) ?></Redirect>
     <?php

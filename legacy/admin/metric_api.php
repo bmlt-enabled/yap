@@ -21,13 +21,14 @@ if (count($GLOBALS["metrics"]) > 0) {
     $start_date = $GLOBALS["metrics"][0]['timestamp'];
     $end_date = $GLOBALS["metrics"][count($GLOBALS["metrics"]) - 1]['timestamp'];
     $current_date = $start_date;
+    $metrics_types = [EventId::VOLUNTEER_SEARCH, EventId::MEETING_SEARCH, EventId::JFT_LOOKUP, EventId::MEETING_SEARCH_SMS, EventId::VOLUNTEER_SEARCH_SMS, EventId::JFT_LOOKUP_SMS];
     while ($current_date <= $end_date) {
-        for ($x = 1; $x <= 3; $x++) {
-            $fm = findMetric($current_date, $x);
+        foreach ($metrics_types as $metric_type) {
+            $fm = findMetric($current_date, $metric_type);
             if ($fm != null) {
                 array_push($all_metrics, $fm);
             } else {
-                array_push($all_metrics, ['timestamp' => $current_date, 'counts' => 0, 'data' => sprintf('{"searchType":"%s"}', $x)]);
+                array_push($all_metrics, ['timestamp' => $current_date, 'counts' => 0, 'data' => sprintf('{"searchType":"%s"}', $metric_type)]);
             }
         }
 

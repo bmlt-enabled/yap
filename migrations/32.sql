@@ -1,0 +1,1 @@
+ALTER TABLE `records` ADD COLUMN `type` int(11) DEFAULT NULL;

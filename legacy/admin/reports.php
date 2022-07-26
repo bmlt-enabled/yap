@@ -43,10 +43,16 @@
         <div id="metrics"></div>
         <div id="metrics-summary">
             <button type="button" class="btn btn-sm btn-info">
-                Volunteer Lookups <span id="summary-volunteer-calls" class="badge badge-light">0</span>
+                Volunteer Lookups (CALL) <span id="summary-volunteer-calls" class="badge badge-light">0</span>
             </button>
             <button type="button" class="btn btn-sm btn-info">
-                Meeting Lookups <span id="summary-meetingsearch-calls" class="badge badge-light">0</span>
+                Meeting Lookups (CALL) <span id="summary-meetingsearch-calls" class="badge badge-light">0</span>
+            </button>
+            <button type="button" class="btn btn-sm btn-info">
+                Volunteer Lookups (SMS) <span id="summary-volunteer-sms" class="badge badge-light">0</span>
+            </button>
+            <button type="button" class="btn btn-sm btn-info">
+                Meeting Lookups (SMS) <span id="summary-meetingsearch-sms" class="badge badge-light">0</span>
             </button>
         </div>
         <div id="metrics-map"></div>
