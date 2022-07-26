@@ -3,6 +3,7 @@
 ### 4.1.0 (UNRELEASED)
 * Added date picker for reports. [#574]
 * Added metrics points for when there is no data. [#530]
+* Added reporting metrics summary feature with some basic metrics [#574]
 * Fix for data missing for meeting lookups [#594] [#586]
 * Fix for loading map points on reports.  Rendering enhanced.
 * Fix to handle metrics and reporting bugs for when service body tracking fails [#530]

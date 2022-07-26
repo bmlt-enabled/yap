@@ -186,6 +186,25 @@ INNER JOIN (select callsid, service_body_id from records_events
     return $resultset;
 }
 
+function getMetricCounts($service_body_ids, $general, $date_range_start, $date_range_end)
+{
+    $db = new Database();
+    $query = "select event_id, count(a.event_id) as counts from records_events a
+INNER JOIN (select callsid, service_body_id from records_events
+            where event_time >= '$date_range_start' AND event_time <= '$date_range_end' and service_body_id is not NULL
+            group by callsid, service_body_id) b on a.callsid = b.callsid " .
+        sprintf(
+            "WHERE a.event_id in (1,2,3) and b.service_body_id in (%s) %s %s",
+            implode(",", $service_body_ids),
+            $general ? "OR b.service_body_id is NULL" : "",
+            "GROUP BY a.event_id"
+        );
+    $db->query($query);
+    $resultset = $db->resultset();
+    $db->close();
+    return $resultset;
+}
+
 function getConferences($service_body_id)
 {
     $db = new Database();

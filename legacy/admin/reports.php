@@ -41,6 +41,14 @@
     </script>
     <div id="reports" style="display: none;">
         <div id="metrics"></div>
+        <div id="metrics-summary">
+            <button type="button" class="btn btn-sm btn-info">
+                Volunteer Lookups <span id="summary-volunteer-calls" class="badge badge-light">0</span>
+            </button>
+            <button type="button" class="btn btn-sm btn-info">
+                Meeting Lookups <span id="summary-meetingsearch-calls" class="badge badge-light">0</span>
+            </button>
+        </div>
         <div id="metrics-map"></div>
         <div class="button-group" role="group" id="cdr-table-controls">
             <button class="btn-sm btn-warning" id="print-table">Print</button>
