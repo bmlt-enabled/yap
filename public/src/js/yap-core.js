@@ -13,7 +13,7 @@ Array.prototype.getArrayItemByObjectKeyValue = function(key, value) {
 
 function getDateRanges() {
     var daterangepicker = $("#reportrange").data('daterangepicker')
-    return "&date_range_start=" + daterangepicker.startDate.format("YYYY-MM-DD 00:00:00") + "&date_range_end=" + daterangepicker.endDate.format("YYYY-MM-DD 00:00:00");
+    return "&date_range_start=" + daterangepicker.startDate.format("YYYY-MM-DD 00:00:00") + "&date_range_end=" + daterangepicker.endDate.format("YYYY-MM-DD 23:59:59");
 }
 
 function recurseReports() {

@@ -59,10 +59,10 @@
         <div id="events-table" style="display:none;"></div>
     </div>
 </div>
-<script src="<?php echo url("/public/dist/js/yap-reports.js")?>"></script>
+<script src="<?php echo url("/public/dist/js/yap-reports.min.js")?>"></script>
 <?php require_once 'footer.php';?>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script type="text/javascript" src="<?php echo url("/public/dist/js/daterangepicker.js") ?>"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo url("/public/dist/css/daterangepicker.css") ?>" />
 <script type="text/javascript">
     var darkTheme = "<?php echo url("/public/dist/css/yap-tabulator-dark.min.css")?>";
     var lightTheme = "<?php echo url("/public/dist/css/yap-tabulator-dark.min.css")?>";
