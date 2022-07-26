@@ -2,6 +2,7 @@
 
 ### 4.1.0 (UNRELEASED)
 * Added date picker for reports. [#574]
+* Added support for downloading the list of volunteers for a given service body. [#595]
 * Added support for SMS reporting and metrics. [#574]
 * Added metrics points for when there is no data. [#530]
 * Added reporting metrics summary feature with some basic metrics. [#574]
