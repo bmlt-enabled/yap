@@ -317,6 +317,10 @@ function volunteerPage() {
             spinnerDialog(true, "Retrieving Volunteers...", function () {
                 loadGroups(service_body_id, function() {
                     loadVolunteers(service_body_id, function () {
+                        $("#volunteers-download-list").show();
+                        $("#volunteers-download-list").click(function() {
+                            document.location.href='volunteers_get.php?service_body_id='+service_body_id+'&format=csv';
+                        })
                         spinnerDialog(false);
                     })
                 });

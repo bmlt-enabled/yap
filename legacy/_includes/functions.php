@@ -240,6 +240,17 @@ class VolunteerInfo
     public $language;
 }
 
+class VolunteerReportInfo
+{
+    public $name;
+    public $number = SpecialPhoneNumber::UNKNOWN;
+    public $gender;
+    public $responder = VolunteerResponderOption::UNSPECIFIED;
+    public $type = VolunteerType::PHONE;
+    public $language;
+    public $shift_info = [];
+}
+
 class Volunteer
 {
     public $phoneNumber;
@@ -1572,6 +1583,32 @@ function getHelplineVolunteer($volunteer_routing_params)
     }
 }
 
+function getAllVolunteersList($volunteers)
+{
+    $finalSchedule = [];
+
+    for ($v = 0; $v < count($volunteers); $v++) {
+        $volunteer                 = $volunteers[$v];
+        $volunteerInfo             = new VolunteerReportInfo();
+        $volunteerInfo->name      = $volunteer->volunteer_name
+            . (isset($volunteer->volunteer_gender) ? " " . VolunteerGender::getGenderById($volunteer->volunteer_gender) : "")
+            . (isset($volunteer->volunteer_language) ? " " . json_encode($volunteer->volunteer_language) : "");
+        $volunteerInfo->shift_info = dataDecoder($volunteer->volunteer_shift_schedule);
+        $volunteerInfo->number    = $volunteer->volunteer_phone_number;
+        $volunteerInfo->gender     = isset($volunteer->volunteer_gender) ? $volunteer->volunteer_gender : VolunteerGender::UNSPECIFIED;
+        $volunteerInfo->responder  = isset($volunteer->volunteer_responder) ? $volunteer->volunteer_responder : VolunteerResponderOption::UNSPECIFIED;
+        if (strlen(setting('language_selections')) > 0) {
+            $volunteerInfo->language = property_exists($volunteer, 'volunteer_language') ? $volunteer->volunteer_language : array(explode(',', setting('language_selections'))[0]);
+        } else {
+            $volunteerInfo->language = array(setting("language"));
+        }
+
+        array_push($finalSchedule, $volunteerInfo);
+    }
+
+    return $finalSchedule;
+}
+
 function getVolunteerInfo($volunteers)
 {
     $finalSchedule = [];
@@ -1647,6 +1684,18 @@ function getHelplineSchedule($service_body_int)
         usort($finalSchedule, function ($a, $b) {
             return $a->sequence > $b->sequence;
         });
+
+        return json_encode($finalSchedule);
+    } else {
+        throw new NoVolunteersException();
+    }
+}
+
+function getVolunteersListReport($service_body_int)
+{
+    $volunteers = getVolunteers($service_body_int);
+    if (count($volunteers) > 0) {
+        $finalSchedule = getAllVolunteersList($volunteers);
 
         return json_encode($finalSchedule);
     } else {
