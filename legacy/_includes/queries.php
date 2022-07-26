@@ -81,7 +81,7 @@ FROM records r LEFT OUTER JOIN records_events re on r.callsid = re.callsid AND r
 WHERE r.start_time >= '$date_range_start' AND r.start_time <= '$date_range_end'");
 
     $db = new Database();
-    $sql = sprintf("SELECT r.`id`,CONCAT(r.`start_time`, 'Z') as start_time,CONCAT(r.`end_time`, 'Z') as end_time,r.`duration`,r.`from_number`,r.`to_number`,r.`callsid`,re.`service_body_id`,
+    $sql = sprintf("SELECT r.`id`,CONCAT(r.`start_time`, 'Z') as start_time,CONCAT(r.`end_time`, 'Z') as end_time,r.`duration`,r.`from_number`,r.`to_number`,r.`callsid`,re.`service_body_id`,IFNULL(r.`type`, 1) as `type`,
 CONCAT('[', GROUP_CONCAT('{\"meta\":', IFNULL(re.meta, '{}'), ',\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, 'Z\",\"service_body_id\":', COALESCE(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
 FROM (SELECT ire.id,ire.callsid, ire.event_time,ire.event_id,ircp.service_body_id,meta FROM records_events ire
       left outer join cache_records_conference_participants ircp ON ire.callsid = ircp.callsid
@@ -107,8 +107,8 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
 function insertCallRecord($callRecord)
 {
     $db = new Database();
-    $stmt = "INSERT INTO `records` (`callsid`,`from_number`,`to_number`,`duration`,`start_time`,`end_time`,`payload`)
-        VALUES (:callSid, :from_number, :to_number, :duration, :start_time, :end_time, :payload)";
+    $stmt = "INSERT INTO `records` (`callsid`,`from_number`,`to_number`,`duration`,`start_time`,`end_time`,`payload`,`type`)
+        VALUES (:callSid, :from_number, :to_number, :duration, :start_time, :end_time, :payload, :type)";
     $db->query($stmt);
     $db->bind(':callSid', $callRecord->callSid);
     $db->bind(':from_number', $callRecord->from_number);
@@ -118,6 +118,7 @@ function insertCallRecord($callRecord)
     $db->bind(':start_time', $callRecord->start_time);
     $db->bind(':end_time', $callRecord->end_time);
     $db->bind(':payload', $callRecord->payload);
+    $db->bind(':type', $callRecord->type);
     $db->execute();
     $db->close();
 }
@@ -144,6 +145,10 @@ function insertCallEventRecord($eventid, $meta = null)
 {
     if (isset($_REQUEST['CallSid'])) {
         $callSid = $_REQUEST['CallSid'];
+        $type = RecordType::PHONE;
+    } elseif (isset($_REQUEST['SmsSid'])) {
+        $callSid = $_REQUEST['SmsSid'];
+        $type = RecordType::SMS;
     } else {
         return;
     }
@@ -153,7 +158,7 @@ function insertCallEventRecord($eventid, $meta = null)
     $service_body_id = setting('service_body_id');
 
     $db = new Database();
-    $stmt = "INSERT INTO `records_events` (`callsid`,`event_id`,`event_time`,`service_body_id`,`meta`) VALUES (:callSid, :eventid, :event_time, :service_body_id, :meta)";
+    $stmt = "INSERT INTO `records_events` (`callsid`,`event_id`,`event_time`,`service_body_id`,`meta`, `type`) VALUES (:callSid, :eventid, :event_time, :service_body_id, :meta, :type)";
     $db->query($stmt);
     $db->bind(':callSid', $callSid);
     $db->bind(':eventid', $eventid);
@@ -161,6 +166,7 @@ function insertCallEventRecord($eventid, $meta = null)
     $db->bind(':event_time', getCurrentTime());
     $db->bind(':service_body_id', $service_body_id);
     $db->bind(':meta', $meta_as_json);
+    $db->bind(':type', $type);
     $db->execute();
     $db->close();
 }
@@ -175,7 +181,7 @@ INNER JOIN (select callsid, service_body_id from records_events
             where event_time >= '$date_range_start' AND event_time <= '$date_range_end' and service_body_id is not NULL
             group by callsid, service_body_id) b on a.callsid = b.callsid " .
     sprintf(
-        "WHERE a.event_id in (1,2,3) and b.service_body_id in (%s) %s %s",
+        "WHERE a.event_id in (1,2,3,19,20,21) and b.service_body_id in (%s) %s %s",
         implode(",", $service_body_ids),
         $general ? "OR b.service_body_id is NULL" : "",
         "GROUP BY DATE_FORMAT(a.event_time, \"%Y-%m-%d\"), a.event_id"
@@ -194,7 +200,7 @@ INNER JOIN (select callsid, service_body_id from records_events
             where event_time >= '$date_range_start' AND event_time <= '$date_range_end' and service_body_id is not NULL
             group by callsid, service_body_id) b on a.callsid = b.callsid " .
         sprintf(
-            "WHERE a.event_id in (1,2,3) and b.service_body_id in (%s) %s %s",
+            "WHERE a.event_id in (1,2,3,19,20,21) and b.service_body_id in (%s) %s %s",
             implode(",", $service_body_ids),
             $general ? "OR b.service_body_id is NULL" : "",
             "GROUP BY a.event_id"

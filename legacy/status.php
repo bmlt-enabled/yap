@@ -12,6 +12,7 @@ $callRecord->duration = intval($_REQUEST['CallDuration']);
 $twilioRecords = $twilioClient->calls($callRecord->callSid)->fetch();
 $callRecord->start_time = $twilioRecords->startTime->format("Y-m-d H:i:s");
 $callRecord->end_time = $twilioRecords->endTime->format("Y-m-d H:i:s");
+$callRecord->type = RecordType::PHONE;
 $callRecord->payload = json_encode($_REQUEST);
 
 insertCallRecord($callRecord);

@@ -169,6 +169,9 @@ class EventId
     const VOICEMAIL_PLAYBACK = 16;
     const DIALBACK = 17;
     const PROVINCE_LOOKUP_LIST = 18;
+    const MEETING_SEARCH_SMS = 19;
+    const VOLUNTEER_SEARCH_SMS = 20;
+    const JFT_LOOKUP_SMS = 21;
 
     public static function getEventById($id)
     {
@@ -209,6 +212,12 @@ class EventId
                 return "Dialback";
             case self::PROVINCE_LOOKUP_LIST:
                 return "Province Lookup List";
+            case self::MEETING_SEARCH_SMS:
+                return "Meeting Search via SMS";
+            case self::VOLUNTEER_SEARCH_SMS:
+                return "Volunteer Search via SMS";
+            case self::JFT_LOOKUP_SMS:
+                return "JFT Looksup via SMS";
         }
     }
 }
@@ -277,6 +286,7 @@ class CallRecord
     public $to;
     public $duration;
     public $payload;
+    public $type;
 }
 
 class ServiceBodyCallHandling
@@ -349,6 +359,22 @@ class VolunteerType
 {
     const PHONE = "PHONE";
     const SMS = "SMS";
+}
+
+class RecordType
+{
+    const PHONE = 1;
+    const SMS = 2;
+
+    public static function getTypeById($id)
+    {
+        switch ($id) {
+            case RecordType::PHONE:
+                return "CALL";
+            case RecordType::SMS:
+                return "SMS";
+        }
+    }
 }
 
 class VolunteerShadowOption
@@ -2002,6 +2028,7 @@ function adjustedCallRecords($service_body_ids, $date_range_start, $date_range_e
     $callRecords = getCallRecords($service_body_ids, $date_range_start, $date_range_end);
 
     foreach ($callRecords as &$callRecord) {
+        $callRecord['type_name'] = RecordType::getTypeById($callRecord['type']);
         $callEvents = isset($callRecord['call_events']) ? unique_stdclass_array(json_decode($callRecord['call_events'])) : [];
 
         if (!isset($callEvents)) {

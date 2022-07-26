@@ -13,7 +13,7 @@ Array.prototype.getArrayItemByObjectKeyValue = function(key, value) {
 
 function getDateRanges() {
     var daterangepicker = $("#reportrange").data('daterangepicker')
-    return "&date_range_start=" + daterangepicker.startDate.format("YYYY-MM-DD 00:00:00") + "&date_range_end=" + daterangepicker.endDate.format("YYYY-MM-DD 00:00:00");
+    return "&date_range_start=" + daterangepicker.startDate.format("YYYY-MM-DD 00:00:00") + "&date_range_end=" + daterangepicker.endDate.format("YYYY-MM-DD 23:59:59");
 }
 
 function recurseReports() {
@@ -115,6 +115,7 @@ function initReports(dataLoadedCallback) {
             {title:"Duration (seconds)", field:"duration"},
             {title:"From", field:"from_number"},
             {title:"To", field:"to_number"},
+            {title:"Type", field:"type_name"},
             {title:"Call Events", field:"call_events", visible: false, download: true, formatter: function(cell, formatterParams, onRendered) {
                     return JSON.stringify(cell.getValue());
                 }}
@@ -158,8 +159,9 @@ function initReports(dataLoadedCallback) {
 function getMetricsData() {
     $("#metrics").slideUp(function() {
         $.getJSON("metric_api.php?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports(), function (data) {
-            var actions = ['Volunteer', 'Meetings', 'Just For Today'];
-            var plots = {"1": [], "2": [], "3": []};
+            var actions = ['Volunteer (CALL)', 'Meetings (CALL)', 'Just For Today (CALL)', 'Volunteer (SMS)', 'Meetings (SMS)', 'Just For Today (SMS)'];
+            var actions_plots = [1, 2, 3, 19, 20, 21];
+            var plots = {"1": [], "2": [], "3": [], "19": [], "20": [], "21": []};
             for (var item of data['metrics']) {
                 plots[JSON.parse(item['data'])['searchType']].push({
                     'x': item['timestamp'],
@@ -172,18 +174,23 @@ function getMetricsData() {
                     $("#summary-volunteer-calls").html(item['counts'])
                 } else if (item['event_id'] === "2") {
                     $("#summary-meetingsearch-calls").html(item['counts'])
+                } else if (item['event_id'] === "19") {
+                    $("#summary-meetingsearch-sms").html(item['counts'])
+                } else if (item['event_id'] === "20") {
+                    $("#summary-meetingsearch-sms").html(item['counts'])
                 }
             }
 
             var datasets = [];
-            var colors = ['#FF6600', '#87B63A', 'indigo'];
+            var colors = ['#FF6600', '#87B63A', 'indigo', '#FF6E9B', '#446E9B', 'black'];
             for (var a = 0; a < actions.length; a++) {
                 var xAgg = [];
                 var yAgg = [];
-                if (plots[a + 1] !== undefined) {
-                    for (var p = 0; p < plots[a + 1].length; p++) {
-                        xAgg.push(plots[a + 1][p].x);
-                        yAgg.push(plots[a + 1][p].y);
+                var ap = actions_plots[a];
+                if (plots[ap] !== undefined) {
+                    for (var p = 0; p < plots[ap].length; p++) {
+                        xAgg.push(plots[ap][p].x);
+                        yAgg.push(plots[ap][p].y);
                     }
 
                     datasets.push({
