@@ -184,7 +184,7 @@ INNER JOIN (select callsid, service_body_id from records_events
         "WHERE a.event_id in (1,2,3,19,20,21) and b.service_body_id in (%s) %s %s",
         implode(",", $service_body_ids),
         $general ? "OR b.service_body_id is NULL" : "",
-        "GROUP BY DATE_FORMAT(a.event_time, \"%Y-%m-%d\"), a.event_id"
+        "GROUP BY DATE_FORMAT(a.event_time, \"%Y-%m-%d\"), a.event_id, b.service_body_id"
     );
     $db->query($query);
     $resultset = $db->resultset();
