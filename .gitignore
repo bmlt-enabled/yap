@@ -8,8 +8,10 @@ config.*.php
 config_*.php
 test.php
 public/dist/croutonjs
-public/dist/js
+public/dist/js/*.js
 public/dist/css/*.css
+!daterangepicker.js
+!daterangepicker.css
 yap.iml
 package-lock.json
 yarn-error.log
