@@ -2093,6 +2093,7 @@ function adjustedCallRecords($service_body_ids, $date_range_start, $date_range_e
     }
 
     $response['data'] = $callRecords;
+    $response['last_page'] = 1;
 
     return $response;
 }
