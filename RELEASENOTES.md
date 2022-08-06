@@ -1,6 +1,6 @@
 # Release Notes
 
-### 4.1.0 (UNRELEASED)
+### 4.1.0 (August 6, 2022)
 * Added date picker for reports. [#574]
 * Added support for downloading the list of volunteers for a given service body. [#595]
 * Added support for SMS reporting and metrics. [#574]
