@@ -5,23 +5,29 @@ require_once __DIR__ . '/../_includes/functions.php';
 try {
     $report = getVolunteersListReport(setting("service_body_id"));
     if (isset($_REQUEST['format']) == "csv") {
-        $data = "name,number,gender,responder,type,language,shift_info\n";
-        foreach (json_decode($report) as $item) {
-            $data .= sprintf(
-                "%s,%s,%s,%s,%s,%s,'%s'\n",
-                $item->name,
-                $item->number,
-                $item->gender,
-                $item->responder,
-                $item->type,
-                json_encode($item->language),
-                json_encode($item->shift_info),
-            );
+        $handle = fopen('php://memory', 'rw');
+        try {
+            fputcsv($handle, array("name", "number", "gender", "responder", "type", "language", "shift_info"));
+            foreach (json_decode($report) as $item) {
+                fputcsv($handle, array(
+                    $item->name,
+                    $item->number,
+                    $item->gender,
+                    $item->responder,
+                    $item->type,
+                    json_encode($item->language),
+                    json_encode($item->shift_info)
+                ));
+            }
+            fseek($handle, 0);
+            $data = stream_get_contents($handle);
+            header('Content-type: text/plain');
+            header('Content-Length: ' . strlen($data));
+            header(sprintf('Content-Disposition: attachment; filename="%s-volunteers.csv"', setting("service_body_id")));
+            echo $data;
+        } finally {
+            fclose($handle);
         }
-        header('Content-type: text/plain');
-        header('Content-Length: ' . strlen($data));
-        header(sprintf('Content-Disposition: attachment; filename="%s-volunteers.csv"', setting("service_body_id")));
-        echo $data;
     } else {
         header("Content-type: application/json");
         echo $report;
