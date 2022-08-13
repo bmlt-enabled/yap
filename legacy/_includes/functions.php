@@ -81,7 +81,8 @@ $GLOBALS['settings_allowlist'] = [
     'twilio_auth_token' => [ 'description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
     'voice' => [ 'description' => '', 'default' => 'Polly.Kendra', 'overridable' => true, 'hidden' => false],
     'voicemail_playback_grace_hours' => [ 'description' => '', 'default' => 48, 'overridable' => true, 'hidden' => false],
-    'word_language' => [ 'description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false]
+    'word_language' => [ 'description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false],
+    'bring_your_own_twilio' => [ 'description' => '' , 'default' => false, 'overridable' => false, 'hidden' => false]
 ];
 $GLOBALS['available_languages'] = [
     "en-US" => "English",
@@ -587,7 +588,9 @@ class UpgradeAdvisor
                 }
             }
         } catch (\Twilio\Exceptions\RestException $e) {
-            return self::getState(false, "Twilio Rest Error: " . $e->getMessage());
+            if (!setting('bring_your_own_twilio')) {
+                return self::getState(false, "Twilio Rest Error: " . $e->getMessage());
+            }
         }
 
         if (has_setting('smtp_host')) {
