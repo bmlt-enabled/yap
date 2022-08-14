@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../_includes/functions.php';
-
+unset($_SESSION['call_state']);
 $auth_v2_result = auth_v2($_POST['username'], $_POST['password']);
 if (count($auth_v2_result) == 1) {
     $_SESSION['username'] = $_POST['username'];
@@ -13,6 +13,7 @@ if (count($auth_v2_result) == 1) {
 
     // TODO: this provides backward compatability until the models are migrated to Laravel.
     $_SESSION['auth_service_bodies_rights'] = getServiceBodiesRightsIds();
+    setConfigForService($_SESSION['auth_service_bodies_rights'][0]);
 
     header('Location: home.php');
 } elseif (setting("bmlt_auth") && auth_v1($_POST['username'], $_POST['password'])) {
@@ -21,6 +22,7 @@ if (count($auth_v2_result) == 1) {
 
     // TODO: this provides backward compatability until the models are migrated to Laravel.
     $_SESSION['auth_service_bodies_rights'] = getServiceBodiesRightsIds();
+    setConfigForService($_SESSION['auth_service_bodies_rights'][0]);
 
     header('Location: home.php');
 } else {
