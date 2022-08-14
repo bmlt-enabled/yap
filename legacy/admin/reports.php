@@ -48,6 +48,9 @@
             <button type="button" class="btn btn-sm btn-info">
                 Meeting Lookups (CALL) <span id="summary-meetingsearch-calls" class="badge badge-light">0</span>
             </button>
+            <button type="button" class="btn btn-sm btn-danger">
+                Missed (CALL) <span id="summary-missedvolunteer-calls" class="badge badge-light">0</span>
+            </button>
             <button type="button" class="btn btn-sm btn-info">
                 Volunteer Lookups (SMS) <span id="summary-volunteer-sms" class="badge badge-light">0</span>
             </button>

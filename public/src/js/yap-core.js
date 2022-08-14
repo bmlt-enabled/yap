@@ -169,11 +169,15 @@ function getMetricsData() {
                 });
             }
 
+            var connectedCalls = 0;
             for (var item of data['summary']) {
                 if (item['event_id'] === "1") {
                     $("#summary-volunteer-calls").html(item['counts'])
+                    connectedCalls = item['counts'];
                 } else if (item['event_id'] === "2") {
                     $("#summary-meetingsearch-calls").html(item['counts'])
+                } else if (item['event_id'] === "12") {
+                    $("#summary-missedvolunteer-calls").html(connectedCalls - item['counts'])
                 } else if (item['event_id'] === "19") {
                     $("#summary-meetingsearch-sms").html(item['counts'])
                 } else if (item['event_id'] === "20") {
