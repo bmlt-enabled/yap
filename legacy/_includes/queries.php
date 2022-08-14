@@ -86,7 +86,7 @@ CONCAT('[', GROUP_CONCAT('{\"meta\":', IFNULL(re.meta, '{}'), ',\"event_id\":', 
 FROM (SELECT ire.id,ire.callsid, ire.event_time,ire.event_id,ircp.service_body_id,meta FROM records_events ire
       left outer join cache_records_conference_participants ircp ON ire.callsid = ircp.callsid
       where guid = :guid) re
-INNER JOIN cache_records_conference_participants rcp ON rcp.parent_callsid = re.callsid
+INNER JOIN cache_records_conference_participants rcp ON rcp.callsid = re.callsid
 INNER JOIN records r ON r.callsid = rcp.parent_callsid
 WHERE re.service_body_id in (%s) AND rcp.guid = :guid
 GROUP BY rcp.parent_callsid
