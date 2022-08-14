@@ -1,6 +1,6 @@
 # Release Notes
 
-### 4.1.1 (UNRELEASED)
+### 4.1.1 (August 14, 2022)
 * Use the current logged-in users' settings for the Admin Portal.  This suppresses the Twilio error for Zonal Yap Servers for service bodies. [#614]
 * Missed call summary metric for reports [#611]
 * Fix for missing additional volunteers on reports regression. [#613]
