@@ -1,7 +1,7 @@
 # Release Notes
 
 ### 4.1.1 (UNRELEASED)
-* Use the current logged in users settings for the admin portal [#614]
+* Use the current logged-in users' settings for the Admin Portal.  This suppresses the Twilio error for Zonal Yap Servers for service bodies. [#614]
 
 ### 4.1.0 (August 6, 2022)
 * Added date picker for reports. [#574]
