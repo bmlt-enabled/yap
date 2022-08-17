@@ -1,7 +1,7 @@
 # Release Notes
 
-### 4.1.2 (UNRELEASED)
-* Fixed an issue where leading whitespace could cause corrupted xml output resulting in failed calls.
+### 4.1.2 (August 17, 2022)
+* Fixed an issue where leading whitespace could cause corrupted xml output resulting in failed calls. [#621]
 
 ### 4.1.1 (August 14, 2022)
 * Use the current logged-in users' settings for the Admin Portal.  This suppresses the Twilio error for Zonal Yap Servers for service bodies. [#614]
