@@ -1,4 +1,4 @@
- <?php
+<?php
  function setConfigForService($service_body_id)
  {
      if (intval($service_body_id) > 0) {
