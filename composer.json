@@ -10,7 +10,6 @@
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "3.*",
-        "nvanheuverzwijn/monolog-logdna": "^2.1",
         "pusher/pusher-php-server": "^4.0",
         "rollbar/rollbar": "~1.5",
 	    "facade/ignition": "^2.3.6",
