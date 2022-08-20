@@ -44,6 +44,13 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
       colorMode: {
         defaultMode: "dark"
       },
+      algolia: {
+        // The application ID provided by Algolia
+        appId: 'UXFW8XBXNC',
+        // Public API key: it is safe to commit it
+        apiKey: '4f0c5731176dbf27fd74302a35d926e6',
+        indexName: 'yapdocs',
+      },
       navbar: {
         title: 'Yap Docs',
         logo: {
