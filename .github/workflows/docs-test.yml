@@ -1,0 +1,25 @@
+name: Test Build Docs
+
+on:
+  push:
+    paths:
+      - 'docs/**'
+
+jobs:
+  build-test:
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        working-directory: 'docs'
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.1
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - name: Install and Build 🔧
+        run: |
+          npm ci
+          npm run build
