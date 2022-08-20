@@ -29,4 +29,6 @@ Homestead.yaml
 npm-debug.log
 .docusaurus
 .cache-loader
+docs/node_modules
+docs/build
 !docs/package-lock.json
