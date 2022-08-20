@@ -27,3 +27,6 @@ yarn-error.log
 Homestead.json
 Homestead.yaml
 npm-debug.log
+.docusaurus
+.cache-loader
+!docs/package-lock.json
