@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.1.3 (UNRELEASED)
+* Fixed an issue with reports not recursing more than one level.
+
 ### 4.1.2 (August 17, 2022)
 * Fixed an issue where leading whitespace could cause corrupted xml output resulting in failed calls. [#621]
 
