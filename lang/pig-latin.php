@@ -97,3 +97,4 @@ $GLOBALS['users'] = "Usersay";
 $GLOBALS['to_speak_to_a_man'] = "otay alktay otay ayay anmay";
 $GLOBALS['to_speak_to_a_woman'] = "otay alktay otay ayay omanway";
 $GLOBALS['speak_no_preference'] = "otay eakspay otay eitheryay";
+$GLOBALS['you_have_an_incoming_phoneline_call_from'] = "ouyay avehay anyay incomingyay onelinephay allcay omfray";

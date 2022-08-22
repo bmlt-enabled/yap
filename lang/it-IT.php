@@ -105,3 +105,4 @@ $GLOBALS['users'] = "Users";
 $GLOBALS['to_speak_to_a_man'] = "to talk to a man";
 $GLOBALS['to_speak_to_a_woman'] = "to talk to a woman";
 $GLOBALS['speak_no_preference'] = "to speak to either";
+$GLOBALS['you_have_an_incoming_phoneline_call_from'] = "You have an incoming phoneline call from";

@@ -1682,7 +1682,7 @@ function getHelplineSchedule($service_body_int)
         $finalSchedule = getVolunteerInfo($volunteers);
 
         usort($finalSchedule, function ($a, $b) {
-            return $a->sequence > $b->sequence;
+            return $a->sequence > $b->sequence ? 1 : -1;
         });
 
         return json_encode($finalSchedule);
@@ -1743,7 +1743,7 @@ function get_str_val($subject)
         } else {
             return "false";
         }
-    } else if (is_array($subject)) {
+    } elseif (is_array($subject)) {
         return strval(json_encode($subject));
     }
 
