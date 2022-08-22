@@ -7,8 +7,6 @@
 <a href="https://github.com/bmlt-enabled/yap/releases"><img src="https://img.shields.io/github/downloads/bmlt-enabled/yap/total"></a>
 </h1>
 
-<hr>
-
 The purposes of yap are :
 * To be able to take the results of a BMLT root server and play it back through the telephone.  
 * To be able to set up routing rules for zip codes and helpline numbers with optional extension dialing.
