@@ -177,7 +177,10 @@ function getMetricsData() {
                 } else if (item['event_id'] === "2") {
                     $("#summary-meetingsearch-calls").html(item['counts'])
                 } else if (item['event_id'] === "12") {
-                    $("#summary-missedvolunteer-calls").html(connectedCalls - item['counts'])
+                    var missedCalls = connectedCalls - item['counts'];
+                    var missedCallsPct = Math.round(missedCalls / item['counts'] * 100);
+
+                    $("#summary-missedvolunteer-calls").html(missedCalls + " ("+ missedCallsPct + "%)");
                 } else if (item['event_id'] === "19") {
                     $("#summary-meetingsearch-sms").html(item['counts'])
                 } else if (item['event_id'] === "20") {
