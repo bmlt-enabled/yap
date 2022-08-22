@@ -1,8 +1,10 @@
 <?php
 require_once __DIR__ . '/../_includes/functions.php';
 header("content-type: application/json");
-$GLOBALS["metrics"] = getMetric(getReportsServiceBodies(), intval($_REQUEST['service_body_id']) == 0, $_REQUEST['date_range_start'], $_REQUEST['date_range_end']);
-$GLOBALS["summary"] = getMetricCounts(getReportsServiceBodies(), intval($_REQUEST['service_body_id']) == 0, $_REQUEST['date_range_start'], $_REQUEST['date_range_end']);
+$reportsServiceBodies = getReportsServiceBodies();
+$GLOBALS["metrics"] = getMetric($reportsServiceBodies, intval($_REQUEST['service_body_id']) == 0, $_REQUEST['date_range_start'], $_REQUEST['date_range_end']);
+$GLOBALS["summary"] = getMetricCounts($reportsServiceBodies, intval($_REQUEST['service_body_id']) == 0, $_REQUEST['date_range_start'], $_REQUEST['date_range_end']);
+$GLOBALS["volunteers"] = getAnsweredAndMissedVolunteerMetrics($reportsServiceBodies, intval($_REQUEST['service_body_id']) == 0, $_REQUEST['date_range_start'], $_REQUEST['date_range_end']);
 
 function findMetric($date, $type)
 {
@@ -35,4 +37,4 @@ if (count($GLOBALS["metrics"]) > 0) {
         $current_date = date('Y-m-d', strtotime($current_date . ' + 1 days'));
     }
 }
-echo json_encode(['metrics' => $all_metrics, 'summary' => $GLOBALS["summary"]]);
+echo json_encode(['metrics' => $all_metrics, 'summary' => $GLOBALS["summary"], 'volunteers' => $GLOBALS['volunteers']]);
