@@ -18,7 +18,7 @@ require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-$GLOBALS['version']  = "4.1.2";
+$GLOBALS['version']  = "4.1.3";
 $GLOBALS['settings_allowlist'] = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -1257,9 +1257,9 @@ function getServiceBodiesForUserRecursively($service_body_id, $service_body_righ
     }
 
     foreach ($service_body_rights as $service_body) {
-        if ($service_body->parent_id == $service_body_id) {
+        if (intval($service_body->parent_id) === intval($service_body_id)) {
             array_push($service_bodies_results, intval($service_body->id));
-            getServiceBodiesForUserRecursively(intval($service_body->id), $service_body_rights);
+            $service_bodies_results = array_merge($service_bodies_results, getServiceBodiesForUserRecursively(intval($service_body->id), $service_body_rights));
         }
     }
 
