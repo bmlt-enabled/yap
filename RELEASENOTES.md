@@ -3,6 +3,7 @@
 ### 4.2.0 (UNRELEASED)
 * Yap now requires PHP version 8.0 and higher. [#623]
 * Added support for downloading the list of volunteers in JSON format for a given service body. [#612]
+* Added support for customizing SMS for incoming calls. [#636]
 * Show missed calls also as a percentage of total calls received.
 * Metric endpoint now returns volunteer missed and answered metrics, not exposed to UI yet. [#632]
 * Fixed an issue with reports not recursing more than one level. [#620]

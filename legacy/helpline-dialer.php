@@ -84,7 +84,7 @@ if (isset($_REQUEST['Debug']) && intval($_REQUEST['Debug']) == 1) {
 $conferences = $twilioClient->conferences->read(array ("friendlyName" => $_REQUEST['FriendlyName'] ));
 if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     $tandem = 0;
-    $sms_body = "You have an incoming phoneline call from ";
+    $sms_body = word('you_have_an_incoming_phoneline_call_from') . " ";
     if (isset($_REQUEST['StatusCallbackEvent']) && $_REQUEST['StatusCallbackEvent'] == 'participant-join' &&
         ( isset($_REQUEST['SequenceNumber']) && intval($_REQUEST['SequenceNumber']) == 1 )) {
         setConferenceParticipant($_REQUEST['FriendlyName'], CallRole::CALLER);
