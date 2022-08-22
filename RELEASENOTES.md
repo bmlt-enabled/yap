@@ -2,6 +2,7 @@
 
 ### 4.2.0 (UNRELEASED)
 * Yap now requires PHP version 8.0 and higher. [#623]
+* Added support for downloading the list of volunteers in JSON format for a given service body. [#612]
 * Fixed an issue with reports not recursing more than one level. [#620]
 
 ### 4.1.2 (August 17, 2022)

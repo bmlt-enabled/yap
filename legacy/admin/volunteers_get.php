@@ -4,7 +4,7 @@ require_once __DIR__ . '/../_includes/functions.php';
 
 try {
     $report = getVolunteersListReport(setting("service_body_id"));
-    if (isset($_REQUEST['format']) == "csv") {
+    if (isset($_REQUEST['fmt']) && $_REQUEST['fmt'] == "csv") {
         $handle = fopen('php://memory', 'rw');
         try {
             fputcsv($handle, array("name", "number", "gender", "responder", "type", "language", "shift_info"));
@@ -28,9 +28,12 @@ try {
         } finally {
             fclose($handle);
         }
-    } else {
+    } elseif (isset($_REQUEST['fmt']) && $_REQUEST['fmt'] == "json") {
         header("Content-type: application/json");
         echo $report;
+    } else {
+        header("Content-type: application/json");
+        echo json_encode(new StdClass());
     }
 } catch (NoVolunteersException $nve) {
     header("Content-type: application/json");
