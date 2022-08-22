@@ -178,7 +178,7 @@ function getMetricsData() {
                     $("#summary-meetingsearch-calls").html(item['counts'])
                 } else if (item['event_id'] === "12") {
                     var missedCalls = connectedCalls - item['counts'];
-                    var missedCallsPct = Math.round(missedCalls / item['counts'] * 100);
+                    var missedCallsPct = Math.round((missedCalls / connectedCalls) * 100);
 
                     $("#summary-missedvolunteer-calls").html(missedCalls + " ("+ missedCallsPct + "%)");
                 } else if (item['event_id'] === "19") {
