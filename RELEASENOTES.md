@@ -1,6 +1,7 @@
 # Release Notes
 
-### 4.1.3 (UNRELEASED)
+### 4.2.0 (UNRELEASED)
+* Yap now requires PHP version 8.0 and higher. [#623]
 * Fixed an issue with reports not recursing more than one level. [#620]
 
 ### 4.1.2 (August 17, 2022)
