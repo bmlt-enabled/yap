@@ -48,7 +48,7 @@ function getMapMetricByType($service_body_ids, $eventId, $date_range_start, $dat
     $db = new Database();
     $sql = sprintf(
         "select event_id, meta from records_events where event_time >= '$date_range_start' AND event_time <= '$date_range_end' and `event_id` = :eventId and meta is not null %s",
-        "and service_body_id in (" . implode(", ", $service_body_ids) . ")"
+        "and IFNULL(service_body_id,0) in (" . implode(", ", $service_body_ids) . ")"
     );
     $db->query($sql);
     $db->bind(":eventId", $eventId);
@@ -70,14 +70,14 @@ function getCallRecords($service_body_ids, $date_range_start, $date_range_end)
 {
     $guid = uniqid();
     quickExec("INSERT INTO `cache_records_conference_participants`
-SELECT DISTINCT r.callsid as parent_callsid,cp2.callsid,'".$guid."' as guid,re.service_body_id
+SELECT DISTINCT r.callsid as parent_callsid,cp2.callsid,'".$guid."' as guid,IFNULL(re.service_body_id,0) as service_body_id
 FROM records r LEFT OUTER JOIN conference_participants cp ON r.callsid = cp.callsid OR cp.callsid IS NULL
 LEFT OUTER JOIN conference_participants cp2 ON cp.conferencesid = cp2.conferencesid
-LEFT OUTER JOIN records_events re ON cp.callsid = re.callsid AND re.service_body_id is not null
+LEFT OUTER JOIN records_events re ON cp.callsid = re.callsid
 WHERE r.start_time >= '$date_range_start' AND r.start_time <= '$date_range_end'
 UNION
-SELECT DISTINCT r.callsid as parent_callsid,r.callsid,'".$guid."' as guid,re.service_body_id
-FROM records r LEFT OUTER JOIN records_events re on r.callsid = re.callsid AND re.service_body_id IS not NULL
+SELECT DISTINCT r.callsid as parent_callsid,r.callsid,'".$guid."' as guid,IFNULL(re.service_body_id,0) as service_body_id
+FROM records r LEFT OUTER JOIN records_events re on r.callsid = re.callsid
 WHERE r.start_time >= '$date_range_start' AND r.start_time <= '$date_range_end'");
 
     $db = new Database();
@@ -171,19 +171,18 @@ function insertCallEventRecord($eventid, $meta = null)
     $db->close();
 }
 
-function getMetric($service_body_ids, $general, $date_range_start, $date_range_end)
+function getMetric($service_body_ids, $date_range_start, $date_range_end)
 {
     $db = new Database();
     $query = "select DATE_FORMAT(a.event_time, \"%Y-%m-%d\") as timestamp,
        COUNT(DATE_FORMAT(a.event_time, \"%Y-%m-%d\")) as counts,
-       CONCAT('{\"searchType\":\"',a.event_id,'\"}') as data, b.service_body_id from records_events a
-INNER JOIN (select callsid, service_body_id from records_events
-            where event_time >= '$date_range_start' AND event_time <= '$date_range_end' and service_body_id is not NULL
+       CONCAT('{\"searchType\":\"',a.event_id,'\"}') as data, IFNULL(b.service_body_id,0) as service_body_id from records_events a
+INNER JOIN (select callsid, IFNULL(service_body_id,0) as service_body_id from records_events
+            where event_time >= '$date_range_start' AND event_time <= '$date_range_end'
             group by callsid, service_body_id) b on a.callsid = b.callsid " .
     sprintf(
-        "WHERE a.event_id in (1,2,3,19,20,21) and b.service_body_id in (%s) %s %s",
+        "WHERE a.event_id in (1,2,3,19,20,21) and IFNULL(b.service_body_id,0) in (%s) %s",
         implode(",", $service_body_ids),
-        $general ? "OR b.service_body_id is NULL" : "",
         "GROUP BY DATE_FORMAT(a.event_time, \"%Y-%m-%d\"), a.event_id, b.service_body_id"
     );
     $db->query($query);
@@ -192,17 +191,16 @@ INNER JOIN (select callsid, service_body_id from records_events
     return $resultset;
 }
 
-function getMetricCounts($service_body_ids, $general, $date_range_start, $date_range_end)
+function getMetricCounts($service_body_ids, $date_range_start, $date_range_end)
 {
     $db = new Database();
     $query = "select event_id, count(a.event_id) as counts from records_events a
-INNER JOIN (select callsid, service_body_id from records_events
-            where event_time >= '$date_range_start' AND event_time <= '$date_range_end' and service_body_id is not NULL
+INNER JOIN (select callsid, IFNULL(service_body_id, 0) as service_body_id from records_events
+            where event_time >= '$date_range_start' AND event_time <= '$date_range_end'
             group by callsid, service_body_id) b on a.callsid = b.callsid " .
         sprintf(
-            "WHERE a.event_id in (1,2,3,12,19,20,21) and b.service_body_id in (%s) %s %s",
+            "WHERE a.event_id in (1,2,3,12,19,20,21) and IFNULL(b.service_body_id,0) in (%s) %s",
             implode(",", $service_body_ids),
-            $general ? "OR b.service_body_id is NULL" : "",
             "GROUP BY a.event_id ORDER BY a.event_id"
         );
     $db->query($query);
@@ -211,7 +209,7 @@ INNER JOIN (select callsid, service_body_id from records_events
     return $resultset;
 }
 
-function getAnsweredAndMissedVolunteerMetrics($service_body_ids, $general, $date_range_start, $date_range_end)
+function getAnsweredAndMissedVolunteerMetrics($service_body_ids, $date_range_start, $date_range_end)
 {
     $db = new Database();
     $query = "select a.meta,
@@ -219,13 +217,12 @@ a.service_body_id,
 sum(case when a.event_id = 6 or a.event_id = 9 then 1 else 0 end) as answered_count,
 sum(case when a.event_id = 8 then 1 else 0 end) as missed_count
 from records_events a
-INNER JOIN (select callsid, service_body_id from records_events
-            where event_time >= '$date_range_start' AND event_time <= '$date_range_end' and service_body_id is not NULL
+INNER JOIN (select callsid, IFNULL(service_body_id,0) as service_body_id from records_events
+            where event_time >= '$date_range_start' AND event_time <= '$date_range_end'
             group by callsid, service_body_id) b on a.callsid = b.callsid " .
         sprintf(
-            "WHERE a.event_id in (6, 8, 9) and b.service_body_id in (%s) %s %s",
+            "WHERE a.event_id in (6, 8, 9) and IFNULL(b.service_body_id,0) in (%s) %s",
             implode(",", $service_body_ids),
-            $general ? "OR b.service_body_id is NULL" : "",
             "GROUP BY a.meta, a.service_body_id"
         );
     $db->query($query);
