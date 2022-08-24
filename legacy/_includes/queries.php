@@ -141,6 +141,16 @@ where alert_id = %s and b.to_number IS NULL", $alert_id, $alert_id);
     return $resultset;
 }
 
+function getCommittees()
+{
+    $db = new Database();
+    $sql = sprintf("SELECT committee_id, committee_name from committee");
+    $db->query($sql);
+    $resultset = $db->resultset();
+    $db->close();
+    return $resultset;
+}
+
 function insertCallEventRecord($eventid, $meta = null)
 {
     if (isset($_REQUEST['CallSid'])) {

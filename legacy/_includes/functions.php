@@ -25,6 +25,7 @@ $GLOBALS['settings_allowlist'] = [
     'bmlt_root_server' => [ 'description' => 'The root server to use.' , 'default' => '', 'overridable' => false, 'hidden' => false],
     'bmlt_auth' => [ 'description' => '' , 'default' => true, 'overridable' => false, 'hidden' => false ],
     'call_routing_filter' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
+    'committee_map' => [ 'description' => '' , 'default' => [0 => ''], 'overridable' => true, 'hidden' => false],
     'config' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => true],
     'custom_geocoding' => ['description' => '', 'default' => [], 'overridable' => true, 'hidden' => false],
     'custom_extensions' => ['description' => '', 'default' => [0 => ''], 'overridable' => true, 'hidden' => false],
@@ -1227,7 +1228,17 @@ function getServiceBodiesForRouting($latitude, $longitude)
 function getServiceBodies()
 {
     $bmlt_search_endpoint = sprintf('%s/client_interface/json/?switcher=GetServiceBodies', getAdminBMLTRootServer());
-    return json_decode(get($bmlt_search_endpoint, false, 3600));
+    $service_bodies = json_decode(get($bmlt_search_endpoint, false, 3600));
+    $committees = getCommittees();
+    foreach ($committees as $committee) {
+        $service_bodies[] = (object)[
+            "id" => $committee['committee_id'],
+            "name" => $committee['committee_name'],
+            "parent_name" => "General",
+            "parent_id" => "0"
+        ];
+    }
+    return $service_bodies;
 }
 
 function getServiceBody($service_body_id)

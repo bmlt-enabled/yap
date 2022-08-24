@@ -45,6 +45,14 @@ if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETING
         </Response>
         <?php
         exit();
+} elseif ($searchType == SearchType::COMMITTEES) {
+        $_SESSION['override_service_body_id'] = setting('committee_map')[$_REQUEST['Digits']];
+    ?>
+        <Response>
+            <Redirect method="GET">helpline-search.php?Called=<?php echo $_REQUEST["Called"] . getSessionLink(true)?></Redirect>
+        </Response>
+        <?php
+        exit();
 } elseif ($searchType == SearchType::VOICEMAIL_PLAYBACK) { ?>
         <Response>
         <Redirect method="GET">voicemail-playback.php</Redirect>

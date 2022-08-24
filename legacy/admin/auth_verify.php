@@ -35,7 +35,7 @@ $expired = is_session_expired();
 if (isset($_REQUEST["format"]) && $_REQUEST["format"] === "json") {
     header('Content-Type: application/json');
     echo "{\"expired\":" . get_str_val($expired) . "}";
-} else if ($expired) {
+} elseif ($expired) {
     header('Location: index.php?auth=false');
     exit();
 }
