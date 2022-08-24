@@ -2,9 +2,9 @@
 require_once __DIR__ . '/../_includes/functions.php';
 header("content-type: application/json");
 $reportsServiceBodies = getReportsServiceBodies();
-$GLOBALS["metrics"] = getMetric($reportsServiceBodies, intval($_REQUEST['service_body_id']) == 0, $_REQUEST['date_range_start'], $_REQUEST['date_range_end']);
-$GLOBALS["summary"] = getMetricCounts($reportsServiceBodies, intval($_REQUEST['service_body_id']) == 0, $_REQUEST['date_range_start'], $_REQUEST['date_range_end']);
-$GLOBALS["volunteers"] = getAnsweredAndMissedVolunteerMetrics($reportsServiceBodies, intval($_REQUEST['service_body_id']) == 0, $_REQUEST['date_range_start'], $_REQUEST['date_range_end']);
+$GLOBALS["metrics"] = getMetric($reportsServiceBodies, $_REQUEST['date_range_start'], $_REQUEST['date_range_end']);
+$GLOBALS["summary"] = getMetricCounts($reportsServiceBodies, $_REQUEST['date_range_start'], $_REQUEST['date_range_end']);
+$GLOBALS["volunteers"] = getAnsweredAndMissedVolunteerMetrics($reportsServiceBodies, $_REQUEST['date_range_start'], $_REQUEST['date_range_end']);
 
 function findMetric($date, $type)
 {

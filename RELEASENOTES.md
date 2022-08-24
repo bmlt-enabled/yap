@@ -6,6 +6,7 @@
 * Added support for customizing SMS for incoming calls. [#636]
 * Show missed calls also as a percentage of total calls received.
 * Metric endpoint now returns volunteer missed and answered metrics, not exposed to UI yet. [#632]
+* Fixed issues with unassigned aka "General" metrics, when no service body is known or defined at a point in a call or SMS. [#627]
 * Fixed an issue with reports not recursing more than one level. [#620]
 
 ### 4.1.2 (August 17, 2022)
