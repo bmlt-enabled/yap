@@ -1296,7 +1296,7 @@ function getServiceBodiesRights()
 
             if (!is_array($service_bodies_for_user->service_body)) {
                 $service_bodies_for_user = array($service_bodies_for_user->service_body);
-            } else if (isset($service_bodies_for_user->service_body)) {
+            } elseif (isset($service_bodies_for_user->service_body)) {
                 $service_bodies_for_user = $service_bodies_for_user->service_body;
             } else {
                 $service_bodies_for_user = array();
