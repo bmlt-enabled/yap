@@ -170,6 +170,12 @@ function getMetricsData() {
             }
 
             var connectedCalls = 0;
+            $("#summary-volunteer-calls").html("0");
+            $("#summary-meetingsearch-calls").html("0");
+            $("#summary-missedvolunteer-calls").html("0 (0%)");
+            $("#summary-meetingsearch-sms").html("0");
+            $("#summary-volunteer-sms").html("0");
+
             for (var item of data['summary']) {
                 if (item['event_id'] === "1") {
                     $("#summary-volunteer-calls").html(item['counts'])
@@ -184,7 +190,7 @@ function getMetricsData() {
                 } else if (item['event_id'] === "19") {
                     $("#summary-meetingsearch-sms").html(item['counts'])
                 } else if (item['event_id'] === "20") {
-                    $("#summary-meetingsearch-sms").html(item['counts'])
+                    $("#summary-volunteer-sms").html(item['counts'])
                 }
             }
 
