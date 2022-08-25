@@ -80,6 +80,11 @@ return [
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                /* TODO In PHP 8.1, PDO no longer casts all results to strings. When we drop support for PHP < 8.1,
+                        we should set this back to false, and modify the code to handle the returned db types
+                        appropriately.
+                */
+                PDO::ATTR_STRINGIFY_FETCHES => true,
             ]) : [],
         ],
     ],

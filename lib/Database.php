@@ -21,8 +21,13 @@ class Database
     {
         $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->dbname;
         $options = array(
-            PDO::ATTR_PERSISTENT    => true,
-            PDO::ATTR_ERRMODE       => PDO::ERRMODE_EXCEPTION
+            PDO::ATTR_PERSISTENT        => true,
+            PDO::ATTR_ERRMODE           => PDO::ERRMODE_EXCEPTION,
+            /* TODO In PHP 8.1, PDO no longer casts all results to strings. When we drop support for PHP < 8.1,
+                    we should set this back to false, and modify the code to handle the returned db types
+                    appropriately.
+            */
+            PDO::ATTR_STRINGIFY_FETCHES => true,
         );
         try {
             $this->dbh = new PDO($dsn, $this->user, $this->pass, $options);
