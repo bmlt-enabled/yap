@@ -20,3 +20,4 @@ services:
         MYSQL_DATABASE: yap
         MYSQL_USER: yap_user
         MYSQL_PASSWORD: yap_password
+        MYSQL_ROOT_HOST: '%'

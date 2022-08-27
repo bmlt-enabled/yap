@@ -23,7 +23,7 @@ debug:
 	docker-compose up --build
 
 test:
-	composer test
+	php artisan test
 
 bundle-deps:
 	yarn install
