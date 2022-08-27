@@ -15,7 +15,7 @@ it('initial call-in default', function () {
             '<Response>',
             '<Pause length="2"></Pause>',
             '<Say voice="alice" language="en-US">Test Helpline</Say>',
-            '<Say voice="alice" language="en-US" >press one to find someone to talk to</Say>',
+            '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
             '<Say voice="alice" language="en-US">press two to search for meetings</Say>',
             '</Gather>',
             '</Response>'
