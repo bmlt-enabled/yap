@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../_includes/functions.php';
+require_once 'auth_verify.php';
 header("content-type: application/json");
 $action = $_REQUEST['action'];
 $data = json_decode(file_get_contents('php://input'));

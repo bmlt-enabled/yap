@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../_includes/functions.php';
+require_once 'auth_verify.php';
 header("content-type: application/json");
 $reportsServiceBodies = getReportsServiceBodies();
 $GLOBALS["metrics"] = getMetric($reportsServiceBodies, $_REQUEST['date_range_start'], $_REQUEST['date_range_end']);
