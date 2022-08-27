@@ -48,23 +48,17 @@ if (has_setting("extension_dial") && json_decode(setting("extension_dial"))) {?>
             <Play><?php echo setting($promptset_name) ?></Play>
         <?php } else { ?>
             <?php if (!isset($_REQUEST["Digits"])) { ?>
-                <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
-                    <?php echo setting('title') ?>
-                </Say>
+                <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>"><?php echo setting('title') ?></Say>
             <?php }
 
             $searchTypeSequence = getDigitMapSequence('digit_map_search_type');
             foreach ($searchTypeSequence as $digit => $type) {
                 if ($type == SearchType::VOLUNTEERS) { ?>
-                    <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>" >
-                        <?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_find') . " " . word('someone_to_talk_to') ?>
-                    </Say>
+                    <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>" ><?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_find') . " " . word('someone_to_talk_to') ?></Say>
                 <?php }
 
                 if ($type == SearchType::MEETINGS) { ?>
-                    <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
-                        <?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . word('meetings') ?>
-                    </Say>
+                    <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>"><?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . word('meetings') ?></Say>
                 <?php }
 
                 if ($type == SearchType::JFT) {?>
