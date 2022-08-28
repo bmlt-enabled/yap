@@ -22,6 +22,9 @@ simulate:
 debug:
 	docker-compose up --build
 
+test-deps:
+	pecl install xdebug-3.1.5
+
 test:
 	php artisan test
 
