@@ -47,6 +47,9 @@ jobs:
 
   package:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     needs: [ lint ]
@@ -76,6 +79,7 @@ jobs:
         run: |
           export ARTIFACT_FILE=yap-${GITHUB_RUN_NUMBER}-${GITHUB_SHA}
           export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
+          echo "ARTIFACT_FILENAME=${ARTIFACT_FILENAME}" >> $GITHUB_ENV
           git archive --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
           DISABLE_NOTIFIER=true make deploy
           unzip ${ARTIFACT_FILENAME}
@@ -89,17 +93,16 @@ jobs:
           mkdir artifacts/
           mv ${ARTIFACT_FILENAME} artifacts/
 
-      - name: Upload artifact to S3
-        id: upload-artifact-to-s3
-        uses: jakejarvis/s3-sync-action@master
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          args: --acl public-read --follow-symlinks
-        env:
-          AWS_S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE_DIR: artifacts/
-          DEST_DIR: yap
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions/gh-ci-s3-artifact
+          role-session-name: gh-actions-jft
+          aws-region: us-east-1
+
+      - name: copy artifact to s3
+        run: |
+          aws s3 cp artifacts/${ARTIFACT_FILENAME} s3://${{ secrets.S3_BUCKET }}/yap/${ARTIFACT_FILENAME}
 
       - uses: act10ns/slack@v1
         with:
