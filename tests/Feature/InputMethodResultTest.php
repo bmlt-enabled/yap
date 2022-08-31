@@ -1,9 +1,9 @@
 <?php
-beforeAll(function() {
+beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
 
-beforeEach(function() {
+beforeEach(function () {
     $_SERVER['REQUEST_URI'] = "/";
 });
 
@@ -20,7 +20,6 @@ test('search for volunteers by city or county', function () {
             '</Response>'
         ], false);
 });
-
 
 test('search for volunteers by zip code', function () {
     $_REQUEST['SearchType'] = "1";

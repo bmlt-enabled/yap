@@ -1,9 +1,9 @@
 <?php
-beforeAll(function() {
+beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
 
-beforeEach(function() {
+beforeEach(function () {
     $_SERVER['REQUEST_URI'] = "/";
 });
 
@@ -22,4 +22,3 @@ test('initial call-in default', function () {
             '</Response>'
     ], false);
 });
-

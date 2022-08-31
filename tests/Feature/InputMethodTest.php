@@ -1,9 +1,9 @@
 <?php
-beforeAll(function() {
+beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
 
-beforeEach(function() {
+beforeEach(function () {
     $_SERVER['REQUEST_URI'] = "/";
 });
 
