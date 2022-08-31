@@ -1,6 +1,4 @@
 <?php
-use Faker\Factory;
-
 beforeAll(function() {
     putenv("ENVIRONMENT=test");
 });

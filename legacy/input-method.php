@@ -1,7 +1,6 @@
 <?php
     require_once '_includes/functions.php';
-    header("content-type: text/xml");
-    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     getIvrResponse('index.php', null, getPossibleDigits('digit_map_search_type'), array(), 'Digits');
     $searchType = getDigitResponse('digit_map_search_type', 'Digits');
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
@@ -66,7 +65,7 @@ if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETING
         exit();
 } ?>
 <Response>
-    <Gather language="<?php echo setting('gather_language') ?>" input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=<?php echo $searchType?>"  method="GET">
+    <Gather language="<?php echo setting('gather_language') ?>" input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=<?php echo $searchType?>" method="GET">
         <?php
         if ($playTitle == "1") { ?>
             <Say voice="<?php echo voice() ?>" language="<?php echo setting("language")?>"><?php echo setting("title")?></Say>
@@ -80,15 +79,11 @@ if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETING
         $locationSearchMethodSequence = getDigitMapSequence('digit_map_location_search_method');
         foreach ($locationSearchMethodSequence as $digit => $method) {
             if ($method == LocationSearchMethod::VOICE) { ?>
-                <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
-                    <?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . $searchDescription . " " . word('by') . " " . word('city_or_county') ?>
-                </Say>
+                <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>"><?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . $searchDescription . " " . word('by') . " " . word('city_or_county') ?></Say>
             <?php }
 
             if ($method == LocationSearchMethod::DTMF) { ?>
-                 <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
-                    <?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . $searchDescription . " " . word('by') . " " . word('zip_code') ?>
-                </Say>
+                 <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>"><?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . $searchDescription . " " . word('by') . " " . word('zip_code') ?></Say>
             <?php }
 
             if ($method == SearchType::JFT && $searchType == SearchType::MEETINGS) { ?>

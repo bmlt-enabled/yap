@@ -1,1 +1,2 @@
-<?php require $includePath;
+<?php
+require $includePath;
