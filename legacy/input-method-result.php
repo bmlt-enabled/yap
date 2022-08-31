@@ -1,6 +1,5 @@
 <?php
     require_once '_includes/functions.php';
-    header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     getIvrResponse("index.php", null, getPossibleDigits('digit_map_location_search_method'));
     $locationSearchMethod = getDigitResponse('digit_map_location_search_method', 'Digits');
