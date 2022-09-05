@@ -7,31 +7,27 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php:
+          - "7.4"
+          - "8.0"
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
       - uses: actions/checkout@v2
         id: code-checkout
 
-      - name: Validate composer.json and composer.lock
+      - name: Validate composer.json
         id: composer-validate
         run: composer validate
-
-      - name: Cache Composer packages
-        id: composer-cache
-        uses: actions/cache@v2
-        with:
-          path: vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php-
 
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
         id: install-dependencies
         uses: php-actions/composer@v5
         with:
-          php_version: 8.0
+          php_version: ${{ matrix.php }}
           args: --prefer-dist --no-progress --no-suggest
 
       - name: PHPCS checker
@@ -47,6 +43,11 @@ jobs:
 
   package:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php:
+          - "7.4"
+          - "8.0"
     permissions:
       id-token: write
       contents: write
@@ -57,27 +58,18 @@ jobs:
       - uses: actions/checkout@v2
         id: code-checkout
 
-      - name: Cache Composer packages
-        id: composer-cache
-        uses: actions/cache@v2
-        with:
-          path: vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php-
-
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
         id: install-dependencies
         uses: php-actions/composer@v5
         with:
-          php_version: 7.3
+          php_version: ${{ matrix.php }}
           args: --prefer-dist --no-progress --no-suggest
 
       - name: Build package
         id: build-package
         run: |
-          export ARTIFACT_FILE=yap-${GITHUB_RUN_NUMBER}-${GITHUB_SHA}
+          export ARTIFACT_FILE=yap-php-${{ matrix.php }}-${GITHUB_RUN_NUMBER}-${GITHUB_SHA}
           export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
           echo "ARTIFACT_FILENAME=${ARTIFACT_FILENAME}" >> $GITHUB_ENV
           git archive --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
