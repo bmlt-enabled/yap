@@ -7,6 +7,11 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php:
+          - "7.4"
+          - "8.0"
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
@@ -31,7 +36,7 @@ jobs:
         id: install-dependencies
         uses: php-actions/composer@v5
         with:
-          php_version: 7.3
+          php_version: ${{ matrix.php }}
           args: --prefer-dist --no-progress --no-suggest
 
       - name: PHPCS checker
@@ -47,6 +52,11 @@ jobs:
 
   package:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php:
+          - "7.4"
+          - "8.0"
     needs: [ lint ]
     steps:
       - uses: actions/checkout@v2
@@ -66,13 +76,13 @@ jobs:
         id: install-dependencies
         uses: php-actions/composer@v5
         with:
-          php_version: 7.3
+          php_version: ${{ matrix.php }}
           args: --prefer-dist --no-progress --no-suggest
 
       - name: Build package
         id: build-package
         run: |
-          export ARTIFACT_FILE=yap-${GITHUB_REF##*/}
+          export ARTIFACT_FILE=yap-${GITHUB_REF##*/}-php-${{ matrix.php }}
           export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
           git archive --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
           DISABLE_NOTIFIER=true make deploy
@@ -91,8 +101,8 @@ jobs:
       - name: Prepare artifact metadata
         id: prepare_artifact_metadata
         run: |
-          echo ::set-output name=ARTIFACT_PATH::./yap-${GITHUB_REF##*/}.zip
-          echo ::set-output name=ARTIFACT_NAME::yap-${GITHUB_REF##*/}.zip
+          echo ::set-output name=ARTIFACT_PATH::./yap-${GITHUB_REF##*/}-php-${{ matrix.php }}.zip
+          echo ::set-output name=ARTIFACT_NAME::yap-${GITHUB_REF##*/}-php-${{ matrix.php }}.zip
 
       - name: Release beta
         if: contains(github.ref, 'beta')
