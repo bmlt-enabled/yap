@@ -105,7 +105,7 @@ jobs:
           echo ::set-output name=ARTIFACT_NAME::yap-${GITHUB_REF##*/}-php-${{ matrix.php }}.zip
 
       - name: Release beta
-        if: contains(github.ref, 'beta')
+        if: contains(github.ref, 'beta') && matrix.php == '7.4'
         id: beta_release
         uses: actions/create-release@v1
         env:
@@ -129,7 +129,7 @@ jobs:
           asset_content_type: application/zip
 
       - name: Release stable
-        if: "!contains(github.ref, 'beta')"
+        if: !contains(github.ref, 'beta') && matrix.php == '7.4'
         id: stable_release
         uses: actions/create-release@v1
         env:
@@ -142,7 +142,7 @@ jobs:
           draft: false
 
       - name: Upload Stable Asset
-        if: "!contains(github.ref, 'beta')"
+        if: !contains(github.ref, 'beta')
         id: stable-release-asset
         uses: actions/upload-release-asset@v1
         env:
