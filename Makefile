@@ -26,7 +26,7 @@ test-deps:
 	pecl install xdebug-3.1.5
 
 test:
-	php artisan test
+	vendor/pestphp/pest/bin/pest --configuration phpunit.xml tests
 
 bundle-deps:
 	yarn install
