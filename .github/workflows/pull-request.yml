@@ -16,6 +16,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: yap_root_password
           MYSQL_DATABASE: yap
+          MYSQL_ROOT_HOST: '%'
         ports:
           - 3106:3306
 
