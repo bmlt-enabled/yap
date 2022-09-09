@@ -50,9 +50,8 @@ jobs:
 
       - name: Test
         id: run-tests
-        run: php artisan test
-        env:
-          ENVIRONMENT: test
+        run: |
+          php artisan test --testdox
 
       - uses: act10ns/slack@v1
         with:
