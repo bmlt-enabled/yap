@@ -32,7 +32,7 @@ jobs:
 
       - name: PHPCS checker
         id: php-codesniffer
-        run: vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=6 --standard=PSR2 --ignore=vendor,bootstrap,database,storage --extensions=php --report=summary ./
+        run: vendor/squizlabs/php_codesniffer/bin/phpcs
 
       - uses: act10ns/slack@v1
         with:
