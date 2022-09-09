@@ -59,7 +59,7 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          junit_files: "test-results/*.xml"
+          junit_files: "tests/*.xml"
 
       - uses: act10ns/slack@v1
         with:
