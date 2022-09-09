@@ -36,11 +36,11 @@ jobs:
 
       - name: PHPCS checker
         id: php-codesniffer
-        run: vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=5 --standard=PSR2 --ignore=vendor,bootstrap,database,storage --extensions=php --report=summary ./
+        run: vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=6 --standard=PSR2 --ignore=vendor,bootstrap,database,storage --extensions=php --report=summary ./
 
       - name: Test
-        id: test
-        run: vendor/pestphp/pest/bin/pest --configuration phpunit.xml tests
+        id: run-tests
+        run: vendor/pestphp/pest/bin/pest --configuration phpunit.xml tests --verbose
 
       - uses: act10ns/slack@v1
         with:
