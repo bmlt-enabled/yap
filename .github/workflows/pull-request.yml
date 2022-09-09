@@ -40,7 +40,7 @@ jobs:
 
       - name: Test
         id: run-tests
-        run: ./test.sh
+        run: env ENVIRONMENT=test php artisan test
 
       - uses: act10ns/slack@v1
         with:
