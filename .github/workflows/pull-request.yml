@@ -54,6 +54,8 @@ jobs:
         run: |
           cp config.test.php config.php
           vendor/bin/pest --log-junit test-report.xml
+          cat test-report.xml
+          ls -R *.md
 
       - name: Test Summary
         uses: test-summary/action@v1
