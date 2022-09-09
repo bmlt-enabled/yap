@@ -65,7 +65,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: test-summary
-          path: test-summary.md
+          path: '*.md'
         if: always()
 
       - uses: act10ns/slack@v1
