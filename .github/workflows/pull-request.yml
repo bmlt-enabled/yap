@@ -40,7 +40,7 @@ jobs:
 
       - name: Test
         id: run-tests
-        run: set -e || vendor/pestphp/pest/bin/pest --configuration phpunit.xml tests --verbose
+        run: ./test.sh
 
       - uses: act10ns/slack@v1
         with:
