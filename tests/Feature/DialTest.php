@@ -19,6 +19,6 @@ test('initial call-in default', function () {
             '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
             '<Say voice="alice" language="en-US">press two to search for meetings</Say>',
             '</Gather>',
-            '</Response>'
+            '</Responsey>'
     ], false);
 });
