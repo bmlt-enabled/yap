@@ -51,7 +51,7 @@ jobs:
       - name: Test
         id: run-tests
         run: |
-          vendor/bin/pest
+          vendor/bin/pest --testdox
 
       - uses: act10ns/slack@v1
         with:
