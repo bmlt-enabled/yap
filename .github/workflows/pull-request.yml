@@ -54,14 +54,17 @@ jobs:
         run: |
           cp config.test.php config.php
           vendor/bin/pest --log-junit test-report.xml
-          cat test-report.xml
-          ls -R *.md
 
       - name: Test Summary
         uses: test-summary/action@v1
         with:
           paths: "test-report.xml"
         if: always()
+
+      - name: Show
+        id: show
+        run: |
+          ls -R *.md
 
       - name: Upload test summary
         uses: actions/upload-artifact@v3
