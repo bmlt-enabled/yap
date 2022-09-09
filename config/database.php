@@ -1,26 +1,32 @@
 <?php
 
-class SearchType
-{
-    const NONE = -1;
-    const VOLUNTEERS = 1;
-    const MEETINGS = 2;
-    const JFT = 3;
-    const CUSTOM_EXTENSIONS = 998;
-    const VOICEMAIL_PLAYBACK = 999;
-    const DIALBACK = 1000;
+if (!class_exists("SearchType")) {
+    class SearchType
+    {
+        const NONE = -1;
+        const VOLUNTEERS = 1;
+        const MEETINGS = 2;
+        const JFT = 3;
+        const CUSTOM_EXTENSIONS = 998;
+        const VOICEMAIL_PLAYBACK = 999;
+        const DIALBACK = 1000;
+    }
 }
 
-class LocationSearchMethod
-{
-    const NONE = -1;
-    const VOICE = 4;
-    const DTMF = 5;
+if (!class_exists("LocationSearchMethod")) {
+    class LocationSearchMethod
+    {
+        const NONE = -1;
+        const VOICE = 4;
+        const DTMF = 5;
+    }
 }
 
-class MeetingResultSort
-{
-    const TODAY = 0;
+if (!class_exists("MeetingResultSort")) {
+    class MeetingResultSort
+    {
+        const TODAY = 0;
+    }
 }
 
 if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], "/v1/")) {
@@ -29,6 +35,7 @@ if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], "/v1/")) {
     putenv('DB_USERNAME=' . $mysql_username);
     putenv('DB_PASSWORD=' . $mysql_password);
     putenv('DB_DATABASE=' . $mysql_database);
+    putenv('DB_PORT=' . $mysql_port);
 }
 
 return [

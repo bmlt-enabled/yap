@@ -5,10 +5,21 @@ on:
     branches: [ 'master' ]
 
 jobs:
-  lint:
+  test:
     runs-on: ubuntu-latest
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    services:
+      db-tests:
+        image: 'mysql/mysql-server:8.0'
+        env:
+          MYSQL_ROOT_PASSWORD: yap_root_password
+          MYSQL_DATABASE: yap
+          MYSQL_ROOT_HOST: '%'
+        ports:
+          - 3106:3306
+
     steps:
       - uses: actions/checkout@v2
         id: code-checkout
@@ -36,7 +47,19 @@ jobs:
 
       - name: PHPCS checker
         id: php-codesniffer
-        run: vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=6 --standard=PSR2 --ignore=vendor,bootstrap,database --extensions=php --report=summary ./
+        run: vendor/squizlabs/php_codesniffer/bin/phpcs
+
+      - name: Test
+        id: run-tests
+        run: |
+          cp config.test.php config.php
+          vendor/bin/pest --log-junit tests/test-results.xml
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          junit_files: "tests/*.xml"
 
       - uses: act10ns/slack@v1
         with:

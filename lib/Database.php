@@ -4,6 +4,7 @@ define("DB_HOST", $GLOBALS['mysql_hostname']);
 define("DB_USERNAME", $GLOBALS['mysql_username']);
 define("DB_PASSWORD", $GLOBALS['mysql_password']);
 define("DB_DATABASE", $GLOBALS['mysql_database']);
+define("DB_PORT", isset($GLOBALS['mysql_port']) ? $GLOBALS['mysql_port'] : 3306);
 
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 class Database
@@ -13,13 +14,14 @@ class Database
     private $user      = DB_USERNAME;
     private $pass      = DB_PASSWORD;
     private $dbname    = DB_DATABASE;
+    private $port      = DB_PORT;
     private $dbh;
     private $error;
     private $stmt;
 
     public function __construct()
     {
-        $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->dbname;
+        $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s', $this->host, $this->port, $this->dbname);
         $options = array(
             PDO::ATTR_PERSISTENT        => true,
             PDO::ATTR_ERRMODE           => PDO::ERRMODE_EXCEPTION,

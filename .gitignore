@@ -5,7 +5,7 @@ cookie.txt
 *_cookie.txt
 config.php
 config.*.php
-config_*.php
+!config.test.php
 test.php
 public/dist/croutonjs
 public/dist/js/*.js
@@ -32,3 +32,4 @@ npm-debug.log
 docs/node_modules
 docs/build
 !docs/package-lock.json
+test-report.xml

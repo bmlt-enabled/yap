@@ -23,7 +23,7 @@ class LegacyController extends Controller
             $content_type = 'text/xml';
         }
 
-        return $this->renderPath($path, $content_type);
+        return response()->view('legacy', ['includePath' => $path])->header('content-Type', $content_type);
     }
 
     public function msr($latitude, $longitude)
@@ -32,8 +32,7 @@ class LegacyController extends Controller
         $_REQUEST['latitude'] = $latitude;
         $_REQUEST['longitude'] = $longitude;
 
-        return response()->view('legacy', ['includePath' => $path])
-            ->header('Content-Type', 'text/html');
+        return response()->view('legacy', ['includePath' => $path, 'contentType' => 'text/html']);
     }
 
     protected function renderPath($path, $content_type)
@@ -41,8 +40,7 @@ class LegacyController extends Controller
         // view()->addNamespace('legacy', base_path('endpoints/'));
 
         if (file_exists($path)) {
-            return response()->view('legacy', ['includePath' => $path])
-                ->header('Content-Type', $content_type);
+            return response()->view('legacy', ['includePath' => $path, 'contentType' => $content_type]);
         } else {
             abort(404);
         }

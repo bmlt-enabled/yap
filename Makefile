@@ -8,10 +8,10 @@ run:
 lint:
 	find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l
 	composer install
-	vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=6 --standard=PSR2 --ignore=vendor,bootstrap,database,storage/framework/views --extensions=php ./
+	vendor/squizlabs/php_codesniffer/bin/phpcs
 
 lint-fix: lint
-	vendor/squizlabs/php_codesniffer/bin/phpcbf --warning-severity=6 --standard=PSR2 --ignore=vendor,bootstrap,database,storage/framework/views --extensions=php --report=summary ./
+	vendor/squizlabs/php_codesniffer/bin/phpcbf
 
 upgrade:
 	./upgrade.sh
@@ -22,8 +22,11 @@ simulate:
 debug:
 	docker-compose up --build
 
+test-deps:
+	pecl install xdebug-3.1.5
+
 test:
-	composer test
+	vendor/pestphp/pest/bin/pest --configuration phpunit.xml tests
 
 bundle-deps:
 	yarn install
