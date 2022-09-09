@@ -53,22 +53,13 @@ jobs:
         id: run-tests
         run: |
           cp config.test.php config.php
-          vendor/bin/pest --testdox-html tests/test-results.html
+          vendor/bin/pest --testdox-xml tests/test-results.xml
 
-#      - name: Test Summary
-#        uses: test-summary/action@v1
-#        with:
-#          paths: "tests/test-results.xml"
-#          output: "tests/test-summary.md"
-#          show: all
-#        if: always()
-
-      - name: Upload test summary
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-summary
-          path: "tests/test-results.html"
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
+        with:
+          junit_files: "test-results/*.xml"
 
       - uses: act10ns/slack@v1
         with:
