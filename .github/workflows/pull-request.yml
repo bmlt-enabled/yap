@@ -58,14 +58,10 @@ jobs:
       - name: Test Summary
         uses: test-summary/action@v1
         with:
-          paths: test-report.xml
+          paths: "test-report.xml"
           output: test-summary.md
+          show: all
         if: always()
-
-      - name: Show
-        id: show
-        run: |
-          ls -R *.md
 
       - name: Upload test summary
         uses: actions/upload-artifact@v3
