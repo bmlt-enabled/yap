@@ -55,13 +55,12 @@ jobs:
           cp config.test.php config.php
           vendor/bin/pest --log-junit test-report.xml
 
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()    # run this step even if previous step failed
+      - name: Publish Test Report
+        id: publish-tests-report
+        uses: mikepenz/action-junit-report@v3
+        if: always()
         with:
-          name: PEST Tests            # Name of the check run which will be created
-          path: test-report.xml       # Path to test results
-          reporter: java-junit        # Format of test results
+          report_paths: 'report-test.xml'
 
       - uses: act10ns/slack@v1
         with:
