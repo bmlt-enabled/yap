@@ -58,7 +58,8 @@ jobs:
       - name: Test Summary
         uses: test-summary/action@v1
         with:
-          paths: "test-report.xml"
+          paths: test-report.xml
+          output: test-summary.md
         if: always()
 
       - name: Show
@@ -70,7 +71,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: test-summary
-          path: '*.md'
+          path: test-summary.md
         if: always()
 
       - uses: act10ns/slack@v1
