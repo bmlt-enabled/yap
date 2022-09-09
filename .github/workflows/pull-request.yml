@@ -51,6 +51,7 @@ jobs:
       - name: Test
         id: run-tests
         run: |
+          cp config.test.php config.php
           vendor/bin/pest --testdox
 
       - uses: act10ns/slack@v1
