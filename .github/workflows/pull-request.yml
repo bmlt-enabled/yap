@@ -51,7 +51,7 @@ jobs:
       - name: Test
         id: run-tests
         run: |
-          php artisan test --testdox
+          vendor/bin/pest
 
       - uses: act10ns/slack@v1
         with:
