@@ -15,7 +15,7 @@ function setConfigForService($service_body_id)
     }
 }
 
-if (!isset($_SESSION['override_service_body_id'])) {
+if (!isset($_SESSION['override_service_body_id']) && !isset($_REQUEST["override_service_body_config_id"])) {
     $service_body_id = 0;
     if (isset($_REQUEST["service_body_id"]) || isset($_REQUEST["override_service_body_id"])) {
         $service_body_id = isset($_REQUEST["service_body_id"]) ? $_REQUEST["service_body_id"] : $_REQUEST["override_service_body_id"];
