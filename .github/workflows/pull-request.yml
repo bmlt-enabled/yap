@@ -53,13 +53,13 @@ jobs:
         id: run-tests
         run: |
           cp config.test.php config.php
-          vendor/bin/pest --log-junit test-report.xml
+          vendor/bin/pest --log-junit tests/test-results.xml
 
       - name: Test Summary
         uses: test-summary/action@v1
         with:
-          paths: "test-report.xml"
-          output: test-summary.md
+          paths: "tests/test-results.xml"
+          output: "tests/test-summary.md"
           show: all
         if: always()
 
@@ -67,7 +67,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: test-summary
-          path: test-summary.md
+          path: "tests/test-summary.md"
         if: always()
 
       - uses: act10ns/slack@v1
