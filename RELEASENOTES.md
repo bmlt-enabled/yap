@@ -1,6 +1,6 @@
 # Release Notes
 
-### 4.2.0 (UNRELEASED)
+### 4.2.0 (September 9, 2022)
 * Yap now requires PHP version 8.0 and higher. [#623]
 * Added support for downloading the list of volunteers in JSON format for a given service body. [#612]
 * Added support for customizing SMS for incoming calls. [#636]
