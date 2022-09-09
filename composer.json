@@ -2,7 +2,7 @@
     "require": {
         "twilio/sdk": "^5.41",
         "phpmailer/phpmailer": "^6.0",
-	"fideloper/proxy": "^4.2",
+	    "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.0",
@@ -22,7 +22,10 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     },
     "extra": {
         "laravel": {
