@@ -55,13 +55,18 @@ jobs:
           cp config.test.php config.php
           vendor/bin/pest --log-junit test-report.xml
 
-      - name: Publish Test Report
-        id: publish-tests-report
-        uses: mikepenz/action-junit-report@v3
-        if: always()
+      - name: Test Summary
+        uses: test-summary/action@v1
         with:
-          report_paths: 'report-test.xml'
-          detailed_summary: true
+          paths: "test-report.xml"
+        if: always()
+
+      - name: Upload test summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-summary
+          path: test-summary.md
+        if: always()
 
       - uses: act10ns/slack@v1
         with:
