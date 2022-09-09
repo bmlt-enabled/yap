@@ -9,6 +9,16 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    services:
+      db-tests:
+        image: 'mysql/mysql-server:8.0'
+        env:
+          MYSQL_ROOT_PASSWORD: yap_root_password
+          MYSQL_DATABASE: yap
+        ports:
+          - 3106:3306
+
     steps:
       - uses: actions/checkout@v2
         id: code-checkout
