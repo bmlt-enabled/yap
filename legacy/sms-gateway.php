@@ -1,7 +1,6 @@
 <?php
 require_once '_includes/functions.php';
 require_once '_includes/twilio-client.php';
-header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
 $callRecord = new CallRecord();
@@ -15,6 +14,8 @@ $callRecord->type = RecordType::SMS;
 $callRecord->payload = json_encode($_REQUEST);
 
 insertCallRecord($callRecord);
+
+checkSMSBlackhole();
 
 $address = $_REQUEST['Body'];
 if (str_exists($address, ',')) {

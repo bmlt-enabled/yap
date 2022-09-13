@@ -16,9 +16,7 @@ if (isset($GLOBALS['rollbar_access_token']) && isset($GLOBALS['rollbar_environme
 
 function log_debug($message)
 {
-    if (isset($GLOBALS['cloudlog_key']) && isset($GLOBALS['debug'])) {
-        $GLOBALS['logger']->debug($message);
-    } elseif (isset($GLOBALS['debug']) && boolval($GLOBALS['debug'])) {
+    if (isset($GLOBALS['debug']) && boolval($GLOBALS['debug'])) {
         error_log($message);
     }
 }
