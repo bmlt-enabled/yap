@@ -18,7 +18,7 @@ require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-$GLOBALS['version']  = "4.2.0";
+$GLOBALS['version']  = "4.2.1";
 $GLOBALS['settings_allowlist'] = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -65,6 +65,7 @@ $GLOBALS['settings_allowlist'] = [
     'service_body_config_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'sms_blackhole' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'sms_combine' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_helpline_keyword' => ['description' => '', 'default' => 'talk', 'overridable' => true, 'hidden' => false],
     'sms_summary_page' => ['description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
@@ -172,6 +173,7 @@ class EventId
     const MEETING_SEARCH_SMS = 19;
     const VOLUNTEER_SEARCH_SMS = 20;
     const JFT_LOOKUP_SMS = 21;
+    const SMS_BLACKHOLED = 22;
 
     public static function getEventById($id)
     {
@@ -218,6 +220,8 @@ class EventId
                 return "Volunteer Search via SMS";
             case self::JFT_LOOKUP_SMS:
                 return "JFT Looksup via SMS";
+            case self::SMS_BLACKHOLED:
+                return "SMS Blackholed";
         }
     }
 }
@@ -662,6 +666,19 @@ function checkBlocklist()
                 header("content-type: text/xml");
                 echo "<?xml version='1.0' encoding='UTF-8'?>\n<Response><Reject/></Response>";
                 exit;
+            }
+        }
+    }
+}
+
+function checkSMSBlackhole()
+{
+    if (has_setting('sms_blackhole') && strlen(setting('sms_blackhole')) > 0 && isset($_REQUEST['From'])) {
+        $sms_blackhole_items = explode(",", setting('sms_blackhole'));
+        foreach ($sms_blackhole_items as $sms_blackhole_item) {
+            if (str_starts_with($sms_blackhole_item, $_REQUEST['From'])) {
+                insertCallEventRecord(EventId::SMS_BLACKHOLED);
+                return;
             }
         }
     }
