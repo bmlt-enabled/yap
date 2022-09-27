@@ -11,7 +11,7 @@ function is_session_expired()
     }
 }
 
-if (isset($_REQUEST["service_body_id"]) && $_REQUEST["service_body_id"] > -1) {
+if (isset($_REQUEST["service_body_id"]) && $_REQUEST["service_body_id"] > 0) {
     $found = false;
     $service_body_rights = getServiceBodiesRights();
     if (isset($service_body_rights)) {
@@ -26,7 +26,7 @@ if (isset($_REQUEST["service_body_id"]) && $_REQUEST["service_body_id"] > -1) {
     if (!$found) {
         session_unset();
     }
-} elseif (isset($_REQUEST["service_body_id"]) && $_REQUEST["service_body_id"] == -1) {
+} elseif (isset($_REQUEST["service_body_id"]) && $_REQUEST["service_body_id"] == 0 && isTopLevelAdmin()) {
     $found = true;
 }
 

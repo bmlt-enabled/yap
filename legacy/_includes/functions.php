@@ -1289,6 +1289,11 @@ function canManageUsers()
         (isset($_SESSION['auth_permissions']) && (intval($_SESSION['auth_permissions']) & AdminInterfaceRights::MANAGE_USERS));
 }
 
+function isTopLevelAdmin()
+{
+    return (isset($_SESSION['auth_is_admin']) && boolval($_SESSION['auth_is_admin']));
+}
+
 function getServiceBodiesRightsIds()
 {
     $ids = [];
