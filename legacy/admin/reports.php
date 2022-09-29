@@ -5,8 +5,9 @@
         <div id="reports-servicebodies-dropdown-container">
             <select class="form-control form-control-sm" id="service_body_id" name="service_body_id">
                 <option selected value="-1">-= Select A Service Body =-</option>
+                <?php if (isTopLevelAdmin()) { ?>
                 <option value="0">All</option>
-                <?php
+                <?php }
                 $serviceBodies = getServiceBodiesForUser();
                 sort_on_field($serviceBodies, 'name');
                 foreach ($serviceBodies as $item) {?>
@@ -76,7 +77,7 @@
         <div id="events-table" style="display:none;"></div>
     </div>
 </div>
-<script src="<?php echo url("/public/dist/js/yap-reports.min.js")?>"></script>
+<script src="<?php echo url("/public/dist/js/yap-reports.js")?>"></script>
 <?php require_once 'footer.php';?>
 <script type="text/javascript" src="<?php echo url("/public/dist/js/daterangepicker.js") ?>"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo url("/public/dist/css/daterangepicker.css") ?>" />

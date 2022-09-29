@@ -253,16 +253,18 @@ function drawMetricsMap(data) {
                 var call_events = data[i].call_events[j];
                 if (JSON.parse(call_events['meta'])['coordinates'] !== undefined && (call_events['event_id'] === 1 || call_events['event_id'] === 14)) {
                     var location = JSON.parse(call_events['meta'])['coordinates'];
-                    var content = location['location'];
-                    var myIcon = L.icon({
-                        iconUrl: parseInt(call_events['event_id']) === 1 ? volunteersMarker : meetingsMarker,
-                        iconSize: [32, 32],
-                    });
+                    if (location['location'] !== null) {
+                        var content = location['location'];
+                        var myIcon = L.icon({
+                            iconUrl: parseInt(call_events['event_id']) === 1 ? volunteersMarker : meetingsMarker,
+                            iconSize: [32, 32],
+                        });
 
-                    var latLng = [location['latitude'], location['longitude']];
-                    var marker = L.marker(latLng, {icon: myIcon, title: content}).addTo(metrics_map);
-                    marker.bindPopup(content);
-                    bounds.push(latLng);
+                        var latLng = [location['latitude'], location['longitude']];
+                        var marker = L.marker(latLng, {icon: myIcon, title: content}).addTo(metrics_map);
+                        marker.bindPopup(content);
+                        bounds.push(latLng);
+                    }
                 }
             }
         }

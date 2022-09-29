@@ -2,6 +2,7 @@
 
 ### 4.2.1 (UNRELEASED)
 * SMS blackhole feature [#656]
+* Fixed an issue with `All` metrics.  Only available now for Yap admins. [#658]
 
 ### 4.2.0 (September 9, 2022)
 * Yap now requires PHP version 8.0 and higher. [#623]
