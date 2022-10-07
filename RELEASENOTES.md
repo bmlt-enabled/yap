@@ -1,6 +1,9 @@
 # Release Notes
 
-### 4.2.1 (UNRELEASED)
+### 4.2.2 (October 7, 2022)
+* Fix for User-Agent issue that appears to be present on SiteGround hosted root servers. [#660]
+
+### 4.2.1 (September 29, 2022)
 * SMS blackhole feature [#656]
 * Fixed an issue with `All` metrics.  Only available now for Yap admins. [#658]
 
