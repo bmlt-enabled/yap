@@ -18,7 +18,7 @@ if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETING
         <Redirect method="GET">input-method-result.php?SearchType=<?php echo $searchType ?>&amp;Digits=1</Redirect>
     </Response>
     <?php
-    exit();
+    return;
 } elseif ($searchType == SearchType::VOLUNTEERS) {
     if (isset($_SESSION['override_service_body_id'])) { ?>
             <Response>

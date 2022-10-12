@@ -26,7 +26,6 @@ test('search for volunteers', function () {
         ], false);
 });
 
-
 test('search for meetings', function () {
     $_REQUEST['Digits'] = "2";
     $response = $this->call('GET', '/input-method.php');
@@ -40,6 +39,21 @@ test('search for meetings', function () {
             '<Say voice="alice" language="en-US">press one to search for meetings by city or county</Say>',
             '<Say voice="alice" language="en-US">press two to search for meetings by zip code</Say>',
             '</Gather>',
+            '</Response>'
+        ], false);
+});
+
+test('search for meetings, disable postal code gathering', function () {
+    $_SESSION['override_disable_postal_code_gather'] = true;
+    $_REQUEST['Digits'] = "2";
+    $response = $this->call('GET', '/input-method.php');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">input-method-result.php?SearchType=2&amp;Digits=1</Redirect>',
             '</Response>'
         ], false);
 });
