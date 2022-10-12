@@ -1,11 +1,10 @@
 <?php
 require_once '_includes/functions.php';
-header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
 if (!has_setting('language_selections')) {
     echo "<Response><Say>language gateway options are not set, please refer to the documentation to utilize this feature.</Say><Hangup/></Response>";
-    exit();
+    return;
 }
 
 $language_selection_options = explode(",", setting('language_selections'));
