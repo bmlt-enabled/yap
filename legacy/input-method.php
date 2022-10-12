@@ -25,7 +25,7 @@ if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETING
                 <Redirect method="GET">helpline-search.php?Called=<?php echo $_REQUEST["Called"] . getSessionLink(true)?></Redirect>
             </Response>
             <?php
-            exit();
+            return;
     }
 
     $searchDescription = word('someone_to_talk_to');

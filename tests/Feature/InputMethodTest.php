@@ -57,3 +57,19 @@ test('search for meetings, disable postal code gathering', function () {
             '</Response>'
         ], false);
 });
+
+test('direct to volunteer search for a specific service body', function () {
+    $_SESSION['override_service_body_id'] = 44;
+    $_REQUEST['Digits'] = "1";
+    $_REQUEST['Called'] = "123";
+    $response = $this->call('GET', '/input-method.php');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">helpline-search.php?Called=123</Redirect>',
+            '</Response>'
+        ], false);
+});
