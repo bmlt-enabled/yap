@@ -5,6 +5,8 @@ beforeAll(function () {
 
 beforeEach(function () {
     $_SERVER['REQUEST_URI'] = "/";
+    $_REQUEST = null;
+    $_SESSION = null;
 });
 
 test('search for volunteers by city or county', function () {

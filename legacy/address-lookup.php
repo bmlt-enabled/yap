@@ -1,6 +1,5 @@
 <?php
 require_once '_includes/functions.php';
-header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
 $address = getIvrResponse();
@@ -15,7 +14,7 @@ if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) { ?>
         <Redirect method="GET">input-method.php?Digits=<?php echo $_REQUEST["SearchType"] . "&amp;Retry=1"; ?></Redirect>
     </Response>
      <?php
-        exit();
+        return;
 }
 ?>
 <Response>
