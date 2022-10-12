@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.2.3 (UNRELEASED)
+* Fix for multi-language support response not returning correct mime type.
+
 ### 4.2.2 (October 7, 2022)
 * Fix for User-Agent issue that appears to be present on SiteGround hosted root servers. [#660]
 

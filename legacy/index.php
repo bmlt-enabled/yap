@@ -10,7 +10,7 @@ if (strlen(setting('language_selections')) > 0) {
     if ($digit == null) {?>
             <Response><Redirect>lng-selector.php</Redirect></Response>
         <?php
-        exit();
+        return;
     } else {
         $selected_language = explode(",", setting('language_selections'))[intval($digit) - 1];
         $_SESSION["override_word_language"] = $selected_language;

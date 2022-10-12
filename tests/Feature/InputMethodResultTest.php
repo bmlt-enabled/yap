@@ -13,6 +13,7 @@ test('search for volunteers by city or county', function () {
     $response = $this->call('GET', '/input-method-result.php');
     $response
         ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
         ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -27,6 +28,7 @@ test('search for volunteers by zip code', function () {
     $response = $this->call('GET', '/input-method-result.php');
     $response
         ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
         ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',

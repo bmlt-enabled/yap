@@ -15,6 +15,7 @@ test('initial sms gateway default', function () {
     $response = $this->get('/sms-gateway.php');
     $response
         ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
         ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -28,6 +29,7 @@ test('initial sms gateway talk option', function () {
     $response = $this->get('/sms-gateway.php');
     $response
         ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
         ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -42,6 +44,7 @@ test('initial sms gateway with a blackholed number', function () {
     $response = $this->get('/sms-gateway.php');
     $response
         ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
         ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
         ], false);
