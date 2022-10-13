@@ -87,7 +87,7 @@ if ($service_body_id > 0 && isset($serviceBodyCallHandling) && $serviceBodyCallH
                 <Redirect method="GET">gender-routing.php?SearchType=<?php echo urlencode($searchType)?></Redirect>
             </Response>
             <?php
-            exit();
+            return;
     } else if ($serviceBodyCallHandling->volunteer_routing_redirect && $serviceBodyCallHandling->volunteer_routing_redirect_id > 0) {
         $calculated_service_body_id = $serviceBodyCallHandling->volunteer_routing_redirect_id;
         $serviceBodyCallHandling = getServiceBodyCallHandling($calculated_service_body_id);

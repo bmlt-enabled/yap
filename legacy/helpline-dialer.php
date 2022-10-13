@@ -71,7 +71,7 @@ if (isset($_REQUEST['noop'])) {
         incrementNoAnswerCount();
     }
 
-    exit();
+    return;
 }
 
 $serviceBodyCallHandling = getServiceBodyCallHandling(setting('service_body_id'));
