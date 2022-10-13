@@ -89,3 +89,70 @@ test('search for volunteers without custom query', function () {
             '</Response>'
         ], false);
 });
+
+test('jft option enabled and selected', function () {
+    $_SESSION['override_jft_option'] = true;
+    $_REQUEST['Digits'] = "3";
+    $response = $this->call('GET', '/input-method.php');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">fetch-jft.php</Redirect>',
+            '</Response>'
+        ], false);
+});
+
+test('voicemail playback selected', function () {
+    $_REQUEST['Digits'] = "8";
+    $response = $this->call('GET', '/input-method.php');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">voicemail-playback.php</Redirect>',
+            '</Response>'
+        ], false);
+});
+
+test('dialback selected', function () {
+    $_REQUEST['Digits'] = "9";
+    $response = $this->call('GET', '/input-method.php');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">dialback.php</Redirect>',
+            '</Response>'
+        ], false);
+});
+
+test('custom extension configured and selected', function () {
+    $_REQUEST['Digits'] = "7";
+    $_SESSION['override_custom_extensions'] = [7 => '12125551212'];
+    $_SESSION['override_digit_map_search_type'] = [
+        '1' => SearchType::VOLUNTEERS,
+        '2' => SearchType::MEETINGS,
+        '3' => SearchType::JFT,
+        '7' => SearchType::CUSTOM_EXTENSIONS,
+        '8' => SearchType::VOICEMAIL_PLAYBACK,
+        '9' => SearchType::DIALBACK
+    ];
+
+    $response = $this->call('GET', '/input-method.php');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">custom-ext.php</Redirect>',
+            '</Response>'
+        ], false);
+});

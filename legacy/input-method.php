@@ -44,25 +44,25 @@ if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETING
         <Redirect method="GET">fetch-jft.php</Redirect>
         </Response>
         <?php
-        exit();
+        return;
 } elseif ($searchType == SearchType::VOICEMAIL_PLAYBACK) { ?>
         <Response>
         <Redirect method="GET">voicemail-playback.php</Redirect>
         </Response>
         <?php
-        exit();
+        return;
 } elseif ($searchType == SearchType::DIALBACK) { ?>
         <Response>
         <Redirect method="GET">dialback.php</Redirect>
         </Response>
         <?php
-        exit();
+        return;
 } elseif ($searchType == SearchType::CUSTOM_EXTENSIONS && count(setting('custom_extensions')) > 0) { ?>
         <Response>
         <Redirect method="GET">custom-ext.php</Redirect>
         </Response>
         <?php
-        exit();
+        return;
 } ?>
 <Response>
     <Gather language="<?php echo setting('gather_language') ?>" input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=<?php echo $searchType?>" method="GET">
