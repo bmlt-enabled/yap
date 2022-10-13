@@ -35,7 +35,7 @@ if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETING
                 <Redirect method="GET">meeting-search.php?Called=<?php echo $_REQUEST["Called"]; ?></Redirect>
             </Response>
             <?php
-            exit();
+            return;
     }
 
     $searchDescription = word('meetings');

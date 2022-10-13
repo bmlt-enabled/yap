@@ -73,3 +73,19 @@ test('direct to volunteer search for a specific service body', function () {
             '</Response>'
         ], false);
 });
+
+test('search for volunteers without custom query', function () {
+    $_SESSION['override_custom_query'] = '&services=92';
+    $_REQUEST['Digits'] = "2";
+    $_REQUEST['Called'] = "123";
+    $response = $this->call('GET', '/input-method.php');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">meeting-search.php?Called=123</Redirect>',
+            '</Response>'
+        ], false);
+});
