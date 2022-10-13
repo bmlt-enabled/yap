@@ -53,3 +53,49 @@ test('jft option', function () {
             '</Response>'
         ], false);
 });
+
+test('city or county lookup', function () {
+    $_REQUEST['Digits'] = "1";
+    $_REQUEST['SearchType'] = "1";
+    $response = $this->call('GET', '/input-method-result.php');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">city-or-county-voice-input.php?SearchType=1&amp;InputMethod=4</Redirect>',
+            '</Response>'
+        ], false);
+});
+
+test('province option', function () {
+    $_SESSION['override_province_lookup'] = true;
+    $_REQUEST['Digits'] = "1";
+    $_REQUEST['SearchType'] = "1";
+    $response = $this->call('GET', '/input-method-result.php');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">province-voice-input.php?SearchType=1&amp;InputMethod=4</Redirect>',
+            '</Response>'
+        ], false);
+});
+
+test('invalid entry', function () {
+    $_REQUEST['Digits'] = "5";
+    $response = $this->call('GET', '/input-method-result.php');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">you might have an invalid entry</Say>',
+            "<Redirect>index.php</Redirect>",
+            '</Response>'
+        ], false);
+});

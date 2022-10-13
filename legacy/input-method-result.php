@@ -2,10 +2,12 @@
     require_once '_includes/functions.php';
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     $response = getIvrResponse("index.php", null, getPossibleDigits('digit_map_location_search_method'));
+if ($response == null) {
+    return;
+}
     $locationSearchMethod = getDigitResponse('digit_map_location_search_method', 'Digits');
 
-if ($locationSearchMethod == SearchType::JFT) {
-    ?>
+if ($locationSearchMethod == SearchType::JFT) {?>
         <Response>
             <Redirect method="GET">fetch-jft.php</Redirect>
         </Response>
@@ -25,7 +27,7 @@ if ($locationSearchMethod == LocationSearchMethod::VOICE) { // voice based
     ?>
     <Redirect method="GET"><?php echo $action; ?>?SearchType=<?php echo $_REQUEST['SearchType']; ?>&amp;InputMethod=<?php echo LocationSearchMethod::VOICE ?></Redirect>
     <?php
-} else if ($locationSearchMethod == LocationSearchMethod::DTMF) { // dtmf based
+} elseif ($locationSearchMethod == LocationSearchMethod::DTMF) { // dtmf based
     ?>
     <Redirect method="GET">zip-input.php?SearchType=<?php echo $_REQUEST['SearchType']; ?>&amp;InputMethod=<?php echo LocationSearchMethod::DTMF ?></Redirect>
     <?php
