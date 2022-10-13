@@ -1,7 +1,7 @@
 <?php
     require_once '_includes/functions.php';
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-    getIvrResponse("index.php", null, getPossibleDigits('digit_map_location_search_method'));
+    $response = getIvrResponse("index.php", null, getPossibleDigits('digit_map_location_search_method'));
     $locationSearchMethod = getDigitResponse('digit_map_location_search_method', 'Digits');
 
 if ($locationSearchMethod == SearchType::JFT) {
@@ -10,7 +10,7 @@ if ($locationSearchMethod == SearchType::JFT) {
             <Redirect method="GET">fetch-jft.php</Redirect>
         </Response>
     <?php
-    exit();
+    return;
 }
 
 if (has_setting('province_lookup') && json_decode(setting('province_lookup'))) {

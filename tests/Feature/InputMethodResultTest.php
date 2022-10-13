@@ -38,3 +38,18 @@ test('search for volunteers by zip code', function () {
             '</Response>'
         ], false);
 });
+
+test('jft option', function () {
+    $_SESSION['override_jft_option'] = true;
+    $_REQUEST['Digits'] = "3";
+    $response = $this->call('GET', '/input-method-result.php');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">fetch-jft.php</Redirect>',
+            '</Response>'
+        ], false);
+});
