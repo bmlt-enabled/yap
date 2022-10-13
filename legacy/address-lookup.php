@@ -3,9 +3,6 @@ require_once '_includes/functions.php';
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
 $address = getIvrResponse();
-if ($address == null) {
-    return;
-}
 $coordinates = getCoordinatesForAddress($address);
 insertCallEventRecord(
     EventId::MEETING_SEARCH_LOCATION_GATHERED,
