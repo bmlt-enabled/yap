@@ -1,9 +1,10 @@
 <?php
     require_once '_includes/functions.php';
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-    if (strlen(getIvrResponse('index.php', null, getPossibleDigits('digit_map_search_type'), array(), 'Digits')) == null) {
-        return;
-    }
+    $response = getIvrResponse('index.php', null, getPossibleDigits('digit_map_search_type'), array(), 'Digits');
+if ($response == null) {
+    return;
+}
     $searchType = getDigitResponse('digit_map_search_type', 'Digits');
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
 
