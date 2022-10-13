@@ -1,6 +1,5 @@
 <?php
 require_once '_includes/functions.php';
-header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 $address = isset($_REQUEST['SpeechResult']) ? $_REQUEST['SpeechResult'] : getIvrResponse();
 $province = has_setting('province_lookup') && json_decode(setting('province_lookup')) ? $_REQUEST['Province'] : getProvince();
@@ -31,7 +30,7 @@ if (!$found) { ?>
         <Hangup/>
     </Response>
     <?php
-    exit();
+    return;
 }
 insertCallEventRecord(EventId::VOICEMAIL_PLAYBACK);
 ?>

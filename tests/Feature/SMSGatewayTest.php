@@ -5,6 +5,8 @@ beforeAll(function () {
 
 beforeEach(function () {
     $_SERVER['REQUEST_URI'] = "/";
+    $_REQUEST = null;
+    $_SESSION = null;
     $_REQUEST['SmsSid'] = "abc123";
     $_REQUEST['To'] = "+12125551212";
     $_REQUEST['From'] = "+19737771313";

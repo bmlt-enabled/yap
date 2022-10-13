@@ -1,7 +1,10 @@
 <?php
     require_once '_includes/functions.php';
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-    getIvrResponse('index.php', null, getPossibleDigits('digit_map_search_type'), array(), 'Digits');
+    $response = getIvrResponse('index.php', null, getPossibleDigits('digit_map_search_type'), array(), 'Digits');
+if ($response == null) {
+    return;
+}
     $searchType = getDigitResponse('digit_map_search_type', 'Digits');
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
 
@@ -18,14 +21,14 @@ if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETING
         <Redirect method="GET">input-method-result.php?SearchType=<?php echo $searchType ?>&amp;Digits=1</Redirect>
     </Response>
     <?php
-    exit();
+    return;
 } elseif ($searchType == SearchType::VOLUNTEERS) {
     if (isset($_SESSION['override_service_body_id'])) { ?>
             <Response>
                 <Redirect method="GET">helpline-search.php?Called=<?php echo $_REQUEST["Called"] . getSessionLink(true)?></Redirect>
             </Response>
             <?php
-            exit();
+            return;
     }
 
     $searchDescription = word('someone_to_talk_to');
@@ -35,7 +38,7 @@ if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETING
                 <Redirect method="GET">meeting-search.php?Called=<?php echo $_REQUEST["Called"]; ?></Redirect>
             </Response>
             <?php
-            exit();
+            return;
     }
 
     $searchDescription = word('meetings');
@@ -44,25 +47,25 @@ if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETING
         <Redirect method="GET">fetch-jft.php</Redirect>
         </Response>
         <?php
-        exit();
+        return;
 } elseif ($searchType == SearchType::VOICEMAIL_PLAYBACK) { ?>
         <Response>
         <Redirect method="GET">voicemail-playback.php</Redirect>
         </Response>
         <?php
-        exit();
+        return;
 } elseif ($searchType == SearchType::DIALBACK) { ?>
         <Response>
         <Redirect method="GET">dialback.php</Redirect>
         </Response>
         <?php
-        exit();
+        return;
 } elseif ($searchType == SearchType::CUSTOM_EXTENSIONS && count(setting('custom_extensions')) > 0) { ?>
         <Response>
         <Redirect method="GET">custom-ext.php</Redirect>
         </Response>
         <?php
-        exit();
+        return;
 } ?>
 <Response>
     <Gather language="<?php echo setting('gather_language') ?>" input="<?php echo getInputType() ?>" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=<?php echo $searchType?>" method="GET">

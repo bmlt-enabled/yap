@@ -1,6 +1,5 @@
 <?php
     require_once '_includes/functions.php';
-    header("content-type: text/xml");
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
     $dial_string = "";?>
@@ -11,6 +10,9 @@ if (!isset($_REQUEST['ForceNumber'])) {
         $service_body_obj = getServiceBody(setting("service_body_id"));
     } else {
         $address = isset($_SESSION['Address']) ? $_SESSION['Address'] : getIvrResponse();
+        if ($address == null) {
+            return;
+        }
         $coordinates  = getCoordinatesForAddress($address);
         try {
             if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) {
@@ -36,7 +38,7 @@ if (!isset($_REQUEST['ForceNumber'])) {
                 <Redirect method="GET">input-method.php?Digits=<?php echo urlencode($_REQUEST["SearchType"]) . "&amp;Retry=1&amp;RetryMessage=" . urlencode($e->getMessage()); ?></Redirect>
                 </Response>
                 <?php
-                exit();
+                return;
         }
     }
     $location    = $service_body_obj->name;
@@ -85,7 +87,7 @@ if ($service_body_id > 0 && isset($serviceBodyCallHandling) && $serviceBodyCallH
                 <Redirect method="GET">gender-routing.php?SearchType=<?php echo urlencode($searchType)?></Redirect>
             </Response>
             <?php
-            exit();
+            return;
     } else if ($serviceBodyCallHandling->volunteer_routing_redirect && $serviceBodyCallHandling->volunteer_routing_redirect_id > 0) {
         $calculated_service_body_id = $serviceBodyCallHandling->volunteer_routing_redirect_id;
         $serviceBodyCallHandling = getServiceBodyCallHandling($calculated_service_body_id);

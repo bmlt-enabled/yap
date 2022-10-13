@@ -2042,7 +2042,7 @@ function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_
                 <Redirect><?php echo $redirected_from . $qs?></Redirect>
             </Response>
             <?php
-            exit();
+            return null;
         }
     }
 
