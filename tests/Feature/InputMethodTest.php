@@ -156,3 +156,18 @@ test('custom extension configured and selected', function () {
             '</Response>'
         ], false);
 });
+
+test('invalid search', function () {
+    $_REQUEST['Digits'] = "5";
+    $response = $this->call('GET', '/input-method.php');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">you might have an invalid entry</Say>',
+            '<Redirect>index.php</Redirect>',
+            '</Response>'
+        ], false);
+});
