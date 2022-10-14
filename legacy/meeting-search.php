@@ -1,7 +1,6 @@
 <?php
 require_once '_includes/functions.php';
 require_once '_includes/twilio-client.php';
-header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
 
@@ -18,7 +17,7 @@ try {
         <Redirect method="GET">fallback.php</Redirect>
     </Response>
     <?php
-    exit;
+    return;
 }
 
 $filtered_list = $meeting_results->filteredList;
@@ -27,30 +26,6 @@ $sms_messages = [];
 $text_space = " ";
 $comma_space = ", ";
 $message = "";
-
-function mobileCheck()
-{
-    if (!isset($_SESSION['is_mobile'])) {
-        $is_mobile = true;
-        if (has_setting('mobile_check') && json_decode(setting('mobile_check'))) {
-            $phone_number = $GLOBALS['twilioClient']->lookups->v1->phoneNumbers($_REQUEST['From'])->fetch(array("type" => "carrier"));
-            if ($phone_number->carrier['type'] !== 'mobile') {
-                $is_mobile = false;
-            }
-        }
-        $_SESSION['is_mobile'] = $is_mobile;
-    }
-
-    return $_SESSION['is_mobile'];
-}
-
-function sendSms($message)
-{
-    $anonymous_number = "266696687";
-    if (isset($_REQUEST['From']) && isset($_REQUEST['To']) && str_replace("+", "", $_REQUEST["From"]) != $anonymous_number && mobileCheck()) {
-        $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
-    }
-}
 ?>
 <Response>
     <?php
