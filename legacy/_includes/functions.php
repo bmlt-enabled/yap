@@ -64,6 +64,7 @@ $GLOBALS['settings_allowlist'] = [
     'service_body_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'service_body_config_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'sms_disable' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_blackhole' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'sms_combine' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],

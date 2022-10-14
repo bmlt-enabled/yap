@@ -9,6 +9,7 @@ $longitude = isset($_REQUEST['Longitude']) ? $_REQUEST['Longitude'] : null;
 
 try {
     $suppress_voice_results = has_setting('suppress_voice_results') && json_decode(setting('suppress_voice_results'));
+    $sms_disable = has_setting('sms_disable') && json_decode(setting('sms_disable'));
     $results_count = has_setting('result_count_max') ? intval(setting('result_count_max')) : 5;
     $meeting_results = getMeetings($latitude, $longitude, $results_count, null, null);
     $results_count_num = count($meeting_results->filteredList) < $results_count ? count($meeting_results->filteredList) : $results_count;
@@ -94,7 +95,7 @@ $message = "";
         }
     }
 
-    if (has_setting('sms_summary_page') && json_decode(setting('sms_summary_page'))) {
+    if (!$sms_disable && has_setting('sms_summary_page') && json_decode(setting('sms_summary_page'))) {
         $voice_url = "https://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'];
         if (strpos(basename($voice_url), ".php")) {
             $webhook_url = substr($voice_url, 0, strrpos($voice_url, "/"));
@@ -111,7 +112,7 @@ $message = "";
         } else {
             sendSms($message);
         }
-    } else {
+    } elseif (!$sms_disable) {
         $results_counter = 0;
         for ($i = 0; $i < count($filtered_list); $i++) {
             $results = getResultsString($filtered_list[$i]);
@@ -158,7 +159,7 @@ $message = "";
     // Do not handle for the SMS gateway
     if (!$isFromSmsGateway && count($filtered_list) > 0) {
         echo "<Pause length=\"2\"/>";
-        if (!$suppress_voice_results && count($sms_messages) > 0) { ?>
+        if (!$sms_disable && !$suppress_voice_results && count($sms_messages) > 0) { ?>
             <Gather numDigits="1" timeout="10" speechTimeout="auto" input="<?php echo getInputType() ?>"
                     action="post-call-action.php?Payload=<?php echo urlencode(json_encode($sms_messages)) ?>"
                     method="GET">
