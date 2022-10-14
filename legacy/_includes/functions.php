@@ -64,6 +64,7 @@ $GLOBALS['settings_allowlist'] = [
     'service_body_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'service_body_config_id' => [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'sms_ask' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'sms_disable' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_blackhole' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'sms_combine' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
@@ -72,6 +73,7 @@ $GLOBALS['settings_allowlist'] = [
     'speech_gathering' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'suppress_voice_results' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'time_format' => ['description' => '', 'default' => 'g:i A', 'overridable' => true, 'hidden' => false],
+    'timezone_default' => ['description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
     'title' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'toll_province_bias' => [ 'description' => '' , 'default' => null, 'overridable' => true, 'hidden' => false],
     'toll_free_province_bias' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -684,6 +686,30 @@ function checkSMSBlackhole()
     }
 }
 
+function sendSms($message)
+{
+    $anonymous_number = "266696687";
+    if (isset($_REQUEST['From']) && isset($_REQUEST['To']) && str_replace("+", "", $_REQUEST["From"]) != $anonymous_number && mobileCheck()) {
+        $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
+    }
+}
+
+function mobileCheck()
+{
+    if (!isset($_SESSION['is_mobile'])) {
+        $is_mobile = true;
+        if (has_setting('mobile_check') && json_decode(setting('mobile_check'))) {
+            $phone_number = $GLOBALS['twilioClient']->lookups->v1->phoneNumbers($_REQUEST['From'])->fetch(array("type" => "carrier"));
+            if ($phone_number->carrier['type'] !== 'mobile') {
+                $is_mobile = false;
+            }
+        }
+        $_SESSION['is_mobile'] = $is_mobile;
+    }
+
+    return $_SESSION['is_mobile'];
+}
+
 function getWordLanguage()
 {
     foreach ($GLOBALS['available_languages'] as $key => $available_language) {
@@ -889,7 +915,7 @@ function getCoordinatesForAddress($address)
 
 function getTimeZoneForCoordinates($latitude, $longitude)
 {
-    $time_zone = get(sprintf("%s&location=%s,%s&timestamp=%d", $GLOBALS['timezone_lookup_endpoint'], $latitude, $longitude, time() - (time() % 1800)), false, 3600);
+    $time_zone = has_setting("timezone_default") ? setting("timezone_default") : get(sprintf("%s&location=%s,%s&timestamp=%d", $GLOBALS['timezone_lookup_endpoint'], $latitude, $longitude, time() - (time() % 1800)), false, 3600);
     return json_decode($time_zone);
 }
 
