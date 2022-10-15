@@ -115,7 +115,7 @@ if (has_setting('config')) {
 include_once __DIR__ . '/../../lang/' .getWordLanguage().'.php';
 $GLOBALS['short_language'] = getWordLanguage() === "da-DK" ? "dk" : explode("-", getWordLanguage())[0];
 
-$GLOBALS['google_maps_endpoint'] = isset($GLOBALS['override_google_maps_endpoint']) ? $GLOBALS['override_google_maps_endpoint'] : "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($GLOBALS['google_maps_api_key']);
+$GLOBALS['google_maps_endpoint'] = "https://maps.googleapis.com/maps/api/geocode/json?key=" . trim($GLOBALS['google_maps_api_key']);
 $GLOBALS['timezone_lookup_endpoint'] = "https://maps.googleapis.com/maps/api/timezone/json?key=" . trim($GLOBALS['google_maps_api_key']);
 $GLOBALS['date_calculations_map'] = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 $GLOBALS['numbers'] = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
