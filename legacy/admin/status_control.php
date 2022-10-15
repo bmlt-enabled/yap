@@ -7,7 +7,7 @@
    target="_blank"
    href="../upgrade-advisor.php"
    title="<?php echo $status['message']?>">
-    <?php echo "Status: " . ($status['status'] ? "OK" : "Problem"); ?>
+    <?php echo sprintf("Status: %s", ($status['status'] ? "OK" : "Problem")); ?>
 </a>
 <?php if (strlen($status['warnings']) > 0 && isset($_REQUEST['include_warnings'])) {?>
     <a class="btn btn-sm btn-outline-warning"
