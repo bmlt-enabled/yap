@@ -18,7 +18,7 @@ require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-$GLOBALS['version']  = "4.2.3";
+$GLOBALS['version']  = "4.3.0";
 $GLOBALS['settings_allowlist'] = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -516,18 +516,19 @@ class UpgradeAdvisor
         return isset($GLOBALS[$setting]) && strlen($GLOBALS[$setting]) > 0;
     }
 
-    public static function getState($status = null, $message = null)
+    public static function getState($status = null, $message = null, $warnings = "")
     {
         try {
             $build = file_get_contents("build.txt", false);
         } catch (Exception $e) {
             $build = $e->getMessage();
         }
-        return ["status"=>$status, "message"=>$message, "version"=>$GLOBALS['version'], "build"=>str_replace("\n", "", $build)];
+        return ["status"=>$status, "message"=>$message, "warnings"=>$warnings, "version"=>$GLOBALS['version'], "build"=>str_replace("\n", "", $build)];
     }
 
     public static function getStatus()
     {
+        $warnings = "";
 //        foreach ($GLOBALS['required_config_settings'] as $setting) {
 //            if (!self::isThere($setting)) {
 //                return self::getState(false, "Missing required setting: " . $setting);
@@ -537,20 +538,20 @@ class UpgradeAdvisor
         $root_server_settings = json_decode(get(sprintf('%s/client_interface/json/?switcher=GetServerInfo', getAdminBMLTRootServer()), false, 3600));
 
         if (strpos(getAdminBMLTRootServer(), 'index.php')) {
-            return self::getState(false, "Your root server points to index.php. Please make sure to set it to just the root directory.");
+            return self::getState(false, "Your root server points to index.php. Please make sure to set it to just the root directory.", $warnings);
         }
 
         if (!isset($root_server_settings)) {
-            return self::getState(false, "Your root server returned no server information.  Double-check that you have the right root server url.");
+            return self::getState(false, "Your root server returned no server information.  Double-check that you have the right root server url.", $warnings);
         } else {
             if ($root_server_settings[0]->semanticAdmin === "0") {
-                return self::getState(false, "Your root server has semanticAdmin disabled, please enable it.  https://bmlt.app/semantic/semantic-administration/");
+                return self::getState(false, "Your root server has semanticAdmin disabled, please enable it.  https://bmlt.app/semantic/semantic-administration/", $warnings);
             }
         }
 
         foreach (setting("digit_map_search_type") as $digit => $value) {
             if ($digit === 0) {
-                return self::getState(false, "You cannot use 0 as an option for `digit_map_search_type`.");
+                return self::getState(false, "You cannot use 0 as an option for `digit_map_search_type`.", $warnings);
             }
         }
 
@@ -558,16 +559,16 @@ class UpgradeAdvisor
             $googleapi_settings = json_decode(get(sprintf("%s&address=91409", $GLOBALS['google_maps_endpoint']), false, 3600));
 
             if ($googleapi_settings->status == "REQUEST_DENIED") {
-                return self::getState(false, "Your Google Maps API key came back with the following error. " . $googleapi_settings->error_message. " Please make sure you have the 'Google Maps Geocoding API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
+                return self::getState(false, "Your Google Maps API key came back with the following error. " . $googleapi_settings->error_message. " Please make sure you have the Google Maps Geocoding API enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/", $warnings);
             }
 
             $timezone_settings = json_decode(get(sprintf("%s&location=34.2011137,-118.475058&timestamp=%d", $GLOBALS['timezone_lookup_endpoint'], time() - (time() % 1800)), false));
 
             if ($timezone_settings->status == "REQUEST_DENIED") {
-                return self::getState(false, "Your Google Maps API key came back with the following error. " . $timezone_settings->errorMessage. " Please make sure you have the 'Google Time Zone API' enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/");
+                return self::getState(false, "Your Google Maps API key came back with the following error. " . $timezone_settings->errorMessage. " Please make sure you have the Google Time Zone API enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/", $warnings);
             }
         } catch (CurlException $e) {
-            return self::getState(false, "HTTP Error connecting to Google Maps API, check your network settings.");
+            return self::getState(false, "HTTP Error connecting to Google Maps API, check your network settings.", $warnings);
         }
 
         $alerts = getMisconfiguredPhoneNumbersAlerts(AlertId::STATUS_CALLBACK_MISSING);
@@ -577,7 +578,7 @@ class UpgradeAdvisor
                 array_push($misconfiguredPhoneNumbers, $alert['payload']);
             }
 
-            return self::getState(false, sprintf("%s is/are phone numbers that are missing Twilio Call Status Changes Callback status.php webhook. This will not allow call reporting to work correctly.  For more information review the documentation page https://github.com/bmlt-enabled/yap/wiki/Call-Detail-Records.", implode(",", $misconfiguredPhoneNumbers)));
+            $warnings = sprintf("%s is/are phone numbers that are missing Twilio Call Status Changes Callback status.php webhook. This will not allow call reporting to work correctly.  For more information review the documentation page https://github.com/bmlt-enabled/yap/wiki/Call-Detail-Records.", implode(",", $misconfiguredPhoneNumbers));
         }
 
         try {
@@ -588,18 +589,18 @@ class UpgradeAdvisor
                         && !strpos($number->voiceUrl, 'twiml')
                         && !strpos($number->voiceUrl, '/?')
                         && substr($number->voiceUrl, -1) !== "/") {
-                        return self::getState(false, $number->phoneNumber . " webhook should end either with `/` or `/index.php`");
+                        return self::getState(false, $number->phoneNumber . " webhook should end either with `/` or `/index.php`", $warnings);
                     }
                 }
             }
         } catch (\Twilio\Exceptions\RestException $e) {
-            return self::getState(false, "Twilio Rest Error: " . $e->getMessage());
+            return self::getState(false, "Twilio Rest Error: " . $e->getMessage(), $warnings);
         }
 
         if (has_setting('smtp_host')) {
             foreach (self::$email_settings as $setting) {
                 if (!self::isThere($setting)) {
-                    return self::getState(false, "Missing required email setting: " . $setting);
+                    return self::getState(false, "Missing required email setting: " . $setting, $warnings);
                 }
             }
         }
@@ -609,12 +610,12 @@ class UpgradeAdvisor
                 $db = new Database();
                 $db->close();
             } catch (PDOException $e) {
-                return self::getState(false, $e->getMessage());
+                return self::getState(false, $e->getMessage(), $warnings);
             }
         }
 
         if (UpgradeAdvisor::$all_good) {
-            return UpgradeAdvisor::getState(true, "Ready To Yap!");
+            return UpgradeAdvisor::getState(true, "Ready To Yap!", $warnings);
         }
     }
 }

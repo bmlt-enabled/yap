@@ -35,7 +35,7 @@ if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], "/v1/")) {
     putenv('DB_USERNAME=' . $mysql_username);
     putenv('DB_PASSWORD=' . $mysql_password);
     putenv('DB_DATABASE=' . $mysql_database);
-    putenv('DB_PORT=' . $mysql_port);
+    putenv('DB_PORT=' . (isset($mysql_port) ? $mysql_port : 3306));
 }
 
 return [

@@ -43,7 +43,7 @@ $state = UpgradeAdvisor::getState();
             ?>
         </select>
         <div id="version-info">
-            <?php echo "v" . $state['version'] ?>
+            <?php require_once 'status_control.php' ?>
         </div>
     </form>
 </div>

@@ -2,19 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-//Route::get("/storage/{extra}", function ($extra) {
-//    return redirect("/public/storage/$extra");
-//})->where("extra", ".*");
 Route::get('/v1/events/status', 'App\Http\Controllers\EventStatusController@index');
 Route::post('/v1/events/status', 'App\Http\Controllers\EventStatusController@set');
 Route::get("/admin/auth/rights", 'App\Http\Controllers\AuthController@rights');
