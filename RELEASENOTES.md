@@ -1,6 +1,6 @@
 # Release Notes
 
-### 4.2.3 (UNRELEASED)
+### 4.2.3 (October 15, 2022)
 * Option added to disable SMS (`sms_disable`) after a call completed returning meeting results back to the caller. [#663]
 * Fix for multi-language support response not returning correct mime type.
 
