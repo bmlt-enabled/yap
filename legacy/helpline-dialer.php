@@ -85,6 +85,7 @@ $conferences = $twilioClient->conferences->read(array ("friendlyName" => $_REQUE
 if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     $tandem = 0;
     $sms_body = word('you_have_an_incoming_phoneline_call_from') . " ";
+
     if (isset($_REQUEST['StatusCallbackEvent']) && $_REQUEST['StatusCallbackEvent'] == 'participant-join' &&
         ( isset($_REQUEST['SequenceNumber']) && intval($_REQUEST['SequenceNumber']) == 1 )) {
         setConferenceParticipant($_REQUEST['FriendlyName'], CallRole::CALLER);
@@ -134,10 +135,11 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                     foreach (explode(",", $callConfig->volunteer->phoneNumber) as $volunteer_number) {
                         if ($serviceBodyCallHandling->volunteer_sms_notification_enabled) {
                             log_debug("Sending volunteer SMS notification: " . $callConfig->volunteer->phoneNumber);
+                            $dialbackString = getDialbackString($callConfig->options['callerId']);
                             $twilioClient->messages->create(
                                 $volunteer_number,
                                 array(
-                                    "body" => $sms_body . $callerNumber,
+                                    "body" => sprintf("%s %s %s", $sms_body, $callerNumber, $dialbackString),
                                     "from" => $callConfig->options['callerId']
                                 )
                             );

@@ -826,6 +826,35 @@ function getPossibleDigits($setting)
     return array_keys(getDigitMap($setting));
 }
 
+function getOptionForSearchType($searchType)
+{
+    foreach (setting("digit_map_search_type") as $digit => $value) {
+        if ($value == $searchType) {
+            return $digit;
+        }
+    }
+    return 0;
+}
+
+function getDialbackString($dialbackNumber)
+{
+    if (setting('dialback_enabled')) {
+        $pin =  $_SESSION['pin'];
+        $dialback_digit_map_digit = getOptionForSearchType(SearchType::DIALBACK);
+        $dialback_string = sprintf(
+            "Tap to dialback: %s,,,%s,,,%s#.  PIN: %s",
+            $dialbackNumber,
+            $dialback_digit_map_digit,
+            $pin,
+            $pin
+        );
+    } else {
+        $dialback_string = "";
+    }
+
+    return $dialback_string;
+}
+
 function getDigitResponse($setting, $field = 'SearchType')
 {
     $digitMap = getDigitMap($setting);

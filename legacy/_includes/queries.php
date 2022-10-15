@@ -119,7 +119,9 @@ function insertCallRecord($callRecord)
     $db->bind(':end_time', $callRecord->end_time);
     $db->bind(':payload', $callRecord->payload);
     $db->bind(':type', $callRecord->type);
-    $db->bind(':pin', rand(1000000, 9999999));
+    $pin = rand(1000000, 9999999);
+    $db->bind(':pin', $pin);
+    $_SESSION['pin'] = $pin;
     $db->execute();
     $db->close();
 }
