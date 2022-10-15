@@ -18,6 +18,9 @@ require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
+if (isset($_GET["CallSid"])) {
+    insertSession($_GET["CallSid"]);
+}
 $GLOBALS['version']  = "4.2.4";
 $GLOBALS['settings_allowlist'] = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
@@ -836,20 +839,21 @@ function getOptionForSearchType($searchType)
     return 0;
 }
 
-function getDialbackString($dialbackNumber)
+function getDialbackString($callsid, $dialbackNumber)
 {
-    if (setting('dialback_enabled')) {
-        $pin =  $_SESSION['pin'];
-        $dialback_digit_map_digit = getOptionForSearchType(SearchType::DIALBACK);
-        $dialback_string = sprintf(
-            "Tap to dialback: %s,,,%s,,,%s#.  PIN: %s",
-            $dialbackNumber,
-            $dialback_digit_map_digit,
-            $pin,
-            $pin
-        );
-    } else {
-        $dialback_string = "";
+    $dialback_string = "";
+    if (setting('sms_dialback_enabled')) {
+        $pin_lookup = lookupPinForCallSid($callsid);
+        if (count($pin_lookup) > 0) {
+            $dialback_digit_map_digit = getOptionForSearchType(SearchType::DIALBACK);
+            $dialback_string = sprintf(
+                "Tap to dialback: %s,,,%s,,,%s#.  PIN: %s",
+                $dialbackNumber,
+                $dialback_digit_map_digit,
+                $pin_lookup[0]['pin'],
+                $pin_lookup[0]['pin']
+            );
+        }
     }
 
     return $dialback_string;

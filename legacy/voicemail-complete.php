@@ -13,7 +13,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 function sendSmsForVoicemail($recipients, $serviceBodyCallHandling, $serviceBodyName, $callerNumber)
 {
     $caller_id = getOutboundDialingCallerId($serviceBodyCallHandling);
-    $dialbackString = getDialbackString($caller_id);
+    $dialbackString = getDialbackString($_REQUEST['CallSid'], $caller_id);
 
     foreach ($recipients as $recipient) {
         $GLOBALS['twilioClient']->messages->create(

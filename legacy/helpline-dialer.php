@@ -135,11 +135,11 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
                     foreach (explode(",", $callConfig->volunteer->phoneNumber) as $volunteer_number) {
                         if ($serviceBodyCallHandling->volunteer_sms_notification_enabled) {
                             log_debug("Sending volunteer SMS notification: " . $callConfig->volunteer->phoneNumber);
-                            $dialbackString = getDialbackString($callConfig->options['callerId']);
+                            $dialbackString = getDialbackString($callerSid, $callConfig->options['callerId']);
                             $twilioClient->messages->create(
                                 $volunteer_number,
                                 array(
-                                    "body" => sprintf("%s %s %s", $sms_body, $callerNumber, $dialbackString),
+                                    "body" => sprintf("%s %s. %s", $sms_body, $callerNumber, $dialbackString),
                                     "from" => $callConfig->options['callerId']
                                 )
                             );
