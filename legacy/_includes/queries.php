@@ -2,7 +2,7 @@
 function getVoicemail($service_body_id)
 {
     $db = new Database();
-    $sql = sprintf("SELECT r.`callsid`,r.`from_number`,r.`to_number`,CONCAT(re.`event_time`, 'Z') as event_time,re.`meta` FROM records_events re
+    $sql = sprintf("SELECT r.`callsid`,r.`pin`,r.`from_number`,r.`to_number`,CONCAT(re.`event_time`, 'Z') as event_time,re.`meta` FROM records_events re
     LEFT OUTER JOIN records r ON re.callsid = r.callsid
     LEFT OUTER JOIN event_status es ON re.callsid = es.callsid where re.event_id = %d and service_body_id = %s and (es.event_id = %s and es.status <> %s OR es.id IS NULL);", EventId::VOICEMAIL, $service_body_id, EventId::VOICEMAIL, EventStatusId::VOICEMAIL_DELETED);
     $db->query($sql);
@@ -107,8 +107,8 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
 function insertCallRecord($callRecord)
 {
     $db = new Database();
-    $stmt = "INSERT INTO `records` (`callsid`,`from_number`,`to_number`,`duration`,`start_time`,`end_time`,`payload`,`type`)
-        VALUES (:callSid, :from_number, :to_number, :duration, :start_time, :end_time, :payload, :type)";
+    $stmt = "INSERT INTO `records` (`callsid`,`from_number`,`to_number`,`duration`,`start_time`,`end_time`,`payload`,`type`,`pin`)
+        VALUES (:callSid, :from_number, :to_number, :duration, :start_time, :end_time, :payload, :type, :pin)";
     $db->query($stmt);
     $db->bind(':callSid', $callRecord->callSid);
     $db->bind(':from_number', $callRecord->from_number);
@@ -119,8 +119,20 @@ function insertCallRecord($callRecord)
     $db->bind(':end_time', $callRecord->end_time);
     $db->bind(':payload', $callRecord->payload);
     $db->bind(':type', $callRecord->type);
+    $db->bind(':pin', rand(1000000, 9999999));
     $db->execute();
     $db->close();
+}
+
+function lookupDialbackPin($pin)
+{
+    $db = new Database();
+    $sql = sprintf("SELECT from_number FROM records where pin = :pin AND IFNULL(type, 1) = 1 order by start_time desc limit 1");
+    $db->query($sql);
+    $db->bind(':pin', $pin);
+    $resultset = $db->resultset();
+    $db->close();
+    return $resultset;
 }
 
 function getMisconfiguredPhoneNumbersAlerts($alert_id)
