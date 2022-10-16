@@ -1,7 +1,4 @@
----
-title: Music On Hold
-sidebar_position: 9
----
+# Music On Hold
 
 ---
 

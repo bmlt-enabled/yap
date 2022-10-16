@@ -1,7 +1,4 @@
----
-title: Custom Extensions
-sidebar_position: 2
----
+# Custom Extensions
 
 ---
 

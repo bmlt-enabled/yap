@@ -1,11 +1,4 @@
----
-layout: default
-title: Helpline Search Radius
-nav_order: 7
-parent: Helpline / Volunteer Routing
----
-
-## Helpline Search Radius
+# Helpline Search Radius
 
 ---
 

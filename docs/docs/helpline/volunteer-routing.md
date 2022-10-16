@@ -1,7 +1,4 @@
----
-title: Volunteer Routing
-sidebar_position: 15
----
+# Volunteer Routing
 
 ---
 

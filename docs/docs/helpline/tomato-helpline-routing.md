@@ -1,7 +1,4 @@
----
-title: Tomato Helpline Routing
-sidebar_position: 13
----
+# Tomato Helpline Routing
 
 ---
 

@@ -13,15 +13,19 @@
                         <th scope="col">Value</th>
                         <th scope="col">Current Source</th>
                         <th scope="col">Default</th>
-                        <th scope="col">Description</th>
                     </tr>
                     </thead>
                     <tbody>
                     <?php
+                    $docs_base = setting("docs_base");
                     foreach ($GLOBALS['settings_allowlist'] as $key => $value) {
                         if (!$value['hidden']) { ?>
                         <tr>
-                            <td><?php echo $key ?></td>
+                            <td><?php echo $key ?>
+                                <?php if ($value['description'] != "") { ?>
+                                    <a href="<?php echo sprintf("%s%s", $docs_base, $value['description']) ?>" target="_blank">📖</a>
+                                <?php } ?>
+                            </td>
                             <td><?php
                             $setting = setting($key);
                             if (is_bool($setting)) {
@@ -42,7 +46,6 @@
                                 echo $value['default'];
                             }?>
                             </td>
-                            <td><?php echo $value['description'] ?></td>
                         </tr>
                             <?php
                         }
