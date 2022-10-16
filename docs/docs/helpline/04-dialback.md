@@ -1,8 +1,4 @@
----
-title: Dialback
-sidebar_position: 16
----
-
+# Dialback
 ---
 
 You can dialback a caller as the helpline number. If the caller leaves a voicemail there is a PIN that is stored for each call and visible in the admin portal under the voicemail section.
