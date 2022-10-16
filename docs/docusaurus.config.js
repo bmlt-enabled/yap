@@ -13,7 +13,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
   favicon: 'img/favicon.ico',
   organizationName: 'bmlt-enabled', // Usually your GitHub org/user name.
   projectName: 'yap', // Usually your repo name.
-  plugins: [require.resolve('docusaurus-lunr-search')],
+  plugins: [],
   presets: [
     [
       '@docusaurus/preset-classic',
@@ -48,7 +48,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
         // The application ID provided by Algolia
         appId: 'UXFW8XBXNC',
         // Public API key: it is safe to commit it
-        apiKey: '4f0c5731176dbf27fd74302a35d926e6',
+        apiKey: '964f47c30775ccc32cbb73a08c4ff778',
         indexName: 'yapdocs',
       },
       navbar: {
