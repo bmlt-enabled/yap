@@ -15,7 +15,7 @@ We are taking advantage of using Twilio which essentially handles all the VOIP p
 
 # Documentation
 
-For setup instructions and general documentation please visit [https://bmlt.app/yap](https://bmlt.app/yap)
+For setup instructions and general documentation please visit [https://yap.bmlt.app](https://yap.bmlt.app)
 
 # Downloads
 
