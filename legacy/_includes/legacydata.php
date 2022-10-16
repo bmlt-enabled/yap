@@ -12,7 +12,8 @@ function getHelplineData($service_body_id, $data_type)
 
     if ($helpline_data != null) {
         foreach ($helpline_data as $item) {
-            $json_string = str_replace(';', ',', html_entity_decode(explode('#@-@#', $item->contact_phone_1)[2]));
+            $json_data = strpos($item->contact_phone_1, '#@-@#') !== false ? explode('#@-@#', $item->contact_phone_1)[2] : $item->contact_phone_1;
+            $json_string = str_replace(';', ',', html_entity_decode($json_data));
             array_push($helpline_data_items, [
                 'id'              => intval($item->id_bigint),
                 'data'            => json_decode($json_string)->data,
