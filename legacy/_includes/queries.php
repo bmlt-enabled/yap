@@ -82,13 +82,14 @@ FROM records r LEFT OUTER JOIN records_events re on r.callsid = re.callsid
 WHERE r.start_time >= '$date_range_start' AND r.start_time <= '$date_range_end'");
 
     $db = new Database();
-    $sql = sprintf("SELECT r.`id`,CONCAT(r.`start_time`, 'Z') as start_time,CONCAT(r.`end_time`, 'Z') as end_time,r.`duration`,r.`from_number`,r.`to_number`,r.`callsid`,re.`service_body_id`,IFNULL(r.`type`, 1) as `type`,
+    $sql = sprintf("SELECT r.`id`,CONCAT(r.`start_time`, 'Z') as start_time,CONCAT(r.`end_time`, 'Z') as end_time,r.`duration`,r.`from_number`,r.`to_number`,r.`callsid`,re.`service_body_id`,IFNULL(r.`type`, 1) as `type`,s.`pin`,
 CONCAT('[', GROUP_CONCAT('{\"meta\":', IFNULL(re.meta, '{}'), ',\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, 'Z\",\"service_body_id\":', COALESCE(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
 FROM (SELECT ire.id,ire.callsid, ire.event_time,ire.event_id,ircp.service_body_id,meta FROM records_events ire
       left outer join cache_records_conference_participants ircp ON ire.callsid = ircp.callsid
       where guid = :guid) re
 INNER JOIN cache_records_conference_participants rcp ON rcp.callsid = re.callsid
 INNER JOIN records r ON r.callsid = rcp.parent_callsid
+INNER JOIN sessions s ON r.callsid = s.callsid
 WHERE re.service_body_id in (%s) AND rcp.guid = :guid
 GROUP BY rcp.parent_callsid
 ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_body_ids));
