@@ -18,7 +18,10 @@ require_once 'constants.php';
 require_once 'migrations.php';
 require_once 'queries.php';
 require_once 'logging.php';
-$GLOBALS['version']  = "4.3.0";
+if (isset($_GET["CallSid"])) {
+    insertSession($_GET["CallSid"]);
+}
+$GLOBALS['version']  = "4.2.4";
 $GLOBALS['settings_allowlist'] = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => 'Allows for blocking a specific list of phone numbers https://github.com/bmlt-enabled/yap/wiki/Blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -68,6 +71,7 @@ $GLOBALS['settings_allowlist'] = [
     'sms_bias_bypass' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_blackhole' => [ 'description' => '' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'sms_combine' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'sms_dialback_enabled' => [ 'description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'sms_helpline_keyword' => ['description' => '', 'default' => 'talk', 'overridable' => true, 'hidden' => false],
     'sms_summary_page' => ['description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
     'speech_gathering' => [ 'description' => '', 'default' => false, 'overridable' => true, 'hidden' => false],
@@ -824,6 +828,36 @@ function getDigitMap($setting)
 function getPossibleDigits($setting)
 {
     return array_keys(getDigitMap($setting));
+}
+
+function getOptionForSearchType($searchType)
+{
+    foreach (setting("digit_map_search_type") as $digit => $value) {
+        if ($value == $searchType) {
+            return $digit;
+        }
+    }
+    return 0;
+}
+
+function getDialbackString($callsid, $dialbackNumber)
+{
+    $dialback_string = "";
+    if (setting('sms_dialback_enabled')) {
+        $pin_lookup = lookupPinForCallSid($callsid);
+        if (count($pin_lookup) > 0) {
+            $dialback_digit_map_digit = getOptionForSearchType(SearchType::DIALBACK);
+            $dialback_string = sprintf(
+                "Tap to dialback: %s,,,%s,,,%s#.  PIN: %s",
+                $dialbackNumber,
+                $dialback_digit_map_digit,
+                $pin_lookup[0]['pin'],
+                $pin_lookup[0]['pin']
+            );
+        }
+    }
+
+    return $dialback_string;
 }
 
 function getDigitResponse($setting, $field = 'SearchType')

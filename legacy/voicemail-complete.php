@@ -13,13 +13,14 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 function sendSmsForVoicemail($recipients, $serviceBodyCallHandling, $serviceBodyName, $callerNumber)
 {
     $caller_id = getOutboundDialingCallerId($serviceBodyCallHandling);
+    $dialbackString = getDialbackString($_REQUEST['CallSid'], $caller_id);
 
     foreach ($recipients as $recipient) {
         $GLOBALS['twilioClient']->messages->create(
             $recipient,
             array(
                 "from" => $caller_id,
-                "body" => "You have a message from the " . $serviceBodyName . " helpline from caller " . $callerNumber . ", " . $_REQUEST["RecordingUrl"] . ".mp3"
+                "body" => sprintf("You have a message from the %s helpline from caller %s. Voicemail Link %s.mp3. %s", $serviceBodyName, $callerNumber, $_REQUEST["RecordingUrl"], $dialbackString)
             )
         );
     }

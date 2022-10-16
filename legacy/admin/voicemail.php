@@ -35,6 +35,7 @@
             {title:"CallSid", field:"callsid"},
             {title:"From", field:"from_number"},
             {title:"To", field:"to_number"},
+            {title:"Pin", field:"pin"},
             {formatter:function(cell, formatterParams) {
                 var actionString = "";
                 var row = cell.getRow();
