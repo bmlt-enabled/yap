@@ -141,6 +141,12 @@ class AlertId
     const STATUS_CALLBACK_MISSING = 1;
 }
 
+class SmsDialbackOptions
+{
+    const VOLUNTEER_NOTIFICATION = 1;
+    const VOICEMAIL_NOTIFICATION = 2;
+}
+
 class CacheType
 {
     const SESSION = 1;
@@ -841,10 +847,11 @@ function getOptionForSearchType($searchType)
     return 0;
 }
 
-function getDialbackString($callsid, $dialbackNumber)
+function getDialbackString($callsid, $dialbackNumber, $option)
 {
     $dialback_string = "";
-    if (setting('sms_dialback_enabled')) {
+    # Bitwise detection
+    if (setting('sms_dialback_options') & $option) {
         $pin_lookup = lookupPinForCallSid($callsid);
         if (count($pin_lookup) > 0) {
             $dialback_digit_map_digit = getOptionForSearchType(SearchType::DIALBACK);
