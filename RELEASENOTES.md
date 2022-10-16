@@ -3,7 +3,8 @@
 ### 4.2.4 (UNRELEASED)
 * Security fixes and enhancements for dialback. [#527]
   * Dialback is now restricted to a PIN that is stored for each call and visible in the admin portal under the voicemail section.
-  * When `sms_dialback_enabled` is enabled some SMS messages will have information about the PIN and a special magic link for dialing back.  These SMS messages are 1) when a volunteer receives an incoming call SMS and 2) when a voicemail notification SMS is received. 
+  * When `$sms_dialback_options` is enabled some SMS messages will have information about the PIN and a special magic link for dialing back.  These SMS messages are 1) when a volunteer receives an incoming call SMS and 2) when a voicemail notification SMS is received.  More information about how to configure these options [here](https://yap.bmlt.app/helpline/dialback).
+* Added documentation links to Settings page in the admin interface.  
 * Decoupled warnings from upgrade advisor, restyled and added to the admin login page.
 
 ### 4.2.3 (October 15, 2022)

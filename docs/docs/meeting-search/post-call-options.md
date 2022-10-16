@@ -1,7 +1,4 @@
----
-title: Post Call Options
-sidebar_position: 9
----
+# Post Call Options
 
 ---
 
@@ -23,3 +20,17 @@ You can provide an option to allow someone to search again.  Just set:
 ```php
 static $infinite_searching = true;
 ``` 
+
+## Suppress Voice Results
+In order to prevent voice results from being returned for meeting searches set the following setting:
+
+```php
+static $suppress_voice_results = true;
+```
+
+## Disable Meeting Results SMS
+In order to prevent meeting results being returned as an SMS on a voice call use this setting:
+
+```php
+static $sms_disable = true;
+```

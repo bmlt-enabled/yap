@@ -1,7 +1,4 @@
----
-title: SMS Volunteer Routing
-sidebar_position: 11
----
+# SMS Volunteer Routing
 
 ---
 

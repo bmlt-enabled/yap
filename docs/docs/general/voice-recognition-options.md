@@ -1,8 +1,4 @@
----
-sidebar_position: 11
-title: Voice Recognition Optimizations
----
-
+# Voice Recognition Options
 ---
 
 It's possible to set the expected spoken language, for recognition by setting the following variable in config.php to the culture variant.  The default is `en-US`, which is US English.

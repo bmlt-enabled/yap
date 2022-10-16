@@ -1,8 +1,4 @@
----
-title: Disabling Postal Code Gathering
-sidebar_position: 4
----
-
+# Disabling Postal Code Gathering
 ---
 
 To disable postal code lookups set your config as follows:

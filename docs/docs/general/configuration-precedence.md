@@ -1,7 +1,3 @@
----
-sidebar_position: 3
----
-
 # Configuration Precedence
 
 ---
@@ -12,7 +8,7 @@ It's possible to override most of the settings in several different ways.  There
 
 2) Session overrides.  This means the entire call will use this setting.  `index.php?override_title=something+here`.  Twilio will respect this setting for entire during of the call.
 
-3) **New Yap 3.0**  Service body overrides from the Admin UI.  These have a cascading hierarchy of precedence based off the service body above it in the hierarchy tree from your root server.  Either the `override_service_body_id` (which will affect call routing) or `override_service_body_config_id` will pull these settings into the session for use.
+3) Service body overrides from the Admin UI.  These have a cascading hierarchy of precedence based off the service body above it in the hierarchy tree from your root server.  Either the `override_service_body_id` (which will affect call routing) or `override_service_body_config_id` will pull these settings into the session for use.
 
 4) Config.php.  Any setting is controllable from within config.php.
 

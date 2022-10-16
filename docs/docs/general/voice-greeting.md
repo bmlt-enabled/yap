@@ -1,7 +1,4 @@
----
-title: Voice Greeting
-sidebar_position: 10
----
+# Voice Greeting
 
 ---
 

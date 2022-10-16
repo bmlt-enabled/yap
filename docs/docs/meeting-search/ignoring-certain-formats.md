@@ -1,7 +1,4 @@
----
-title: Ignoring Certain Formats
-sidebar_position: 6
----
+# Ignoring Certain Formats
 
 ---
 

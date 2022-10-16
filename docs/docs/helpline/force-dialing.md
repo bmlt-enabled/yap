@@ -1,7 +1,4 @@
----
-title: Force Dialing
-sidebar_position: 4
----
+# Force Dialing
 
 ---
 

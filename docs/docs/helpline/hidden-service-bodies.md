@@ -1,8 +1,4 @@
----
-title: Using Hidden Service Bodies For Helpline Lookups
-sidebar_position: 8
----
-
+# Using Hidden Service Bodies For Helpline Lookups
 ---
 
 It is possible to create a service body with an unpublished group in order create additional routing for service bodies that may not exist in a given root server.

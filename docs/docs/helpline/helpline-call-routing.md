@@ -1,7 +1,4 @@
----
-title: Helpline Call Routing
-sidebar_position: 6
----
+# Helpline Call Routing
 
 ---
 

@@ -1,7 +1,4 @@
----
-title: Voicemail
-sidebar_position: 14
----
+# Voicemail
 
 ---
 
@@ -9,11 +6,11 @@ This is configured through service body call handling, through your call strateg
 
 ### Voicemail Recordings
 
-**NEW in Yap 3.x** Recordings are now available in the admin portal under "Service Bodies > Call Records" for each respective area.
+Recordings are now available in the admin portal under "Service Bodies > Call Records" for each respective area.
 
 ### Voicemail Notifications to SMS
 
-**NEW in Yap 3.x** You can set up any volunteer to receive voicemail notifications.  Within the volunteer setting, set the dropdown Responder to "Enabled".
+You can set up any volunteer to receive voicemail notifications.  Within the volunteer setting, set the dropdown Responder to "Enabled".
 
 If you specify a Primary Contact Number, it will SMS a link to the recording that person when a voicemail is left.  You can also comma separate the values if you want it to go to more than one person.
 

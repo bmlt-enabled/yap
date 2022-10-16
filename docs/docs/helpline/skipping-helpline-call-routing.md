@@ -1,8 +1,4 @@
----
-title: Skipping Helpline Call Routing
-sidebar_position: 10
----
-
+# Skipping Helpline Call Routing
 ---
 
 When configuring the TwiML app instead of pointing to `index.php` point to `input-method.php?Digits=2`.
