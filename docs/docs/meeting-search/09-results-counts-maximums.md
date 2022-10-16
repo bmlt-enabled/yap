@@ -1,7 +1,4 @@
----
-title: Results Counts Maximums
-sidebar_position: 10
----
+# Results Counts Maximums
 
 ---
 

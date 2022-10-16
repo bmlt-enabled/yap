@@ -1,8 +1,4 @@
----
-title: Custom Query
-sidebar_position: 3
----
-
+# Custom Query
 ---
 
 In some cases you may want use a custom BMLT query.  For example, if you have a small service body you may want to ignore the day of the week concept that is the default behavior in searches.
