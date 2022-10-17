@@ -5,7 +5,7 @@
    data-toggle="tooltip"
    data-placement="bottom"
    target="_blank"
-   href="<?php echo url('/upgrade-advisor.php');  ?>"
+   href="<?php echo url(sprintf('/upgrade-advisor.php%s', isset($_REQUEST['run_exclude_errors_check']) ? "?run_exclude_errors_check=1" : "")) ?>"
    title="<?php echo $status['message']?>">
     <?php echo sprintf("Status: %s", ($status['status'] ? "OK" : "Problem")); ?>
 </a>
