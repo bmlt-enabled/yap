@@ -15,6 +15,6 @@
        data-toggle="tooltip"
        data-placement="bottom"
        target="_blank"
-       href="../upgrade-advisor.php"
+       href="<?php echo url('/upgrade-advisor.php');  ?>"
        title="<?php echo $status['warnings']?>">Warnings</a>
 <?php }?>
