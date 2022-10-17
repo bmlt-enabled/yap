@@ -36,7 +36,6 @@ $GLOBALS['settings_allowlist'] = [
     'digit_map_location_search_method' => [ 'description' => '', 'default' => ['1' => LocationSearchMethod::VOICE, '2' => LocationSearchMethod::DTMF, '3' => SearchType::JFT], 'overridable' => true, 'hidden' => false],
     'disable_postal_code_gather' => [ 'description' => '/general/disabling-postal-code-gathering', 'default' => false, 'overridable' => true, 'hidden' => false],
     'docs_base' => [ 'description' => '', 'default' => 'https://yap.bmlt.app', 'overridable' => true, 'hidden' => true],
-    'exclude_errors_on_login_page'  => [ 'description' => '', 'default' => [], 'overridable' => true, 'hidden' => true],
     'extension_dial' => [ 'description' => '/helpline/extension-dial', 'default' => false, 'overridable' => true, 'hidden' => false],
     'fallback_number' => [ 'description' => '/general/fallback' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'gather_hints' => [ 'description' => '/general/voice-recognition-options' , 'default' => '', 'overridable' => true, 'hidden' => false],
