@@ -21,7 +21,7 @@ require_once 'logging.php';
 if (isset($_GET["CallSid"])) {
     insertSession($_GET["CallSid"]);
 }
-$GLOBALS['version']  = "4.2.4";
+$GLOBALS['version']  = "4.2.5";
 $GLOBALS['settings_allowlist'] = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '/helpline/announce_servicebody_volunteer_routing' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => '/general/blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -537,6 +537,15 @@ class UpgradeAdvisor
         return ["status"=>$status, "message"=>$message, "warnings"=>$warnings, "version"=>$GLOBALS['version'], "build"=>str_replace("\n", "", $build)];
     }
 
+    public static function isAllowedError($exceptionName)
+    {
+        if (isset($GLOBALS["exclude_errors_on_login_page"]) && isset($_REQUEST['run_exclude_errors_check'])) {
+            return !in_array($exceptionName, $GLOBALS["exclude_errors_on_login_page"]);
+        }
+
+        return true;
+    }
+
     public static function getStatus()
     {
         $warnings = "";
@@ -606,6 +615,10 @@ class UpgradeAdvisor
             }
         } catch (\Twilio\Exceptions\RestException $e) {
             return self::getState(false, "Twilio Rest Error: " . $e->getMessage(), $warnings);
+        } catch (\Twilio\Exceptions\ConfigurationException $e) {
+            if (self::isAllowedError("twilioMissingCredentials")) {
+                return self::getState(false, "Twilio Configuration Error: " . $e->getMessage(), $warnings);
+            }
         }
 
         if (has_setting('smtp_host')) {

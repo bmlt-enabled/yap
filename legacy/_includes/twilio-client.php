@@ -7,6 +7,7 @@ try {
     $GLOBALS['twilioClient'] = $twilioClient;
 } catch (\Twilio\Exceptions\ConfigurationException $e) {
     error_log("Missing Twilio Credentials");
+    throw $e;
 }
 
 function hup($callSid)

@@ -5,7 +5,6 @@ if (stripos($_SERVER['REQUEST_URI'], '/admin/index.php') == true) {
     die();
 }
 
-$state = UpgradeAdvisor::getState();
 ?>
 <script type="text/javascript">
     if (!!window.MSInputMethodContext && !!document.documentMode) {
@@ -43,7 +42,10 @@ $state = UpgradeAdvisor::getState();
             ?>
         </select>
         <div id="version-info">
-            <?php require_once 'status_control.php' ?>
+            <?php
+            $_REQUEST['run_exclude_errors_check'] = "1";
+            require_once 'status_control.php'
+            ?>
         </div>
     </form>
 </div>
