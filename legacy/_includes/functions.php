@@ -617,7 +617,7 @@ class UpgradeAdvisor
             return self::getState(false, "Twilio Rest Error: " . $e->getMessage(), $warnings);
         } catch (\Twilio\Exceptions\ConfigurationException $e) {
             if (self::isAllowedError("twilioMissingCredentials")) {
-                return self::getState(false, "Missing Twilio Credentials", $warnings);
+                return self::getState(false, "Twilio Configuration Error: " . $e->getMessage(), $warnings);
             }
         }
 
