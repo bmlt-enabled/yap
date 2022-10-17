@@ -21,7 +21,7 @@ require_once 'logging.php';
 if (isset($_GET["CallSid"])) {
     insertSession($_GET["CallSid"]);
 }
-$GLOBALS['version']  = "4.2.4";
+$GLOBALS['version']  = "4.2.5";
 $GLOBALS['settings_allowlist'] = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '/helpline/announce_servicebody_volunteer_routing' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => '/general/blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -36,6 +36,7 @@ $GLOBALS['settings_allowlist'] = [
     'digit_map_location_search_method' => [ 'description' => '', 'default' => ['1' => LocationSearchMethod::VOICE, '2' => LocationSearchMethod::DTMF, '3' => SearchType::JFT], 'overridable' => true, 'hidden' => false],
     'disable_postal_code_gather' => [ 'description' => '/general/disabling-postal-code-gathering', 'default' => false, 'overridable' => true, 'hidden' => false],
     'docs_base' => [ 'description' => '', 'default' => 'https://yap.bmlt.app', 'overridable' => true, 'hidden' => true],
+    'exclude_errors_on_login_page'  => [ 'description' => '', 'default' => [], 'overridable' => true, 'hidden' => true],
     'extension_dial' => [ 'description' => '/helpline/extension-dial', 'default' => false, 'overridable' => true, 'hidden' => false],
     'fallback_number' => [ 'description' => '/general/fallback' , 'default' => '', 'overridable' => true, 'hidden' => false],
     'gather_hints' => [ 'description' => '/general/voice-recognition-options' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -537,6 +538,15 @@ class UpgradeAdvisor
         return ["status"=>$status, "message"=>$message, "warnings"=>$warnings, "version"=>$GLOBALS['version'], "build"=>str_replace("\n", "", $build)];
     }
 
+    public static function isAllowedError($exceptionName)
+    {
+        if (isset($GLOBALS["exclude_errors_on_login_page"]) && $_REQUEST['exclude_check']) {
+            return !in_array($exceptionName, $GLOBALS["exclude_errors_on_login_page"]);
+        }
+
+        return true;
+    }
+
     public static function getStatus()
     {
         $warnings = "";
@@ -606,6 +616,10 @@ class UpgradeAdvisor
             }
         } catch (\Twilio\Exceptions\RestException $e) {
             return self::getState(false, "Twilio Rest Error: " . $e->getMessage(), $warnings);
+        } catch (\Twilio\Exceptions\ConfigurationException $e) {
+            if (self::isAllowedError("twilioMissingCredentials")) {
+                return self::getState(false, "Missing Twilio Credentials", $warnings);
+            }
         }
 
         if (has_setting('smtp_host')) {
