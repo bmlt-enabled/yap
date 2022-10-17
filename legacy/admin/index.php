@@ -43,7 +43,7 @@ if (stripos($_SERVER['REQUEST_URI'], '/admin/index.php') == true) {
         </select>
         <div id="version-info">
             <?php
-            $_REQUEST['exclude_check'] = "1";
+            $_REQUEST['run_exclude_errors_check'] = "1";
             require_once 'status_control.php'
             ?>
         </div>

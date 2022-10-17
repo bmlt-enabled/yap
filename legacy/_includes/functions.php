@@ -539,7 +539,7 @@ class UpgradeAdvisor
 
     public static function isAllowedError($exceptionName)
     {
-        if (isset($GLOBALS["exclude_errors_on_login_page"]) && $_REQUEST['exclude_check']) {
+        if (isset($GLOBALS["exclude_errors_on_login_page"]) && $_REQUEST['run_exclude_errors_check']) {
             return !in_array($exceptionName, $GLOBALS["exclude_errors_on_login_page"]);
         }
 
