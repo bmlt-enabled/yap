@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.2.6 (UNRELEASED)
+* Fix for some servers that don't have credentials in config.php.  When that is the case, pages that require Twilio credentials will return a 403 Forbidden page.
+
 ### 4.2.5 (October 17, 2022)
 * Fix for status notification messages on the admin interface login page as a result of moving it there.  This issue occurs when a value is purposefully left out of config.php, but intended to be inherited from a service body. A new option has been added to specifically hide some specific errors.  More information is [here](https://yap.bmlt.app/general/exclude-errors). [#677]
 * Fix for broken links on the status button on the admin interface.
