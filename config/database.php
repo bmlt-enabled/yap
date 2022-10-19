@@ -8,7 +8,6 @@ if (!class_exists("SearchType")) {
         const MEETINGS = 2;
         const JFT = 3;
         const CUSTOM_EXTENSIONS = 998;
-        const VOICEMAIL_PLAYBACK = 999;
         const DIALBACK = 1000;
     }
 }
