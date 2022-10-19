@@ -48,12 +48,6 @@ if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETING
         </Response>
         <?php
         return;
-} elseif ($searchType == SearchType::VOICEMAIL_PLAYBACK) { ?>
-        <Response>
-        <Redirect method="GET">voicemail-playback.php</Redirect>
-        </Response>
-        <?php
-        return;
 } elseif ($searchType == SearchType::DIALBACK) { ?>
         <Response>
         <Redirect method="GET">dialback.php</Redirect>

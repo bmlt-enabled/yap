@@ -105,20 +105,6 @@ test('jft option enabled and selected', function () {
         ], false);
 });
 
-test('voicemail playback selected', function () {
-    $_REQUEST['Digits'] = "8";
-    $response = $this->call('GET', '/input-method.php');
-    $response
-        ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
-            '<?xml version="1.0" encoding="UTF-8"?>',
-            '<Response>',
-            '<Redirect method="GET">voicemail-playback.php</Redirect>',
-            '</Response>'
-        ], false);
-});
-
 test('dialback selected', function () {
     $_REQUEST['Digits'] = "9";
     $response = $this->call('GET', '/input-method.php');
@@ -141,7 +127,6 @@ test('custom extension configured and selected', function () {
         '2' => SearchType::MEETINGS,
         '3' => SearchType::JFT,
         '7' => SearchType::CUSTOM_EXTENSIONS,
-        '8' => SearchType::VOICEMAIL_PLAYBACK,
         '9' => SearchType::DIALBACK
     ];
 
