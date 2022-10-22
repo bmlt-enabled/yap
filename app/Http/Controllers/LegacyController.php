@@ -15,7 +15,7 @@ class LegacyController extends Controller
             $path .= '/index.php';
         }
 
-        if (str_starts_with($request->path(), 'admin') && str_ends_with($request->path(), '_api.php')) {
+        if (str_starts_with($request->path(), 'admin') && str_ends_with($request->path(), 'api.php')) {
             $content_type = 'application/json';
         } elseif (str_starts_with($request->path(), 'admin') || str_ends_with($request->path(), 'clear-session.php')) {
             $content_type = 'text/html';

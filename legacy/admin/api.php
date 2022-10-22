@@ -1,6 +1,6 @@
 <?php
 require_once 'auth_verify.php';
-header("content-type: application/json");
+
 if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'save') {
     $data = file_get_contents('php://input');
 
