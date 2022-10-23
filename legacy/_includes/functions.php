@@ -251,7 +251,6 @@ class VolunteerInfo
     public $contact = SpecialPhoneNumber::UNKNOWN;
     public $color;
     public $gender;
-    public $shadow = VolunteerShadowOption::UNSPECIFIED;
     public $responder = VolunteerResponderOption::UNSPECIFIED;
     public $type = VolunteerType::PHONE;
     public $language;
@@ -405,13 +404,6 @@ class RecordType
     }
 }
 
-class VolunteerShadowOption
-{
-    const UNSPECIFIED = 0;
-    const TRAINEE = 1;
-    const TRAINER = 2;
-}
-
 class VolunteerResponderOption
 {
     const UNSPECIFIED = 0;
@@ -452,7 +444,6 @@ class VolunteerRoutingParameters
     public $cycle_algorithm = CycleAlgorithm::LINEAR_LOOP_FOREVER;
     public $volunteer_type = VolunteerType::PHONE;
     public $volunteer_gender = VolunteerGender::UNSPECIFIED;
-    public $volunteer_shadow = VolunteerShadowOption::UNSPECIFIED;
     public $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
     public $volunteer_language;
 }
@@ -493,14 +484,6 @@ class VolunteerRoutingHelpers
             || (($volunteer_routing_params->volunteer_responder !== VolunteerResponderOption::UNSPECIFIED
                 && isset($volunteers[$v]->responder)
                 && $volunteer_routing_params->volunteer_responder == $volunteers[$v]->responder)));
-    }
-
-    public static function checkVolunteerRoutingShadow($volunteer_routing_params, $volunteers, $v)
-    {
-        return ($volunteer_routing_params->volunteer_shadow == VolunteerShadowOption::UNSPECIFIED
-            || (($volunteer_routing_params->volunteer_shadow !== VolunteerShadowOption::UNSPECIFIED
-                && isset($volunteers[$v]->shadow)
-                && $volunteer_routing_params->volunteer_shadow == $volunteers[$v]->shadow)));
     }
 
     public static function checkVolunteerRoutingGender($volunteer_routing_params, $volunteers, $v)
@@ -1737,7 +1720,6 @@ function getVolunteerInfo($volunteers)
                 $volunteerInfo->contact    = $volunteer->volunteer_phone_number;
                 $volunteerInfo->color      = "#" . getNameHashColorCode(strval($v+1) . "-" . $volunteerInfo->title);
                 $volunteerInfo->gender     = isset($volunteer->volunteer_gender) ? $volunteer->volunteer_gender : VolunteerGender::UNSPECIFIED;
-                $volunteerInfo->shadow     = isset($volunteer->volunteer_shadow) ? $volunteer->volunteer_shadow : VolunteerShadowOption::UNSPECIFIED;
                 $volunteerInfo->responder  = isset($volunteer->volunteer_responder) ? $volunteer->volunteer_responder : VolunteerResponderOption::UNSPECIFIED;
                 if (strlen(setting('language_selections')) > 0) {
                     $volunteerInfo->language = property_exists($volunteer, 'volunteer_language') ? $volunteer->volunteer_language : array(explode(',', setting('language_selections'))[0]);
