@@ -2,7 +2,7 @@
 require_once '_includes/functions.php';
 require_once '_includes/twilio-client.php';
 
-function getCallConfig($serviceBodyCallHandling, $tandem = VolunteerShadowOption::UNSPECIFIED)
+function getCallConfig($serviceBodyCallHandling)
 {
     $tracker            = !isset($_REQUEST["tracker"]) ? 0 : $_REQUEST["tracker"];
 
@@ -20,23 +20,17 @@ function getCallConfig($serviceBodyCallHandling, $tandem = VolunteerShadowOption
     $volunteer_routing_parameters = new VolunteerRoutingParameters();
     $volunteer_routing_parameters->service_body_id = $serviceBodyCallHandling->service_body_id;
     $volunteer_routing_parameters->tracker = $tracker;
-    $volunteer_routing_parameters->cycle_algorithm = $tandem == VolunteerShadowOption::TRAINEE ? CycleAlgorithm::BLASTING : $serviceBodyCallHandling->call_strategy;
+    $volunteer_routing_parameters->cycle_algorithm = $serviceBodyCallHandling->call_strategy;
     $volunteer_routing_parameters->volunteer_type = VolunteerType::PHONE;
     $volunteer_routing_parameters->volunteer_gender = isset($_SESSION['Gender']) ? $_SESSION['Gender'] : VolunteerGender::UNSPECIFIED;
-    $volunteer_routing_parameters->volunteer_shadow = $tandem == VolunteerShadowOption::TRAINEE ? VolunteerShadowOption::TRAINER : VolunteerShadowOption::UNSPECIFIED;
     $volunteer_routing_parameters->volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
     $volunteer_routing_parameters->volunteer_language = setting('language');
-    if ($tandem == VolunteerShadowOption::UNSPECIFIED) {
-        $_SESSION["volunteer_routing_parameters"] = $volunteer_routing_parameters;
-    }
     $config->volunteer_routing_params = $volunteer_routing_parameters;
     $volunteer = getHelplineVolunteer($config->volunteer_routing_params);
     $config->volunteer = $volunteer;
     $config->options = array(
         'method' => 'GET',
-        'url'  => $tandem !== VolunteerShadowOption::TRAINEE
-            ? (getWebhookUrl() . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'] . '&service_body_id=' . $serviceBodyCallHandling->service_body_id . getSessionLink())
-            : (getWebhookUrl() . '/tandem-answer-response.php?conference_name=' . $_REQUEST['FriendlyName'] . '&service_body_id=' . $serviceBodyCallHandling->service_body_id . getSessionLink()),
+        'url'  => (getWebhookUrl() . '/helpline-outdial-response.php?conference_name=' . $_REQUEST['FriendlyName'] . '&service_body_id=' . $serviceBodyCallHandling->service_body_id . getSessionLink()),
         'statusCallback'       => $serviceBodyCallHandling->call_strategy == CycleAlgorithm::BLASTING
             ? (getWebhookUrl() . '/helpline-dialer.php?noop=1' . getSessionLink())
             : (getWebhookUrl() . '/helpline-dialer.php?service_body_id=' . $serviceBodyCallHandling->service_body_id
@@ -83,7 +77,6 @@ if (isset($_REQUEST['Debug']) && intval($_REQUEST['Debug']) == 1) {
 
 $conferences = $twilioClient->conferences->read(array ("friendlyName" => $_REQUEST['FriendlyName'] ));
 if (count($conferences) > 0 && $conferences[0]->status != "completed") {
-    $tandem = 0;
     $sms_body = word('you_have_an_incoming_phoneline_call_from') . " ";
 
     if (isset($_REQUEST['StatusCallbackEvent']) && $_REQUEST['StatusCallbackEvent'] == 'participant-join' &&
@@ -93,19 +86,13 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
 
         if (isset($_SESSION["ActiveVolunteer"])) {
             $volunteer = $_SESSION["ActiveVolunteer"];
-            if (isset($volunteer->volunteerInfo) && $volunteer->volunteerInfo->shadow == VolunteerShadowOption::TRAINEE) {
-                $_REQUEST['SequenceNumber'] = 1;
-                $sms_body = "You have an incoming phoneline trainee call.  The originating phoneline call is from ";
-                $_SESSION["ActiveVolunteer"] = null;
-                $tandem = 1;
-            }
         }
     }
 
     // Make timeout configurable per volunteer
     if (( isset($_REQUEST['SequenceNumber']) && intval($_REQUEST['SequenceNumber']) == 1 ) ||
          ( isset($_REQUEST['CallStatus']) && ( $_REQUEST['CallStatus'] == 'no-answer' || $_REQUEST['CallStatus'] == 'completed' ) )) {
-        $callConfig = getCallConfig($serviceBodyCallHandling, $tandem);
+        $callConfig = getCallConfig($serviceBodyCallHandling);
 
         if (isset($_REQUEST['CallStatus']) && $_REQUEST['CallStatus'] == 'no-answer') {
             insertCallEventRecord(EventId::VOLUNTEER_NOANSWER, (object)['to_number' => $_REQUEST['Called']]);
@@ -116,7 +103,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
         $participants = $twilioClient->conferences($conferences[0]->sid)->participants->read();
 
         // Do not call if the caller hung up.
-        if (count($participants) == 1 || (count($participants) > 0 && $tandem == VolunteerShadowOption::TRAINEE)) {
+        if (count($participants) == 1) {
             try {
                 $callerSid = $participants[0]->callSid;
                 $_SESSION['master_callersid'] = $callerSid;
