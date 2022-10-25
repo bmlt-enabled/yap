@@ -65,4 +65,11 @@ class CallFlowController extends Controller
             "sayText" => sprintf("%s %s", word('please_say_the_name_of_the'), word('city_or_county'))
         ])->header("Content-Type", "text/xml");
     }
+
+    public function servicebodyextresponse(Request $request)
+    {
+        return response()->view("redirect", [
+            "redirectUrl" => sprintf("helpline-search.php?override_service_body_id=%s", $request->query('Digits'))
+        ])->header("Content-Type", "text/xml");
+    }
 }
