@@ -96,4 +96,11 @@ class CallFlowController extends Controller
             ])->header("Content-Type", "text/xml");
         }
     }
+
+    public function playlist(Request $request)
+    {
+        return response()->view("playlist", [
+            "items" => $request->query("items")
+        ])->header("Content-Type", "text/xml");
+    }
 }

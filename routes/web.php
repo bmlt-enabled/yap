@@ -27,5 +27,7 @@ Route::get("/service-body-ext-response{ext}", 'App\Http\Controllers\CallFlowCont
     ->where('ext', $ext);
 Route::get("/gender-routing-response{ext}", 'App\Http\Controllers\CallFlowController@genderroutingresponse')
     ->where('ext', $ext);
+Route::get("/playlist{ext}", 'App\Http\Controllers\CallFlowController@playlist')
+    ->where('ext', $ext);
 Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])
     ->where('all', '^(?!api).*$');
