@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Constants\SearchType;
+use App\Constants\VolunteerGender;
 use Illuminate\Http\Request;
 
 class CallFlowController extends Controller
@@ -71,5 +72,28 @@ class CallFlowController extends Controller
         return response()->view("redirect", [
             "redirectUrl" => sprintf("helpline-search.php?override_service_body_id=%s", $request->query('Digits'))
         ])->header("Content-Type", "text/xml");
+    }
+
+    public function genderroutingresponse(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        $gender = getIvrResponse(
+            "gender-routing.php",
+            null,
+            [VolunteerGender::MALE, VolunteerGender::FEMALE, VolunteerGender::NO_PREFERENCE]
+        );
+        if ($gender == null) {
+            return response()->view("redirect", [
+                "voice" => voice(),
+                "language" => setting("language"),
+                "redirectUrl" => "gender-routing.php",
+                "sayText" => word('you_might_have_invalid_entry')
+            ])->header("Content-Type", "text/xml");
+        } else {
+            $_SESSION['Gender'] = $gender;
+            return response()->view("redirect", [
+                "redirectUrl" => sprintf("helpline-search.php?SearchType=%s", $request->query('SearchType'))
+            ])->header("Content-Type", "text/xml");
+        }
     }
 }

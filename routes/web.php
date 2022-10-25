@@ -25,5 +25,7 @@ Route::get("/city-or-county-voice-input{ext}", 'App\Http\Controllers\CallFlowCon
     ->where('ext', $ext);
 Route::get("/service-body-ext-response{ext}", 'App\Http\Controllers\CallFlowController@servicebodyextresponse')
     ->where('ext', $ext);
+Route::get("/gender-routing-response{ext}", 'App\Http\Controllers\CallFlowController@genderroutingresponse')
+    ->where('ext', $ext);
 Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])
     ->where('all', '^(?!api).*$');
