@@ -15,5 +15,6 @@ Route::get("/msr/{latitude}/{longitude}", ['uses' => 'App\Http\Controllers\Legac
 Route::delete("/admin/cache", 'App\Http\Controllers\AdminController@cacheClear');
 Route::get("/fetch-jft{ext}", 'App\Http\Controllers\FetchJFTController@index')->where('ext', $ext);
 Route::get("/ping{ext}", 'App\Http\Controllers\PingController@index')->where('ext', $ext);
+Route::get("/zip-input{ext}", 'App\Http\Controllers\CallFlowController@zipinput')->where('ext', $ext);
 Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])
     ->where('all', '^(?!api).*$');
