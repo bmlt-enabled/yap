@@ -19,13 +19,50 @@ class CallFlowController extends Controller
         $enterWord = (has_setting('speech_gathering') && json_decode(setting('speech_gathering'))
             ? word('please_enter_or_say_your_digit') : word('please_enter_your_digit'));
 
-        return response()->view("gather", [
+        return response()->view("gather.say", [
             "inputType" => getInputType(),
             "numDigits" => setting('postal_code_length'),
             "action" => $action,
             "voice" => voice(),
+            "timeout" => 10,
+            "gatherLanguage" => setting('gather_language'),
             "language" => setting('language'),
-            "sayText" => sprintf("%s %s", $enterWord, word("zip_code"))
+            "sayText" => sprintf("%s %s", $enterWord, word('zip_code'))
+        ])->header("Content-Type", "text/xml");
+    }
+
+    public function customext()
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        return response()->view("gather.play", [
+            "inputType" => getInputType(),
+            "numDigits" => setting('postal_code_length'),
+            "action" => "custom-ext-dialer.php",
+            "voice" => voice(),
+            "timeout" => 15,
+            "gatherLanguage" => setting('gather_language'),
+            "language" => setting('language'),
+            "playUrl" => setting(str_replace("-", "_", getWordLanguage()) . "_custom_extensions_greeting")
+        ])->header("Content-Type", "text/xml");
+    }
+
+    public function cityorcountyinput(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        $province = json_decode(setting('province_lookup')) ? $request->query("SpeechResult") : "";
+        return response()->view("gather.say", [
+            "inputType" => "speech",
+            "action" => sprintf(
+                "voice-input-result.php?SearchType=%s&Province=%s",
+                $request->query("SearchType"),
+                urlencode($province)
+            ),
+            "hints" => setting('gather_hints'),
+            "voice" => voice(),
+            "timeout" => 15,
+            "gatherLanguage" => setting('gather_language'),
+            "language" => setting('language'),
+            "sayText" => sprintf("%s %s", word('please_say_the_name_of_the'), word('city_or_county'))
         ])->header("Content-Type", "text/xml");
     }
 }
