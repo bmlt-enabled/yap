@@ -103,4 +103,22 @@ class CallFlowController extends Controller
             "items" => $request->query("items")
         ])->header("Content-Type", "text/xml");
     }
+
+    public function voiceinputresult(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        $province = (has_setting('province_lookup')
+        && json_decode(setting('province_lookup')) ? $_REQUEST['Province'] : getProvince());
+        $speechResult = $request->query('SpeechResult');
+        $searchType = $request->query('SearchType');
+        $action = ($searchType == SearchType::VOLUNTEERS ? "helpline-search.php" : "address-lookup.php");
+        return response()->view("redirect", [
+            "redirectUrl" => sprintf(
+                "%s?Digits=%s&SearchType=%s",
+                $action,
+                urlencode($speechResult . ", " . $province),
+                $searchType
+            ),
+        ])->header("Content-Type", "text/xml");
+    }
 }

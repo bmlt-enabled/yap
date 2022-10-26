@@ -18,7 +18,37 @@ test('service body extension response', function () {
         ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Redirect>helpline-search.php?override_service_body_id=1</Redirect>',
+            '<Redirect method="GET">helpline-search.php?override_service_body_id=1</Redirect>',
+            '</Response>'
+        ], false);
+});
+
+test('voice input result for someone to talk to', function () {
+    $_REQUEST['SpeechResult'] = "Raleigh";
+    $_REQUEST['SearchType'] = "1";
+    $response = $this->call('GET', '/voice-input-result.php?SpeechResult=Raleigh&SearchType=1');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">helpline-search.php?Digits=Raleigh%2C+&amp;SearchType=1</Redirect>',
+            '</Response>'
+        ], false);
+});
+
+test('voice input result for meeting lookup', function () {
+    $_REQUEST['SpeechResult'] = "Raleigh";
+    $_REQUEST['SearchType'] = "2";
+    $response = $this->call('GET', '/voice-input-result.php?SpeechResult=Raleigh&SearchType=2');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">address-lookup.php?Digits=Raleigh%2C+&amp;SearchType=2</Redirect>',
             '</Response>'
         ], false);
 });
