@@ -1,6 +1,7 @@
 # Release Notes
 
-### 4.2.6 (UNRELEASED)
+### 4.2.6 (October 25, 2022)
+* Fix for www.jftna.org broken certificate issue.  Swapped to jftna.org. [#691]
 * Fix for some servers that don't have credentials in config.php.  When that is the case, pages that require Twilio credentials will return a 403 Forbidden page. [#681]
 * Fix for config api not returning correct mime type. [#684]
 
