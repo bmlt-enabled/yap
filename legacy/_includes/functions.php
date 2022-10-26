@@ -2012,7 +2012,7 @@ function get_jft($sms = false)
     $result = null;
 
     if (setting('word_language') == 'en-US' || setting('word_language') == 'en-AU') {
-        $url = 'https://www.jftna.org/jft/';
+        $url = 'https://jftna.org/jft/';
         $jft_language_dom_element = "table";
         $copyright_info = '';
         $preg_search_lang = "\r\n";

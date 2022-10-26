@@ -20,7 +20,7 @@ test('invalid entry', function () {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">you might have an invalid entry</Say>',
-            '<Redirect>gender-routing.php</Redirect>',
+            '<Redirect method="GET">gender-routing.php</Redirect>',
             '</Response>'
         ], false);
 });
@@ -35,7 +35,7 @@ test('selected option', function () {
         ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Redirect>helpline-search.php?SearchType=1</Redirect>',
+            '<Redirect method="GET">helpline-search.php?SearchType=1</Redirect>',
             '</Response>'
         ], false);
 });
