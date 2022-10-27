@@ -14,6 +14,7 @@ beforeEach(function () {
 
 test('initial sms gateway default', function () {
     $_REQUEST['Body'] = '27592';
+    $_REQUEST['stub_google_maps_endpoint'] = true;
     $response = $this->get('/sms-gateway.php');
     $response
         ->assertStatus(200)
@@ -21,13 +22,14 @@ test('initial sms gateway default', function () {
         ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Redirect method="GET">meeting-search.php?SearchType=1&amp;Latitude=&amp;Longitude=</Redirect>',
+            '<Redirect method="GET">meeting-search.php?SearchType=1&amp;Latitude=35.5648713&amp;Longitude=-78.6682395</Redirect>',
             '</Response>',
     ], false);
 });
 
 test('initial sms gateway talk option', function () {
     $_REQUEST['Body'] = 'talk 27592';
+    $_REQUEST['stub_google_maps_endpoint'] = true;
     $response = $this->get('/sms-gateway.php');
     $response
         ->assertStatus(200)
@@ -35,7 +37,7 @@ test('initial sms gateway talk option', function () {
         ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Redirect method="GET">helpline-sms.php?OriginalCallerId=+19737771313&amp;To=+12125551212&amp;Latitude=&amp;Longitude=</Redirect>',
+            '<Redirect method="GET">helpline-sms.php?OriginalCallerId=+19737771313&amp;To=+12125551212&amp;Latitude=35.5648713&amp;Longitude=-78.6682395</Redirect>',
             '</Response>',
         ], false);
 });

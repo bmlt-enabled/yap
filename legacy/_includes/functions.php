@@ -936,11 +936,17 @@ function getCoordinatesForAddress($address)
             }
         }
 
-        $map_details_response = get($GLOBALS['google_maps_endpoint']
-            . "&address="
-            . urlencode($address)
-            . "&components=" . urlencode(setting('location_lookup_bias')), false, 3600);
+        if (isset($_REQUEST['stub_google_maps_endpoint']) && $_REQUEST['stub_google_maps_endpoint']) {
+            $map_details_response = json_encode(\App\Services\StubService::geocode());
+        } else {
+            $map_details_response = get(($GLOBALS['google_maps_endpoint'])
+                . "&address="
+                . urlencode($address)
+                . "&components=" . urlencode(setting('location_lookup_bias')), false, 3600);
+        }
+
         $map_details = json_decode($map_details_response);
+
         if (count($map_details->results) > 0) {
             $coordinates->location = $map_details->results[0]->formatted_address;
             $geometry = $map_details->results[0]->geometry->location;
