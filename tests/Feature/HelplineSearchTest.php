@@ -30,6 +30,7 @@ test('valid search', function () {
     $_REQUEST['Address'] = "Raleigh, NC";
     $_REQUEST['SearchType'] = "1";
     $_REQUEST['Called'] = "+12125551212";
+    $GLOBALS['override_service_body_id'] = null;
     $response = $this->call('GET', '/helpline-search.php');
     $response
         ->assertStatus(200)
