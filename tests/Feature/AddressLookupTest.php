@@ -10,9 +10,8 @@ beforeEach(function () {
 });
 
 test('search for address with speech text result with bad google api key', function () {
-    $_REQUEST['SpeechResult'] = "Raleigh, NC";
-    $_REQUEST['SearchType'] = "1";
-    $response = $this->call('GET', '/address-lookup.php');
+    $_REQUEST['stub_google_maps_endpoint'] = false;
+    $response = $this->call('GET', '/address-lookup.php?SpeechResult=Raleigh, NC&SearchType=1');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -20,6 +19,21 @@ test('search for address with speech text result with bad google api key', funct
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect method="GET">input-method.php?Digits=1&amp;Retry=1</Redirect>',
+            '</Response>'
+        ], false);
+});
+
+test('search for address for someone to talk to with speech text result with google api key', function () {
+    $_REQUEST['stub_google_maps_endpoint'] = true;
+    $response = $this->call('GET', '/address-lookup.php?SpeechResult=Raleigh, NC&SearchType=1');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">searching meeting information for Willow Spring, NC 27592, USA</Say>',
+            '<Redirect method="GET">meeting-search.php?Latitude=35.5648713&amp;Longitude=-78.6682395</Redirect>',
             '</Response>'
         ], false);
 });
