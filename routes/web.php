@@ -29,6 +29,8 @@ Route::get("/gender-routing-response{ext}", 'App\Http\Controllers\CallFlowContro
     ->where('ext', $ext);
 Route::get("/voice-input-result{ext}", 'App\Http\Controllers\CallFlowController@voiceinputresult')
     ->where('ext', $ext);
+Route::get("/address-lookup{ext}", 'App\Http\Controllers\CallFlowController@addresslookup')
+    ->where('ext', $ext);
 Route::get("/playlist{ext}", 'App\Http\Controllers\CallFlowController@playlist')
     ->where('ext', $ext);
 Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])

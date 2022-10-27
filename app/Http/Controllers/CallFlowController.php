@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\EventId;
 use App\Constants\SearchType;
 use App\Constants\VolunteerGender;
 use Illuminate\Http\Request;
@@ -120,5 +121,32 @@ class CallFlowController extends Controller
                 $searchType
             ),
         ])->header("Content-Type", "text/xml");
+    }
+
+    public function addresslookup(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        $address = getIvrResponse();
+        $coordinates = getCoordinatesForAddress($address);
+        insertCallEventRecord(
+            EventId::MEETING_SEARCH_LOCATION_GATHERED,
+            (object)['gather' => $address, 'coordinates' => $coordinates ?? null]
+        );
+        if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) {
+            return response()->view("redirect", [
+                "redirectUrl" => sprintf("input-method.php?Digits=%s&Retry=1", $request->query('SearchType'))
+            ])->header("Content-Type", "text/xml");
+        } else {
+            return response()->view("redirect", [
+                "voice" => voice(),
+                "language" => setting("language"),
+                "redirectUrl" => sprintf(
+                    "meeting-search.php?Latitude=%s&Longitude=%s",
+                    $coordinates->latitude,
+                    $coordinates->longitude
+                ),
+                "sayText" => sprintf("%s %s", word('searching_meeting_information_for'), $coordinates->location)
+            ])->header("Content-Type", "text/xml");
+        }
     }
 }
