@@ -33,5 +33,7 @@ Route::get("/address-lookup{ext}", 'App\Http\Controllers\CallFlowController@addr
     ->where('ext', $ext);
 Route::get("/playlist{ext}", 'App\Http\Controllers\CallFlowController@playlist')
     ->where('ext', $ext);
+Route::get("/fallback{ext}", 'App\Http\Controllers\CallFlowController@fallback')
+    ->where('ext', $ext);
 Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])
     ->where('all', '^(?!api).*$');

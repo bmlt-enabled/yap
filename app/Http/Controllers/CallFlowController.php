@@ -149,4 +149,24 @@ class CallFlowController extends Controller
             ])->header("Content-Type", "text/xml");
         }
     }
+
+    public function fallback()
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        $exploded_result = explode("\|", setting("helpline_fallback"));
+        $phone_number = isset($exploded_result[0]) ? $exploded_result[0] : "";
+        $extension = isset($exploded_result[1]) ? $exploded_result[1] : "w";
+        return response()->view("dial", [
+            "voice" => voice(),
+            "language" => setting("language"),
+            "phoneNumber" => $phone_number,
+            "extension" => $extension,
+            "sayText" => sprintf(
+                "%s... %s... %s.",
+                word('there_seems_to_be_a_problem'),
+                word('please_wait_while_we_connect_your_call'),
+                word('please_stand_by')
+            )
+        ])->header("Content-Type", "text/xml");
+    }
 }
