@@ -26,7 +26,7 @@ test-deps:
 	pecl install xdebug-3.1.5
 
 test:
-	php artisan test --coverage --coverage-clover coverage.xml
+	vendor/bin/pest --coverage-clover coverage.xml
 
 bundle-deps:
 	yarn install
