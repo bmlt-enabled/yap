@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
         id: install-dependencies
-        uses: php-actions/composer@v5
+        uses: php-actions/composer@v6
         with:
           php_version: ${{ matrix.php }}
           php_extensions: xdebug
