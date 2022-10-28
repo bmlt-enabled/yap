@@ -38,6 +38,9 @@ bundle:
 watch:
 	gulp watch
 
+coverage:
+	XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-html tests/reports/coverage
+
 cache-clear:
 	php artisan route:clear
 	php artisan cache:clear

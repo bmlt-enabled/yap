@@ -33,3 +33,4 @@ docs/node_modules
 docs/build
 !docs/package-lock.json
 test-report.xml
+tests/reports
