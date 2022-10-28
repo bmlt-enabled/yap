@@ -47,14 +47,12 @@ jobs:
         if: matrix.php == '8.0'
         run: |
           make test
-          ls -l
-          cat src/coverage.xml
 
       - name: Send coverage data to codecov.io
         if: matrix.php == '8.0'
         uses: codecov/codecov-action@v3
         with:
-          files: src/coverage.xml
+          files: tests/reports/coverage.xml
 
       - uses: act10ns/slack@v1
         with:
