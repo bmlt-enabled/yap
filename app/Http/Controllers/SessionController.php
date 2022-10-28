@@ -8,6 +8,9 @@ class SessionController extends Controller
 {
     public function delete()
     {
+        if (!isset($_SESSION)) {
+            session_start();
+        }
         foreach ($_SESSION as $key => $value) {
             if (strpos($key, "cache_") === 0
                 || strpos($key, "override_") === 0
