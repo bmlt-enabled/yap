@@ -6,5 +6,5 @@
 
 PHP files left to migrate to Laravel.
 
-* Non-Admin - 25 Left, 14 Done
+* Non-Admin - 23 Left, 16 Done
 * Admin - 29 Left

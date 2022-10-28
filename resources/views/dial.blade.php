@@ -3,7 +3,12 @@
     @if(isset($sayText))
     <Say voice="{{ $voice }}" language="{{ $language }}">{{ $sayText }}</Say>
     @endif
+    @if(isset($callerId))
+    <Dial callerId="{{ $callerId }}">
+    @else
     <Dial>
-        <Number sendDigits="{{ $extension }}">{{ $phoneNumber }}</Number>
+    @endif
+    <Number sendDigits="{{ $extension }}">{{ $phoneNumber }}</Number>
     </Dial>
+</Dial>
 </Response>

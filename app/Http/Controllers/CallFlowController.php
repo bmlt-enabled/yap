@@ -169,4 +169,16 @@ class CallFlowController extends Controller
             )
         ])->header("Content-Type", "text/xml");
     }
+
+    public function customextdialer(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        return response()->view("dial", [
+            "voice" => voice(),
+            "language" => setting("language"),
+            "phoneNumber" => setting('custom_extensions')[str_replace("#", "", $request->query('Digits'))],
+            "extension" => '',
+            "callerId" => $request->query("Called")
+        ])->header("Content-Type", "text/xml");
+    }
 }
