@@ -6,6 +6,7 @@ $ext = '(\.php)?$';
 
 Route::get('/v1/events/status', 'App\Http\Controllers\EventStatusController@index');
 Route::post('/v1/events/status', 'App\Http\Controllers\EventStatusController@set');
+Route::delete('/v1/session', 'App\Http\Controllers\SessionController@delete');
 Route::get("/admin/auth/rights", 'App\Http\Controllers\AuthController@rights');
 Route::get("/admin/auth/logout", 'App\Http\Controllers\AuthController@logout');
 Route::get("/admin/auth/timeout", 'App\Http\Controllers\AuthController@timeout');
