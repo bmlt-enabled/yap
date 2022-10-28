@@ -48,13 +48,13 @@ jobs:
         run: |
           make test
           pwd
-          cat coverage.xml
+          cat src/coverage.xml
 
       - name: Send coverage data to codecov.io
         if: matrix.php == '8.0'
         uses: codecov/codecov-action@v3
         with:
-          files: coverage.xml
+          files: src/coverage.xml
 
       - uses: act10ns/slack@v1
         with:
