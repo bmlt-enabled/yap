@@ -43,6 +43,10 @@ jobs:
         id: php-codesniffer
         run: vendor/squizlabs/php_codesniffer/bin/phpcs
 
+      - name: Test
+        if: matrix.php == '8.0'
+        run: make test
+
       - name: Send coverage data to codecov.io
         if: matrix.php == '8.0'
         uses: codecov/codecov-action@v3
