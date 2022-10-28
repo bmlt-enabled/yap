@@ -26,3 +26,19 @@ test('custom extensions', function () {
             '</Response>'
         ], false);
 });
+
+test('custom extensions dialer', function () {
+    $_SESSION["override_custom_extensions"] = [365 => '555-555-1212'];
+    $response = $this->call('GET', '/custom-ext-dialer.php?Called=%2B17183367631&Digits=365#');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Dial callerId="+17183367631">',
+            '<Number sendDigits="">555-555-1212</Number>',
+            '</Dial>',
+            '</Response>'
+        ], false);
+});
