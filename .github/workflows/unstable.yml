@@ -45,7 +45,7 @@ jobs:
 
       - name: Test
         if: matrix.php == '8.0'
-        uses: dgershman/pestunit
+        uses: dgershman/pestunit@master
         env:
           XDEBUG_MODE: coverage
         with:
