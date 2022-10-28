@@ -47,7 +47,7 @@ jobs:
         if: matrix.php == '8.0'
         run: |
           make test
-          pwd
+          ls -l
           cat src/coverage.xml
 
       - name: Send coverage data to codecov.io
