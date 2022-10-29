@@ -1,4 +1,4 @@
-.PHONY: run lint lint-fix upgrade simulate debug test bundle bundle-deps watch debug
+.PHONY: run lint lint-fix upgrade simulate debug test bundle bundle-deps watch debug coverage coverage-xml
 
 run:
 	composer install
@@ -25,9 +25,6 @@ debug:
 test-deps:
 	pecl install xdebug-3.1.5
 
-test:
-	XDEBUG_MODE=coverage vendor/bin/pest --coverage-clover coverage.xml --debug
-
 bundle-deps:
 	yarn install
 	yarn global add gulp-cli
@@ -37,6 +34,9 @@ bundle:
 
 watch:
 	gulp watch
+
+coverage-xml:
+	XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-clover coverage.xml
 
 coverage:
 	XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-html tests/reports/coverage

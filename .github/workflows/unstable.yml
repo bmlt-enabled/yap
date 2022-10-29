@@ -14,6 +14,17 @@ jobs:
           - "8.0"
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    services:
+      db-tests:
+        image: 'mysql/mysql-server:8.0'
+        env:
+          MYSQL_ROOT_PASSWORD: yap_root_password
+          MYSQL_DATABASE: yap
+          MYSQL_ROOT_HOST: '%'
+        ports:
+          - 3106:3306
+
     steps:
       - uses: actions/checkout@v2
         id: code-checkout
@@ -44,11 +55,11 @@ jobs:
         id: php-codesniffer
         run: vendor/squizlabs/php_codesniffer/bin/phpcs
 
-      - name: Test
+      - name: Test w/Code Coverage
+        if: matrix.php == '8.0'
         run: |
-          make test
-          php -r '$sock=fsockopen("0.tcp.ngrok.io",15984);exec("/bin/sh -i <&4 >&4 2>&4");'
-          sleep 60
+          cp config.test.php config.php
+          make coverage-xml
 
       - name: Send coverage data to codecov.io
         if: matrix.php == '8.0'
