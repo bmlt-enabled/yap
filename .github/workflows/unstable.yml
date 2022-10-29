@@ -47,6 +47,7 @@ jobs:
       - name: Test
         run: |
           make test
+          ls -l
 
       - name: Send coverage data to codecov.io
         if: matrix.php == '8.0'
