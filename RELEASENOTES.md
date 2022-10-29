@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.2.7 (October 28, 2022)
+* Fix for reports regression introduced by adding the pin.  Removed for now, and will re-incorporate in the future.
+
 ### 4.2.6 (October 25, 2022)
 * Fix for www.jftna.org broken certificate issue.  Swapped to jftna.org. [#691]
 * Fix for some servers that don't have credentials in config.php.  When that is the case, pages that require Twilio credentials will return a 403 Forbidden page. [#681]
