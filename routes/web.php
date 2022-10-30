@@ -40,5 +40,7 @@ Route::get("/custom-ext-dialer{ext}", 'App\Http\Controllers\CallFlowController@c
     ->where('ext', $ext);
 Route::get("/dialback{ext}", 'App\Http\Controllers\CallFlowController@dialback')
     ->where('ext', $ext);
+Route::get("/gender-routing{ext}", 'App\Http\Controllers\CallFlowController@genderrouting')
+    ->where('ext', $ext);
 Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])
     ->where('all', '^(?!api).*$');
