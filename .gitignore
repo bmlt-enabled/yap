@@ -35,3 +35,4 @@ docs/build
 test-report.xml
 tests/reports
 coverage.xml
+composer.lock
