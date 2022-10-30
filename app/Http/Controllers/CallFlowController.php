@@ -222,4 +222,24 @@ class CallFlowController extends Controller
 
         return response($twiml)->header("Content-Type", "text/xml");
     }
+
+    public function genderrouting(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        $gender_no_preference = (setting("gender_no_preference") ? sprintf(", %s %s %s", getPressWord(), word('three'), word('speak_no_preference')) : "");
+        $twiml = new VoiceResponse();
+        $gather = $twiml->gather()
+            ->setLanguage(setting('gather_language'))
+            ->setHints(setting('gather_hints'))
+            ->setInput(getInputType())
+            ->setTimeout(10)
+            ->setSpeechTimeout("auto")
+            ->setAction(sprintf("gender-routing-response.php?SearchType=%s", $request->query("SearchType")))
+            ->setMethod('GET');
+
+        $gather->say(sprintf("%s %s %s, %s %s %s%s", getPressWord(), word('one'), word('to_speak_to_a_man'), getPressWord(), word('two'), word('to_speak_to_a_woman'), $gender_no_preference))
+            ->setVoice(voice())
+            ->setLanguage(setting('language'));
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
 }

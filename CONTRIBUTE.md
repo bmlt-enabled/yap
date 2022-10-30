@@ -8,7 +8,7 @@
 
 ### PHP files left to migrate to true Laravel.
 
-* Non-Admin - 21 Left, 18 Done
+* Non-Admin - 20 Left, 19 Done
 * Admin - 29 Left
 
 * 2000 or so lines of code in functions.php.
