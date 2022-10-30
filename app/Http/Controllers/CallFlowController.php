@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Constants\EventId;
 use App\Constants\SearchType;
 use App\Constants\VolunteerGender;
+use Twilio\Rest\Voice;
+use Twilio\TwiML\VoiceResponse;
 use Illuminate\Http\Request;
 
 class CallFlowController extends Controller
@@ -21,58 +23,74 @@ class CallFlowController extends Controller
         $enterWord = (has_setting('speech_gathering') && json_decode(setting('speech_gathering'))
             ? word('please_enter_or_say_your_digit') : word('please_enter_your_digit'));
 
-        return response()->view("gather.say", [
-            "inputType" => getInputType(),
-            "numDigits" => setting('postal_code_length'),
-            "action" => $action,
-            "voice" => voice(),
-            "timeout" => 10,
-            "gatherLanguage" => setting('gather_language'),
-            "language" => setting('language'),
-            "sayText" => sprintf("%s %s", $enterWord, word('zip_code'))
-        ])->header("Content-Type", "text/xml");
+        $twiml = new VoiceResponse();
+        $gather = $twiml->gather()
+            ->setLanguage(setting("gather_language"))
+            ->setInput(getInputType())
+            ->setNumDigits(setting('postal_code_length'))
+            ->setTimeout(10)
+            ->setAction($action)
+            ->setMethod("GET");
+
+        if (str_contains(getInputType(), "speech")) {
+            $gather->setSpeechTimeout("auto");
+        }
+
+        $gather->say(sprintf("%s %s", $enterWord, word('zip_code')))
+            ->setVoice(voice())
+            ->setLanguage(setting('language'));
+
+        return response($twiml)->header("Content-Type", "text/xml");
     }
 
     public function customext()
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
-        return response()->view("gather.play", [
-            "inputType" => getInputType(),
-            "numDigits" => setting('postal_code_length'),
-            "action" => "custom-ext-dialer.php",
-            "voice" => voice(),
-            "timeout" => 15,
-            "gatherLanguage" => setting('gather_language'),
-            "language" => setting('language'),
-            "playUrl" => setting(str_replace("-", "_", getWordLanguage()) . "_custom_extensions_greeting")
-        ])->header("Content-Type", "text/xml");
+        $twiml = new VoiceResponse();
+        $gather = $twiml->gather()
+            ->setLanguage(setting("gather_language"))
+            ->setInput(getInputType())
+            ->setFinishOnKey("#")
+            ->setTimeout(15)
+            ->setAction("custom-ext-dialer.php")
+            ->setMethod("GET");
+
+        $gather->play(setting(str_replace("-", "_", getWordLanguage()) . "_custom_extensions_greeting"));
+        return response($twiml)->header("Content-Type", "text/xml");
     }
 
     public function cityorcountyinput(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
         $province = json_decode(setting('province_lookup')) ? $request->query("SpeechResult") : "";
-        return response()->view("gather.say", [
-            "inputType" => "speech",
-            "action" => sprintf(
+        $twiml = new VoiceResponse();
+        $gather = $twiml->gather()
+            ->setLanguage(setting('gather_language'))
+            ->setInput("speech")
+            ->setHints(setting('gather_hints'))
+            ->setTimeout(10)
+            ->setSpeechTimeout("auto")
+            ->setAction(sprintf(
                 "voice-input-result.php?SearchType=%s&Province=%s",
                 $request->query("SearchType"),
                 urlencode($province)
-            ),
-            "hints" => setting('gather_hints'),
-            "voice" => voice(),
-            "timeout" => 15,
-            "gatherLanguage" => setting('gather_language'),
-            "language" => setting('language'),
-            "sayText" => sprintf("%s %s", word('please_say_the_name_of_the'), word('city_or_county'))
-        ])->header("Content-Type", "text/xml");
+            ))
+            ->setMethod('GET');
+        $gather->say(sprintf("%s %s", word('please_say_the_name_of_the'), word('city_or_county')))
+            ->setVoice(voice())
+            ->setLanguage(setting('language'));
+
+        return response($twiml)->header("Content-Type", "text/xml");
     }
 
     public function servicebodyextresponse(Request $request)
     {
-        return response()->view("redirect", [
-            "redirectUrl" => sprintf("helpline-search.php?override_service_body_id=%s", $request->query('Digits'))
-        ])->header("Content-Type", "text/xml");
+        $twiml = new VoiceResponse();
+        $twiml->redirect(sprintf(
+            "helpline-search.php?override_service_body_id=%s",
+            $request->query('Digits')
+        ), ["method" => "GET"]);
+        return response($twiml)->header("Content-Type", "text/xml");
     }
 
     public function genderroutingresponse(Request $request)
@@ -83,26 +101,34 @@ class CallFlowController extends Controller
             null,
             [VolunteerGender::MALE, VolunteerGender::FEMALE, VolunteerGender::NO_PREFERENCE]
         );
+        $twiml = new VoiceResponse();
         if ($gender == null) {
-            return response()->view("redirect", [
-                "voice" => voice(),
-                "language" => setting("language"),
-                "redirectUrl" => "gender-routing.php",
-                "sayText" => word('you_might_have_invalid_entry')
-            ])->header("Content-Type", "text/xml");
+            $twiml->say(word('you_might_have_invalid_entry'))
+                ->setVoice(voice())
+                ->setLanguage(setting("language"));
+            $twiml->redirect("gender-routing.php")
+                ->setMethod("GET");
         } else {
             $_SESSION['Gender'] = $gender;
-            return response()->view("redirect", [
-                "redirectUrl" => sprintf("helpline-search.php?SearchType=%s", $request->query('SearchType'))
-            ])->header("Content-Type", "text/xml");
+            $twiml->redirect(sprintf("helpline-search.php?SearchType=%s", $request->query('SearchType')))
+                ->setMethod('GET');
         }
+
+        return response($twiml)->header("Content-Type", "text/xml");
     }
 
     public function playlist(Request $request)
     {
-        return response()->view("playlist", [
-            "items" => $request->query("items")
-        ])->header("Content-Type", "text/xml");
+        $items = $request->query("items");
+        $twiml = new VoiceResponse();
+        $playlist_uris = explode(",", $items);
+        foreach ($playlist_uris as $item) {
+            $twiml->play($item);
+        }
+        $twiml->redirect(sprintf("playlist.php?items=%s", $items));
+
+        return response($twiml)
+            ->header("Content-Type", "text/xml");
     }
 
     public function voiceinputresult(Request $request)
@@ -113,14 +139,16 @@ class CallFlowController extends Controller
         $speechResult = $request->query('SpeechResult');
         $searchType = $request->query('SearchType');
         $action = ($searchType == SearchType::VOLUNTEERS ? "helpline-search.php" : "address-lookup.php");
-        return response()->view("redirect", [
-            "redirectUrl" => sprintf(
-                "%s?Digits=%s&SearchType=%s",
-                $action,
-                urlencode($speechResult . ", " . $province),
-                $searchType
-            ),
-        ])->header("Content-Type", "text/xml");
+
+        $twiml = new VoiceResponse();
+        $twiml->redirect(sprintf(
+            "%s?Digits=%s&SearchType=%s",
+            $action,
+            urlencode($speechResult . ", " . $province),
+            $searchType
+        ))->setMethod('GET');
+
+        return response($twiml)->header("Content-Type", "text/xml");
     }
 
     public function addresslookup(Request $request)
@@ -132,22 +160,22 @@ class CallFlowController extends Controller
             EventId::MEETING_SEARCH_LOCATION_GATHERED,
             (object)['gather' => $address, 'coordinates' => $coordinates ?? null]
         );
+        $twiml = new VoiceResponse();
         if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) {
-            return response()->view("redirect", [
-                "redirectUrl" => sprintf("input-method.php?Digits=%s&Retry=1", $request->query('SearchType'))
-            ])->header("Content-Type", "text/xml");
+            $twiml->redirect(sprintf("input-method.php?Digits=%s&Retry=1", $request->query('SearchType')))
+                ->setMethod('GET');
         } else {
-            return response()->view("redirect", [
-                "voice" => voice(),
-                "language" => setting("language"),
-                "redirectUrl" => sprintf(
-                    "meeting-search.php?Latitude=%s&Longitude=%s",
-                    $coordinates->latitude,
-                    $coordinates->longitude
-                ),
-                "sayText" => sprintf("%s %s", word('searching_meeting_information_for'), $coordinates->location)
-            ])->header("Content-Type", "text/xml");
+            $twiml->say(sprintf("%s %s", word('searching_meeting_information_for'), $coordinates->location))
+                ->setVoice(voice())
+                ->setLanguage(setting("language"));
+            $twiml->redirect(sprintf(
+                "meeting-search.php?Latitude=%s&Longitude=%s",
+                $coordinates->latitude,
+                $coordinates->longitude
+            ))->setMethod('GET');
         }
+
+        return response($twiml)->header("Content-Type", "text/xml");
     }
 
     public function fallback()
@@ -156,29 +184,42 @@ class CallFlowController extends Controller
         $exploded_result = explode("\|", setting("helpline_fallback"));
         $phone_number = isset($exploded_result[0]) ? $exploded_result[0] : "";
         $extension = isset($exploded_result[1]) ? $exploded_result[1] : "w";
-        return response()->view("dial", [
-            "voice" => voice(),
-            "language" => setting("language"),
-            "phoneNumber" => $phone_number,
-            "extension" => $extension,
-            "sayText" => sprintf(
-                "%s... %s... %s.",
-                word('there_seems_to_be_a_problem'),
-                word('please_wait_while_we_connect_your_call'),
-                word('please_stand_by')
-            )
-        ])->header("Content-Type", "text/xml");
+        $twiml = new VoiceResponse();
+        $twiml->say(sprintf(
+            "%s... %s... %s.",
+            word('there_seems_to_be_a_problem'),
+            word('please_wait_while_we_connect_your_call'),
+            word('please_stand_by')
+        ))->setVoice(voice())->setLanguage(setting("language"));
+        $twiml->dial()->number($phone_number, ['sendDigits' => $extension]);
+
+        return response($twiml)->header("Content-Type", "text/xml");
     }
 
     public function customextdialer(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
-        return response()->view("dial", [
-            "voice" => voice(),
-            "language" => setting("language"),
-            "phoneNumber" => setting('custom_extensions')[str_replace("#", "", $request->query('Digits'))],
-            "extension" => '',
-            "callerId" => $request->query("Called")
-        ])->header("Content-Type", "text/xml");
+        $twiml = new VoiceResponse();
+        $dial = $twiml->dial()->setCallerId($request->query("Called"));
+        $dial->number(setting('custom_extensions')[str_replace("#", "", $request->query('Digits'))]);
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
+
+    public function dialback(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        $twiml = new VoiceResponse();
+        $gather = $twiml->gather()
+            ->setLanguage(setting("gather_language"))
+            ->setInput("dtmf")
+            ->setTimeout(15)
+            ->setFinishOnKey("#")
+            ->setAction("dialback-dialer.php")
+            ->setMethod("GET");
+        $gather->say("Please enter the dialback pin, followed by the pound sign.")
+            ->setVoice(voice())
+            ->setLanguage(setting("language"));
+
+        return response($twiml)->header("Content-Type", "text/xml");
     }
 }
