@@ -33,7 +33,7 @@ if (isset($_REQUEST["service_body_id"]) && $_REQUEST["service_body_id"] > 0) {
 $expired = is_session_expired();
 
 if (isset($_REQUEST["format"]) && $_REQUEST["format"] === "json") {
-    header('Content-Type: application/json');
+//    header('Content-Type: application/json');
     echo "{\"expired\":" . get_str_val($expired) . "}";
 } else if ($expired) {
     header('Location: index.php?auth=false');

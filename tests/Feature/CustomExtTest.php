@@ -37,7 +37,7 @@ test('custom extensions dialer', function () {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Dial callerId="+17183367631">',
-            '<Number sendDigits="">555-555-1212</Number>',
+            '<Number>555-555-1212</Number>',
             '</Dial>',
             '</Response>'
         ], false);

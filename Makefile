@@ -25,6 +25,9 @@ debug:
 test-deps:
 	pecl install xdebug-3.1.5
 
+test:
+	php artisan test
+
 bundle-deps:
 	yarn install
 	yarn global add gulp-cli
