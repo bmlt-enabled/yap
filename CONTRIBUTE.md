@@ -4,7 +4,9 @@
 4) Run `make run`.
 5) Browse to http://localhost:3100/yap in your web browser.
 
-PHP files left to migrate to Laravel.
+---
+
+### PHP files left to migrate to true Laravel.
 
 * Non-Admin - 21 Left, 18 Done
 * Admin - 29 Left
