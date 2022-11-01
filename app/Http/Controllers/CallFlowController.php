@@ -99,7 +99,8 @@ class CallFlowController extends Controller
         $gender = getIvrResponse(
             "gender-routing.php",
             null,
-            [VolunteerGender::MALE, VolunteerGender::FEMALE, VolunteerGender::NO_PREFERENCE]
+            [VolunteerGender::MALE, VolunteerGender::FEMALE, VolunteerGender::NO_PREFERENCE],
+            skip_output: true
         );
         $twiml = new VoiceResponse();
         if ($gender == null) {
@@ -154,7 +155,7 @@ class CallFlowController extends Controller
     public function addresslookup(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
-        $address = getIvrResponse();
+        $address = getIvrResponse(skip_output: true);
         $coordinates = getCoordinatesForAddress($address);
         insertCallEventRecord(
             EventId::MEETING_SEARCH_LOCATION_GATHERED,
@@ -226,7 +227,9 @@ class CallFlowController extends Controller
     public function genderrouting(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
-        $gender_no_preference = (setting("gender_no_preference") ? sprintf(", %s %s %s", getPressWord(), word('three'), word('speak_no_preference')) : "");
+        $gender_no_preference = (setting("gender_no_preference")
+            ? sprintf(", %s %s %s", getPressWord(), word('three'), word('speak_no_preference'))
+            : "");
         $twiml = new VoiceResponse();
         $gather = $twiml->gather()
             ->setLanguage(setting('gather_language'))
@@ -237,9 +240,52 @@ class CallFlowController extends Controller
             ->setAction(sprintf("gender-routing-response.php?SearchType=%s", $request->query("SearchType")))
             ->setMethod('GET');
 
-        $gather->say(sprintf("%s %s %s, %s %s %s%s", getPressWord(), word('one'), word('to_speak_to_a_man'), getPressWord(), word('two'), word('to_speak_to_a_woman'), $gender_no_preference))
+        $gather->say(sprintf(
+            "%s %s %s, %s %s %s%s",
+            getPressWord(),
+            word('one'),
+            word('to_speak_to_a_man'),
+            getPressWord(),
+            word('two'),
+            word('to_speak_to_a_woman'),
+            $gender_no_preference
+        ))
             ->setVoice(voice())
             ->setLanguage(setting('language'));
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
+
+    public function provincelookuplistresponse(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        $search_type = $request->query("SearchType");
+        $province_lookup_item = getIvrResponse(
+            sprintf("province-voice-input.php?SearchType=%s", $search_type),
+            null,
+            range(1, count(setting('province_lookup_list'))),
+            skip_output: true
+        );
+        $twiml = new VoiceResponse();
+        if ($province_lookup_item == null) {
+            $twiml->say(word('you_might_have_invalid_entry'))
+                ->setVoice(voice())
+                ->setLanguage(setting("language"));
+            $twiml->redirect(sprintf("province-voice-input.php?SearchType=%s", $search_type))
+                ->setMethod("GET");
+            return response($twiml)->header("Content-Type", "text/xml");
+        }
+
+        insertCallEventRecord(
+            EventId::PROVINCE_LOOKUP_LIST,
+            (object)['province_lookup_list' => setting('province_lookup_list')[$province_lookup_item - 1]]
+        );
+
+        $twiml->redirect(sprintf(
+            "city-or-county-voice-input.php?SearchType=%s&SpeechResult=%s",
+            $search_type,
+            urlencode(setting('province_lookup_list')[$province_lookup_item - 1])
+        ));
+
         return response($twiml)->header("Content-Type", "text/xml");
     }
 }

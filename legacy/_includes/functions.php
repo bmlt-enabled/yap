@@ -2079,7 +2079,7 @@ function get_jft($sms = false)
     }
 }
 
-function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_exacts = array(), $expected_likes = array(), $field = 'Digits')
+function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_exacts = array(), $expected_likes = array(), $field = 'Digits', $skip_output = false)
 {
     $response = "0";
 
@@ -2103,6 +2103,10 @@ function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_
                     $found_at_least_once = true;
                 }
             }
+        }
+
+        if (!$found_at_least_once && $skip_output) {
+            return null;
         }
 
         if (!$found_at_least_once) {
