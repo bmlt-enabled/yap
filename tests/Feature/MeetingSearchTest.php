@@ -117,3 +117,35 @@ test('meeting search with valid latitude and longitude with sms ask', function (
             '</Response>'
         ], false);
 });
+
+test('meeting search with valid latitude and longitude with sms combine', function () {
+    $_REQUEST['Latitude'] = '35.7796';
+    $_REQUEST['Longitude'] = '-78.6382';
+    $_SESSION['override_timezone_default'] = '{"timeZoneId": "America/New_York"}';
+    $_SESSION['override_sms_combine'] = true;
+    $_SESSION['override_sms_ask'] = false;
+    $response = $this->get('/meeting-search.php');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSee([
+            '<?xml version="1.0" encoding="UTF-8"?><Response>',
+            '<Say voice="alice" language="en-US">meeting information found, listing the top 5 results</Say>',
+            '<Say voice="alice" language="en-US">',
+            '<Pause length="1"/><Say voice="alice" language="en-US">number 1</Say><Say voice="alice" language="en-US">',
+            '</Say><Pause length="1"/><Say voice="alice" language="en-US">',
+            '</Say><Pause length="1"/><Say voice="alice" language="en-US">',
+            '</Say><Pause length="1"/><Say voice="alice" language="en-US">number 2</Say><Say voice="alice" language="en-US">',
+            '</Say><Pause length="1"/><Say voice="alice" language="en-US">',
+            '</Say><Pause length="1"/><Say voice="alice" language="en-US">',
+            '</Say><Pause length="1"/><Say voice="alice" language="en-US">number 3</Say><Say voice="alice" language="en-US">',
+            '</Say><Pause length="1"/><Say voice="alice" language="en-US">',
+            '</Say><Pause length="1"/><Say voice="alice" language="en-US">',
+            '</Say><Pause length="1"/><Say voice="alice" language="en-US">number 4</Say><Say voice="alice" language="en-US">',
+            '</Say><Pause length="1"/><Say voice="alice" language="en-US">',
+            '</Say><Pause length="1"/><Say voice="alice" language="en-US">',
+            '</Say><Pause length="1"/><Say voice="alice" language="en-US">number 5</Say><Say voice="alice" language="en-US">',
+            'thank you for calling, goodbye        </Say>',
+            '</Response>'
+        ], false);
+});
