@@ -159,7 +159,7 @@ $message = "";
     // Do not handle for the SMS gateway
     if (!$isFromSmsGateway && count($filtered_list) > 0) {
         echo "<Pause length=\"2\"/>";
-        if (!$sms_disable && !$suppress_voice_results && count($sms_messages) > 0) { ?>
+        if (!$sms_disable && !$suppress_voice_results && setting("sms_ask") && count($sms_messages) > 0) { ?>
             <Gather numDigits="1" timeout="10" speechTimeout="auto" input="<?php echo getInputType() ?>"
                     action="post-call-action.php?Payload=<?php echo urlencode(json_encode($sms_messages)) ?>"
                     method="GET">
