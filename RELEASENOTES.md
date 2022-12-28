@@ -3,6 +3,9 @@
 ### 4.3.0 (UNRELEASED)
 * Fix for scenario when `sms_combine` is enabled and `sms_ask` is disabled.  [#706]
 
+### 4.2.8 (December 28, 2022).
+* Fix for issue where SMS notifications wouldn't send for voicemails with Responder setting. [#709]
+
 ### 4.2.7 (October 28, 2022)
 * Fix for reports regression introduced by adding the pin.  Removed for now, and will re-incorporate in the future.
 

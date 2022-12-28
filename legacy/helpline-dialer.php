@@ -25,6 +25,7 @@ function getCallConfig($serviceBodyCallHandling)
     $volunteer_routing_parameters->volunteer_gender = isset($_SESSION['Gender']) ? $_SESSION['Gender'] : VolunteerGender::UNSPECIFIED;
     $volunteer_routing_parameters->volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
     $volunteer_routing_parameters->volunteer_language = setting('language');
+    $_SESSION["volunteer_routing_parameters"] = $volunteer_routing_parameters;
     $config->volunteer_routing_params = $volunteer_routing_parameters;
     $volunteer = getHelplineVolunteer($config->volunteer_routing_params);
     $config->volunteer = $volunteer;
