@@ -88,7 +88,6 @@ jobs:
       matrix:
         php:
           - "8.0"
-          - "8.1"
     needs: [ lint, create_release ]
     steps:
       - uses: actions/checkout@v2
@@ -114,7 +113,7 @@ jobs:
       - name: Build package
         id: build-package
         run: |
-          export ARTIFACT_FILE=yap-${GITHUB_REF##*/}-php-${{ matrix.php }}
+          export ARTIFACT_FILE=yap-${GITHUB_REF##*/}
           export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
           git archive --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
           DISABLE_NOTIFIER=true make deploy
@@ -133,8 +132,8 @@ jobs:
       - name: Prepare artifact metadata
         id: prepare_artifact_metadata
         run: |
-          echo ::set-output name=ARTIFACT_PATH::./yap-${GITHUB_REF##*/}-php-${{ matrix.php }}.zip
-          echo ::set-output name=ARTIFACT_NAME::yap-${GITHUB_REF##*/}-php-${{ matrix.php }}.zip
+          echo ::set-output name=ARTIFACT_PATH::./yap-${GITHUB_REF##*/}.zip
+          echo ::set-output name=ARTIFACT_NAME::yap-${GITHUB_REF##*/}.zip
 
       - name: Upload Release
         uses: actions/upload-release-asset@v1
