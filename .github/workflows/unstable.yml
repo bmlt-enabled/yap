@@ -10,8 +10,8 @@ jobs:
     strategy:
       matrix:
         php:
-          - "7.4"
           - "8.0"
+          - "8.1"
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
@@ -55,7 +55,6 @@ jobs:
     strategy:
       matrix:
         php:
-          - "7.4"
           - "8.0"
     permissions:
       id-token: write
@@ -87,7 +86,7 @@ jobs:
       - name: Build package
         id: build-package
         run: |
-          export ARTIFACT_FILE=yap-php-${{ matrix.php }}-${GITHUB_RUN_NUMBER}-${GITHUB_SHA}
+          export ARTIFACT_FILE=yap-${GITHUB_RUN_NUMBER}-${GITHUB_SHA}
           export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
           echo "ARTIFACT_FILENAME=${ARTIFACT_FILENAME}" >> $GITHUB_ENV
           git archive --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
