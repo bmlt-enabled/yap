@@ -55,7 +55,7 @@ function initReports(dataLoadedCallback) {
 
     var eventsTableColumns = [
         {title: "Event Time", field: "event_time", mutator: toCurrentTimezone},
-        {title: "Event", field: "event_name"},
+        {title: "Event", field: "event_name", formatter: "textarea"},
         {title: "Service Body Id", field: "service_body_id", mutator: function(id) {
             if (isNaN(id)) return id;
             var service_body = getServiceBodyById(id);

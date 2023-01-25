@@ -73,6 +73,12 @@ if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETING
             <Pause length="1"/>
         <?php }
 
+         if ($searchDescription == word('meetings') && !json_decode(setting("sms_ask")) && !json_decode(setting("sms_disable"))) { ?>
+            <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
+                Meeting search results will also be sent to you by SMS text message.
+            </Say>
+        <?php }
+
         $locationSearchMethodSequence = getDigitMapSequence('digit_map_location_search_method');
         foreach ($locationSearchMethodSequence as $digit => $method) {
             if ($method == LocationSearchMethod::VOICE) { ?>
