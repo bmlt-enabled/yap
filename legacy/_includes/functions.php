@@ -33,7 +33,7 @@ $GLOBALS['settings_allowlist'] = [
     'custom_extensions' => ['description' => '/helpline/custom-extensions', 'default' => [0 => ''], 'overridable' => true, 'hidden' => false],
     'custom_query' => ['description' => '/meeting-search/custom-query', 'default' => '&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width={SETTING_MEETING_SEARCH_RADIUS}&weekdays={DAY}', 'overridable' => true, 'hidden' => false],
     'digit_map_search_type' => [ 'description' => '/helpline/custom-extensions/', 'default' => ['1' => SearchType::VOLUNTEERS, '2' => SearchType::MEETINGS, '3' => SearchType::JFT, '4' => SearchType::SPAD, '9' => SearchType::DIALBACK], 'overridable' => true, 'hidden' => false],
-    'digit_map_location_search_method' => [ 'description' => '', 'default' => ['1' => LocationSearchMethod::VOICE, '2' => LocationSearchMethod::DTMF, '3' => SearchType::JFT], 'overridable' => true, 'hidden' => false],
+    'digit_map_location_search_method' => [ 'description' => '', 'default' => ['1' => LocationSearchMethod::VOICE, '2' => LocationSearchMethod::DTMF, '3' => SearchType::JFT, '4' => SearchType::SPAD], 'overridable' => true, 'hidden' => false],
     'disable_postal_code_gather' => [ 'description' => '/general/disabling-postal-code-gathering', 'default' => false, 'overridable' => true, 'hidden' => false],
     'docs_base' => [ 'description' => '', 'default' => 'https://yap.bmlt.app', 'overridable' => true, 'hidden' => true],
     'extension_dial' => [ 'description' => '/helpline/extension-dial', 'default' => false, 'overridable' => true, 'hidden' => false],
