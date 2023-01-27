@@ -13,7 +13,7 @@ if ($searchType == SearchType::MEETINGS) {
     insertCallEventRecord(EventId::MEETING_SEARCH);
 } elseif ($searchType == SearchType::JFT) {
     insertCallEventRecord(EventId::JFT_LOOKUP);
-}  elseif ($searchType == SearchType::SPAD) {
+} elseif ($searchType == SearchType::SPAD) {
     insertCallEventRecord(EventId::SPAD_LOOKUP);
 }
 
