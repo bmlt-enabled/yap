@@ -66,6 +66,12 @@ if (has_setting("extension_dial") && json_decode(setting("extension_dial"))) {?>
                         <?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_listen_to_the_just_for_today') ?>
                     </Say>
                 <?php }
+
+                if ($type == SearchType::SPAD) {?>
+                    <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>">
+                        <?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_listen_to_the_spad') ?>
+                    </Say>
+                <?php }
             }
         }?>
     </Gather>

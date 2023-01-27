@@ -13,6 +13,8 @@ if ($searchType == SearchType::MEETINGS) {
     insertCallEventRecord(EventId::MEETING_SEARCH);
 } elseif ($searchType == SearchType::JFT) {
     insertCallEventRecord(EventId::JFT_LOOKUP);
+}  elseif ($searchType == SearchType::SPAD) {
+    insertCallEventRecord(EventId::SPAD_LOOKUP);
 }
 
 if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETINGS)
@@ -48,6 +50,12 @@ if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETING
         </Response>
         <?php
         return;
+} elseif ($searchType == SearchType::SPAD) { ?>
+    <Response>
+        <Redirect method="GET">fetch-spad.php</Redirect>
+    </Response>
+    <?php
+    return;
 } elseif ($searchType == SearchType::DIALBACK) { ?>
         <Response>
         <Redirect method="GET">dialback.php</Redirect>
@@ -86,6 +94,12 @@ if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETING
             if ($method == SearchType::JFT && $searchType == SearchType::MEETINGS) { ?>
                 <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
                     <?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_listen_to_the_just_for_today') ?>
+                </Say>
+            <?php }
+
+            if ($method == SearchType::SPAD && $searchType == SearchType::MEETINGS) { ?>
+                <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
+                    <?php echo getPressWord() . " " . getWordForNumber($digit) . " " . word('to_listen_to_the_spad') ?>
                 </Say>
             <?php }
         } ?>

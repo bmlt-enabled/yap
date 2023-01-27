@@ -16,6 +16,8 @@ Route::get("/msr/{latitude}/{longitude}", ['uses' => 'App\Http\Controllers\Legac
 Route::delete("/admin/cache", 'App\Http\Controllers\AdminController@cacheClear');
 Route::get("/fetch-jft{ext}", 'App\Http\Controllers\FetchJFTController@index')
     ->where('ext', $ext);
+Route::get("/fetch-spad{ext}", 'App\Http\Controllers\FetchJFTController@spad')
+    ->where('ext', $ext);
 Route::get("/ping{ext}", 'App\Http\Controllers\PingController@index')
     ->where('ext', $ext);
 Route::get("/custom-ext{ext}", 'App\Http\Controllers\CallFlowController@customext')
