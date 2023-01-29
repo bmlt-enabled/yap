@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Constants\EventId;
 use App\Constants\SearchType;
 use App\Constants\VolunteerGender;
+use App\Models\CallRecord;
+use App\Models\RecordType;
 use Twilio\Rest\Voice;
 use Twilio\TwiML\VoiceResponse;
 use Illuminate\Http\Request;
@@ -308,6 +310,27 @@ class CallFlowController extends Controller
             urlencode(setting('province_lookup_list')[$province_lookup_item - 1])
         ));
 
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
+
+    function statusCallback(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
+        $callRecord = new CallRecord();
+        $callRecord->callSid = $request->query('CallSid');
+        $callRecord->to_number = $request->query('Called');
+        $callRecord->from_number = $request->query('Caller');
+        $callRecord->duration = intval($request->query('CallDuration'));
+        $twilioRecords = $twilioClient->calls($callRecord->callSid)->fetch();
+        $callRecord->start_time = $twilioRecords->startTime->format("Y-m-d H:i:s");
+        $callRecord->end_time = $twilioRecords->endTime->format("Y-m-d H:i:s");
+        $callRecord->type = RecordType::PHONE;
+        $callRecord->payload = json_encode($_REQUEST);
+
+        insertCallRecord($callRecord);
+
+        $twiml = new VoiceResponse();
         return response($twiml)->header("Content-Type", "text/xml");
     }
 }
