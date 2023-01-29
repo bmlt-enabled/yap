@@ -313,7 +313,7 @@ class CallFlowController extends Controller
         return response($twiml)->header("Content-Type", "text/xml");
     }
 
-    function statusCallback(Request $request)
+    public function statusCallback(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
         require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
