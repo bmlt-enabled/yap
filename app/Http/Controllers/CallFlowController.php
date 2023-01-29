@@ -224,6 +224,28 @@ class CallFlowController extends Controller
         return response($twiml)->header("Content-Type", "text/xml");
     }
 
+    public function dialbackDialer(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        $dialbackPinValid = isDialbackPinValid($request->query("Digits"));
+        $twiml = new VoiceResponse();
+        if ($dialbackPinValid) {
+            $twiml->say(word('please_wait_while_we_connect_your_call'))
+                ->setVoice(voice())
+                ->setLanguage(setting("language"));
+            $twiml->dial($request->query("Digits"))
+                ->setCallerId($request->query("Called"));
+        } else {
+            $twiml->say("Invalid pin entry")
+                ->setVoice(voice())
+                ->setLanguage(setting("language"));
+            $twiml->pause()->setLength(2);
+            $twiml->redirect("index.php");
+        }
+
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
+
     public function genderrouting(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
