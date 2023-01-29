@@ -38,6 +38,8 @@ Route::get("/fallback{ext}", 'App\Http\Controllers\CallFlowController@fallback')
     ->where('ext', $ext);
 Route::get("/custom-ext-dialer{ext}", 'App\Http\Controllers\CallFlowController@customextdialer')
     ->where('ext', $ext);
+Route::get("/dialback-dialer{ext}", 'App\Http\Controllers\CallFlowController@dialbackDialer')
+    ->where('ext', $ext);
 Route::get("/dialback{ext}", 'App\Http\Controllers\CallFlowController@dialback')
     ->where('ext', $ext);
 Route::get("/gender-routing{ext}", 'App\Http\Controllers\CallFlowController@genderrouting')

@@ -141,7 +141,7 @@ function insertSession($callsid)
     }
 }
 
-function lookupDialbackPin($pin)
+function isDialbackPinValid($pin)
 {
     $db = new Database();
     $sql = sprintf("SELECT from_number FROM sessions a INNER JOIN records b ON a.callsid = b.callsid where pin = :pin order by start_time desc limit 1");
@@ -149,7 +149,7 @@ function lookupDialbackPin($pin)
     $db->bind(':pin', $pin);
     $resultset = $db->resultset();
     $db->close();
-    return $resultset;
+    return count($resultset) > 0;
 }
 
 function lookupPinForCallSid($callsid)
