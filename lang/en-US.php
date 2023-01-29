@@ -44,6 +44,7 @@ $GLOBALS['if_you_would_like_these_results_texted_to_you'] = "if you would like t
 $GLOBALS['if_you_would_like_to_search_again'] = "if you would like to search again";
 $GLOBALS['if_you_would_like_to_do_both'] = "if you would like to do both";
 $GLOBALS['to_listen_to_the_just_for_today'] = "to listen to the just for today";
+$GLOBALS['to_listen_to_the_spad'] = "to listen to the spiritual principle a day";
 $GLOBALS['press_any_key_to_continue'] = "press any key to continue";
 $GLOBALS['log_out'] = "Log Out";
 $GLOBALS['home'] = "Home";

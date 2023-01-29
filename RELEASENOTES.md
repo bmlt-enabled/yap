@@ -1,6 +1,7 @@
 # Release Notes
 
 ### 4.3.0 (UNRELEASED)
+* Added feature for SPAD playback `spad_option`. 
 * Fix for scenario when `sms_combine` is enabled and `sms_ask` is disabled.  [#706]
 
 ### 4.2.8 (December 28, 2022).

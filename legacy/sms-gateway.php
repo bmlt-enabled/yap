@@ -35,10 +35,15 @@ if (str_exists(strtoupper($address), strtoupper($sms_helpline_keyword))) {
         ?>
         <Sms><?php echo word('please_send_a_message_formatting_as') ?> "<?php echo $sms_helpline_keyword?>", <?php echo word('followed_by_your_location')?>, <?php echo word('for') ?> <?php echo word('someone_to_talk_to')?>.</Sms>
     <?php }
-} else if (str_exists(strtoupper($address), strtoupper('jft')) && json_decode(setting('jft_option'))) {
-    $jft_chunks = get_jft(true);
-    for ($i = 0; $i < count($jft_chunks); $i++) {
-        $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $jft_chunks[$i]));
+} elseif (json_decode(setting('jft_option')) && str_exists(strtoupper($address), strtoupper('jft'))) {
+    $reading_chunks = get_reading(ReadingType::JFT, true);
+    for ($i = 0; $i < count($reading_chunks); $i++) {
+        $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $reading_chunks[$i]));
+    }
+} elseif (json_decode(setting('spad_option')) && str_exists(strtoupper($address), strtoupper('spad'))) {
+    $reading_chunks = get_reading(ReadingType::SPAD, true);
+    for ($i = 0; $i < count($reading_chunks); $i++) {
+        $GLOBALS['twilioClient']->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $reading_chunks[$i]));
     }
 } else {
     insertCallEventRecord(EventId::MEETING_SEARCH_SMS);

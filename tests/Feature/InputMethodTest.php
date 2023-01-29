@@ -126,6 +126,7 @@ test('custom extension configured and selected', function () {
         '1' => SearchType::VOLUNTEERS,
         '2' => SearchType::MEETINGS,
         '3' => SearchType::JFT,
+        '4' => SearchType::SPAD,
         '7' => SearchType::CUSTOM_EXTENSIONS,
         '9' => SearchType::DIALBACK
     ];

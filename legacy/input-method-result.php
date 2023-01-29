@@ -15,6 +15,14 @@ if ($locationSearchMethod == SearchType::JFT) {?>
     return;
 }
 
+if ($locationSearchMethod == SearchType::SPAD) {?>
+    <Response>
+        <Redirect method="GET">fetch-spad.php</Redirect>
+    </Response>
+    <?php
+    return;
+}
+
 if (has_setting('province_lookup') && json_decode(setting('province_lookup'))) {
     $action = "province-voice-input.php";
 } else {

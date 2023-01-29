@@ -44,6 +44,7 @@ $GLOBALS['if_you_would_like_these_results_texted_to_you'] = "Si desea que estos 
 $GLOBALS['if_you_would_like_to_search_again'] = "si desea buscar de nuevo";
 $GLOBALS['if_you_would_like_to_do_both'] = "si le gustaría hacer ambas cosas";
 $GLOBALS['to_listen_to_the_just_for_today'] = "para escuchar el solo por hoy";
+$GLOBALS['to_listen_to_the_spad'] = "to listen to the spiritual principle a day";
 $GLOBALS['press_any_key_to_continue'] = "presione  cualquier tecla para continuar";
 $GLOBALS['log_out'] = "cerrar la sesión";
 $GLOBALS['home'] = "inició";

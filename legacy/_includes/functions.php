@@ -32,8 +32,8 @@ $GLOBALS['settings_allowlist'] = [
     'custom_geocoding' => ['description' => '/general/custom-geocoding', 'default' => [], 'overridable' => true, 'hidden' => false],
     'custom_extensions' => ['description' => '/helpline/custom-extensions', 'default' => [0 => ''], 'overridable' => true, 'hidden' => false],
     'custom_query' => ['description' => '/meeting-search/custom-query', 'default' => '&sort_results_by_distance=1&long_val={LONGITUDE}&lat_val={LATITUDE}&geo_width={SETTING_MEETING_SEARCH_RADIUS}&weekdays={DAY}', 'overridable' => true, 'hidden' => false],
-    'digit_map_search_type' => [ 'description' => '/helpline/custom-extensions/', 'default' => ['1' => SearchType::VOLUNTEERS, '2' => SearchType::MEETINGS, '3' => SearchType::JFT, '9' => SearchType::DIALBACK], 'overridable' => true, 'hidden' => false],
-    'digit_map_location_search_method' => [ 'description' => '', 'default' => ['1' => LocationSearchMethod::VOICE, '2' => LocationSearchMethod::DTMF, '3' => SearchType::JFT], 'overridable' => true, 'hidden' => false],
+    'digit_map_search_type' => [ 'description' => '/helpline/custom-extensions/', 'default' => ['1' => SearchType::VOLUNTEERS, '2' => SearchType::MEETINGS, '3' => SearchType::JFT, '4' => SearchType::SPAD, '9' => SearchType::DIALBACK], 'overridable' => true, 'hidden' => false],
+    'digit_map_location_search_method' => [ 'description' => '', 'default' => ['1' => LocationSearchMethod::VOICE, '2' => LocationSearchMethod::DTMF, '3' => SearchType::JFT, '4' => SearchType::SPAD], 'overridable' => true, 'hidden' => false],
     'disable_postal_code_gather' => [ 'description' => '/general/disabling-postal-code-gathering', 'default' => false, 'overridable' => true, 'hidden' => false],
     'docs_base' => [ 'description' => '', 'default' => 'https://yap.bmlt.app', 'overridable' => true, 'hidden' => true],
     'extension_dial' => [ 'description' => '/helpline/extension-dial', 'default' => false, 'overridable' => true, 'hidden' => false],
@@ -53,7 +53,7 @@ $GLOBALS['settings_allowlist'] = [
     'include_unpublished' => [ 'description' => '/meeting-search/including-unpublished' , 'default' => 0, 'overridable' => true, 'hidden' => false],
     'infinite_searching' => [ 'description' => '/meeting-search/post-call-options#infinite-searches' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'initial_pause' => [ 'description' => '/general/initial-pause' , 'default' => 2, 'overridable' => true, 'hidden' => false],
-    'jft_option' => [ 'description' => '/miscellaneous/playback-for-the-just-for-today-meditation' , 'default' => false, 'overridable' => true, 'hidden' => false],
+    'jft_option' => [ 'description' => '/miscellaneous/playback-for-readings' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'language' => [ 'description' => '/general/language-options' , 'default' =>  'en-US', 'overridable' => true, 'hidden' => false],
     'language_selections' => [ 'description' => '/general/language-options', 'default' => null, 'overridable' => true, 'hidden' => false],
     'location_lookup_bias' => [ 'description' => '/general/location-lookup-bias' , 'default' => 'country:us', 'overridable' => true, 'hidden' => false],
@@ -75,6 +75,7 @@ $GLOBALS['settings_allowlist'] = [
     'sms_dialback_options' => [ 'description' => '/helpline/dialback' , 'default' => 0, 'overridable' => true, 'hidden' => false],
     'sms_helpline_keyword' => ['description' => '/helpline/sms-volunteer-routing', 'default' => 'talk', 'overridable' => true, 'hidden' => false],
     'sms_summary_page' => ['description' => '/meeting-search/results-counts-maximums', 'default' => false, 'overridable' => true, 'hidden' => false],
+    'spad_option' => [ 'description' => '/miscellaneous/playback-for-readings' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'speech_gathering' => [ 'description' => '/general/voice-recognition-options', 'default' => false, 'overridable' => true, 'hidden' => false],
     'suppress_voice_results' => [ 'description' => '/meeting-search/post-call-options#suppress-voice-results', 'default' => false, 'overridable' => true, 'hidden' => false],
     'time_format' => ['description' => '', 'default' => 'g:i A', 'overridable' => true, 'hidden' => false],
@@ -153,6 +154,12 @@ class CacheType
     const DATABASE = 2;
 }
 
+class ReadingType
+{
+    const JFT = 1;
+    const SPAD = 2;
+}
+
 class AdminInterfaceRights
 {
     const MANAGE_USERS = 1;
@@ -187,6 +194,8 @@ class EventId
     const VOLUNTEER_SEARCH_SMS = 20;
     const JFT_LOOKUP_SMS = 21;
     const SMS_BLACKHOLED = 22;
+    const SPAD_LOOKUP = 23;
+    const SPAD_LOOKUP_SMS = 24;
 
     public static function getEventById($id)
     {
@@ -815,6 +824,12 @@ function getDigitMap($setting)
 
     if (json_decode(setting('jft_option')) == false) {
         if (($key = array_search(SearchType::JFT, $digitMapSetting)) !== false) {
+            unset($digitMapSetting[$key]);
+        }
+    }
+
+    if (json_decode(setting('spad_option')) == false) {
+        if (($key = array_search(SearchType::SPAD, $digitMapSetting)) !== false) {
             unset($digitMapSetting[$key]);
         }
     }
@@ -2011,14 +2026,14 @@ function sms_chunk_split($msg)
     return explode('\n', $chunks);
 }
 
-function get_jft($sms = false)
+function get_reading($reading = ReadingType::JFT, $sms = false)
 {
     $d = new DOMDocument();
     $d->validateOnParse = true;
     $result = null;
 
     if (setting('word_language') == 'en-US' || setting('word_language') == 'en-AU') {
-        $url = 'https://jftna.org/jft/';
+        $url = ($reading === ReadingType::JFT ? "https://www.jftna.org/jft/" : "https://www.spadna.org");
         $jft_language_dom_element = "table";
         $copyright_info = '';
         $preg_search_lang = "\r\n";

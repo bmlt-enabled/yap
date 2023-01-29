@@ -44,6 +44,7 @@ $GLOBALS['if_you_would_like_these_results_texted_to_you'] = "ifway ouyay ouldway
 $GLOBALS['if_you_would_like_to_search_again'] = "ifway ouyay ouldway ikelay otay earchsay againway";
 $GLOBALS['if_you_would_like_to_do_both'] = "ifway ouyay ouldway ikelay otay oday othbay";
 $GLOBALS['to_listen_to_the_just_for_today'] = "otay istenlay otay ethay ustjay orfay odaytay";
+$GLOBALS['to_listen_to_the_spad'] = "to listen to the spiritual principle a day";
 $GLOBALS['press_any_key_to_continue'] = "esspray anyyay eykay otay ontinuecay";
 $GLOBALS['log_out'] = "oglay outyay";
 $GLOBALS['home'] = "omehay";
