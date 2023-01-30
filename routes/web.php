@@ -50,5 +50,7 @@ Route::get("/province-lookup-list-response{ext}", 'App\Http\Controllers\CallFlow
     ->where('ext', $ext);
 Route::get("/status{ext}", 'App\Http\Controllers\CallFlowController@statusCallback')
     ->where('ext', $ext);
+Route::get("/voicemail{ext}", 'App\Http\Controllers\CallFlowController@voicemail')
+    ->where('ext', $ext);
 Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])
     ->where('all', '^(?!api).*$');
