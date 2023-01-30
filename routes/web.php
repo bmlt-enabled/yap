@@ -52,5 +52,7 @@ Route::get("/status{ext}", 'App\Http\Controllers\CallFlowController@statusCallba
     ->where('ext', $ext);
 Route::get("/voicemail{ext}", 'App\Http\Controllers\CallFlowController@voicemail')
     ->where('ext', $ext);
+Route::get("/upgrade-advisor{ext}", 'App\Http\Controllers\UpgradeAdvisorController@index')
+    ->where('ext', $ext);
 Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])
     ->where('all', '^(?!api).*$');
