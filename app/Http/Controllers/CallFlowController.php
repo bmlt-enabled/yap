@@ -316,15 +316,23 @@ class CallFlowController extends Controller
     public function statusCallback(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
-        require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
         $callRecord = new CallRecord();
         $callRecord->callSid = $request->query('CallSid');
         $callRecord->to_number = $request->query('Called');
         $callRecord->from_number = $request->query('Caller');
         $callRecord->duration = intval($request->query('CallDuration'));
-        $twilioRecords = $twilioClient->calls($callRecord->callSid)->fetch();
-        $callRecord->start_time = $twilioRecords->startTime->format("Y-m-d H:i:s");
-        $callRecord->end_time = $twilioRecords->endTime->format("Y-m-d H:i:s");
+
+        if ($request->query("TimestampNow")) {
+            $start_time = date("Y-m-d H:i:s");
+            $end_time = date("Y-m-d H:i:s");
+        } else {
+            require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
+            $twilioRecords = $twilioClient->calls($callRecord->callSid)->fetch();
+            $start_time = $twilioRecords->startTime->format("Y-m-d H:i:s");
+            $end_time = $twilioRecords->endTime->format("Y-m-d H:i:s");
+        }
+        $callRecord->start_time = $start_time;
+        $callRecord->end_time = $end_time;
         $callRecord->type = RecordType::PHONE;
         $callRecord->payload = json_encode($_REQUEST);
 
