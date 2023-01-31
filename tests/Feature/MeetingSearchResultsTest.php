@@ -14,7 +14,7 @@ beforeEach(function () {
 });
 
 test('meeting seating results', function () {
-    $response = $this->get('msr/35.560471/-78.670792');
+    $response = $this->get('/msr/35.560471/-78.670792');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/html; charset=UTF-8")
