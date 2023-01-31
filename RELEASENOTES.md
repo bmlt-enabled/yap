@@ -3,6 +3,7 @@
 ### 4.3.0 (UNRELEASED)
 * Added feature for SPAD playback `spad_option`. 
 * Fix for scenario when `sms_combine` is enabled and `sms_ask` is disabled.  [#706]
+* Added explicit notification that SMS will be sent in response to meeting search request; reflected this in report. This is to satisfy regulatory requirements regarding explicit consent.
 
 ### 4.2.8 (December 28, 2022).
 * Fix for issue where SMS notifications wouldn't send for voicemails with Responder setting. [#709]
