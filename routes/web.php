@@ -52,6 +52,8 @@ Route::get("/status{ext}", 'App\Http\Controllers\CallFlowController@statusCallba
     ->where('ext', $ext);
 Route::get("/voicemail{ext}", 'App\Http\Controllers\CallFlowController@voicemail')
     ->where('ext', $ext);
+Route::get("/post-call-action{ext}", 'App\Http\Controllers\CallFlowController@postCallAction')
+    ->where('ext', $ext);
 Route::get("/upgrade-advisor{ext}", 'App\Http\Controllers\UpgradeAdvisorController@index')
     ->where('ext', $ext);
 Route::get("/lng-selector{ext}", 'App\Http\Controllers\CallFlowController@languageSelector')

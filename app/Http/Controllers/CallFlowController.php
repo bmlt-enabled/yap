@@ -342,6 +342,47 @@ class CallFlowController extends Controller
         return response($twiml)->header("Content-Type", "text/xml");
     }
 
+    public function postCallAction(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
+        $sms_messages = $request->query('Payload') ? json_decode(urldecode($request->query('Payload'))) : [];
+        $digits = getIvrResponse();
+
+        $twiml = new VoiceResponse();
+        if (($digits == 1 || $digits == 3) && count($sms_messages) > 0) {
+            if (setting("sms_combine")) {
+                $GLOBALS['twilioClient']->messages->create(
+                    $request->query('From'),
+                    array("from" => $request->query('To'),
+                        "body" => implode(
+                            "\n\n",
+                            $sms_messages
+                        ))
+                );
+            } else {
+                for ($i = 0; $i < count($sms_messages); $i++) {
+                    $GLOBALS['twilioClient']->messages->create(
+                        $request->query('From'),
+                        array("from" => $request->query('To'),
+                            "body" => $sms_messages[$i])
+                    );
+                }
+            }
+        }
+
+        if ($digits == 2 || $digits == 3) {
+            $twiml->redirect(str_replace("&", "&amp;", $_SESSION['initial_webhook']))
+                ->setMethod("GET");
+        } else {
+            $twiml->say(word('thank_you_for_calling_goodbye'))
+                ->setVoice(voice())
+                ->setLanguage(setting("language"));
+        }
+
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
+
     public function voicemail(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
