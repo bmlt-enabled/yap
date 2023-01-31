@@ -75,7 +75,7 @@ if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETING
 
         if ($searchDescription == word('meetings') && !json_decode(setting("sms_ask")) && !json_decode(setting("sms_disable"))) { ?>
             <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
-                Meeting search results will also be sent to you by SMS text message.
+                <?php echo word('search_results_by_sms') ?>
             </Say>
         <?php }
 
