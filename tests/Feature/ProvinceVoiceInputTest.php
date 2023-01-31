@@ -21,9 +21,9 @@ test('province input list seleection', function () {
             '<Response>',
             '<Gather language="en-US" hints="" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="province-lookup-list-response.php?SearchType=2" method="GET">',
             '<Say voice="alice" language="en-US">',
-            'for North Carolina press one            </Say>',
+            'for North Carolina press one</Say>',
             '<Say voice="alice" language="en-US">',
-            'for South Carolina press two            </Say>',
+            'for South Carolina press two</Say>',
             '</Gather>',
             '</Response>'
         ], false);
@@ -40,7 +40,8 @@ test('province input speech input', function () {
             '<Response>',
             '<Gather language="en-US" hints="" input="speech" timeout="10" speechTimeout="auto" action="city-or-county-voice-input.php?SearchType=2" method="GET">',
             '<Say voice="alice" language="en-US">',
-            'please say the name of the state or province        </Say>',
+            'please say the name of the state or province',
+            '</Say>',
             '</Gather>',
             '</Response>'
         ], false);

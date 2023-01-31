@@ -478,7 +478,7 @@ class CallFlowController extends Controller
                 ->setInput("speech")
                 ->setTimeout(10)
                 ->setSpeechTimeout("auto")
-                ->setAction("city-or-county-voice-input.php??SearchType=".$request->query("SearchType"))
+                ->setAction("city-or-county-voice-input.php?SearchType=".$request->query("SearchType"))
                 ->setMethod("GET");
             $gather->say($say)
                 ->setVoice(voice())
