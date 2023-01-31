@@ -345,6 +345,7 @@ class CallFlowController extends Controller
     public function postCallAction(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
         $sms_messages = $request->query('Payload') ? json_decode(urldecode($request->query('Payload'))) : [];
         $digits = getIvrResponse();
 
