@@ -371,4 +371,40 @@ class CallFlowController extends Controller
 
         return response($twiml)->header("Content-Type", "text/xml");
     }
+
+    public function languageSelector(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        $twiml = new VoiceResponse();
+        if (!has_setting('language_selections')) {
+            $twiml->say("language gateway options are not set, please refer to the documentation to utilize this feature.");
+            $twiml->hangup();
+        } else {
+            $language_selection_options = explode(",", setting('language_selections'));
+            $twiml->pause()->setLength(setting('initial_pause'));
+            $gather = $twiml->gather()
+                ->setLanguage(setting('gather_language'))
+                ->setInput(getInputType())
+                ->setNumDigits(1)
+                ->setTimeout(10)
+                ->setSpeechTimeout("auto")
+                ->setAction("index.php")
+                ->setMethod("GET");
+            for ($i = 0; $i < count($language_selection_options); $i++) {
+                include __DIR__ . '/../../../lang/' . $language_selection_options[$i] . '.php';
+                $message = sprintf(
+                    "%s %s %s %s",
+                    word('for'),
+                    word('language_title'),
+                    getPressWord(),
+                    getWordForNumber($i + 1)
+                );
+                $gather->say($message)
+                    ->setVoice(voice(str_replace("-", "_", $language_selection_options[$i])))
+                    ->setLanguage($language_selection_options[$i]);
+            }
+        }
+
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
 }
