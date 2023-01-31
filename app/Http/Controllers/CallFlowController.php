@@ -448,4 +448,43 @@ class CallFlowController extends Controller
 
         return response($twiml)->header("Content-Type", "text/xml");
     }
+
+    public function provinceVoiceInput(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        $province_lookup_list = setting('province_lookup_list');
+        $twiml = new VoiceResponse();
+        if (count($province_lookup_list) > 0) {
+            for ($i = 0; $i < count($province_lookup_list); $i++) {
+                $say = sprintf("%s %s %s %s", word('for'), $province_lookup_list[$i], getPressWord(), getWordForNumber($i + 1));
+                $gather = $twiml->gather()
+                    ->setLanguage(setting("gather_language"))
+                    ->setHints(setting('gather_hints'))
+                    ->setInput(getInputType())
+                    ->setNumDigits(1)
+                    ->setTimeout(10)
+                    ->setSpeechTimeout("auto")
+                    ->setAction("province-lookup-list-response.php?SearchType=".$request->query("SearchType"))
+                    ->setMethod("GET");
+                $gather->say($say)
+                    ->setVoice(voice())
+                    ->setLanguage(setting("language"));
+            }
+        } else {
+            $say = sprintf("%s %s", word('please_say_the_name_of_the'), word('state_or_province'));
+            $gather = $twiml->gather()
+                ->setLanguage(setting("gather_language"))
+                ->setHints(setting('gather_hints'))
+                ->setInput("speech")
+                ->setTimeout(10)
+                ->setSpeechTimeout("auto")
+                ->setAction("city-or-county-voice-input.php??SearchType=".$request->query("SearchType"))
+                ->setMethod("GET");
+            $gather->say($say)
+                ->setVoice(voice())
+                ->setLanguage(setting("language"));
+        }
+
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
 }
