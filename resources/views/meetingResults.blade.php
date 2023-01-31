@@ -1,28 +1,25 @@
-<?php require_once '_includes/functions.php';
-$filePath = str_replace(basename($_SERVER['PHP_SELF']), "", $_SERVER['PHP_SELF']);
-?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Meetings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href='https://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="<?php echo url("/public/dist/croutonjs/yap-meeting-results.min.css") ?>" />
+    <link rel="stylesheet" type="text/css" href="{{ url("/public/dist/croutonjs/yap-meeting-results.min.css") }}" />
     <style type="text/css">
         #bmlt-map { display: none; }
     </style>
-    <script src="<?php echo url("/public/dist/croutonjs/yap-meeting-results.min.js") ?>"></script>
+    <script src="{{ url("/public/dist/croutonjs/yap-meeting-results.min.js") }}"></script>
     <script type="text/javascript">
         var crouton = new Crouton({
-            root_server: "<?php echo getBMLTRootServer(); ?>",
+            root_server: "{{ $rootServerUrl }}",
             theme: "sezf",
-            template_path: "<?php echo url("/public/dist/croutonjs/templates") ?>",
+            template_path: "{{ url("/public/dist/croutonjs/templates") }}",
             has_languages: "1",
             time_format: "H:mm (h:mma) z",
             filter_tabs: 0,
             map_search: {
-                latitude: <?php echo $_REQUEST["latitude"] ?>,
-                longitude: <?php echo $_REQUEST["longitude"] ?>,
+                latitude: {{ $latitude }},
+                longitude: {{ $longitude }},
                 coordinates_search: true,
                 width: -100
             }
