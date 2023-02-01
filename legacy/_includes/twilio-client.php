@@ -1,10 +1,11 @@
 <?php
 require_once __DIR__ . '/../../vendor/autoload.php';
-use Twilio\Rest\Client;
 
 try {
-    $twilioClient = new Client(setting("twilio_account_sid"), setting("twilio_auth_token"));
-    $GLOBALS['twilioClient'] = $twilioClient;
+    if (!array_key_exists("twilioClient", $GLOBALS)) {
+        $twilioClient = new Twilio\Rest\Client(setting("twilio_account_sid"), setting("twilio_auth_token"));
+        $GLOBALS['twilioClient'] = $twilioClient;
+    }
 } catch (\Twilio\Exceptions\ConfigurationException $e) {
     error_log("Missing Twilio Credentials");
     throw $e;
