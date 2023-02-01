@@ -327,7 +327,7 @@ class CallFlowController extends Controller
             $end_time = date("Y-m-d H:i:s");
         } else {
             require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
-            $twilioRecords = $twilioClient->calls($callRecord->callSid)->fetch();
+            $twilioRecords = $GLOBALS['twilioClient']->calls($callRecord->callSid)->fetch();
             $start_time = $twilioRecords->startTime->format("Y-m-d H:i:s");
             $end_time = $twilioRecords->endTime->format("Y-m-d H:i:s");
         }
@@ -364,8 +364,7 @@ class CallFlowController extends Controller
                 for ($i = 0; $i < count($sms_messages); $i++) {
                     $GLOBALS['twilioClient']->messages->create(
                         $request->query('From'),
-                        array("from" => $request->query('To'),
-                            "body" => $sms_messages[$i])
+                        array("from" => $request->query('To'), "body" => $sms_messages[$i])
                     );
                 }
             }

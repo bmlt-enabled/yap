@@ -1,13 +1,11 @@
 <?php
 require_once '_includes/functions.php';
 require_once '_includes/twilio-client.php';
-header("content-type: text/xml");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";?>
 <Response>
 <?php if ($_REQUEST['Digits'] == "1") {
-    log_debug("They took the call.");
-    $conferences = $twilioClient->conferences->read(array ("friendlyName" => $_REQUEST['conference_name'] ));
-    $participants = $twilioClient->conferences($conferences[0]->sid)->participants->read();
+    $conferences = $GLOBALS['twilioClient']->conferences->read(array ("friendlyName" => $_REQUEST['conference_name'] ));
+    $participants = $GLOBALS['twilioClient']->conferences($conferences[0]->sid)->participants->read();
 
     if (count($participants) == 2) {
         error_log("Enough volunteers have joined.  Hanging up this volunteer.") ?>
