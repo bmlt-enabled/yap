@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 try {
-    if (!array_key_exists("twilioClient", $GLOBALS)) {
+    if (!array_key_exists("twilioClient", $GLOBALS) || !isset($GLOBALS["twilioClient"])) {
         $twilioClient = new Twilio\Rest\Client(setting("twilio_account_sid"), setting("twilio_auth_token"));
         $GLOBALS['twilioClient'] = $twilioClient;
     }
