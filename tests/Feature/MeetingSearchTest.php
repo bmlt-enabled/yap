@@ -17,19 +17,7 @@ beforeEach(function () {
     $_REQUEST['To'] = $this->to;
     $_REQUEST['From'] = $this->from;
 
-    $fakeHttpClient = new FakeTwilioHttpClient();
-    $this->twilioClient = mock('Twilio\Rest\Client', [
-        "username" => "fake",
-        "password" => "fake",
-        "httpClient" => $fakeHttpClient
-    ]);
-
-    // mocking TwilioRestClient->messages->create()
-    $messageListMock = mock("\Twilio\Rest\Api\V2010\Account\MessageList");
-    $messageListMock->shouldReceive('create')
-        ->with(is_string(""), is_array([]));
-    $this->twilioClient->messages = $messageListMock;
-    $GLOBALS['twilioClient'] = $this->twilioClient;
+    new \Tests\TwilioMessagesCreateMock();
 });
 
 test('meeting search with an error on meeting lookup', function () {
