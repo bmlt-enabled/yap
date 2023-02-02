@@ -17,7 +17,7 @@
         "pestphp/pest-plugin-mock": "^1.0",
         "phpunit/phpunit": "^9.3",
         "pusher/pusher-php-server": "^7.2",
-        "rollbar/rollbar": "~1.5",
+        "rollbar/rollbar": "~3.1",
         "squizlabs/php_codesniffer": "3.*"
     },
     "config": {
