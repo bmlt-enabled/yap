@@ -6,7 +6,7 @@ class TwilioMessagesCreateMock
 {
     private $twilioClient = null;
 
-    public function __construct($body)
+    public function __construct()
     {
         $fakeHttpClient = new FakeTwilioHttpClient();
         $this->twilioClient = mock('Twilio\Rest\Client', [
@@ -18,7 +18,7 @@ class TwilioMessagesCreateMock
         // mocking TwilioRestClient->messages->create()
         $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
         $messageListMock->shouldReceive('create')
-            ->with(is_string(""), is_array(['body' => $body]));
+            ->with(is_string(""), is_array([]));
         $this->twilioClient->messages = $messageListMock;
         $GLOBALS['twilioClient'] = $this->twilioClient;
     }
