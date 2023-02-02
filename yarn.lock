@@ -880,10 +880,10 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
-"@bmlt-enabled/croutonjs@^3.11.4":
-  version "3.12.5"
-  resolved "https://registry.yarnpkg.com/@bmlt-enabled/croutonjs/-/croutonjs-3.12.5.tgz#52886be5870260090ac9bd27b255b07a71665b0a"
-  integrity sha512-SIoHgvKQj+Y34RvZh+8ypp99bo28J4DLewJI7kxCJRFSVahXrfUU+L2PodqFT2hTnUyo0JuKFy6/cmyL0RPbtA==
+"@bmlt-enabled/croutonjs@^3.15.1":
+  version "3.15.1"
+  resolved "https://registry.yarnpkg.com/@bmlt-enabled/croutonjs/-/croutonjs-3.15.1.tgz#cd4e674e5915e16c402a2943b3ff640688b7635b"
+  integrity sha512-f9++TFLFoJASRBuoapF5k9nZS+8UZFRIkQA6rkPgmEiz3NhPPckSCaFmn8ATqRU5KHk40Z0zbFvTXtXnMDTDeg==
 
 "@discoveryjs/json-ext@^0.5.0":
   version "0.5.5"
