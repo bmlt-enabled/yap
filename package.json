@@ -10,7 +10,7 @@
     "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
   },
   "dependencies": {
-    "@bmlt-enabled/croutonjs": "^3.11.4",
+    "@bmlt-enabled/croutonjs": "^3.15.1",
     "@fullcalendar/bootstrap": "^4.4.2",
     "@fullcalendar/core": "^4.1.0",
     "@fullcalendar/daygrid": "^4.0.1",
