@@ -1,4 +1,4 @@
-    # Release Notes
+# Release Notes
 
 ### 4.3.0 (UNRELEASED)
 * Added feature for SPAD playback `spad_option`. 
