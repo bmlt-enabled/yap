@@ -177,22 +177,27 @@ function getMetricsData() {
             $("#summary-volunteer-sms").html("0");
 
             for (var item of data['summary']) {
-                if (item['event_id'] === "1") {
-                    $("#summary-volunteer-calls").html(item['counts'])
-                    connectedCalls = item['counts'];
-                } else if (item['event_id'] === "2") {
+                if (item['event_id'] === "2") {
                     $("#summary-meetingsearch-calls").html(item['counts'])
-                } else if (item['event_id'] === "12") {
-                    var missedCalls = connectedCalls - item['counts'];
-                    var missedCallsPct = Math.round((missedCalls / connectedCalls) * 100);
-
-                    $("#summary-missedvolunteer-calls").html(missedCalls + " ("+ missedCallsPct + "%)");
                 } else if (item['event_id'] === "19") {
                     $("#summary-meetingsearch-sms").html(item['counts'])
                 } else if (item['event_id'] === "20") {
                     $("#summary-volunteer-sms").html(item['counts'])
                 }
             }
+
+            var totalCalls = data['calls'].length;
+            var missedCalls = 0;
+            $("#summary-volunteer-calls").html(totalCalls)
+            for (var item of data['calls']) {
+                var answeredCount = parseInt(item['answered_count']);
+                var missedCount = parseInt(item['missed_count']);
+                if (answeredCount === 0 && missedCount > 0) {
+                    missedCalls++;
+                }
+            }
+            var missedCallsPct = Math.round((missedCalls / totalCalls) * 100);
+            $("#summary-missedvolunteer-calls").html(missedCalls + " ("+ missedCallsPct + "%)");
 
             var datasets = [];
             var colors = ['#FF6600', '#87B63A', 'indigo', '#FF6E9B', '#446E9B', 'black'];

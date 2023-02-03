@@ -249,6 +249,26 @@ INNER JOIN (select callsid, IFNULL(service_body_id, 0) as service_body_id from r
     return $resultset;
 }
 
+function getAnsweredAndMissedCallMetrics($service_body_ids, $date_range_start, $date_range_end)
+{
+    $db = new Database();
+    $query = "SELECT
+a.service_body_id,
+b.conferencesid,
+sum(case when a.event_id = 12 then 1 else 0 end) as answered_count,
+sum(case when a.event_id = 7 or a.event_id = 8 then 1 else 0 end) as missed_count
+from records_events a
+INNER JOIN (select re.callsid, conferencesid, IFNULL(service_body_id,0) as service_body_id from records_events re
+			inner join conference_participants cp on re.callsid = cp.callsid
+            where event_time >= '$date_range_start' AND event_time <= '$date_range_end'
+            group by re.callsid, conferencesid, service_body_id) b on a.callsid = b.callsid " .
+        "WHERE a.event_id in (7, 8, 12) and IFNULL(b.service_body_id,0) in (" . implode(",", $service_body_ids) . ") GROUP BY a.service_body_id, b.conferencesid";
+    $db->query($query);
+    $resultset = $db->resultset();
+    $db->close();
+    return $resultset;
+}
+
 function getAnsweredAndMissedVolunteerMetrics($service_body_ids, $date_range_start, $date_range_end)
 {
     $db = new Database();
