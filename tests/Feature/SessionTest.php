@@ -12,7 +12,7 @@ beforeEach(function () {
 test('clear the session', function () {
     $_SESSION["override_blah"] = "test";
     assert($_SESSION["override_blah"] == "test");
-    $response = $this->call('DELETE', '/v1/session');
+    $response = $this->call('GET', '/v1/session/delete');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/plain; charset=UTF-8")
