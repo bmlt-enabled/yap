@@ -11,7 +11,6 @@ class SessionController extends Controller
         if (!isset($_SESSION)) {
             session_start();
         }
-        $cookie = cookie(session_id(), "", time() - 3600);
 
         foreach ($_SESSION as $key => $value) {
             if (strpos($key, "cache_") === 0
@@ -22,7 +21,6 @@ class SessionController extends Controller
         }
 
         return response("OK")
-            ->header('Content-Type', 'text/plain')
-            ->withCookie($cookie);
+            ->header('Content-Type', 'text/plain');
     }
 }
