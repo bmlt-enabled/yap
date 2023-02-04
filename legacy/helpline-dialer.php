@@ -82,7 +82,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
 
     if (isset($_REQUEST['StatusCallbackEvent']) && $_REQUEST['StatusCallbackEvent'] == 'participant-join' &&
         ( isset($_REQUEST['SequenceNumber']) && intval($_REQUEST['SequenceNumber']) == 1 )) {
-        setConferenceParticipant($_REQUEST['FriendlyName'], CallRole::CALLER);
+        setConferenceParticipant($_REQUEST['FriendlyName'], $_REQUEST['CallSid'], CallRole::CALLER);
         insertCallEventRecord(EventId::CALLER_IN_CONFERENCE);
 
         if (isset($_SESSION["ActiveVolunteer"])) {
@@ -97,7 +97,7 @@ if (count($conferences) > 0 && $conferences[0]->status != "completed") {
 
         if (isset($_REQUEST['CallStatus']) && $_REQUEST['CallStatus'] == 'no-answer') {
             insertCallEventRecord(EventId::VOLUNTEER_NOANSWER, (object)['to_number' => $_REQUEST['Called']]);
-            setConferenceParticipant($_REQUEST['FriendlyName'], CallRole::VOLUNTEER);
+            setConferenceParticipant($_REQUEST['FriendlyName'], $_REQUEST['CallSid'], CallRole::VOLUNTEER);
         }
 
         log_debug("Next volunteer to call " . $callConfig->volunteer->phoneNumber);
