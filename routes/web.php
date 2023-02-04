@@ -62,5 +62,7 @@ Route::get("/province-voice-input{ext}", 'App\Http\Controllers\CallFlowControlle
     ->where('ext', $ext);
 Route::get("/helpline-sms{ext}", 'App\Http\Controllers\CallFlowController@helplineSms')
     ->where('ext', $ext);
+Route::get("/helpline-answer-response{ext}", 'App\Http\Controllers\CallFlowController@helplineAnswerResponse')
+    ->where('ext', $ext);
 Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])
     ->where('all', '^(?!api).*$');

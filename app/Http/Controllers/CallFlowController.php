@@ -7,9 +7,9 @@ use App\Constants\SearchType;
 use App\Constants\VolunteerGender;
 use App\Models\CallRecord;
 use App\Models\RecordType;
+use CallRole;
 use Exception;
 use SpecialPhoneNumber;
-use Twilio\Rest\Voice;
 use Twilio\TwiML\VoiceResponse;
 use Illuminate\Http\Request;
 use VolunteerRoutingParameters;
@@ -459,7 +459,13 @@ class CallFlowController extends Controller
         $twiml = new VoiceResponse();
         if (count($province_lookup_list) > 0) {
             for ($i = 0; $i < count($province_lookup_list); $i++) {
-                $say = sprintf("%s %s %s %s", word('for'), $province_lookup_list[$i], getPressWord(), getWordForNumber($i + 1));
+                $say = sprintf(
+                    "%s %s %s %s",
+                    word('for'),
+                    $province_lookup_list[$i],
+                    getPressWord(),
+                    getWordForNumber($i + 1)
+                );
                 $gather = $twiml->gather()
                     ->setLanguage(setting("gather_language"))
                     ->setHints(setting('gather_hints'))
@@ -486,6 +492,47 @@ class CallFlowController extends Controller
             $gather->say($say)
                 ->setVoice(voice())
                 ->setLanguage(setting("language"));
+        }
+
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
+
+    public function helplineAnswerResponse(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
+
+        $twiml = new VoiceResponse();
+        if ($request->query('Digits') == "1") {
+            $conferences = $GLOBALS['twilioClient']->conferences
+                ->read(array ("friendlyName" => $request->query('conference_name') ));
+            $participants = $GLOBALS['twilioClient']->conferences($conferences[0]->sid)->participants->read();
+
+            if (count($participants) == 2) {
+                error_log("Enough volunteers have joined.  Hanging up this volunteer.");
+                $twiml->say(word('volunteer_has_already_joined_the_call_goodbye'))
+                    ->setVoice(voice())->setLanguage(setting('language'));
+                $twiml->hangup();
+            } else {
+                insertCallEventRecord(EventId::VOLUNTEER_IN_CONFERENCE, (object)["to_number" => $request->query('Called')]);
+                $dial = $twiml->dial();
+                $dial->conference($request->query("conference_name"))
+                    ->setStatusCallbackMethod("GET")
+                    ->setStatusCallbackEvent("join")
+                    ->setStartConferenceOnEnter("true")
+                    ->setEndConferenceOnExit("true")
+                    ->setBeep("false");
+            }
+        } else {
+            insertCallEventRecord(
+                EventId::VOLUNTEER_REJECTED,
+                (object)["digits" => $request->query('Digits'),
+                    "to_number" => $request->query('Called')]
+            );
+            incrementNoAnswerCount();
+            setConferenceParticipant($request->query('conference_name'), CallRole::VOLUNTEER);
+            log_debug("They rejected the call.");
+            $twiml->hangup();
         }
 
         return response($twiml)->header("Content-Type", "text/xml");

@@ -18,7 +18,7 @@ beforeEach(function () {
         "httpClient" => $fakeHttpClient
     ]);
 
-    $this->conferenceName = "dude";
+    $this->conferenceName = "abc";
 
     // mocking TwilioRestClient->conferences->read()
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
@@ -50,13 +50,7 @@ test('join volunteer to conference', function () {
         ->assertSeeInOrder([
             '<Response>',
             '<Dial>',
-            sprintf('<Conference
-                statusCallbackMethod="GET"
-                statusCallbackEvent="join"
-                endConferenceOnExit="true"
-                startConferenceOnEnter="true"
-                beep="false">
-                %s            </Conference>', $this->conferenceName),
+            sprintf('<Conference statusCallbackMethod="GET" statusCallbackEvent="join" startConferenceOnEnter="true" endConferenceOnExit="true" beep="false">%s</Conference>', $this->conferenceName),
         '</Dial>',
         '</Response>'
         ], false);
@@ -85,7 +79,7 @@ test('enough volunteers in conference, someone is talking to the caller already'
         ->assertSeeInOrder([
             '<Response>',
             '<Say voice="alice" language="en-US">',
-            'A volunteer has already joined the call... goodbye        </Say>',
+            'A volunteer has already joined the call... goodbye</Say>',
             '<Hangup/>',
             '</Response>'
         ], false);
