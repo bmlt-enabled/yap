@@ -301,12 +301,11 @@ function getConferences($service_body_id)
     return $resultset;
 }
 
-function setConferenceParticipant($friendlyname, $role)
+function setConferenceParticipant($friendlyname, $callsid, $role)
 {
     require_once 'twilio-client.php';
     $conferences = $GLOBALS['twilioClient']->conferences->read(array ("friendlyName" => $friendlyname ));
     $conferencesid = $conferences[0]->sid;
-    $callsid = $_REQUEST['CallSid'];
     $db = new Database();
     $stmt = "INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`,`role`) VALUES (:conferencesid,:callsid,:friendlyname,:role)";
     $db->query($stmt);
