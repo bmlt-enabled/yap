@@ -13,9 +13,6 @@ lint:
 lint-fix: lint
 	vendor/squizlabs/php_codesniffer/bin/phpcbf
 
-upgrade:
-	./upgrade.sh
-
 simulate:
 	ngrok http 3100
 
