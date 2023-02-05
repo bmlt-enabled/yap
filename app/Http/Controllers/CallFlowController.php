@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use AlertId;
 use App\Constants\EventId;
 use App\Constants\SearchType;
 use App\Constants\VolunteerGender;
@@ -19,6 +20,98 @@ use VolunteerType;
 
 class CallFlowController extends Controller
 {
+    public function index(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
+
+        log_debug("version: " . $GLOBALS['version']);
+        $digit = getDigitResponse($request, 'language_selections', 'Digits');
+
+        $twiml = new VoiceResponse();
+        if (strlen(setting('language_selections')) > 0) {
+            if ($digit == null) {
+                $twiml->redirect("lng-selector.php");
+                return response($twiml)->header("Content-Type", "text/xml");
+            } else {
+                $selected_language = explode(",", setting('language_selections'))[intval($digit) - 1];
+                $_SESSION["override_word_language"] = $selected_language;
+                $_SESSION["override_gather_language"] = $selected_language;
+                $_SESSION["override_language"] = $selected_language;
+                include_once __DIR__.'/../../../lang/'.getWordLanguage().'.php';
+            }
+        }
+
+        if ($request->has('CallSid')) {
+            $phoneNumberSid = $GLOBALS['twilioClient']->calls($request->query('CallSid'))->fetch()->phoneNumberSid;
+            $incomingPhoneNumber = $GLOBALS['twilioClient']->incomingPhoneNumbers($phoneNumberSid)->fetch();
+
+            if ($incomingPhoneNumber->statusCallback == null
+                || !str_exists($incomingPhoneNumber->statusCallback, "status.php")) {
+                insertAlert(AlertId::STATUS_CALLBACK_MISSING, $incomingPhoneNumber->phoneNumber);
+            }
+        }
+
+        if ($request->has("override_service_body_id")) {
+            getServiceBodyCallHandling($request->query("override_service_body_id"));
+        }
+
+        $promptset_name = str_replace("-", "_", getWordLanguage()) . "_greeting";
+        if (has_setting("extension_dial") && json_decode(setting("extension_dial"))) {
+            $gather = $twiml->gather()
+                ->setLanguage(setting('gather_language'))
+                ->setInput("dtmf")
+                ->setFinishOnKey("#")
+                ->setTimeout("10")
+                ->setAction("service-body-ext-response.php")
+                ->setMethod("GET");
+            $gather->say("Enter the service body ID, followed by the pound sign.");
+        } else {
+            $gather = $twiml->gather()
+                ->setLanguage(setting('gather_language'))
+                ->setInput(getInputType())
+                ->setNumDigits("1")
+                ->setTimeout("10")
+                ->setSpeechTimeout("auto")
+                ->setAction("input-method.php")
+                ->setMethod("GET");
+            $gather->pause()->setLength(setting('initial_pause'));
+            if (has_setting($promptset_name)) {
+                $gather->play(setting($promptset_name));
+            } else {
+                if (!$request->has("Digits")) {
+                    $gather->say(setting('title'))
+                        ->setVoice(voice())
+                        ->setLanguage(setting("language"));
+                }
+
+                $searchTypeSequence = getDigitMapSequence('digit_map_search_type');
+
+                foreach ($searchTypeSequence as $digit => $type) {
+                    if ($type == SearchType::VOLUNTEERS) {
+                        $gather->say(getPressWord() . " " . getWordForNumber($digit) . " " . word('to_find') . " " . word('someone_to_talk_to'))
+                            ->setVoice(voice())
+                            ->setLanguage(setting("language"));
+                    } elseif ($type == SearchType::MEETINGS) {
+                        $gather->say(getPressWord() . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . word('meetings'))
+                            ->setVoice(voice())
+                            ->setLanguage(setting("language"));
+                    } elseif ($type == SearchType::JFT) {
+                        $gather->say(getPressWord() . " " . getWordForNumber($digit) . " " . word('to_listen_to_the_just_for_today'))
+                            ->setVoice(voice())
+                            ->setLanguage(setting("language"));
+                    } elseif ($type == SearchType::SPAD) {
+                        $gather->say(getPressWord() . " " . getWordForNumber($digit) . " " . word('to_listen_to_the_spad'))
+                            ->setVoice(voice())
+                            ->setLanguage(setting("language"));
+                    }
+                }
+            }
+        }
+
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
+
     public function zipinput(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
