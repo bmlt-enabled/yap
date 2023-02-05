@@ -244,6 +244,10 @@ class EventId
                 return "JFT Looksup via SMS";
             case self::SMS_BLACKHOLED:
                 return "SMS Blackholed";
+            case self::SPAD_LOOKUP:
+                return "SPAD Lookup";
+            case self::SPAD_LOOKUP_SMS:
+                return "SPAD Lookup via SMS";
         }
     }
 }
@@ -879,16 +883,16 @@ function getDialbackString($callsid, $dialbackNumber, $option)
     return $dialback_string;
 }
 
-function getDigitResponse($setting, $field = 'SearchType')
+function getDigitResponse($request, $setting, $field = 'SearchType')
 {
     $digitMap = getDigitMap($setting);
     if ($field === 'Digits'
         && has_setting('speech_gathering')
         && json_encode(setting('speech_gathering'))
-        && isset($_REQUEST['SpeechResult'])) {
-        $digit = intval($_REQUEST['SpeechResult']);
-    } else if (isset($_REQUEST[$field])) {
-        $digit = intval($_REQUEST[$field]);
+        && $request->has('SpeechResult')) {
+        $digit = intval($request->query('SpeechResult'));
+    } elseif ($request->has($field)) {
+        $digit = intval($request->query($field));
     } else {
         return null;
     }
@@ -2094,14 +2098,22 @@ function get_reading($reading = ReadingType::JFT, $sms = false)
     }
 }
 
-function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_exacts = array(), $expected_likes = array(), $field = 'Digits', $skip_output = false)
+function getIvrResponse($request = null, $expected_exacts = array(), $expected_likes = array(), $field = 'Digits')
 {
     $response = "0";
 
-    if (isset($_REQUEST[$field])) {
-        $response = $_REQUEST[$field];
-    } elseif (isset($_REQUEST['SpeechResult'])) {
-        $response = intval($_REQUEST['SpeechResult']);
+    if ($request != null) {
+        if ($request->has($field)) {
+            $response = $request->query($field);
+        } elseif ($request->has('SpeechResult')) {
+            $response = intval($request->query('SpeechResult'));
+        }
+    } else {
+        if (isset($_REQUEST[$field])) {
+            $response = $_REQUEST[$field];
+        } elseif (isset($_REQUEST['SpeechResult'])) {
+            $response = intval($_REQUEST['SpeechResult']);
+        }
     }
 
     if (count($expected_exacts) > 0 || count($expected_likes) > 0) {
@@ -2120,17 +2132,7 @@ function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_
             }
         }
 
-        if (!$found_at_least_once && $skip_output) {
-            return null;
-        }
-
         if (!$found_at_least_once) {
-            $qs = $prior_digit != null ? "?Digits=" . $prior_digit : "";?>
-            <Response>
-                <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>"><?php echo word('you_might_have_invalid_entry') ?></Say>
-                <Redirect><?php echo $redirected_from . $qs?></Redirect>
-            </Response>
-            <?php
             return null;
         }
     }

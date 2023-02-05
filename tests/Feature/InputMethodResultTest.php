@@ -10,9 +10,10 @@ beforeEach(function () {
 });
 
 test('search for volunteers by city or county', function () {
-    $_REQUEST['SearchType'] = "1";
-    $_REQUEST['Digits'] = "1";
-    $response = $this->call('GET', '/input-method-result.php');
+    $response = $this->call('GET', '/input-method-result.php', [
+        "SearchType"=>"1",
+        "Digits"=>"1",
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -25,9 +26,10 @@ test('search for volunteers by city or county', function () {
 });
 
 test('search for volunteers by zip code', function () {
-    $_REQUEST['SearchType'] = "1";
-    $_REQUEST['Digits'] = "2";
-    $response = $this->call('GET', '/input-method-result.php');
+    $response = $this->call('GET', '/input-method-result.php', [
+        "SearchType" => "1",
+        "Digits" => "2"
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -41,8 +43,9 @@ test('search for volunteers by zip code', function () {
 
 test('jft option', function () {
     $_SESSION['override_jft_option'] = true;
-    $_REQUEST['Digits'] = "3";
-    $response = $this->call('GET', '/input-method-result.php');
+    $response = $this->call('GET', '/input-method-result.php', [
+        "Digits"=>"3"
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -54,10 +57,27 @@ test('jft option', function () {
         ], false);
 });
 
+test('spad option', function () {
+    $_SESSION['override_spad_option'] = true;
+    $response = $this->call('GET', '/input-method-result.php', [
+        "Digits"=>"4"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">fetch-spad.php</Redirect>',
+            '</Response>'
+        ], false);
+});
+
 test('city or county lookup', function () {
-    $_REQUEST['Digits'] = "1";
-    $_REQUEST['SearchType'] = "1";
-    $response = $this->call('GET', '/input-method-result.php');
+    $response = $this->call('GET', '/input-method-result.php', [
+        "Digits" => "1",
+        "SearchType" => "1"
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -71,9 +91,10 @@ test('city or county lookup', function () {
 
 test('province option', function () {
     $_SESSION['override_province_lookup'] = true;
-    $_REQUEST['Digits'] = "1";
-    $_REQUEST['SearchType'] = "1";
-    $response = $this->call('GET', '/input-method-result.php');
+    $response = $this->call('GET', '/input-method-result.php', [
+        "Digits"=>"1",
+        "SearchType"=>"1"
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -86,8 +107,9 @@ test('province option', function () {
 });
 
 test('invalid entry', function () {
-    $_REQUEST['Digits'] = "5";
-    $response = $this->call('GET', '/input-method-result.php');
+    $response = $this->call('GET', '/input-method-result.php', [
+        "Digits"=>"5"
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")

@@ -10,8 +10,9 @@ beforeEach(function () {
 });
 
 test('search for volunteers', function () {
-    $_REQUEST['Digits'] = "1";
-    $response = $this->call('GET', '/input-method.php');
+    $response = $this->call('GET', '/input-method.php', [
+        "Digits"=>"1"
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -27,8 +28,9 @@ test('search for volunteers', function () {
 });
 
 test('search for meetings', function () {
-    $_REQUEST['Digits'] = "2";
-    $response = $this->call('GET', '/input-method.php');
+    $response = $this->call('GET', '/input-method.php', [
+        "Digits"=>"2"
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -45,8 +47,9 @@ test('search for meetings', function () {
 
 test('search for meetings, disable postal code gathering', function () {
     $_SESSION['override_disable_postal_code_gather'] = true;
-    $_REQUEST['Digits'] = "2";
-    $response = $this->call('GET', '/input-method.php');
+    $response = $this->call('GET', '/input-method.php', [
+        "Digits"=>"2"
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -60,9 +63,10 @@ test('search for meetings, disable postal code gathering', function () {
 
 test('direct to volunteer search for a specific service body', function () {
     $_SESSION['override_service_body_id'] = 44;
-    $_REQUEST['Digits'] = "1";
-    $_REQUEST['Called'] = "123";
-    $response = $this->call('GET', '/input-method.php');
+    $response = $this->call('GET', '/input-method.php', [
+        "Digits"=>"1",
+        "Called"=>"123"
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -76,9 +80,10 @@ test('direct to volunteer search for a specific service body', function () {
 
 test('search for volunteers without custom query', function () {
     $_SESSION['override_custom_query'] = '&services=92';
-    $_REQUEST['Digits'] = "2";
-    $_REQUEST['Called'] = "123";
-    $response = $this->call('GET', '/input-method.php');
+    $response = $this->call('GET', '/input-method.php', [
+        "Digits"=>"2",
+        "Called"=>"123"
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -92,8 +97,9 @@ test('search for volunteers without custom query', function () {
 
 test('jft option enabled and selected', function () {
     $_SESSION['override_jft_option'] = true;
-    $_REQUEST['Digits'] = "3";
-    $response = $this->call('GET', '/input-method.php');
+    $response = $this->call('GET', '/input-method.php', [
+        "Digits"=>"3"
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -106,8 +112,9 @@ test('jft option enabled and selected', function () {
 });
 
 test('dialback selected', function () {
-    $_REQUEST['Digits'] = "9";
-    $response = $this->call('GET', '/input-method.php');
+    $response = $this->call('GET', '/input-method.php', [
+        "Digits"=>"9"
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -120,7 +127,6 @@ test('dialback selected', function () {
 });
 
 test('custom extension configured and selected', function () {
-    $_REQUEST['Digits'] = "7";
     $_SESSION['override_custom_extensions'] = [7 => '12125551212'];
     $_SESSION['override_digit_map_search_type'] = [
         '1' => SearchType::VOLUNTEERS,
@@ -131,7 +137,9 @@ test('custom extension configured and selected', function () {
         '9' => SearchType::DIALBACK
     ];
 
-    $response = $this->call('GET', '/input-method.php');
+    $response = $this->call('GET', '/input-method.php', [
+        "Digits"=>"7"
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -144,8 +152,9 @@ test('custom extension configured and selected', function () {
 });
 
 test('invalid search', function () {
-    $_REQUEST['Digits'] = "5";
-    $response = $this->call('GET', '/input-method.php');
+    $response = $this->call('GET', '/input-method.php', [
+        "Digits"=>"5"
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")

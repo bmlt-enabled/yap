@@ -26,6 +26,9 @@ class EventId
     const JFT_LOOKUP_SMS = 21;
     const SMS_BLACKHOLED = 22;
 
+    const SPAD_LOOKUP = 23;
+    const SPAD_LOOKUP_SMS = 24;
+
     public static function getEventById($id)
     {
         switch ($id) {
@@ -70,9 +73,13 @@ class EventId
             case self::VOLUNTEER_SEARCH_SMS:
                 return "Volunteer Search via SMS";
             case self::JFT_LOOKUP_SMS:
-                return "JFT Looksup via SMS";
+                return "JFT Lookup via SMS";
             case self::SMS_BLACKHOLED:
                 return "SMS Blackholed";
+            case self::SPAD_LOOKUP:
+                return "SPAD Lookup";
+            case self::SPAD_LOOKUP_SMS:
+                return "SPAD Lookup via SMS";
         }
     }
 }

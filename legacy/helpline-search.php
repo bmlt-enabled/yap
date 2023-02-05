@@ -11,7 +11,11 @@ if (!isset($_REQUEST['ForceNumber'])) {
     } else {
         $address = isset($_SESSION['Address']) ? $_SESSION['Address'] : getIvrResponse();
         if ($address == null) {
-            return;
+//            $twiml->say(word('you_might_have_invalid_entry'))
+//                ->setVoice(voice())
+//                ->setLanguage(setting('language'));
+//            $twiml->redirect("index.php");
+//            return response($twiml)->header("Content-Type", "text/xml");
         }
         $coordinates  = getCoordinatesForAddress($address);
         try {

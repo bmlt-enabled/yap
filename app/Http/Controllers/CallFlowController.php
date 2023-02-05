@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use AlertId;
 use App\Constants\EventId;
 use App\Constants\SearchType;
 use App\Constants\VolunteerGender;
@@ -9,7 +10,9 @@ use App\Models\CallRecord;
 use App\Models\RecordType;
 use CallRole;
 use Exception;
+use LocationSearchMethod;
 use SpecialPhoneNumber;
+use Twilio\Rest\Voice;
 use Twilio\TwiML\VoiceResponse;
 use Illuminate\Http\Request;
 use VolunteerRoutingParameters;
@@ -17,6 +20,216 @@ use VolunteerType;
 
 class CallFlowController extends Controller
 {
+    public function index(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
+
+        log_debug("version: " . $GLOBALS['version']);
+        $digit = getDigitResponse($request, 'language_selections', 'Digits');
+
+        $twiml = new VoiceResponse();
+        if (strlen(setting('language_selections')) > 0) {
+            if ($digit == null) {
+                $twiml->redirect("lng-selector.php");
+                return response($twiml)->header("Content-Type", "text/xml");
+            } else {
+                $selected_language = explode(",", setting('language_selections'))[intval($digit) - 1];
+                $_SESSION["override_word_language"] = $selected_language;
+                $_SESSION["override_gather_language"] = $selected_language;
+                $_SESSION["override_language"] = $selected_language;
+                include_once __DIR__.'/../../../lang/'.getWordLanguage().'.php';
+            }
+        }
+
+        if ($request->has('CallSid')) {
+            $phoneNumberSid = $GLOBALS['twilioClient']->calls($request->query('CallSid'))->fetch()->phoneNumberSid;
+            $incomingPhoneNumber = $GLOBALS['twilioClient']->incomingPhoneNumbers($phoneNumberSid)->fetch();
+
+            if ($incomingPhoneNumber->statusCallback == null
+                || !str_exists($incomingPhoneNumber->statusCallback, "status.php")) {
+                insertAlert(AlertId::STATUS_CALLBACK_MISSING, $incomingPhoneNumber->phoneNumber);
+            }
+        }
+
+        if ($request->has("override_service_body_id")) {
+            getServiceBodyCallHandling($request->query("override_service_body_id"));
+        }
+
+        $promptset_name = str_replace("-", "_", getWordLanguage()) . "_greeting";
+        if (has_setting("extension_dial") && json_decode(setting("extension_dial"))) {
+            $gather = $twiml->gather()
+                ->setLanguage(setting('gather_language'))
+                ->setInput("dtmf")
+                ->setFinishOnKey("#")
+                ->setTimeout("10")
+                ->setAction("service-body-ext-response.php")
+                ->setMethod("GET");
+            $gather->say("Enter the service body ID, followed by the pound sign.");
+        } else {
+            $gather = $twiml->gather()
+                ->setLanguage(setting('gather_language'))
+                ->setInput(getInputType())
+                ->setNumDigits("1")
+                ->setTimeout("10")
+                ->setSpeechTimeout("auto")
+                ->setAction("input-method.php")
+                ->setMethod("GET");
+            $gather->pause()->setLength(setting('initial_pause'));
+            if (has_setting($promptset_name)) {
+                $gather->play(setting($promptset_name));
+            } else {
+                if (!$request->has("Digits")) {
+                    $gather->say(setting('title'))
+                        ->setVoice(voice())
+                        ->setLanguage(setting("language"));
+                }
+
+                $searchTypeSequence = getDigitMapSequence('digit_map_search_type');
+
+                foreach ($searchTypeSequence as $digit => $type) {
+                    if ($type == SearchType::VOLUNTEERS) {
+                        $gather->say(getPressWord() . " " . getWordForNumber($digit) . " " . word('to_find') . " " . word('someone_to_talk_to'))
+                            ->setVoice(voice())
+                            ->setLanguage(setting("language"));
+                    } elseif ($type == SearchType::MEETINGS) {
+                        $gather->say(getPressWord() . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . word('meetings'))
+                            ->setVoice(voice())
+                            ->setLanguage(setting("language"));
+                    } elseif ($type == SearchType::JFT) {
+                        $gather->say(getPressWord() . " " . getWordForNumber($digit) . " " . word('to_listen_to_the_just_for_today'))
+                            ->setVoice(voice())
+                            ->setLanguage(setting("language"));
+                    } elseif ($type == SearchType::SPAD) {
+                        $gather->say(getPressWord() . " " . getWordForNumber($digit) . " " . word('to_listen_to_the_spad'))
+                            ->setVoice(voice())
+                            ->setLanguage(setting("language"));
+                    }
+                }
+            }
+        }
+
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
+
+    public function inputMethod(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        $response = getIvrResponse(
+            $request,
+            getPossibleDigits('digit_map_search_type')
+        );
+        $twiml = new VoiceResponse();
+        if ($response == null) {
+            $twiml->say(word('you_might_have_invalid_entry'))
+                ->setVoice(voice())
+                ->setLanguage(setting('language'));
+            $twiml->redirect("index.php");
+            return response($twiml)->header("Content-Type", "text/xml");
+        }
+
+        $searchType = getDigitResponse($request, 'digit_map_search_type', 'Digits');
+        $playTitle = $request->has('PlayTitle') ? $request->query('PlayTitle') : 0;
+
+        if ($searchType == SearchType::MEETINGS) {
+            insertCallEventRecord(EventId::MEETING_SEARCH);
+        } elseif ($searchType == SearchType::JFT) {
+            insertCallEventRecord(EventId::JFT_LOOKUP);
+        } elseif ($searchType == SearchType::SPAD) {
+            insertCallEventRecord(EventId::SPAD_LOOKUP);
+        }
+
+        if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETINGS)
+            && json_decode(setting('disable_postal_code_gather'))) {
+            $twiml->redirect("input-method-result.php?SearchType=" . $searchType . "&Digits=1")
+                ->setMethod("GET");
+            return response($twiml)->header("Content-Type", "text/xml");
+        } elseif ($searchType == SearchType::VOLUNTEERS) {
+            if (isset($_SESSION['override_service_body_id'])) {
+                $twiml->redirect("helpline-search.php?Called=" . $request->query("Called") . getSessionLink(true))
+                    ->setMethod("GET");
+                return response($twiml)->header("Content-Type", "text/xml");
+            }
+
+            $searchDescription = word('someone_to_talk_to');
+        } elseif ($searchType == SearchType::MEETINGS) {
+            if (!strpos(setting('custom_query'), '{LATITUDE}') || !strpos(setting('custom_query'), '{LONGITUDE}')) {
+                $twiml->redirect("meeting-search.php?Called=" . $request->query("Called"))
+                    ->setMethod("GET");
+                return response($twiml)->header("Content-Type", "text/xml");
+            }
+
+            $searchDescription = word('meetings');
+        } elseif ($searchType == SearchType::JFT) {
+            $twiml->redirect("fetch-jft.php")
+                ->setMethod("GET");
+            return response($twiml)->header("Content-Type", "text/xml");
+        } elseif ($searchType == SearchType::SPAD) {
+            $twiml->redirect("fetch-spad.php")
+                ->setMethod("GET");
+            return response($twiml)->header("Content-Type", "text/xml");
+        } elseif ($searchType == SearchType::DIALBACK) {
+            $twiml->redirect("dialback.php")
+                ->setMethod("GET");
+            return response($twiml)->header("Content-Type", "text/xml");
+        } elseif ($searchType == SearchType::CUSTOM_EXTENSIONS && count(setting('custom_extensions')) > 0) {
+            $twiml->redirect("custom-ext.php")
+                ->setMethod("GET");
+            return response($twiml)->header("Content-Type", "text/xml");
+        }
+
+        $gather = $twiml->gather()
+            ->setLanguage(setting('gather_language'))
+            ->setInput(getInputType())
+            ->setNumDigits("1")
+            ->setTimeout("10")
+            ->setSpeechTimeout("auto")
+            ->setAction("input-method-result.php?SearchType=".$searchType)
+            ->setMethod("GET");
+        if ($playTitle == "1") {
+            $gather->say(setting("title"))
+                ->setVoice(voice())
+                ->setLanguage(setting("language"));
+        }
+
+        if ($request->has("Retry")) {
+            $retry_message = $request->has("RetryMessage") ? $request->query("RetryMessage") : word("could_not_find_location_please_retry_your_entry");
+            $gather->say($retry_message)
+                ->setVoice(voice())
+                ->setLanguage(setting("language"));
+            $gather->pause()->setLength("1");
+        }
+
+        if ($searchDescription == word('meetings') && !json_decode(setting("sms_ask")) && !json_decode(setting("sms_disable"))) {
+            $gather->say(word('search_results_by_sms'))
+                ->setVoice(voice())
+                ->setLanguage(setting('language'));
+        }
+
+        $locationSearchMethodSequence = getDigitMapSequence('digit_map_location_search_method');
+        foreach ($locationSearchMethodSequence as $digit => $method) {
+            if ($method == LocationSearchMethod::VOICE) {
+                $gather->say(getPressWord() . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . $searchDescription . " " . word('by') . " " . word('city_or_county'))
+                ->setVoice(voice())
+                ->setLanguage(setting('language'));
+            } elseif ($method == LocationSearchMethod::DTMF) {
+                $gather->say(getPressWord() . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . $searchDescription . " " . word('by') . " " . word('zip_code'))
+                    ->setVoice(voice())
+                    ->setLanguage(setting('language'));
+            } elseif ($method == SearchType::JFT && $searchType == SearchType::MEETINGS) {
+                $gather->say(getWordForNumber($digit) . " " . word('to_listen_to_the_just_for_today'))
+                    ->setVoice(voice())
+                    ->setLanguage(setting('language'));
+            } elseif ($method == SearchType::SPAD && $searchType == SearchType::MEETINGS) {
+                $gather->say(getWordForNumber($digit) . " " . word('to_listen_to_the_spad'))
+                    ->setVoice(voice())
+                    ->setLanguage(setting('language'));
+            }
+        }
+
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
+
     public function zipinput(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
@@ -103,10 +316,8 @@ class CallFlowController extends Controller
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
         $gender = getIvrResponse(
-            "gender-routing.php",
-            null,
+            $request,
             [VolunteerGender::MALE, VolunteerGender::FEMALE, VolunteerGender::NO_PREFERENCE],
-            skip_output: true
         );
         $twiml = new VoiceResponse();
         if ($gender == null) {
@@ -161,7 +372,7 @@ class CallFlowController extends Controller
     public function addresslookup(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
-        $address = getIvrResponse(skip_output: true);
+        $address = getIvrResponse($request);
         $coordinates = getCoordinatesForAddress($address);
         insertCallEventRecord(
             EventId::MEETING_SEARCH_LOCATION_GATHERED,
@@ -288,10 +499,8 @@ class CallFlowController extends Controller
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
         $search_type = $request->query("SearchType");
         $province_lookup_item = getIvrResponse(
-            sprintf("province-voice-input.php?SearchType=%s", $search_type),
-            null,
-            range(1, count(setting('province_lookup_list'))),
-            skip_output: true
+            $request,
+            range(1, count(setting('province_lookup_list')))
         );
         $twiml = new VoiceResponse();
         if ($province_lookup_item == null) {
@@ -351,7 +560,7 @@ class CallFlowController extends Controller
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
         require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
         $sms_messages = $request->query('Payload') ? json_decode(urldecode($request->query('Payload'))) : [];
-        $digits = getIvrResponse();
+        $digits = getIvrResponse($request);
 
         $twiml = new VoiceResponse();
         if (($digits == 1 || $digits == 3) && count($sms_messages) > 0) {
@@ -589,13 +798,13 @@ class CallFlowController extends Controller
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
         require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
         try {
-            if (is_null($request->query("OriginalCallerId"))) {
+            if ($request->has("OriginalCallerId")) {
                 $original_caller_id = $request->query("OriginalCallerId");
             }
 
             $service_body = getServiceBodyCoverage($request->query("Latitude"), $request->query("Longitude"));
             $serviceBodyCallHandling   = getServiceBodyCallHandling($service_body->id);
-            $tracker                   = !is_null($request->query("tracker")) ? 0 : $request->query("tracker");
+            $tracker                   = $request->has("tracker") ? 0 : $request->query("tracker");
 
             if ($serviceBodyCallHandling->sms_routing_enabled) {
                 $volunteer_routing_parameters = new VolunteerRoutingParameters();
@@ -625,7 +834,8 @@ class CallFlowController extends Controller
                                 "body" => sprintf(
                                     "%s: %s %s %s",
                                     word('helpline'),
-                                    word('someone_is_requesting_sms_help_from'),
+                                    word('someone_is_
+                                    requesting_sms_help_from'),
                                     $original_caller_id,
                                     word('please_call_or_text_them_back')
                                 ),
@@ -651,6 +861,45 @@ class CallFlowController extends Controller
         }
 
         $twiml = new VoiceResponse();
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
+
+    public function inputMethodResult(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        $twiml = new VoiceResponse();
+        $response = getIvrResponse($request, getPossibleDigits('digit_map_location_search_method'));
+        if ($response == null) {
+            $twiml->say(word('you_might_have_invalid_entry'))
+                ->setVoice(voice())
+                ->setLanguage(setting('language'));
+            $twiml->redirect("index.php");
+            return response($twiml)->header("Content-Type", "text/xml");
+        }
+
+        $locationSearchMethod = getDigitResponse($request, 'digit_map_location_search_method', 'Digits');
+        if ($locationSearchMethod == SearchType::JFT) {
+            $twiml->redirect("fetch-jft.php")->setMethod("GET");
+            return response($twiml)->header("Content-Type", "text/xml");
+        } elseif ($locationSearchMethod == SearchType::SPAD) {
+            $twiml->redirect("fetch-spad.php")->setMethod("GET");
+            return response($twiml)->header("Content-Type", "text/xml");
+        }
+
+        if (has_setting('province_lookup') && json_decode(setting('province_lookup'))) {
+            $action = "province-voice-input.php";
+        } else {
+            $action = "city-or-county-voice-input.php";
+        }
+
+        if ($locationSearchMethod == LocationSearchMethod::VOICE) { // voice based
+            $twiml->redirect($action."?SearchType=".$request->query('SearchType')."&InputMethod=".LocationSearchMethod::VOICE)
+            ->setMethod("GET");
+        } elseif ($locationSearchMethod == LocationSearchMethod::DTMF) {
+            $twiml->redirect("zip-input.php?SearchType=".$request->query('SearchType')."&InputMethod=".LocationSearchMethod::DTMF)
+            ->setMethod("GET");
+        }
+
         return response($twiml)->header("Content-Type", "text/xml");
     }
 }
