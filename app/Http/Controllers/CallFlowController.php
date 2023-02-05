@@ -117,13 +117,17 @@ class CallFlowController extends Controller
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
         $response = getIvrResponse(
             $request,
-            'index.php',
-            null,
             getPossibleDigits('digit_map_search_type')
         );
+        $twiml = new VoiceResponse();
         if ($response == null) {
-            return;
+            $twiml->say(word('you_might_have_invalid_entry'))
+                ->setVoice(voice())
+                ->setLanguage(setting('language'));
+            $twiml->redirect("index.php");
+            return response($twiml)->header("Content-Type", "text/xml");
         }
+
         $searchType = getDigitResponse($request, 'digit_map_search_type', 'Digits');
         $playTitle = $request->has('PlayTitle') ? $request->query('PlayTitle') : 0;
 
@@ -135,7 +139,6 @@ class CallFlowController extends Controller
             insertCallEventRecord(EventId::SPAD_LOOKUP);
         }
 
-        $twiml = new VoiceResponse();
         if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETINGS)
             && json_decode(setting('disable_postal_code_gather'))) {
             $twiml->redirect("input-method-result.php?SearchType=" . $searchType . "&Digits=1")
@@ -314,10 +317,7 @@ class CallFlowController extends Controller
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
         $gender = getIvrResponse(
             $request,
-            "gender-routing.php",
-            null,
             [VolunteerGender::MALE, VolunteerGender::FEMALE, VolunteerGender::NO_PREFERENCE],
-            skip_output: true
         );
         $twiml = new VoiceResponse();
         if ($gender == null) {
@@ -372,7 +372,7 @@ class CallFlowController extends Controller
     public function addresslookup(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
-        $address = getIvrResponse($request, skip_output: true);
+        $address = getIvrResponse($request);
         $coordinates = getCoordinatesForAddress($address);
         insertCallEventRecord(
             EventId::MEETING_SEARCH_LOCATION_GATHERED,
@@ -500,10 +500,7 @@ class CallFlowController extends Controller
         $search_type = $request->query("SearchType");
         $province_lookup_item = getIvrResponse(
             $request,
-            sprintf("province-voice-input.php?SearchType=%s", $search_type),
-            null,
-            range(1, count(setting('province_lookup_list'))),
-            skip_output: true
+            range(1, count(setting('province_lookup_list')))
         );
         $twiml = new VoiceResponse();
         if ($province_lookup_item == null) {
@@ -871,9 +868,13 @@ class CallFlowController extends Controller
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
         $twiml = new VoiceResponse();
-        $response = getIvrResponse($request, "index.php", null, getPossibleDigits('digit_map_location_search_method'));
+        $response = getIvrResponse($request, getPossibleDigits('digit_map_location_search_method'));
         if ($response == null) {
-            return;
+            $twiml->say(word('you_might_have_invalid_entry'))
+                ->setVoice(voice())
+                ->setLanguage(setting('language'));
+            $twiml->redirect("index.php");
+            return response($twiml)->header("Content-Type", "text/xml");
         }
 
         $locationSearchMethod = getDigitResponse($request, 'digit_map_location_search_method', 'Digits');

@@ -2098,7 +2098,7 @@ function get_reading($reading = ReadingType::JFT, $sms = false)
     }
 }
 
-function getIvrResponse($request, $redirected_from = null, $prior_digit = null, $expected_exacts = array(), $expected_likes = array(), $field = 'Digits', $skip_output = false)
+function getIvrResponse($request, $expected_exacts = array(), $expected_likes = array(), $field = 'Digits')
 {
     $response = "0";
 
@@ -2124,17 +2124,7 @@ function getIvrResponse($request, $redirected_from = null, $prior_digit = null, 
             }
         }
 
-        if (!$found_at_least_once && $skip_output) {
-            return null;
-        }
-
         if (!$found_at_least_once) {
-            $qs = $prior_digit != null ? "?Digits=" . $prior_digit : "";?>
-            <Response>
-                <Say voice="<?php echo voice() ?>" language="<?php echo setting('language') ?>"><?php echo word('you_might_have_invalid_entry') ?></Say>
-                <Redirect><?php echo $redirected_from . $qs?></Redirect>
-            </Response>
-            <?php
             return null;
         }
     }
