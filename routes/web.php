@@ -24,6 +24,8 @@ Route::get("/", 'App\Http\Controllers\CallFlowController@index')
     ->where('ext', $ext);
 Route::get("/index{ext}", 'App\Http\Controllers\CallFlowController@index')
     ->where('ext', $ext);
+Route::get("/input-method{ext}", 'App\Http\Controllers\CallFlowController@inputMethod')
+    ->where('ext', $ext);
 Route::get("/custom-ext{ext}", 'App\Http\Controllers\CallFlowController@customext')
     ->where('ext', $ext);
 Route::get("/input-method-result{ext}", 'App\Http\Controllers\CallFlowController@inputMethodResult')

@@ -244,6 +244,10 @@ class EventId
                 return "JFT Looksup via SMS";
             case self::SMS_BLACKHOLED:
                 return "SMS Blackholed";
+            case self::SPAD_LOOKUP:
+                return "SPAD Lookup";
+            case self::SPAD_LOOKUP_SMS:
+                return "SPAD Lookup via SMS";
         }
     }
 }

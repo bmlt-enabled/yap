@@ -112,6 +112,121 @@ class CallFlowController extends Controller
         return response($twiml)->header("Content-Type", "text/xml");
     }
 
+    public function inputMethod(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        $response = getIvrResponse(
+            $request,
+            'index.php',
+            null,
+            getPossibleDigits('digit_map_search_type')
+        );
+        if ($response == null) {
+            return;
+        }
+        $searchType = getDigitResponse($request, 'digit_map_search_type', 'Digits');
+        $playTitle = $request->has('PlayTitle') ? $request->query('PlayTitle') : 0;
+
+        if ($searchType == SearchType::MEETINGS) {
+            insertCallEventRecord(EventId::MEETING_SEARCH);
+        } elseif ($searchType == SearchType::JFT) {
+            insertCallEventRecord(EventId::JFT_LOOKUP);
+        } elseif ($searchType == SearchType::SPAD) {
+            insertCallEventRecord(EventId::SPAD_LOOKUP);
+        }
+
+        $twiml = new VoiceResponse();
+        if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETINGS)
+            && json_decode(setting('disable_postal_code_gather'))) {
+            $twiml->redirect("input-method-result.php?SearchType=" . $searchType . "&Digits=1")
+                ->setMethod("GET");
+            return response($twiml)->header("Content-Type", "text/xml");
+        } elseif ($searchType == SearchType::VOLUNTEERS) {
+            if (isset($_SESSION['override_service_body_id'])) {
+                $twiml->redirect("helpline-search.php?Called=" . $request->query("Called") . getSessionLink(true))
+                    ->setMethod("GET");
+                return response($twiml)->header("Content-Type", "text/xml");
+            }
+
+            $searchDescription = word('someone_to_talk_to');
+        } elseif ($searchType == SearchType::MEETINGS) {
+            if (!strpos(setting('custom_query'), '{LATITUDE}') || !strpos(setting('custom_query'), '{LONGITUDE}')) {
+                $twiml->redirect("meeting-search.php?Called=" . $request->query("Called"))
+                    ->setMethod("GET");
+                return response($twiml)->header("Content-Type", "text/xml");
+            }
+
+            $searchDescription = word('meetings');
+        } elseif ($searchType == SearchType::JFT) {
+            $twiml->redirect("fetch-jft.php")
+                ->setMethod("GET");
+            return response($twiml)->header("Content-Type", "text/xml");
+        } elseif ($searchType == SearchType::SPAD) {
+            $twiml->redirect("fetch-spad.php")
+                ->setMethod("GET");
+            return response($twiml)->header("Content-Type", "text/xml");
+        } elseif ($searchType == SearchType::DIALBACK) {
+            $twiml->redirect("dialback.php")
+                ->setMethod("GET");
+            return response($twiml)->header("Content-Type", "text/xml");
+        } elseif ($searchType == SearchType::CUSTOM_EXTENSIONS && count(setting('custom_extensions')) > 0) {
+            $twiml->redirect("custom-ext.php")
+                ->setMethod("GET");
+            return response($twiml)->header("Content-Type", "text/xml");
+        }
+
+        $gather = $twiml->gather()
+            ->setLanguage(setting('gather_language'))
+            ->setInput(getInputType())
+            ->setNumDigits("1")
+            ->setTimeout("10")
+            ->setSpeechTimeout("auto")
+            ->setAction("input-method-result.php?SearchType=".$searchType)
+            ->setMethod("GET");
+        if ($playTitle == "1") {
+            $gather->say(setting("title"))
+                ->setVoice(voice())
+                ->setLanguage(setting("language"));
+        }
+
+        if ($request->has("Retry")) {
+            $retry_message = $request->has("RetryMessage") ? $request->query("RetryMessage") : word("could_not_find_location_please_retry_your_entry");
+            $gather->say($retry_message)
+                ->setVoice(voice())
+                ->setLanguage(setting("language"));
+            $gather->pause()->setLength("1");
+        }
+
+        if ($searchDescription == word('meetings') && !json_decode(setting("sms_ask")) && !json_decode(setting("sms_disable"))) {
+            $gather->say(word('search_results_by_sms'))
+                ->setVoice(voice())
+                ->setLanguage(setting('language'));
+        }
+
+        $locationSearchMethodSequence = getDigitMapSequence('digit_map_location_search_method');
+        foreach ($locationSearchMethodSequence as $digit => $method) {
+            if ($method == LocationSearchMethod::VOICE) {
+                $gather->say(getPressWord() . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . $searchDescription . " " . word('by') . " " . word('city_or_county'))
+                ->setVoice(voice())
+                ->setLanguage(setting('language'));
+            } elseif ($method == LocationSearchMethod::DTMF) {
+                $gather->say(getPressWord() . " " . getWordForNumber($digit) . " " . word('to_search_for') . " " . $searchDescription . " " . word('by') . " " . word('zip_code'))
+                    ->setVoice(voice())
+                    ->setLanguage(setting('language'));
+            } elseif ($method == SearchType::JFT && $searchType == SearchType::MEETINGS) {
+                $gather->say(getWordForNumber($digit) . " " . word('to_listen_to_the_just_for_today'))
+                    ->setVoice(voice())
+                    ->setLanguage(setting('language'));
+            } elseif ($method == SearchType::SPAD && $searchType == SearchType::MEETINGS) {
+                $gather->say(getWordForNumber($digit) . " " . word('to_listen_to_the_spad'))
+                    ->setVoice(voice())
+                    ->setLanguage(setting('language'));
+            }
+        }
+
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
+
     public function zipinput(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
