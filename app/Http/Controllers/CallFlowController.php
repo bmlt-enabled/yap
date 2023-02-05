@@ -9,7 +9,9 @@ use App\Models\CallRecord;
 use App\Models\RecordType;
 use CallRole;
 use Exception;
+use LocationSearchMethod;
 use SpecialPhoneNumber;
+use Twilio\Rest\Voice;
 use Twilio\TwiML\VoiceResponse;
 use Illuminate\Http\Request;
 use VolunteerRoutingParameters;
@@ -103,6 +105,7 @@ class CallFlowController extends Controller
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
         $gender = getIvrResponse(
+            $request,
             "gender-routing.php",
             null,
             [VolunteerGender::MALE, VolunteerGender::FEMALE, VolunteerGender::NO_PREFERENCE],
@@ -161,7 +164,7 @@ class CallFlowController extends Controller
     public function addresslookup(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
-        $address = getIvrResponse(skip_output: true);
+        $address = getIvrResponse($request, skip_output: true);
         $coordinates = getCoordinatesForAddress($address);
         insertCallEventRecord(
             EventId::MEETING_SEARCH_LOCATION_GATHERED,
@@ -288,6 +291,7 @@ class CallFlowController extends Controller
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
         $search_type = $request->query("SearchType");
         $province_lookup_item = getIvrResponse(
+            $request,
             sprintf("province-voice-input.php?SearchType=%s", $search_type),
             null,
             range(1, count(setting('province_lookup_list'))),
@@ -351,7 +355,7 @@ class CallFlowController extends Controller
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
         require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
         $sms_messages = $request->query('Payload') ? json_decode(urldecode($request->query('Payload'))) : [];
-        $digits = getIvrResponse();
+        $digits = getIvrResponse($request);
 
         $twiml = new VoiceResponse();
         if (($digits == 1 || $digits == 3) && count($sms_messages) > 0) {
@@ -589,13 +593,13 @@ class CallFlowController extends Controller
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
         require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
         try {
-            if (is_null($request->query("OriginalCallerId"))) {
+            if ($request->has("OriginalCallerId")) {
                 $original_caller_id = $request->query("OriginalCallerId");
             }
 
             $service_body = getServiceBodyCoverage($request->query("Latitude"), $request->query("Longitude"));
             $serviceBodyCallHandling   = getServiceBodyCallHandling($service_body->id);
-            $tracker                   = !is_null($request->query("tracker")) ? 0 : $request->query("tracker");
+            $tracker                   = $request->has("tracker") ? 0 : $request->query("tracker");
 
             if ($serviceBodyCallHandling->sms_routing_enabled) {
                 $volunteer_routing_parameters = new VolunteerRoutingParameters();
@@ -625,7 +629,8 @@ class CallFlowController extends Controller
                                 "body" => sprintf(
                                     "%s: %s %s %s",
                                     word('helpline'),
-                                    word('someone_is_requesting_sms_help_from'),
+                                    word('someone_is_
+                                    requesting_sms_help_from'),
                                     $original_caller_id,
                                     word('please_call_or_text_them_back')
                                 ),
@@ -651,6 +656,41 @@ class CallFlowController extends Controller
         }
 
         $twiml = new VoiceResponse();
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
+
+    public function inputMethodResult(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        $twiml = new VoiceResponse();
+        $response = getIvrResponse($request, "index.php", null, getPossibleDigits('digit_map_location_search_method'));
+        if ($response == null) {
+            return;
+        }
+
+        $locationSearchMethod = getDigitResponse($request, 'digit_map_location_search_method', 'Digits');
+        if ($locationSearchMethod == SearchType::JFT) {
+            $twiml->redirect("fetch-jft.php")->setMethod("GET");
+            return response($twiml)->header("Content-Type", "text/xml");
+        } elseif ($locationSearchMethod == SearchType::SPAD) {
+            $twiml->redirect("fetch-spad.php")->setMethod("GET");
+            return response($twiml)->header("Content-Type", "text/xml");
+        }
+
+        if (has_setting('province_lookup') && json_decode(setting('province_lookup'))) {
+            $action = "province-voice-input.php";
+        } else {
+            $action = "city-or-county-voice-input.php";
+        }
+
+        if ($locationSearchMethod == LocationSearchMethod::VOICE) { // voice based
+            $twiml->redirect($action."?SearchType=".$request->query('SearchType')."&InputMethod=".LocationSearchMethod::VOICE)
+            ->setMethod("GET");
+        } elseif ($locationSearchMethod == LocationSearchMethod::DTMF) {
+            $twiml->redirect("zip-input.php?SearchType=".$request->query('SearchType')."&InputMethod=".LocationSearchMethod::DTMF)
+            ->setMethod("GET");
+        }
+
         return response($twiml)->header("Content-Type", "text/xml");
     }
 }

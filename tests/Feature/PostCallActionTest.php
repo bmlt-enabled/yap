@@ -13,6 +13,8 @@ beforeEach(function () {
     $this->to = "+15005550006";
     $this->from = "+12125551212";
 
+    $_SESSION["initial_webhook"] = "https://example.org/index.php";
+
     new \Tests\TwilioMessagesCreateMock();
 });
 
@@ -29,8 +31,6 @@ test('standard call ending', function () {
 });
 
 test('start over', function () {
-    $_SESSION["initial_webhook"] = "https://example.org/index.php";
-    $_REQUEST["Digits"] = "2";
     $response = $this->call('GET', '/post-call-action.php', ["Digits"=>"2"]);
     $response
         ->assertStatus(200)
@@ -41,11 +41,10 @@ test('start over', function () {
 });
 
 test('send meeting results SMS', function () {
-    $_REQUEST["Digits"] = "1";
     $response = $this->call(
         'GET',
         '/post-call-action.php',
-        ["Digits" => "2", "To" => "+15005550006", "From" => "+12125551212",
+        ["To" => "+15005550006", "From" => "+12125551212",
             "Payload" => "[\"test message 1\", \"test message 2\"]"]
     );
     $response
@@ -59,12 +58,11 @@ test('send meeting results SMS', function () {
 });
 
 test('send meeting results SMS with combine', function () {
-    $_REQUEST["Digits"] = "1";
     $_SESSION["override_sms_combine"] = true;
     $response = $this->call(
         'GET',
         '/post-call-action.php',
-        ["Digits"=>"2", "To" => $this->to, "From" => $this->from,
+        ["To" => $this->to, "From" => $this->from,
             "Payload" => "[\"test message 1\", \"test message 2\"]"]
     );
     $response

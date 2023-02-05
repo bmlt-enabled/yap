@@ -4,7 +4,7 @@
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
     log_debug("version: " . $GLOBALS['version']);
-    $digit = getDigitResponse('language_selections', 'Digits');
+    $digit = getDigitResponse($request,'language_selections', 'Digits');
 
 if (strlen(setting('language_selections')) > 0) {
     if ($digit == null) {?>

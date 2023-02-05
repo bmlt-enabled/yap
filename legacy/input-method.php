@@ -1,11 +1,11 @@
 <?php
     require_once '_includes/functions.php';
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-    $response = getIvrResponse('index.php', null, getPossibleDigits('digit_map_search_type'), array(), 'Digits');
+    $response = getIvrResponse($request, 'index.php', null, getPossibleDigits('digit_map_search_type'), array(), 'Digits');
 if ($response == null) {
     return;
 }
-    $searchType = getDigitResponse('digit_map_search_type', 'Digits');
+    $searchType = getDigitResponse($request, 'digit_map_search_type', 'Digits');
     $playTitle = isset($_REQUEST['PlayTitle']) ? $_REQUEST['PlayTitle'] : 0;
 
 

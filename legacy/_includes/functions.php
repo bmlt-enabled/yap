@@ -879,16 +879,16 @@ function getDialbackString($callsid, $dialbackNumber, $option)
     return $dialback_string;
 }
 
-function getDigitResponse($setting, $field = 'SearchType')
+function getDigitResponse($request, $setting, $field = 'SearchType')
 {
     $digitMap = getDigitMap($setting);
     if ($field === 'Digits'
         && has_setting('speech_gathering')
         && json_encode(setting('speech_gathering'))
-        && isset($_REQUEST['SpeechResult'])) {
-        $digit = intval($_REQUEST['SpeechResult']);
-    } else if (isset($_REQUEST[$field])) {
-        $digit = intval($_REQUEST[$field]);
+        && $request->has('SpeechResult')) {
+        $digit = intval($request->query('SpeechResult'));
+    } elseif ($request->has($field)) {
+        $digit = intval($request->query($field));
     } else {
         return null;
     }
@@ -2094,14 +2094,14 @@ function get_reading($reading = ReadingType::JFT, $sms = false)
     }
 }
 
-function getIvrResponse($redirected_from = null, $prior_digit = null, $expected_exacts = array(), $expected_likes = array(), $field = 'Digits', $skip_output = false)
+function getIvrResponse($request, $redirected_from = null, $prior_digit = null, $expected_exacts = array(), $expected_likes = array(), $field = 'Digits', $skip_output = false)
 {
     $response = "0";
 
-    if (isset($_REQUEST[$field])) {
-        $response = $_REQUEST[$field];
-    } elseif (isset($_REQUEST['SpeechResult'])) {
-        $response = intval($_REQUEST['SpeechResult']);
+    if ($request->has($field)) {
+        $response = $request->query($field);
+    } elseif ($request->has('SpeechResult')) {
+        $response = intval($request->query('SpeechResult'));
     }
 
     if (count($expected_exacts) > 0 || count($expected_likes) > 0) {

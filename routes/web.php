@@ -22,6 +22,8 @@ Route::get("/ping{ext}", 'App\Http\Controllers\PingController@index')
     ->where('ext', $ext);
 Route::get("/custom-ext{ext}", 'App\Http\Controllers\CallFlowController@customext')
     ->where('ext', $ext);
+Route::get("/input-method-result{ext}", 'App\Http\Controllers\CallFlowController@inputMethodResult')
+    ->where('ext', $ext);
 Route::get("/zip-input{ext}", 'App\Http\Controllers\CallFlowController@zipinput')
     ->where('ext', $ext);
 Route::get("/city-or-county-voice-input{ext}", 'App\Http\Controllers\CallFlowController@cityorcountyinput')
