@@ -2098,14 +2098,22 @@ function get_reading($reading = ReadingType::JFT, $sms = false)
     }
 }
 
-function getIvrResponse($request, $expected_exacts = array(), $expected_likes = array(), $field = 'Digits')
+function getIvrResponse($request = null, $expected_exacts = array(), $expected_likes = array(), $field = 'Digits')
 {
     $response = "0";
 
-    if ($request->has($field)) {
-        $response = $request->query($field);
-    } elseif ($request->has('SpeechResult')) {
-        $response = intval($request->query('SpeechResult'));
+    if ($request != null) {
+        if ($request->has($field)) {
+            $response = $request->query($field);
+        } elseif ($request->has('SpeechResult')) {
+            $response = intval($request->query('SpeechResult'));
+        }
+    } else {
+        if (isset($_REQUEST[$field])) {
+            $response = $_REQUEST[$field];
+        } elseif (isset($_REQUEST['SpeechResult'])) {
+            $response = intval($_REQUEST['SpeechResult']);
+        }
     }
 
     if (count($expected_exacts) > 0 || count($expected_likes) > 0) {

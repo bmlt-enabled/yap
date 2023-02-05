@@ -9,7 +9,7 @@ if (!isset($_REQUEST['ForceNumber'])) {
     if (isset($_SESSION["override_service_body_id"])) {
         $service_body_obj = getServiceBody(setting("service_body_id"));
     } else {
-        $address = isset($_SESSION['Address']) ? $_SESSION['Address'] : getIvrResponse($request);
+        $address = isset($_SESSION['Address']) ? $_SESSION['Address'] : getIvrResponse();
         if ($address == null) {
 //            $twiml->say(word('you_might_have_invalid_entry'))
 //                ->setVoice(voice())
