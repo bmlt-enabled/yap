@@ -6,9 +6,17 @@ User authentication has primarily been sourced by a BMLT. You can create users o
 
 Once you log in, using the admin user, you can create / manage additional users.
 
-```
+```sql
 SET @realname = '';
 SET @username = '';
 SET @password = '';
 INSERT INTO users (name, username, password, permissions, is_admin) VALUES (@realname, @username, SHA2(@password, 256), 0, 1);
+```
+
+If you happen to forget your password, or need to reset it for some reason.  You can run this query to reset it to something new. (Note: it is not possible to recover a password, as they are stored as one-way hashes).
+
+```sql
+SET @username = '';
+SET @newpassword = '';
+UPDATE users set password = SHA2(@newpassword, 256) where username = @username;
 ```
