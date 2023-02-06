@@ -340,53 +340,6 @@ function insertAlert($alertId, $payload)
     $db->close();
 }
 
-function admin_PersistDbConfig($service_body_id, $data, $data_type, $parent_id = 0)
-{
-    $db = new Database();
-    $current_data_check = isset($parent_id) && $parent_id > 0 ? getDbDataByParentId($parent_id, $data_type) : getDbData($service_body_id, $data_type);
-
-    if (count($current_data_check) == 0 || $data_type == DataType::YAP_GROUPS_V2) {
-        $parent_id = $parent_id == 0 ? null : $parent_id;
-        $stmt = "INSERT INTO `config` (`service_body_id`,`data`,`data_type`,`parent_id`) VALUES (:service_body_id,:data,:data_type,:parent_id)";
-        $db->query($stmt);
-        $db->bind(':service_body_id', $service_body_id);
-        $db->bind(':data', $data);
-        $db->bind(':data_type', $data_type);
-        $db->bind(':parent_id', $parent_id, PDO::PARAM_INT);
-        $db->execute();
-        $db->query("SELECT MAX(id) as id FROM `config` WHERE `service_body_id`=:service_body_id AND `data_type`=:data_type");
-        $db->bind(':service_body_id', $service_body_id);
-        $db->bind(':data_type', $data_type);
-        $resultset = $db->resultset();
-        $db->close();
-        return $resultset[0]['id'];
-    } else {
-        $stmt = "UPDATE `config` SET `data`=:data WHERE `service_body_id`=:service_body_id AND `data_type`=:data_type";
-        if (isset($parent_id) && $parent_id > 0) {
-            $stmt .= " AND `parent_id`=:parent_id";
-        }
-        $db->query($stmt);
-        $db->bind(':data', $data);
-        $db->bind(':service_body_id', $service_body_id);
-        $db->bind(':data_type', $data_type);
-        if (isset($parent_id) && $parent_id > 0) {
-            $db->bind(':parent_id', $parent_id);
-        }
-        $db->execute();
-    }
-}
-
-function admin_PersistDbConfigById($id, $data)
-{
-    $db = new Database();
-    $stmt = "UPDATE `config` SET `data`=:data WHERE `id`=:id";
-    $db->query($stmt);
-    $db->bind(':data', $data);
-    $db->bind(':id', $id);
-    $db->execute();
-    $db->close();
-}
-
 function setDatabaseCacheValue($key, $value, $expiry)
 {
     $db = new Database();
@@ -433,17 +386,6 @@ function getDbData($service_body_id, $data_type)
     $db = new Database();
     $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `service_body_id`=:service_body_id AND `data_type`=:data_type");
     $db->bind(':service_body_id', $service_body_id);
-    $db->bind(':data_type', $data_type);
-    $resultset = $db->resultset();
-    $db->close();
-    return $resultset;
-}
-
-function getDbDataById($id, $data_type)
-{
-    $db = new Database();
-    $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `id`=:id AND `data_type`=:data_type");
-    $db->bind(':id', $id);
     $db->bind(':data_type', $data_type);
     $resultset = $db->resultset();
     $db->close();
