@@ -23,7 +23,7 @@
     "jquery": "~3.4.1",
     "jquery-ui-dist": "^1.13.2",
     "jquery-ui-touch-punch": "^0.2.3",
-    "jquery-validation": "^1.19.2",
+    "jquery-validation": "^1.19.5",
     "leaflet": "^1.9.3",
     "leaflet-fullscreen": "^1.0.2",
     "moment": "^2.29.4",
