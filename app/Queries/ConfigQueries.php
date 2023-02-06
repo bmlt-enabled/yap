@@ -30,14 +30,14 @@ class ConfigQueries
         );
     }
 
-    public static function admin_PersistDbConfigById($id, $data)
+    public static function adminPersistDbConfigById($id, $data)
     {
         return DB::update("UPDATE `config` SET `data`=? WHERE `id`=?", [
             $data, $id
         ]);
     }
 
-    public static function admin_PersistDbConfig($service_body_id, $data, $data_type, $parent_id = 0)
+    public static function adminPersistDbConfig($service_body_id, $data, $data_type, $parent_id = 0)
     {
         $current_data_check = (isset($parent_id) && $parent_id > 0
             ? ConfigQueries::getDbDataByParentId($parent_id, $data_type)
@@ -59,10 +59,10 @@ class ConfigQueries
                 DB::insert(
                     "UPDATE `config` SET `data`=? WHERE `service_body_id`=? AND `data_type`=? AND `parent_id`=?",
                     [
-                    $data,
-                    $service_body_id,
-                    $data_type,
-                    $parent_id
+                        $data,
+                        $service_body_id,
+                        $data_type,
+                        $parent_id
                     ]
                 );
             } else {

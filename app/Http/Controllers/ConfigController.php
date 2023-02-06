@@ -40,10 +40,10 @@ class ConfigController extends Controller
 
         if ($request->query('data_type') === DataType::YAP_GROUPS_V2 &&
             $request->has('id') && intval($request->query('id')) > 0) {
-            ConfigQueries::admin_PersistDbConfigById($request->query('id'), $data);
+            ConfigQueries::adminPersistDbConfigById($request->query('id'), $data);
             $request->query('id');
         } else {
-            ConfigQueries::admin_PersistDbConfig(
+            ConfigQueries::adminPersistDbConfig(
                 $request->query('service_body_id'),
                 $data,
                 $request->query('data_type'),
