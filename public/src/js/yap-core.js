@@ -3,7 +3,7 @@ var groups;
 var calendar;
 var metrics_map = null;
 
-Array.prototype.getArrayItemByObjectKeyValue = function(key, value) {
+Array.prototype.getArrayItemByObjectKeyValue = function (key, value) {
     for (var i = 0; i < this.length; i++) {
         if (this[i][key] === value) {
             return this[i];
@@ -11,40 +11,43 @@ Array.prototype.getArrayItemByObjectKeyValue = function(key, value) {
     }
 };
 
-function getDateRanges() {
+function getDateRanges()
+{
     var daterangepicker = $("#reportrange").data('daterangepicker')
     return "&date_range_start=" + daterangepicker.startDate.format("YYYY-MM-DD 00:00:00") + "&date_range_end=" + daterangepicker.endDate.format("YYYY-MM-DD 23:59:59");
 }
 
-function recurseReports() {
+function recurseReports()
+{
     return $("#recursive-reports-switch:checked").length > 0;
 }
 
-function initReports(dataLoadedCallback) {
-    $(".page-size-dropdown-item").click(function(e) {
+function initReports(dataLoadedCallback)
+{
+    $(".page-size-dropdown-item").click(function (e) {
         $(".page-size-dropdown-item").removeClass("active");
         $(e.target).addClass("active");
         var pageSize = parseInt(e.target.text);
         table.setPageSize(pageSize);
     });
 
-    $("#print-table").on("click", function(){
+    $("#print-table").on("click", function () {
         table.print(false, true);
     });
 
-    $("#download-records-csv").click(function(){
+    $("#download-records-csv").click(function () {
         table.download("csv", "yap-records.csv");
     });
 
-    $("#download-events-csv").click(function(){
+    $("#download-events-csv").click(function () {
         eventsTable.download("csv", "yap-events.csv");
     });
 
-    $("#download-json").click(function(){
+    $("#download-json").click(function () {
         table.download("json", "yap.json");
     });
 
-    $("#download-xlsx").click(function() {
+    $("#download-xlsx").click(function () {
         var sheets = {
             "Calls": true,
             "Events": "#events-table"
@@ -56,8 +59,10 @@ function initReports(dataLoadedCallback) {
     var eventsTableColumns = [
         {title: "Event Time", field: "event_time", mutator: toCurrentTimezone},
         {title: "Event", field: "event_name", formatter: "textarea"},
-        {title: "Service Body Id", field: "service_body_id", mutator: function(id) {
-            if (isNaN(id)) return id;
+        {title: "Service Body Id", field: "service_body_id", mutator: function (id) {
+            if (isNaN(id)) {
+                return id;
+            }
             var service_body = getServiceBodyById(id);
             return service_body['name'] + " (" + service_body['id'] + ")"
         }},
@@ -73,10 +78,10 @@ function initReports(dataLoadedCallback) {
         history: true,
         pagination: "remote",
         ajaxURL: "cdr_api.php",
-        ajaxURLGenerator: function(url, config, params) {
+        ajaxURLGenerator: function (url, config, params) {
             return url + "?service_body_id=" + $("#service_body_id").val() + "&page=1&size=1" + getDateRanges() + "&recurse=" + recurseReports();
         },
-        ajaxResponse: function(url, params, response) {
+        ajaxResponse: function (url, params, response) {
             var events = [];
             for (var i = 0; i < response['data'].length; i++) {
                 var callEvents = response['data'][i]['call_events'];
@@ -92,10 +97,10 @@ function initReports(dataLoadedCallback) {
 
             return response;
         },
-        dataLoaded: function(data) {
+        dataLoaded: function (data) {
             dataLoadedCallback(data)
         },
-        pageLoaded: function(pageno) {
+        pageLoaded: function (pageno) {
             $(".subTableHolder").hide();
         },
         movableColumns: true,
@@ -103,7 +108,7 @@ function initReports(dataLoadedCallback) {
         printAsHtml: true,
         printHeader: "<h3>Call Detail Records<h3>",
         printFooter: "",
-        rowClick: function(e, row) {
+        rowClick: function (e, row) {
             $("#subTableId_" + row.getData().id).toggle();
         },
         initialSort: [
@@ -116,11 +121,11 @@ function initReports(dataLoadedCallback) {
             {title:"From", field:"from_number"},
             {title:"To", field:"to_number"},
             {title:"Type", field:"type_name"},
-            {title:"Call Events", field:"call_events", visible: false, download: true, formatter: function(cell, formatterParams, onRendered) {
+            {title:"Call Events", field:"call_events", visible: false, download: true, formatter: function (cell, formatterParams, onRendered) {
                     return JSON.stringify(cell.getValue());
-                }}
+            }}
         ],
-        rowFormatter: function(row) {
+        rowFormatter: function (row) {
             //create and style holder elements
             var holderEl = document.createElement("div");
             var tableEl = document.createElement("div");
@@ -156,8 +161,9 @@ function initReports(dataLoadedCallback) {
     return table;
 }
 
-function getMetricsData() {
-    $("#metrics").slideUp(function() {
+function getMetricsData()
+{
+    $("#metrics").slideUp(function () {
         $.getJSON("metric_api.php?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports(), function (data) {
             var actions = ['Volunteer (CALL)', 'Meetings (CALL)', 'Just For Today (CALL)', 'Volunteer (SMS)', 'Meetings (SMS)', 'Just For Today (SMS)'];
             var actions_plots = [1, 2, 3, 19, 20, 21];
@@ -222,7 +228,7 @@ function getMetricsData() {
                 }
             }
 
-            $("#metrics").slideDown(function() {
+            $("#metrics").slideDown(function () {
                 Plotly.newPlot("metrics", datasets, {
                     title: 'Usage Summary',
                     xaxis: {
@@ -238,7 +244,8 @@ function getMetricsData() {
     });
 }
 
-function drawMetricsMap(data) {
+function drawMetricsMap(data)
+{
     if (metrics_map !== null) {
         metrics_map.off();
         metrics_map.remove();
@@ -290,11 +297,13 @@ function drawMetricsMap(data) {
     }
 }
 
-function updateCallRecords() {
+function updateCallRecords()
+{
     Tabulator.prototype.findTable("#cdr-table")[0].setData();
 }
 
-function updateAllReports() {
+function updateAllReports()
+{
     $("#reports").show();
     getMetricsData();
     drawMetricsMap();
@@ -304,45 +313,47 @@ function updateAllReports() {
     $("#volunteers-map-metrics-json").attr("href", "map_metric_api.php?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports() + "&format=14&event_id=1");
 }
 
-function getMetrics(table) {
-    $("#service_body_id").on("change", function(e) {
+function getMetrics(table)
+{
+    $("#service_body_id").on("change", function (e) {
         updateAllReports();
     });
 
-    $("#recursive-reports-switch").on("change", function(e) {
+    $("#recursive-reports-switch").on("change", function (e) {
         updateAllReports();
     });
 
-    $("#refresh-button").on("click", function() {
+    $("#refresh-button").on("click", function () {
         updateAllReports();
     });
 
     getMetricsData();
 }
 
-function volunteerPage() {
-    $(function() {
+function volunteerPage()
+{
+    $(function () {
         if ($('select#service_body_id option').length === 2) {
             $('#service_body_id option:nth-child(2)').prop('selected', true)
             $('#service_body_id').change();
         }
     });
 
-    $("#service_body_id").on("change", function() {
+    $("#service_body_id").on("change", function () {
         addNewVolunteerDialog($(this).val() > 0);
         addGroupVolunteersDialog($(this).val() >= 0);
         clearVolunteerCards();
         if ($(this).val() > 0) {
             var service_body_id = $(this).val();
             spinnerDialog(true, "Retrieving Volunteers...", function () {
-                loadGroups(service_body_id, function() {
+                loadGroups(service_body_id, function () {
                     loadVolunteers(service_body_id, function () {
                         $("#volunteers-download-list-csv").show();
-                        $("#volunteers-download-list-csv").click(function() {
+                        $("#volunteers-download-list-csv").click(function () {
                             document.location.href='volunteers_get.php?service_body_id='+service_body_id+'&fmt=csv';
                         })
                         $("#volunteers-download-list-json").show();
-                        $("#volunteers-download-list-json").click(function() {
+                        $("#volunteers-download-list-json").click(function () {
                             document.location.href='volunteers_get.php?service_body_id='+service_body_id+'&fmt=json';
                         })
                         spinnerDialog(false);
@@ -367,7 +378,8 @@ function volunteerPage() {
     }
 }
 
-function schedulePage() {
+function schedulePage()
+{
     var calendarEl = document.getElementById('calendar');
     calendar = new FullCalendar.Calendar(calendarEl, {
         allDaySlot: false,
@@ -387,7 +399,7 @@ function schedulePage() {
             end: moment().add(7, 'days').endOf('day').format("YYYY-MM-DD")
         },
         eventOrder: ['sequence'],
-        eventAllow: function(dropLocation, draggedEvent) {
+        eventAllow: function (dropLocation, draggedEvent) {
             return moment(dropLocation.start).day() === moment(dropLocation.end).day();
         },
         slotEventOverlap: false,
@@ -401,14 +413,14 @@ function schedulePage() {
 
     calendar.render();
 
-    $(function() {
+    $(function () {
         if ($('select#service_body_id option').length === 2) {
             $('#service_body_id option:nth-child(2)').prop('selected', true)
             $('#service_body_id').change();
         }
     });
 
-    $('select#service_body_id').change(function() {
+    $('select#service_body_id').change(function () {
         if (parseInt($('select#service_body_id').val()) > 0) {
             for (eventSource of calendar.getEventSources()) {
                 eventSource.remove();
@@ -418,11 +430,13 @@ function schedulePage() {
     })
 }
 
-function includeVolunteers() {
+function includeVolunteers()
+{
     includeVolunteer({"volunteer_name": ""});
 }
 
-function saveVolunteers(data_type) {
+function saveVolunteers(data_type)
+{
     $("#save-volunteers").addClass('disabled');
     spinnerDialog(true, "Saving Volunteers...", function () {
         var volunteerCards = $("#volunteerCards").children();
@@ -470,7 +484,8 @@ function saveVolunteers(data_type) {
     });
 }
 
-function saveServiceBodyConfig(service_body_id) {
+function saveServiceBodyConfig(service_body_id)
+{
     var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
     serviceBodyConfiguration.modal('hide');
     spinnerDialog(true, "Saving Service Body Configuration...", function () {
@@ -489,7 +504,7 @@ function saveServiceBodyConfig(service_body_id) {
             '_YAP_CONFIG_V2_',
             0,
             0,
-            function(xhr, status) {
+            function (xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
                     alert.addClass("alert-danger");
@@ -507,7 +522,8 @@ function saveServiceBodyConfig(service_body_id) {
     });
 }
 
-function saveServiceBodyCallHandling(service_body_id) {
+function saveServiceBodyCallHandling(service_body_id)
+{
     var serviceBodyCallHandling = $("#serviceBodyCallHandling_" + service_body_id);
     var urls = [
         $(serviceBodyCallHandling).find("#override_en_US_voicemail_greeting").val(),
@@ -541,7 +557,7 @@ function saveServiceBodyCallHandling(service_body_id) {
             '_YAP_CALL_HANDLING_V2_',
             0,
             0,
-            function(xhr, status) {
+            function (xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
                     alert.addClass("alert-danger");
@@ -559,11 +575,12 @@ function saveServiceBodyCallHandling(service_body_id) {
     });
 }
 
-function saveToAdminApi(service_body_id, data, data_type, parent_id, id, callback) {
+function saveToAdminApi(service_body_id, data, data_type, parent_id, id, callback)
+{
     $.ajax({
         async: false,
         type: "POST",
-        url: "api.php?action=save"
+        url: "../v1/config"
             + "&service_body_id=" + service_body_id
             + "&data_type=" + data_type
             + (parent_id !== null && parent_id !== 0 ? "&parent_id=" + parent_id : "")
@@ -576,7 +593,8 @@ function saveToAdminApi(service_body_id, data, data_type, parent_id, id, callbac
     });
 }
 
-function usersApi(data, action, callback) {
+function usersApi(data, action, callback)
+{
     $.ajax({
         async: false,
         type: "POST",
@@ -589,19 +607,22 @@ function usersApi(data, action, callback) {
     });
 }
 
-function loadFromAdminApi(parent_id, service_body_id, data_type, callback) {
-    $.getJSON("api.php?service_body_id=" + service_body_id
+function loadFromAdminApi(parent_id, service_body_id, data_type, callback)
+{
+    $.getJSON("../v1/config?service_body_id=" + service_body_id
         + "&data_type=" + data_type
-        + (parent_id !== null ? "&parent_id=" + parent_id : ""), function(data) {
-        callback(data)
-    });
+        + (parent_id !== null ? "&parent_id=" + parent_id : ""), function (data) {
+            callback(data)
+        });
 }
 
-function addNewVolunteerDialog(isVisible) {
+function addNewVolunteerDialog(isVisible)
+{
     isVisible ? $("#newVolunteerDialog").show() : $("#newVolunteerDialog").hide();
 }
 
-function addGroupVolunteersDialog(isVisible) {
+function addGroupVolunteersDialog(isVisible)
+{
     if (isVisible) {
         $("#include-group").show();
         $("#manage-groups").show();
@@ -611,12 +632,14 @@ function addGroupVolunteersDialog(isVisible) {
     }
 }
 
-function clearVolunteerCards() {
+function clearVolunteerCards()
+{
     $("#volunteerCards").children().remove()
 }
 
-function loadVolunteers(serviceBodyId, callback) {
-    loadFromAdminApi(null, serviceBodyId, '_YAP_VOLUNTEERS_V2_', function(data) {
+function loadVolunteers(serviceBodyId, callback)
+{
+    loadFromAdminApi(null, serviceBodyId, '_YAP_VOLUNTEERS_V2_', function (data) {
         if (!$.isEmptyObject(data)) {
             for (item of data['data']) {
                 if (item.hasOwnProperty('volunteer_name')) {
@@ -630,8 +653,9 @@ function loadVolunteers(serviceBodyId, callback) {
     });
 }
 
-function loadGroupVolunteers(parent_id, service_body_id, callback) {
-    loadFromAdminApi($("#group_id").val(), service_body_id,'_YAP_GROUP_VOLUNTEERS_V2_', function(data) {
+function loadGroupVolunteers(parent_id, service_body_id, callback)
+{
+    loadFromAdminApi($("#group_id").val(), service_body_id,'_YAP_GROUP_VOLUNTEERS_V2_', function (data) {
         if (!$.isEmptyObject(data)) {
             for (item of data['data']) {
                 includeVolunteer(item);
@@ -641,7 +665,8 @@ function loadGroupVolunteers(parent_id, service_body_id, callback) {
     });
 }
 
-function onGroupServiceBodyChange(callback) {
+function onGroupServiceBodyChange(callback)
+{
     if (groups !== undefined) {
         groups = undefined
         $("#group_id").html("");
@@ -675,7 +700,8 @@ function onGroupServiceBodyChange(callback) {
     });
 }
 
-function loadGroups(service_body_id, callback) {
+function loadGroups(service_body_id, callback)
+{
     if (groups === undefined) {
         $.getJSON("groups_api.php?service_body_id=" + service_body_id, function (data) {
             groups = data;
@@ -686,8 +712,9 @@ function loadGroups(service_body_id, callback) {
     }
 }
 
-function getGroupForId(service_body_id, group_id, callback) {
-    loadGroups(service_body_id, function(data) {
+function getGroupForId(service_body_id, group_id, callback)
+{
+    loadGroups(service_body_id, function (data) {
         for (item of data) {
             if (item['id'] === group_id) {
                 callback(item);
@@ -698,7 +725,8 @@ function getGroupForId(service_body_id, group_id, callback) {
     });
 }
 
-function includeVolunteer(volunteerData) {
+function includeVolunteer(volunteerData)
+{
     var shiftRenderQueue = [];
     var cards = $("#volunteerCards").children();
     var getLastVolunteerCard = 0;
@@ -742,11 +770,13 @@ function includeVolunteer(volunteerData) {
     }
 }
 
-function manageGroups(e) {
+function manageGroups(e)
+{
     location.href='groups.php?service_body_id=' + $("#service_body_id").val();
 }
 
-function addUserHandling(action) {
+function addUserHandling(action)
+{
     var rules = {
         name: {
             minlength: 5,
@@ -777,7 +807,8 @@ function addUserHandling(action) {
     }).form();
 }
 
-function saveUserData(action) {
+function saveUserData(action)
+{
     var userForm = $("#addUserForm");
     var formData = userForm.serializeArray();
     if (formData.getArrayItemByObjectKeyValue("name", "permissions") === undefined) {
@@ -793,14 +824,15 @@ function saveUserData(action) {
 
     $("#addUserModal").modal('hide');
     spinnerDialog(true, "Saving User...", function () {
-        usersApi(dataObj, action,function() {
+        usersApi(dataObj, action,function () {
             spinnerDialog(false);
             location.reload();
         });
     });
 }
 
-function resetUsersValidation() {
+function resetUsersValidation()
+{
     var form = $("#addUserForm")
     if (form.data('validator')) {
         form.validate().destroy();
@@ -809,16 +841,18 @@ function resetUsersValidation() {
     $(".text-danger").removeClass('text-danger');
 }
 
-function showAddUsersModal() {
+function showAddUsersModal()
+{
     resetUsersValidation();
     adminOnlyFields(true, "Add User");
-    $("#usersSaveButton").off('click').on('click', function() {
+    $("#usersSaveButton").off('click').on('click', function () {
         addUserHandling("save");
     });
     $("#addUserModal").modal('show');
 }
 
-function adminOnlyFields(show, title) {
+function adminOnlyFields(show, title)
+{
     if (show) {
         $(".users_username").show();
         $(".users_permissions").show();
@@ -831,7 +865,8 @@ function adminOnlyFields(show, title) {
     $(".users_modal_title").text(title);
 }
 
-function editUser(id, username, name, permissions, service_bodies, type) {
+function editUser(id, username, name, permissions, service_bodies, type)
+{
     resetUsersValidation();
     $("#id").val(id);
     $("#username").val(username);
@@ -848,13 +883,14 @@ function editUser(id, username, name, permissions, service_bodies, type) {
             $("#service_bodies option[value='" + e + "']").prop("selected", true);
         });
     }
-    $("#usersSaveButton").off('click').on('click', function() {
+    $("#usersSaveButton").off('click').on('click', function () {
         addUserHandling(type);
     });
     $("#addUserModal").modal('show');
 }
 
-function deleteUserHandling(id) {
+function deleteUserHandling(id)
+{
     if (confirm("Are you sure you want to delete this user?")) {
         spinnerDialog(true, "Deleting User...", function () {
             usersApi({id: id}, "delete", function () {
@@ -865,7 +901,8 @@ function deleteUserHandling(id) {
     }
 }
 
-function showGroupsModal() {
+function showGroupsModal()
+{
     spinnerDialog(true, "Retrieving Groups...", function () {
         loadGroups($("#service_body_id").val(), function (data) {
             if (!$.isEmptyObject(data)) {
@@ -885,11 +922,13 @@ function showGroupsModal() {
     });
 }
 
-function confirmIncludeGroup(e) {
+function confirmIncludeGroup(e)
+{
     includeGroup({"group_id":$("#selected_group_id").val()});
 }
 
-function includeGroup(groupData) {
+function includeGroup(groupData)
+{
     var shiftRenderQueue = [];
     var cards = $("#volunteerCards").children();
     var getLastVolunteerCard = 0;
@@ -929,11 +968,13 @@ function includeGroup(groupData) {
     })
 }
 
-function removeCard(e) {
+function removeCard(e)
+{
     $(e).closest(".card").remove();
 }
 
-function checkboxStatusToggle(e) {
+function checkboxStatusToggle(e)
+{
     if (!e.checked) {
         $(e).closest(".card").addClass("cardDisabled");
     } else {
@@ -942,7 +983,8 @@ function checkboxStatusToggle(e) {
     $(e).val(e.checked);
 }
 
-function renderShift(volunteerId, shiftInfoObj) {
+function renderShift(volunteerId, shiftInfoObj)
+{
     if (shiftInfoObj !== null) {
         var shiftCardTemplate = $("#shiftCardTemplate").clone();
         var volunter_type = shiftInfoObj["type"] != null ? shiftInfoObj["type"] : "PHONE";
@@ -955,13 +997,14 @@ function renderShift(volunteerId, shiftInfoObj) {
     }
 }
 
-var wrapFunction = function(fn, context, params) {
-    return function() {
+var wrapFunction = function (fn, context, params) {
+    return function () {
         fn.apply(context, params);
     };
 };
 
-function addShift(e) {
+function addShift(e)
+{
     $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
     $("#shiftVolunteerName").html($(e).closest(".volunteerCard").find("#volunteer_name").val());
     $("#selectShiftDialog").attr({
@@ -971,7 +1014,8 @@ function addShift(e) {
     $("#selectShiftDialog").modal("show");
 }
 
-function add7DayShifts(e) {
+function add7DayShifts(e)
+{
     $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
     $("#shiftVolunteerName").html($(e).closest(".volunteerCard").find("#volunteer_name").val());
     $("#selectRepeatShiftDialog").attr({
@@ -981,13 +1025,15 @@ function add7DayShifts(e) {
     $("#selectRepeatShiftDialog").modal("show");
 }
 
-function add24by7Shifts(e) {
+function add24by7Shifts(e)
+{
     $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
     $("#selectTimeZoneDialog").attr("data-volunteerid", $(e).closest(".volunteerCard").attr("id"));
     $("#selectTimeZoneDialog").modal("show");
 }
 
-function selectTimeZoneFor247Shifts(e) {
+function selectTimeZoneFor247Shifts(e)
+{
     var volunteerId = $(e).closest("#selectTimeZoneDialog").attr("data-volunteerid");
     var tz = $(e).closest("#selectTimeZoneDialog").find("#time_zone").val();
     var type = $(e).closest("#selectTimeZoneDialog").find("#shift_type").val();
@@ -1006,7 +1052,8 @@ function selectTimeZoneFor247Shifts(e) {
     $("#selectTimeZoneDialog").modal("hide");
 }
 
-function save7DayShifts(e) {
+function save7DayShifts(e)
+{
     var start_time = $("#start_time_hour").val() + ":" + $("#start_time_minute").val() + " " + $("#start_time_division").val();
     var end_time = $("#end_time_hour").val() + ":" + $("#end_time_minute").val() + " " + $("#end_time_division").val();
     if (Date.parse("01/01/2000 " + start_time) < Date.parse("01/01/2000 " + end_time)) {
@@ -1031,7 +1078,8 @@ function save7DayShifts(e) {
     }
 }
 
-function saveShift(e) {
+function saveShift(e)
+{
     var closestShiftDialog = $(e).closest("#selectShiftDialog");
     var start_time = $(closestShiftDialog).find("#start_time_hour").val() + ":" + $(closestShiftDialog).find("#start_time_minute").val() + " " + $(closestShiftDialog).find("#start_time_division").val();
     var end_time = $(closestShiftDialog).find("#end_time_hour").val() + ":" + $(closestShiftDialog).find("#end_time_minute").val() + " " + $(closestShiftDialog).find("#end_time_division").val();
@@ -1055,26 +1103,30 @@ function saveShift(e) {
     }
 }
 
-function removeShift(e) {
+function removeShift(e)
+{
     $(e).closest(".shiftCard").remove();
 }
 
-function removeAllShifts(e) {
+function removeAllShifts(e)
+{
     $(e).closest(".volunteerCard").find(".shiftCard").remove()
 }
 
-function toggleCardDetails(e) {
+function toggleCardDetails(e)
+{
     var volunteerCard = $(e).closest(".volunteerCard")
     var isCurrentlyShown = volunteerCard.find(".volunteerCardBody").attr("class").indexOf("show") >= 0;
     volunteerCard.find(".volunteerCardBodyToggleButton").html(isCurrentlyShown ? "+" : "-");
     volunteerCard.find(".volunteerCardBody").collapse('toggle');
 }
 
-function openServiceBodyConfigure(service_body_id) {
-    spinnerDialog(true, "Retrieving Service Body Configuration...", function() {
+function openServiceBodyConfigure(service_body_id)
+{
+    spinnerDialog(true, "Retrieving Service Body Configuration...", function () {
         var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
         var serviceBodyFields = $("#serviceBodyConfigurationFields");
-        loadFromAdminApi(null, service_body_id, '_YAP_CONFIG_V2_', function(data) {
+        loadFromAdminApi(null, service_body_id, '_YAP_CONFIG_V2_', function (data) {
             if (!$.isEmptyObject(data)) {
                 clearServiceBodyFields(service_body_id);
                 var dataSet = data['data'][0];
@@ -1086,19 +1138,21 @@ function openServiceBodyConfigure(service_body_id) {
                 }
             }
 
-            spinnerDialog(false, "", function() {
+            spinnerDialog(false, "", function () {
                 serviceBodyConfiguration.modal("show");
             });
         });
     });
 }
 
-function addServiceBodyButtonClick(service_body_id) {
+function addServiceBodyButtonClick(service_body_id)
+{
     var configName = $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyConfigurationFields").val();
     addServiceBodyField(service_body_id, configName);
 }
 
-function addServiceBodyField(service_body_id, configName) {
+function addServiceBodyField(service_body_id, configName)
+{
     if (configName != null) {
         var field = $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyConfigurationFields option[value='" + configName + "']")
         field.attr("disabled", "disabled");
@@ -1106,19 +1160,22 @@ function addServiceBodyField(service_body_id, configName) {
     }
 }
 
-function removeServiceBodyField(service_body_id, configName) {
+function removeServiceBodyField(service_body_id, configName)
+{
     $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyFieldsPlaceholder").find("#serviceBodyField_" + configName).remove();
     $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyConfigurationFields option[value='" + configName + "']").removeAttr("disabled");
 }
 
-function clearServiceBodyFields(service_body_id) {
+function clearServiceBodyFields(service_body_id)
+{
     $("#serviceBodyConfiguration_" + service_body_id).find("#serviceBodyFieldsPlaceholder").html("");
 }
 
-function openServiceBodyCallHandling(service_body_id) {
-    spinnerDialog(true, "Retrieving Service Body Call Handling...", function() {
+function openServiceBodyCallHandling(service_body_id)
+{
+    spinnerDialog(true, "Retrieving Service Body Call Handling...", function () {
         var serviceBodyCallHandling = $("#serviceBodyCallHandling_" + service_body_id);
-        loadFromAdminApi(null, service_body_id, '_YAP_CALL_HANDLING_V2_', function(data) {
+        loadFromAdminApi(null, service_body_id, '_YAP_CALL_HANDLING_V2_', function (data) {
             if (!$.isEmptyObject(data)) {
                 var dataSet = data['data'][0];
                 for (var key in dataSet) {
@@ -1129,7 +1186,7 @@ function openServiceBodyCallHandling(service_body_id) {
                 }
             }
 
-            serviceBodyCallHandling.find("select").change(function() {
+            serviceBodyCallHandling.find("select").change(function () {
                 var trigger = this.id;
                 for (var match of $("#serviceBodyCallHandling_" + service_body_id).find("[data-" + trigger + "]")) {
                     if ($(match).attr("data-" + trigger).split(",").indexOf(this.value) > -1) {
@@ -1147,14 +1204,15 @@ function openServiceBodyCallHandling(service_body_id) {
 
             serviceBodyCallHandling.find("select").change();
 
-            spinnerDialog(false, "", function() {
+            spinnerDialog(false, "", function () {
                 serviceBodyCallHandling.modal("show");
             });
         });
     });
 }
 
-function deleteVoicemail(callsid) {
+function deleteVoicemail(callsid)
+{
     spinnerDialog(true, "Marking voicemail as deleted...", function () {
         $.ajax({
             async: false,
@@ -1165,7 +1223,7 @@ function deleteVoicemail(callsid) {
                 "status": 1,
                 "event_id": 4 // VOICEMAIL
             },
-            complete: function(res) {
+            complete: function (res) {
                 if (res['status'] === 403) {
                     spinnerDialog(false);
                     var alert = $("#voicemail-deleted-alert");
@@ -1184,8 +1242,9 @@ function deleteVoicemail(callsid) {
     return false;
 }
 
-function groupsPage() {
-    $("#group_id").on("change", function() {
+function groupsPage()
+{
+    $("#group_id").on("change", function () {
         addNewVolunteerDialog(parseInt($(this).val()) > 0);
         clearVolunteerCards();
         if (parseInt($(this).val()) > 0) {
@@ -1215,7 +1274,8 @@ function groupsPage() {
     }
 }
 
-function addGroup() {
+function addGroup()
+{
     $("#group_dialog_message").html("");
     $("#groupEditorHeader").html("Add Group");
     $("#group_name").val("");
@@ -1225,7 +1285,8 @@ function addGroup() {
     return false;
 }
 
-function editGroup() {
+function editGroup()
+{
     $("#group_dialog_message").html("");
     $("#groupEditorHeader").html("Edit Group");
     $("#group_name").val($("#group_id option:selected").text());
@@ -1244,7 +1305,8 @@ function editGroup() {
     return false;
 }
 
-function confirmGroup() {
+function confirmGroup()
+{
     if ($("#group_name").val() == "") {
         $("#group_dialog_message").html("A name is required.");
         return false;
@@ -1264,7 +1326,7 @@ function confirmGroup() {
             '_YAP_GROUPS_V2_',
             0,
             $("#groupEditorHeader").text().indexOf("Add") !== 0 ? $("#group_id").val() : 0,
-            function(xhr, status) {
+            function (xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
                     alert.addClass("alert-danger");
@@ -1272,8 +1334,8 @@ function confirmGroup() {
                     $("#addGroupButton").show();
                     spinnerDialog(false);
                 } else {
-                    spinnerDialog(false, null, function() {
-                        onGroupServiceBodyChange(function() {
+                    spinnerDialog(false, null, function () {
+                        onGroupServiceBodyChange(function () {
                             var group_id = xhr.responseJSON["id"];
                             $("#group_id option").removeAttr("selected");
                             $("#group_id option[value='" + group_id + "']").attr("selected", "selected");
@@ -1291,7 +1353,8 @@ function confirmGroup() {
     });
 }
 
-function checkForConfigFile() {
+function checkForConfigFile()
+{
     jQuery.getJSON("../upgrade-advisor.php?status-check", function (data) {
         if (!data['status'] && data['message'] !== null) {
             setErrorMessage(data['message'])
@@ -1301,7 +1364,8 @@ function checkForConfigFile() {
     });
 }
 
-function generateConfig(callback) {
+function generateConfig(callback)
+{
     var bmltRootServer = jQuery("#input_bmlt_root_server").val();
     jQuery.getJSON(bmltRootServer + "/client_interface/jsonp/?switcher=GetServerInfo&callback=?", function (data) {
         if (data == null) {
@@ -1319,7 +1383,7 @@ function generateConfig(callback) {
         }
 
         callback(configHtml);
-    }).fail(function(error) {
+    }).fail(function (error) {
         spinnerDialog(false);
         var alert = $("#wizardAlert");
         alert.html("Root server is incorrect or unavailable.");
@@ -1329,17 +1393,19 @@ function generateConfig(callback) {
     });
 }
 
-function setErrorMessage(message) {
+function setErrorMessage(message)
+{
     jQuery("#config-error-message").html(message);
 }
 
-function initInstaller() {
-    jQuery(function() {
-        jQuery(".wizardForm").on("submit", function(event) {
+function initInstaller()
+{
+    jQuery(function () {
+        jQuery(".wizardForm").on("submit", function (event) {
             event.preventDefault();
-            spinnerDialog(true, "Validating configuration", function() {
-                generateConfig(function(config) {
-                    spinnerDialog(false, '', function() {
+            spinnerDialog(true, "Validating configuration", function () {
+                generateConfig(function (config) {
+                    spinnerDialog(false, '', function () {
                         jQuery("#result").html(config);
                         $("#wizardResultModal").modal('show');
                         checkForConfigFileInterval = setInterval(checkForConfigFile, 3000);
@@ -1347,54 +1413,65 @@ function initInstaller() {
                 });
             });
         });
-        jQuery("#wizardResultModal").on('hidden.bs.modal', function() {
+        jQuery("#wizardResultModal").on('hidden.bs.modal', function () {
             clearInterval(checkForConfigFileInterval);
         });
     });
 }
 
-function openUrl(e, id) {
+function openUrl(e, id)
+{
     window.open($("#" + id).val());
     return false;
 }
 
-function spinnerDialog(show, text, callback) {
+function spinnerDialog(show, text, callback)
+{
     var d = $("#spinnerDialog");
     if (show) {
-        d.on('shown.bs.modal', function() {
+        d.on('shown.bs.modal', function () {
             d.off();
-            if (callback != undefined) callback();
+            if (callback != undefined) {
+                callback();
+            }
         });
         d.find("#spinnerDialogText").text(text);
         d.modal('show');
     } else {
-        d.on('hidden.bs.modal', function() {
+        d.on('hidden.bs.modal', function () {
             d.off();
-            if (callback != undefined) callback();
+            if (callback != undefined) {
+                callback();
+            }
         });
-        setTimeout(function() {
+        setTimeout(function () {
             d.modal('hide');
         }, 500);
     }
 }
 
-function dataEncoder(dataObject) {
+function dataEncoder(dataObject)
+{
     return btoa(JSON.stringify(dataObject));
 }
 
-function dataDecoder(dataString) {
+function dataDecoder(dataString)
+{
     return JSON.parse(atob(dataString));
 }
 
-function dec2bin(dec) {
+function dec2bin(dec)
+{
     return (dec >>> 0).toString(2);
 }
 
-function bin2dec(bin) {
+function bin2dec(bin)
+{
     return parseInt(bin, 2).toString(10);
 }
 
-function bitwiseSplit(x) {
+function bitwiseSplit(x)
+{
     let counter = 0;
     let seeds = [];
     let decimal_bits = [];
@@ -1421,11 +1498,13 @@ function bitwiseSplit(x) {
     return decimal_bits;
 }
 
-function toCurrentTimezone(dateTime) {
+function toCurrentTimezone(dateTime)
+{
     return moment(dateTime, "YYYY-MM-DD hh:mm:ssZ").local().format("YYYY-MM-DD HH:mm:ssZ");
 }
 
-function loadCssFile(cssFilePath) {
+function loadCssFile(cssFilePath)
+{
     $('head').append(
         $('<link>', {
             rel:  'stylesheet',
@@ -1435,12 +1514,13 @@ function loadCssFile(cssFilePath) {
     );
 }
 
-function loadTabulatorTheme() {
-    $(function() {
+function loadTabulatorTheme()
+{
+    $(function () {
         loadCssFile($("body").attr("data-theme") === "dark" ? darkTheme : lightTheme)
     });
 }
 
-Object.prototype.hasOwnProperty = function(property) {
+Object.prototype.hasOwnProperty = function (property) {
     return this[property] !== undefined;
 };
