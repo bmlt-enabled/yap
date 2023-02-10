@@ -2225,4 +2225,3 @@ function getSessionLink($shouldUriEncode = false)
 
     return (isset($session_id) ? ($shouldUriEncode ? "&amp;" : "&") . ("ysk=" . $session_id) : "");
 }
-require_once "legacydata.php";

@@ -11,7 +11,7 @@ class PermissionService
 
     public function __construct()
     {
-        session_start();
+        @session_start();
         $this->serviceBodyRights = isset($_SESSION["auth_service_bodies_rights"]) ? $_SESSION["auth_service_bodies_rights"] : null;
     }
 

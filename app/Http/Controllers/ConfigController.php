@@ -3,22 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Constants\DataType;
-use App\Queries\ConfigQueries;
+use App\Repositories\ConfigRepository;
 use Illuminate\Http\Request;
 
 class ConfigController extends Controller
 {
+    protected ConfigRepository $config;
+
+    public function __construct(ConfigRepository $config)
+    {
+        $this->config = $config;
+    }
+
     public function load(Request $request)
     {
-        if (isset($parent_id) || $request->has('parent_id')) {
-            $data = ConfigQueries::getDbDataByParentId(
-                $parent_id ?? $request->has('parent_id'),
-                $request->query('data_type')
-            );
-        } elseif ($_REQUEST['data_type'] === DataType::YAP_GROUPS_V2 && isset($id)) {
-            $data = ConfigQueries::getDbDataById($id, $request->query('data_type'));
+        if ($request->has('parent_id')) {
+            $data = $this->config->getDbDataByParentId($request->query('parent_id'), $request->query('data_type'));
+        } elseif ($request->query('data_type') === DataType::YAP_GROUPS_V2 && $request->has('id')) {
+            $data = $this->config->getDbDataById($request->query('id'), $request->query('data_type'));
         } else {
-            $data = ConfigQueries::getDbData($request->query('service_body_id'), $request->query('data_type'));
+            $data = $this->config->getDbData($request->query('service_body_id'), $request->query('data_type'));
         }
 
         if (count($data) > 0) {
@@ -38,19 +42,19 @@ class ConfigController extends Controller
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
         $data = $request->getContent();
 
-        if ($request->query('data_type') === DataType::YAP_GROUPS_V2 &&
-            $request->has('id') && intval($request->query('id')) > 0) {
-            ConfigQueries::adminPersistDbConfigById($request->query('id'), $data);
-            $request->query('id');
+        if ($request->get('data_type') === DataType::YAP_GROUPS_V2 &&
+            $request->has('id') && intval($request->get('id')) > 0) {
+            $this->config->adminPersistDbConfigById($request->get('id'), $data);
+            $request->get('id');
         } else {
-            ConfigQueries::adminPersistDbConfig(
-                $request->query('service_body_id'),
+            $this->config->adminPersistDbConfig(
+                $request->get('service_body_id'),
                 $data,
-                $request->query('data_type'),
-                $request->has('parent_id') ? $request->query('parent_id') : "0"
+                $request->get('data_type'),
+                $request->has('parent_id') ? $request->get('parent_id') : "0"
             );
         }
 
-        return $this->load($request);
+        return response("");
     }
 }

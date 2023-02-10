@@ -1,12 +1,12 @@
 <?php
-namespace App\Queries;
+namespace App\Repositories;
 
 use App\Constants\DataType;
 use Illuminate\Support\Facades\DB;
 
-class ConfigQueries
+class ConfigRepository
 {
-    public static function getDbDataByParentId($parent_id, $data_type)
+    public function getDbDataByParentId($parent_id, $data_type)
     {
         return DB::select(
             'SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `parent_id`= ? AND `data_type`= ?',
@@ -14,7 +14,7 @@ class ConfigQueries
         );
     }
 
-    public static function getDbDataById($id, $data_type)
+    public function getDbDataById($id, $data_type)
     {
         return DB::select(
             'SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `id`=? AND `data_type`=?',
@@ -22,7 +22,7 @@ class ConfigQueries
         );
     }
 
-    public static function getDbData($service_body_id, $data_type)
+    public function getDbData($service_body_id, $data_type)
     {
         return DB::select(
             "SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `service_body_id`=? AND `data_type`=?",
@@ -30,18 +30,18 @@ class ConfigQueries
         );
     }
 
-    public static function adminPersistDbConfigById($id, $data)
+    public function adminPersistDbConfigById($id, $data)
     {
         return DB::update("UPDATE `config` SET `data`=? WHERE `id`=?", [
             $data, $id
         ]);
     }
 
-    public static function adminPersistDbConfig($service_body_id, $data, $data_type, $parent_id = 0)
+    public function adminPersistDbConfig($service_body_id, $data, $data_type, $parent_id = 0)
     {
         $current_data_check = (isset($parent_id) && $parent_id > 0
-            ? ConfigQueries::getDbDataByParentId($parent_id, $data_type)
-            : ConfigQueries::getDbData($service_body_id, $data_type));
+            ? $this->getDbDataByParentId($parent_id, $data_type)
+            : $this->getDbData($service_body_id, $data_type));
 
         if (count($current_data_check) == 0 || $data_type == DataType::YAP_GROUPS_V2) {
             $parent_id = $parent_id == 0 ? null : $parent_id;
