@@ -9,7 +9,7 @@
     <icon>https://yapdocs.com/img/favicon.ico</icon>
     <entry>
         <title type="html"><![CDATA[Merging Yap Servers]]></title>
-        <id>merging-yap-post</id>
+        <id>https://yapdocs.com/blog/merging-yap-post</id>
         <link href="https://yapdocs.com/blog/merging-yap-post"/>
         <updated>2021-08-01T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[Since Yap 3.0.0 (released in March 2019), it’s been possible to use a single Yap server with multiple Twilio accounts.  What this means is that a service body can handle the overhead of server management while another service body retains the management of phone numbers and billing.]]></summary>
@@ -22,7 +22,7 @@
     </entry>
     <entry>
         <title type="html"><![CDATA[Excluding a custom format from a Yap query]]></title>
-        <id>excluding-format-post</id>
+        <id>https://yapdocs.com/blog/excluding-format-post</id>
         <link href="https://yapdocs.com/blog/excluding-format-post"/>
         <updated>2019-05-28T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[It’s possible to exclude a result from Yap results by using a custom format. For example say you made a Temporary Closure format that had an ID of 2069. You could set in your config.php a custom query, which would exclude those in the response.]]></summary>
