@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@bmlt-enabled/croutonjs": "^3.15.1",
-    "@fullcalendar/bootstrap": "^4.4.2",
+    "@fullcalendar/bootstrap": "^5.11.4",
     "@fullcalendar/core": "^4.1.0",
     "@fullcalendar/daygrid": "^4.0.1",
     "@fullcalendar/interaction": "^4.0.1",

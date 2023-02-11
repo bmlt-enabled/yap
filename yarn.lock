@@ -890,10 +890,13 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.5.tgz#9283c9ce5b289a3c4f61c12757469e59377f81f3"
   integrity sha512-6nFkfkmSeV/rqSaS4oWHgmpnYw194f6hmWF5is6b0J1naJZoiD0NTc9AiUwPHvWsowkjuHErCZT1wa0jg+BLIA==
 
-"@fullcalendar/bootstrap@^4.4.2":
-  version "4.4.2"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/bootstrap/-/bootstrap-4.4.2.tgz#b396aa39fd2e49c1bfb68deb677df5a5544bb924"
-  integrity sha512-zxtQvpZqr7zeBCfszo/i1e4zCvGwLh2zOp8J6Wxw5s73HsB1zuftWop7sPO+qhRrhX5MdM9i/wr8/nNY8BZSmw==
+"@fullcalendar/bootstrap@^5.11.4":
+  version "5.11.4"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/bootstrap/-/bootstrap-5.11.4.tgz#8870915e5f4dd3fedd95c83bf14fd1a1f8d3d34f"
+  integrity sha512-IfBtsixKtDyludqxtiYtzlQ6Ozmaipovgl1Fz7EhjUDsm3wZ+So7YVu4yWSJL3DnFB40YjsyP8nqLTG+qPNIaA==
+  dependencies:
+    "@fullcalendar/common" "~5.11.4"
+    tslib "^2.1.0"
 
 "@fullcalendar/common@~5.11.4":
   version "5.11.4"
