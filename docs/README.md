@@ -26,4 +26,4 @@ This command starts a local development server and opens up a browser window. Mo
 
 ## Deployment
 
-The website is hosted as a github page and is deployed upon merges to master.
+The website is hosted as a github page and is deployed upon merges to `main`.
