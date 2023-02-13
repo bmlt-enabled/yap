@@ -2077,7 +2077,7 @@ function get_reading($reading = ReadingType::JFT, $sms = false)
     $stripped_results = strip_tags($result);
     $without_tabs     = str_replace("\t", "", $stripped_results);
     $trim_results     = trim($without_tabs);
-    if ($sms == true) {
+    if ($sms) {
         $without_htmlentities = html_entity_decode($trim_results);
         $without_extranewlines = preg_replace("/[$preg_search_lang]+/", "$preg_replace_lang", $without_htmlentities);
         $message = sms_chunk_split($without_extranewlines);

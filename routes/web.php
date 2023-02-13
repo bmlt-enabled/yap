@@ -76,5 +76,7 @@ Route::get("/helpline-answer-response{ext}", 'App\Http\Controllers\CallFlowContr
     ->where('ext', $ext);
 Route::get("/helpline-outdial-response{ext}", 'App\Http\Controllers\CallFlowController@helplineOutdialResponse')
     ->where('ext', $ext);
+Route::get("/sms-gateway{ext}", 'App\Http\Controllers\CallFlowController@smsGateway')
+    ->where('ext', $ext);
 Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])
     ->where('all', '^(?!api).*$');
