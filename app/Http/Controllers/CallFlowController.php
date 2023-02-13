@@ -11,6 +11,7 @@ use App\Models\RecordType;
 use CallRole;
 use Exception;
 use LocationSearchMethod;
+use ReadingType;
 use SpecialPhoneNumber;
 use Twilio\Rest\Voice;
 use Twilio\TwiML\VoiceResponse;
@@ -898,6 +899,65 @@ class CallFlowController extends Controller
         } elseif ($locationSearchMethod == LocationSearchMethod::DTMF) {
             $twiml->redirect("zip-input.php?SearchType=".$request->query('SearchType')."&InputMethod=".LocationSearchMethod::DTMF)
             ->setMethod("GET");
+        }
+
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
+
+    public function smsGateway(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
+
+        $callRecord = new CallRecord();
+        $callRecord->callSid = $request->query('SmsSid');
+        $callRecord->to_number = $request->query('To');
+        $callRecord->from_number = $request->query('From');
+        $callRecord->duration = 0;
+        $callRecord->start_time = date("Y-m-d H:i:s");
+        $callRecord->end_time = date("Y-m-d H:i:s");
+        $callRecord->type = RecordType::SMS;
+        $callRecord->payload = json_encode($_REQUEST);
+
+        insertCallRecord($callRecord);
+
+        checkSMSBlackhole();
+
+        $address = $request->get('Body');
+        if (str_exists($address, ',')) {
+            $coordinates = getCoordinatesForAddress($address);
+        } else {
+            $coordinates = getCoordinatesForAddress($address . "," . getProvince());
+        }
+
+        $twiml = new VoiceResponse();
+        $sms_helpline_keyword = setting("sms_helpline_keyword");
+        if (str_exists(strtoupper($address), strtoupper($sms_helpline_keyword))) {
+            if (strlen(trim(str_replace(strtoupper($sms_helpline_keyword), "", strtoupper($address)))) > 0) {
+                $twiml->redirect("helpline-sms.php?OriginalCallerId=" . $request->get("From") . "&To=" . $request->get("To") . "&Latitude=" . $coordinates->latitude . "&Longitude=" . $coordinates->longitude)
+                    ->setMethod("GET");
+            } else {
+                $message = word('please_send_a_message_formatting_as') . " " . $sms_helpline_keyword . ", " . word('followed_by_your_location') . " " . word('for') . " " .  word('someone_to_talk_to');
+                $GLOBALS['twilioClient']->messages->create($request->get("From"), array("from" => $request->get("To"), "body" => $message));
+            }
+        } elseif (json_decode(setting('jft_option')) && str_exists(strtoupper($address), strtoupper('jft'))) {
+            $reading_chunks = get_reading(ReadingType::JFT, true);
+            for ($i = 0; $i < count($reading_chunks); $i++) {
+                $GLOBALS['twilioClient']->messages->create($request->get("From"), array("from" => $request->get("To"), "body" => $reading_chunks[$i]));
+            }
+        } elseif (json_decode(setting('spad_option')) && str_exists(strtoupper($address), strtoupper('spad'))) {
+            $reading_chunks = get_reading(ReadingType::SPAD, true);
+            for ($i = 0; $i < count($reading_chunks); $i++) {
+                $GLOBALS['twilioClient']->messages->create($request->get("From"), array("from" => $request->get("To"), "body" => $reading_chunks[$i]));
+            }
+        } else {
+            insertCallEventRecord(EventId::MEETING_SEARCH_SMS);
+            insertCallEventRecord(
+                EventId::MEETING_SEARCH_LOCATION_GATHERED,
+                (object)['gather' => $address, 'coordinates' => isset($coordinates) ? $coordinates : null]
+            );
+            $twiml->redirect("meeting-search.php?SearchType=" . getDigitForAction('digit_map_search_type', SearchType::VOLUNTEERS) . "&Latitude=" . $coordinates->latitude . "&Longitude=" . $coordinates->longitude)
+                ->setMethod("GET");
         }
 
         return response($twiml)->header("Content-Type", "text/xml");
