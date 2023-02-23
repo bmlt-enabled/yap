@@ -60,7 +60,9 @@ Route::get("/province-lookup-list-response{ext}", 'App\Http\Controllers\CallFlow
     ->where('ext', $ext);
 Route::get("/status{ext}", 'App\Http\Controllers\CallFlowController@statusCallback')
     ->where('ext', $ext);
-Route::get("/voicemail{ext}", 'App\Http\Controllers\CallFlowController@voicemail')
+Route::get("/voicemail-complete{ext}", 'App\Http\Controllers\VoicemailController@complete')
+    ->where('ext', $ext);
+Route::get("/voicemail{ext}", 'App\Http\Controllers\VoicemailController@start')
     ->where('ext', $ext);
 Route::get("/post-call-action{ext}", 'App\Http\Controllers\CallFlowController@postCallAction')
     ->where('ext', $ext);

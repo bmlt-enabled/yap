@@ -596,36 +596,6 @@ class CallFlowController extends Controller
         return response($twiml)->header("Content-Type", "text/xml");
     }
 
-    public function voicemail(Request $request)
-    {
-        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
-        getServiceBodyCallHandling(setting("service_body_id"));
-        $promptset_name = str_replace("-", "_", getWordLanguage()) . "_voicemail_greeting";
-
-        $twiml = new VoiceResponse();
-        if (has_setting($promptset_name)) {
-            $twiml->play(setting($promptset_name));
-        } else {
-            $say = word("please_leave_a_message_after_the_tone").", ".word("hang_up_when_finished");
-            $twiml->say($say)
-                ->setVoice(voice())
-                ->setLanguage(setting("language"));
-        }
-
-        $recordingStatusCallback = "voicemail-complete.php?service_body_id=".setting("service_body_id").
-            "&caller_id=".urlencode($request->query("caller_id"))."&caller_number=".
-            urlencode($request->query("Caller")).getSessionLink(true);
-
-        $twiml->record()
-            ->setPlayBeep(true)
-            ->setMaxLength(120)
-            ->setTimeout(15)
-            ->setRecordingStatusCallback($recordingStatusCallback)
-            ->setRecordingStatusCallbackMethod("GET");
-
-        return response($twiml)->header("Content-Type", "text/xml");
-    }
-
     public function languageSelector(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
