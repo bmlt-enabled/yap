@@ -101,7 +101,7 @@ class HelplineController extends Controller
             } elseif ($serviceBodyCallHandling->volunteer_routing_redirect
                 && $serviceBodyCallHandling->volunteer_routing_redirect_id > 0) {
                 $calculated_service_body_id = $serviceBodyCallHandling->volunteer_routing_redirect_id;
-                $serviceBodyCallHandling = getServiceBodyCallHandling($calculated_service_body_id);
+                $serviceBodyCallHandling = $this->config->getCallHandling($calculated_service_body_id);
             } else {
                 $calculated_service_body_id = $service_body_id;
             }
