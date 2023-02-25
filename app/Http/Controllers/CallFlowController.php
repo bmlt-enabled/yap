@@ -14,6 +14,7 @@ use LocationSearchMethod;
 use ReadingType;
 use SpecialPhoneNumber;
 use Twilio\Rest\Voice;
+use Twilio\TwiML\Messaging\Message;
 use Twilio\TwiML\VoiceResponse;
 use Illuminate\Http\Request;
 use VolunteerRoutingParameters;
@@ -928,6 +929,226 @@ class CallFlowController extends Controller
             );
             $twiml->redirect("meeting-search.php?SearchType=" . getDigitForAction('digit_map_search_type', SearchType::VOLUNTEERS) . "&Latitude=" . $coordinates->latitude . "&Longitude=" . $coordinates->longitude)
                 ->setMethod("GET");
+        }
+
+        return response($twiml)->header("Content-Type", "text/xml");
+    }
+
+    public function meetingSearch(Request $request)
+    {
+        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
+        require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
+        $twiml = new VoiceResponse();
+
+        $latitude = $request->has("Latitude") ? $request->get('Latitude') : null;
+        $longitude = $request->has("Longitude") ? $request->get('Longitude') : null;
+
+        try {
+            $suppress_voice_results = has_setting('suppress_voice_results') && json_decode(setting('suppress_voice_results'));
+            $sms_disable = has_setting('sms_disable') && json_decode(setting('sms_disable'));
+            $results_count = has_setting('result_count_max') ? intval(setting('result_count_max')) : 5;
+            $meeting_results = getMeetings($latitude, $longitude, $results_count, null, null);
+            $results_count_num = count($meeting_results->filteredList) < $results_count ? count($meeting_results->filteredList) : $results_count;
+        } catch (Exception $e) {
+            $twiml->redirect("fallback.php")
+                ->setMethod("GET");
+            return response($twiml)->header("Content-Type", "text/xml");
+        }
+
+        $filtered_list = $meeting_results->filteredList;
+        $sms_messages = [];
+
+        $text_space = " ";
+        $comma_space = ", ";
+        $message = "";
+
+        $isFromSmsGateway = $request->has("SmsSid");
+        if (!$isFromSmsGateway) {
+            if ($meeting_results->originalListCount == 0) {
+                $twiml->say(word('no_results_found') . "... " .
+                    word('you_might_have_invalid_entry') . "... " . word('try_again'))
+                    ->setVoice(voice())
+                    ->setLanguage(setting("language"));
+                $twiml->redirect("input-method.php?Digits=2")
+                    ->setMethod("GET");
+            } elseif (count($filtered_list) == 0) {
+                $twiml->say(word('there_are_no_other_meetings_for_today') . ".... " . word('try_again'))
+                    ->setVoice(voice())
+                    ->setLanguage(setting("language"));
+                $twiml->redirect("input-method.php?Digits=2")
+                    ->setMethod("GET");
+            } elseif ($suppress_voice_results) {
+                $twiml->say($results_count_num  . " " . word('meetings_have_been_texted'))
+                    ->setVoice(voice())
+                    ->setLanguage(setting("language"));
+            } else {
+                $twiml->say(word('meeting_information_found_listing_the_top') . " "
+                    . $results_count_num . " " . word('results'))
+                    ->setVoice(voice())
+                    ->setLanguage(setting("language"));
+            }
+        } else {
+            if ($meeting_results->originalListCount == 0) {
+            } elseif (count($filtered_list) == 0) {
+            }
+        }
+
+        $results_counter = 0;
+        for ($i = 0; $i < count($filtered_list); $i++) {
+            $results = getResultsString($filtered_list[$i]);
+
+            if (!$isFromSmsGateway && !$suppress_voice_results) {
+                $twiml->pause()->setLength(1);
+                $twiml->say(word('number') . " " . ($results_counter + 1))
+                    ->setVoice(voice())
+                    ->setLanguage(setting("language"));
+                $twiml->say($results['meeting_name'])
+                    ->setVoice(voice())
+                    ->setLanguage(setting("language"));
+                $twiml->pause()->setLength(1);
+                $twiml->say(word('starts_at') . " " . $results['timestamp'])
+                    ->setVoice(voice())
+                    ->setLanguage(setting("language"));
+
+                if (has_setting('include_format_details') && count(setting('include_format_details')) > 0) {
+                    for ($fd = 0; $fd < count($results['format_details']); $fd++) {
+                        $twiml->pause()->setLength(1);
+                        $twiml->say(word('number') . " " . $results['format_details'][$fd]->description_string)
+                            ->setVoice(voice())
+                            ->setLanguage(setting("language"));
+                    }
+                }
+
+                for ($ll = 0; $ll < count($results['location']); $ll++) {
+                    $twiml->pause()->setLength(1);
+                    $twiml->say($results['location'][$ll])
+                        ->setVoice(voice())
+                        ->setLanguage(setting("language"));
+                }
+
+                if (has_setting("say_links") && json_decode(setting("say_links"))) {
+                    for ($fl = 0; $fl < count($results['links']); $fl++) {
+                        $twiml->pause()->setLength(1);
+                        $twiml->say($results['links'][$fl])
+                            ->setVoice(voice())
+                            ->setLanguage(setting("language"));
+                    }
+                }
+
+                for ($vmai = 0; $vmai < count($results['virtual_meeting_additional_info']); $vmai++) {
+                    $twiml->pause()->setLength(1);
+                    $twiml->say($results['virtual_meeting_additional_info'][$vmai])
+                        ->setVoice(voice())
+                        ->setLanguage(setting("language"));
+                }
+
+                if ($request->has("Debug")) {
+                    $twiml->say(json_encode($filtered_list[$i]))
+                        ->setVoice(voice())
+                        ->setLanguage(setting("language"));
+                }
+            }
+
+            $results_counter++;
+            if ($results_counter == $results_count) {
+                break;
+            }
+        }
+
+        if (!$sms_disable && has_setting('sms_summary_page') && json_decode(setting('sms_summary_page'))) {
+            $voice_url = "https://" . $request->server('HTTP_HOST') . $request->server('PHP_SELF');
+            if (strpos(basename($voice_url), ".php")) {
+                $webhook_url = substr($voice_url, 0, strrpos($voice_url, "/"));
+            } elseif (strpos($voice_url, "?")) {
+                $webhook_url = substr($voice_url, 0, strrpos($voice_url, "?"));
+            } else {
+                $webhook_url = $voice_url;
+            }
+
+            $message = sprintf("Meeting Results, click here: %s/msr/%s/%s", $webhook_url, $latitude, $longitude);
+
+            if (json_decode(setting("sms_ask")) && !$isFromSmsGateway) {
+                array_push($sms_messages, $message);
+            } else {
+                sendSms($message);
+            }
+        } elseif (!$sms_disable) {
+            $results_counter = 0;
+            for ($i = 0; $i < count($filtered_list); $i++) {
+                $results = getResultsString($filtered_list[$i]);
+                $location_line = implode(", ", $results['location']);
+                $message = $results['meeting_name'] . $text_space . $results['timestamp'] . $comma_space . $location_line;
+
+                if (strlen($results['distance_details']) > 0) {
+                    $message .= " " . $results['distance_details'];
+                }
+
+                foreach ($results['format_details'] as $format_detail) {
+                    $message .= "\n" . $format_detail->description_string;
+                }
+
+                foreach ($results['location_links'] as $location_link) {
+                    $message .= " " . $location_link;
+                }
+
+                foreach ($results['links'] as $link) {
+                    $message .= "\n" . $link;
+                }
+
+                foreach ($results['virtual_meeting_additional_info'] as $additional_info) {
+                    $message .= "\n" . $additional_info;
+                }
+
+                if (json_decode(setting("sms_combine")) || (json_decode(setting("sms_ask")) && !$isFromSmsGateway)) {
+                    array_push($sms_messages, $message);
+                } else {
+                    sendSms($message);
+                }
+
+                $results_counter++;
+                if ($results_counter == $results_count) {
+                    break;
+                }
+            }
+
+            if (json_decode(setting("sms_combine")) && !json_decode(setting("sms_ask"))) {
+                sendSms(implode("\n\n", $sms_messages));
+            }
+        }
+
+        if (!$isFromSmsGateway && count($filtered_list) > 0) {
+            $twiml->pause()->setLength(2);
+            if (!$sms_disable && !$suppress_voice_results && setting("sms_ask") && count($sms_messages) > 0) {
+                $gather = $twiml->gather()
+                    ->setNumDigits(1)
+                    ->setTimeout(10)
+                    ->setSpeechTimeout("auto")
+                    ->setInput(getInputType())
+                    ->setAction("post-call-action.php?Payload=" . urlencode(json_encode($sms_messages)))
+                    ->setMethod("GET");
+                $gather->say(getPressWord() . " " . word("one") . " " . word('if_you_would_like_these_results_texted_to_you'))
+                    ->setVoice(voice())
+                    ->setLanguage(setting("language"));
+                if (json_decode(setting('infinite_searching'))) {
+                    $gather->say(getPressWord() . " " . word("two") . " " . word('if_you_would_like_to_search_again') . "..." . getPressWord() . " " . word("three") . " " . word('if_you_would_like_to_do_both'))
+                        ->setVoice(voice())
+                        ->setLanguage(setting("language"));
+                }
+            } elseif (json_decode(setting('infinite_searching'))) {
+                $gather = $twiml->gather()
+                    ->setNumDigits(1)
+                    ->setTimeout(10)
+                    ->setSpeechTimeout("auto")
+                    ->setAction("post-call-action.php")
+                    ->setMethod("GET");
+                $gather->say(getPressWord() . " " . word("two") . " " . word('if_you_would_like_to_search_again'))
+                    ->setVoice(voice())
+                    ->setLanguage(setting("language"));
+            }
+
+            $twiml->say(word('thank_you_for_calling_goodbye'))
+                ->setVoice(voice())
+                ->setLanguage(setting("language"));
         }
 
         return response($twiml)->header("Content-Type", "text/xml");
