@@ -82,7 +82,7 @@ Route::get("/sms-gateway{ext}", 'App\Http\Controllers\CallFlowController@smsGate
     ->where('ext', $ext);
 Route::get("/meeting-search{ext}", 'App\Http\Controllers\CallFlowController@meetingSearch')
     ->where('ext', $ext);
-Route::get("/helpline-search{ext}", 'App\Http\Controllers\CallFlowController@helplineSearch')
+Route::get("/helpline-search{ext}", 'App\Http\Controllers\HelplineController@search')
     ->where('ext', $ext);
 Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])
     ->where('all', '^(?!api).*$');
