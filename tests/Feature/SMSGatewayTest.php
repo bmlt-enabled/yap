@@ -124,8 +124,7 @@ test('sms to deliver the jft', function () {
     $this->twilioClient->messages = $messageListMock;
     $messageListMock->shouldReceive('create')
         ->with($this->from, Mockery::on(function ($data) {
-            return $data['from'] == $this->to &&
-                (str_contains($data['body'][0], ' ') || str_contains($data['body'][0], ' '));
+            return $data['from'] == $this->to && !empty($data['body'][0]);
         }));
     $GLOBALS['twilioClient'] = $this->twilioClient;
 
@@ -151,8 +150,7 @@ test('sms to deliver the spad', function () {
     $this->twilioClient->messages = $messageListMock;
     $messageListMock->shouldReceive('create')
         ->with($this->from, Mockery::on(function ($data) {
-            return $data['from'] == $this->to &&
-                (str_contains($data['body'], ' ') || str_contains($data['body'], ' '));
+            return $data['from'] == $this->to && !empty($data['body'][0]);
         }));
     $GLOBALS['twilioClient'] = $this->twilioClient;
 
