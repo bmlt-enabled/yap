@@ -135,5 +135,3 @@ test('the caller hung up before the call was answered', function () {
             '</Response>'
         ], false);
 });
-
-

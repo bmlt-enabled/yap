@@ -37,7 +37,7 @@ test('noop', function () {
         ->with(Mockery::on(function ($data) {
             return $data['method'] == "GET" && $data['url'] == $this->voicemail_url;
         }))->once();
-    $this->twilioClient->shouldReceive('calls')->with($master_callsid)->andReturn($callContextMock);
+    $this->twilioClient->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
 
     $this->twilioClient->calls = $callContextMock;
     $GLOBALS['twilioClient'] = $this->twilioClient;
