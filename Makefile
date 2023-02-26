@@ -48,3 +48,6 @@ cache-clear:
 	php artisan view:clear
 
 deploy: bundle-deps bundle
+
+swagger:
+	php artisan l5-swagger:generate

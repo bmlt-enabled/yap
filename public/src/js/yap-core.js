@@ -580,8 +580,8 @@ function saveToAdminApi(service_body_id, data, data_type, parent_id, id, callbac
     $.ajax({
         async: false,
         type: "POST",
-        url: "../v1/config"
-            + "&service_body_id=" + service_body_id
+        url: "../api/v1/config"
+            + "?service_body_id=" + service_body_id
             + "&data_type=" + data_type
             + (parent_id !== null && parent_id !== 0 ? "&parent_id=" + parent_id : "")
             + (id !== null && id !== 0 ? "&id=" + id : ""),
@@ -609,7 +609,7 @@ function usersApi(data, action, callback)
 
 function loadFromAdminApi(parent_id, service_body_id, data_type, callback)
 {
-    $.getJSON("../v1/config?service_body_id=" + service_body_id
+    $.getJSON("../api/v1/config?service_body_id=" + service_body_id
         + "&data_type=" + data_type
         + (parent_id !== null ? "&parent_id=" + parent_id : ""), function (data) {
             callback(data)
@@ -1217,7 +1217,7 @@ function deleteVoicemail(callsid)
         $.ajax({
             async: false,
             type: "POST",
-            url: "../v1/events/status",
+            url: "../api/v1/events/status",
             data: {
                 "callsid": callsid,
                 "status": 1,

@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Constants\DataType;
+use App\Http\Controllers\Controller;
 use App\Repositories\ConfigRepository;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ConfigController extends Controller
 {
@@ -15,7 +17,23 @@ class ConfigController extends Controller
         $this->config = $config;
     }
 
-    public function load(Request $request)
+    /**
+     * @OA\Get(
+     * path="/api/v1/config",
+     * operationId="Config",
+     * tags={"Config"},
+     * summary="Get Configuration",
+     * description="Get Configuration",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Data Returned",
+     *          @OA\JsonContent()
+     *       ),
+     *      @OA\Response(response=400, description="Bad request"),
+     *      @OA\Response(response=404, description="Resource Not Found"),
+     * )
+     */
+    public function index(Request $request)
     {
         if ($request->has('parent_id')) {
             $data = $this->config->getDbDataByParentId($request->query('parent_id'), $request->query('data_type'));
@@ -37,9 +55,8 @@ class ConfigController extends Controller
         }
     }
 
-    public function save(Request $request)
+    public function store(Request $request): Response
     {
-        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
         $data = $request->getContent();
 
         if ($request->get('data_type') === DataType::YAP_GROUPS_V2 &&
