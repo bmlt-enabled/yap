@@ -55,7 +55,7 @@ test('noop', function () {
         ->assertHeader("Content-Type", "application/json");
 });
 
-test('?1', function () {
+test('do nothing', function () {
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
         '44',
