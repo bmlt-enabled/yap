@@ -1,8 +1,20 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\V1\Admin\SwaggerController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+// TODO: implement auth later
+Route::group([
+    'prefix' => 'v1',
+    'as' => 'api.',
+    'namespace' => 'App\Http\Controllers\Api\V1\Admin',
+    //'middleware' => ['auth:api']
+], function () {
+    Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
+    Route::resource('config', 'ConfigController')->only([
+        'index', 'store'
+    ]);
+    Route::resource('events/status', 'EventStatusController')->only([
+        'index', 'store'
+    ]);
 });

@@ -1,0 +1,35 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Yap API",
+        "version": "0.1"
+    },
+    "paths": {
+        "/api/v1/config": {
+            "get": {
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get Configuration",
+                "description": "Get Configuration",
+                "operationId": "Config",
+                "responses": {
+                    "200": {
+                        "description": "Data Returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        }
+    }
+}

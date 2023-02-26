@@ -26,7 +26,7 @@ test('get config', function () {
     ]]);
     app()->instance(ConfigRepository::class, $repository);
 
-    $response = $this->call('GET', '/v1/config', [
+    $response = $this->call('GET', '/api/v1/config', [
         "service_body_id" => "44",
         "data_type" => DataType::YAP_CONFIG_V2
     ]);
@@ -46,7 +46,7 @@ test('get groups', function () {
     ]]);
     app()->instance(ConfigRepository::class, $repository);
 
-    $response = $this->call('GET', '/v1/config', [
+    $response = $this->call('GET', '/api/v1/config', [
         "id" => '200',
         "data_type" => DataType::YAP_GROUPS_V2
     ]);
@@ -66,7 +66,7 @@ test('get by parent id', function () {
     ]]);
     app()->instance(ConfigRepository::class, $repository);
 
-    $response = $this->call('GET', '/v1/config', [
+    $response = $this->call('GET', '/api/v1/config', [
         "parent_id" => '43',
         "data_type" => DataType::YAP_CONFIG_V2
     ]);
@@ -86,7 +86,7 @@ test('save group', function () {
     ]]);
     app()->instance(ConfigRepository::class, $repository);
 
-    $response = $this->call('POST', '/v1/config', [
+    $response = $this->call('POST', '/api/v1/config', [
         "id" => '200',
         "data_type" => DataType::YAP_GROUPS_V2
     ]);
@@ -108,7 +108,7 @@ test('save config', function () {
     ]]);
     app()->instance(ConfigRepository::class, $repository);
 
-    $response = $this->call('POST', '/v1/config', [
+    $response = $this->call('POST', '/api/v1/config', [
         "service_body_id" => '44',
         "data_type" => DataType::YAP_CONFIG_V2
     ]);
@@ -130,7 +130,7 @@ test('save config with parent id', function () {
     ]]);
     app()->instance(ConfigRepository::class, $repository);
 
-    $response = $this->call('POST', '/v1/config', [
+    $response = $this->call('POST', '/api/v1/config', [
         "service_body_id" => '44',
         "data_type" => DataType::YAP_CONFIG_V2,
         "parent_id" => '43'

@@ -19,8 +19,6 @@ class LegacyController extends Controller
             $content_type = 'application/json';
         } elseif (str_starts_with($request->path(), 'admin')) {
             $content_type = 'text/html';
-        } else {
-            $content_type = 'text/xml';
         }
 
         return response()->view('legacy', ['includePath' => $path])->header('content-Type', $content_type);

@@ -30,3 +30,10 @@ For setup instructions and general documentation please visit [https://yap.bmlt.
 Currently we are in the process of doing a major overhaul of the codebase, by migrating all of the legacy PHP to a more Laravel-like structure.  This will improve the stability and maintainability.  Also as part of this change, we are making the code more testable which will help us track code paths more effectively.  We also plan to redo the frontend part of it migrating from a Bootstrap/Jquery structure to React.
 
 The current status is tht all the non-admin PHP has been migrated to controllers.  The next step will be to migrate the admin components.  Once this is completed, there will be some other include type files that need to be migrated, namely functions.php which is a general location for all php functions in the legacy structure.  Once this is completed, we will refactor the frontend by building a new React application to consume the rebuilt APIs.  Once this is all completed, we would cut a version (either 4.3.0 or 5.0.0, uncertain right now).
+
+# API Docs (WIP)
+
+This only works locally right now.
+
+1. Run `make swagger`.
+2. Browse to `/api/documentation`
