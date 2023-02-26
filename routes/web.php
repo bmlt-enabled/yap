@@ -9,6 +9,8 @@ Route::get("/admin/auth/rights", 'App\Http\Controllers\AuthController@rights');
 Route::get("/admin/auth/logout", 'App\Http\Controllers\AuthController@logout');
 Route::get("/admin/auth/timeout", 'App\Http\Controllers\AuthController@timeout');
 Route::get("/admin/auth/invalid", 'App\Http\Controllers\AuthController@invalid');
+Route::get("/adminv2{page}", 'App\Http\Controllers\AdminController@index')
+    ->where('page', '.*');
 Route::get("/msr/{latitude}/{longitude}", ['uses' => 'App\Http\Controllers\MeetingResultsController@index'])
     ->where(['latitude' => '.*', 'longitude' => '.*']);
 Route::delete("/admin/cache", 'App\Http\Controllers\AdminController@cacheClear');
@@ -82,5 +84,5 @@ Route::get("/helpline-search{ext}", 'App\Http\Controllers\HelplineController@sea
     ->where('ext', $ext);
 Route::get("/helpline-dialer{ext}", 'App\Http\Controllers\HelplineController@dial')
     ->where('ext', $ext);
-Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])
-    ->where('all', '^(?!api).*$');
+//Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])
+//    ->where('all', '^(?!api).*$');

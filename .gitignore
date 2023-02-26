@@ -10,6 +10,8 @@ test.php
 public/dist/croutonjs
 public/dist/js/*.js
 public/dist/css/*.css
+public/css/*.css
+public/js/*.js
 !daterangepicker.js
 !daterangepicker.css
 yap.iml
