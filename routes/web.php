@@ -84,5 +84,7 @@ Route::get("/meeting-search{ext}", 'App\Http\Controllers\CallFlowController@meet
     ->where('ext', $ext);
 Route::get("/helpline-search{ext}", 'App\Http\Controllers\HelplineController@search')
     ->where('ext', $ext);
+Route::get("/helpline-dialer{ext}", 'App\Http\Controllers\HelplineController@dial')
+    ->where('ext', $ext);
 Route::any('{all}', ['uses' => 'App\Http\Controllers\LegacyController@index'])
     ->where('all', '^(?!api).*$');

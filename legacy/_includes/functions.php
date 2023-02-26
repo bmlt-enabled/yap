@@ -2140,18 +2140,6 @@ function getIvrResponse($request = null, $expected_exacts = array(), $expected_l
     return $response;
 }
 
-function getWebhookUrl()
-{
-    $voice_url = str_replace("/endpoints", "", "https://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']);
-    if (strpos(basename($voice_url), ".php")) {
-        return substr($voice_url, 0, strrpos($voice_url, "/"));
-    } else if (strpos($voice_url, "?")) {
-        return substr($voice_url, 0, strrpos($voice_url, "?"));
-    } else {
-        return $voice_url;
-    }
-}
-
 function getInputType()
 {
     return has_setting('speech_gathering') && json_decode(setting('speech_gathering')) ? "speech dtmf" : "dtmf";
