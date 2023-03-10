@@ -2,7 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {createTheme, Button, ThemeProvider} from "@mui/material";
 import MenuBar from './MenuBar';
-import {BrowserRouter} from "react-router-dom";
+import {BrowserRouter, Route, Routes, useLocation} from "react-router-dom";
+import ServiceBodies from "./ServiceBodies";
+import Schedules from "./Schedules";
 
 function App() {
     const themeOptions = createTheme({
@@ -24,7 +26,13 @@ function App() {
     return (
         <div className="App">
             <ThemeProvider theme={themeOptions}>
-                <MenuBar/>
+                <MenuBar basePath={window.location.pathname}/>
+                <header className="App-header">
+                    <Routes>
+                        <Route path={`${window.location.pathname}/serviceBodies`} element={<ServiceBodies/>} />
+                        <Route path={`${window.location.pathname}/schedules`} element={<Schedules/>} />
+                    </Routes>
+                </header>
                 <div className="row justify-content-center">
                 </div>
             </ThemeProvider>

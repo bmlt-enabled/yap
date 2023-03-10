@@ -4,11 +4,11 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {Divider, Drawer, IconButton, ListItemButton, Typography} from "@mui/material";
 import {Menu, Close} from "@mui/icons-material";
 
-function MenuBar() {
+function MenuBar({basePath}) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
 
@@ -53,25 +53,25 @@ function MenuBar() {
                         <Typography>Yap</Typography>
                     </Box>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', sm: 'flex' } }}>
-                        <Link to="/" style={{textDecoration:'none'}}>
+                        <Link to={`${basePath}/`} style={{textDecoration:'none'}}>
                             <Button color="secondary" variant="text">Home</Button>
                         </Link>
-                        <Link to="/reports" style={{textDecoration:'none'}}>
+                        <Link to={`${basePath}/reports`} style={{textDecoration:'none'}}>
                             <Button color="secondary" variant="text">Reports</Button>
                         </Link>
-                        <Link to="/serviceBodies" style={{textDecoration:'none'}}>
+                        <Link to={`${basePath}/serviceBodies`} style={{textDecoration:'none'}}>
                             <Button color="secondary" variant="text">Service Bodies</Button>
                         </Link>
-                        <Link to="/schedules" style={{textDecoration:'none'}}>
+                        <Link to={`${basePath}/schedules`} style={{textDecoration:'none'}}>
                             <Button color="secondary" variant="text">Schedules</Button>
                         </Link>
-                        <Link to="/volunteers" style={{textDecoration:'none'}}>
+                        <Link to={`${basePath}/volunteers`} style={{textDecoration:'none'}}>
                             <Button color="secondary" variant="text">Volunteers</Button>
                         </Link>
-                        <Link to="/groups" style={{textDecoration:'none'}}>
+                        <Link to={`${basePath}/groups`} style={{textDecoration:'none'}}>
                             <Button color="secondary" variant="text">Groups</Button>
                         </Link>
-                        <Link to="users" style={{textDecoration:'none'}}>
+                        <Link to={`${basePath}/users`} style={{textDecoration:'none'}}>
                             <Button color="secondary" variant="text">Users</Button>
                         </Link>
                     </Box>
