@@ -30,6 +30,32 @@
                     }
                 }
             }
+        },
+        "/api/v1/rootServer/servicebodies": {
+            "get": {
+                "tags": [
+                    "RootServer"
+                ],
+                "summary": "Get ServiceBodies",
+                "description": "Get ServiceBodies",
+                "operationId": "RootServer",
+                "responses": {
+                    "200": {
+                        "description": "Data Returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
         }
     }
 }

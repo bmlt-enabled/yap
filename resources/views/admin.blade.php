@@ -8,7 +8,7 @@
 </head>
 <body>
 <div id="root"></div>
-<script>const baseUrl = "{{ $baseUrl }}";</script>
+<script>const rootUrl = "{{ $rootUrl }}";const baseUrl = "{{ $baseUrl }}";</script>
 <script src="{{ url('public' . mix('js/index.js')) }}"></script>
 </body>
 </html>

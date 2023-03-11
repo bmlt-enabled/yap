@@ -1,6 +1,8 @@
 function ServiceBodies() {
     return (
-        <h1>ServiceBodies</h1>
+        <div>
+            <h1>ServiceBodies</h1>
+        </div>
     )
 }
 

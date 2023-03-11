@@ -14,6 +14,9 @@ Route::group([
     Route::resource('config', 'ConfigController')->only([
         'index', 'store'
     ]);
+    Route::resource('rootServer/servicebodies', 'RootServerServiceBodiesController')->only([
+        'index'
+    ]);
     Route::resource('events/status', 'EventStatusController')->only([
         'index', 'store'
     ]);

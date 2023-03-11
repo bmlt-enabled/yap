@@ -7,7 +7,9 @@ class AdminController extends Controller
 {
     public function index(Request $request)
     {
-        return view('admin')->with('baseUrl', sprintf("%s/adminv2", $request->getBaseUrl()));
+        return view('admin')
+            ->with('baseUrl', sprintf("%s/adminv2", $request->getBaseUrl()))
+            ->with('rootUrl', $request->getBaseUrl());
     }
 
     public function cacheClear()

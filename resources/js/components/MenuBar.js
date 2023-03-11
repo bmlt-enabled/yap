@@ -37,8 +37,8 @@ function MenuBar() {
                             p: 2,
                             height: 1,
                         }}>
-                            <IconButton sx={{mb: 2, color: "white"}}>
-                                <Close onClick={toggleDrawer(false)} />
+                            <IconButton sx={{mb: 2, color: "white"}} onClick={toggleDrawer(false)}>
+                                <Close />
                             </IconButton>
                             <Divider sx={{mb: 2}} />
                             <Box sx={{mb: 2}}>

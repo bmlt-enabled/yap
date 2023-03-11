@@ -1,6 +1,12 @@
+import ServiceBodiesDropdown from "./ServiceBodiesDropdown";
+import React from "react";
+
 function Volunteers() {
     return (
-        <h1>Volunteers</h1>
+        <div>
+            <h1>Volunteers</h1>
+            <ServiceBodiesDropdown/>
+        </div>
     )
 }
 
