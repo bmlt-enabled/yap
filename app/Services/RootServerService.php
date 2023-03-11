@@ -45,7 +45,7 @@ class RootServerService
         return $service_bodies;
     }
 
-    function getServiceBodiesRights()
+    public function getServiceBodiesRights()
     {
         if (isset($_SESSION['auth_mechanism'])) {
             if ($_SESSION['auth_mechanism'] == AuthMechanism::V1) {
