@@ -13,8 +13,6 @@ use Exception;
 use LocationSearchMethod;
 use ReadingType;
 use SpecialPhoneNumber;
-use Twilio\Rest\Voice;
-use Twilio\TwiML\Messaging\Message;
 use Twilio\TwiML\VoiceResponse;
 use Illuminate\Http\Request;
 use VolunteerRoutingParameters;

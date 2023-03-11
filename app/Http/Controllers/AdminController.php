@@ -1,15 +1,15 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Constants\AuthMechanism;
-use App\Constants\Http;
-use App\Services\PermissionService;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin');
+        return view('admin')
+            ->with('baseUrl', sprintf("%s/adminv2", $request->getBaseUrl()))
+            ->with('rootUrl', $request->getBaseUrl());
     }
 
     public function cacheClear()
