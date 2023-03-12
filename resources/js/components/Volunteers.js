@@ -2,10 +2,14 @@ import ServiceBodiesDropdown from "./ServiceBodiesDropdown";
 import React from "react";
 
 function Volunteers() {
+
+    const serviceBodiesHandleChange = (event, index) => {
+        console.log(event)
+    }
+
     return (
         <div>
-            <h1>Volunteers</h1>
-            <ServiceBodiesDropdown/>
+            <ServiceBodiesDropdown handleChange={serviceBodiesHandleChange}/>
         </div>
     )
 }

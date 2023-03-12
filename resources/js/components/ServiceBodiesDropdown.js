@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {FormControl, InputLabel, MenuItem, Select} from "@mui/material";
 
-function ServiceBodiesDropdown() {
+function ServiceBodiesDropdown(props) {
     const [loading, setLoading] = useState(false);
     const [list, setList] = useState([]);
 
@@ -25,10 +25,12 @@ function ServiceBodiesDropdown() {
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     // label="servicebody"
-                    // onChange={handleChange}
+                    onChange={(e)=>{props.handleChange(e.target.value)}}
+                    defaultValue={0}
                 >
+                    <MenuItem key={0} value={0}>-= Select a Service Body =-</MenuItem>
                     {list.map(item => (
-                        <MenuItem value={item.id}>{item.name} ({item.id}) / {item.parent_name} ({item.parent_id})</MenuItem>
+                        <MenuItem key={item.id} value={item.id}>{item.name} ({item.id}) / {item.parent_name} ({item.parent_id})</MenuItem>
                     ))}
                 </Select>
             </FormControl> : "Loading..."
