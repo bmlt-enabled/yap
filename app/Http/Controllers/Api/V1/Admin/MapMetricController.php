@@ -23,8 +23,8 @@ class MapMetricController extends Controller
             $data = $this->reportsService->getMapMetricsCsv(
                 $request->query("service_body_id"),
                 $eventId,
-                $request->query('date_range_start'),
-                $request->query('date_range_end'),
+                $request->query("date_range_start"),
+                $request->query("date_range_end"),
                 $request->query("recurse")
             );
 
@@ -38,8 +38,8 @@ class MapMetricController extends Controller
         } else {
             $data = $this->reportsService->getMapMetrics(
                 $request->query("service_body_id"),
-                $request->query('date_range_start'),
-                $request->query('date_range_end'),
+                $request->query("date_range_start"),
+                $request->query("date_range_end"),
                 $request->query("recurse")
             );
 
