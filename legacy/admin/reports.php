@@ -66,7 +66,7 @@
             <button class="btn-sm btn-success" id="download-events-csv">CSV (Events)</button>
             <button class="btn-sm btn-primary" id="download-xlsx">XLSX</button>
             <button class="btn-sm btn-warning" id="download-json">JSON</button>
-            <a class="btn-sm btn-warning" id="metrics-json" target="_blank" href="metric_api.php?service_body_id=0">MetricsJSON</a>
+            <a class="btn-sm btn-warning" id="metrics-json" target="_blank" href="../api/v1/reports/metrics?service_body_id=0">MetricsJSON</a>
             <a class="btn-sm btn-warning" id="meetings-map-metrics-json" target="_blank" href="../api/v1/reports/mapmetrics?service_body_id=0&format=csv&event_id=14">POI CSV (Meetings)</a>
             <a class="btn-sm btn-warning" id="volunteers-map-metrics-json" target="_blank" href="../api/v1/reports/mapmetrics?service_body_id=0&format=csv&event_id=1">POI CSV (Volunteers)</a>
             <div id="refresh-button-holder">

@@ -164,7 +164,7 @@ function initReports(dataLoadedCallback)
 function getMetricsData()
 {
     $("#metrics").slideUp(function () {
-        $.getJSON("metric_api.php?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports(), function (data) {
+        $.getJSON("../api/v1/reports/metrics?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports(), function (data) {
             var actions = ['Volunteer (CALL)', 'Meetings (CALL)', 'Just For Today (CALL)', 'Volunteer (SMS)', 'Meetings (SMS)', 'Just For Today (SMS)'];
             var actions_plots = [1, 2, 3, 19, 20, 21];
             var plots = {"1": [], "2": [], "3": [], "19": [], "20": [], "21": []};
@@ -308,7 +308,7 @@ function updateAllReports()
     getMetricsData();
     drawMetricsMap();
     updateCallRecords();
-    $("#metrics-json").attr("href", "metric_api.php?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports());
+    $("#metrics-json").attr("href", "../api/v1/reports/metrics?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports());
     $("#meetings-map-metrics-json").attr("href", "../api/v1/reports/mapmetrics?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports() + "&format=csv&event_id=14");
     $("#volunteers-map-metrics-json").attr("href", "../api/v1/reports/mapmetrics?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports() + "&format=csv&event_id=1");
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\MetricsCollection;
 use App\Models\RecordType;
 use App\Constants\EventId;
 use App\Repositories\ReportsRepository;
@@ -122,5 +123,88 @@ test('validate sample map metrics poi csv', function () {
         ->assertHeader("Content-Type", "text/plain; charset=UTF-8")
         ->assertHeader("Content-Disposition", "attachment; filename=\"volunteers-map-metrics.csv\"")
         ->assertHeader("Content-Length", strlen($expectedContent))
+        ->assertStatus(200);
+});
+
+test('validate sample metrics', function () {
+    $repository = Mockery::mock(ReportsRepository::class);
+    $service_body_id = "44";
+    $date_range_start = "2023-01-03 00:00:00";
+    $date_range_end = "2023-01-03 23:59:59";
+
+    $getMetric = [(object)[
+        "timestamp"=>"2023-01-03",
+        "counts"=>"1",
+        "data"=>"{\"searchType\":\"1\"}",
+        "service_body_id"=>$service_body_id
+    ]];
+
+    $repository->shouldReceive("getMetric")->with(
+        [$service_body_id],
+        $date_range_start,
+        $date_range_end
+    )->andReturn($getMetric);
+
+    $summarySample = [
+        ["event_id"=>EventId::VOLUNTEER_SEARCH, "counts"=>"14"],
+        ["event_id"=>EventId::VOLUNTEER_IN_CONFERENCE, "counts"=>"6"],
+        ["event_id"=>EventId::MEETING_SEARCH_SMS, "counts"=>"94"]];
+    $repository->shouldReceive("getMetricCounts")->with(
+        [$service_body_id],
+        $date_range_start,
+        $date_range_end
+    )->andReturn($summarySample);
+
+
+    $callsSample = [[
+        "service_body_id"=>$service_body_id,
+        "conferencesid"=>"abc123",
+        "answered_count"=>"0",
+        "missed_count"=>"3"
+    ]];
+    $repository->shouldReceive("getAnsweredAndMissedCallMetrics")->with(
+        [$service_body_id],
+        $date_range_start,
+        $date_range_end
+    )->andReturn($callsSample);
+
+    $volunteersSample = [[
+        "service_body_id"=>$service_body_id,
+        "meta"=> "{\"to_number\":\"+19103818003\"}",
+        "answered_count"=>"0",
+        "missed_count"=>"3"
+    ]];
+    $repository->shouldReceive("getAnsweredAndMissedVolunteerMetrics")->with(
+        [$service_body_id],
+        $date_range_start,
+        $date_range_end
+    )->andReturn($volunteersSample);
+
+    app()->instance(ReportsRepository::class, $repository);
+
+    $response = $this->call('GET', '/api/v1/reports/metrics', [
+        "service_body_id" => $service_body_id,
+        "date_range_start" => $date_range_start,
+        "date_range_end" => $date_range_end
+    ]);
+
+    $metricsCollection = [
+        "metrics"=>[
+            ["timestamp" => "2023-01-03", "counts" => "1", "service_body_id" => $service_body_id,
+                "data" => "{\"searchType\":\"1\"}"],
+            ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"2\"}"],
+            ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"3\"}"],
+            ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"19\"}"],
+            ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"20\"}"],
+            ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"21\"}"],
+        ],
+        "volunteers"=>$volunteersSample,
+        "summary"=>$summarySample,
+        "calls"=>$callsSample
+    ];
+
+    $response
+        ->assertExactJson($metricsCollection)
+        ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });

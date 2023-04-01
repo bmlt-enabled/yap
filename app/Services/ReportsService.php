@@ -1,10 +1,11 @@
 <?php
-
 namespace App\Services;
 
 use App\Constants\EventId;
+use App\Models\MetricsCollection;
 use App\Models\RecordType;
 use App\Repositories\ReportsRepository;
+use function App\Http\Controllers\Api\V1\Admin\findMetric;
 
 class ReportsService
 {
@@ -33,6 +34,72 @@ class ReportsService
         $array = array_map('json_encode', $array);
         $array = array_unique($array);
         return array_map('json_decode', array_values($array));
+    }
+
+    private function findMetric($metrics, $date, $type)
+    {
+        foreach ($metrics as $metric) {
+            if ($metric->timestamp == $date && ($metric->data == '{"searchType":"'.$type.'"}'
+                    || $metric->data == '{"searchType":'.$type.'}')) {
+                return $metric;
+            }
+        }
+
+        return null;
+    }
+
+    public function getMetrics($serviceBodyId, $date_range_start, $date_range_end, $recurse = false) : MetricsCollection
+    {
+        $metricsCollection = new MetricsCollection();
+
+        $reportsServiceBodies = $this->getServiceBodies($serviceBodyId, $recurse);
+        $metricsCollection->metrics = $this->reportsRepository->getMetric(
+            $reportsServiceBodies,
+            $date_range_start,
+            $date_range_end
+        );
+        $metricsCollection->summary = $this->reportsRepository->getMetricCounts(
+            $reportsServiceBodies,
+            $date_range_start,
+            $date_range_end
+        );
+        $metricsCollection->calls = $this->reportsRepository->getAnsweredAndMissedCallMetrics(
+            $reportsServiceBodies,
+            $date_range_start,
+            $date_range_end
+        );
+        $metricsCollection->volunteers = $this->reportsRepository->getAnsweredAndMissedVolunteerMetrics(
+            $reportsServiceBodies,
+            $date_range_start,
+            $date_range_end
+        );
+
+        $all_metrics = array();
+        if (count($metricsCollection->metrics) > 0) {
+            $start_date = $metricsCollection->metrics[0]->timestamp;
+            $end_date = $metricsCollection->metrics[count($metricsCollection->metrics) - 1]->timestamp;
+            $current_date = $start_date;
+            $metrics_types = array(EventId::VOLUNTEER_SEARCH, EventId::MEETING_SEARCH, EventId::JFT_LOOKUP,
+                EventId::MEETING_SEARCH_SMS, EventId::VOLUNTEER_SEARCH_SMS, EventId::JFT_LOOKUP_SMS);
+            while ($current_date <= $end_date) {
+                foreach ($metrics_types as $metric_type) {
+                    $fm = $this->findMetric($metricsCollection->metrics, $current_date, $metric_type);
+                    if ($fm != null) {
+                        array_push($all_metrics, $fm);
+                    } else {
+                        array_push($all_metrics, ['timestamp' => $current_date,
+                            'counts' => 0,
+                            'data' => sprintf('{"searchType":"%s"}', $metric_type)]);
+                    }
+                }
+
+                $current_date = date('Y-m-d', strtotime($current_date . ' + 1 days'));
+            }
+        }
+
+        $metricsCollection->metrics = $all_metrics;
+
+        return $metricsCollection;
     }
 
     public function getMapMetricsCsv($serviceBodyId, $eventId, $date_range_start, $date_range_end, $recurse = false)
