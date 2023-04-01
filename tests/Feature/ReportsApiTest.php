@@ -110,7 +110,8 @@ test('validate sample map metrics poi csv', function () {
         "format" => "csv",
         "event_id" => EventId::VOLUNTEER_SEARCH
     ]);
-    $expectedContent = sprintf("lat,lon,name,desc\n%s,%s,\"%s\",\"%s\"\n",
+    $expectedContent = sprintf(
+        "lat,lon,name,desc\n%s,%s,\"%s\",\"%s\"\n",
         $meta_sample['coordinates']['latitude'],
         $meta_sample['coordinates']['longitude'],
         $meta_sample['coordinates']['location'],
