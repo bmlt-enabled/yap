@@ -39,6 +39,7 @@
     <exclude-pattern>storage/*</exclude-pattern>
     <exclude-pattern>database/*</exclude-pattern>
     <exclude-pattern>database.php</exclude-pattern>
+    <exclude-pattern>node_modules/*</exclude-pattern>
     <!--
     You can add specific global ignores to different
     rules here.
