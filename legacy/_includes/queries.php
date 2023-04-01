@@ -31,41 +31,6 @@ function getFlag($flag)
     return isset($resultset[0]["flag_setting"]) ? $resultset[0]["flag_setting"] : -1;
 }
 
-function getMapMetrics($service_body_ids, $date_range_start, $date_range_end)
-{
-    $db = new Database();
-    $sql = sprintf(
-        "select event_id, meta from records_events where event_time >= '$date_range_start' AND event_time <= '$date_range_end' and event_id in (1,14) and meta is not null %s",
-        "and service_body_id in (" . implode(", ", $service_body_ids) . ")"
-    );
-    $db->query($sql);
-    $resultset = $db->resultset();
-    $db->close();
-    return $resultset;
-}
-
-function getMapMetricByType($service_body_ids, $eventId, $date_range_start, $date_range_end)
-{
-    $db = new Database();
-    $sql = sprintf(
-        "select event_id, meta from records_events where event_time >= '$date_range_start' AND event_time <= '$date_range_end' and `event_id` = :eventId and meta is not null %s",
-        "and IFNULL(service_body_id,0) in (" . implode(", ", $service_body_ids) . ")"
-    );
-    $db->query($sql);
-    $db->bind(":eventId", $eventId);
-    $resultset = $db->resultset();
-    $db->close();
-    return $resultset;
-}
-
-function quickExec($sql)
-{
-    $db = new Database();
-    $db->query($sql);
-    $db->execute();
-    $db->close();
-}
-
 function insertCallRecord($callRecord)
 {
     $db = new Database();
