@@ -2173,32 +2173,6 @@ function getReportsServiceBodies()
     }
 }
 
-function adjustedCallRecords($service_body_ids, $date_range_start, $date_range_end)
-{
-    $callRecords = getCallRecords($service_body_ids, $date_range_start, $date_range_end);
-
-    foreach ($callRecords as &$callRecord) {
-        $callRecord['type_name'] = RecordType::getTypeById($callRecord['type']);
-        $callEvents = isset($callRecord['call_events']) ? unique_stdclass_array(json_decode($callRecord['call_events'])) : [];
-
-        if (!isset($callEvents)) {
-            log_debug("callEvents issue");
-        }
-
-        foreach ($callEvents as &$callEvent) {
-            $callEvent->parent_callsid = $callRecord['callsid'];
-            $callEvent->event_name = EventId::getEventById($callEvent->event_id);
-            $callEvent->meta = json_encode($callEvent->meta);
-        }
-        $callRecord['call_events'] = $callEvents;
-    }
-
-    $response['data'] = $callRecords;
-    $response['last_page'] = 1;
-
-    return $response;
-}
-
 function getSessionLink($shouldUriEncode = false)
 {
     if (isset($_REQUEST['ysk'])) {

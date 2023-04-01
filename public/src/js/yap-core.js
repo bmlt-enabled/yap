@@ -77,7 +77,7 @@ function initReports(dataLoadedCallback)
         addRowPos: "top",
         history: true,
         pagination: "remote",
-        ajaxURL: "cdr_api.php",
+        ajaxURL: "../api/v1/reports/cdr",
         ajaxURLGenerator: function (url, config, params) {
             return url + "?service_body_id=" + $("#service_body_id").val() + "&page=1&size=1" + getDateRanges() + "&recurse=" + recurseReports();
         },

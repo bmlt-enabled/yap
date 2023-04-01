@@ -14,6 +14,7 @@ Route::group([
     Route::resource('config', 'ConfigController')->only([
         'index', 'store'
     ]);
+    Route::resource('reports/cdr', 'CdrController')->only(['index']);
     Route::resource('rootServer/servicebodies', 'RootServerServiceBodiesController')->only([
         'index'
     ]);

@@ -45,6 +45,28 @@ class RootServerService
         return $service_bodies;
     }
 
+    public function getServiceBodiesForUserRecursively($service_body_id, $service_body_rights = null): array
+    {
+        $service_bodies_results = [];
+
+        if ($service_body_rights == null) {
+            array_push($service_bodies_results, intval($service_body_id));
+            $service_body_rights = $this->getServiceBodiesForUser();
+        }
+
+        foreach ($service_body_rights as $service_body) {
+            if (intval($service_body->parent_id) === intval($service_body_id)) {
+                array_push($service_bodies_results, intval($service_body->id));
+                $service_bodies_results = array_merge(
+                    $service_bodies_results,
+                    $this->getServiceBodiesForUserRecursively(intval($service_body->id), $service_body_rights)
+                );
+            }
+        }
+
+        return $service_bodies_results;
+    }
+
     public function getServiceBodiesRights()
     {
         if (isset($_SESSION['auth_mechanism'])) {
