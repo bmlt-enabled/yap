@@ -44,6 +44,7 @@
         "axios": "^0.21",
         "bootstrap": "^5.2.3",
         "cross-env": "^7.0",
+        "eslint": "^8.37.0",
         "gulp": "^4.0.2",
         "gulp-clean-css": "^4.2.0",
         "gulp-concat": "^2.6.1",

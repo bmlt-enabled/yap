@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom/client';
 import {createTheme, Button, ThemeProvider} from "@mui/material";
 import MenuBar from './MenuBar';
 import {BrowserRouter, Route, Routes, useLocation} from "react-router-dom";
-import ServiceBodies from "./ServiceBodies";
-import Schedules from "./Schedules";
-import Home from "./Home";
-import Reports from "./Reports";
-import Volunteers from "./Volunteers";
-import Groups from "./Groups";
-import Users from "./Users";
+import ServiceBodies from "../pages/ServiceBodies";
+import Schedules from "../pages/Schedules";
+import Home from "../pages/Home";
+import Reports from "../pages/Reports";
+import Volunteers from "../pages/Volunteers";
+import Groups from "../pages/Groups";
+import Users from "../pages/Users";
 
 function App() {
     const themeOptions = createTheme({

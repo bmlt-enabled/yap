@@ -13,6 +13,44 @@
                 "summary": "Get Configuration",
                 "description": "Get Configuration",
                 "operationId": "Config",
+                "parameters": [
+                    {
+                        "name": "service_body_id",
+                        "in": "query",
+                        "description": "The service body ID",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "data_type",
+                        "in": "query",
+                        "description": "The data type",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": {
+                            "config": {
+                                "summary": "Configuration",
+                                "value": "_YAP_CONFIG_V2_"
+                            },
+                            "volunteers": {
+                                "summary": "Volunteers",
+                                "value": "_YAP_VOLUNTEERS_V2_"
+                            },
+                            "groups": {
+                                "summary": "Groups",
+                                "value": "_YAP_GROUPS_V2_"
+                            },
+                            "callhandling": {
+                                "summary": "Call Handling",
+                                "value": "_YAP_CALL_HANDLING_V2_"
+                            }
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Data Returned",
