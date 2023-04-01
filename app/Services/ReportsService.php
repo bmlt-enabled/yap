@@ -35,6 +35,50 @@ class ReportsService
         return array_map('json_decode', array_values($array));
     }
 
+    public function getMapMetricsCsv($serviceBodyId, $eventId, $date_range_start, $date_range_end, $recurse = false)
+    {
+        $data = "lat,lon,name,desc\n";
+        $metrics = $this->reportsRepository->getMapMetricByType(
+            $this->getServiceBodies($serviceBodyId, $recurse),
+            $eventId,
+            $date_range_start,
+            $date_range_end
+        );
+        $event_id = intval($eventId);
+        foreach ($metrics as $metric) {
+            $coordinates = json_decode($metric->meta)->coordinates;
+            if ($coordinates->location != null) {
+                $data .= sprintf(
+                    "%s,%s,\"%s\",\"%s\"\n",
+                    $coordinates->latitude,
+                    $coordinates->longitude,
+                    $coordinates->location,
+                    $event_id
+                );
+            }
+        }
+
+        return $data;
+    }
+
+    public function getMapMetrics($serviceBodyId, $date_range_start, $date_range_end, $recurse = false)
+    {
+        $results = [];
+        $metrics = $this->reportsRepository->getMapMetrics(
+            $this->getServiceBodies($serviceBodyId, $recurse),
+            $date_range_start,
+            $date_range_end
+        );
+        foreach ($metrics as $metric) {
+            $coordinates = json_decode($metric->meta)->coordinates;
+            if ($coordinates->location != null) {
+                $results[] = $metric;
+            }
+        }
+
+        return $results;
+    }
+
     public function getCallDetailRecords($serviceBodyId, $date_range_start, $date_range_end, $recurse = false): array
     {
         $service_body_ids = $this->getServiceBodies($serviceBodyId, $recurse);

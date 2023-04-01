@@ -15,6 +15,7 @@ Route::group([
         'index', 'store'
     ]);
     Route::resource('reports/cdr', 'CdrController')->only(['index']);
+    Route::resource('reports/mapmetrics', 'MapMetricController')->only(['index']);
     Route::resource('rootServer/servicebodies', 'RootServerServiceBodiesController')->only([
         'index'
     ]);

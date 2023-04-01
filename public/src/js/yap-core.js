@@ -309,8 +309,8 @@ function updateAllReports()
     drawMetricsMap();
     updateCallRecords();
     $("#metrics-json").attr("href", "metric_api.php?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports());
-    $("#meetings-map-metrics-json").attr("href", "map_metric_api.php?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports() + "&format=14&event_id=14");
-    $("#volunteers-map-metrics-json").attr("href", "map_metric_api.php?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports() + "&format=14&event_id=1");
+    $("#meetings-map-metrics-json").attr("href", "../api/v1/reports/mapmetrics?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports() + "&format=csv&event_id=14");
+    $("#volunteers-map-metrics-json").attr("href", "../api/v1/reports/mapmetrics?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports() + "&format=csv&event_id=1");
 }
 
 function getMetrics(table)

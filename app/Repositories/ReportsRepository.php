@@ -6,6 +6,27 @@ use Illuminate\Support\Facades\DB;
 
 class ReportsRepository
 {
+    public function getMapMetrics($service_body_ids, $date_range_start, $date_range_end)
+    {
+        return DB::select(
+            "select event_id, meta from records_events where event_time >= ?
+                                            AND event_time <= ? and event_id in (1,14) and meta is not null
+            and service_body_id in (?)",
+            [$date_range_start, $date_range_end, implode(", ", $service_body_ids)]
+        );
+    }
+
+
+    public function getMapMetricByType($service_body_ids, $eventId, $date_range_start, $date_range_end)
+    {
+        return DB::select(
+            "select event_id, meta from records_events where event_time >= ?
+                                            AND event_time <= ? and event_id = ? and meta is not null
+                                            and IFNULL(service_body_id,0) in (?)",
+            [$date_range_start, $date_range_end, $eventId, implode(", ", $service_body_ids)]
+        );
+    }
+
     // TODO: add show multiple service bodies options
     public function getCallRecords($service_body_ids, $date_range_start, $date_range_end)
     {
@@ -40,7 +61,7 @@ WHERE re.service_body_id in (%s) AND rcp.guid = ?
 GROUP BY rcp.parent_callsid
 ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_body_ids)), [$guid, $guid]);
 
-        // DB::delete("DELETE FROM cache_records_conference_participants WHERE guid = ?", [$guid]);
+        DB::delete("DELETE FROM cache_records_conference_participants WHERE guid = ?", [$guid]);
 
         return $resultset;
     }
