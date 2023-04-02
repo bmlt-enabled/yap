@@ -703,7 +703,7 @@ function onGroupServiceBodyChange(callback)
 function loadGroups(service_body_id, callback)
 {
     if (groups === undefined) {
-        $.getJSON("groups_api.php?service_body_id=" + service_body_id, function (data) {
+        $.getJSON("../api/v1/volunteers/groups?service_body_id=" + service_body_id, function (data) {
             groups = data;
             callback(data)
         });

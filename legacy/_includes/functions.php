@@ -252,46 +252,6 @@ class EventId
     }
 }
 
-class VolunteerInfo
-{
-    public $title;
-    public $start;
-    public $end;
-    public $weekday_id;
-    public $weekday;
-    public $sequence;
-    public $time_zone;
-    public $contact = SpecialPhoneNumber::UNKNOWN;
-    public $color;
-    public $gender;
-    public $responder = VolunteerResponderOption::UNSPECIFIED;
-    public $type = VolunteerType::PHONE;
-    public $language;
-}
-
-class VolunteerReportInfo
-{
-    public $name;
-    public $number = SpecialPhoneNumber::UNKNOWN;
-    public $gender;
-    public $responder = VolunteerResponderOption::UNSPECIFIED;
-    public $type = VolunteerType::PHONE;
-    public $language;
-    public $shift_info = [];
-}
-
-class Volunteer
-{
-    public $phoneNumber;
-    public $volunteerInfo;
-
-    public function __construct($phoneNumber, $volunteerInfo = null)
-    {
-        $this->phoneNumber = $phoneNumber;
-        $this->volunteerInfo = $volunteerInfo;
-    }
-}
-
 class Coordinates
 {
     public $location;
@@ -299,34 +259,10 @@ class Coordinates
     public $longitude;
 }
 
-class DurationInterval
-{
-    public $hours;
-    public $minutes;
-    public $seconds;
-
-    public function getDurationFormat()
-    {
-        return $this->hours . " hours " . $this->minutes . " minutes " . $this->seconds . " seconds";
-    }
-}
-
 class MeetingResults
 {
     public $originalListCount = 0;
     public $filteredList = [];
-}
-
-class CallRecord
-{
-    public $callSid;
-    public $start_time;
-    public $end_time;
-    public $from;
-    public $to;
-    public $duration;
-    public $payload;
-    public $type;
 }
 
 class ServiceBodyCallHandling
@@ -395,12 +331,6 @@ class SettingSource
     const DEFAULT_SETTING = "Factory Default";
 }
 
-class VolunteerType
-{
-    const PHONE = "PHONE";
-    const SMS = "SMS";
-}
-
 class RecordType
 {
     const PHONE = 1;
@@ -415,19 +345,6 @@ class RecordType
                 return "SMS";
         }
     }
-}
-
-class VolunteerResponderOption
-{
-    const UNSPECIFIED = 0;
-    const ENABLED = 1;
-}
-
-class CallRole
-{
-    const CALLER = 1;
-    const VOLUNTEER = 2;
-    const TRAINER = 3;
 }
 
 class CurlException extends Exception
@@ -675,16 +592,6 @@ function word($name)
     return isset($GLOBALS['override_' . $name]) ? $GLOBALS['override_' . $name] : $GLOBALS[$name];
 }
 
-function getNumberForWord($name)
-{
-    $numbers = $GLOBALS['numbers'];
-    for ($n = 0; $n < count($numbers); $n++) {
-        if ($name == $numbers[$n]) {
-            return $n;
-        }
-    }
-}
-
 function getWordForNumber($number)
 {
     return word($GLOBALS['numbers'][$number]);
@@ -694,6 +601,7 @@ function has_setting($name)
 {
     return !is_null(setting($name));
 }
+
 function setting($name)
 {
     if (isset($GLOBALS['settings_allowlist'][$name]) && $GLOBALS['settings_allowlist'][$name]['overridable']) {
@@ -1395,20 +1303,6 @@ function admin_GetUserName()
     return $_SESSION['auth_user_name_string'];
 }
 
-function getGroupsForServiceBody($service_body_id, $manage = false)
-{
-    $all_groups = getAllDbData(DataType::YAP_GROUPS_V2);
-    $final_groups = array();
-    foreach ($all_groups as $all_group) {
-        if ($all_group['service_body_id'] === $service_body_id
-            || (!$manage && isset(json_decode($all_group['data'])[0]->group_shared_service_bodies) && in_array($service_body_id, json_decode($all_group['data'])[0]->group_shared_service_bodies))) {
-            array_push($final_groups, $all_group);
-        }
-    }
-
-    return $final_groups;
-}
-
 function getServiceBodyConfig($service_body_id)
 {
     $service_body_finder = new ServiceBodyFinder();
@@ -1539,11 +1433,6 @@ function getIdsFormats($types)
     }
 
     return $finalFormats;
-}
-
-function dataEncoder($dataObject)
-{
-    return base64_encode(json_encode($dataObject));
 }
 
 function str_exists($subject, $needle)

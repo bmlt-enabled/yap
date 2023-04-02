@@ -175,7 +175,6 @@ test('return volunteers json', function () {
         DataType::YAP_VOLUNTEERS_V2
     )->andReturn([(object)[
         "service_body_id" => $service_body_id,
-        "id" => "200",
         "parent_id" => $parent_service_body_id,
         "data" => json_encode($volunteer)
     ]]);
@@ -216,14 +215,11 @@ test('return volunteers csv', function () {
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
-    $volunteer = [[
         "volunteer_name"=>$volunteer_name,
         "volunteer_phone_number"=>$volunteer_phone_number,
         "volunteer_gender"=>$volunteer_gender,
         "volunteer_responder"=>$volunteer_responder,
-        "volunteer_notes"=>"",
         "volunteer_enabled"=>true,
-        "volunteer_shift_schedule"=>base64_encode(json_encode([[
             "day"=>$shiftDay,
             "tz"=>$shiftTz,
             "start_time"=>$shiftStart,
@@ -233,18 +229,13 @@ test('return volunteers csv', function () {
     $service_body_id = "44";
     $parent_service_body_id = "43";
     $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
         $service_body_id,
-        DataType::YAP_VOLUNTEERS_V2
     )->andReturn([(object)[
         "service_body_id" => $service_body_id,
-        "id" => "200",
         "parent_id" => $parent_service_body_id,
-        "data" => json_encode($volunteer)
     ]]);
 
     app()->instance(ConfigRepository::class, $repository);
-    $response = $this->call('GET', '/api/v1/volunteers/download', [
         "service_body_id" => $service_body_id,
         "fmt" => "csv"
     ]);
@@ -273,27 +264,54 @@ test('return volunteers invalid service body id', function () {
     ]);
 
     $response
-        ->assertSimilarJson([])
-        ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });
 
 test('return volunteers invalid format', function () {
-    $service_body_id = "44";
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
-        $service_body_id,
         DataType::YAP_VOLUNTEERS_V2
     )->andReturn([]);
 
     app()->instance(ConfigRepository::class, $repository);
     $response = $this->call('GET', '/api/v1/volunteers/download', [
-        "service_body_id" => $service_body_id,
         "fmt" => "garbage"
-    ]);
 
     $response
         ->assertSimilarJson([])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('get groups for service body', function () {
+    $service_body_id = "44";
+    $parent_service_body_id = "43";
+    $id = "200";
+    $group = [[
+        "group_name"=>"Fake Group",
+        "group_shared_service_bodies"=>[$service_body_id]
+    ]];
+    $repository = Mockery::mock(ConfigRepository::class);
+    $repository->shouldReceive("getAllDbData")->with(
+        DataType::YAP_GROUPS_V2
+    )->andReturn([(object)[
+        "service_body_id" => $service_body_id,
+        "id" => $id,
+        "parent_id" => $parent_service_body_id,
+        "data" => json_encode($group)
+    ]]);
+    app()->instance(ConfigRepository::class, $repository);
+    $response = $this->call('GET', '/api/v1/volunteers/groups', [
+        "service_body_id" => $service_body_id,
+    ]);
+
+    $response
+        ->assertSimilarJson([[
+            "data"=>json_encode($group),
+            "id"=>$id,
+            "parent_id"=>$parent_service_body_id,
+            "service_body_id"=>$service_body_id
+        ]])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });
