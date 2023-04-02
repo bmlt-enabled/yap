@@ -36,7 +36,7 @@ class VolunteerService
                 return $a->sequence > $b->sequence ? 1 : -1;
             });
 
-            return $finalSchedule;
+            return $this->filterOutPhoneNumber($finalSchedule);
         } else {
             throw new NoVolunteersException();
         }
@@ -237,13 +237,13 @@ class VolunteerService
         return $mod_meeting_datetime;
     }
 
-    private function filterOut($volunteers): bool|string
+    private function filterOutPhoneNumber($volunteers): array
     {
-        $volunteers_array = json_decode($volunteers);
+        $volunteers_array = $volunteers;
         for ($v = 0; $v < count($volunteers_array); $v++) {
             unset($volunteers_array[$v]->contact);
         }
 
-        return json_encode($volunteers_array);
+        return $volunteers_array;
     }
 }
