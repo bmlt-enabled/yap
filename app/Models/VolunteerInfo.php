@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use App\Constants\SpecialPhoneNumber;
+use App\Constants\VolunteerResponderOption;
+use App\Constants\VolunteerType;
+
 class VolunteerInfo
 {
     public $title;
