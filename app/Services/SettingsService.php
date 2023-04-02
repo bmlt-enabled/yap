@@ -79,7 +79,7 @@ class SettingsService
         'word_language' => ['description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false]
     ];
 
-    public array $dateCalculationsMap = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    public static array $dateCalculationsMap = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     private array $settings = [];
     private array $available_languages = [
         "en-US" => "English",

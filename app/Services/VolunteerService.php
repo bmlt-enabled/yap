@@ -13,6 +13,7 @@ use App\Models\VolunteerInfo;
 use App\Models\VolunteerReportInfo;
 use App\Repositories\ConfigRepository;
 use App\Utility\VolunteerRoutingHelpers;
+use App\Utility\VolunteerScheduleHelpers;
 use DateTime;
 
 class VolunteerService
@@ -36,7 +37,7 @@ class VolunteerService
                 return $a->sequence > $b->sequence ? 1 : -1;
             });
 
-            return $this->filterOutPhoneNumber($finalSchedule);
+            return VolunteerScheduleHelpers::filterOutPhoneNumber($finalSchedule);
         } else {
             throw new NoVolunteersException();
         }
@@ -157,7 +158,7 @@ class VolunteerService
             $volunteerInfo->name = $volunteer->volunteer_name
                 . (isset($volunteer->volunteer_gender) ? " " . VolunteerGender::getGenderById($volunteer->volunteer_gender) : "")
                 . (isset($volunteer->volunteer_language) ? " " . json_encode($volunteer->volunteer_language) : "");
-            $volunteerInfo->shift_info = $this->dataDecoder($volunteer->volunteer_shift_schedule);
+            $volunteerInfo->shift_info = VolunteerScheduleHelpers::dataDecoder($volunteer->volunteer_shift_schedule);
             $volunteerInfo->number = $volunteer->volunteer_phone_number;
             $volunteerInfo->gender = $volunteer->volunteer_gender ?? VolunteerGender::UNSPECIFIED;
             $volunteerInfo->responder = $volunteer->volunteer_responder ?? VolunteerResponderOption::UNSPECIFIED;
@@ -187,7 +188,7 @@ class VolunteerService
             $volunteer = $volunteers[$v];
             if (isset($volunteer->volunteer_enabled) && $volunteer->volunteer_enabled &&
                 isset($volunteer->volunteer_phone_number) && strlen($volunteer->volunteer_phone_number) > 0) {
-                $volunteerShiftSchedule = $this->dataDecoder($volunteer->volunteer_shift_schedule);
+                $volunteerShiftSchedule = VolunteerScheduleHelpers::dataDecoder($volunteer->volunteer_shift_schedule);
                 foreach ($volunteerShiftSchedule as $vsi) {
                     $volunteerInfo = new VolunteerInfo();
                     $volunteerInfo->type = isset($vsi->type) ? $vsi->type : $volunteerInfo->type;
@@ -195,13 +196,13 @@ class VolunteerService
                         . (isset($volunteer->volunteer_gender) ? " " . VolunteerGender::getGenderById($volunteer->volunteer_gender) : "")
                         . (isset($volunteer->volunteer_language) ? " " . json_encode($volunteer->volunteer_language) : "");
                     $volunteerInfo->time_zone = $vsi->tz;
-                    $volunteerInfo->start = str_replace(" ", "T", $this->getNextShiftInstance($vsi->day, $vsi->start_time, $volunteerInfo->time_zone)->format("Y-m-d H:i:s"));
-                    $volunteerInfo->end = str_replace(" ", "T", $this->getNextShiftInstance($vsi->day, $vsi->end_time, $volunteerInfo->time_zone)->format("Y-m-d H:i:s"));
+                    $volunteerInfo->start = VolunteerScheduleHelpers::getNextShiftInstance($vsi->day, $vsi->start_time, $volunteerInfo->time_zone);
+                    $volunteerInfo->end = VolunteerScheduleHelpers::getNextShiftInstance($vsi->day, $vsi->end_time, $volunteerInfo->time_zone);
                     $volunteerInfo->weekday_id = $vsi->day;
                     $volunteerInfo->weekday = $this->settingsService->word('days_of_the_week')[$vsi->day];
                     $volunteerInfo->sequence = $v;
                     $volunteerInfo->contact = $volunteer->volunteer_phone_number;
-                    $volunteerInfo->color = "#" . $this->getNameHashColorCode(strval($v + 1) . "-" . $volunteerInfo->title);
+                    $volunteerInfo->color = "#" . VolunteerScheduleHelpers::getNameHashColorCode(strval($v + 1) . "-" . $volunteerInfo->title);
                     $volunteerInfo->gender = isset($volunteer->volunteer_gender) ? $volunteer->volunteer_gender : VolunteerGender::UNSPECIFIED;
                     $volunteerInfo->responder = isset($volunteer->volunteer_responder) ? $volunteer->volunteer_responder : VolunteerResponderOption::UNSPECIFIED;
                     if (strlen($this->settingsService->get('language_selections')) > 0) {
@@ -215,35 +216,5 @@ class VolunteerService
         }
 
         return $finalSchedule;
-    }
-
-    private function getNameHashColorCode($str): string
-    {
-        $code = dechex(crc32($str));
-        return substr($code, 0, 6);
-    }
-
-    private function dataDecoder($dataString)
-    {
-        return json_decode(base64_decode($dataString));
-    }
-
-    private function getNextShiftInstance($shift_day, $shift_time, $shift_tz)
-    {
-        date_default_timezone_set($shift_tz);
-        $mod_meeting_day = (new DateTime())
-            ->modify($this->settingsService->dateCalculationsMap[$shift_day])->format("Y-m-d");
-        $mod_meeting_datetime = (new DateTime($mod_meeting_day . " " . $shift_time));
-        return $mod_meeting_datetime;
-    }
-
-    private function filterOutPhoneNumber($volunteers): array
-    {
-        $volunteers_array = $volunteers;
-        for ($v = 0; $v < count($volunteers_array); $v++) {
-            unset($volunteers_array[$v]->contact);
-        }
-
-        return $volunteers_array;
     }
 }
