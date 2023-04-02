@@ -350,11 +350,11 @@ function volunteerPage()
                     loadVolunteers(service_body_id, function () {
                         $("#volunteers-download-list-csv").show();
                         $("#volunteers-download-list-csv").click(function () {
-                            document.location.href='volunteers_get.php?service_body_id='+service_body_id+'&fmt=csv';
+                            document.location.href='../api/v1/volunteers/download?service_body_id='+service_body_id+'&fmt=csv';
                         })
                         $("#volunteers-download-list-json").show();
                         $("#volunteers-download-list-json").click(function () {
-                            document.location.href='volunteers_get.php?service_body_id='+service_body_id+'&fmt=json';
+                            document.location.href='../api/v1/volunteers/download?service_body_id='+service_body_id+'&fmt=json';
                         })
                         spinnerDialog(false);
                     })
