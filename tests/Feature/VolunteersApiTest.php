@@ -297,3 +297,36 @@ test('return volunteers invalid format', function () {
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });
+
+test('get groups for service body', function () {
+    $service_body_id = "44";
+    $parent_service_body_id = "43";
+    $id = "200";
+    $group = [[
+        "group_name"=>"Fake Group",
+        "group_shared_service_bodies"=>[$service_body_id]
+    ]];
+    $repository = Mockery::mock(ConfigRepository::class);
+    $repository->shouldReceive("getAllDbData")->with(
+        DataType::YAP_GROUPS_V2
+    )->andReturn([(object)[
+        "service_body_id" => $service_body_id,
+        "id" => $id,
+        "parent_id" => $parent_service_body_id,
+        "data" => json_encode($group)
+    ]]);
+    app()->instance(ConfigRepository::class, $repository);
+    $response = $this->call('GET', '/api/v1/volunteers/groups', [
+        "service_body_id" => $service_body_id,
+    ]);
+
+    $response
+        ->assertSimilarJson([[
+            "data"=>json_encode($group),
+            "id"=>$id,
+            "parent_id"=>$parent_service_body_id,
+            "service_body_id"=>$service_body_id
+        ]])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 
 class ConfigRepository
 {
-    public function getDbDataByParentId($parent_id, $data_type)
+    public function getDbDataByParentId($parent_id, $data_type): array
     {
         return DB::select(
             'SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `parent_id`= ? AND `data_type`= ?',
@@ -14,7 +14,7 @@ class ConfigRepository
         );
     }
 
-    public function getDbDataById($id, $data_type)
+    public function getDbDataById($id, $data_type): array
     {
         return DB::select(
             'SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `id`=? AND `data_type`=?',
@@ -22,13 +22,23 @@ class ConfigRepository
         );
     }
 
-    public function getDbData($service_body_id, $data_type)
+    public function getDbData($service_body_id, $data_type): array
     {
         return DB::select(
-            "SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `service_body_id`=? AND `data_type`=?",
+            "SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `service_body_id`=?
+                                                                 AND `data_type`=?",
             [$service_body_id, $data_type]
         );
     }
+
+    public function getAllDbData($data_type): array
+    {
+        return DB::select(
+            "SELECT `id`,`data`,`service_body_id`,`parent_id` FROM `config` WHERE `data_type`=?",
+            [$data_type]
+        );
+    }
+
 
     public function adminPersistDbConfigById($id, $data)
     {

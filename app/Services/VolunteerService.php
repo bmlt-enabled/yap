@@ -175,6 +175,21 @@ class VolunteerService
         return $finalSchedule;
     }
 
+    public function getGroupsForServiceBody($service_body_id, $manage = false)
+    {
+        $all_groups = $this->configRepository->getAllDbData(DataType::YAP_GROUPS_V2);
+        $final_groups = array();
+        foreach ($all_groups as $all_group) {
+            if ($all_group->service_body_id === $service_body_id
+                || (!$manage && isset(json_decode($all_group->data)[0]->group_shared_service_bodies)
+                    && in_array($service_body_id, json_decode($all_group->data)[0]->group_shared_service_bodies))) {
+                $final_groups[] = $all_group;
+            }
+        }
+
+        return $final_groups;
+    }
+
     private function getGroupVolunteers($group_id)
     {
         $groupData = $this->configRepository->getDbDataByParentId($group_id, DataType::YAP_GROUP_VOLUNTEERS_V2);
