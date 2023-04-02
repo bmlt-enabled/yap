@@ -6,7 +6,6 @@ use App\Constants\VolunteerResponderOption;
 use App\Repositories\ConfigRepository;
 use App\Models\VolunteerInfo;
 use App\Constants\VolunteerType;
-use App\Services\VolunteerService;
 use App\Utility\VolunteerScheduleHelpers;
 
 beforeAll(function () {
@@ -140,6 +139,161 @@ test('get schedule for service body sms volunteer', function () {
 
     $response
         ->assertSimilarJson(json_decode(json_encode($volunteers), true))
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('return volunteers json', function () {
+    $volunteer_name = "Corey";
+    $volunteer_gender = VolunteerGender::UNSPECIFIED;
+    $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
+    $volunteer_languages = ["en-US"];
+    $volunteer_phone_number = "(555) 111-2222";
+    $shiftDay = 2;
+    $shiftTz = "America/New_York";
+    $shiftStart = "12:00 AM";
+    $shiftEnd = "11:59 PM";
+    $volunteer = [[
+        "volunteer_name"=>$volunteer_name,
+        "volunteer_phone_number"=>$volunteer_phone_number,
+        "volunteer_gender"=>$volunteer_gender,
+        "volunteer_responder"=>$volunteer_responder,
+        "volunteer_notes"=>"",
+        "volunteer_enabled"=>true,
+        "volunteer_shift_schedule"=>base64_encode(json_encode([[
+            "day"=>$shiftDay,
+            "tz"=>$shiftTz,
+            "start_time"=>$shiftStart,
+            "end_time"=>$shiftEnd,
+        ]]))
+    ]];
+    $service_body_id = "44";
+    $parent_service_body_id = "43";
+    $repository = Mockery::mock(ConfigRepository::class);
+    $repository->shouldReceive("getDbData")->with(
+        $service_body_id,
+        DataType::YAP_VOLUNTEERS_V2
+    )->andReturn([(object)[
+        "service_body_id" => $service_body_id,
+        "id" => "200",
+        "parent_id" => $parent_service_body_id,
+        "data" => json_encode($volunteer)
+    ]]);
+
+    app()->instance(ConfigRepository::class, $repository);
+    $response = $this->call('GET', '/api/v1/volunteers/download', [
+        "service_body_id" => $service_body_id,
+        "fmt" => "json"
+    ]);
+
+    $expectedResponse = [[
+        "name"=>sprintf("%s ", $volunteer_name),
+        "number"=>$volunteer_phone_number,
+        "gender"=>$volunteer_gender,
+        "responder"=>$volunteer_responder,
+        "type"=>VolunteerType::PHONE,
+        "language"=>$volunteer_languages,
+        "shift_info"=>[[
+            "day"=>$shiftDay,
+            "tz"=>$shiftTz,
+            "start_time"=>$shiftStart,
+            "end_time"=>$shiftEnd
+        ]]
+    ]];
+    $response
+        ->assertSimilarJson($expectedResponse)
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('return volunteers csv', function () {
+    $volunteer_name = "Corey";
+    $volunteer_gender = VolunteerGender::UNSPECIFIED;
+    $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
+    $volunteer_languages = ["en-US"];
+    $volunteer_phone_number = "(555) 111-2222";
+    $shiftDay = 2;
+    $shiftTz = "America/New_York";
+    $shiftStart = "12:00 AM";
+    $shiftEnd = "11:59 PM";
+    $volunteer = [[
+        "volunteer_name"=>$volunteer_name,
+        "volunteer_phone_number"=>$volunteer_phone_number,
+        "volunteer_gender"=>$volunteer_gender,
+        "volunteer_responder"=>$volunteer_responder,
+        "volunteer_notes"=>"",
+        "volunteer_enabled"=>true,
+        "volunteer_shift_schedule"=>base64_encode(json_encode([[
+            "day"=>$shiftDay,
+            "tz"=>$shiftTz,
+            "start_time"=>$shiftStart,
+            "end_time"=>$shiftEnd,
+        ]]))
+    ]];
+    $service_body_id = "44";
+    $parent_service_body_id = "43";
+    $repository = Mockery::mock(ConfigRepository::class);
+    $repository->shouldReceive("getDbData")->with(
+        $service_body_id,
+        DataType::YAP_VOLUNTEERS_V2
+    )->andReturn([(object)[
+        "service_body_id" => $service_body_id,
+        "id" => "200",
+        "parent_id" => $parent_service_body_id,
+        "data" => json_encode($volunteer)
+    ]]);
+
+    app()->instance(ConfigRepository::class, $repository);
+    $response = $this->call('GET', '/api/v1/volunteers/download', [
+        "service_body_id" => $service_body_id,
+        "fmt" => "csv"
+    ]);
+
+    $expectedResponse = "name,number,gender,responder,type,language,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"[{\"\"day\"\":2,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n";
+    $response
+        ->assertContent($expectedResponse)
+        ->assertHeader("Content-Type", "text/plain; charset=UTF-8")
+        ->assertHeader("Content-Length", strlen($expectedResponse))
+        ->assertHeader("Content-Disposition", sprintf("attachment; filename=\"%s-map-metrics.csv\"", $service_body_id))
+        ->assertStatus(200);
+});
+
+test('return volunteers invalid service body id', function () {
+    $service_body_id = "999999";
+    $repository = Mockery::mock(ConfigRepository::class);
+    $repository->shouldReceive("getDbData")->with(
+        $service_body_id,
+        DataType::YAP_VOLUNTEERS_V2
+    )->andReturn([]);
+
+    app()->instance(ConfigRepository::class, $repository);
+    $response = $this->call('GET', '/api/v1/volunteers/download', [
+        "service_body_id" => $service_body_id,
+        "fmt" => "json"
+    ]);
+
+    $response
+        ->assertSimilarJson([])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('return volunteers invalid format', function () {
+    $service_body_id = "44";
+    $repository = Mockery::mock(ConfigRepository::class);
+    $repository->shouldReceive("getDbData")->with(
+        $service_body_id,
+        DataType::YAP_VOLUNTEERS_V2
+    )->andReturn([]);
+
+    app()->instance(ConfigRepository::class, $repository);
+    $response = $this->call('GET', '/api/v1/volunteers/download', [
+        "service_body_id" => $service_body_id,
+        "fmt" => "garbage"
+    ]);
+
+    $response
+        ->assertSimilarJson([])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });

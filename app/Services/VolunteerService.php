@@ -15,6 +15,7 @@ use App\Repositories\ConfigRepository;
 use App\Utility\VolunteerRoutingHelpers;
 use App\Utility\VolunteerScheduleHelpers;
 use DateTime;
+use stdClass;
 
 class VolunteerService
 {
@@ -65,13 +66,13 @@ class VolunteerService
         return $volunteerList;
     }
 
-    public function getVolunteersListReport($service_body_int): bool|string
+    public function getVolunteersListReport($service_body_int)
     {
         $volunteers = $this->getVolunteers($service_body_int);
         if (count($volunteers) > 0) {
             $finalSchedule = $this->getAllVolunteersList($volunteers);
 
-            return json_encode($finalSchedule);
+            return $finalSchedule;
         } else {
             throw new NoVolunteersException();
         }
@@ -162,10 +163,10 @@ class VolunteerService
             $volunteerInfo->number = $volunteer->volunteer_phone_number;
             $volunteerInfo->gender = $volunteer->volunteer_gender ?? VolunteerGender::UNSPECIFIED;
             $volunteerInfo->responder = $volunteer->volunteer_responder ?? VolunteerResponderOption::UNSPECIFIED;
-            if (strlen(setting('language_selections')) > 0) {
-                $volunteerInfo->language = property_exists($volunteer, 'volunteer_language') ? $volunteer->volunteer_language : array(explode(',', setting('language_selections'))[0]);
+            if (strlen($this->settingsService->get('language_selections')) > 0) {
+                $volunteerInfo->language = property_exists($volunteer, 'volunteer_language') ? $volunteer->volunteer_language : array(explode(',', $this->settingsService->get('language_selections'))[0]);
             } else {
-                $volunteerInfo->language = array(setting("language"));
+                $volunteerInfo->language = array($this->settingsService->get("language"));
             }
 
             $finalSchedule[] = $volunteerInfo;
