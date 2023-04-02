@@ -10,6 +10,7 @@ use App\Constants\VolunteerType;
 use App\Models\VolunteerRoutingParameters;
 use App\Services\ConfigService;
 use App\Services\VoicemailService;
+use App\Services\VolunteerService;
 use CallConfig;
 use CallRole;
 use Exception;
@@ -21,10 +22,12 @@ use Twilio\TwiML\VoiceResponse;
 class HelplineController extends Controller
 {
     protected ConfigService $config;
+    protected VolunteerService $volunteerService;
 
-    public function __construct(ConfigService $config)
+    public function __construct(ConfigService $config, VolunteerService $volunteerService)
     {
         $this->config = $config;
+        $this->volunteerService = $volunteerService;
     }
 
     public function search(Request $request)
@@ -327,12 +330,12 @@ class HelplineController extends Controller
         $volunteer_routing_parameters->tracker = $tracker;
         $volunteer_routing_parameters->cycle_algorithm = $serviceBodyCallHandling->call_strategy;
         $volunteer_routing_parameters->volunteer_type = VolunteerType::PHONE;
-        $volunteer_routing_parameters->volunteer_gender = isset($_SESSION['Gender']) ? $_SESSION['Gender'] : VolunteerGender::UNSPECIFIED;
+        $volunteer_routing_parameters->volunteer_gender = $_SESSION['Gender'] ?? VolunteerGender::UNSPECIFIED;
         $volunteer_routing_parameters->volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
         $volunteer_routing_parameters->volunteer_language = setting('language');
         $_SESSION["volunteer_routing_parameters"] = $volunteer_routing_parameters;
         $config->volunteer_routing_params = $volunteer_routing_parameters;
-        $volunteer = getHelplineVolunteer($config->volunteer_routing_params);
+        $volunteer = $this->volunteerService->getHelplineVolunteer($config->volunteer_routing_params);
         $config->volunteer = $volunteer;
         $config->options = array(
             'method' => 'GET',

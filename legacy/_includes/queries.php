@@ -236,17 +236,6 @@ function getDbData($service_body_id, $data_type)
     return $resultset;
 }
 
-function getDbDataByParentId($parent_id, $data_type)
-{
-    $db = new Database();
-    $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `parent_id`=:parent_id AND `data_type`=:data_type");
-    $db->bind(':parent_id', $parent_id);
-    $db->bind(':data_type', $data_type);
-    $resultset = $db->resultset();
-    $db->close();
-    return $resultset;
-}
-
 function getAllDbData($data_type)
 {
     $db = new Database();

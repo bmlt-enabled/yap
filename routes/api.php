@@ -14,6 +14,7 @@ Route::group([
     Route::resource('config', 'ConfigController')->only([
         'index', 'store'
     ]);
+    Route::resource('volunteers/schedule', 'VolunteerScheduleController')->only(['index']);
     Route::resource('reports/cdr', 'CdrController')->only(['index']);
     Route::resource('reports/mapmetrics', 'MapMetricController')->only(['index']);
     Route::resource('reports/metrics', 'MetricController')->only(['index']);

@@ -79,14 +79,44 @@ class SettingsService
         'word_language' => ['description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false]
     ];
 
-    private $settings = [];
+    public static array $dateCalculationsMap = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    private array $settings = [];
+    private array $available_languages = [
+        "en-US" => "English",
+        "en-AU" => "English (Australian)",
+        "es-US" => "Español (United States)",
+        "pig-latin" => "Igpay Atinlay",
+        "pt-BR" => "Português (Brazil)",
+        "fr-CA" => "Français (Canada)",
+        "it-IT" => "Italian (Italy)"
+    ];
+    private array $available_prompts = [
+        "greeting",
+        "voicemail_greeting"
+    ];
+    private array $localization;
+    private string $shortLanguage;
 
     public function __construct()
     {
         @include(!getenv("ENVIRONMENT") ? base_path() . '/config.php' :
             base_path() . '/config.' . getenv("ENVIRONMENT") . '.php');
-
         $this->settings = get_defined_vars();
+
+        foreach ($this->available_languages as $available_language_key => $available_language_value) {
+            foreach ($this->available_prompts as $available_prompt) {
+                $this->allowlist[str_replace("-", "_", $available_language_key) . "_" . $available_prompt] = [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false];
+                $this->allowlist[str_replace("-", "_", $available_language_key) . "_voice"] = [ 'description' => '', 'default' => 'alice', 'overridable' => true, 'hidden' => false];
+            }
+        }
+
+        $this->localization = @include(base_path() . '/lang/' .$this->getWordLanguage().'_v2.php');
+        $this->shortLanguage = $this->getWordLanguage() === "da-DK" ? "dk" : explode("-", $this->getWordLanguage())[0];
+    }
+
+    public function getShortLanguage(): string
+    {
+        return $this->shortLanguage;
     }
 
     public function has($name): bool
@@ -111,6 +141,37 @@ class SettingsService
         }
 
         return null;
+    }
+
+    public function getWordLanguage(): string
+    {
+        foreach ($this->available_languages as $key => $available_language) {
+            if ($key == $this->get('word_language')) {
+                return $key;
+            }
+        }
+
+        return "";
+    }
+
+    public function word($name)
+    {
+        return $this->localization['override_' . $name] ?? $this->localization[$name];
+    }
+
+    public function getNumberForWord($name)
+    {
+        $numbers = $this->localization['numbers'];
+        for ($n = 0; $n < count($numbers); $n++) {
+            if ($name == $numbers[$n]) {
+                return $n;
+            }
+        }
+    }
+
+    public function getWordForNumber($number)
+    {
+        return word($this->localization['numbers'][$number]);
     }
 
     public function getAdminBMLTRootServer(): string

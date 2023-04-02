@@ -8,18 +8,26 @@ use App\Constants\SearchType;
 use App\Constants\VolunteerGender;
 use App\Models\CallRecord;
 use App\Models\RecordType;
-use CallRole;
+use App\Models\VolunteerRoutingParameters;
+use App\Services\VolunteerService;
+use App\Constants\CallRole;
 use Exception;
-use LocationSearchMethod;
-use ReadingType;
-use SpecialPhoneNumber;
+use App\Constants\LocationSearchMethod;
+use App\Constants\ReadingType;
+use App\Constants\SpecialPhoneNumber;
 use Twilio\TwiML\VoiceResponse;
 use Illuminate\Http\Request;
-use VolunteerRoutingParameters;
-use VolunteerType;
+use App\Constants\VolunteerType;
 
 class CallFlowController extends Controller
 {
+//    protected VolunteerService $volunteerService;
+//
+//    public function __construct(VolunteerService $volunteerService)
+//    {
+//        $this->volunteerService = $volunteerService;
+//    }
+
     public function index(Request $request)
     {
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
@@ -782,7 +790,10 @@ class CallFlowController extends Controller
                 $volunteer_routing_parameters->tracker = $tracker;
                 $volunteer_routing_parameters->cycle_algorithm = $serviceBodyCallHandling->sms_strategy;
                 $volunteer_routing_parameters->volunteer_type = VolunteerType::SMS;
-                $phone_numbers = explode(',', getHelplineVolunteer($volunteer_routing_parameters)->phoneNumber);
+                $phone_numbers = explode(
+                    ',',
+                    $this->volunteerService->getHelplineVolunteer($volunteer_routing_parameters)->phoneNumber
+                );
 
                 $GLOBALS['twilioClient']->messages->create(
                     $original_caller_id,
