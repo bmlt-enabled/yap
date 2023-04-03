@@ -72,9 +72,7 @@ class MeetingResultsService
 
     public function meetingSearch($meeting_results, $latitude, $longitude, $day)
     {
-        $search_response = $this->rootServer->searchForMeetings($latitude, $longitude, $day);
-
-        $search_results = json_decode($search_response);
+        $search_results = $this->rootServer->searchForMeetings($latitude, $longitude, $day);
         if (is_array($search_results->meetings) || $search_results->meetings instanceof Countable) {
             $meeting_results->originalListCount += count($search_results->meetings);
         } else {
@@ -82,7 +80,7 @@ class MeetingResultsService
         }
 
         $filteredList = $meeting_results->filteredList;
-        if ($search_response !== "{}") {
+        if ($search_results !== null) {
             for ($i = 0; $i < count($search_results->meetings); $i++) {
                 // Hide meetings if they are TC and are not VM formats.
                 if (!in_array("VM", explode(",", $search_results->meetings[$i]->formats))

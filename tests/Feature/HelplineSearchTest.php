@@ -17,6 +17,7 @@ beforeEach(function () {
 test('force number', function () {
     $repository = Mockery::mock(ReportsRepository::class);
     $repository->shouldReceive("insertCallRecord")->withAnyArgs();
+    $repository->shouldReceive("insertCallEventRecord")->withAnyArgs();
     app()->instance(ReportsRepository::class, $repository);
     $response = $this->call('GET', '/helpline-search.php', [
         'SearchType' => "1",
