@@ -113,12 +113,12 @@ class HelplineController extends Controller
         }
 
         if (isset($address)) {
-            insertCallEventRecord(
+            $this->call->insertCallEventRecord(
                 EventId::VOLUNTEER_SEARCH,
                 (object)['gather' => $address, 'coordinates' => isset($coordinates) ? $coordinates : null]
             );
         } else {
-            insertCallEventRecord(EventId::VOLUNTEER_SEARCH);
+            $this->call->insertCallEventRecord(EventId::VOLUNTEER_SEARCH);
         }
 
         if ($service_body_id > 0 && isset($serviceBodyCallHandling)

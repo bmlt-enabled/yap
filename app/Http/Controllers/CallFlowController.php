@@ -638,7 +638,7 @@ class CallFlowController extends Controller
                     $this->settings->word('for'),
                     $this->settings->word('language_title'),
                     $this->settings->getPressWord(),
-                    getWordForNumber($i + 1)
+                    $this->settings->getWordForNumber($i + 1)
                 );
                 $gather->say($message)
                     ->setVoice($this->settings->voice(str_replace("-", "_", $language_selection_options[$i])))
@@ -898,19 +898,18 @@ class CallFlowController extends Controller
         $callRecord->payload = json_encode($_REQUEST);
 
         $this->call->insertCallRecord($callRecord);
-
         $this->call->checkSMSBlackhole();
 
         $address = $request->get('Body');
-        if (str_exists($address, ',')) {
+        if (str_contains($address, ',')) {
             $coordinates = $this->geocoding->getCoordinatesForAddress($address);
         } else {
-            $coordinates = $this->geocoding->getCoordinatesForAddress($address . "," . getProvince());
+            $coordinates = $this->geocoding->getCoordinatesForAddress($address . "," . $this->call->getProvince());
         }
 
         $twiml = new VoiceResponse();
         $sms_helpline_keyword = $this->settings->get("sms_helpline_keyword");
-        if (str_exists(strtoupper($address), strtoupper($sms_helpline_keyword))) {
+        if (str_contains(strtoupper($address), strtoupper($sms_helpline_keyword))) {
             if (strlen(trim(str_replace(strtoupper($sms_helpline_keyword), "", strtoupper($address)))) > 0) {
                 $twiml->redirect("helpline-sms.php?OriginalCallerId=" . $request->get("From") . "&To=" . $request->get("To") . "&Latitude=" . $coordinates->latitude . "&Longitude=" . $coordinates->longitude)
                     ->setMethod("GET");
@@ -918,19 +917,19 @@ class CallFlowController extends Controller
                 $message = $this->settings->word('please_send_a_message_formatting_as') . " " . $sms_helpline_keyword . ", " . $this->settings->word('followed_by_your_location') . " " . $this->settings->word('for') . " " .  $this->settings->word('someone_to_talk_to');
                 $this->twilio->client()->messages->create($request->get("From"), array("from" => $request->get("To"), "body" => $message));
             }
-        } elseif (json_decode($this->settings->get('jft_option')) && str_exists(strtoupper($address), strtoupper('jft'))) {
+        } elseif (json_decode($this->settings->get('jft_option')) && str_contains(strtoupper($address), strtoupper('jft'))) {
             $reading_chunks = $this->reading->get(ReadingType::JFT, true);
             for ($i = 0; $i < count($reading_chunks); $i++) {
                 $this->twilio->client()->messages->create($request->get("From"), array("from" => $request->get("To"), "body" => $reading_chunks[$i]));
             }
-        } elseif (json_decode($this->settings->get('spad_option')) && str_exists(strtoupper($address), strtoupper('spad'))) {
+        } elseif (json_decode($this->settings->get('spad_option')) && str_contains(strtoupper($address), strtoupper('spad'))) {
             $reading_chunks = $this->reading->get(ReadingType::SPAD, true);
             for ($i = 0; $i < count($reading_chunks); $i++) {
                 $this->twilio->client()->messages->create($request->get("From"), array("from" => $request->get("To"), "body" => $reading_chunks[$i]));
             }
         } else {
-            insertCallEventRecord(EventId::MEETING_SEARCH_SMS);
-            insertCallEventRecord(
+            $this->call->insertCallEventRecord(EventId::MEETING_SEARCH_SMS);
+            $this->call->insertCallEventRecord(
                 EventId::MEETING_SEARCH_LOCATION_GATHERED,
                 (object)['gather' => $address, 'coordinates' => isset($coordinates) ? $coordinates : null]
             );

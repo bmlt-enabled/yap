@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Constants\Http;
 use App\Constants\ReadingType;
+use App\Utility\Sms;
 use DOMDocument;
 use DOMXPath;
 
@@ -69,7 +70,7 @@ class ReadingService
         if ($sms) {
             $without_htmlentities = html_entity_decode($trim_results);
             $without_extranewlines = preg_replace("/[$preg_search_lang]+/", "$preg_replace_lang", $without_htmlentities);
-            $message = sms_chunk_split($without_extranewlines);
+            $message = Sms::chunkSplit($without_extranewlines);
             $finalMessage  = array();
             if (count($message) > 1) {
                 for ($i = 0; $i < count($message); $i++) {

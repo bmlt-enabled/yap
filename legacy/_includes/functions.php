@@ -1117,13 +1117,6 @@ function check_auth()
     }
 }
 
-function sms_chunk_split($msg)
-{
-    $chunk_width = 1575;
-    $chunks = wordwrap($msg, $chunk_width, '\n');
-    return explode('\n', $chunks);
-}
-
 function getCurrentTime()
 {
     return gmdate("Y-m-d H:i:s");

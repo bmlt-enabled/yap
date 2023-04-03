@@ -86,4 +86,18 @@ class CallService
         return $this->reports->isDialbackPinValid($pin);
     }
 
+    public function getProvince()
+    {
+        if ($this->settings->has('sms_bias_bypass') && json_decode($this->settings->get('sms_bias_bypass'))) {
+            return "";
+        } elseif ($this->settings->has('toll_province_bias')) {
+            return $this->settings->get('toll_province_bias');
+        } elseif (isset($_REQUEST['ToState']) && strlen($_REQUEST['ToState']) > 0) {
+            return $_REQUEST['ToState']; // Retrieved from Twilio metadata
+        } elseif ($this->settings->has('toll_free_province_bias')) {
+            return $this->settings->get('toll_free_province_bias'); // Override for Tollfree
+        } else {
+            return "";
+        }
+    }
 }
