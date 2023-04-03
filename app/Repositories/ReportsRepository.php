@@ -2,10 +2,19 @@
 
 namespace App\Repositories;
 
+use App\Models\RecordType;
+use App\Services\SettingsService;
 use Illuminate\Support\Facades\DB;
 
 class ReportsRepository
 {
+    protected SettingsService $settings;
+
+    public function __construct(SettingsService $settings)
+    {
+        $this->settings = $settings;
+    }
+
     public function getMetric($service_body_ids, $date_range_start, $date_range_end): array
     {
         return DB::select(
@@ -131,5 +140,58 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
         DB::delete("DELETE FROM cache_records_conference_participants WHERE guid = ?", [$guid]);
 
         return $resultset;
+    }
+
+    public function insertCallEventRecord($eventid, $meta = null)
+    {
+        if (isset($_REQUEST['CallSid'])) {
+            $callSid = $_REQUEST['CallSid'];
+            $type = RecordType::PHONE;
+        } elseif (isset($_REQUEST['SmsSid'])) {
+            $callSid = $_REQUEST['SmsSid'];
+            $type = RecordType::SMS;
+        } else {
+            return;
+        }
+
+        $meta_as_json = isset($meta) ? json_encode($meta) : null;
+
+        $service_body_id = $this->settings->get('service_body_id');
+        date_default_timezone_set('UTC');
+
+        DB::insert(
+            "INSERT INTO `records_events` (`callsid`,`event_id`,`event_time`,`service_body_id`,`meta`, `type`)
+            VALUES (?, ?, ?, ?, ?, ?)",
+            [$callSid, $eventid,  getCurrentTime(), $service_body_id, $meta_as_json, $type]
+        );
+    }
+
+    public function insertCallRecord($callRecord)
+    {
+        date_default_timezone_set('UTC');
+        DB::insert(
+            "INSERT INTO `records`
+            (`callsid`,`from_number`,`to_number`,`duration`,`start_time`,`end_time`,`payload`,`type`)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                    $callRecord->callSid,
+                    $callRecord->from_number,
+                    $callRecord->to_number,
+                    $callRecord->duration,
+                    $callRecord->start_time,
+                    $callRecord->end_time,
+                    $callRecord->payload,
+                    $callRecord->type
+                ]
+        );
+    }
+
+    public function isDialbackPinValid($pin)
+    {
+        return DB::select(
+            "SELECT from_number FROM sessions a INNER JOIN records b ON
+        a.callsid = b.callsid where pin = ? order by start_time desc limit 1",
+            [$pin]
+        );
     }
 }

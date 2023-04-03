@@ -1,4 +1,7 @@
 <?php
+
+use App\Repositories\ReportsRepository;
+
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
@@ -27,6 +30,13 @@ test('dialback initial', function () {
 });
 
 test('dialback dialer valid pin entry', function () {
+    $fakePin = "123456";
+    $repository = Mockery::mock(ReportsRepository::class);
+    $repository->shouldReceive("insertCallRecord")->withAnyArgs();
+    $repository->shouldReceive("isDialbackPinValid")
+        ->with("123456")
+        ->andReturn(["123456"]);
+    app()->instance(ReportsRepository::class, $repository);
     $fakeCallSid = "abcdefghij";
     $called = "+12125551212";
     $response = $this->call(
@@ -39,9 +49,7 @@ test('dialback dialer valid pin entry', function () {
             "CallDuration"=>"120"]
     );
     $response->assertStatus(200);
-    insertSession($fakeCallSid);
-    $pin = lookupPinForCallSid($fakeCallSid)[0]['pin'];
-    $response = $this->call('GET', '/dialback-dialer.php', ['Digits'=>$pin,'Called'=>$called]);
+    $response = $this->call('GET', '/dialback-dialer.php', ['Digits'=>$fakePin,'Called'=>$called]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -51,12 +59,18 @@ test('dialback dialer valid pin entry', function () {
             '<Say voice="alice" language="en-US">',
             'please wait while we connect your call',
             '</Say>',
-            '<Dial callerId="'.$called.'">'.$pin.'</Dial>',
+            '<Dial callerId="'.$called.'">'.$fakePin.'</Dial>',
             '</Response>'
         ], false);
 });
 
 test('dialback dialer invalid pin entry', function () {
+    $repository = Mockery::mock(ReportsRepository::class);
+    $repository->shouldReceive("insertCallRecord")->withAnyArgs();
+    $repository->shouldReceive("isDialbackPinValid")
+        ->with(null)
+        ->andReturn([]);
+    app()->instance(ReportsRepository::class, $repository);
     $_REQUEST['Digits'] = 123;
     $response = $this->get('/dialback-dialer.php');
     $response

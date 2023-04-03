@@ -31,25 +31,6 @@ function getFlag($flag)
     return isset($resultset[0]["flag_setting"]) ? $resultset[0]["flag_setting"] : -1;
 }
 
-function insertCallRecord($callRecord)
-{
-    $db = new Database();
-    $stmt = "INSERT INTO `records` (`callsid`,`from_number`,`to_number`,`duration`,`start_time`,`end_time`,`payload`,`type`)
-        VALUES (:callSid, :from_number, :to_number, :duration, :start_time, :end_time, :payload, :type)";
-    $db->query($stmt);
-    $db->bind(':callSid', $callRecord->callSid);
-    $db->bind(':from_number', $callRecord->from_number);
-    $db->bind(':to_number', $callRecord->to_number);
-    $db->bind(':duration', $callRecord->duration);
-    date_default_timezone_set('UTC');
-    $db->bind(':start_time', $callRecord->start_time);
-    $db->bind(':end_time', $callRecord->end_time);
-    $db->bind(':payload', $callRecord->payload);
-    $db->bind(':type', $callRecord->type);
-    $db->execute();
-    $db->close();
-}
-
 function insertSession($callsid)
 {
     $pin = lookupPinForCallSid($callsid);
@@ -133,16 +114,6 @@ function insertCallEventRecord($eventid, $meta = null)
     $db->bind(':type', $type);
     $db->execute();
     $db->close();
-}
-
-function getConferences($service_body_id)
-{
-    $db = new Database();
-    $db->query("SELECT * FROM `conference_participants` WHERE `friendlyname` LIKE ':service_body_id_%';");
-    $db->bind(':service_body_id', strval(intval($service_body_id)));
-    $resultset = $db->resultset();
-    $db->close();
-    return $resultset;
 }
 
 function setConferenceParticipant($friendlyname, $callsid, $role)

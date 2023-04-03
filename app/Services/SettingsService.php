@@ -79,7 +79,10 @@ class SettingsService
         'word_language' => ['description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false]
     ];
 
-    public static array $dateCalculationsMap = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    public static array $dateCalculationsMap =
+        [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    private static array $numbers =
+        ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
     private array $settings = [];
     private array $available_languages = [
         "en-US" => "English",
@@ -154,6 +157,12 @@ class SettingsService
         return "";
     }
 
+    public function getPressWord()
+    {
+        return $this->has('speech_gathering')
+        && json_decode($this->get('speech_gathering')) ? $this->word('press_or_say') : $this->word('press');
+    }
+
     public function word($name)
     {
         return $this->localization['override_' . $name] ?? $this->localization[$name];
@@ -161,7 +170,7 @@ class SettingsService
 
     public function getNumberForWord($name)
     {
-        $numbers = $this->localization['numbers'];
+        $numbers = self::$numbers;
         for ($n = 0; $n < count($numbers); $n++) {
             if ($name == $numbers[$n]) {
                 return $n;
@@ -171,7 +180,16 @@ class SettingsService
 
     public function getWordForNumber($number)
     {
-        return word($this->localization['numbers'][$number]);
+        return $this->word(self::$numbers[$number]);
+    }
+
+    public function getBMLTRootServer(): string
+    {
+        if (json_decode($this->get('tomato_meeting_search'))) {
+            return $this->get('tomato_url');
+        } else {
+            return $this->get('bmlt_root_server');
+        }
     }
 
     public function getAdminBMLTRootServer(): string
@@ -180,6 +198,47 @@ class SettingsService
             return $this->get('helpline_bmlt_root_server');
         } else {
             return $this->get('bmlt_root_server');
+        }
+    }
+
+    public function getInputType(): string
+    {
+        return $this->has('speech_gathering') &&
+        json_decode($this->get('speech_gathering')) ? "speech dtmf" : "dtmf";
+    }
+
+    public function voice($current_language = null)
+    {
+        if (!isset($current_language)) {
+            $current_language = str_replace("-", "_", $this->get('language'));
+        }
+
+        if ($this->has($current_language . "_voice")) {
+            return $this->get($current_language . "_voice");
+        } else {
+            return $this->get('voice');
+        }
+    }
+
+    public function getSessionLink($shouldUriEncode = false)
+    {
+        if (isset($_REQUEST['ysk'])) {
+            $session_id = $_REQUEST['ysk'];
+        } elseif (isset($_REQUEST['PHPSESSID'])) {
+            $session_id = $_REQUEST['PHPSESSID'];
+        } elseif (isset($_COOKIE['PHPSESSID'])) {
+            $session_id = $_COOKIE['PHPSESSID'];
+        } else {
+            $session_id = null;
+        }
+
+        return (isset($session_id) ? ($shouldUriEncode ? "&amp;" : "&") . ("ysk=" . $session_id) : "");
+    }
+
+    public function log_debug($message): void
+    {
+        if ($this->has('debug') && boolval($this->get('debug'))) {
+            error_log($message);
         }
     }
 }

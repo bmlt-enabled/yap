@@ -8,7 +8,12 @@ use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
 use App\Constants\VolunteerType;
 use App\Models\VolunteerRoutingParameters;
+use App\Services\CallService;
 use App\Services\ConfigService;
+use App\Services\GeocodingService;
+use App\Services\MeetingResultsService;
+use App\Services\RootServerService;
+use App\Services\SettingsService;
 use App\Services\VoicemailService;
 use App\Services\VolunteerService;
 use CallConfig;
@@ -22,27 +27,41 @@ use Twilio\TwiML\VoiceResponse;
 class HelplineController extends Controller
 {
     protected ConfigService $config;
-    protected VolunteerService $volunteerService;
+    protected VolunteerService $volunteers;
+    protected SettingsService $settings;
+    protected CallService $call;
+    protected RootServerService $rootServer;
+    protected GeocodingService $geocoding;
+    protected MeetingResultsService $meetingResults;
 
-    public function __construct(ConfigService $config, VolunteerService $volunteerService)
-    {
+    public function __construct(
+        ConfigService    $config,
+        VolunteerService $volunteers,
+        SettingsService  $settings,
+        CallService $call,
+        RootServerService $rootServer,
+        GeocodingService $geocoding,
+        MeetingResultsService $meetingResults,
+    ) {
         $this->config = $config;
-        $this->volunteerService = $volunteerService;
+        $this->volunteers = $volunteers;
+        $this->settings = $settings;
+        $this->call = $call;
+        $this->rootServer = $rootServer;
+        $this->geocoding = $geocoding;
+        $this->meetingResults = $meetingResults;
     }
 
     public function search(Request $request)
     {
-        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
-        require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
-
         $twiml = new VoiceResponse();
         $dial_string = "";
 
         if (!$request->has('ForceNumber')) {
             if (isset($_SESSION["override_service_body_id"])) {
-                $service_body_obj = getServiceBody(setting("service_body_id"));
+                $service_body_obj = $this->rootServer->getServiceBody($this->settings->get("service_body_id"));
             } else {
-                $address = isset($_SESSION['Address']) ? $_SESSION['Address'] : getIvrResponse();
+                $address = $_SESSION['Address'] ?? $this->call->getIvrResponse($request);
                 if ($address == null) {
 //            $twiml->say(word('you_might_have_invalid_entry'))
 //                ->setVoice(voice())
@@ -50,13 +69,14 @@ class HelplineController extends Controller
 //            $twiml->redirect("index.php");
 //            return response($twiml)->header("Content-Type", "text/xml");
                 }
-                $coordinates  = getCoordinatesForAddress($address);
+                $coordinates  = $this->geocoding->getCoordinatesForAddress($address);
                 try {
                     if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) {
                         throw new Exception("Couldn't find an address for that location.");
                     }
 
-                    $service_body_obj = getServiceBodyCoverage($coordinates->latitude, $coordinates->longitude);
+                    $service_body_obj = $this->meetingResults
+                        ->getServiceBodyCoverage($coordinates->latitude, $coordinates->longitude);
                 } catch (Exception $e) {
                     $twiml->redirect("input-method.php?Digits=" . $request->get("SearchType") . "&Retry=1&RetryMessage=" . urlencode($e->getMessage()))
                         ->setMethod("GET");
@@ -87,7 +107,8 @@ class HelplineController extends Controller
         $GLOBALS['service_body_id'] = $service_body_id;
 
         if (!$request->has('ForceNumber')
-            && (isset($_SESSION["override_service_body_id"]) || isServiceBodyHelplingCallInternallyRoutable($coordinates->latitude, $coordinates->longitude))) {
+            && (isset($_SESSION["override_service_body_id"])
+                || isServiceBodyHelplingCallInternallyRoutable($coordinates->latitude, $coordinates->longitude))) {
             $serviceBodyCallHandling = $this->config->getCallHandling($service_body_id);
         }
 
@@ -120,16 +141,16 @@ class HelplineController extends Controller
 
             if (setting("announce_servicebody_volunteer_routing")) {
                 $twiml->say(sprintf("%s... %s %s", word('please_stand_by'), word('relocating_your_call_to'), $location))
-                    ->setVoice(voice())
+                    ->setVoice($this->settings->voice())
                     ->setLanguage(setting('language'));
             } else {
                 $twiml->say(word('please_wait_while_we_connect_your_call'))
-                    ->setVoice(voice())
+                    ->setVoice($this->settings->voice())
                     ->setLanguage(setting('language'));
             }
 
             $dial = $twiml->dial();
-            $dial->conference(getConferenceName($calculated_service_body_id))
+            $dial->conference($this->call->getConferenceName($calculated_service_body_id))
                 ->setWaitUrl($serviceBodyCallHandling->moh_count == 1 ? $serviceBodyCallHandling->moh : "playlist.php?items=" . $serviceBodyCallHandling->moh)
                 ->setStatusCallback("helpline-dialer.php?service_body_id=" . $calculated_service_body_id . "&Caller=" . $request->get('Called') . getSessionLink(true))
                 ->setStartConferenceOnEnter("false")
@@ -141,7 +162,7 @@ class HelplineController extends Controller
         } elseif ($phone_number != "") {
             if (!$request->has("ForceNumber")) {
                 $twiml->say(word('please_stand_by') . "... " . word('relocating_your_call_to') . "... " . $location)
-                    ->setVoice(voice())
+                    ->setVoice($this->settings->voice())
                     ->setLanguage(setting('language'));
             } elseif ($request->has("ForceNumber")) {
                 if ($captcha) {
@@ -156,17 +177,17 @@ class HelplineController extends Controller
                         . getSessionLink(true) . " " . $waiting_message ? "&amp;WaitingMessage=1" : "");
 
                     $gather->say(setting('title') .  "..." . word('press_any_key_to_continue'))
-                        ->setVoice(voice())
+                        ->setVoice($this->settings->voice())
                         ->setLanguage(setting('language'));
                     $twiml->hangup();
                 } elseif ($waiting_message) {
                     $twiml->say(!$captcha_verified ? setting('title') : ""
                         .  word('please_wait_while_we_connect_your_call'))
-                        ->setVoice(voice())
+                        ->setVoice($this->settings->voice())
                         ->setLanguage(setting('language'));
                 }
             }
-            insertCallEventRecord(
+            $this->call->insertCallEventRecord(
                 EventId::HELPLINE_ROUTE,
                 (object)["helpline_number" => $phone_number, "extension" => $extension]
             );
@@ -303,7 +324,7 @@ class HelplineController extends Controller
         $voice_url = str_replace("/endpoints", "", "https://".$request->server('HTTP_HOST').$request->server('PHP_SELF'));
         if (strpos(basename($voice_url), ".php")) {
             return substr($voice_url, 0, strrpos($voice_url, "/"));
-        } else if (strpos($voice_url, "?")) {
+        } elseif (strpos($voice_url, "?")) {
             return substr($voice_url, 0, strrpos($voice_url, "?"));
         } else {
             return $voice_url;
@@ -335,7 +356,7 @@ class HelplineController extends Controller
         $volunteer_routing_parameters->volunteer_language = setting('language');
         $_SESSION["volunteer_routing_parameters"] = $volunteer_routing_parameters;
         $config->volunteer_routing_params = $volunteer_routing_parameters;
-        $volunteer = $this->volunteerService->getHelplineVolunteer($config->volunteer_routing_params);
+        $volunteer = $this->volunteers->getHelplineVolunteer($config->volunteer_routing_params);
         $config->volunteer = $volunteer;
         $config->options = array(
             'method' => 'GET',

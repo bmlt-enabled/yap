@@ -15,3 +15,4 @@ function hup($callSid)
 {
     $GLOBALS['twilioClient']->calls($callSid)->update(array('status' => 'completed'));
 }
+
