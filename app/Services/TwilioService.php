@@ -25,7 +25,7 @@ class TwilioService
         }
     }
 
-    public function client() : Client
+    public function client()
     {
         return $this->client;
     }
@@ -49,7 +49,7 @@ class TwilioService
         if (!isset($_SESSION['is_mobile'])) {
             $is_mobile = true;
             if ($this->settings->has('mobile_check') && json_decode($this->settings->get('mobile_check'))) {
-                $phone_number = $GLOBALS['twilioClient']->lookups->v1->phoneNumbers($_REQUEST['From'])
+                $phone_number = $this->client->lookups->v1->phoneNumbers($_REQUEST['From'])
                     ->fetch(array("type" => "carrier"));
                 if ($phone_number->carrier['type'] !== 'mobile') {
                     $is_mobile = false;

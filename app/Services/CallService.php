@@ -12,10 +12,12 @@ class CallService
 
     public function __construct(
         SettingsService $settings,
-        ReportsRepository $reports)
-    {
+        ReportsRepository $reports,
+        TwilioService $twilio,
+    ) {
         $this->settings = $settings;
         $this->reports = $reports;
+        $this->twilio = $twilio;
     }
 
     public function checkSMSBlackhole()
@@ -79,6 +81,13 @@ class CallService
     public function getConferenceName($service_body_id)
     {
         return $service_body_id . "_" . rand(1000000, 9999999) . "_" . time();
+    }
+
+    public function setConferenceParticipant($friendlyname, $callsid, $role)
+    {
+        $conferences = $this->twilio->client()->conferences->read(array ("friendlyName" => $friendlyname ));
+        $conferencesid = $conferences[0]->sid;
+        $this->reports->setConferenceParticipant($friendlyname, $conferencesid, $callsid, $role);
     }
 
     public function isDialbackPinValid($pin)

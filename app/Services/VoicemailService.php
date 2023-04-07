@@ -9,14 +9,16 @@ use SmsDialbackOptions;
 class VoicemailService
 {
     protected PHPMailer $mailer;
+    protected TwilioService $twilio;
 
-    public function __construct(PHPMailer $mailer = null)
+    public function __construct(PHPMailer $mailer = null, TwilioService $twilio)
     {
         if ($mailer == null) {
             $mailer = new PHPMailer(true);
         }
 
         $this->mailer = $mailer;
+        $this->twilio = $twilio;
     }
 
     public function sendSmsForVoicemail($callsid, $recordingUrl, $recipients, $serviceBodyCallHandling, $serviceBodyName, $callerNumber)
@@ -25,7 +27,7 @@ class VoicemailService
         $dialbackString = getDialbackString($callsid, $caller_id, SmsDialbackOptions::VOICEMAIL_NOTIFICATION);
 
         foreach ($recipients as $recipient) {
-            $GLOBALS['twilioClient']->messages->create(
+            $this->twilio->client()->messages->create(
                 $recipient,
                 array(
                     "from" => $caller_id,

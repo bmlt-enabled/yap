@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\CallRole;
 use App\Constants\CycleAlgorithm;
 use App\Constants\EventId;
 use App\Constants\VolunteerGender;
@@ -14,14 +15,13 @@ use App\Services\GeocodingService;
 use App\Services\MeetingResultsService;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
-use App\Services\VoicemailService;
+use App\Services\TwilioService;
 use App\Services\VolunteerService;
-use CallConfig;
-use CallRole;
+use App\Models\CallConfig;
 use Exception;
 use Illuminate\Http\Request;
-use SmsDialbackOptions;
-use SpecialPhoneNumber;
+use App\Constants\SmsDialbackOptions;
+use App\Constants\SpecialPhoneNumber;
 use Twilio\TwiML\VoiceResponse;
 
 class HelplineController extends Controller
@@ -33,6 +33,7 @@ class HelplineController extends Controller
     protected RootServerService $rootServer;
     protected GeocodingService $geocoding;
     protected MeetingResultsService $meetingResults;
+    protected TwilioService $twilio;
 
     public function __construct(
         ConfigService    $config,
@@ -42,6 +43,7 @@ class HelplineController extends Controller
         RootServerService $rootServer,
         GeocodingService $geocoding,
         MeetingResultsService $meetingResults,
+        TwilioService $twilio,
     ) {
         $this->config = $config;
         $this->volunteers = $volunteers;
@@ -50,6 +52,7 @@ class HelplineController extends Controller
         $this->rootServer = $rootServer;
         $this->geocoding = $geocoding;
         $this->meetingResults = $meetingResults;
+        $this->twilio = $twilio;
     }
 
     public function search(Request $request)
@@ -152,7 +155,7 @@ class HelplineController extends Controller
             $dial = $twiml->dial();
             $dial->conference($this->call->getConferenceName($calculated_service_body_id))
                 ->setWaitUrl($serviceBodyCallHandling->moh_count == 1 ? $serviceBodyCallHandling->moh : "playlist.php?items=" . $serviceBodyCallHandling->moh)
-                ->setStatusCallback("helpline-dialer.php?service_body_id=" . $calculated_service_body_id . "&Caller=" . $request->get('Called') . getSessionLink(true))
+                ->setStatusCallback("helpline-dialer.php?service_body_id=" . $calculated_service_body_id . "&Caller=" . $request->get('Called') . $this->settings->getSessionLink(true))
                 ->setStartConferenceOnEnter("false")
                 ->setEndConferenceOnExit("true")
                 ->setStatusCallbackMethod("GET")
@@ -174,7 +177,7 @@ class HelplineController extends Controller
                         ->setNumDigits(1)
                         ->setAction("helpline-search.php?CaptchaVerified=1&ForceNumber="
                         . urlencode($request->get('ForceNumber'))
-                        . getSessionLink(true) . " " . $waiting_message ? "&amp;WaitingMessage=1" : "");
+                        . $this->settings->getSessionLink(true) . " " . $waiting_message ? "&amp;WaitingMessage=1" : "");
 
                     $gather->say(setting('title') .  "..." . word('press_any_key_to_continue'))
                         ->setVoice($this->settings->voice())
@@ -207,9 +210,6 @@ class HelplineController extends Controller
 
     public function dial(Request $request)
     {
-        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
-        require_once __DIR__ . '/../../../legacy/_includes/twilio-client.php';
-
         if ($request->has('noop')) {
             if ($request->has('CallStatus') && $request->get('CallStatus') == 'no-answer') {
                 incrementNoAnswerCount();
@@ -225,13 +225,18 @@ class HelplineController extends Controller
             exit();
         }
 
-        $conferences = $GLOBALS['twilioClient']->conferences->read(array ("friendlyName" => $request->get('FriendlyName')));
+        $conferences = $this->twilio->client()->conferences
+            ->read(array ("friendlyName" => $request->get('FriendlyName')));
         if (count($conferences) > 0 && $conferences[0]->status != "completed") {
             $sms_body = word('you_have_an_incoming_phoneline_call_from') . " ";
 
             if ($request->has('StatusCallbackEvent') && $request->get('StatusCallbackEvent') == 'participant-join' &&
                 ($request->has('SequenceNumber') && intval($request->get('SequenceNumber')) == 1 )) {
-                setConferenceParticipant($request->get('FriendlyName'), $request->get('CallSid'), CallRole::CALLER);
+                $this->call->setConferenceParticipant(
+                    $request->get('FriendlyName'),
+                    $request->get('CallSid'),
+                    CallRole::CALLER
+                );
                 insertCallEventRecord(EventId::CALLER_IN_CONFERENCE);
 
                 if (isset($_SESSION["ActiveVolunteer"])) {
@@ -246,25 +251,29 @@ class HelplineController extends Controller
 
                 if ($request->has('CallStatus') && $request->get('CallStatus') == 'no-answer') {
                     insertCallEventRecord(EventId::VOLUNTEER_NOANSWER, (object)['to_number' => $request->get('Called')]);
-                    setConferenceParticipant($request->get('FriendlyName'), $request->get('CallSid'), CallRole::VOLUNTEER);
+                    $this->call->setConferenceParticipant(
+                        $request->get('FriendlyName'),
+                        $request->get('CallSid'),
+                        CallRole::VOLUNTEER
+                    );
                 }
 
                 log_debug("Next volunteer to call " . $callConfig->volunteer->phoneNumber);
-                $participants = $GLOBALS['twilioClient']->conferences($conferences[0]->sid)->participants->read();
+                $participants = $this->twilio->client()->conferences($conferences[0]->sid)->participants->read();
 
                 // Do not call if the caller hung up.
                 if (count($participants) == 1) {
                     try {
                         $callerSid = $participants[0]->callSid;
                         $_SESSION['master_callersid'] = $callerSid;
-                        $callerNumber = $GLOBALS['twilioClient']->calls($callerSid)->fetch()->from;
+                        $callerNumber = $this->twilio->client()->calls($callerSid)->fetch()->from;
                         if (strpos($callerNumber, "+") !== 0) {
                             $callerNumber .= "+" . trim($callerNumber);
                         }
                         log_debug("callerNumber: " . $callerNumber . ", callerSid: " . $callerSid);
                         if ($callConfig->volunteer->phoneNumber == SpecialPhoneNumber::VOICE_MAIL || $callConfig->volunteer->phoneNumber == SpecialPhoneNumber::UNKNOWN) {
                             log_debug("Calling voicemail.");
-                            $GLOBALS['twilioClient']->calls($callerSid)->update(array(
+                            $this->twilio->client()->calls($callerSid)->update(array(
                                 "method" => "GET",
                                 "url" => $callConfig->voicemail_url . "&caller_number=" . $callerNumber
                             ));
@@ -273,7 +282,7 @@ class HelplineController extends Controller
                                 if ($serviceBodyCallHandling->volunteer_sms_notification_enabled) {
                                     log_debug("Sending volunteer SMS notification: " . $callConfig->volunteer->phoneNumber);
                                     $dialbackString = getDialbackString($callerSid, $callConfig->options['callerId'], SmsDialbackOptions::VOLUNTEER_NOTIFICATION);
-                                    $GLOBALS['twilioClient']->messages->create(
+                                    $this->twilio->client()->messages->create(
                                         $volunteer_number,
                                         array(
                                             "body" => sprintf("%s %s. %s", $sms_body, $callerNumber, $dialbackString),
@@ -284,7 +293,7 @@ class HelplineController extends Controller
 
                                 log_debug("Calling: " . $callConfig->volunteer->phoneNumber);
                                 insertCallEventRecord(EventId::VOLUNTEER_DIALED, (object)['to_number' => $volunteer_number]);
-                                $GLOBALS['twilioClient']->calls->create(
+                                $this->twilio->client()->calls->create(
                                     $volunteer_number,
                                     $callConfig->options['callerId'],
                                     $callConfig->options
@@ -297,11 +306,11 @@ class HelplineController extends Controller
                 }
             } elseif ($request->has('StatusCallbackEvent') && $request->get('StatusCallbackEvent') == 'participant-leave') {
                 $conference_sid = $conferences[0]->sid;
-                $conference_participants = $GLOBALS['twilioClient']->conferences($conference_sid)->participants;
+                $conference_participants = $this->twilio->client()->conferences($conference_sid)->participants;
                 foreach ($conference_participants as $participant) {
                     try {
                         log_debug("Someone left the conference: " . $participant->callSid);
-                        $GLOBALS['twilioClient']->calls($participant->callSid)->update(array( 'status' => 'completed' ));
+                        $this->twilio->client()->calls($participant->callSid)->update(array( 'status' => 'completed' ));
                     } catch (\Twilio\Exceptions\TwilioException $e) {
                         error_log($e);
                     }
@@ -362,14 +371,14 @@ class HelplineController extends Controller
             'method' => 'GET',
             'url'  => ($this->getWebhookUrl($request) . '/helpline-outdial-response.php?conference_name='
                 . $request->get('FriendlyName') . '&service_body_id='
-                . $serviceBodyCallHandling->service_body_id . getSessionLink()),
+                . $serviceBodyCallHandling->service_body_id . $this->settings->getSessionLink()),
             'statusCallback'       => $serviceBodyCallHandling->call_strategy == CycleAlgorithm::BLASTING
-                ? ($this->getWebhookUrl($request) . '/helpline-dialer.php?noop=1' . getSessionLink())
+                ? ($this->getWebhookUrl($request) . '/helpline-dialer.php?noop=1' . $this->settings->getSessionLink())
                 : ($this->getWebhookUrl($request) . '/helpline-dialer.php?service_body_id=' . $serviceBodyCallHandling->service_body_id
                     . ('&tracker=' . ++$tracker)
                     . ('&FriendlyName=' . $request->get('FriendlyName')
                     . ('&OriginalCallerId=' . trim($original_caller_id))
-                    . (getSessionLink()))),
+                    . ($this->settings->getSessionLink()))),
             'statusCallbackEvent'  => 'completed',
             'statusCallbackMethod' => 'GET',
             'timeout'              => $serviceBodyCallHandling->call_timeout,
@@ -379,7 +388,7 @@ class HelplineController extends Controller
 
         $config->voicemail_url = $this->getWebhookUrl($request) . '/voicemail.php?service_body_id='
             . $serviceBodyCallHandling->service_body_id . '&caller_id='
-            . trim($config->options['callerId']) . getSessionLink();
+            . trim($config->options['callerId']) . $this->settings->getSessionLink();
         if (!isset($_SESSION['ActiveVolunteer'])) {
             $_SESSION['ActiveVolunteer'] = $volunteer;
         }

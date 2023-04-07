@@ -76,6 +76,7 @@ class SettingsService
         'twilio_auth_token' => ['description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
         'voice' => ['description' => '/general/language-options', 'default' => 'Polly.Kendra', 'overridable' => true, 'hidden' => false],
         'voicemail_playback_grace_hours' => ['description' => '', 'default' => 48, 'overridable' => true, 'hidden' => false],
+        'volunteer_auto_answer' => ['description' => '/helpline/volunteer-auto-answer', 'default'=>false, 'overridable' => true, 'hidden' => false],
         'word_language' => ['description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false]
     ];
 
@@ -144,6 +145,11 @@ class SettingsService
         }
 
         return null;
+    }
+
+    public function set($name, $value)
+    {
+        $this->settings[$name] = $value;
     }
 
     public function getWordLanguage(): string

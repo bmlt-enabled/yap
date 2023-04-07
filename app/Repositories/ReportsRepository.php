@@ -186,6 +186,15 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
         );
     }
 
+    public function setConferenceParticipant($friendlyname, $conferencesid, $callsid, $role)
+    {
+        DB::insert(
+            "INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`,`role`)
+                VALUES (?,?,?,?)",
+            [$conferencesid, $callsid, $friendlyname, $role]
+        );
+    }
+
     public function isDialbackPinValid($pin)
     {
         return DB::select(

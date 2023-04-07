@@ -179,7 +179,7 @@ class CallFlowController extends Controller
             return response($twiml)->header("Content-Type", "text/xml");
         } elseif ($searchType == SearchType::VOLUNTEERS) {
             if (isset($_SESSION['override_service_body_id'])) {
-                $twiml->redirect("helpline-search.php?Called=" . $request->query("Called") . getSessionLink(true))
+                $twiml->redirect("helpline-search.php?Called=" . $request->query("Called") . $this->settings->getSessionLink(true))
                     ->setMethod("GET");
                 return response($twiml)->header("Content-Type", "text/xml");
             }
@@ -383,7 +383,8 @@ class CallFlowController extends Controller
     public function voiceinputresult(Request $request)
     {
         $province = ($this->settings->has('province_lookup')
-        && json_decode($this->settings->get('province_lookup')) ? $request->query('Province') : getProvince());
+        && json_decode($this->settings->get('province_lookup')) ? $request->query('Province')
+            : $this->call->getProvince());
         $speechResult = $request->query('SpeechResult');
         $searchType = $request->query('SearchType');
         $action = ($searchType == SearchType::VOLUNTEERS ? "helpline-search.php" : "address-lookup.php");
@@ -707,7 +708,7 @@ class CallFlowController extends Controller
                     ->setVoice($this->settings->voice())->setLanguage($this->settings->get('language'));
                 $twiml->hangup();
             } else {
-                insertCallEventRecord(EventId::VOLUNTEER_IN_CONFERENCE, (object)["to_number" => $request->query('Called')]);
+                $this->call->insertCallEventRecord(EventId::VOLUNTEER_IN_CONFERENCE, (object)["to_number" => $request->query('Called')]);
                 $dial = $twiml->dial();
                 $dial->conference($request->query("conference_name"))
                     ->setStatusCallbackMethod("GET")
@@ -723,7 +724,11 @@ class CallFlowController extends Controller
                     "to_number" => $request->query('Called')]
             );
             incrementNoAnswerCount();
-            setConferenceParticipant($request->query('conference_name'), $request->query('CallSid'), CallRole::VOLUNTEER);
+            $this->call->setConferenceParticipant(
+                $request->query('conference_name'),
+                $request->query('CallSid'),
+                CallRole::VOLUNTEER
+            );
             log_debug("They rejected the call.");
             $twiml->hangup();
         }
@@ -739,32 +744,47 @@ class CallFlowController extends Controller
 
         $twiml = new VoiceResponse();
         if (count($participants) == 2) {
-            setConferenceParticipant($request->query('conference_name'), $request->query('CallSid'), CallRole::VOLUNTEER);
+            $this->call->setConferenceParticipant(
+                $request->query('conference_name'),
+                $request->query('CallSid'),
+                CallRole::VOLUNTEER
+            );
             error_log("Enough volunteers have joined.  Hanging up this volunteer.");
             $twiml->say($this->settings->word('volunteer_has_already_joined_the_call_goodbye'))
                 ->setVoice($this->settings->voice())->setLanguage($this->settings->get('language'));
             $twiml->hangup();
         } elseif (count($participants) > 0) {
-            insertCallEventRecord(EventId::VOLUNTEER_ANSWERED, (object)['to_number' => $request->query('Called')]);
-            setConferenceParticipant($request->query('conference_name'), $request->query('CallSid'), CallRole::VOLUNTEER);
+            $this->call->insertCallEventRecord(
+                EventId::VOLUNTEER_ANSWERED,
+                (object)['to_number' => $request->query('Called')]
+            );
+            $this->call->setConferenceParticipant(
+                $request->query('conference_name'),
+                $request->query('CallSid'),
+                CallRole::VOLUNTEER
+            );
             error_log("Volunteer picked up or put to their voicemail, asking if they want to take the call, timing out after 15 seconds of no response.");
             if ($this->settings->has('volunteer_auto_answer') && $this->settings->get('volunteer_auto_answer')) {
-                $twiml->redirect("helpline-answer-response.php?Digits=1&conference_name=".$request->query('conference_name')."&service_body_id=" . $request->query('service_body_id') . getSessionLink(true))
+                $twiml->redirect("helpline-answer-response.php?Digits=1&conference_name=".$request->query('conference_name')."&service_body_id=" . $request->query('service_body_id') . $this->settings->getSessionLink(true))
                 ->setMethod("GET");
             } else {
                 $gather = $twiml->gather()
                     ->setActionOnEmptyResult(true)
                     ->setNumDigits("1")
                     ->setTimeout("15")
-                    ->setAction("helpline-answer-response.php?conference_name=".$request->query('conference_name')."&service_body_id=" . $request->query('service_body_id') . getSessionLink(true))
+                    ->setAction("helpline-answer-response.php?conference_name=".$request->query('conference_name')."&service_body_id=" . $request->query('service_body_id') . $this->settings->getSessionLink(true))
                     ->setMethod("GET");
                 $gather->say($this->settings->word('you_have_a_call_from_the_helpline'))
                     ->setVoice($this->settings->voice())
                     ->setLanguage($this->settings->get('language'));
             }
         } else {
-            setConferenceParticipant($request->query('conference_name'), $request->query('CallSid'), CallRole::CALLER);
-            insertCallEventRecord(EventID::VOLUNTEER_ANSWERED_BUT_CALLER_HUP, (object)[
+            $this->call->setConferenceParticipant(
+                $request->query('conference_name'),
+                $request->query('CallSid'),
+                CallRole::CALLER
+            );
+            $this->call->insertCallEventRecord(EventID::VOLUNTEER_ANSWERED_BUT_CALLER_HUP, (object)[
                 'to_number' => $request->query('Called')]);
             error_log("The caller hungup.");
             $twiml->say($this->settings->word('the_caller_hungup'))
@@ -1190,7 +1210,7 @@ class CallFlowController extends Controller
             if (has_setting('include_distance_details')) {
                 if (setting('include_distance_details') == "mi") {
                     $results_string["distance_details"] = sprintf("(%s mi)", round($filtered_list->distance_in_miles));
-                } else if (setting('include_distance_details') == "km") {
+                } elseif (setting('include_distance_details') == "km") {
                     $results_string["distance_details"] = sprintf("(%s km)", round($filtered_list->distance_in_km));
                 }
             }

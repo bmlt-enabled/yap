@@ -46,8 +46,6 @@ test('voicemail complete send sms using primary contact', function () {
         }));
     $this->twilioClient->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
 
-    $GLOBALS['twilioClient'] = $this->twilioClient;
-
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
         '44',
@@ -149,8 +147,6 @@ test('voicemail complete send email using primary contact', function () {
             return $data['status'] == "completed";
         }));
     $this->twilioClient->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
-
-    $GLOBALS['twilioClient'] = $this->twilioClient;
 
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(

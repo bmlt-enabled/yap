@@ -72,7 +72,6 @@ test('initial sms gateway talk option without location', function () {
             return $data['from'] == $this->to
                 && $data['body'] == 'please send a message formatting as talk, followed by your location as a city, county or zip code for someone to talk to';
         }));
-    $GLOBALS['twilioClient'] = $this->twilioClient;
 
     $_REQUEST['stub_google_maps_endpoint'] = true;
     $this->callerIdInfo['Body'] = 'talk';
@@ -132,7 +131,6 @@ test('sms to deliver the jft', function () {
         ->with($this->from, Mockery::on(function ($data) {
             return $data['from'] == $this->to && !empty($data['body'][0]);
         }));
-    $GLOBALS['twilioClient'] = $this->twilioClient;
 
     $_SESSION['override_jft_option'] = true;
     $this->callerIdInfo['Body'] = 'jFt';
@@ -158,7 +156,6 @@ test('sms to deliver the spad', function () {
         ->with($this->from, Mockery::on(function ($data) {
             return $data['from'] == $this->to && !empty($data['body'][0]);
         }));
-    $GLOBALS['twilioClient'] = $this->twilioClient;
 
     $_SESSION['override_spad_option'] = true;
     $this->callerIdInfo['Body'] = 'spad';

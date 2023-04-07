@@ -38,9 +38,7 @@ test('noop', function () {
             return $data['method'] == "GET" && $data['url'] == $this->voicemail_url;
         }))->once();
     $this->twilioClient->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
-
     $this->twilioClient->calls = $callContextMock;
-    $GLOBALS['twilioClient'] = $this->twilioClient;
 
     $response = $this->call('GET', '/helpline-dialer.php', [
         'noop' => "1",
@@ -76,7 +74,6 @@ test('do nothing', function () {
         ))
         ->once();
     $this->twilioClient->conferences = $conferenceListMock;
-    $GLOBALS['twilioClient'] = $this->twilioClient;
 
     $_SESSION['override_service_body_id'] = '44';
     $response = $this->call('GET', '/helpline-dialer.php', [

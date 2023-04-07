@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
 
 beforeAll(function () {
@@ -18,6 +19,11 @@ beforeEach(function () {
         "httpClient" => $fakeHttpClient
     ]);
 
+    $repository = Mockery::mock(TwilioService::class);
+    $repository->shouldReceive("client")
+        ->andReturn($this->twilioClient);
+    app()->instance(TwilioService::class, $repository);
+
     $this->conferenceName = "abc";
 
     // mocking TwilioRestClient->conferences->read()
@@ -34,7 +40,6 @@ test('join volunteer to conference', function () {
     $participantListMock->shouldReceive("read")->andReturn(["person1"]);
     $conferenceContextMock->participants = $participantListMock;
     $this->twilioClient->shouldReceive("conferences")->with($this->conferenceName)->andReturn($conferenceContextMock);
-    $GLOBALS['twilioClient'] = $this->twilioClient;
 
     $_REQUEST['Digits'] = "1";
     $_REQUEST['Called'] = "12125551212";
@@ -63,7 +68,6 @@ test('enough volunteers in conference, someone is talking to the caller already'
     $participantListMock->shouldReceive("read")->andReturn(["person1", "person2"]);
     $conferenceContextMock->participants = $participantListMock;
     $this->twilioClient->shouldReceive("conferences")->with($this->conferenceName)->andReturn($conferenceContextMock);
-    $GLOBALS['twilioClient'] = $this->twilioClient;
 
     $_REQUEST['Digits'] = "1";
     $_REQUEST['Called'] = "12125551212";

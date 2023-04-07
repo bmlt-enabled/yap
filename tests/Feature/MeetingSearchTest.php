@@ -46,7 +46,6 @@ test('meeting search with valid latitude and longitude', function () {
         ->with(is_string(""), is_array([]))->times(5);
     $this->twilioClient->messages = $messageListMock;
 
-    $GLOBALS['twilioClient'] = $this->twilioClient;
 
     $_SESSION['override_timezone_default'] = '{"timeZoneId": "America/New_York"}';
     $response = $this->call('GET', '/meeting-search.php', [
@@ -110,7 +109,6 @@ test('meeting search with valid latitude and longitude different results count m
         ->with(is_string(""), is_array([]))->times(3);
     $this->twilioClient->messages = $messageListMock;
 
-    $GLOBALS['twilioClient'] = $this->twilioClient;
 
     $_SESSION['override_sms_combine'] = false;
     $_SESSION['override_sms_ask'] = false;

@@ -443,7 +443,6 @@ class UpgradeAdvisor
         }
 
         try {
-            require_once 'twilio-client.php';
             foreach ($GLOBALS['twilioClient']->incomingPhoneNumbers->read() as $number) {
                 if (basename($number->voiceUrl)) {
                     if (!strpos($number->voiceUrl, '.php')
@@ -730,21 +729,6 @@ function getOutboundDialingCallerId($serviceBodyCallHandling)
         return $_REQUEST['caller_id'];
     } else {
         return SpecialPhoneNumber::UNKNOWN;
-    }
-}
-
-function getProvince()
-{
-    if (has_setting('sms_bias_bypass') && json_decode(setting('sms_bias_bypass'))) {
-        return "";
-    } elseif (has_setting('toll_province_bias')) {
-        return setting('toll_province_bias');
-    } elseif (isset($_REQUEST['ToState']) && strlen($_REQUEST['ToState']) > 0) {
-        return $_REQUEST['ToState']; // Retrieved from Twilio metadata
-    } elseif (has_setting('toll_free_province_bias')) {
-        return setting('toll_free_province_bias'); // Override for Tollfree
-    } else {
-        return "";
     }
 }
 
@@ -1120,19 +1104,4 @@ function check_auth()
 function getCurrentTime()
 {
     return gmdate("Y-m-d H:i:s");
-}
-
-function getSessionLink($shouldUriEncode = false)
-{
-    if (isset($_REQUEST['ysk'])) {
-        $session_id = $_REQUEST['ysk'];
-    } else if (isset($_REQUEST['PHPSESSID'])) {
-        $session_id = $_REQUEST['PHPSESSID'];
-    } else if (isset($_COOKIE['PHPSESSID'])) {
-        $session_id = $_COOKIE['PHPSESSID'];
-    } else {
-        $session_id = null;
-    }
-
-    return (isset($session_id) ? ($shouldUriEncode ? "&amp;" : "&") . ("ysk=" . $session_id) : "");
 }

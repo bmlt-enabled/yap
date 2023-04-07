@@ -46,17 +46,6 @@ function insertSession($callsid)
     }
 }
 
-function isDialbackPinValid($pin)
-{
-    $db = new Database();
-    $sql = sprintf("SELECT from_number FROM sessions a INNER JOIN records b ON a.callsid = b.callsid where pin = :pin order by start_time desc limit 1");
-    $db->query($sql);
-    $db->bind(':pin', $pin);
-    $resultset = $db->resultset();
-    $db->close();
-    return count($resultset) > 0;
-}
-
 function lookupPinForCallSid($callsid)
 {
     $db = new Database();
@@ -116,22 +105,6 @@ function insertCallEventRecord($eventid, $meta = null)
     $db->close();
 }
 
-function setConferenceParticipant($friendlyname, $callsid, $role)
-{
-    require_once 'twilio-client.php';
-    $conferences = $GLOBALS['twilioClient']->conferences->read(array ("friendlyName" => $friendlyname ));
-    $conferencesid = $conferences[0]->sid;
-    $db = new Database();
-    $stmt = "INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`,`role`) VALUES (:conferencesid,:callsid,:friendlyname,:role)";
-    $db->query($stmt);
-    $db->bind(':conferencesid', $conferencesid);
-    $db->bind(':callsid', $callsid);
-    $db->bind(':friendlyname', $friendlyname);
-    $db->bind(':role', $role);
-    $db->execute();
-    $db->close();
-}
-
 function getConferenceParticipant($callsid)
 {
     $db = new Database();
@@ -155,46 +128,6 @@ function insertAlert($alertId, $payload)
     $db->close();
 }
 
-function setDatabaseCacheValue($key, $value, $expiry)
-{
-    $db = new Database();
-    $stmt = "INSERT INTO `cache` (`key`, `value`, `expiry`) VALUES (:key, :value, :expiry)";
-    $db->query($stmt);
-    $db->bind(':key', $key);
-    $db->bind(':value', $value);
-    $db->bind(':expiry', $expiry);
-    $db->execute();
-    $db->close();
-}
-
-function getDatabaseCacheValue($key)
-{
-    $db = new Database();
-    $stmt = "SELECT `value`,`expiry` FROM `cache` WHERE `key`=:key ORDER BY id DESC LIMIT 1";
-    $db->query($stmt);
-    $db->bind(':key', $key);
-    $resultset = $db->resultset();
-    $db->close();
-    return $resultset;
-}
-
-function deleteExpiredCacheValues($currentEpoch)
-{
-    $db = new Database();
-    $db->query("DELETE FROM `cache` WHERE `expiry` <= :currentEpoch");
-    $db->bind(":currentEpoch", $currentEpoch);
-    $db->execute();
-    $db->close();
-}
-
-function clearCache()
-{
-    $db = new Database();
-    $stmt = "TRUNCATE TABLE `cache`";
-    $db->query($stmt);
-    $db->execute();
-    $db->close();
-}
 
 function getDbData($service_body_id, $data_type)
 {
@@ -212,17 +145,6 @@ function getAllDbData($data_type)
     $db = new Database();
     $db->query("SELECT `id`,`data`,`service_body_id`,`parent_id` FROM `config` WHERE `data_type`=:data_type");
     $db->bind(':data_type', $data_type);
-    $resultset = $db->resultset();
-    $db->close();
-    return $resultset;
-}
-
-function getDbGroupsForServiceBody($service_body_id)
-{
-    $db = new Database();
-    $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `service_body_id`=:service_body_id AND `data_type`=:data_type");
-    $db->bind(':service_body_id', $service_body_id);
-    $db->bind(':data_type', DataType::YAP_GROUPS_V2);
     $resultset = $db->resultset();
     $db->close();
     return $resultset;
