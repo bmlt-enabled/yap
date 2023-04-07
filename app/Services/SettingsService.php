@@ -147,6 +147,62 @@ class SettingsService
         return null;
     }
 
+    public function getDigitForAction($setting, $action)
+    {
+        $searchTypeSequence = $this->getDigitMapSequence($setting);
+        foreach ($searchTypeSequence as $digit => $type) {
+            if ($type == $action) {
+                return $digit;
+            }
+        }
+    }
+
+    public function getDigitMapSequence($setting)
+    {
+        $digitMap = $this->getDigitMap($setting);
+        ksort($digitMap);
+        return $digitMap;
+    }
+
+    public function getDigitMap($setting)
+    {
+        $digitMapSetting = $this->get($setting);
+
+        if ($setting == 'language_selections') {
+            $language_selection_digit_map = [];
+            for ($i = 0; $i <= count(explode(",", $this->get('language_selections'))); $i++) {
+                $language_selection_digit_map[] = $i;
+            }
+
+            return $language_selection_digit_map;
+        }
+
+        if (!json_decode($this->get('jft_option'))) {
+            if (($key = array_search(SearchType::JFT, $digitMapSetting)) !== false) {
+                unset($digitMapSetting[$key]);
+            }
+        }
+
+        if (!json_decode($this->get('spad_option'))) {
+            if (($key = array_search(SearchType::SPAD, $digitMapSetting)) !== false) {
+                unset($digitMapSetting[$key]);
+            }
+        }
+
+        if (json_decode($this->get('disable_postal_code_gather'))) {
+            if (($key = array_search(LocationSearchMethod::DTMF, $digitMapSetting)) !== false) {
+                unset($digitMapSetting[$key]);
+            }
+        }
+
+        return $digitMapSetting;
+    }
+
+    public function getPossibleDigits($setting)
+    {
+        return array_keys($this->getDigitMap($setting));
+    }
+
     public function set($name, $value)
     {
         $this->settings[$name] = $value;

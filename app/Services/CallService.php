@@ -95,6 +95,27 @@ class CallService
         return $this->reports->isDialbackPinValid($pin);
     }
 
+    function getDigitResponse($request, $setting, $field = 'SearchType')
+    {
+        $digitMap = $this->settings->getDigitMap($setting);
+        if ($field === 'Digits'
+            && $this->settings->has('speech_gathering')
+            && json_encode($this->settings->get('speech_gathering'))
+            && $request->has('SpeechResult')) {
+            $digit = intval($request->query('SpeechResult'));
+        } elseif ($request->has($field)) {
+            $digit = intval($request->query($field));
+        } else {
+            return null;
+        }
+
+        if (array_key_exists($digit, $digitMap)) {
+            return $digitMap[$digit];
+        } else {
+            return null;
+        }
+    }
+
     public function getProvince()
     {
         if ($this->settings->has('sms_bias_bypass') && json_decode($this->settings->get('sms_bias_bypass'))) {

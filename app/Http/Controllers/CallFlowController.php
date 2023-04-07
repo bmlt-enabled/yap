@@ -60,7 +60,7 @@ class CallFlowController extends Controller
 
     public function index(Request $request)
     {
-        $digit = getDigitResponse($request, 'language_selections', 'Digits');
+        $digit = $this->call->getDigitResponse($request, 'language_selections', 'Digits');
 
         $twiml = new VoiceResponse();
         if (strlen($this->settings->get('language_selections')) > 0) {
@@ -119,7 +119,7 @@ class CallFlowController extends Controller
                         ->setLanguage($this->settings->get("language"));
                 }
 
-                $searchTypeSequence = getDigitMapSequence('digit_map_search_type');
+                $searchTypeSequence = $this->settings->getDigitMapSequence('digit_map_search_type');
 
                 foreach ($searchTypeSequence as $digit => $type) {
                     if ($type == SearchType::VOLUNTEERS) {
@@ -150,7 +150,7 @@ class CallFlowController extends Controller
     {
         $response = $this->call->getIvrResponse(
             $request,
-            getPossibleDigits('digit_map_search_type')
+            $this->settings->getPossibleDigits('digit_map_search_type')
         );
         $twiml = new VoiceResponse();
         if ($response == null) {
@@ -161,7 +161,7 @@ class CallFlowController extends Controller
             return response($twiml)->header("Content-Type", "text/xml");
         }
 
-        $searchType = getDigitResponse($request, 'digit_map_search_type', 'Digits');
+        $searchType = $this->call->getDigitResponse($request, 'digit_map_search_type', 'Digits');
         $playTitle = $request->has('PlayTitle') ? $request->query('PlayTitle') : 0;
 
         if ($searchType == SearchType::MEETINGS) {
@@ -241,7 +241,7 @@ class CallFlowController extends Controller
                 ->setLanguage($this->settings->get('language'));
         }
 
-        $locationSearchMethodSequence = getDigitMapSequence('digit_map_location_search_method');
+        $locationSearchMethodSequence = $this->settings->getDigitMapSequence('digit_map_location_search_method');
         foreach ($locationSearchMethodSequence as $digit => $method) {
             if ($method == LocationSearchMethod::VOICE) {
                 $gather->say($this->settings->getPressWord() . " " . $this->settings->getWordForNumber($digit) . " " . $this->settings->word('to_search_for') . " " . $searchDescription . " " . $this->settings->word('by') . " " . $this->settings->word('city_or_county'))
@@ -870,7 +870,8 @@ class CallFlowController extends Controller
     public function inputMethodResult(Request $request)
     {
         $twiml = new VoiceResponse();
-        $response = $this->call->getIvrResponse($request, getPossibleDigits('digit_map_location_search_method'));
+        $response = $this->call->getIvrResponse($request,
+            $this->settings->getPossibleDigits('digit_map_location_search_method'));
         if ($response == null) {
             $twiml->say($this->settings->word('you_might_have_invalid_entry'))
                 ->setVoice($this->settings->voice())
@@ -879,7 +880,7 @@ class CallFlowController extends Controller
             return response($twiml)->header("Content-Type", "text/xml");
         }
 
-        $locationSearchMethod = getDigitResponse($request, 'digit_map_location_search_method', 'Digits');
+        $locationSearchMethod = $this->call->getDigitResponse($request, 'digit_map_location_search_method', 'Digits');
         if ($locationSearchMethod == SearchType::JFT) {
             $twiml->redirect("fetch-jft.php")->setMethod("GET");
             return response($twiml)->header("Content-Type", "text/xml");

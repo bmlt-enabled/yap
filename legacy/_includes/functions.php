@@ -611,45 +611,6 @@ function setting_source($name)
     }
 }
 
-function getDigitMap($setting)
-{
-    $digitMapSetting = setting($setting);
-
-    if ($setting == 'language_selections') {
-        $language_selection_digit_map = [];
-        for ($i = 0; $i <= count(explode(",", setting('language_selections'))); $i++) {
-            array_push($language_selection_digit_map, $i);
-        }
-
-        return $language_selection_digit_map;
-    }
-
-    if (json_decode(setting('jft_option')) == false) {
-        if (($key = array_search(SearchType::JFT, $digitMapSetting)) !== false) {
-            unset($digitMapSetting[$key]);
-        }
-    }
-
-    if (json_decode(setting('spad_option')) == false) {
-        if (($key = array_search(SearchType::SPAD, $digitMapSetting)) !== false) {
-            unset($digitMapSetting[$key]);
-        }
-    }
-
-    if (json_decode(setting('disable_postal_code_gather'))) {
-        if (($key = array_search(LocationSearchMethod::DTMF, $digitMapSetting)) !== false) {
-            unset($digitMapSetting[$key]);
-        }
-    }
-
-    return $digitMapSetting;
-}
-
-function getPossibleDigits($setting)
-{
-    return array_keys(getDigitMap($setting));
-}
-
 function getOptionForSearchType($searchType)
 {
     foreach (setting("digit_map_search_type") as $digit => $value) {
@@ -679,44 +640,6 @@ function getDialbackString($callsid, $dialbackNumber, $option)
     }
 
     return $dialback_string;
-}
-
-function getDigitResponse($request, $setting, $field = 'SearchType')
-{
-    $digitMap = getDigitMap($setting);
-    if ($field === 'Digits'
-        && has_setting('speech_gathering')
-        && json_encode(setting('speech_gathering'))
-        && $request->has('SpeechResult')) {
-        $digit = intval($request->query('SpeechResult'));
-    } elseif ($request->has($field)) {
-        $digit = intval($request->query($field));
-    } else {
-        return null;
-    }
-
-    if (array_key_exists($digit, $digitMap)) {
-        return $digitMap[$digit];
-    } else {
-        return null;
-    }
-}
-
-function getDigitMapSequence($setting)
-{
-    $digitMap = getDigitMap($setting);
-    ksort($digitMap);
-    return $digitMap;
-}
-
-function getDigitForAction($setting, $action)
-{
-    $searchTypeSequence = getDigitMapSequence($setting);
-    foreach ($searchTypeSequence as $digit => $type) {
-        if ($type == $action) {
-            return $digit;
-        }
-    }
 }
 
 function getOutboundDialingCallerId($serviceBodyCallHandling)
