@@ -96,7 +96,8 @@ class SettingsService
     ];
     private array $available_prompts = [
         "greeting",
-        "voicemail_greeting"
+        "voicemail_greeting",
+        "custom_extensions_greeting"
     ];
     private array $localization;
     private string $shortLanguage;
