@@ -25,9 +25,9 @@ For setup instructions and general documentation please visit [https://yap.bmlt.
 * Latest Releases: [https://github.com/bmlt-enabled/yap/releases](https://github.com/bmlt-enabled/yap/releases)
 * Bleeding Edge: [https://archives.bmlt.app/index.html#yap](https://archives.bmlt.app/index.html#yap)
 
-# Major Refactor
+# ⚠️ Major Refactor
 
-<img src="https://img.shields.io/badge/legacyleft-3849-red"/>
+<img src="https://img.shields.io/badge/legacyleft-2947-red"/>
 
 Currently we are in the process of doing a major overhaul of the codebase, by migrating all of the legacy PHP to a more Laravel-like structure.  This will improve the stability and maintainability.  Also as part of this change, we are making the code more testable which will help us track code paths more effectively.  We also plan to redo the frontend part of it migrating from a Bootstrap/Jquery structure to React.
 

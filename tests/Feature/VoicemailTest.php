@@ -50,7 +50,19 @@ test('voicemail standard response', function () {
 });
 
 test('voicemail custom prompt', function () {
-    $_SESSION['override_service_body_id'] = "44";
+    $service_body_id = "44";
+    $_SESSION['override_service_body_id'] = $service_body_id;
+    $repository = Mockery::mock(ConfigRepository::class);
+    $repository->shouldReceive("getDbData")->with(
+        '44',
+        DataType::YAP_CALL_HANDLING_V2
+    )->andReturn([(object)[
+        "service_body_id" => $service_body_id,
+        "id" => "200",
+        "parent_id" => "43",
+        "data" => "{\"data\":{}}"
+    ]]);
+    app()->instance(ConfigRepository::class, $repository);
     $_SESSION['override_en_US_voicemail_greeting'] = "https://example.org/test.mp3";
     $response = $this->call('GET', '/voicemail.php', [
         "caller_id" => "+17325551212",
