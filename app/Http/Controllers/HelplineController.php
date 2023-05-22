@@ -212,13 +212,13 @@ class HelplineController extends Controller
     {
         if ($request->has('noop')) {
             if ($request->has('CallStatus') && $request->get('CallStatus') == 'no-answer') {
-                incrementNoAnswerCount();
+                $this->twilio->incrementNoAnswerCount();
             }
 
             return response([])->header("Content-Type", "application/json");
         }
 
-        $serviceBodyCallHandling = $this->config->getCallHandling(setting('service_body_id'));
+        $serviceBodyCallHandling = $this->config->getCallHandling($this->settings->get('service_body_id'));
 
         if ($request->has('Debug') && intval($request->get('Debug')) == 1) {
             echo var_dump(getCallConfig($request, $serviceBodyCallHandling));

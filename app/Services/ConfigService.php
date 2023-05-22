@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Constants\DataType;
 use App\Constants\SpecialPhoneNumber;
 use App\Repositories\ConfigRepository;
-use ServiceBodyCallHandling;
+use App\Models\ServiceBodyCallHandling;
 
 class ConfigService
 {

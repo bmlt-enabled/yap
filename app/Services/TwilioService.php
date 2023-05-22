@@ -50,6 +50,18 @@ class TwilioService
         }
     }
 
+    public function incrementNoAnswerCount()
+    {
+        $_SESSION['no_answer_count'] = !isset($_SESSION['no_answer_count']) ? 1 : $_SESSION['no_answer_count'] + 1;
+        if ($_SESSION['no_answer_count'] == $_SESSION['no_answer_max']) {
+            $this->settings->logDebug("Call blasting no answer, calling voicemail.");
+            $this->client->calls($_SESSION['master_callersid'])->update(array(
+                "method" => "GET",
+                "url" => $_SESSION['voicemail_url']
+            ));
+        }
+    }
+
     private function mobileCheck()
     {
         if (!isset($_SESSION['is_mobile'])) {

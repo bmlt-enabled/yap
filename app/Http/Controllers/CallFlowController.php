@@ -723,7 +723,7 @@ class CallFlowController extends Controller
                 (object)["digits" => $request->query('Digits'),
                     "to_number" => $request->query('Called')]
             );
-            incrementNoAnswerCount();
+            $this->twilio->incrementNoAnswerCount();
             $this->call->setConferenceParticipant(
                 $request->query('conference_name'),
                 $request->query('CallSid'),
