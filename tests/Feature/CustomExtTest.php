@@ -10,7 +10,7 @@ beforeEach(function () {
 });
 
 test('custom extensions', function () {
-    $GLOBALS['en_US_custom_extensions_greeting'] = "https://fake.org/test.mp3";
+    $_SESSION['override_en_US_custom_extensions_greeting'] = "https://fake.org/test.mp3";
     $response = $this->call('GET', '/custom-ext.php');
     $response
         ->assertStatus(200)

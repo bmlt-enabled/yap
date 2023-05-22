@@ -1,4 +1,8 @@
 <?php
+
+use App\Services\SettingsService;
+use Tests\FakeTwilioHttpClient;
+
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
@@ -7,6 +11,14 @@ beforeEach(function () {
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
     $_SESSION = null;
+
+    $fakeHttpClient = new FakeTwilioHttpClient();
+    $this->twilioClient = mock('Twilio\Rest\Client', [
+        "username" => "fake",
+        "password" => "fake",
+        "httpClient" => $fakeHttpClient
+    ]);
+
 });
 
 test('zip input for helpline lookup', function () {
@@ -62,10 +74,12 @@ test('zip input for address lookup with speech gathering', function () {
 });
 
 test('zip input for 4 digit postal code', function () {
-    $GLOBALS["override_please_enter_your_digit"] = "please enter your four digit";
-    $GLOBALS["override_zip_code"] = "postal code";
+    $settingsService = mock(SettingsService::class)->makePartial();
+    $settingsService->setWord("override_please_enter_your_digit", "please enter your four digit");
+    $settingsService->setWord("override_zip_code", "postal_code");
+    app()->instance(SettingsService::class, $settingsService);
     $_SESSION["override_postal_code_length"] = 4;
-    $response = $this->call('GET', '/zip-input.php?SearchType=2');
+    $response = $this->call('GET', '/zip-input.php', ['SearchType'=>'2']);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")

@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
 
 beforeAll(function () {
@@ -22,7 +23,10 @@ beforeEach(function () {
         "username" => "fake",
         "password" => "fake",
         "httpClient" => $fakeHttpClient
-    ]);
+    ])->makePartial();
+    $twilioService = mock(TwilioService::class)->makePartial();
+    $twilioService->setup($this->twilioClient);
+    app()->instance(TwilioService::class, $twilioService);
 });
 
 test('meeting search with an error on meeting lookup', function () {
@@ -45,7 +49,6 @@ test('meeting search with valid latitude and longitude', function () {
     $messageListMock->shouldReceive('create')
         ->with(is_string(""), is_array([]))->times(5);
     $this->twilioClient->messages = $messageListMock;
-
 
     $_SESSION['override_timezone_default'] = '{"timeZoneId": "America/New_York"}';
     $response = $this->call('GET', '/meeting-search.php', [
@@ -108,7 +111,6 @@ test('meeting search with valid latitude and longitude different results count m
     $messageListMock->shouldReceive('create')
         ->with(is_string(""), is_array([]))->times(3);
     $this->twilioClient->messages = $messageListMock;
-
 
     $_SESSION['override_sms_combine'] = false;
     $_SESSION['override_sms_ask'] = false;

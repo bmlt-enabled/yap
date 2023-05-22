@@ -15,14 +15,20 @@ class TwilioService
     {
         $this->settings = $settings;
         try {
-            $this->client = new Client(
+            $client = new Client(
                 $this->settings->get("twilio_account_sid"),
                 $this->settings->get("twilio_auth_token")
             );
+            $this->setup($client);
         } catch (ConfigurationException $e) {
             error_log("Missing Twilio Credentials");
             throw $e;
         }
+    }
+
+    public function setup(Client $client)
+    {
+        $this->client = $client;
     }
 
     public function client()

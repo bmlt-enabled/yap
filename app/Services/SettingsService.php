@@ -208,6 +208,11 @@ class SettingsService
         $this->settings[$name] = $value;
     }
 
+    public function setWord($word, $value)
+    {
+        $this->localization[$word] = $value;
+    }
+
     public function getWordLanguage(): string
     {
         foreach ($this->available_languages as $key => $available_language) {

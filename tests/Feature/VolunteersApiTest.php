@@ -45,6 +45,8 @@ test('get schedule for service body phone volunteer', function () {
     $parent_service_body_id = "43";
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
+        $service_body_id,
+        DataType::YAP_VOLUNTEERS_V2
     )->andReturn([(object)[
         "service_body_id" => $service_body_id,
         "id" => "200",

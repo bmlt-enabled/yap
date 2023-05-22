@@ -1,6 +1,7 @@
 <?php
 
 use App\Repositories\ReportsRepository;
+use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
 
 beforeAll(function () {
@@ -13,11 +14,12 @@ beforeEach(function () {
     $_SESSION = null;
 
     $fakeHttpClient = new FakeTwilioHttpClient();
-    $this->twilioClient = mock('Twilio\Rest\Client', [
+    $twilioClient = mock('Twilio\Rest\Client', [
         "username" => "fake",
         "password" => "fake",
         "httpClient" => $fakeHttpClient
     ]);
+    app()->instance(TwilioService::class, $twilioClient);
 
     $this->from = '+19737771313';
     $this->to = '+12125551212';
