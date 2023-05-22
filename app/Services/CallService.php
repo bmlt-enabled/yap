@@ -54,7 +54,7 @@ class CallService
 
             if (!$found_at_least_once) {
                 foreach ($expected_likes as $expected_like) {
-                    if (str_exists($response, $expected_like)) {
+                    if (str_contains($response, $expected_like)) {
                         $found_at_least_once = true;
                     }
                 }

@@ -20,8 +20,8 @@ class ConfigService
     {
         $helplineData = $this->config->getDbData($serviceBodyId, DataType::YAP_CALL_HANDLING_V2);
         // TODO: this line needs to be reworked after functions.php is blown up
-        return count($helplineData) > 0 ? getServiceBodyCallHandlingData(json_decode(json_encode($helplineData[0]), true))
-            : getServiceBodyCallHandlingData(null);
+        return count($helplineData) > 0 ? $this->getServiceBodyCallHandlingData(json_decode(json_encode($helplineData[0]), true))
+            : $this->getServiceBodyCallHandlingData(null);
     }
 
     public function getServiceBodyCallHandling($service_body_id)
@@ -45,7 +45,7 @@ class ConfigService
                     }
                 }
 
-                $config->volunteer_routing_enabled = str_exists($data->volunteer_routing, "volunteers");
+                $config->volunteer_routing_enabled = str_contains($data->volunteer_routing, "volunteers");
                 $config->volunteer_routing_redirect = $data->volunteer_routing == "volunteers_redirect";
                 $config->volunteer_routing_redirect_id = $config->volunteer_routing_redirect ?
                     $data->volunteers_redirect_id : 0;

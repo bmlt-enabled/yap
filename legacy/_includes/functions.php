@@ -1,6 +1,6 @@
 <?php
 if (!file_exists('config.php')) {
-    header(sprintf('Location: %s', str_exists($_SERVER['REQUEST_URI'], 'admin') ? 'installer.php' : 'admin/installer.php'), true, 302);
+    header(sprintf('Location: %s', str_contains($_SERVER['REQUEST_URI'], 'admin') ? 'installer.php' : 'admin/installer.php'), true, 302);
     exit();
 }
 if (isset($_GET["ysk"])) {
@@ -877,7 +877,7 @@ function getServiceBodyCallHandlingData($helplineData)
                 }
             }
 
-            $config->volunteer_routing_enabled = str_exists($data->volunteer_routing, "volunteers");
+            $config->volunteer_routing_enabled = str_contains($data->volunteer_routing, "volunteers");
             $config->volunteer_routing_redirect = $data->volunteer_routing == "volunteers_redirect";
             $config->volunteer_routing_redirect_id = $config->volunteer_routing_redirect ? $data->volunteers_redirect_id : 0;
             $config->forced_caller_id_enabled = isset($data->forced_caller_id) && strlen($data->forced_caller_id) > 0;
@@ -898,11 +898,6 @@ function getServiceBodyCallHandlingData($helplineData)
     }
 
     return $config;
-}
-
-function str_exists($subject, $needle)
-{
-    return strpos($subject, $needle) !== false;
 }
 
 function get_str_val($subject)

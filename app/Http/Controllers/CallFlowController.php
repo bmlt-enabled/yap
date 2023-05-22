@@ -81,7 +81,7 @@ class CallFlowController extends Controller
             $incomingPhoneNumber = $this->twilio->client()->incomingPhoneNumbers($phoneNumberSid)->fetch();
 
             if ($incomingPhoneNumber->statusCallback == null
-                || !str_exists($incomingPhoneNumber->statusCallback, "status.php")) {
+                || !str_contains($incomingPhoneNumber->statusCallback, "status.php")) {
                 insertAlert(AlertId::STATUS_CALLBACK_MISSING, $incomingPhoneNumber->phoneNumber);
             }
         }

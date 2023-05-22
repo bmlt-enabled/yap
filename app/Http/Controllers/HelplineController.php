@@ -142,14 +142,21 @@ class HelplineController extends Controller
                 $calculated_service_body_id = $service_body_id;
             }
 
-            if (setting("announce_servicebody_volunteer_routing")) {
-                $twiml->say(sprintf("%s... %s %s", word('please_stand_by'), word('relocating_your_call_to'), $location))
+            if ($this->settings->get("announce_servicebody_volunteer_routing")) {
+                $twiml->say(
+                    sprintf(
+                        "%s... %s %s",
+                        $this->settings->word('please_stand_by'),
+                        $this->settings->word('relocating_your_call_to'),
+                        $location
+                    )
+                )
                     ->setVoice($this->settings->voice())
-                    ->setLanguage(setting('language'));
+                    ->setLanguage($this->settings->get('language'));
             } else {
-                $twiml->say(word('please_wait_while_we_connect_your_call'))
+                $twiml->say($this->settings->word('please_wait_while_we_connect_your_call'))
                     ->setVoice($this->settings->voice())
-                    ->setLanguage(setting('language'));
+                    ->setLanguage($this->settings->get('language'));
             }
 
             $dial = $twiml->dial();
@@ -164,14 +171,16 @@ class HelplineController extends Controller
                 ->setBeep("false");
         } elseif ($phone_number != "") {
             if (!$request->has("ForceNumber")) {
-                $twiml->say(word('please_stand_by') . "... " . word('relocating_your_call_to') . "... " . $location)
+                $twiml->say(
+                    $this->settings->word('please_stand_by') . "... " . $this->settings->word('relocating_your_call_to') . "... " . $location
+                )
                     ->setVoice($this->settings->voice())
-                    ->setLanguage(setting('language'));
+                    ->setLanguage($this->settings->get('language'));
             } elseif ($request->has("ForceNumber")) {
                 if ($captcha) {
                     $gather = $twiml->gather()
-                        ->setLanguage(setting('gather_language'))
-                        ->setHints(setting('gather_hints'))
+                        ->setLanguage($this->settings->get('gather_language'))
+                        ->setHints($this->settings->get('gather_hints'))
                         ->setInput("dtmf")
                         ->setTimeout(15)
                         ->setNumDigits(1)
@@ -179,15 +188,15 @@ class HelplineController extends Controller
                         . urlencode($request->get('ForceNumber'))
                         . $this->settings->getSessionLink(true) . " " . $waiting_message ? "&amp;WaitingMessage=1" : "");
 
-                    $gather->say(setting('title') .  "..." . word('press_any_key_to_continue'))
+                    $gather->say($this->settings->get('title') .  "..." . $this->settings->word('press_any_key_to_continue'))
                         ->setVoice($this->settings->voice())
-                        ->setLanguage(setting('language'));
+                        ->setLanguage($this->settings->get('language'));
                     $twiml->hangup();
                 } elseif ($waiting_message) {
-                    $twiml->say(!$captcha_verified ? setting('title') : ""
-                        .  word('please_wait_while_we_connect_your_call'))
+                    $twiml->say(!$captcha_verified ? $this->settings->get('title') : ""
+                        .  $this->settings->word('please_wait_while_we_connect_your_call'))
                         ->setVoice($this->settings->voice())
-                        ->setLanguage(setting('language'));
+                        ->setLanguage($this->settings->get('language'));
                 }
             }
             $this->call->insertCallEventRecord(
@@ -201,7 +210,7 @@ class HelplineController extends Controller
             $twiml->redirect("input-method.php?Digits="
                 . urlencode($request->get("SearchType"))
                 . "&Retry=1&RetryMessage="
-                . urlencode(word('the_location_you_entered_is_not_found')))
+                . urlencode($this->settings->word('the_location_you_entered_is_not_found')))
                 ->setMethod("GET");
         }
 

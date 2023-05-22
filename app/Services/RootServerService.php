@@ -22,7 +22,7 @@ class RootServerService
             '%s/client_interface/json/?switcher=GetServiceBodies',
             $this->settings->getAdminBMLTRootServer()
         );
-        $this->serviceBodies = $this->http->get($bmlt_search_endpoint, 3600)->json();
+        $this->serviceBodies = json_decode($this->http->get($bmlt_search_endpoint, 3600));
     }
 
     public function getServiceBodiesForUser($include_general = false)
@@ -256,6 +256,6 @@ class RootServerService
         );
         $search_results = $this->http->get($bmlt_search_endpoint, 60)->json();
         $root_server_uri_from_first_result = $search_results[0]->root_server_uri;
-        return str_exists($root_server_uri_from_first_result, getAdminBMLTRootServer());
+        return str_contains($root_server_uri_from_first_result, getAdminBMLTRootServer());
     }
 }
