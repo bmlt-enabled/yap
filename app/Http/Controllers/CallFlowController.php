@@ -846,14 +846,14 @@ class CallFlowController extends Controller
                             )
                         );
                     } else {
-                        $this->settings->log_debug("No phone number was found and no fallback number in primary_contact_number was found.");
+                        $this->settings->logDebug("No phone number was found and no fallback number in primary_contact_number was found.");
                     }
                 }
             } else {
-                $this->settings->log_debug(sprintf("SMS Helpline capability not enabled for service body id: %s", $service_body->id));
+                $this->settings->logDebug(sprintf("SMS Helpline capability not enabled for service body id: %s", $service_body->id));
             }
         } catch (Exception $e) {
-            $this->settings->log_debug($e);
+            $this->settings->logDebug($e);
             $this->twilio->client()->messages->create(
                 $original_caller_id,
                 array(
@@ -870,8 +870,10 @@ class CallFlowController extends Controller
     public function inputMethodResult(Request $request)
     {
         $twiml = new VoiceResponse();
-        $response = $this->call->getIvrResponse($request,
-            $this->settings->getPossibleDigits('digit_map_location_search_method'));
+        $response = $this->call->getIvrResponse(
+            $request,
+            $this->settings->getPossibleDigits('digit_map_location_search_method')
+        );
         if ($response == null) {
             $twiml->say($this->settings->word('you_might_have_invalid_entry'))
                 ->setVoice($this->settings->voice())

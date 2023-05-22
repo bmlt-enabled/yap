@@ -303,7 +303,7 @@ class SettingsService
         return (isset($session_id) ? ($shouldUriEncode ? "&amp;" : "&") . ("ysk=" . $session_id) : "");
     }
 
-    public function log_debug($message): void
+    public function logDebug($message): void
     {
         if ($this->has('debug') && boolval($this->get('debug'))) {
             error_log($message);

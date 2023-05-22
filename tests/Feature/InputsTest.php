@@ -18,7 +18,6 @@ beforeEach(function () {
         "password" => "fake",
         "httpClient" => $fakeHttpClient
     ]);
-
 });
 
 test('zip input for helpline lookup', function () {

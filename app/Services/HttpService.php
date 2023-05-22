@@ -29,5 +29,4 @@ class HttpService
     {
         return isset($_SESSION['bmlt_auth_session']) ? implode(";", $_SESSION['bmlt_auth_session']) : "";
     }
-
 }

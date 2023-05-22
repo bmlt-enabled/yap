@@ -95,7 +95,7 @@ class CallService
         return $this->reports->isDialbackPinValid($pin);
     }
 
-    function getDigitResponse($request, $setting, $field = 'SearchType')
+    public function getDigitResponse($request, $setting, $field = 'SearchType')
     {
         $digitMap = $this->settings->getDigitMap($setting);
         if ($field === 'Digits'
