@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Constants\LocationSearchMethod;
 use App\Constants\MeetingResultSort;
 use App\Constants\SearchType;
+use App\Models\Localizations;
 
 class SettingsService
 {
@@ -99,7 +100,8 @@ class SettingsService
         "voicemail_greeting",
         "custom_extensions_greeting"
     ];
-    private array $localization;
+
+    private object $localizations;
     private string $shortLanguage;
 
     public function __construct()
@@ -107,12 +109,15 @@ class SettingsService
         @include(!getenv("ENVIRONMENT") ? base_path() . '/config.php' :
             base_path() . '/config.' . getenv("ENVIRONMENT") . '.php');
         $this->settings = get_defined_vars();
+        $this->localizations = new Localizations();
 
         foreach ($this->available_languages as $available_language_key => $available_language_value) {
             foreach ($this->available_prompts as $available_prompt) {
                 $this->allowlist[str_replace("-", "_", $available_language_key) . "_" . $available_prompt] = [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false];
                 $this->allowlist[str_replace("-", "_", $available_language_key) . "_voice"] = [ 'description' => '', 'default' => 'alice', 'overridable' => true, 'hidden' => false];
             }
+
+            $this->localizations->$available_language_key = @include(base_path() . '/lang/' .$available_language_key.'_v2.php');
         }
 
         $this->localization = @include(base_path() . '/lang/' .$this->getWordLanguage().'_v2.php');
@@ -204,14 +209,17 @@ class SettingsService
         return array_keys($this->getDigitMap($setting));
     }
 
-    public function set($name, $value)
+    public function set($name, $value): void
     {
         $this->settings[$name] = $value;
     }
 
-    public function setWord($word, $value)
+    public function setWord($word, $value, $language = null): void
     {
-        $this->localization[$word] = $value;
+        if ($language == null) {
+            $language = $this->getWordLanguage();
+        }
+        $this->localizations->$language[$word] = $value;
     }
 
     public function getWordLanguage(): string
@@ -231,9 +239,12 @@ class SettingsService
         && json_decode($this->get('speech_gathering')) ? $this->word('press_or_say') : $this->word('press');
     }
 
-    public function word($name)
+    public function word($name, $language = null)
     {
-        return $this->localization['override_' . $name] ?? $this->localization[$name];
+        if ($language == null) {
+            $language = $this->getWordLanguage();
+        }
+        return $this->localizations->$language['override_' . $name] ?? $this->localizations->$language[$name];
     }
 
     public function getNumberForWord($name)
@@ -288,7 +299,7 @@ class SettingsService
         }
     }
 
-    public function getSessionLink($shouldUriEncode = false)
+    public function getSessionLink($shouldUriEncode = false): string
     {
         if (isset($_REQUEST['ysk'])) {
             $session_id = $_REQUEST['ysk'];

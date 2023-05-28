@@ -1,4 +1,7 @@
 <?php
+
+use App\Services\SettingsService;
+
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
@@ -24,7 +27,9 @@ test('language selector no languages set', function () {
 });
 
 test('language selector with languages set', function () {
-    $_SESSION['override_language_selections'] = 'en-US,es-US';
+    $settingsService = new SettingsService();
+    $settingsService->set("language_selections", "en-US,es-US");
+    app()->instance(SettingsService::class, $settingsService);
     $response = $this->call('GET', '/lng-selector.php');
     $response
         ->assertStatus(200)
