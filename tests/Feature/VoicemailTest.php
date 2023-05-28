@@ -27,7 +27,7 @@ test('voicemail standard response', function () {
         "service_body_id" => $service_body_id,
         "id" => "200",
         "parent_id" => "43",
-        "data" => "{\"data\":{}}"
+        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
     ]]);
     app()->instance(ConfigRepository::class, $repository);
 

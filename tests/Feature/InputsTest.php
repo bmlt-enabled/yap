@@ -1,6 +1,7 @@
 <?php
 
 use App\Services\SettingsService;
+use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
 
 beforeAll(function () {
@@ -18,6 +19,11 @@ beforeEach(function () {
         "password" => "fake",
         "httpClient" => $fakeHttpClient
     ]);
+
+    $repository = Mockery::mock(TwilioService::class);
+    $repository->shouldReceive("client")
+        ->andReturn($this->twilioClient);
+    app()->instance(TwilioService::class, $repository);
 });
 
 test('zip input for helpline lookup', function () {
@@ -73,10 +79,10 @@ test('zip input for address lookup with speech gathering', function () {
 });
 
 test('zip input for 4 digit postal code', function () {
-    $settingsService = mock(SettingsService::class)->makePartial();
+    $settingsService = new SettingsService();
     $settingsService->setWord("override_please_enter_your_digit", "please enter your four digit");
-    $settingsService->setWord("override_zip_code", "postal_code");
-    app()->instance(SettingsService::class, $settingsService);
+    $settingsService->setWord("override_zip_code", "postal code");
+    $this->instance(SettingsService::class, $settingsService);
     $_SESSION["override_postal_code_length"] = 4;
     $response = $this->call('GET', '/zip-input.php', ['SearchType'=>'2']);
     $response
