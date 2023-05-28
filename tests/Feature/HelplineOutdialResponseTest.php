@@ -113,8 +113,8 @@ test('volunteer called and auto answer capability enabled', function () {
     $reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
     app()->instance(ReportsRepository::class, $reportsRepository);
 
-    $settingsService = Mockery::mock(SettingsService::class);
-    $settingsService->makePartial()->set("volunteer_auto_answer", true);
+    $settingsService = new SettingsService();
+    $settingsService->set("volunteer_auto_answer", true);
     app()->instance(SettingsService::class, $settingsService);
 
     $response = $this->call('GET', '/helpline-outdial-response.php', [

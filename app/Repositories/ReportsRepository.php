@@ -142,7 +142,7 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
         return $resultset;
     }
 
-    public function insertCallEventRecord($eventid, $meta = null)
+    public function insertCallEventRecord($eventid, $meta = null): void
     {
         if (isset($_REQUEST['CallSid'])) {
             $callSid = $_REQUEST['CallSid'];

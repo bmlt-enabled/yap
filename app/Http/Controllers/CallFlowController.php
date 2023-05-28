@@ -165,11 +165,11 @@ class CallFlowController extends Controller
         $playTitle = $request->has('PlayTitle') ? $request->query('PlayTitle') : 0;
 
         if ($searchType == SearchType::MEETINGS) {
-            insertCallEventRecord(EventId::MEETING_SEARCH);
+            $this->call->insertCallEventRecord(EventId::MEETING_SEARCH);
         } elseif ($searchType == SearchType::JFT) {
-            insertCallEventRecord(EventId::JFT_LOOKUP);
+            $this->call->insertCallEventRecord(EventId::JFT_LOOKUP);
         } elseif ($searchType == SearchType::SPAD) {
-            insertCallEventRecord(EventId::SPAD_LOOKUP);
+            $this->call->insertCallEventRecord(EventId::SPAD_LOOKUP);
         }
 
         if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETINGS)

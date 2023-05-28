@@ -68,29 +68,29 @@ class CallService
         return $response;
     }
 
-    public function insertCallEventRecord($eventid, $meta = null)
+    public function insertCallEventRecord($eventid, $meta = null): void
     {
         $this->reports->insertCallEventRecord($eventid, $meta);
     }
 
-    public function insertCallRecord($callRecord)
+    public function insertCallRecord($callRecord): void
     {
         $this->reports->insertCallRecord($callRecord);
     }
 
-    public function getConferenceName($service_body_id)
+    public function getConferenceName($service_body_id): string
     {
         return $service_body_id . "_" . rand(1000000, 9999999) . "_" . time();
     }
 
-    public function setConferenceParticipant($friendlyname, $callsid, $role)
+    public function setConferenceParticipant($friendlyname, $callsid, $role): void
     {
         $conferences = $this->twilio->client()->conferences->read(array ("friendlyName" => $friendlyname ));
         $conferencesid = $conferences[0]->sid;
         $this->reports->setConferenceParticipant($friendlyname, $conferencesid, $callsid, $role);
     }
 
-    public function isDialbackPinValid($pin)
+    public function isDialbackPinValid($pin): array
     {
         return $this->reports->isDialbackPinValid($pin);
     }
