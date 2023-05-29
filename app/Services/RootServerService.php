@@ -181,7 +181,7 @@ class RootServerService
             '%s/client_interface/json/?switcher=GetServiceBodies',
             $this->getHelplineRoutingBMLTServer($latitude, $longitude)
         );
-        return $this->http->get($bmlt_search_endpoint, 3600)->json();
+        return json_decode($this->http->get($bmlt_search_endpoint, 3600));
     }
 
     private function getFormatString($formats, $ignore = false)
@@ -203,7 +203,7 @@ class RootServerService
             '%s/client_interface/json/?switcher=GetFormats',
             $this->settings->getBMLTRootServer()
         );
-        $formats = $this->http->get($bmlt_search_endpoint, 3600)->json();
+        $formats = json_decode($this->http->get($bmlt_search_endpoint, 3600));
         for ($t = 0; $t < count($typesArray); $t++) {
             for ($f = 0; $f < count($formats); $f ++) {
                 if ($formats[ $f ]->key_string == $typesArray[$t]) {
@@ -226,7 +226,7 @@ class RootServerService
             $this->settings->get('call_routing_filter')
         );
 
-        return $this->http->get($search_url, 60)->json();
+        return json_decode($this->http->get($search_url, 60));
     }
 
     public function getHelplineRoutingBMLTServer($latitude, $longitude)
@@ -254,7 +254,7 @@ class RootServerService
             $longitude,
             setting('helpline_search_radius')
         );
-        $search_results = $this->http->get($bmlt_search_endpoint, 60)->json();
+        $search_results = json_decode($this->http->get($bmlt_search_endpoint, 60));
         $root_server_uri_from_first_result = $search_results[0]->root_server_uri;
         return str_contains($root_server_uri_from_first_result, getAdminBMLTRootServer());
     }

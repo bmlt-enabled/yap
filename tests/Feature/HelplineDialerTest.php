@@ -2,6 +2,8 @@
 
 use App\Repositories\ConfigRepository;
 use App\Constants\DataType;
+use App\Services\SettingsService;
+use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
 use Twilio\Rest\Api\V2010\Account\CallInstance;
 use Twilio\Version;
@@ -21,9 +23,16 @@ beforeEach(function () {
         "password" => "fake",
         "httpClient" => $fakeHttpClient
     ])->makePartial();
+    $this->twilioService = mock(TwilioService::class)->makePartial();
     $this->conferenceName = "abc";
     $this->voicemail_url = 'https://example.org/voicemail.php';
     $this->callSid = 'abc';
+
+    $settingsService = new SettingsService();
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(TwilioService::class, $this->twilioService);
+    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
+    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
 });
 
 test('noop', function () {
