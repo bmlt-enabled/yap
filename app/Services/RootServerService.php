@@ -12,17 +12,20 @@ class RootServerService
 {
     protected SettingsService $settings;
     protected HttpService $http;
-    protected $serviceBodies;
 
     public function __construct(SettingsService $settings, HttpService $http)
     {
         $this->settings = $settings;
         $this->http = $http;
+    }
+
+    private function getServiceBodies()
+    {
         $bmlt_search_endpoint = sprintf(
             '%s/client_interface/json/?switcher=GetServiceBodies',
             $this->settings->getAdminBMLTRootServer()
         );
-        $this->serviceBodies = json_decode($this->http->get($bmlt_search_endpoint, 3600));
+        return json_decode($this->http->get($bmlt_search_endpoint, 3600));
     }
 
     public function getServiceBodiesForUser($include_general = false)
@@ -92,7 +95,7 @@ class RootServerService
                     $service_bodies_for_user = array();
                 }
 
-                $service_bodies = $this->serviceBodies;
+                $service_bodies = $this->getServiceBodies();
                 $enriched_service_bodies_for_user = array();
                 foreach ($service_bodies_for_user as $service_body_for_user) {
                     foreach ($service_bodies as $service_body) {
@@ -104,9 +107,9 @@ class RootServerService
 
                 return $enriched_service_bodies_for_user;
             } elseif ($_SESSION['auth_mechanism'] == AuthMechanism::V2 && $_SESSION['auth_is_admin']) {
-                return $this->serviceBodies;
+                return $this->getServiceBodies();
             } elseif ($_SESSION['auth_mechanism'] == AuthMechanism::V2) {
-                $service_bodies = $this->serviceBodies;
+                $service_bodies = $this->getServiceBodies();
                 $service_body_rights = $_SESSION['auth_service_bodies'];
                 $service_bodies_for_user = array();
                 foreach ($service_bodies as $service_body) {
@@ -124,7 +127,7 @@ class RootServerService
 
     public function getServiceBody($service_body_id)
     {
-        foreach ($this->serviceBodies as $service_body) {
+        foreach ($this->getServiceBodies() as $service_body) {
             if ($service_body->id == $service_body_id) {
                 return $service_body;
             }
