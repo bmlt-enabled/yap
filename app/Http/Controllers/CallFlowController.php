@@ -633,13 +633,12 @@ class CallFlowController extends Controller
                 ->setAction("index.php")
                 ->setMethod("GET");
             for ($i = 0; $i < count($language_selection_options); $i++) {
-                include __DIR__ . '/../../../lang/' . $language_selection_options[$i] . '.php';
                 $message = sprintf(
                     "%s %s %s %s",
-                    $this->settings->word('for'),
-                    $this->settings->word('language_title'),
-                    $this->settings->getPressWord(),
-                    $this->settings->getWordForNumber($i + 1)
+                    $this->settings->word('for', $language_selection_options[$i]),
+                    $this->settings->word('language_title', $language_selection_options[$i]),
+                    $this->settings->getPressWord($language_selection_options[$i]),
+                    $this->settings->getWordForNumber($i + 1, $language_selection_options[$i])
                 );
                 $gather->say($message)
                     ->setVoice($this->settings->voice(str_replace("-", "_", $language_selection_options[$i])))
@@ -1135,7 +1134,7 @@ class CallFlowController extends Controller
                 if (json_decode($this->settings->get("sms_combine")) || (json_decode($this->settings->get("sms_ask")) && !$isFromSmsGateway)) {
                     array_push($sms_messages, $message);
                 } else {
-                    $this->settings->sendSms($message);
+                    $this->twilio->sendSms($message);
                 }
 
                 $results_counter++;
@@ -1191,8 +1190,8 @@ class CallFlowController extends Controller
     {
         $results_string = array(
             "meeting_name" => str_replace("&", "&amp;", $filtered_list->meeting_name),
-            "timestamp" => str_replace("&", "&amp;", $GLOBALS['days_of_the_week'][$filtered_list->weekday_tinyint]
-                . ' ' . (new DateTime($filtered_list->start_time))->format(setting('time_format'))),
+            "timestamp" => str_replace("&", "&amp;", $this->settings->word('days_of_the_week')[$filtered_list->weekday_tinyint]
+                . ' ' . (new DateTime($filtered_list->start_time))->format($this->settings->get('time_format'))),
             "location" => array(),
             "distance_details" => "",
             "location_links" => array(),
@@ -1202,7 +1201,7 @@ class CallFlowController extends Controller
         );
 
         if (!in_array("TC", explode(",", $filtered_list->formats))) {
-            if (has_setting('include_location_text') && json_decode(setting('include_location_text'))) {
+            if ($this->settings->has('include_location_text') && json_decode($this->settings->get('include_location_text'))) {
                 array_push($results_string["location"], str_replace("&", "&amp;", $filtered_list->location_text));
             }
 
@@ -1210,15 +1209,15 @@ class CallFlowController extends Controller
                 . ($filtered_list->location_municipality !== "" ? ", " . $filtered_list->location_municipality : "")
                 . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")));
 
-            if (has_setting('include_distance_details')) {
-                if (setting('include_distance_details') == "mi") {
+            if ($this->settings->has('include_distance_details')) {
+                if ($this->settings->get('include_distance_details') == "mi") {
                     $results_string["distance_details"] = sprintf("(%s mi)", round($filtered_list->distance_in_miles));
-                } elseif (setting('include_distance_details') == "km") {
+                } elseif ($this->settings->get('include_distance_details') == "km") {
                     $results_string["distance_details"] = sprintf("(%s km)", round($filtered_list->distance_in_km));
                 }
             }
 
-            if (has_setting('include_map_link') && json_decode(setting('include_map_link'))) {
+            if ($this->settings->has('include_map_link') && json_decode($this->settings->get('include_map_link'))) {
                 array_push($results_string["location_links"], sprintf("https://maps.google.com/maps?q=%s,%s&hl=%s", $filtered_list->latitude, $filtered_list->longitude, $GLOBALS['short_language']));
             }
         }
@@ -1237,8 +1236,8 @@ class CallFlowController extends Controller
             }
         }
 
-        if (has_setting('include_format_details') && count(setting('include_format_details')) > 0) {
-            $include_format_details = setting('include_format_details');
+        if ($this->settings->has('include_format_details') && count($this->settings->get('include_format_details')) > 0) {
+            $include_format_details = $this->settings->get('include_format_details');
             foreach ($include_format_details as $include_format_detail) {
                 foreach ($filtered_list->format_details as $format_detail) {
                     if ($format_detail->key_string === $include_format_detail) {

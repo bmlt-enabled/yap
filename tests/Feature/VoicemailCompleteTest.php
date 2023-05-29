@@ -19,7 +19,7 @@ beforeEach(function () {
         "username" => "fake",
         "password" => "fake",
         "httpClient" => $fakeHttpClient
-    ]);
+    ])->makePartial();
 
     $this->callSid = "abc123";
     $this->callerNumber = "+17325551212";

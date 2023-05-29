@@ -233,10 +233,10 @@ class SettingsService
         return "";
     }
 
-    public function getPressWord()
+    public function getPressWord($language = null)
     {
         return $this->has('speech_gathering')
-        && json_decode($this->get('speech_gathering')) ? $this->word('press_or_say') : $this->word('press');
+        && json_decode($this->get('speech_gathering')) ? $this->word('press_or_say', $language) : $this->word('press', $language);
     }
 
     public function word($name, $language = null)
@@ -257,9 +257,9 @@ class SettingsService
         }
     }
 
-    public function getWordForNumber($number)
+    public function getWordForNumber($number, $language = null)
     {
-        return $this->word(self::$numbers[$number]);
+        return $this->word(self::$numbers[$number], $language);
     }
 
     public function getBMLTRootServer(): string

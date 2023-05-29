@@ -1,4 +1,7 @@
 <?php
+
+use Tests\FakeTwilioHttpClient;
+
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
@@ -7,6 +10,13 @@ beforeEach(function () {
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
     $_SESSION = null;
+
+    $fakeHttpClient = new FakeTwilioHttpClient();
+    $this->twilioClient = mock('Twilio\Rest\Client', [
+        "username" => "fake",
+        "password" => "fake",
+        "httpClient" => $fakeHttpClient
+    ])->makePartial();
 });
 
 test('search for volunteers by city or county', function () {

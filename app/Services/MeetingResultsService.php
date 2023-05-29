@@ -88,7 +88,7 @@ class MeetingResultsService
                     continue;
                 }
 
-                if (strpos($bmlt_search_endpoint, "{DAY}")) {
+                if (strpos($this->settings->get('custom_query'), "{DAY}")) {
                     if (!$this->isItPastTime(
                         $search_results->meetings[$i]->weekday_tinyint,
                         $search_results->meetings[$i]->start_time

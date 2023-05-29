@@ -1,11 +1,14 @@
 <?php
 
+use App\Models\Timezone;
+use App\Services\SettingsService;
+use App\Services\TimeZoneService;
 use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
+use Twilio\Rest\Client;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
-    include __DIR__ . '/../../lang/en-US.php';
 });
 
 beforeEach(function () {
@@ -24,23 +27,32 @@ beforeEach(function () {
         "password" => "fake",
         "httpClient" => $fakeHttpClient
     ])->makePartial();
-    $twilioService = mock(TwilioService::class)->makePartial();
-    $twilioService->setup($this->twilioClient);
-    app()->instance(TwilioService::class, $twilioService);
+    $this->twilioService = mock(TwilioService::class)->makePartial();
+
+    $this->latitude = '35.7796';
+    $this->longitude = '-78.6382';
 });
 
-test('meeting search with an error on meeting lookup', function () {
-    $response = $this->get('/meeting-search.php');
+test('meeting search with odd coordinates on meeting lookup', function () {
+    $this->twilioService->shouldReceive("client")->andReturn($this->twilioClient);
+    $settingsService = new SettingsService();
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(Client::class, $this->twilioClient);
+
+    $response = $this->call('GET', '/meeting-search.php', [
+        "Latitude" => 0,
+        "Longitude" => 0,
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
         ->assertDontSee("post-call-action.php")
         ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
-            '<Response>',
-            '<Redirect method="GET">fallback.php</Redirect>',
+            '<Say voice="alice" language="en-US">no results found... you might have an invalid entry... try again</Say>',
+            '<Redirect method="GET">input-method.php?Digits=2</Redirect>',
             '</Response>',
-    ], false);
+        ], false);
 });
 
 test('meeting search with valid latitude and longitude', function () {
@@ -50,11 +62,35 @@ test('meeting search with valid latitude and longitude', function () {
         ->with(is_string(""), is_array([]))->times(5);
     $this->twilioClient->messages = $messageListMock;
 
-    $_SESSION['override_timezone_default'] = '{"timeZoneId": "America/New_York"}';
+//    $this->twilioService->shouldReceive("client")
+//        ->withArgs([])->andReturn($this->twilioClient);
+    $settingsService = new SettingsService();
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(Client::class, $this->twilioClient);
+//    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
+
+    $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
+    $timezoneService = mock(TimeZoneService::class)->makePartial();
+    $timezoneService->shouldReceive('getTimeZoneForCoordinates')
+        ->withArgs([$this->latitude, $this->longitude])
+        ->once()
+        ->andReturn($timezone);
+    app()->instance(TimeZoneService::class, $timezoneService);
+
+//    $phoneNumbersLookup = mock('\Twilio\Rest\Lookups\V1\PhoneNumberList');
+//    $phoneNumbersLookup->shouldReceive('phoneNumbers')
+//        ->withArgs([$_REQUEST['From']]);
+//    $this->twilioClient->lookups->v1->phoneNumbers = $phoneNumbersLookup;
+//    $phoneNumbersLookup->shouldReceive('fetch')
+//        ->withArgs(array("type" => "carrier"))
+//        ->once()
+//        ->andReturn(["carrier" => ["type" => "mobile"])
+
     $response = $this->call('GET', '/meeting-search.php', [
-        'Latitude' => '35.7796',
-        'Longitude' => '-78.6382'
+        'Latitude' => $this->latitude,
+        'Longitude' => $this->longitude
     ]);
+
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -106,19 +142,30 @@ test('meeting search with valid latitude and longitude', function () {
 });
 
 test('meeting search with valid latitude and longitude different results count max', function () {
+    $settingsService = new SettingsService();
+    $settingsService->set('sms_combine', false);
+    $settingsService->set('sms_ask', false);
+    $settingsService->set('result_count_max', 3);
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(Client::class, $this->twilioClient);
+
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
     $messageListMock->shouldReceive('create')
         ->with(is_string(""), is_array([]))->times(3);
-    $this->twilioClient->messages = $messageListMock;
+    $this->twilioService->client()->messages = $messageListMock;
 
-    $_SESSION['override_sms_combine'] = false;
-    $_SESSION['override_sms_ask'] = false;
-    $_SESSION['override_result_count_max'] = 3;
-    $_SESSION['override_timezone_default'] = '{"timeZoneId": "America/New_York"}';
+    $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
+    $timezoneService = mock(TimeZoneService::class)->makePartial();
+    $timezoneService->shouldReceive('getTimeZoneForCoordinates')
+        ->withArgs([$this->latitude, $this->longitude])
+        ->once()
+        ->andReturn($timezone);
+    app()->instance(TimeZoneService::class, $timezoneService);
+
     $response = $this->call('GET', '/meeting-search.php', [
-        'Latitude' => '35.7796',
-        'Longitude' => '-78.6382'
+        'Latitude' => $this->latitude,
+        'Longitude' => $this->longitude
     ]);
     $response
         ->assertStatus(200)
@@ -157,11 +204,22 @@ test('meeting search with valid latitude and longitude different results count m
 });
 
 test('meeting search with valid latitude and longitude with sms ask', function () {
-    $_SESSION['override_timezone_default'] = '{"timeZoneId": "America/New_York"}';
-    $_SESSION['override_sms_ask'] = true;
+    $settingsService = new SettingsService();
+    $settingsService->set("sms_ask", true);
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(Client::class, $this->twilioClient);
+
+    $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
+    $timezoneService = mock(TimeZoneService::class)->makePartial();
+    $timezoneService->shouldReceive('getTimeZoneForCoordinates')
+        ->withArgs([$this->latitude, $this->longitude])
+        ->once()
+        ->andReturn($timezone);
+    app()->instance(TimeZoneService::class, $timezoneService);
+
     $response = $this->call('GET', '/meeting-search.php', [
-        'Latitude' => '35.7796',
-        'Longitude' => '-78.6382'
+        'Latitude' => $this->latitude,
+        'Longitude' => $this->longitude
     ]);
     $response
         ->assertStatus(200)
@@ -216,12 +274,29 @@ test('meeting search with valid latitude and longitude with sms ask', function (
 });
 
 test('meeting search with valid latitude and longitude with sms combine', function () {
-    $_SESSION['override_timezone_default'] = '{"timeZoneId": "America/New_York"}';
-    $_SESSION['override_sms_combine'] = true;
-    $_SESSION['override_sms_ask'] = false;
+    $settingsService = new SettingsService();
+    $settingsService->set('sms_combine', true);
+    $settingsService->set('sms_ask', false);
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(Client::class, $this->twilioClient);
+
+    $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
+    $timezoneService = mock(TimeZoneService::class)->makePartial();
+    $timezoneService->shouldReceive('getTimeZoneForCoordinates')
+        ->withArgs([$this->latitude, $this->longitude])
+        ->once()
+        ->andReturn($timezone);
+    app()->instance(TimeZoneService::class, $timezoneService);
+
+    // mocking TwilioRestClient->messages->create()
+    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+    $messageListMock->shouldReceive('create')
+        ->with(is_string(""), is_array([]))->times(1);
+    $this->twilioClient->messages = $messageListMock;
+
     $response = $this->call('GET', '/meeting-search.php', [
-        'Latitude' => '35.7796',
-        'Longitude' => '-78.6382'
+        'Latitude' => $this->latitude,
+        'Longitude' => $this->longitude
     ]);
     $response
         ->assertStatus(200)

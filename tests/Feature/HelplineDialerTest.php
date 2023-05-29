@@ -20,7 +20,7 @@ beforeEach(function () {
         "username" => "fake",
         "password" => "fake",
         "httpClient" => $fakeHttpClient
-    ]);
+    ])->makePartial();
     $this->conferenceName = "abc";
     $this->voicemail_url = 'https://example.org/voicemail.php';
     $this->callSid = 'abc';

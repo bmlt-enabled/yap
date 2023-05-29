@@ -163,7 +163,7 @@ class RootServerService
         $final_url = $bmlt_base_url . $search_url;
 
         try {
-            $search_response = $this->http->get($final_url)->json();
+            $search_response = json_decode($this->http->get($final_url));
         } catch (Exception $e) {
             if ($e->getMessage() == "Couldn't resolve host name") {
                 throw $e;

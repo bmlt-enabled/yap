@@ -19,11 +19,11 @@ beforeEach(function () {
         "username" => "fake",
         "password" => "fake",
         "httpClient" => $fakeHttpClient
-    ]);
+    ])->makePartial();
 
     $this->conferenceName = "abc";
 
-    $repository = Mockery::mock(TwilioService::class);
+    $repository = Mockery::mock(TwilioService::class)->makePartial();
     $repository->shouldReceive("client")
         ->andReturn($this->twilioClient);
     app()->instance(TwilioService::class, $repository);

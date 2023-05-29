@@ -14,12 +14,11 @@ beforeEach(function () {
     $_SESSION = null;
 
     $fakeHttpClient = new FakeTwilioHttpClient();
-    $twilioClient = mock('Twilio\Rest\Client', [
+    $this->twilioClient = mock('Twilio\Rest\Client', [
         "username" => "fake",
         "password" => "fake",
         "httpClient" => $fakeHttpClient
-    ]);
-    app()->instance(TwilioService::class, $twilioClient);
+    ])->makePartial();
 
     $this->from = '+19737771313';
     $this->to = '+12125551212';

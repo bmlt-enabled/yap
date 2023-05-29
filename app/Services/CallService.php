@@ -9,6 +9,7 @@ class CallService
 {
     protected SettingsService $settings;
     protected ReportsRepository $reports;
+    protected TwilioService $twilio;
 
     public function __construct(
         SettingsService $settings,

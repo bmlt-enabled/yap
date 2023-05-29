@@ -18,7 +18,7 @@ beforeEach(function () {
         "username" => "fake",
         "password" => "fake",
         "httpClient" => $fakeHttpClient
-    ]);
+    ])->makePartial();
 
     $repository = Mockery::mock(TwilioService::class);
     $repository->shouldReceive("client")

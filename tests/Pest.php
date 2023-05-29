@@ -11,6 +11,9 @@
 |
 */
 
+use App\Models\Timezone;
+use App\Services\TimeZoneService;
+
 uses(Tests\TestCase::class)->in('Feature');
 
 /*
@@ -39,7 +42,3 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
-{
-    // ..
-}
