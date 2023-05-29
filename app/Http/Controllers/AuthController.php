@@ -3,15 +3,15 @@ namespace App\Http\Controllers;
 
 use App\Constants\AuthMechanism;
 use App\Constants\Http;
-use App\Services\PermissionService;
+use App\Services\AuthorizationService;
 use App\Services\SettingsService;
 
 class AuthController extends Controller
 {
-    protected PermissionService $permissions;
+    protected AuthorizationService $permissions;
     protected SettingsService $settings;
 
-    public function __construct(PermissionService $permissions, SettingsService $settings)
+    public function __construct(AuthorizationService $permissions, SettingsService $settings)
     {
         $this->permissions = $permissions;
         $this->settings = $settings;

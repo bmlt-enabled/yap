@@ -1,28 +1,59 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use App\Constants\AuthMechanism;
+use App\Services\AuthenticationService;
+use App\Services\AuthorizationService;
+use App\Services\RootServerService;
+use App\Services\SettingsService;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    public function index(Request $request)
+    protected SettingsService $settings;
+    protected RootServerService $rootServer;
+    protected AuthenticationService $authn;
+    protected AuthorizationService $authz;
+    private array $pages = ["Home", "Reports", "Service Bodies", "Schedules", "Settings", "Volunteers", "Groups"];
+
+    public function __construct(SettingsService $settings, RootServerService $rootServer, AuthenticationService $authn, AuthorizationService $authz)
     {
-        return view('admin')
-            ->with('baseUrl', sprintf("%s/adminv2", $request->getBaseUrl()))
-            ->with('rootUrl', $request->getBaseUrl());
+        $this->settings = $settings;
+        $this->rootServer = $rootServer;
+        $this->authn = $authn;
+        $this->authz = $authz;
+
+        if ($authz->canManageUsers()) {
+            $this->pages[] = "Users";
+        }
     }
 
-    public function cacheClear()
+    public function index(Request $request)
     {
-        // TODO: reimplement this with Laravel caching mechanism
-        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
-        if (isset($_SESSION['auth_is_admin']) && $_SESSION['auth_is_admin'] == 1) {
-            clearCache();
-            return response()->json([
-                'status' => 'cache cleared'
-            ]);
+        return view('admin/index', [
+            "settings" => $this->settings,
+            "rootServer" => $this->rootServer
+        ]);
+    }
+
+    public function home(Request $request)
+    {
+        return view('admin/home', [
+            "settings" => $this->settings,
+            "rootServer" => $this->rootServer,
+            "pages" => $this->pages,
+            "username" => $this->authn->username(),
+        ]);
+    }
+
+    public function login(Request $request): \Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse
+    {
+        $auth = $this->authn->authenticate();
+        if ($auth) {
+            return redirect("admin/home");
         } else {
-            abort(404);
+            return redirect("admin/auth/invalid");
         }
     }
 }

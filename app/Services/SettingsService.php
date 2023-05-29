@@ -118,10 +118,9 @@ class SettingsService
                 $this->allowlist[str_replace("-", "_", $available_language_key) . "_voice"] = [ 'description' => '', 'default' => 'alice', 'overridable' => true, 'hidden' => false];
             }
 
-            $this->localizations->$available_language_key = @include(base_path() . '/lang/' .$available_language_key.'_v2.php');
+            $this->localizations->setLocalization($available_language_key, @include(base_path() . '/lang/' .$available_language_key.'_v2.php'));
         }
 
-        $this->localization = @include(base_path() . '/lang/' .$this->getWordLanguage().'_v2.php');
         $this->shortLanguage = $this->getWordLanguage() === "da-DK" ? "dk" : explode("-", $this->getWordLanguage())[0];
     }
 
@@ -225,7 +224,7 @@ class SettingsService
         if ($language == null) {
             $language = $this->getWordLanguage();
         }
-        $this->localizations->$language[$word] = $value;
+        $this->localizations->getLocalization($language)[$word] = $value;
     }
 
     public function getWordLanguage(): string
@@ -250,7 +249,12 @@ class SettingsService
         if ($language == null) {
             $language = $this->getWordLanguage();
         }
-        return $this->localizations->$language['override_' . $name] ?? $this->localizations->$language[$name];
+        return $this->localizations->getLocalization($language)['override_' . $name] ?? $this->localizations->getLocalization($language)[$name];
+    }
+
+    public function availableLanguages(): array
+    {
+        return $this->available_languages;
     }
 
     public function getNumberForWord($name)

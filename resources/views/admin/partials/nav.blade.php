@@ -1,7 +1,4 @@
-<?php
-require_once 'auth_verify.php';
-require_once 'header.php';
-?>
+@include('admin.partials.header')
 <script type="text/javascript">
     var sessionTimeoutMinutes = 20;
     setInterval(function() { location.href='<?php echo ("auth/timeout")?>'; }, sessionTimeoutMinutes * 60000);
@@ -17,19 +14,11 @@ require_once 'header.php';
     </button>
     <div class="collapse navbar-collapse" id="top-navbar">
         <ul class="navbar-nav mr-auto">
-        <?php
-        $pages = array("Home", "Reports", "Service Bodies", "Schedules", "Settings", "Volunteers", "Groups");
-        if (canManageUsers()) {
-            array_push($pages, "Users");
-        }
-
-        foreach ($pages as $page) {
-            $slug = str_replace(" ", "_", strtolower($page))
-            ?>
-            <li class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == $slug.".php" ? "active" : ""?>">
-                <a class="nav-link" href="<?php echo $slug?>.php"><?php echo $GLOBALS[$slug]?></a>
+            @foreach ($pages as $page)
+            <li class="nav-item {{ basename($_SERVER['PHP_SELF']) == Str::of($page)->slug("-") ? "active" : "" }}">
+                <a class="nav-link" href="{{ Str::of($page)->slug("-") }}">{{ $settings->word(Str::of($page)->slug("_")->toString()) }}</a>
             </li>
-        <?php }?>
+            @endforeach
         </ul>
         <ul class="nav justify-content-end">
             <li class="nav-item nav-item-right">
@@ -48,7 +37,7 @@ require_once 'header.php';
                 <button type="button"
                         class="btn btn-danger"
                         id="log-out-button"
-                        onclick="location.href='<?php echo ("auth/logout")?>';"><?php echo $GLOBALS['log_out']?> <?php echo admin_GetUserName()?></button>
+                        onclick="location.href='<?php echo ("auth/logout")?>';">{{ $settings->word("log_out") }} {{ $username }} </button>
             </li>
         </ul>
     </div>

@@ -16,6 +16,18 @@ class ConfigService
         $this->config = $config;
     }
 
+    public function getConfig($service_body_id)
+    {
+        $configs = $this->config->getAllDbData(DataType::YAP_CONFIG_V2);
+        foreach ($configs as $config) {
+            if ($config['service_body_id'] == $service_body_id) {
+                return $config;
+            }
+        }
+
+        return null;
+    }
+
     public function getCallHandling($serviceBodyId): ServiceBodyCallHandling
     {
         $helplineData = $this->config->getDbData($serviceBodyId, DataType::YAP_CALL_HANDLING_V2);

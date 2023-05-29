@@ -14,18 +14,26 @@ class HttpService
         $this->settings = $settings;
     }
 
-    const USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0 +yap";
+    const USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 +yap";
 
     public function get($url, $ttl = 0, $extraHeaders = []) : Response
     {
-        $key = sprintf('cache_%s', $url);
-        return cache()->remember($key, $ttl, function () use ($url, $extraHeaders) {
+        //$key = sprintf('cache_%s', $url);
+        //return cache()->remember($key, $ttl, function () use ($url, $extraHeaders) {
             $response = Http::withHeaders(array_merge([
                 "User-Agent"=>self::USER_AGENT
             ], $extraHeaders))->get($url);
             return $response;
-        });
+        //});
     }
+
+    public function post($url, $data, $extraHeaders = []) : Response
+    {
+        return Http::withHeaders(array_merge([
+            "User-Agent"=>self::USER_AGENT
+        ], $extraHeaders))->post($url, $data);
+    }
+
 
     public function getWithAuth($url, $ttl = 0) : Response
     {

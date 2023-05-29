@@ -25,7 +25,18 @@ class RootServerService
             '%s/client_interface/json/?switcher=GetServiceBodies',
             $this->settings->getAdminBMLTRootServer()
         );
-        return json_decode($this->http->get($bmlt_search_endpoint, 3600));
+        return json_decode($this->http->get($bmlt_search_endpoint, 0));
+    }
+
+    public function getServiceBodiesRightsIds()
+    {
+        $ids = [];
+
+        foreach ($this->getServiceBodiesRights() as $service_body) {
+            array_push($ids, $service_body->id);
+        }
+
+        return $ids;
     }
 
     public function getServiceBodiesForUser($include_general = false)

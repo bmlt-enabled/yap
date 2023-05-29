@@ -1,20 +1,4 @@
 <?php
-function setConfigForService($service_body_id)
-{
-    if (intval($service_body_id) > 0) {
-        $service_body_config = getServiceBodyConfig($service_body_id);
-
-        if (isset($service_body_config)) {
-            foreach ($service_body_config as $item => $value) {
-                if (($item == "twilio_account_sid" || $item == "twilio_auth_token") && isset($_SESSION['call_state'])) {
-                    continue;
-                }
-                $_SESSION["override_" . $item] = $value;
-            }
-        }
-    }
-}
-
 if (!isset($_SESSION['override_service_body_id']) && !isset($_SESSION["override_service_body_config_id"])) {
     $service_body_id = 0;
     if (isset($_REQUEST["service_body_id"]) || isset($_REQUEST["override_service_body_id"])) {

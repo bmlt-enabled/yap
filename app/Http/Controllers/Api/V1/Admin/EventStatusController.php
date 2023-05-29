@@ -4,16 +4,16 @@ namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\EventStatus;
-use App\Services\PermissionService;
+use App\Services\AuthorizationService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class EventStatusController extends Controller
 {
-    private PermissionService $permissionService;
+    private AuthorizationService $permissionService;
     private EventStatus $eventStatus;
 
-    public function __construct(PermissionService $permissionService, EventStatus $eventStatus)
+    public function __construct(AuthorizationService $permissionService, EventStatus $eventStatus)
     {
         $this->permissionService = $permissionService;
         $this->eventStatus = $eventStatus;
