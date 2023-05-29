@@ -14,6 +14,7 @@ class AdminController extends Controller
 
     public function cacheClear()
     {
+        // TODO: reimplement this with Laravel caching mechanism
         require_once __DIR__ . '/../../../legacy/_includes/functions.php';
         if (isset($_SESSION['auth_is_admin']) && $_SESSION['auth_is_admin'] == 1) {
             clearCache();

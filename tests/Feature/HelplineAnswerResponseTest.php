@@ -1,5 +1,9 @@
 <?php
 
+use App\Constants\CallRole;
+use App\Constants\EventId;
+use App\Repositories\ReportsRepository;
+use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
 
 beforeAll(function () {
@@ -16,14 +20,19 @@ beforeEach(function () {
         "username" => "fake",
         "password" => "fake",
         "httpClient" => $fakeHttpClient
-    ]);
+    ])->makePartial();
+
+    $repository = Mockery::mock(TwilioService::class)->makePartial();
+    $repository->shouldReceive("client")->andReturn($this->twilioClient);
+    app()->instance(TwilioService::class, $repository);
 
     $this->conferenceName = "abc";
+    $this->conferenceSid = "ijk";
 
     // mocking TwilioRestClient->conferences->read()
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $conferenceListMock->shouldReceive("read")->with(['friendlyName' => $this->conferenceName])
-        ->andReturn(json_decode('[{"sid":"'.$this->conferenceName.'"}]'));
+        ->andReturn(json_decode('[{"sid":"'.$this->conferenceSid.'"}]'));
     $this->twilioClient->conferences = $conferenceListMock;
 });
 
@@ -33,8 +42,7 @@ test('join volunteer to conference', function () {
     $participantListMock = mock("Twilio\Rest\Api\V2010\Account\Conference\ParticipantList");
     $participantListMock->shouldReceive("read")->andReturn(["person1"]);
     $conferenceContextMock->participants = $participantListMock;
-    $this->twilioClient->shouldReceive("conferences")->with($this->conferenceName)->andReturn($conferenceContextMock);
-    $GLOBALS['twilioClient'] = $this->twilioClient;
+    $this->twilioClient->shouldReceive("conferences")->with($this->conferenceSid)->andReturn($conferenceContextMock);
 
     $_REQUEST['Digits'] = "1";
     $_REQUEST['Called'] = "12125551212";
@@ -62,8 +70,7 @@ test('enough volunteers in conference, someone is talking to the caller already'
     $participantListMock = mock("Twilio\Rest\Api\V2010\Account\Conference\ParticipantList");
     $participantListMock->shouldReceive("read")->andReturn(["person1", "person2"]);
     $conferenceContextMock->participants = $participantListMock;
-    $this->twilioClient->shouldReceive("conferences")->with($this->conferenceName)->andReturn($conferenceContextMock);
-    $GLOBALS['twilioClient'] = $this->twilioClient;
+    $this->twilioClient->shouldReceive("conferences")->with($this->conferenceSid)->andReturn($conferenceContextMock);
 
     $_REQUEST['Digits'] = "1";
     $_REQUEST['Called'] = "12125551212";
@@ -86,16 +93,30 @@ test('enough volunteers in conference, someone is talking to the caller already'
 });
 
 test('volunteer opts not to answer the call', function () {
-    $_REQUEST['Digits'] = "2";
-    $_REQUEST['Called'] = "12125551212";
-    $_REQUEST['CallSid'] = "abc";
-    $_REQUEST['conference_name'] = $this->conferenceName;
+    $callSid = "def";
+    $digits = "2";
+    $called = "12125551212";
+
+    $reportsRepository = Mockery::mock(ReportsRepository::class)->makePartial();
+    $reportsRepository
+        ->shouldReceive("insertCallEventRecord")
+        ->withArgs([
+            EventId::VOLUNTEER_REJECTED,
+            Mockery::any()])
+        ->once();
+    $reportsRepository
+        ->shouldReceive("setConferenceParticipant")
+        ->withArgs([$this->conferenceName, $this->conferenceSid, $callSid, CallRole::VOLUNTEER])
+        ->once();
+
+    app()->instance(ReportsRepository::class, $reportsRepository);
+
     $_SESSION['no_answer_max'] = 5;
     $response = $this->call('GET', '/helpline-answer-response.php', [
-        "Digits"=>"1",
-        "Called"=>"12125551212",
-        "CallSid"=>"abc",
-        "conference_name"=>"abc"
+        "Digits"=>$digits,
+        "Called"=>$called,
+        "CallSid"=>$callSid,
+        "conference_name"=>$this->conferenceName
     ]);
     $response
         ->assertStatus(200)

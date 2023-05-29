@@ -2,6 +2,8 @@
 
 use App\Repositories\ConfigRepository;
 use App\Constants\DataType;
+use App\Services\SettingsService;
+use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
 use Twilio\Rest\Api\V2010\Account\CallInstance;
 use Twilio\Version;
@@ -20,10 +22,17 @@ beforeEach(function () {
         "username" => "fake",
         "password" => "fake",
         "httpClient" => $fakeHttpClient
-    ]);
+    ])->makePartial();
+    $this->twilioService = mock(TwilioService::class)->makePartial();
     $this->conferenceName = "abc";
     $this->voicemail_url = 'https://example.org/voicemail.php';
     $this->callSid = 'abc';
+
+    $settingsService = new SettingsService();
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(TwilioService::class, $this->twilioService);
+    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
+    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
 });
 
 test('noop', function () {
@@ -38,9 +47,7 @@ test('noop', function () {
             return $data['method'] == "GET" && $data['url'] == $this->voicemail_url;
         }))->once();
     $this->twilioClient->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
-
     $this->twilioClient->calls = $callContextMock;
-    $GLOBALS['twilioClient'] = $this->twilioClient;
 
     $response = $this->call('GET', '/helpline-dialer.php', [
         'noop' => "1",
@@ -76,7 +83,6 @@ test('do nothing', function () {
         ))
         ->once();
     $this->twilioClient->conferences = $conferenceListMock;
-    $GLOBALS['twilioClient'] = $this->twilioClient;
 
     $_SESSION['override_service_body_id'] = '44';
     $response = $this->call('GET', '/helpline-dialer.php', [

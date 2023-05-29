@@ -2,6 +2,7 @@
 
 use App\Repositories\ConfigRepository;
 use App\Constants\DataType;
+use App\Repositories\ReportsRepository;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -14,6 +15,10 @@ beforeEach(function () {
 });
 
 test('force number', function () {
+    $repository = Mockery::mock(ReportsRepository::class);
+    $repository->shouldReceive("insertCallRecord")->withAnyArgs();
+    $repository->shouldReceive("insertCallEventRecord")->withAnyArgs();
+    app()->instance(ReportsRepository::class, $repository);
     $response = $this->call('GET', '/helpline-search.php', [
         'SearchType' => "1",
         'Called' => "+12125551212",

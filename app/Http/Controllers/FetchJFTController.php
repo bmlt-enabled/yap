@@ -2,35 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Twilio\Rest\Voice;
+use App\Constants\ReadingType;
+use App\Services\ReadingService;
+use App\Services\SettingsService;
 use Twilio\TwiML\VoiceResponse;
 
 class FetchJFTController extends Controller
 {
+    protected ReadingService $reading;
+    protected SettingsService $settings;
 
-    public function index()
+    public function __construct(ReadingService $reading, SettingsService $settings)
     {
-        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
-        $jft_array = get_reading(\ReadingType::JFT);
+        $this->reading = $reading;
+        $this->settings = $settings;
+    }
+
+    public function index(ReadingService $reading, SettingsService $settings)
+    {
+        $jft_array = $this->reading->get(ReadingType::JFT);
         $twiml = new VoiceResponse();
         foreach ($jft_array as $item) {
             $twiml->say(str_replace("&nbsp;", " ", $item))
-                ->setVoice(voice())
-                ->setLanguage(setting('language'));
+                ->setVoice($this->settings->voice())
+                ->setLanguage($this->settings->get('language'));
         }
         return response($twiml)->header("Content-Type", "text/xml");
     }
 
     public function spad()
     {
-        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
-        $spad_array = get_reading(\ReadingType::SPAD);
+        $spad_array = $this->reading->get(ReadingType::SPAD);
         $twiml = new VoiceResponse();
         foreach ($spad_array as $item) {
             $twiml->say(str_replace("&nbsp;", " ", $item))
-                ->setVoice(voice())
-                ->setLanguage(setting('language'));
+                ->setVoice($this->settings->voice())
+                ->setLanguage($this->settings->get('language'));
         }
         return response($twiml)->header("Content-Type", "text/xml");
     }

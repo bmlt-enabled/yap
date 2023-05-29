@@ -2,20 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Services\SettingsService;
+use Illuminate\Http\Response;
 
 class MeetingResultsController extends Controller
 {
-    public function index($latitude, $longitude): \Illuminate\Http\Response
+    protected SettingsService $settingsService;
+
+    public function __construct(SettingsService $settingsService)
+    {
+        $this->settingsService = $settingsService;
+    }
+
+    public function index($latitude, $longitude): Response
     {
         if (is_numeric($latitude) && is_numeric($longitude)) {
-            require_once __DIR__ . '/../../../legacy/_includes/functions.php';
             return response()->view(
                 'meetingResults',
                 [
                     'latitude' => $latitude,
                     'longitude' => $longitude,
-                    'rootServerUrl' => getBMLTRootServer()
+                    'rootServerUrl' => $this->settingsService->getBMLTRootServer()
                 ],
                 200,
                 ['contentType' => 'text/html']

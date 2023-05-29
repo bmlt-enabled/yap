@@ -27,7 +27,7 @@ class VolunteerRoutingHelpers
 
     public static function checkVolunteerRoutingType($volunteer_routing_params, $volunteers, $v): bool
     {
-        return (!isset($volunteers[$v]->type) || str_exists($volunteers[$v]->type, $volunteer_routing_params->volunteer_type));
+        return (!isset($volunteers[$v]->type) || str_contains($volunteers[$v]->type, $volunteer_routing_params->volunteer_type));
     }
 
     public static function checkVolunteerRoutingResponder($volunteer_routing_params, $volunteers, $v): bool

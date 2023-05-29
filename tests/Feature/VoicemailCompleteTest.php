@@ -1,6 +1,7 @@
 <?php
 
 use App\Repositories\ConfigRepository;
+use App\Repositories\ReportsRepository;
 use PHPMailer\PHPMailer\PHPMailer;
 use Tests\FakeTwilioHttpClient;
 use App\Constants\DataType;
@@ -14,13 +15,7 @@ beforeEach(function () {
     $_REQUEST = null;
     $_SESSION = null;
 
-    $fakeHttpClient = new FakeTwilioHttpClient();
-    $this->twilioClient = mock('Twilio\Rest\Client', [
-        "username" => "fake",
-        "password" => "fake",
-        "httpClient" => $fakeHttpClient
-    ]);
-
+    $this->utility = setupTwilioService();
     $this->callSid = "abc123";
     $this->callerNumber = "+17325551212";
     $this->recordingUrl = "file:///".getcwd()."/tests/fake";
@@ -32,11 +27,16 @@ test('voicemail complete send sms using primary contact', function () {
     $_REQUEST['caller_number'] = $this->callerNumber;
     $_REQUEST['RecordingUrl'] = $this->recordingUrl;
 
+    $reportsRepository = mock(ReportsRepository::class)->makePartial();
+    $reportsRepository->shouldReceive("insertCallEventRecord")
+        ->withAnyArgs()->once();
+    app()->instance(ReportsRepository::class, $reportsRepository);
+
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
     $messageListMock->shouldReceive('create')
         ->with(is_string(""), is_array([]))->once();
-    $this->twilioClient->messages = $messageListMock;
+    $this->utility->client->messages = $messageListMock;
 
     // mocking TwilioRestClient->calls()->update();
     $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
@@ -44,9 +44,7 @@ test('voicemail complete send sms using primary contact', function () {
         ->with(Mockery::on(function ($data) {
             return $data['status'] == "completed";
         }));
-    $this->twilioClient->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
-
-    $GLOBALS['twilioClient'] = $this->twilioClient;
+    $this->utility->client->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
 
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
@@ -137,10 +135,15 @@ test('voicemail complete send sms using primary contact', function () {
 
 test('voicemail complete send email using primary contact', function () {
     $_SESSION['override_service_body_id'] = "44";
-    $GLOBALS['smtp_host'] = "fake.host";
+    $this->utility->settings->set("smtp_host", "fake.host");
     $_REQUEST['CallSid'] = $this->callSid;
     $_REQUEST['caller_number'] = $this->callerNumber;
     $_REQUEST['RecordingUrl'] = $this->recordingUrl;
+
+    $reportsRepository = mock(ReportsRepository::class)->makePartial();
+    $reportsRepository->shouldReceive("insertCallEventRecord")
+        ->withAnyArgs()->once();
+    app()->instance(ReportsRepository::class, $reportsRepository);
 
     // mocking TwilioRestClient->calls()->update();
     $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
@@ -148,9 +151,7 @@ test('voicemail complete send email using primary contact', function () {
         ->with(Mockery::on(function ($data) {
             return $data['status'] == "completed";
         }));
-    $this->twilioClient->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
-
-    $GLOBALS['twilioClient'] = $this->twilioClient;
+    $this->utility->client->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
 
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(

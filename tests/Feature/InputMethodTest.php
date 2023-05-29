@@ -1,4 +1,7 @@
 <?php
+
+use App\Repositories\ReportsRepository;
+
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
@@ -28,6 +31,10 @@ test('search for volunteers', function () {
 });
 
 test('search for meetings', function () {
+    $reportsRepository = Mockery::mock(ReportsRepository::class);
+    $reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
+    app()->instance(ReportsRepository::class, $reportsRepository);
+
     $response = $this->call('GET', '/input-method.php', [
         "Digits"=>"2"
     ]);

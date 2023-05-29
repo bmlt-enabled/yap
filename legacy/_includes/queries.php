@@ -31,25 +31,6 @@ function getFlag($flag)
     return isset($resultset[0]["flag_setting"]) ? $resultset[0]["flag_setting"] : -1;
 }
 
-function insertCallRecord($callRecord)
-{
-    $db = new Database();
-    $stmt = "INSERT INTO `records` (`callsid`,`from_number`,`to_number`,`duration`,`start_time`,`end_time`,`payload`,`type`)
-        VALUES (:callSid, :from_number, :to_number, :duration, :start_time, :end_time, :payload, :type)";
-    $db->query($stmt);
-    $db->bind(':callSid', $callRecord->callSid);
-    $db->bind(':from_number', $callRecord->from_number);
-    $db->bind(':to_number', $callRecord->to_number);
-    $db->bind(':duration', $callRecord->duration);
-    date_default_timezone_set('UTC');
-    $db->bind(':start_time', $callRecord->start_time);
-    $db->bind(':end_time', $callRecord->end_time);
-    $db->bind(':payload', $callRecord->payload);
-    $db->bind(':type', $callRecord->type);
-    $db->execute();
-    $db->close();
-}
-
 function insertSession($callsid)
 {
     $pin = lookupPinForCallSid($callsid);
@@ -63,17 +44,6 @@ function insertSession($callsid)
         $db->execute();
         $db->close();
     }
-}
-
-function isDialbackPinValid($pin)
-{
-    $db = new Database();
-    $sql = sprintf("SELECT from_number FROM sessions a INNER JOIN records b ON a.callsid = b.callsid where pin = :pin order by start_time desc limit 1");
-    $db->query($sql);
-    $db->bind(':pin', $pin);
-    $resultset = $db->resultset();
-    $db->close();
-    return count($resultset) > 0;
 }
 
 function lookupPinForCallSid($callsid)
@@ -135,32 +105,6 @@ function insertCallEventRecord($eventid, $meta = null)
     $db->close();
 }
 
-function getConferences($service_body_id)
-{
-    $db = new Database();
-    $db->query("SELECT * FROM `conference_participants` WHERE `friendlyname` LIKE ':service_body_id_%';");
-    $db->bind(':service_body_id', strval(intval($service_body_id)));
-    $resultset = $db->resultset();
-    $db->close();
-    return $resultset;
-}
-
-function setConferenceParticipant($friendlyname, $callsid, $role)
-{
-    require_once 'twilio-client.php';
-    $conferences = $GLOBALS['twilioClient']->conferences->read(array ("friendlyName" => $friendlyname ));
-    $conferencesid = $conferences[0]->sid;
-    $db = new Database();
-    $stmt = "INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`,`role`) VALUES (:conferencesid,:callsid,:friendlyname,:role)";
-    $db->query($stmt);
-    $db->bind(':conferencesid', $conferencesid);
-    $db->bind(':callsid', $callsid);
-    $db->bind(':friendlyname', $friendlyname);
-    $db->bind(':role', $role);
-    $db->execute();
-    $db->close();
-}
-
 function getConferenceParticipant($callsid)
 {
     $db = new Database();
@@ -184,46 +128,6 @@ function insertAlert($alertId, $payload)
     $db->close();
 }
 
-function setDatabaseCacheValue($key, $value, $expiry)
-{
-    $db = new Database();
-    $stmt = "INSERT INTO `cache` (`key`, `value`, `expiry`) VALUES (:key, :value, :expiry)";
-    $db->query($stmt);
-    $db->bind(':key', $key);
-    $db->bind(':value', $value);
-    $db->bind(':expiry', $expiry);
-    $db->execute();
-    $db->close();
-}
-
-function getDatabaseCacheValue($key)
-{
-    $db = new Database();
-    $stmt = "SELECT `value`,`expiry` FROM `cache` WHERE `key`=:key ORDER BY id DESC LIMIT 1";
-    $db->query($stmt);
-    $db->bind(':key', $key);
-    $resultset = $db->resultset();
-    $db->close();
-    return $resultset;
-}
-
-function deleteExpiredCacheValues($currentEpoch)
-{
-    $db = new Database();
-    $db->query("DELETE FROM `cache` WHERE `expiry` <= :currentEpoch");
-    $db->bind(":currentEpoch", $currentEpoch);
-    $db->execute();
-    $db->close();
-}
-
-function clearCache()
-{
-    $db = new Database();
-    $stmt = "TRUNCATE TABLE `cache`";
-    $db->query($stmt);
-    $db->execute();
-    $db->close();
-}
 
 function getDbData($service_body_id, $data_type)
 {
@@ -241,17 +145,6 @@ function getAllDbData($data_type)
     $db = new Database();
     $db->query("SELECT `id`,`data`,`service_body_id`,`parent_id` FROM `config` WHERE `data_type`=:data_type");
     $db->bind(':data_type', $data_type);
-    $resultset = $db->resultset();
-    $db->close();
-    return $resultset;
-}
-
-function getDbGroupsForServiceBody($service_body_id)
-{
-    $db = new Database();
-    $db->query("SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `service_body_id`=:service_body_id AND `data_type`=:data_type");
-    $db->bind(':service_body_id', $service_body_id);
-    $db->bind(':data_type', DataType::YAP_GROUPS_V2);
     $resultset = $db->resultset();
     $db->close();
     return $resultset;

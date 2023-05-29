@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Constants\CycleAlgorithm;
+use App\Constants\SpecialPhoneNumber;
+
 class ServiceBodyCallHandling
 {
     public $service_body_id;

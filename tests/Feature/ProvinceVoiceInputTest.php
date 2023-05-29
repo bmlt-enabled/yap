@@ -9,7 +9,7 @@ beforeEach(function () {
     $_SESSION = null;
 });
 
-test('province input list seleection', function () {
+test('province input list selection', function () {
     $_SESSION['override_province_lookup_list'] = ["North Carolina","South Carolina"];
     $_REQUEST['SearchType'] = 2;
     $response = $this->call('GET', '/province-voice-input.php', ["SearchType"=>2]);

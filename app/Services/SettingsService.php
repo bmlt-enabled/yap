@@ -5,9 +5,11 @@ namespace App\Services;
 use App\Constants\LocationSearchMethod;
 use App\Constants\MeetingResultSort;
 use App\Constants\SearchType;
+use App\Models\Localizations;
 
 class SettingsService
 {
+    private $version = "4.3.0";
     private $allowlist = [
         'announce_servicebody_volunteer_routing' => ['description' => '/helpline/announce_servicebody_volunteer_routing' , 'default' => false, 'overridable' => true, 'hidden' => false],
         'blocklist' => ['description' => '/general/blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -76,10 +78,14 @@ class SettingsService
         'twilio_auth_token' => ['description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
         'voice' => ['description' => '/general/language-options', 'default' => 'Polly.Kendra', 'overridable' => true, 'hidden' => false],
         'voicemail_playback_grace_hours' => ['description' => '', 'default' => 48, 'overridable' => true, 'hidden' => false],
+        'volunteer_auto_answer' => ['description' => '/helpline/volunteer-auto-answer', 'default'=>false, 'overridable' => true, 'hidden' => false],
         'word_language' => ['description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false]
     ];
 
-    public static array $dateCalculationsMap = [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    public static array $dateCalculationsMap =
+        [1 => "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    private static array $numbers =
+        ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
     private array $settings = [];
     private array $available_languages = [
         "en-US" => "English",
@@ -92,9 +98,11 @@ class SettingsService
     ];
     private array $available_prompts = [
         "greeting",
-        "voicemail_greeting"
+        "voicemail_greeting",
+        "custom_extensions_greeting"
     ];
-    private array $localization;
+
+    private object $localizations;
     private string $shortLanguage;
 
     public function __construct()
@@ -102,12 +110,15 @@ class SettingsService
         @include(!getenv("ENVIRONMENT") ? base_path() . '/config.php' :
             base_path() . '/config.' . getenv("ENVIRONMENT") . '.php');
         $this->settings = get_defined_vars();
+        $this->localizations = new Localizations();
 
         foreach ($this->available_languages as $available_language_key => $available_language_value) {
             foreach ($this->available_prompts as $available_prompt) {
                 $this->allowlist[str_replace("-", "_", $available_language_key) . "_" . $available_prompt] = [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false];
                 $this->allowlist[str_replace("-", "_", $available_language_key) . "_voice"] = [ 'description' => '', 'default' => 'alice', 'overridable' => true, 'hidden' => false];
             }
+
+            $this->localizations->$available_language_key = @include(base_path() . '/lang/' .$available_language_key.'_v2.php');
         }
 
         $this->localization = @include(base_path() . '/lang/' .$this->getWordLanguage().'_v2.php');
@@ -117,6 +128,11 @@ class SettingsService
     public function getShortLanguage(): string
     {
         return $this->shortLanguage;
+    }
+
+    public function version(): string
+    {
+        return $this->version;
     }
 
     public function has($name): bool
@@ -143,6 +159,75 @@ class SettingsService
         return null;
     }
 
+    public function getDigitForAction($setting, $action)
+    {
+        $searchTypeSequence = $this->getDigitMapSequence($setting);
+        foreach ($searchTypeSequence as $digit => $type) {
+            if ($type == $action) {
+                return $digit;
+            }
+        }
+    }
+
+    public function getDigitMapSequence($setting)
+    {
+        $digitMap = $this->getDigitMap($setting);
+        ksort($digitMap);
+        return $digitMap;
+    }
+
+    public function getDigitMap($setting)
+    {
+        $digitMapSetting = $this->get($setting);
+
+        if ($setting == 'language_selections') {
+            $language_selection_digit_map = [];
+            for ($i = 0; $i <= count(explode(",", $this->get('language_selections'))); $i++) {
+                $language_selection_digit_map[] = $i;
+            }
+
+            return $language_selection_digit_map;
+        }
+
+        if (!json_decode($this->get('jft_option'))) {
+            if (($key = array_search(SearchType::JFT, $digitMapSetting)) !== false) {
+                unset($digitMapSetting[$key]);
+            }
+        }
+
+        if (!json_decode($this->get('spad_option'))) {
+            if (($key = array_search(SearchType::SPAD, $digitMapSetting)) !== false) {
+                unset($digitMapSetting[$key]);
+            }
+        }
+
+        if (json_decode($this->get('disable_postal_code_gather'))) {
+            if (($key = array_search(LocationSearchMethod::DTMF, $digitMapSetting)) !== false) {
+                unset($digitMapSetting[$key]);
+            }
+        }
+
+        return $digitMapSetting;
+    }
+
+    public function getPossibleDigits($setting)
+    {
+        return array_keys($this->getDigitMap($setting));
+    }
+
+    public function set($name, $value): void
+    {
+        $this->settings[$name] = $value;
+    }
+
+    public function setWord($word, $value, $language = null): void
+    {
+        if ($language == null) {
+            $language = $this->getWordLanguage();
+        }
+        $this->localizations->$language[$word] = $value;
+    }
+
     public function getWordLanguage(): string
     {
         foreach ($this->available_languages as $key => $available_language) {
@@ -154,14 +239,23 @@ class SettingsService
         return "";
     }
 
-    public function word($name)
+    public function getPressWord($language = null)
     {
-        return $this->localization['override_' . $name] ?? $this->localization[$name];
+        return $this->has('speech_gathering')
+        && json_decode($this->get('speech_gathering')) ? $this->word('press_or_say', $language) : $this->word('press', $language);
+    }
+
+    public function word($name, $language = null)
+    {
+        if ($language == null) {
+            $language = $this->getWordLanguage();
+        }
+        return $this->localizations->$language['override_' . $name] ?? $this->localizations->$language[$name];
     }
 
     public function getNumberForWord($name)
     {
-        $numbers = $this->localization['numbers'];
+        $numbers = self::$numbers;
         for ($n = 0; $n < count($numbers); $n++) {
             if ($name == $numbers[$n]) {
                 return $n;
@@ -169,9 +263,18 @@ class SettingsService
         }
     }
 
-    public function getWordForNumber($number)
+    public function getWordForNumber($number, $language = null)
     {
-        return word($this->localization['numbers'][$number]);
+        return $this->word(self::$numbers[$number], $language);
+    }
+
+    public function getBMLTRootServer(): string
+    {
+        if (json_decode($this->get('tomato_meeting_search'))) {
+            return $this->get('tomato_url');
+        } else {
+            return $this->get('bmlt_root_server');
+        }
     }
 
     public function getAdminBMLTRootServer(): string
@@ -180,6 +283,47 @@ class SettingsService
             return $this->get('helpline_bmlt_root_server');
         } else {
             return $this->get('bmlt_root_server');
+        }
+    }
+
+    public function getInputType(): string
+    {
+        return $this->has('speech_gathering') &&
+        json_decode($this->get('speech_gathering')) ? "speech dtmf" : "dtmf";
+    }
+
+    public function voice($current_language = null)
+    {
+        if (!isset($current_language)) {
+            $current_language = str_replace("-", "_", $this->get('language'));
+        }
+
+        if ($this->has($current_language . "_voice")) {
+            return $this->get($current_language . "_voice");
+        } else {
+            return $this->get('voice');
+        }
+    }
+
+    public function getSessionLink($shouldUriEncode = false): string
+    {
+        if (isset($_REQUEST['ysk'])) {
+            $session_id = $_REQUEST['ysk'];
+        } elseif (isset($_REQUEST['PHPSESSID'])) {
+            $session_id = $_REQUEST['PHPSESSID'];
+        } elseif (isset($_COOKIE['PHPSESSID'])) {
+            $session_id = $_COOKIE['PHPSESSID'];
+        } else {
+            $session_id = null;
+        }
+
+        return (isset($session_id) ? ($shouldUriEncode ? "&amp;" : "&") . ("ysk=" . $session_id) : "");
+    }
+
+    public function logDebug($message): void
+    {
+        if ($this->has('debug') && boolval($this->get('debug'))) {
+            error_log($message);
         }
     }
 }

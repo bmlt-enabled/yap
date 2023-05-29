@@ -1,6 +1,8 @@
 <?php
 
+use App\Repositories\ConfigRepository;
 use Tests\FakeTwilioHttpClient;
+use App\Constants\DataType;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -15,7 +17,20 @@ beforeEach(function () {
 });
 
 test('voicemail standard response', function () {
-    $_SESSION['override_service_body_id'] = "44";
+    $service_body_id = "44";
+    $_SESSION['override_service_body_id'] = $service_body_id;
+    $repository = Mockery::mock(ConfigRepository::class);
+    $repository->shouldReceive("getDbData")->with(
+        '44',
+        DataType::YAP_CALL_HANDLING_V2
+    )->andReturn([(object)[
+        "service_body_id" => $service_body_id,
+        "id" => "200",
+        "parent_id" => "43",
+        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
+    ]]);
+    app()->instance(ConfigRepository::class, $repository);
+
     $response = $this->call('GET', '/voicemail.php', [
         "caller_id" => "+17325551212",
         "Caller" => "+12125551313",
@@ -35,7 +50,19 @@ test('voicemail standard response', function () {
 });
 
 test('voicemail custom prompt', function () {
-    $_SESSION['override_service_body_id'] = "44";
+    $service_body_id = "44";
+    $_SESSION['override_service_body_id'] = $service_body_id;
+    $repository = Mockery::mock(ConfigRepository::class);
+    $repository->shouldReceive("getDbData")->with(
+        '44',
+        DataType::YAP_CALL_HANDLING_V2
+    )->andReturn([(object)[
+        "service_body_id" => $service_body_id,
+        "id" => "200",
+        "parent_id" => "43",
+        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
+    ]]);
+    app()->instance(ConfigRepository::class, $repository);
     $_SESSION['override_en_US_voicemail_greeting'] = "https://example.org/test.mp3";
     $response = $this->call('GET', '/voicemail.php', [
         "caller_id" => "+17325551212",

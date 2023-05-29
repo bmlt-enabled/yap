@@ -37,7 +37,7 @@ if (!isset($_SESSION['initial_webhook'])) {
 
 if (isset($_REQUEST)) {
     foreach ($_REQUEST as $key => $value) {
-        if (str_exists($key, "override_")) {
+        if (str_contains($key, "override_")) {
             $_SESSION[$key] = $value;
         }
     }

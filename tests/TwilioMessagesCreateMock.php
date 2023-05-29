@@ -22,7 +22,5 @@ class TwilioMessagesCreateMock
         $messageListMock->shouldReceive('create')
             ->with(is_string(""), is_array([]));
         $this->twilioClient->messages = $messageListMock;
-
-        $GLOBALS['twilioClient'] = $this->twilioClient;
     }
 }
