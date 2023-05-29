@@ -611,50 +611,6 @@ function setting_source($name)
     }
 }
 
-function getOptionForSearchType($searchType)
-{
-    foreach (setting("digit_map_search_type") as $digit => $value) {
-        if ($value == $searchType) {
-            return $digit;
-        }
-    }
-    return 0;
-}
-
-function getDialbackString($callsid, $dialbackNumber, $option)
-{
-    $dialback_string = "";
-    # Bitwise detection
-    if (setting('sms_dialback_options') & $option) {
-        $pin_lookup = lookupPinForCallSid($callsid);
-        if (count($pin_lookup) > 0) {
-            $dialback_digit_map_digit = getOptionForSearchType(SearchType::DIALBACK);
-            $dialback_string = sprintf(
-                "Tap to dialback: %s,,,%s,,,%s#.  PIN: %s",
-                $dialbackNumber,
-                $dialback_digit_map_digit,
-                $pin_lookup[0]['pin'],
-                $pin_lookup[0]['pin']
-            );
-        }
-    }
-
-    return $dialback_string;
-}
-
-function getOutboundDialingCallerId($serviceBodyCallHandling)
-{
-    if ($serviceBodyCallHandling->forced_caller_id_enabled) {
-        return $serviceBodyCallHandling->forced_caller_id_number;
-    } else if (isset($_REQUEST["Caller"])) {
-        return $_REQUEST["Caller"];
-    } else if (isset($_REQUEST['caller_id'])) {
-        return $_REQUEST['caller_id'];
-    } else {
-        return SpecialPhoneNumber::UNKNOWN;
-    }
-}
-
 function getAdminBMLTRootServer()
 {
     if (has_setting('helpline_bmlt_root_server')) {

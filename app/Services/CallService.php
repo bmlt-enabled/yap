@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Constants\EventId;
+use App\Constants\SearchType;
+use App\Constants\SpecialPhoneNumber;
 use App\Repositories\ReportsRepository;
 
 class CallService
@@ -89,6 +91,50 @@ class CallService
         $conferences = $this->twilio->client()->conferences->read(array ("friendlyName" => $friendlyname ));
         $conferencesid = $conferences[0]->sid;
         $this->reports->setConferenceParticipant($friendlyname, $conferencesid, $callsid, $role);
+    }
+
+    function getOutboundDialingCallerId($serviceBodyCallHandling)
+    {
+        if ($serviceBodyCallHandling->forced_caller_id_enabled) {
+            return $serviceBodyCallHandling->forced_caller_id_number;
+        } else if (isset($_REQUEST["Caller"])) {
+            return $_REQUEST["Caller"];
+        } else if (isset($_REQUEST['caller_id'])) {
+            return $_REQUEST['caller_id'];
+        } else {
+            return SpecialPhoneNumber::UNKNOWN;
+        }
+    }
+
+    function getDialbackString($callsid, $dialbackNumber, $option)
+    {
+        $dialback_string = "";
+        # Bitwise detection
+        if ($this->settings->get('sms_dialback_options') & $option) {
+            $pin_lookup = lookupPinForCallSid($callsid);
+            if (count($pin_lookup) > 0) {
+                $dialback_digit_map_digit = $this->getOptionForSearchType(SearchType::DIALBACK);
+                $dialback_string = sprintf(
+                    "Tap to dialback: %s,,,%s,,,%s#.  PIN: %s",
+                    $dialbackNumber,
+                    $dialback_digit_map_digit,
+                    $pin_lookup[0]['pin'],
+                    $pin_lookup[0]['pin']
+                );
+            }
+        }
+
+        return $dialback_string;
+    }
+
+    private function getOptionForSearchType($searchType)
+    {
+        foreach ($this->settings->get("digit_map_search_type") as $digit => $value) {
+            if ($value == $searchType) {
+                return $digit;
+            }
+        }
+        return 0;
     }
 
     public function isDialbackPinValid($pin): array

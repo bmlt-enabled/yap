@@ -290,7 +290,7 @@ class HelplineController extends Controller
                             foreach (explode(",", $callConfig->volunteer->phoneNumber) as $volunteer_number) {
                                 if ($serviceBodyCallHandling->volunteer_sms_notification_enabled) {
                                     log_debug("Sending volunteer SMS notification: " . $callConfig->volunteer->phoneNumber);
-                                    $dialbackString = getDialbackString($callerSid, $callConfig->options['callerId'], SmsDialbackOptions::VOLUNTEER_NOTIFICATION);
+                                    $dialbackString = $this->call->getDialbackString($callerSid, $callConfig->options['callerId'], SmsDialbackOptions::VOLUNTEER_NOTIFICATION);
                                     $this->twilio->client()->messages->create(
                                         $volunteer_number,
                                         array(
@@ -353,7 +353,7 @@ class HelplineController extends Controller
     {
         $tracker = !$request->has("tracker") ? 0 : $request->get("tracker");
 
-        $caller_id = getOutboundDialingCallerId($serviceBodyCallHandling);
+        $caller_id = $this->call->getOutboundDialingCallerId($serviceBodyCallHandling);
 
         if ($request->has("OriginalCallerId")) {
             $original_caller_id = $request->get("OriginalCallerId");

@@ -44,11 +44,11 @@ function setupTwilioService(): TwilioTestUtility
         "password" => "fake",
         "httpClient" => $fakeHttpClient
     ])->makePartial();
-    $utility->service = mock(TwilioService::class)->makePartial();
-    $settingsService = new SettingsService();
-    app()->instance(SettingsService::class, $settingsService);
-    app()->instance(TwilioService::class, $utility->service);
-    $utility->service->shouldReceive("client")->withArgs([])->andReturn($utility->client);
-    $utility->service->shouldReceive("settings")->andReturn($settingsService);
+    $utility->twilio = mock(TwilioService::class)->makePartial();
+    $utility->settings = new SettingsService();
+    app()->instance(SettingsService::class, $utility->settings);
+    app()->instance(TwilioService::class, $utility->twilio);
+    $utility->twilio->shouldReceive("client")->withArgs([])->andReturn($utility->client);
+    $utility->twilio->shouldReceive("settings")->andReturn($utility->settings);
     return $utility;
 }

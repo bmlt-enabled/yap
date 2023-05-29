@@ -15,27 +15,15 @@ beforeEach(function () {
     $_REQUEST = null;
     $_SESSION = null;
 
-    $fakeHttpClient = new FakeTwilioHttpClient();
-    $this->twilioClient = mock('Twilio\Rest\Client', [
-        "username" => "fake",
-        "password" => "fake",
-        "httpClient" => $fakeHttpClient
-    ])->makePartial();
-    $this->twilioService = mock(TwilioService::class)->makePartial();
+    $this->utility = setupTwilioService();
 });
 
 test('initial sms gateway default', function () {
-    $settingsService = new SettingsService();
-    app()->instance(SettingsService::class, $settingsService);
-    app()->instance(TwilioService::class, $this->twilioService);
-    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
-    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
-
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
     $messageListMock->shouldReceive('create')
         ->with(is_string(""), is_array([]))->times(1);
-    $this->twilioClient->messages = $messageListMock;
+    $this->utility->client->messages = $messageListMock;
 
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
