@@ -259,6 +259,6 @@ class RootServerService
         );
         $search_results = json_decode($this->http->get($bmlt_search_endpoint, 60));
         $root_server_uri_from_first_result = $search_results[0]->root_server_uri;
-        return str_contains($root_server_uri_from_first_result, getAdminBMLTRootServer());
+        return str_contains($root_server_uri_from_first_result, $this->settings->getAdminBMLTRootServer());
     }
 }

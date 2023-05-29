@@ -129,35 +129,15 @@ $GLOBALS['numbers'] = ["zero", "one", "two", "three", "four", "five", "six", "se
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 // phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses
 
-class CallConfig
-{
-    public $voicemail_url;
-    public $volunteer_routing_params;
-    public $options;
-    public $volunteer;
-}
-
 class AlertId
 {
     const STATUS_CALLBACK_MISSING = 1;
-}
-
-class SmsDialbackOptions
-{
-    const VOLUNTEER_NOTIFICATION = 1;
-    const VOICEMAIL_NOTIFICATION = 2;
 }
 
 class CacheType
 {
     const SESSION = 1;
     const DATABASE = 2;
-}
-
-class ReadingType
-{
-    const JFT = 1;
-    const SPAD = 2;
 }
 
 class AdminInterfaceRights
@@ -250,19 +230,6 @@ class EventId
                 return "SPAD Lookup via SMS";
         }
     }
-}
-
-class Coordinates
-{
-    public $location;
-    public $latitude;
-    public $longitude;
-}
-
-class MeetingResults
-{
-    public $originalListCount = 0;
-    public $filteredList = [];
 }
 
 class ServiceBodyCallHandling
@@ -554,11 +521,6 @@ function word($name)
     return isset($GLOBALS['override_' . $name]) ? $GLOBALS['override_' . $name] : $GLOBALS[$name];
 }
 
-function getWordForNumber($number)
-{
-    return word($GLOBALS['numbers'][$number]);
-}
-
 function has_setting($name)
 {
     return !is_null(setting($name));
@@ -581,19 +543,6 @@ function setting($name)
     }
 
     return null;
-}
-
-function voice($current_language = null)
-{
-    if (!isset($current_language)) {
-        $current_language = str_replace("-", "_", setting('language'));
-    }
-
-    if (has_setting($current_language . "_voice")) {
-        return setting($current_language . "_voice");
-    } else {
-        return setting('voice');
-    }
 }
 
 function setting_source($name)

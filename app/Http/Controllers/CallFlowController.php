@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use AlertId;
+use App\Constants\AlertId;
 use App\Constants\EventId;
 use App\Constants\SearchType;
 use App\Constants\VolunteerGender;
@@ -252,11 +252,11 @@ class CallFlowController extends Controller
                     ->setVoice($this->settings->voice())
                     ->setLanguage($this->settings->get('language'));
             } elseif ($method == SearchType::JFT && $searchType == SearchType::MEETINGS) {
-                $gather->say(getWordForNumber($digit) . " " . $this->settings->word('to_listen_to_the_just_for_today'))
+                $gather->say($this->settings->getWordForNumber($digit) . " " . $this->settings->word('to_listen_to_the_just_for_today'))
                     ->setVoice($this->settings->voice())
                     ->setLanguage($this->settings->get('language'));
             } elseif ($method == SearchType::SPAD && $searchType == SearchType::MEETINGS) {
-                $gather->say(getWordForNumber($digit) . " " . $this->settings->word('to_listen_to_the_spad'))
+                $gather->say($this->settings->getWordForNumber($digit) . " " . $this->settings->word('to_listen_to_the_spad'))
                     ->setVoice($this->settings->voice())
                     ->setLanguage($this->settings->get('language'));
             }

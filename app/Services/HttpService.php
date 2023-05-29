@@ -7,6 +7,13 @@ use Illuminate\Support\Facades\Http;
 
 class HttpService
 {
+    protected SettingsService $settings;
+
+    public function __construct(SettingsService $settings)
+    {
+        $this->settings = $settings;
+    }
+
     const USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0 +yap";
 
     public function get($url, $ttl = 0, $extraHeaders = []) : Response
@@ -22,10 +29,10 @@ class HttpService
 
     public function getWithAuth($url, $ttl = 0) : Response
     {
-        return $this->get($url, $ttl, ["Cookie", getBMLTAuthSessionCookies()]);
+        return $this->get($url, $ttl, ["Cookie", $this->getBMLTAuthSessionCookies()]);
     }
 
-    private function getBMLTAuthSessionCookies()
+    private function getBMLTAuthSessionCookies(): string
     {
         return isset($_SESSION['bmlt_auth_session']) ? implode(";", $_SESSION['bmlt_auth_session']) : "";
     }
