@@ -12,7 +12,7 @@ $data_type = DataType::YAP_VOLUNTEERS_V2;
         $helplineConfiguration = getVolunteerRoutingEnabledServiceBodies();
         sort_on_field($helplineConfiguration, 'service_body_name');
         foreach ($helplineConfiguration as $item) {?>
-            <option value="<?php echo $item->service_body_id ?>"><?php echo $item->service_body_name ?> (<?php echo $item->service_body_id ?>) / <?php echo $item->service_body_parent_name ?> (<?php echo $item->service_body_parent_id ?>)</option>
+        <option value="<?php echo $item->service_body_id ?>"><?php echo $item->service_body_name ?> (<?php echo $item->service_body_id ?>) / <?php echo $item->service_body_parent_name ?> (<?php echo $item->service_body_parent_id ?>)</option>
             <?php
         }?>
     </select>

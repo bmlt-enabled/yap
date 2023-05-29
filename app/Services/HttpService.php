@@ -18,13 +18,13 @@ class HttpService
 
     public function get($url, $ttl = 0, $extraHeaders = []) : Response
     {
-        //$key = sprintf('cache_%s', $url);
-        //return cache()->remember($key, $ttl, function () use ($url, $extraHeaders) {
+        $key = sprintf('cache_%s', $url);
+        return cache()->remember($key, $ttl, function () use ($url, $extraHeaders) {
             $response = Http::withHeaders(array_merge([
                 "User-Agent"=>self::USER_AGENT
             ], $extraHeaders))->get($url);
             return $response;
-        //});
+        });
     }
 
     public function post($url, $data, $extraHeaders = []) : Response
@@ -33,7 +33,6 @@ class HttpService
             "User-Agent"=>self::USER_AGENT
         ], $extraHeaders))->post($url, $data);
     }
-
 
     public function getWithAuth($url, $ttl = 0) : Response
     {

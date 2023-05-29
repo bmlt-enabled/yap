@@ -1,4 +1,4 @@
-<?php require_once 'nav.php';
+@include('admin.partials.nav')
 $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
 ?>
 <div class="container">
@@ -13,7 +13,7 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
             $serviceBodies = getServiceBodiesForUser();
             sort_on_field($serviceBodies, 'name');
             foreach ($serviceBodies as $item) {?>
-                <option value="<?php echo $item->id ?>"><?php echo $item->name ?> (<?php echo $item->id ?>) / <?php echo $item->parent_name ?> (<?php echo $item->parent_id ?>)</option>
+            <option value="<?php echo $item->id ?>"><?php echo $item->name ?> (<?php echo $item->id ?>) / <?php echo $item->parent_name ?> (<?php echo $item->parent_id ?>)</option>
                 <?php
             }?>
         </select>
@@ -43,13 +43,13 @@ $data_type = DataType::YAP_GROUP_VOLUNTEERS_V2;
                         <input class="form-control form-control-sm" type="text" id="group_name" name="group_name">
 
                         <?php
-                            $shareable_service_bodies = getServiceBodies();
-                            sort_on_field($shareable_service_bodies, 'name')
+                        $shareable_service_bodies = getServiceBodies();
+                        sort_on_field($shareable_service_bodies, 'name')
                         ?>
                         Shared With Service Bodies (optional): <select size="10" multiple class="form-control form-control-sm" name="group_shared_service_bodies" id="group_shared_service_bodies">
                             <?php
                             foreach ($shareable_service_bodies as $service_body) { ?>
-                                <option value="<?php echo $service_body->id; ?>"><?php echo $service_body->name; ?></option>
+                            <option value="<?php echo $service_body->id; ?>"><?php echo $service_body->name; ?></option>
                             <?php } ?>
                         </select>
                     </form>

@@ -21,7 +21,7 @@
                     <select class="form-control form-control-sm time_zone_selector" id="time_zone">
                         <?php
                         foreach (getTimezoneList() as $tzItem) { ?>
-                            <option value="<?php echo $tzItem?>"><?php echo $tzItem; ?></option>
+                        <option value="<?php echo $tzItem?>"><?php echo $tzItem; ?></option>
                         <?php } ?>
                     </select>
 
@@ -56,7 +56,7 @@
                     <select class="form-control form-control-sm time_zone_selector" id="time_zone">
                         <?php
                         foreach (getTimezoneList() as $tzItem) { ?>
-                            <option value="<?php echo $tzItem?>"><?php echo $tzItem; ?></option>
+                        <option value="<?php echo $tzItem?>"><?php echo $tzItem; ?></option>
                         <?php } ?>
                     </select>
                 </div>
@@ -123,7 +123,7 @@
                     <select class="form-control form-control-sm time_zone_selector" id="time_zone">
                         <?php
                         foreach (getTimezoneList() as $tzItem) { ?>
-                            <option value="<?php echo $tzItem?>"><?php echo $tzItem; ?></option>
+                        <option value="<?php echo $tzItem?>"><?php echo $tzItem; ?></option>
                         <?php } ?>
                     </select>
                 </div>
@@ -200,13 +200,13 @@
                 <?php
                 if (has_setting('language_selections')) { ?>
                 Languages: <select multiple class="form-control form-control-sm" name="volunteer_language" id="volunteer_language">
-                    <?php
+                        <?php
                     foreach ($language_selection_options = explode(",", setting('language_selections')) as $key => $available_language) {
                         ?>
-                        <option value="<?php echo $available_language; ?>"><?php echo $available_language; ?></option>
+                    <option value="<?php echo $available_language; ?>"><?php echo $available_language; ?></option>
                         <?php
                     }
-                } ?>
+                    } ?>
                 </select>
             </div>
             <table id="volunteer_schedule" class="table table-striped table-borderless">

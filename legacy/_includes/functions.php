@@ -410,21 +410,6 @@ function setting($name)
     return null;
 }
 
-function setting_source($name)
-{
-    if (isset($_REQUEST[$name])) {
-        return SettingSource::QUERYSTRING;
-    } else if (isset($_SESSION["override_" . $name])) {
-        return SettingSource::SESSION;
-    } else if (isset($GLOBALS[$name])) {
-        return SettingSource::CONFIG;
-    } else if (isset($GLOBALS['settings_allowlist'][$name]['default'])) {
-        return SettingSource::DEFAULT_SETTING;
-    } else {
-        return "NOT SET";
-    }
-}
-
 function getAdminBMLTRootServer()
 {
     if (has_setting('helpline_bmlt_root_server')) {

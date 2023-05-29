@@ -31,15 +31,7 @@ class AdminController extends Controller
 
     public function index(Request $request)
     {
-        return view('admin/index', [
-            "settings" => $this->settings,
-            "rootServer" => $this->rootServer
-        ]);
-    }
-
-    public function home(Request $request)
-    {
-        return view('admin/home', [
+        return view('admin/'.$request->route("page"), [
             "settings" => $this->settings,
             "rootServer" => $this->rootServer,
             "pages" => $this->pages,

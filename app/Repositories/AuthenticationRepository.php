@@ -17,7 +17,7 @@ class AuthenticationRepository
         $this->http = $http;
     }
 
-    public function V1($username, $password)
+    public function authV1($username, $password): bool
     {
         $auth_endpoint = ($this->settings->has('alt_auth_method') && $this->settings->get('alt_auth_method') ? '/index.php' : '/local_server/server_admin/xml.php');
         $res = $this->http->post(sprintf("%s%s", $this->settings->getAdminBMLTRootServer(), $auth_endpoint), "admin_action=login&c_comdef_admin_login='.$username.'&c_comdef_admin_password='.urlencode($password)");
@@ -26,8 +26,7 @@ class AuthenticationRepository
         return $is_authed;
     }
 
-
-    public function V2($username, $password)
+    public function authV2($username, $password): array
     {
         return DB::select(
             'SELECT id, name, username, password, is_admin, permissions, service_bodies FROM `users` WHERE `username` = ? AND `password` = SHA2(?, 256)',
@@ -35,7 +34,7 @@ class AuthenticationRepository
         );
     }
 
-    public function V1GetUserName()
+    public function getUserNameV1()
     {
         if (!isset($_SESSION['auth_user_name_string'])) {
             $url = sprintf('%s/local_server/server_admin/json.php?admin_action=get_user_info', $this->settings->getAdminBMLTRootServer());

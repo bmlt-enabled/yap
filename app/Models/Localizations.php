@@ -12,13 +12,13 @@ class Localizations
     public $frCA;
     public $itIT;
 
-    public function __construct() {}
-
-    public function setLocalization($language, $localization): void {
+    public function setLocalization($language, $localization): void
+    {
         $this->{str_replace("-", "", $language)} = $localization;
     }
 
-    public function &getLocalization($language) {
+    public function &getLocalization($language)
+    {
         return $this->{str_replace("-", "", $language)};
     }
 }

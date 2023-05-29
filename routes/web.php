@@ -11,8 +11,7 @@ Route::get("/admin/auth/timeout", 'App\Http\Controllers\AuthController@timeout')
 Route::get("/admin/auth/invalid", 'App\Http\Controllers\AuthController@invalid');
 Route::get("/admin", 'App\Http\Controllers\AdminController@index');
 Route::post("/admin/login", 'App\Http\Controllers\AdminController@login');
-Route::get("/admin/home", 'App\Http\Controllers\AdminController@home');
-
+Route::get("/admin/{page}", 'App\Http\Controllers\AdminController@index');
 //Hiding the new UI for now.
 //Route::get("/adminv2{page}", 'App\Http\Controllers\AdminController@index')
 //    ->where('page', '.*');

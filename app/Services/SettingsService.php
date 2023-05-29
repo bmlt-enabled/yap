@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Constants\LocationSearchMethod;
 use App\Constants\MeetingResultSort;
 use App\Constants\SearchType;
+use App\Constants\SettingSource;
 use App\Models\Localizations;
 
 class SettingsService
@@ -134,6 +135,11 @@ class SettingsService
         return $this->version;
     }
 
+    public function allowlist(): array
+    {
+        return $this->allowlist;
+    }
+
     public function has($name): bool
     {
         return !is_null($this->get($name));
@@ -156,6 +162,21 @@ class SettingsService
         }
 
         return null;
+    }
+
+    public function source($name): string
+    {
+        if (isset($_REQUEST[$name])) {
+            return SettingSource::QUERYSTRING;
+        } else if (isset($_SESSION["override_" . $name])) {
+            return SettingSource::SESSION;
+        } else if (isset($GLOBALS[$name])) {
+            return SettingSource::CONFIG;
+        } else if (isset($this->allowlist[$name]['default'])) {
+            return SettingSource::DEFAULT_SETTING;
+        } else {
+            return "NOT SET";
+        }
     }
 
     public function getDigitForAction($setting, $action)
