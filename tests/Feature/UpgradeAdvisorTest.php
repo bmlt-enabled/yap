@@ -1,4 +1,7 @@
 <?php
+
+use App\Services\SettingsService;
+
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
@@ -10,7 +13,9 @@ beforeEach(function () {
 });
 
 test('bad google maps api key', function () {
+    $settings = new SettingsService();
     $GLOBALS['google_maps_endpoint'] = 'https://maps.googleapis.com/maps/api/geocode/json?key=bad_key';
+    app()->instance(SettingsService::class, $settings);
     $response = $this->get('/upgrade-advisor.php');
     $response
         ->assertStatus(200)
@@ -19,10 +24,9 @@ test('bad google maps api key', function () {
             'status' => false,
             'message' => 'Your Google Maps API key came back with the following error. The provided API key is invalid.  Please make sure you have the Google Maps Geocoding API enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/',
             'warnings' => '',
-            'version' => $GLOBALS['version'],
+            'version' => $settings->version(),
             'build' => 'local'
         ]);
-    print($GLOBALS['google_maps_endpoint']);
 });
 
 //test('bad timezone api key', function () {

@@ -16,7 +16,7 @@ class ConfigService
         $this->config = $config;
     }
 
-    public function getCallHandling($serviceBodyId)
+    public function getCallHandling($serviceBodyId): ServiceBodyCallHandling
     {
         $helplineData = $this->config->getDbData($serviceBodyId, DataType::YAP_CALL_HANDLING_V2);
         // TODO: this line needs to be reworked after functions.php is blown up
@@ -24,14 +24,7 @@ class ConfigService
             : $this->getServiceBodyCallHandlingData(null);
     }
 
-    public function getServiceBodyCallHandling($service_body_id)
-    {
-        $helplineData = $this->config->getDbData($service_body_id, DataType::YAP_CALL_HANDLING_V2);
-        return count($helplineData) > 0 ?
-            $this->getServiceBodyCallHandlingData($helplineData[0]) : $this->getServiceBodyCallHandlingData(null);
-    }
-
-    public function getServiceBodyCallHandlingData($helplineData)
+    public function getServiceBodyCallHandlingData($helplineData): ServiceBodyCallHandling
     {
         $config = new ServiceBodyCallHandling();
         if (isset($helplineData)) {

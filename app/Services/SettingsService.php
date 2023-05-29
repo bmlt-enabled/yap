@@ -9,6 +9,7 @@ use App\Models\Localizations;
 
 class SettingsService
 {
+    private $version = "4.3.0";
     private $allowlist = [
         'announce_servicebody_volunteer_routing' => ['description' => '/helpline/announce_servicebody_volunteer_routing' , 'default' => false, 'overridable' => true, 'hidden' => false],
         'blocklist' => ['description' => '/general/blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -127,6 +128,11 @@ class SettingsService
     public function getShortLanguage(): string
     {
         return $this->shortLanguage;
+    }
+
+    public function version(): string
+    {
+        return $this->version;
     }
 
     public function has($name): bool

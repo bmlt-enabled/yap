@@ -44,7 +44,7 @@ class VoicemailController extends Controller
 
     public function start(Request $request)
     {
-        $this->config->getServiceBodyCallHandling($this->settings->get("service_body_id"));
+        $this->config->getCallHandling($this->settings->get("service_body_id"));
         $promptset_name = str_replace("-", "_", $this->settings->getWordLanguage()) . "_voicemail_greeting";
 
         $twiml = new VoiceResponse();

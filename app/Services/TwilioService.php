@@ -37,7 +37,7 @@ class TwilioService
         $this->client()->calls($callSid)->update(array('status' => 'completed'));
     }
 
-    public function sendSms($message)
+    public function sendSms($message): void
     {
         if (isset($_REQUEST['From']) && isset($_REQUEST['To'])
             && str_replace("+", "", $_REQUEST["From"]) != self::ANONYMOUS_NUMBER && $this->mobileCheck()) {
@@ -45,7 +45,7 @@ class TwilioService
         }
     }
 
-    public function incrementNoAnswerCount()
+    public function incrementNoAnswerCount(): void
     {
         $_SESSION['no_answer_count'] = !isset($_SESSION['no_answer_count']) ? 1 : $_SESSION['no_answer_count'] + 1;
         if ($_SESSION['no_answer_count'] == $_SESSION['no_answer_max']) {

@@ -1,6 +1,7 @@
 <?php
 
 use App\Repositories\ReportsRepository;
+use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
 
@@ -13,12 +14,7 @@ beforeEach(function () {
     $_REQUEST = null;
     $_SESSION = null;
 
-    $fakeHttpClient = new FakeTwilioHttpClient();
-    $this->twilioClient = mock('Twilio\Rest\Client', [
-        "username" => "fake",
-        "password" => "fake",
-        "httpClient" => $fakeHttpClient
-    ])->makePartial();
+    $this->utility = setupTwilioService();
 
     $this->from = '+19737771313';
     $this->to = '+12125551212';
@@ -67,12 +63,12 @@ test('initial sms gateway talk option', function () {
 
 test('initial sms gateway talk option without location', function () {
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
-    $this->twilioClient->messages = $messageListMock;
     $messageListMock->shouldReceive('create')
         ->with($this->from, Mockery::on(function ($data) {
             return $data['from'] == $this->to
                 && $data['body'] == 'please send a message formatting as talk, followed by your location as a city, county or zip code for someone to talk to';
         }));
+    $this->utility->client->messages = $messageListMock;
 
     $_REQUEST['stub_google_maps_endpoint'] = true;
     $this->callerIdInfo['Body'] = 'talk';
@@ -127,7 +123,7 @@ test('initial sms gateway with a blackholed number', function () {
 test('sms to deliver the jft', function () {
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
-    $this->twilioClient->messages = $messageListMock;
+    $this->utility->client->messages = $messageListMock;
     $messageListMock->shouldReceive('create')
         ->with($this->from, Mockery::on(function ($data) {
             return $data['from'] == $this->to && !empty($data['body'][0]);
@@ -152,7 +148,7 @@ test('sms to deliver the jft', function () {
 test('sms to deliver the spad', function () {
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
-    $this->twilioClient->messages = $messageListMock;
+    $this->utility->client->messages = $messageListMock;
     $messageListMock->shouldReceive('create')
         ->with($this->from, Mockery::on(function ($data) {
             return $data['from'] == $this->to && !empty($data['body'][0]);

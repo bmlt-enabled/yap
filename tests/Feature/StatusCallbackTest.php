@@ -1,4 +1,7 @@
 <?php
+
+use App\Repositories\ReportsRepository;
+
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
@@ -10,6 +13,9 @@ beforeEach(function () {
 });
 
 test('status callback test', function () {
+    $reportsRepository = Mockery::mock(ReportsRepository::class);
+    $reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs()->once();
+    app()->instance(ReportsRepository::class, $reportsRepository);
     $response = $this->call(
         'GET',
         '/status.php',

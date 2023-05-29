@@ -87,7 +87,7 @@ class CallFlowController extends Controller
         }
 
         if ($request->has("override_service_body_id")) {
-            $this->config->getServiceBodyCallHandling($request->query("override_service_body_id"));
+            $this->config->getCallHandling($request->query("override_service_body_id"));
         }
 
         $promptset_name = str_replace("-", "_", $this->settings->getWordLanguage()) . "_greeting";
@@ -717,7 +717,7 @@ class CallFlowController extends Controller
                     ->setBeep("false");
             }
         } else {
-            insertCallEventRecord(
+            $this->call->insertCallEventRecord(
                 EventId::VOLUNTEER_REJECTED,
                 (object)["digits" => $request->query('Digits'),
                     "to_number" => $request->query('Called')]
@@ -728,7 +728,7 @@ class CallFlowController extends Controller
                 $request->query('CallSid'),
                 CallRole::VOLUNTEER
             );
-            log_debug("They rejected the call.");
+            $this->settings->logDebug("They rejected the call.");
             $twiml->hangup();
         }
 
@@ -803,7 +803,7 @@ class CallFlowController extends Controller
 
             $service_body = $this->meetingResults
                 ->getServiceBodyCoverage($request->query("Latitude"), $request->query("Longitude"));
-            $serviceBodyCallHandling   = $this->config->getServiceBodyCallHandling($service_body->id);
+            $serviceBodyCallHandling   = $this->config->getCallHandling($service_body->id);
             $tracker                   = $request->has("tracker") ? 0 : $request->query("tracker");
 
             if ($serviceBodyCallHandling->sms_routing_enabled) {
@@ -955,7 +955,7 @@ class CallFlowController extends Controller
                 EventId::MEETING_SEARCH_LOCATION_GATHERED,
                 (object)['gather' => $address, 'coordinates' => isset($coordinates) ? $coordinates : null]
             );
-            $twiml->redirect("meeting-search.php?SearchType=" . getDigitForAction('digit_map_search_type', SearchType::VOLUNTEERS) . "&Latitude=" . $coordinates->latitude . "&Longitude=" . $coordinates->longitude)
+            $twiml->redirect("meeting-search.php?SearchType=" . $this->settings->getDigitForAction('digit_map_search_type', SearchType::VOLUNTEERS) . "&Latitude=" . $coordinates->latitude . "&Longitude=" . $coordinates->longitude)
                 ->setMethod("GET");
         }
 
