@@ -34,11 +34,6 @@ beforeEach(function () {
 });
 
 test('meeting search with odd coordinates on meeting lookup', function () {
-    $this->twilioService->shouldReceive("client")->andReturn($this->twilioClient);
-    $settingsService = new SettingsService();
-    app()->instance(SettingsService::class, $settingsService);
-    app()->instance(Client::class, $this->twilioClient);
-
     $response = $this->call('GET', '/meeting-search.php', [
         "Latitude" => 0,
         "Longitude" => 0,
@@ -56,18 +51,11 @@ test('meeting search with odd coordinates on meeting lookup', function () {
 });
 
 test('meeting search with valid latitude and longitude', function () {
-    // mocking TwilioRestClient->messages->create()
-    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
-    $messageListMock->shouldReceive('create')
-        ->with(is_string(""), is_array([]))->times(5);
-    $this->twilioClient->messages = $messageListMock;
-
-//    $this->twilioService->shouldReceive("client")
-//        ->withArgs([])->andReturn($this->twilioClient);
     $settingsService = new SettingsService();
     app()->instance(SettingsService::class, $settingsService);
-    app()->instance(Client::class, $this->twilioClient);
-//    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
+    app()->instance(TwilioService::class, $this->twilioService);
+    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
+    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
 
     $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
     $timezoneService = mock(TimeZoneService::class)->makePartial();
@@ -76,6 +64,12 @@ test('meeting search with valid latitude and longitude', function () {
         ->once()
         ->andReturn($timezone);
     app()->instance(TimeZoneService::class, $timezoneService);
+
+    // mocking TwilioRestClient->messages->create()
+    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+    $messageListMock->shouldReceive('create')
+        ->with(is_string(""), is_array([]))->times(5);
+    $this->twilioClient->messages = $messageListMock;
 
 //    $phoneNumbersLookup = mock('\Twilio\Rest\Lookups\V1\PhoneNumberList');
 //    $phoneNumbersLookup->shouldReceive('phoneNumbers')
@@ -147,7 +141,9 @@ test('meeting search with valid latitude and longitude different results count m
     $settingsService->set('sms_ask', false);
     $settingsService->set('result_count_max', 3);
     app()->instance(SettingsService::class, $settingsService);
-    app()->instance(Client::class, $this->twilioClient);
+    app()->instance(TwilioService::class, $this->twilioService);
+    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
+    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
 
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
@@ -207,7 +203,6 @@ test('meeting search with valid latitude and longitude with sms ask', function (
     $settingsService = new SettingsService();
     $settingsService->set("sms_ask", true);
     app()->instance(SettingsService::class, $settingsService);
-    app()->instance(Client::class, $this->twilioClient);
 
     $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
     $timezoneService = mock(TimeZoneService::class)->makePartial();
@@ -278,7 +273,9 @@ test('meeting search with valid latitude and longitude with sms combine', functi
     $settingsService->set('sms_combine', true);
     $settingsService->set('sms_ask', false);
     app()->instance(SettingsService::class, $settingsService);
-    app()->instance(Client::class, $this->twilioClient);
+    app()->instance(TwilioService::class, $this->twilioService);
+    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
+    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
 
     $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
     $timezoneService = mock(TimeZoneService::class)->makePartial();
