@@ -20,7 +20,6 @@ class TwilioService
                 $this->settings->get("twilio_account_sid"),
                 $this->settings->get("twilio_auth_token")
             );
-
         } catch (ConfigurationException $e) {
             error_log("Missing Twilio Credentials");
             throw $e;

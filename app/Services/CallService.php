@@ -13,11 +13,8 @@ class CallService
     protected ReportsRepository $reports;
     protected TwilioService $twilio;
 
-    public function __construct(
-        SettingsService $settings,
-        ReportsRepository $reports,
-        TwilioService $twilio,
-    ) {
+    public function __construct(SettingsService $settings, ReportsRepository $reports, TwilioService $twilio)
+    {
         $this->settings = $settings;
         $this->reports = $reports;
         $this->twilio = $twilio;
@@ -93,7 +90,7 @@ class CallService
         $this->reports->setConferenceParticipant($friendlyname, $conferencesid, $callsid, $role);
     }
 
-    function getOutboundDialingCallerId($serviceBodyCallHandling)
+    public function getOutboundDialingCallerId($serviceBodyCallHandling)
     {
         if ($serviceBodyCallHandling->forced_caller_id_enabled) {
             return $serviceBodyCallHandling->forced_caller_id_number;
@@ -106,7 +103,7 @@ class CallService
         }
     }
 
-    function getDialbackString($callsid, $dialbackNumber, $option)
+    public function getDialbackString($callsid, $dialbackNumber, $option)
     {
         $dialback_string = "";
         # Bitwise detection

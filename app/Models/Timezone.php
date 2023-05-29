@@ -10,12 +10,7 @@ class Timezone
     public string $timeZoneId;
     public string $timeZoneName;
 
-    public function __construct(
-        string $status,
-        string $dstOffset,
-        string $rawOffset,
-        string $timeZoneId,
-        string $timeZoneName)
+    public function __construct(string $status, string $dstOffset, string $rawOffset, string $timeZoneId, string $timeZoneName)
     {
         $this->status = $status;
         $this->dstOffset = $dstOffset;

@@ -13,11 +13,7 @@ class VoicemailService
     protected CallService $call;
     protected SettingsService $settings;
 
-    public function __construct(
-        PHPMailer $mailer = null,
-        TwilioService $twilio,
-        CallService $call,
-        SettingsService $settings)
+    public function __construct(PHPMailer $mailer = null, TwilioService $twilio, CallService $call, SettingsService $settings)
     {
         if ($mailer == null) {
             $mailer = new PHPMailer(true);
