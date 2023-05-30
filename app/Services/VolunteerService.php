@@ -20,12 +20,12 @@ use stdClass;
 class VolunteerService
 {
     protected ConfigRepository $configRepository;
-    protected SettingsService $settingsService;
+    protected SettingsService $settings;
 
     public function __construct(ConfigRepository $configRepository, SettingsService $settingsService)
     {
         $this->configRepository = $configRepository;
-        $this->settingsService = $settingsService;
+        $this->settings = $settingsService;
     }
 
     public function getHelplineSchedule($service_body_int)
@@ -105,7 +105,7 @@ class VolunteerService
     {
         try {
             $volunteers = $this->getHelplineVolunteersActiveNow($volunteer_routing_params);
-            log_debug("getHelplineVolunteer():: activeVolunteers: " . var_export($volunteers, true));
+            $this->settings->logDebug("getHelplineVolunteer():: activeVolunteers: " . var_export($volunteers, true));
             if (isset($volunteers) && count($volunteers) > 0) {
                 if ($volunteer_routing_params->cycle_algorithm == CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL) {
                     if ($volunteer_routing_params->tracker > count($volunteers) - 1) {
@@ -163,10 +163,10 @@ class VolunteerService
             $volunteerInfo->number = $volunteer->volunteer_phone_number;
             $volunteerInfo->gender = $volunteer->volunteer_gender ?? VolunteerGender::UNSPECIFIED;
             $volunteerInfo->responder = $volunteer->volunteer_responder ?? VolunteerResponderOption::UNSPECIFIED;
-            if (strlen($this->settingsService->get('language_selections')) > 0) {
-                $volunteerInfo->language = property_exists($volunteer, 'volunteer_language') ? $volunteer->volunteer_language : array(explode(',', $this->settingsService->get('language_selections'))[0]);
+            if (strlen($this->settings->get('language_selections')) > 0) {
+                $volunteerInfo->language = property_exists($volunteer, 'volunteer_language') ? $volunteer->volunteer_language : array(explode(',', $this->settings->get('language_selections'))[0]);
             } else {
-                $volunteerInfo->language = array($this->settingsService->get("language"));
+                $volunteerInfo->language = array($this->settings->get("language"));
             }
 
             $finalSchedule[] = $volunteerInfo;
@@ -215,16 +215,16 @@ class VolunteerService
                     $volunteerInfo->start = VolunteerScheduleHelpers::getNextShiftInstance($vsi->day, $vsi->start_time, $volunteerInfo->time_zone);
                     $volunteerInfo->end = VolunteerScheduleHelpers::getNextShiftInstance($vsi->day, $vsi->end_time, $volunteerInfo->time_zone);
                     $volunteerInfo->weekday_id = $vsi->day;
-                    $volunteerInfo->weekday = $this->settingsService->word('days_of_the_week')[$vsi->day];
+                    $volunteerInfo->weekday = $this->settings->word('days_of_the_week')[$vsi->day];
                     $volunteerInfo->sequence = $v;
                     $volunteerInfo->contact = $volunteer->volunteer_phone_number;
                     $volunteerInfo->color = "#" . VolunteerScheduleHelpers::getNameHashColorCode(strval($v + 1) . "-" . $volunteerInfo->title);
                     $volunteerInfo->gender = isset($volunteer->volunteer_gender) ? $volunteer->volunteer_gender : VolunteerGender::UNSPECIFIED;
                     $volunteerInfo->responder = isset($volunteer->volunteer_responder) ? $volunteer->volunteer_responder : VolunteerResponderOption::UNSPECIFIED;
-                    if (strlen($this->settingsService->get('language_selections')) > 0) {
-                        $volunteerInfo->language = property_exists($volunteer, 'volunteer_language') ? $volunteer->volunteer_language : array(explode(',', $this->settingsService->get('language_selections'))[0]);
+                    if (strlen($this->settings->get('language_selections')) > 0) {
+                        $volunteerInfo->language = property_exists($volunteer, 'volunteer_language') ? $volunteer->volunteer_language : array(explode(',', $this->settings->get('language_selections'))[0]);
                     } else {
-                        $volunteerInfo->language = array($this->settingsService->get("language"));
+                        $volunteerInfo->language = array($this->settings->get("language"));
                     }
                     $finalSchedule[] = $volunteerInfo;
                 }
