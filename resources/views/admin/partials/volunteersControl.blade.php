@@ -1,9 +1,9 @@
 <div class="row">
     <div id="newVolunteerDialog" class="col-sm" style="display:none;">
         <div class="form-group">
-            <button id="add-volunteer" class="btn btn-sm btn-primary volunteer-manage-buttons" type="button" onclick="includeVolunteers();"><?php echo word('add_volunteer')?></button>
-            <button id="save-volunteers" class="btn btn-sm btn-success volunteer-manage-buttons" type="button" onclick="saveVolunteers('<?php echo $data_type?>');"><?php echo word('save_volunteers')?></button>
-            <button id="include-group" class="btn btn-sm btn-warning volunteer-manage-buttons" type="button" onclick="showGroupsModal();" style="display: none;"><?php echo word('include_group')?></button>
+            <button id="add-volunteer" class="btn btn-sm btn-primary volunteer-manage-buttons" type="button" onclick="includeVolunteers();">{{ $settings->word('add_volunteer') }}</button>
+            <button id="save-volunteers" class="btn btn-sm btn-success volunteer-manage-buttons" type="button" onclick="saveVolunteers('<?php echo $dataType?>');">{{ $settings->word('save_volunteers') }}</button>
+            <button id="include-group" class="btn btn-sm btn-warning volunteer-manage-buttons" type="button" onclick="showGroupsModal();" style="display: none;">{{ $settings->word('include_group') }}</button>
             <button id="volunteers-download-list-csv" class="btn btn-sm btn-secondary volunteer-manage-buttons" type="button" style="display: none;">Volunteer List (CSV)</button>
             <button id="volunteers-download-list-json" class="btn btn-sm btn-secondary volunteer-manage-buttons" type="button" style="display: none;">Volunteer List (JSON)</button>
         </div>
@@ -19,10 +19,9 @@
                 <div class="form-group form-row">
                     Time Zone:
                     <select class="form-control form-control-sm time_zone_selector" id="time_zone">
-                        <?php
-                        foreach (getTimezoneList() as $tzItem) { ?>
-                        <option value="<?php echo $tzItem?>"><?php echo $tzItem; ?></option>
-                        <?php } ?>
+                        @foreach ($settings->getTimezoneList() as $tzItem)
+                            <option value="{{ $tzItem }}">{{ $tzItem }}</option>
+                        @endforeach
                     </select>
 
                     Type:
@@ -54,10 +53,9 @@
                 <div class="form-group form-row form-inline">
                     Time Zone:
                     <select class="form-control form-control-sm time_zone_selector" id="time_zone">
-                        <?php
-                        foreach (getTimezoneList() as $tzItem) { ?>
-                        <option value="<?php echo $tzItem?>"><?php echo $tzItem; ?></option>
-                        <?php } ?>
+                        @foreach ($settings->getTimezoneList() as $tzItem)
+                        <option value="{{ $tzItem }}">{{ $tzItem }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="form-group form-row form-inline">
@@ -121,10 +119,9 @@
                 <div class="form-group form-row form-inline">
                     Time Zone:
                     <select class="form-control form-control-sm time_zone_selector" id="time_zone">
-                        <?php
-                        foreach (getTimezoneList() as $tzItem) { ?>
-                        <option value="<?php echo $tzItem?>"><?php echo $tzItem; ?></option>
-                        <?php } ?>
+                        @foreach ($settings->getTimezoneList() as $tzItem)
+                            <option value="{{ $tzItem }}">{{ $tzItem }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="form-group form-row form-inline">
@@ -163,7 +160,7 @@
     </div>
 </div>
 <div id="volunteerCards" class="list-group-flush" class="row"></div>
-<?php require_once 'footer.php';?>
+@include('admin.partials.footer')
 <div class="card volunteerCard border-dark" id="volunteerCardTemplate" style="display:none;">
     <form id="volunteersForm">
         <div class="card-header">
@@ -197,26 +194,22 @@
                     <option value="0">Unassigned</option>
                     <option value="1">Enabled</option>
                 </select>
-                <?php
-                if (has_setting('language_selections')) { ?>
+                @if ($settings->has('language_selections'))
                 Languages: <select multiple class="form-control form-control-sm" name="volunteer_language" id="volunteer_language">
-                        <?php
-                    foreach ($language_selection_options = explode(",", setting('language_selections')) as $key => $available_language) {
-                        ?>
+                    @foreach ($settings->languageSelections() as $key => $available_language) {
                     <option value="<?php echo $available_language; ?>"><?php echo $available_language; ?></option>
-                        <?php
-                    }
-                    } ?>
+                    @endforeach
+                @endif
                 </select>
             </div>
             <table id="volunteer_schedule" class="table table-striped table-borderless">
                 <tr>
                     <th>
                         Shifts
-                        <button class="btn btn-sm btn-primary" onclick="addShift(this);return false;"><?php echo word('add_shift')?></button>
-                        <button class="btn btn-sm btn-primary" onclick="add7DayShifts(this);return false;"><?php echo word('add_7_day_shifts')?></button>
-                        <button class="btn btn-sm btn-primary" onclick="add24by7Shifts(this);return false;"><?php echo word('add_24by7_shifts')?></button>
-                        <button class="btn btn-sm btn-danger" onclick="removeAllShifts(this);return false;"><?php echo word('remove_all_shifts')?></button>
+                        <button class="btn btn-sm btn-primary" onclick="addShift(this);return false;"><{{ $settings->word('add_shift') }}</button>
+                        <button class="btn btn-sm btn-primary" onclick="add7DayShifts(this);return false;">{{ $settings->word('add_7_day_shifts') }}</button>
+                        <button class="btn btn-sm btn-primary" onclick="add24by7Shifts(this);return false;">{{ $settings->word('add_24by7_shifts') }}</button>
+                        <button class="btn btn-sm btn-danger" onclick="removeAllShifts(this);return false;">{{ $settings->word('remove_all_shifts') }}</button>
                     </th>
                 </tr>
                 <tr>
@@ -237,7 +230,7 @@
                     <input type="checkbox" class="form-check-input" name="volunteer_enabled" id="volunteer_enabled" value="false" onclick="checkboxStatusToggle(this)">
                     <label class="form-check-label" for="volunteer_enabled">Enabled</label>
                 </div>
-                <button class="btn btn-sm btn-danger" type="button" onclick="removeCard(this);return false;"><?php echo word('remove')?></button>
+                <button class="btn btn-sm btn-danger" type="button" onclick="removeCard(this);return false;">{{ $settings->word('remove') }}</button>
             </div>
         </div>
     </form>
@@ -251,7 +244,7 @@
     </div>
     <div id="shiftCardFooter" class="card-footer">
         <div id="shiftRemove" class="float-right">
-            <button class="btn btn-sm btn-danger" type="button" onclick="removeShift(this);return false;"><?php echo word('remove')?></button>
+            <button class="btn btn-sm btn-danger" type="button" onclick="removeShift(this);return false;">{{ $settings->word('remove') }}</button>
         </div>
     </div>
 </div>

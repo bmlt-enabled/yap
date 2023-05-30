@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Constants\AuthMechanism;
+use App\Repositories\VoicemailRepository;
+use App\Services\ConfigService;
+use App\Utility\Sort;
 use App\Services\AuthenticationService;
 use App\Services\AuthorizationService;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
 use Illuminate\Http\Request;
+use PHP_CodeSniffer\Config;
 
 class AdminController extends Controller
 {
@@ -15,14 +18,24 @@ class AdminController extends Controller
     protected RootServerService $rootServer;
     protected AuthenticationService $authn;
     protected AuthorizationService $authz;
+    protected ConfigService $config;
+    protected VoicemailRepository $voicemail;
     private array $pages = ["Home", "Reports", "Service Bodies", "Schedules", "Settings", "Volunteers", "Groups"];
 
-    public function __construct(SettingsService $settings, RootServerService $rootServer, AuthenticationService $authn, AuthorizationService $authz)
-    {
+    public function __construct(
+        SettingsService       $settings,
+        RootServerService     $rootServer,
+        AuthenticationService $authn,
+        AuthorizationService  $authz,
+        ConfigService         $config,
+        VoicemailRepository   $voicemail
+    ) {
         $this->settings = $settings;
         $this->rootServer = $rootServer;
         $this->authn = $authn;
         $this->authz = $authz;
+        $this->config = $config;
+        $this->voicemail = $voicemail;
 
         if ($authz->canManageUsers()) {
             $this->pages[] = "Users";
@@ -31,11 +44,22 @@ class AdminController extends Controller
 
     public function index(Request $request)
     {
-        return view('admin/'.$request->route("page"), [
+        $serviceBodiesForUser =$this->rootServer->getServiceBodiesForUser();
+        Sort::sortOnField($serviceBodiesForUser, 'name');
+
+        $serviceBodiesEnabledForRouting = $this->config->getVolunteerRoutingEnabledServiceBodies();
+        Sort::sortOnField($serviceBodiesEnabledForRouting, 'service_body_name');
+
+        $page = $request->route("page") == "" ? "index" : $request->route("page");
+        return view(sprintf('admin/%s', $page), [
             "settings" => $this->settings,
             "rootServer" => $this->rootServer,
             "pages" => $this->pages,
             "username" => $this->authn->username(),
+            "serviceBodiesForUser" => $serviceBodiesForUser,
+            "serviceBodiesEnabledForRouting" => $serviceBodiesEnabledForRouting,
+            "isTopLevelAdmin" => $this->authz->isTopLevelAdmin(),
+            "voicemail" => $this->voicemail,
         ]);
     }
 

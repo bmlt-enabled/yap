@@ -1,7 +1,4 @@
 @include('admin.partials.nav')
-$service_bodies = getServiceBodiesForUser();
-sort_on_field($service_bodies, 'name');
-?>
 <div class="container">
     <div class="alert" role="alert" style="display:none;" id="service_body_saved_alert">
         Saved.
@@ -11,25 +8,25 @@ sort_on_field($service_bodies, 'name');
             <table id="service-bodies-table" class="table table-striped table-borderless">
                 <thead>
                 <tr>
-                    <th scope="col"><?php echo word("service_body")?></th>
-                    <th scope="col"><?php echo word("helpline")?></th>
-                    <th scope="col"><?php echo word("action")?></th>
+                    <th scope="col">{{ $settings->word("service_body") }}</th>
+                    <th scope="col">{{ $settings->word("helpline") }}</th>
+                    <th scope="col">{{ $settings->word("action") }}</th>
                 </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($service_bodies as $service_body) { ?>
+                @foreach ($serviceBodiesForUser as $service_body)
                 <tr>
-                    <td><?php echo $service_body->name ?> (<?php echo $service_body->id ?>)
-                    <td><?php echo isset($service_body->helpline) ? $service_body->helpline : "" ?></td>
+                    <td>{{ $service_body->name }} ({{ $service_body->id }})
+                    <td>{{ isset($service_body->helpline) ? $service_body->helpline : "" }}</td>
                     <td>
-                        <button class="btn btn-sm btn-primary" onclick="openServiceBodyCallHandling(<?php echo $service_body->id ?>);"><?php echo word('call_handling')?></button>
-                        <button class="btn btn-sm btn-success" onclick="openServiceBodyConfigure(<?php echo $service_body->id ?>);"><?php echo word('configure')?></button>
-                        <button class="btn btn-sm btn-warning" onclick="location.href='voicemail.php?service_body_id=<?php echo $service_body->id ?>';"><?php echo word('voicemail')?></button>
+                        <button class="btn btn-sm btn-primary" onclick="openServiceBodyCallHandling(<?php echo $service_body->id ?>);">{{ $settings->word('call_handling') }}</button>
+                        <button class="btn btn-sm btn-success" onclick="openServiceBodyConfigure(<?php echo $service_body->id ?>);"><?php echo $settings->word('configure')?></button>
+                        <button class="btn btn-sm btn-warning" onclick="location.href='voicemail?service_body_id=<?php echo $service_body->id ?>';"><?php echo $settings->word('voicemail')?></button>
                         <div class="modal fade" id="serviceBodyCallHandling_<?php echo $service_body->id ?>" tabindex="-1" role="dialog" aria-labelledby="configureShiftDialog" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title"><?php echo sprintf("%s (%s)", word('call_handling'), $service_body->name); ?></h5>
+                                        <h5 class="modal-title"><?php echo sprintf("%s (%s)", $settings->word('call_handling'), $service_body->name); ?></h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
@@ -146,7 +143,7 @@ sort_on_field($service_bodies, 'name');
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title"><?php echo sprintf("%s (%s)", word('configure'), $service_body->name) ?></h5>
+                                        <h5 class="modal-title"><?php echo sprintf("%s (%s)", $settings->word('configure'), $service_body->name) ?></h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
@@ -155,13 +152,13 @@ sort_on_field($service_bodies, 'name');
                                         <div>For more information on using this, see the documentation on <a href="https://github.com/bmlt-enabled/yap/wiki/Configuration-Precedence" target="_blank">Configuration Precedence</a>.</div>
                                         <form id="serviceBodyConfigurationForm" class="serviceBodyConfigurationForm">
                                             <select class="form-control form-control-sm" name="serviceBodyConfigurationFields" id="serviceBodyConfigurationFields">
-                                                    <?php foreach ($GLOBALS['settings_allowlist'] as $setting => $value) {
-                                                if (gettype($value["default"]) === "array") {?>
+                                                @foreach ($settings->allowlist() as $setting => $value)
+                                                @if (gettype($value["default"]) === "array")
                                                 <option data-default="<?php echo str_replace("\"", "'", json_encode($value["default"])) ?>" value="<?php echo $setting?>"><?php echo $setting?></option>
-                                                <?php } else { ?>
-                                                <option data-default="<?php echo get_str_val($value["default"]) ?>" value="<?php echo $setting?>"><?php echo $setting?></option>
-                                                <?php } ?>
-                                                <?php } ?>
+                                                @else
+                                                <option data-default="<?php echo \App\Utility\Format::getStringValue($value["default"]) ?>" value="<?php echo $setting?>"><?php echo $setting?></option>
+                                                @endif
+                                                @endforeach
                                             </select>
                                             <button type="button" class="btn btn-sm btn-primary addFieldButton" onclick="addServiceBodyButtonClick(<?php echo $service_body->id ?>)">+</button>
                                             <div id="serviceBodyFieldsPlaceholder"></div>
@@ -176,10 +173,10 @@ sort_on_field($service_bodies, 'name');
                         </div>
                     </td>
                 </tr>
-                <?php } ?>
+                @endforeach
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-<?php require_once 'footer.php';?>
+@include('admin.partials.footer')

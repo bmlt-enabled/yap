@@ -19,13 +19,13 @@ class RootServerService
         $this->http = $http;
     }
 
-    private function getServiceBodies()
+    public function getServiceBodies()
     {
         $bmlt_search_endpoint = sprintf(
             '%s/client_interface/json/?switcher=GetServiceBodies',
             $this->settings->getAdminBMLTRootServer()
         );
-        return json_decode($this->http->get($bmlt_search_endpoint, 3600));
+        return json_decode($this->http->get($bmlt_search_endpoint, 15));
     }
 
     public function getServiceBodiesRightsIds()
@@ -263,10 +263,10 @@ class RootServerService
     {
         $bmlt_search_endpoint = sprintf(
             '%s/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s',
-            setting('tomato_url'),
+            $this->settings->get('tomato_url'),
             $latitude,
             $longitude,
-            setting('helpline_search_radius')
+            $this->settings->get('helpline_search_radius')
         );
         $search_results = json_decode($this->http->get($bmlt_search_endpoint, 60));
         $root_server_uri_from_first_result = $search_results[0]->root_server_uri;

@@ -16,14 +16,13 @@ class HttpService
 
     const USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 +yap";
 
-    public function get($url, $ttl = 0, $extraHeaders = []) : Response
+    public function get($url, $ttl = 0, $extraHeaders = []) : string
     {
         $key = sprintf('cache_%s', $url);
         return cache()->remember($key, $ttl, function () use ($url, $extraHeaders) {
-            $response = Http::withHeaders(array_merge([
-                "User-Agent"=>self::USER_AGENT
-            ], $extraHeaders))->get($url);
-            return $response;
+            return Http::withHeaders(array_merge([
+                "User-Agent" => self::USER_AGENT
+            ], $extraHeaders))->get($url)->body();
         });
     }
 

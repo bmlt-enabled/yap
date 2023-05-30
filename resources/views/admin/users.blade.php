@@ -33,7 +33,7 @@ if (!canManageUsers()) {
                         <button class="btn btn-sm btn-warning" onclick="editUser(<?php echo $user['id']?>, '<?php echo $user['username']?>', '<?php echo $user['name']?>', '<?php echo $user['permissions']?>', '<?php echo $user['service_bodies']?>', 'edit')">Edit</button>
                             <?php if ($user['id'] !== $_SESSION['auth_id']) { ?>
                         <button class="btn btn-sm btn-danger" onclick="deleteUserHandling(<?php echo $user['id']?>)">Delete</button>
-                        <?php } ?>
+                            <?php } ?>
                     </td>
                     <td><?php echo $user['username']?></td>
                     <td><?php echo $user['name']?></td>
@@ -41,7 +41,7 @@ if (!canManageUsers()) {
                     <td><?php echo $user['permissions']?></td>
                         <?php if (boolval($_SESSION['auth_is_admin'])) { ?>
                     <td><input type="checkbox" <?php echo boolval($user['is_admin']) ? "checked" : "" ?> disabled="true"></td>
-                    <?php } ?>
+                        <?php } ?>
                     <td><?php echo $user['created_on']?></td>
                 </tr>
                 <?php } ?>

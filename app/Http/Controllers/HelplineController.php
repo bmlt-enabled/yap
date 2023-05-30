@@ -91,7 +91,7 @@ class HelplineController extends Controller
             if (isset($service_body_obj->helpline)) {
                 $dial_string = explode(":", $service_body_obj->helpline)[0];
             } else {
-                $dial_string = has_setting("fallback_number") ? setting("fallback_number") : "0000000000";
+                $dial_string = $this->settings->has("fallback_number") ? $this->settings->get("fallback_number") : "0000000000";
             }
 
             $waiting_message = true;
@@ -371,7 +371,7 @@ class HelplineController extends Controller
         $volunteer_routing_parameters->volunteer_type = VolunteerType::PHONE;
         $volunteer_routing_parameters->volunteer_gender = $_SESSION['Gender'] ?? VolunteerGender::UNSPECIFIED;
         $volunteer_routing_parameters->volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
-        $volunteer_routing_parameters->volunteer_language = setting('language');
+        $volunteer_routing_parameters->volunteer_language = $this->settings->get('language');
         $_SESSION["volunteer_routing_parameters"] = $volunteer_routing_parameters;
         $config->volunteer_routing_params = $volunteer_routing_parameters;
         $volunteer = $this->volunteers->getHelplineVolunteer($config->volunteer_routing_params);

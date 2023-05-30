@@ -1,17 +1,4 @@
 <?php
-function getVoicemail($service_body_id)
-{
-    $db = new Database();
-    $sql = sprintf("SELECT r.`callsid`,s.`pin`,r.`from_number`,r.`to_number`,CONCAT(re.`event_time`, 'Z') as event_time,re.`meta` FROM records_events re
-    LEFT OUTER JOIN records r ON re.callsid = r.callsid
-    LEFT OUTER JOIN sessions s ON r.callsid = s.callsid
-    LEFT OUTER JOIN event_status es ON re.callsid = es.callsid where re.event_id = %d and service_body_id = %s and (es.event_id = %s and es.status <> %s OR es.id IS NULL);", EventId::VOICEMAIL, $service_body_id, EventId::VOICEMAIL, EventStatusId::VOICEMAIL_DELETED);
-    $db->query($sql);
-    $resultset = $db->resultset();
-    $db->close();
-    return $resultset;
-}
-
 function setFlag($flag, $setting)
 {
     $db = new Database();
@@ -228,15 +215,4 @@ function saveUser($data)
     $db->bind(':service_bodies', implode(",", $data->service_bodies));
     $db->execute();
     $db->close();
-}
-
-function auth_v2($username, $password)
-{
-    $db = new Database();
-    $db->query("SELECT id, name, username, password, is_admin, permissions, service_bodies FROM `users` WHERE `username` = :username AND `password` = SHA2(:password, 256)");
-    $db->bind(':username', $username);
-    $db->bind(':password', $password);
-    $resultset = $db->resultset();
-    $db->close();
-    return $resultset;
 }

@@ -7,6 +7,7 @@ use App\Constants\MeetingResultSort;
 use App\Constants\SearchType;
 use App\Constants\SettingSource;
 use App\Models\Localizations;
+use DateTimeZone;
 
 class SettingsService
 {
@@ -278,6 +279,11 @@ class SettingsService
         return $this->available_languages;
     }
 
+    public function languageSelections(): array
+    {
+        return explode(",", $this->get('language_selections'));
+    }
+
     public function getNumberForWord($name)
     {
         $numbers = self::$numbers;
@@ -343,6 +349,11 @@ class SettingsService
         }
 
         return (isset($session_id) ? ($shouldUriEncode ? "&amp;" : "&") . ("ysk=" . $session_id) : "");
+    }
+
+    public function getTimezoneList(): array
+    {
+        return DateTimeZone::listIdentifiers(DateTimeZone::ALL);
     }
 
     public function logDebug($message): void

@@ -1,21 +1,21 @@
-<?php require_once 'nav.php';?>
+@include('admin.partials.nav')
 <link rel="stylesheet" href="<?php echo url("/public/dist/css/yap-reports.min.css")?>">
 <div class="container">
     <div class="alert alert-success" role="alert" style="display:none;" id="voicemail-deleted-alert">
         Saved.
     </div>
     <h3 class="voicemail-title"><?php
-                                $service_body = getServiceBody($_REQUEST['service_body_id']);
-                                echo sprintf("%s for %s", word('voicemail'), $service_body->name) ;?>
+                                $service_body = $rootServer->getServiceBody($_REQUEST['service_body_id']);
+                                echo sprintf("%s for %s", $settings->word('voicemail'), $service_body->name) ;?>
     </h3>
     <div id="voicemail-table"></div>
-    <?php require_once 'footer.php';?>
+@include('admin.partials.footer')
     <script src="<?php echo url("/public/dist/js/yap-reports.min.js")?>"></script>
     <script type="text/javascript">
         var darkTheme = "<?php echo url("/public/dist/css/yap-tabulator-dark.min.css")?>";
         var lightTheme = "<?php echo url("/public/dist/css/yap-tabulator-dark.min.css")?>";
         loadTabulatorTheme();
-        var data = <?php echo json_encode(getVoicemail($_REQUEST['service_body_id']))?>;
+        var data = <?php echo json_encode($voicemail->get($_REQUEST['service_body_id']))?>;
         var table = new Tabulator("#voicemail-table", {
             data: data,
             layout:"fitColumns",

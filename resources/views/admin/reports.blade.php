@@ -5,15 +5,12 @@
         <div id="reports-servicebodies-dropdown-container">
             <select class="form-control form-control-sm" id="service_body_id" name="service_body_id">
                 <option selected value="-1">-= Select A Service Body =-</option>
-                <?php if (isTopLevelAdmin()) { ?>
+                @if ($isTopLevelAdmin)
                 <option value="0">All</option>
-                <?php }
-                $serviceBodies = getServiceBodiesForUser();
-                sort_on_field($serviceBodies, 'name');
-                foreach ($serviceBodies as $item) {?>
+                @endif
+                @foreach ($serviceBodiesForUser as $item)
                 <option value="<?php echo $item->id ?>"><?php echo $item->name ?> (<?php echo $item->id ?>) / <?php echo $item->parent_name ?> (<?php echo $item->parent_id ?>)</option>
-                    <?php
-                }?>
+                @endforeach
             </select>
         </div>
         <div id="reports-servicebodies-recursive-container" class="custom-control custom-switch">
@@ -28,7 +25,7 @@
         </div>
     </div>
     <script type="text/javascript">
-        var service_bodies = <?php echo json_encode(getServiceBodies()) ?>;
+        var service_bodies = {{ json_encode($rootServer->getServiceBodies()) }};
         function getServiceBodyById(id) {
             if (id === 0) return { id: "0", name: "General" };
 
@@ -78,7 +75,7 @@
     </div>
 </div>
 <script src="<?php echo url("/public/dist/js/yap-reports.js")?>"></script>
-<?php require_once 'footer.php';?>
+@include('admin.partials.footer')
 <script type="text/javascript" src="<?php echo url("/public/dist/js/daterangepicker.js") ?>"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo url("/public/dist/css/daterangepicker.css") ?>" />
 <script type="text/javascript">
