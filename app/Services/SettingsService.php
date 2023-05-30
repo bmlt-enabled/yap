@@ -356,6 +356,11 @@ class SettingsService
         return DateTimeZone::listIdentifiers(DateTimeZone::ALL);
     }
 
+    public function getCurrentTime(): string
+    {
+        return gmdate("Y-m-d H:i:s");
+    }
+
     public function logDebug($message): void
     {
         if ($this->has('debug') && boolval($this->get('debug'))) {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\VoicemailRepository;
+use App\Services\CallService;
 use App\Services\ConfigService;
 use App\Utility\Sort;
 use App\Services\AuthenticationService;
@@ -19,7 +20,7 @@ class AdminController extends Controller
     protected AuthenticationService $authn;
     protected AuthorizationService $authz;
     protected ConfigService $config;
-    protected VoicemailRepository $voicemail;
+    protected CallService $call;
     private array $pages = ["Home", "Reports", "Service Bodies", "Schedules", "Settings", "Volunteers", "Groups"];
 
     public function __construct(
@@ -28,14 +29,14 @@ class AdminController extends Controller
         AuthenticationService $authn,
         AuthorizationService  $authz,
         ConfigService         $config,
-        VoicemailRepository   $voicemail
+        CallService           $call,
     ) {
         $this->settings = $settings;
         $this->rootServer = $rootServer;
         $this->authn = $authn;
         $this->authz = $authz;
         $this->config = $config;
-        $this->voicemail = $voicemail;
+        $this->call = $call;
 
         if ($authz->canManageUsers()) {
             $this->pages[] = "Users";
@@ -59,7 +60,9 @@ class AdminController extends Controller
             "serviceBodiesForUser" => $serviceBodiesForUser,
             "serviceBodiesEnabledForRouting" => $serviceBodiesEnabledForRouting,
             "isTopLevelAdmin" => $this->authz->isTopLevelAdmin(),
-            "voicemail" => $this->voicemail,
+            "canManageUsers" => $this->authz->canManageUsers(),
+            "voicemail" => $this->call->getVoicemail(),
+            "users" => $this->config->getUsers(),
         ]);
     }
 

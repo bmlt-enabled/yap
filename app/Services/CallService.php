@@ -6,18 +6,30 @@ use App\Constants\EventId;
 use App\Constants\SearchType;
 use App\Constants\SpecialPhoneNumber;
 use App\Repositories\ReportsRepository;
+use App\Repositories\VoicemailRepository;
 
 class CallService
 {
     protected SettingsService $settings;
     protected ReportsRepository $reports;
+    protected VoicemailRepository $voicemail;
     protected TwilioService $twilio;
 
-    public function __construct(SettingsService $settings, ReportsRepository $reports, TwilioService $twilio)
-    {
+    public function __construct(
+        SettingsService $settings,
+        ReportsRepository $reports,
+        TwilioService $twilio,
+        VoicemailRepository $voicemail
+    ) {
         $this->settings = $settings;
         $this->reports = $reports;
         $this->twilio = $twilio;
+        $this->voicemail = $voicemail;
+    }
+
+    public function getVoicemail()
+    {
+        return $this->voicemail;
     }
 
     public function checkSMSBlackhole()
@@ -88,6 +100,11 @@ class CallService
         $conferences = $this->twilio->client()->conferences->read(array ("friendlyName" => $friendlyname ));
         $conferencesid = $conferences[0]->sid;
         $this->reports->setConferenceParticipant($friendlyname, $conferencesid, $callsid, $role);
+    }
+
+    public function getConferencePartipant($callsid): array
+    {
+        return $this->reports->getConferenceParticipant($callsid);
     }
 
     public function getOutboundDialingCallerId($serviceBodyCallHandling)

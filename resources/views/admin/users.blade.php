@@ -1,5 +1,6 @@
 @include('admin.partials.nav')
-if (!canManageUsers()) {
+<?php
+if (!$canManageUsers) {
     echo("Access Denied");
     exit();
 }
@@ -26,23 +27,22 @@ if (!canManageUsers()) {
                 </thead>
                 <tbody>
                 <?php
-                $users = getUsers(boolval($_SESSION['auth_is_admin']) ? null : $_SESSION['auth_service_bodies']);
                 foreach ($users as $user) {?>
                 <tr>
                     <td>
-                        <button class="btn btn-sm btn-warning" onclick="editUser(<?php echo $user['id']?>, '<?php echo $user['username']?>', '<?php echo $user['name']?>', '<?php echo $user['permissions']?>', '<?php echo $user['service_bodies']?>', 'edit')">Edit</button>
-                            <?php if ($user['id'] !== $_SESSION['auth_id']) { ?>
-                        <button class="btn btn-sm btn-danger" onclick="deleteUserHandling(<?php echo $user['id']?>)">Delete</button>
+                        <button class="btn btn-sm btn-warning" onclick="editUser(<?php echo $user->id?>, '<?php echo $user->username?>', '<?php echo $user->name?>', '<?php echo $user->permissions?>', '<?php echo $user->service_bodies?>', 'edit')">Edit</button>
+                            <?php if ($user->id !== $_SESSION['auth_id']) { ?>
+                        <button class="btn btn-sm btn-danger" onclick="deleteUserHandling(<?php echo $user->id ?>)">Delete</button>
                             <?php } ?>
                     </td>
-                    <td><?php echo $user['username']?></td>
-                    <td><?php echo $user['name']?></td>
-                    <td><?php echo $user['service_bodies']?></td>
-                    <td><?php echo $user['permissions']?></td>
+                    <td><?php echo $user->username?></td>
+                    <td><?php echo $user->name ?></td>
+                    <td><?php echo $user->service_bodies ?></td>
+                    <td><?php echo $user->permissions ?></td>
                         <?php if (boolval($_SESSION['auth_is_admin'])) { ?>
-                    <td><input type="checkbox" <?php echo boolval($user['is_admin']) ? "checked" : "" ?> disabled="true"></td>
+                    <td><input type="checkbox" <?php echo boolval($user->is_admin) ? "checked" : "" ?> disabled="true"></td>
                         <?php } ?>
-                    <td><?php echo $user['created_on']?></td>
+                    <td><?php echo $user->created_on ?></td>
                 </tr>
                 <?php } ?>
                 </tbody>
@@ -50,5 +50,4 @@ if (!canManageUsers()) {
         </div>
     </div>
 </div>
-<?php
-require_once 'footer.php';
+@include('admin.partials.footer')

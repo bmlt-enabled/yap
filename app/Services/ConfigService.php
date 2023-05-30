@@ -6,16 +6,19 @@ use App\Constants\DataType;
 use App\Constants\SpecialPhoneNumber;
 use App\Repositories\ConfigRepository;
 use App\Models\ServiceBodyCallHandling;
+use App\Repositories\UserRepository;
 
 class ConfigService
 {
     protected ConfigRepository $config;
+    protected UserRepository $users;
     protected RootServerService $rootServer;
 
-    public function __construct(ConfigRepository $config, RootServerService $rootServer)
+    public function __construct(ConfigRepository $config, RootServerService $rootServer, UserRepository $users)
     {
         $this->config = $config;
         $this->rootServer = $rootServer;
+        $this->users = $users;
     }
 
     public function getConfig($service_body_id)
@@ -106,5 +109,10 @@ class ConfigService
         }
 
         return $config;
+    }
+
+    public function getUsers($service_bodies = null)
+    {
+        return $this->users->getUsers($service_bodies);
     }
 }

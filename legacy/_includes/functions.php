@@ -7,22 +7,12 @@ if (isset($_GET["ysk"])) {
     session_id($_GET["ysk"]);
 }
 @session_start();
-require_once(!getenv("ENVIRONMENT") ? base_path() . '/config.php' : base_path() . '/config.' . getenv("ENVIRONMENT") . '.php');
-$ignored_vars = ['__path', '__env', '__data', 'includePath', 'ignored_vars', 'app', 'errors', 'key', 'value'];
-foreach (get_defined_vars() as $key => $value) {
-    if (!in_array($key, $ignored_vars)) {
-        $GLOBALS[$key] = $value;
-    }
-}
 require_once 'migrations.php';
 if (isset($_GET["CallSid"])) {
     insertSession($_GET["CallSid"]);
 }
 $GLOBALS['version']  = "4.3.0";
 checkBlocklist();
-if (has_setting('config')) {
-    include_once __DIR__ . '/../../config_'.setting('config').'.php';
-}
 
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 // phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses
@@ -323,9 +313,4 @@ function check_auth()
     } else {
         return true;
     }
-}
-
-function getCurrentTime()
-{
-    return gmdate("Y-m-d H:i:s");
 }
