@@ -1,42 +1,13 @@
 <?php
 
-if (!class_exists("SearchType")) {
-    class SearchType
-    {
-        const NONE = -1;
-        const VOLUNTEERS = 1;
-        const MEETINGS = 2;
-        const JFT = 3;
-        const SPAD = 6;
-        const CUSTOM_EXTENSIONS = 998;
-        const DIALBACK = 1000;
-    }
-}
+use App\Services\SettingsService;
 
-if (!class_exists("LocationSearchMethod")) {
-    class LocationSearchMethod
-    {
-        const NONE = -1;
-        const VOICE = 4;
-        const DTMF = 5;
-    }
-}
-
-if (!class_exists("MeetingResultSort")) {
-    class MeetingResultSort
-    {
-        const TODAY = 0;
-    }
-}
-
-if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], "/v1/")) {
-    require_once(!getenv("ENVIRONMENT") ? base_path() . '/config.php' : base_path() . '/config.' . getenv("ENVIRONMENT") . '.php');
-    putenv('DB_HOSTNAME=' . $mysql_hostname);
-    putenv('DB_USERNAME=' . $mysql_username);
-    putenv('DB_PASSWORD=' . $mysql_password);
-    putenv('DB_DATABASE=' . $mysql_database);
-    putenv('DB_PORT=' . (isset($mysql_port) ? $mysql_port : 3306));
-}
+$settings = new SettingsService();
+putenv(sprintf("DB_HOSTNAME=%s", $settings->get('mysql_hostname')));
+putenv(sprintf("DB_USERNAME=%s", $settings->get('mysql_username')));
+putenv(sprintf("DB_PASSWORD=%s", $settings->get('mysql_password')));
+putenv(sprintf("DB_DATABASE=%s", $settings->get('mysql_database')));
+putenv(sprintf("DB_PORT=%s", $settings->has('mysql_port') ? $settings->get('mysql_port')  : 3306));
 
 return [
 
@@ -87,11 +58,7 @@ return [
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-                /* TODO In PHP 8.1, PDO no longer casts all results to strings. When we drop support for PHP < 8.1,
-                        we should set this back to false, and modify the code to handle the returned db types
-                        appropriately.
-                */
-                PDO::ATTR_STRINGIFY_FETCHES => true,
+                PDO::ATTR_STRINGIFY_FETCHES => false,
             ]) : [],
         ],
     ],

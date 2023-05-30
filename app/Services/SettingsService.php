@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Constants\LocationSearchMethod;
 use App\Constants\MeetingResultSort;
 use App\Constants\SearchType;
+use App\Constants\SettingSource;
 use App\Models\Localizations;
+use DateTimeZone;
 
 class SettingsService
 {
@@ -118,10 +120,9 @@ class SettingsService
                 $this->allowlist[str_replace("-", "_", $available_language_key) . "_voice"] = [ 'description' => '', 'default' => 'alice', 'overridable' => true, 'hidden' => false];
             }
 
-            $this->localizations->$available_language_key = @include(base_path() . '/lang/' .$available_language_key.'_v2.php');
+            $this->localizations->setLocalization($available_language_key, @include(base_path() . '/lang/' .$available_language_key.'_v2.php'));
         }
 
-        $this->localization = @include(base_path() . '/lang/' .$this->getWordLanguage().'_v2.php');
         $this->shortLanguage = $this->getWordLanguage() === "da-DK" ? "dk" : explode("-", $this->getWordLanguage())[0];
     }
 
@@ -133,6 +134,11 @@ class SettingsService
     public function version(): string
     {
         return $this->version;
+    }
+
+    public function allowlist(): array
+    {
+        return $this->allowlist;
     }
 
     public function has($name): bool
@@ -157,6 +163,21 @@ class SettingsService
         }
 
         return null;
+    }
+
+    public function source($name): string
+    {
+        if (isset($_REQUEST[$name])) {
+            return SettingSource::QUERYSTRING;
+        } else if (isset($_SESSION["override_" . $name])) {
+            return SettingSource::SESSION;
+        } else if (isset($GLOBALS[$name])) {
+            return SettingSource::CONFIG;
+        } else if (isset($this->allowlist[$name]['default'])) {
+            return SettingSource::DEFAULT_SETTING;
+        } else {
+            return "NOT SET";
+        }
     }
 
     public function getDigitForAction($setting, $action)
@@ -225,7 +246,7 @@ class SettingsService
         if ($language == null) {
             $language = $this->getWordLanguage();
         }
-        $this->localizations->$language[$word] = $value;
+        $this->localizations->getLocalization($language)[$word] = $value;
     }
 
     public function getWordLanguage(): string
@@ -250,7 +271,17 @@ class SettingsService
         if ($language == null) {
             $language = $this->getWordLanguage();
         }
-        return $this->localizations->$language['override_' . $name] ?? $this->localizations->$language[$name];
+        return $this->localizations->getLocalization($language)['override_' . $name] ?? $this->localizations->getLocalization($language)[$name];
+    }
+
+    public function availableLanguages(): array
+    {
+        return $this->available_languages;
+    }
+
+    public function languageSelections(): array
+    {
+        return explode(",", $this->get('language_selections'));
     }
 
     public function getNumberForWord($name)
@@ -318,6 +349,16 @@ class SettingsService
         }
 
         return (isset($session_id) ? ($shouldUriEncode ? "&amp;" : "&") . ("ysk=" . $session_id) : "");
+    }
+
+    public function getTimezoneList(): array
+    {
+        return DateTimeZone::listIdentifiers(DateTimeZone::ALL);
+    }
+
+    public function getCurrentTime(): string
+    {
+        return gmdate("Y-m-d H:i:s");
     }
 
     public function logDebug($message): void

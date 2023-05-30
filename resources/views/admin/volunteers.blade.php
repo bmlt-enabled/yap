@@ -1,22 +1,16 @@
-<?php require_once 'nav.php';
-$data_type = DataType::YAP_VOLUNTEERS_V2;
-?>
+@include('admin.partials.nav')
 <div class="container">
     <div class="alert alert-success" role="alert" style="display:none;" id="volunteer_saved_alert">
         Saved.
     </div>
-    <label for="service_body_id"><?php echo word('service_body')?></label>
+    <label for="service_body_id">{{ $settings->word('service_body') }}</label>
     <select class="form-control form-control-sm" id="service_body_id">
-        <option>-= Select A Service Body =-</option>
-        <?php
-        $helplineConfiguration = getVolunteerRoutingEnabledServiceBodies();
-        sort_on_field($helplineConfiguration, 'service_body_name');
-        foreach ($helplineConfiguration as $item) {?>
-            <option value="<?php echo $item->service_body_id ?>"><?php echo $item->service_body_name ?> (<?php echo $item->service_body_id ?>) / <?php echo $item->service_body_parent_name ?> (<?php echo $item->service_body_parent_id ?>)</option>
-            <?php
-        }?>
+        <option>-= Select A Service Body =-</option>;
+        @foreach ($serviceBodiesEnabledForRouting as $item)
+        <option value="<?php echo $item->service_body_id ?>"><?php echo $item->service_body_name ?> (<?php echo $item->service_body_id ?>) / <?php echo $item->service_body_parent_name ?> (<?php echo $item->service_body_parent_id ?>)</option>
+        @endforeach
     </select>
-    <?php require_once 'volunteers_control.php';?>
+@include('admin.partials.volunteersControl', ['dataType' => \App\Constants\DataType::YAP_VOLUNTEERS_V2])
 </div>
 <div class="modal fade" id="includeGroupDialog" tabindex="-1" role="dialog" aria-labelledby="includeGroupDialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -52,7 +46,7 @@ $data_type = DataType::YAP_VOLUNTEERS_V2;
                     <input type="checkbox" class="form-check-input" name="group_enabled" id="group_enabled" value="false" onclick="checkboxStatusToggle(this)">
                     <label class="form-check-label" for="group_enabled">Enabled</label>
                 </div>
-                <button class="btn btn-sm btn-danger" type="button" onclick="removeCard(this);return false;"><?php echo word('remove')?></button>
+                <button class="btn btn-sm btn-danger" type="button" onclick="removeCard(this);return false;"><?php echo $settings->word('remove')?></button>
             </div>
         </div>
     </form>

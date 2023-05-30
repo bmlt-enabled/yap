@@ -6,14 +6,31 @@ use App\Constants\DataType;
 use App\Constants\SpecialPhoneNumber;
 use App\Repositories\ConfigRepository;
 use App\Models\ServiceBodyCallHandling;
+use App\Repositories\UserRepository;
 
 class ConfigService
 {
     protected ConfigRepository $config;
+    protected UserRepository $users;
+    protected RootServerService $rootServer;
 
-    public function __construct(ConfigRepository $config)
+    public function __construct(ConfigRepository $config, RootServerService $rootServer, UserRepository $users)
     {
         $this->config = $config;
+        $this->rootServer = $rootServer;
+        $this->users = $users;
+    }
+
+    public function getConfig($service_body_id)
+    {
+        $configs = $this->config->getAllDbData(DataType::YAP_CONFIG_V2);
+        foreach ($configs as $config) {
+            if ($config['service_body_id'] == $service_body_id) {
+                return $config;
+            }
+        }
+
+        return null;
     }
 
     public function getCallHandling($serviceBodyId): ServiceBodyCallHandling
@@ -22,6 +39,29 @@ class ConfigService
         // TODO: this line needs to be reworked after functions.php is blown up
         return count($helplineData) > 0 ? $this->getServiceBodyCallHandlingData(json_decode(json_encode($helplineData[0]), true))
             : $this->getServiceBodyCallHandlingData(null);
+    }
+
+    public function getVolunteerRoutingEnabledServiceBodies(): array
+    {
+        $all_helpline_data = $this->config->getAllDbData(DataType::YAP_CALL_HANDLING_V2);
+        $service_bodies = $this->rootServer->getServiceBodiesForUser();
+        $helpline_enabled = array();
+
+        for ($x = 0; $x < count($all_helpline_data); $x++) {
+            $config = $this->getServiceBodyCallHandlingData($all_helpline_data[$x]);
+            if ($config->volunteer_routing_enabled || $config->sms_routing_enabled) {
+                for ($y = 0; $y < count($service_bodies); $y++) {
+                    if ($config->service_body_id == intval($service_bodies[$y]->id)) {
+                        $config->service_body_name = $service_bodies[$y]->name;
+                        $config->service_body_parent_id = $service_bodies[$y]->parent_id;
+                        $config->service_body_parent_name = $service_bodies[$y]->parent_name;
+                        $helpline_enabled[] = $config;
+                    }
+                }
+            }
+        }
+
+        return $helpline_enabled;
     }
 
     public function getServiceBodyCallHandlingData($helplineData): ServiceBodyCallHandling
@@ -69,5 +109,10 @@ class ConfigService
         }
 
         return $config;
+    }
+
+    public function getUsers($service_bodies = null)
+    {
+        return $this->users->getUsers($service_bodies);
     }
 }

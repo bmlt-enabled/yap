@@ -34,15 +34,16 @@
                     </div>
 
                     <div class="users_service_bodies control-group">
+
                         <?php
-                        $shareable_service_bodies = getServiceBodiesForUser();
+                        $shareable_service_bodies = $rootServer->getServiceBodiesForUser();
                         if (count($shareable_service_bodies) > 0) {
                             sort_on_field($shareable_service_bodies, 'name') ?>
                         Service Bodies Access: (press and hold Command/Control (macOS/Windows) and click to deselect an option) <select size="10" multiple class="form-control form-control-sm" name="service_bodies" id="service_bodies">
-                            <?php
-                            foreach ($shareable_service_bodies as $service_body) { ?>
-                                <option value="<?php echo $service_body->id; ?>"><?php echo $service_body->name ?> (<?php echo $service_body->id ?>) / <?php echo $service_body->parent_name ?> (<?php echo $service_body->parent_id ?>)</option>
-                            <?php } ?>
+                                <?php
+                                foreach ($shareable_service_bodies as $service_body) { ?>
+                            <option value="<?php echo $service_body->id; ?>"><?php echo $service_body->name ?> (<?php echo $service_body->id ?>) / <?php echo $service_body->parent_name ?> (<?php echo $service_body->parent_id ?>)</option>
+                                <?php } ?>
                         </select>
                         <?php } ?>
                     </div>

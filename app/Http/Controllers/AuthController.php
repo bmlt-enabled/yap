@@ -3,15 +3,18 @@ namespace App\Http\Controllers;
 
 use App\Constants\AuthMechanism;
 use App\Constants\Http;
-use App\Services\PermissionService;
+use App\Services\AuthorizationService;
+use App\Services\SettingsService;
 
 class AuthController extends Controller
 {
-    private $permissionService;
+    protected AuthorizationService $permissions;
+    protected SettingsService $settings;
 
-    public function __construct(PermissionService $permissionService)
+    public function __construct(AuthorizationService $permissions, SettingsService $settings)
     {
-        $this->permissionService = $permissionService;
+        $this->permissions = $permissions;
+        $this->settings = $settings;
     }
 
     public function logout($auth = true)
@@ -37,7 +40,7 @@ class AuthController extends Controller
             if (isset($_SESSION['bmlt_auth_session']) && $_SESSION['bmlt_auth_session'] != null) {
                 require_once __DIR__ . '/../../../legacy/_includes/functions.php';
                 $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=logout', getAdminBMLTRootServer()));
+                curl_setopt($ch, CURLOPT_URL, sprintf('%s/local_server/server_admin/xml.php?admin_action=logout', $this->settings->getAdminBMLTRootServer()));
                 curl_setopt($ch, CURLOPT_USERAGENT, Http::USERAGENT);
                 curl_setopt($ch, CURLOPT_COOKIE, self::getBMLTAuthSessionCookies());
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -55,7 +58,7 @@ class AuthController extends Controller
 
     public function rights()
     {
-        $rights = $this->permissionService->getServiceBodyRights();
+        $rights = $this->permissions->getServiceBodyRights();
         return $rights ?? response()->json(['error' => 'Unauthorized'], 403);
     }
 

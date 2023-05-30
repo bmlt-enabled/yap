@@ -162,7 +162,7 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
         DB::insert(
             "INSERT INTO `records_events` (`callsid`,`event_id`,`event_time`,`service_body_id`,`meta`, `type`)
             VALUES (?, ?, ?, ?, ?, ?)",
-            [$callSid, $eventid,  getCurrentTime(), $service_body_id, $meta_as_json, $type]
+            [$callSid, $eventid, $this->settings->getCurrentTime(), $service_body_id, $meta_as_json, $type]
         );
     }
 
@@ -184,6 +184,11 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
                     $callRecord->type
                 ]
         );
+    }
+
+    public function getConferenceParticipant($callsid)
+    {
+        return DB::select("SELECT DISTINCT callsid, role FROM conference_participants WHERE callsid = ?", [$callsid]);
     }
 
     public function setConferenceParticipant($friendlyname, $conferencesid, $callsid, $role)

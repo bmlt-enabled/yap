@@ -54,7 +54,7 @@ class ReadingService
 
         $jft = new DOMDocument;
         libxml_use_internal_errors(true);
-        $d->loadHTML(mb_convert_encoding($this->http->get($url, 3600)->body(), 'HTML-ENTITIES', 'UTF-8'));
+        $d->loadHTML(mb_convert_encoding($this->http->get($url, 3600), 'HTML-ENTITIES', 'UTF-8'));
         libxml_clear_errors();
         libxml_use_internal_errors(false);
         $xpath = new DOMXpath($d);

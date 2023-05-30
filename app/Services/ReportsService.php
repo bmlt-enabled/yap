@@ -157,7 +157,7 @@ class ReportsService
                 ? $this->uniqueStdClassArray(json_decode($callRecord->call_events)) : [];
 
             if (!isset($callEvents)) {
-                log_debug("callEvents issue");
+                $this->settings->logDebug("callEvents issue");
             }
 
             foreach ($callEvents as &$callEvent) {

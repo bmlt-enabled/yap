@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\SearchType;
 use App\Repositories\ReportsRepository;
 
 beforeAll(function () {
