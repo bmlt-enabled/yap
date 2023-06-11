@@ -8,11 +8,13 @@ use stdClass;
 class SessionService
 {
     protected ConfigService $config;
+    protected SettingsService $settings;
     protected RootServerService $rootServer;
 
-    public function __construct(ConfigService $config, RootServerService $rootServer)
+    public function __construct(ConfigService $config, SettingsService $settings, RootServerService $rootServer)
     {
         $this->config = $config;
+        $this->settings = $settings;
         $this->rootServer = $rootServer;
     }
 
@@ -41,7 +43,7 @@ class SessionService
             $config_from_db = $this->config->getConfig($lookup_id);
             if (isset($config_from_db)) {
                 $config_obj = json_decode($config_from_db['data']);
-                foreach ($GLOBALS['settings_allowlist'] as $setting => $value) {
+                foreach ($this->settings->allowlist() as $setting => $value) {
                     if (isset($config_obj[0]->$setting) && !isset($config->$setting)) {
                         if (gettype($value['default']) === "array") {
                             $config->$setting = (array) json_decode(str_replace("'", "\"", $config_obj[0]->$setting));

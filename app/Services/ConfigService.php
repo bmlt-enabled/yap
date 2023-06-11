@@ -36,8 +36,7 @@ class ConfigService
     public function getCallHandling($serviceBodyId): ServiceBodyCallHandling
     {
         $helplineData = $this->config->getDbData($serviceBodyId, DataType::YAP_CALL_HANDLING_V2);
-        // TODO: this line needs to be reworked after functions.php is blown up
-        return count($helplineData) > 0 ? $this->getServiceBodyCallHandlingData(json_decode(json_encode($helplineData[0]), true))
+        return count($helplineData) > 0 ? $this->getServiceBodyCallHandlingData($helplineData[0])
             : $this->getServiceBodyCallHandlingData(null);
     }
 
@@ -68,9 +67,9 @@ class ConfigService
     {
         $config = new ServiceBodyCallHandling();
         if (isset($helplineData)) {
-            $data = json_decode($helplineData['data'])[0];
+            $data = json_decode($helplineData->data)[0];
             if (isset($data)) {
-                $config->service_body_id = $helplineData['service_body_id'];
+                $config->service_body_id = $helplineData->service_body_id;
 
                 foreach ($data as $key => $value) {
                     if (str_starts_with($key, 'override_') && strlen($value) > 0) {

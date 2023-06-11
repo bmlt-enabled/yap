@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\VoicemailRepository;
 use App\Services\CallService;
 use App\Services\ConfigService;
 use App\Utility\Sort;
@@ -11,7 +10,6 @@ use App\Services\AuthorizationService;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
 use Illuminate\Http\Request;
-use PHP_CodeSniffer\Config;
 
 class AdminController extends Controller
 {

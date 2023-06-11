@@ -39,7 +39,6 @@ class ConfigRepository
         );
     }
 
-
     public function adminPersistDbConfigById($id, $data)
     {
         return DB::update("UPDATE `config` SET `data`=? WHERE `id`=?", [
@@ -86,5 +85,10 @@ class ConfigRepository
                 );
             }
         }
+    }
+
+    private function convertToArray($o) : array
+    {
+        return json_decode(json_encode($o), true);
     }
 }
