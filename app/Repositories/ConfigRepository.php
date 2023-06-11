@@ -86,9 +86,4 @@ class ConfigRepository
             }
         }
     }
-
-    private function convertToArray($o) : array
-    {
-        return json_decode(json_encode($o), true);
-    }
 }
