@@ -51,16 +51,16 @@ class AdminController extends Controller
 
         $page = $request->route("page") == "" ? "index" : $request->route("page");
         return view(sprintf('admin/%s', $page), [
-            "settings" => $this->settings,
-            "rootServer" => $this->rootServer,
+            "canManageUsers" => $this->authz->canManageUsers(),
+            "isTopLevelAdmin" => $this->authz->isTopLevelAdmin(),
             "pages" => $this->pages,
-            "username" => $this->authn->username(),
+            "rootServer" => $this->rootServer,
             "serviceBodiesForUser" => $serviceBodiesForUser,
             "serviceBodiesEnabledForRouting" => $serviceBodiesEnabledForRouting,
-            "isTopLevelAdmin" => $this->authz->isTopLevelAdmin(),
-            "canManageUsers" => $this->authz->canManageUsers(),
-            "voicemail" => $this->call->getVoicemail(),
+            "settings" => $this->settings,
             "users" => $this->config->getUsers(),
+            "username" => $this->authn->username(),
+            "voicemail" => $this->call->getVoicemail(),
         ]);
     }
 
