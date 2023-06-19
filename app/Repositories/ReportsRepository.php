@@ -186,6 +186,23 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
         );
     }
 
+    public function insertAlert($alertId, $payload)
+    {
+        date_default_timezone_set('UTC');
+        return DB::insert(
+            "INSERT INTO `alerts` (`timestamp`,`alert_id`,`payload`) VALUES (?, ?, ?)",
+            [gmdate("Y-m-d H:i:s"), $alertId, $payload]
+        );
+    }
+
+    public function lookupPinForCallSid($callsid)
+    {
+        return DB::select(
+            "SELECT pin FROM sessions where callsid = ? order by timestamp desc limit 1",
+            [$callsid]
+        );
+    }
+
     public function getConferenceParticipant($callsid)
     {
         return DB::select("SELECT DISTINCT callsid, role FROM conference_participants WHERE callsid = ?", [$callsid]);

@@ -267,22 +267,6 @@ function getServiceBodiesRights()
     return null;
 }
 
-function getGroups($service_body_id)
-{
-    $groupsData = getDbData($service_body_id, DataType::YAP_GROUPS_V2);
-    $groupsArray = [];
-    foreach ($groupsData as $group) {
-        $groupsDataObj = json_decode($group['data'])[0];
-        array_push($groupsArray, (object)[
-            'name' => $groupsDataObj->group_name,
-            'id' => $group['id'],
-            'shares' => json_encode(isset($groupsDataObj->group_shared_service_bodies) ? $groupsDataObj->group_shared_service_bodies : [])
-        ]);
-    }
-
-    return $groupsArray;
-}
-
 function getUserAgent()
 {
     return 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0 +yap';

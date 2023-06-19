@@ -39,7 +39,7 @@ class CallService
             $sms_blackhole_items = explode(",", ($this->settings->get('sms_blackhole')));
             foreach ($sms_blackhole_items as $sms_blackhole_item) {
                 if (str_starts_with($sms_blackhole_item, $_REQUEST['From'])) {
-                    insertCallEventRecord(EventId::SMS_BLACKHOLED);
+                    $this->insertCallEventRecord(EventId::SMS_BLACKHOLED);
                     return;
                 }
             }
@@ -90,6 +90,11 @@ class CallService
         $this->reports->insertCallRecord($callRecord);
     }
 
+    public function insertAlert($alertId, $payload): void
+    {
+        $this->reports->insertAlert($alertId, $payload);
+    }
+
     public function getConferenceName($service_body_id): string
     {
         return $service_body_id . "_" . rand(1000000, 9999999) . "_" . time();
@@ -125,7 +130,7 @@ class CallService
         $dialback_string = "";
         # Bitwise detection
         if ($this->settings->get('sms_dialback_options') & $option) {
-            $pin_lookup = lookupPinForCallSid($callsid);
+            $pin_lookup = $this->reports->lookupPinForCallSid($callsid);
             if (count($pin_lookup) > 0) {
                 $dialback_digit_map_digit = $this->getOptionForSearchType(SearchType::DIALBACK);
                 $dialback_string = sprintf(

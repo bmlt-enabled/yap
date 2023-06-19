@@ -82,7 +82,7 @@ class CallFlowController extends Controller
 
             if ($incomingPhoneNumber->statusCallback == null
                 || !str_contains($incomingPhoneNumber->statusCallback, "status.php")) {
-                insertAlert(AlertId::STATUS_CALLBACK_MISSING, $incomingPhoneNumber->phoneNumber);
+                $this->call->insertAlert(AlertId::STATUS_CALLBACK_MISSING, $incomingPhoneNumber->phoneNumber);
             }
         }
 
