@@ -27,7 +27,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title"><?php echo sprintf("%s (%s)", $settings->word('call_handling'), $service_body->name); ?></h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#serviceBodyCallHandling_<?php echo $service_body->id ?>').modal('toggle')">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
@@ -133,7 +133,7 @@
                                         </form>
                                     </div>
                                     <div class="modal-footer">
-                                        <button class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+                                        <button class="btn btn-sm btn-danger" data-dismiss="modal" onclick="$('#serviceBodyCallHandling_<?php echo $service_body->id ?>').modal('toggle')">Close</button>
                                         <button class="btn btn-sm btn-primary" onclick="saveServiceBodyCallHandling(<?php echo $service_body->id ?>)">Save Changes</button>
                                     </div>
                                 </div>
@@ -144,7 +144,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title"><?php echo sprintf("%s (%s)", $settings->word('configure'), $service_body->name) ?></h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#serviceBodyConfiguration_<?php echo $service_body->id ?>').modal('toggle');">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
@@ -165,7 +165,7 @@
                                         </form>
                                     </div>
                                     <div class="modal-footer">
-                                        <button class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+                                        <button class="btn btn-sm btn-danger" data-dismiss="modal" onclick="$('#serviceBodyConfiguration_<?php echo $service_body->id ?>').modal('toggle');">Close</button>
                                         <button class="btn btn-sm btn-primary" onclick="saveServiceBodyConfig(<?php echo $service_body->id ?>)">Save Changes</button>
                                     </div>
                                 </div>
