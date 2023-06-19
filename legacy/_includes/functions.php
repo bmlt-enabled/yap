@@ -21,7 +21,7 @@ require_once 'logging.php';
 if (isset($_GET["CallSid"])) {
     insertSession($_GET["CallSid"]);
 }
-$GLOBALS['version']  = "4.2.8";
+$GLOBALS['version']  = "4.2.9";
 $GLOBALS['settings_allowlist'] = [
     'announce_servicebody_volunteer_routing' => [ 'description' => '/helpline/announce_servicebody_volunteer_routing' , 'default' => false, 'overridable' => true, 'hidden' => false],
     'blocklist' => [ 'description' => '/general/blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
