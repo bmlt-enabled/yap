@@ -1,6 +1,9 @@
 # Release Notes
 
-### 4.2.8 (December 28, 2022).
+### 4.2.9 (June 18, 2023)
+* Fix for issue when many volunteers are set for a service body and data becomes corrupted due to underlying database field size. [#809]
+
+### 4.2.8 (December 28, 2022)
 * Fix for issue where SMS notifications wouldn't send for voicemails with Responder setting. [#709]
 
 ### 4.2.7 (October 28, 2022)
