@@ -24,12 +24,12 @@ class TimeZoneService
     {
         return $this->settings->has("timezone_default")
             ? $this->settings->get("timezone_default")
-            : $this->http->get(sprintf(
+            : json_decode($this->http->get(sprintf(
                 "%s&location=%s,%s&timestamp=%d",
                 $this->timeZoneEndpoint,
                 $latitude,
                 $longitude,
                 time() - (time() % 1800)
-            ), 3600)->json();
+            ), 3600));
     }
 }

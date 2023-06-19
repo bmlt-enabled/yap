@@ -186,6 +186,36 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
         );
     }
 
+    public function insertAlert($alertId, $payload)
+    {
+        date_default_timezone_set('UTC');
+        return DB::insert(
+            "INSERT INTO `alerts` (`timestamp`,`alert_id`,`payload`) VALUES (?, ?, ?)",
+            [gmdate("Y-m-d H:i:s"), $alertId, $payload]
+        );
+    }
+
+    public function getMisconfiguredPhoneNumbersAlerts($alert_id)
+    {
+        return DB::select("SELECT a.payload FROM alerts a
+INNER JOIN (select to_number, max(start_time) as start_time FROM records GROUP BY to_number) b
+ON a.payload = b.to_number and a.timestamp > b.start_time
+where alert_id = ?
+group by a.payload
+UNION
+SELECT a.payload FROM alerts a
+LEFT OUTER JOIN records b ON a.payload = b.to_number
+where alert_id = ? and b.to_number IS NULL", [$alert_id, $alert_id]);
+    }
+
+    public function lookupPinForCallSid($callsid)
+    {
+        return DB::select(
+            "SELECT pin FROM sessions where callsid = ? order by timestamp desc limit 1",
+            [$callsid]
+        );
+    }
+
     public function getConferenceParticipant($callsid)
     {
         return DB::select("SELECT DISTINCT callsid, role FROM conference_participants WHERE callsid = ?", [$callsid]);

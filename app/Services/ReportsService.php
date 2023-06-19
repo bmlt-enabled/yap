@@ -173,4 +173,9 @@ class ReportsService
 
         return $response;
     }
+
+    public function getMisconfiguredPhoneNumbersAlerts($alertId)
+    {
+        return $this->reportsRepository->getMisconfiguredPhoneNumbersAlerts($alertId);
+    }
 }

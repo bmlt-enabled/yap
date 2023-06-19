@@ -11,7 +11,7 @@ lint:
 	vendor/squizlabs/php_codesniffer/bin/phpcs
 
 .PHONY: lint-fix
-lint-fix: lint
+lint-fix:
 	vendor/squizlabs/php_codesniffer/bin/phpcbf
 
 .PHONY: simulate

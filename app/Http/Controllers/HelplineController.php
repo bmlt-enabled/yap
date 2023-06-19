@@ -111,7 +111,7 @@ class HelplineController extends Controller
 
         if (!$request->has('ForceNumber')
             && (isset($_SESSION["override_service_body_id"])
-                || isServiceBodyHelplingCallInternallyRoutable($coordinates->latitude, $coordinates->longitude))) {
+                || $this->rootServer->isServiceBodyHelplingCallInternallyRoutable($coordinates->latitude, $coordinates->longitude))) {
             $serviceBodyCallHandling = $this->config->getCallHandling($service_body_id);
         }
 
@@ -230,7 +230,7 @@ class HelplineController extends Controller
         $serviceBodyCallHandling = $this->config->getCallHandling($this->settings->get('service_body_id'));
 
         if ($request->has('Debug') && intval($request->get('Debug')) == 1) {
-            echo var_dump(getCallConfig($request, $serviceBodyCallHandling));
+            echo var_dump($this->getCallConfig($request, $serviceBodyCallHandling));
             exit();
         }
 
@@ -246,7 +246,7 @@ class HelplineController extends Controller
                     $request->get('CallSid'),
                     CallRole::CALLER
                 );
-                insertCallEventRecord(EventId::CALLER_IN_CONFERENCE);
+                $this->call->insertCallEventRecord(EventId::CALLER_IN_CONFERENCE);
 
                 if (isset($_SESSION["ActiveVolunteer"])) {
                     $volunteer = $_SESSION["ActiveVolunteer"];
@@ -259,7 +259,7 @@ class HelplineController extends Controller
                 $callConfig = $this->getCallConfig($request, $serviceBodyCallHandling);
 
                 if ($request->has('CallStatus') && $request->get('CallStatus') == 'no-answer') {
-                    insertCallEventRecord(EventId::VOLUNTEER_NOANSWER, (object)['to_number' => $request->get('Called')]);
+                    $this->call->insertCallEventRecord(EventId::VOLUNTEER_NOANSWER, (object)['to_number' => $request->get('Called')]);
                     $this->call->setConferenceParticipant(
                         $request->get('FriendlyName'),
                         $request->get('CallSid'),
@@ -301,7 +301,7 @@ class HelplineController extends Controller
                                 }
 
                                 $this->settings->logDebug("Calling: " . $callConfig->volunteer->phoneNumber);
-                                insertCallEventRecord(EventId::VOLUNTEER_DIALED, (object)['to_number' => $volunteer_number]);
+                                $this->call->insertCallEventRecord(EventId::VOLUNTEER_DIALED, (object)['to_number' => $volunteer_number]);
                                 $this->twilio->client()->calls->create(
                                     $volunteer_number,
                                     $callConfig->options['callerId'],
@@ -328,9 +328,9 @@ class HelplineController extends Controller
         } elseif ($request->has('StatusCallbackEvent') && $request->get('StatusCallbackEvent') == 'participant-leave') {
             $participant = $this->call->getConferencePartipant($request->get('CallSid'));
             if ($participant['role'] == CallRole::CALLER) {
-                insertCallEventRecord(EventId::CALLER_HUP);
+                $this->call->insertCallEventRecord(EventId::CALLER_HUP);
             } elseif ($participant['role'] == CallRole::VOLUNTEER) {
-                insertCallEventRecord(EventId::VOLUNTEER_HUP);
+                $this->call->insertCallEventRecord(EventId::VOLUNTEER_HUP);
             }
         }
 

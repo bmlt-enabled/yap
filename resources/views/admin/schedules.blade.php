@@ -6,7 +6,7 @@
             <select class="form-control form-control-sm" id="service_body_id">
                 <option>-= Select A Service Body =-</option>
                 @foreach ($serviceBodiesEnabledForRouting as $item)
-                <option value="{{ $item->service_body_id }}">{{ $tem->service_body_name }} ({{ $item->service_body_id }}) / {{ $item->service_body_parent_name }} ({{ $item->service_body_parent_id }})</option>
+                <option value="{{ $item->service_body_id }}">{{ $item->service_body_name }} ({{ $item->service_body_id }}) / {{ $item->service_body_parent_name }} ({{ $item->service_body_parent_id }})</option>
                 @endforeach
             </select>
             <div id='calendar'></div>

@@ -103,6 +103,25 @@ class SettingsService
         "voicemail_greeting",
         "custom_extensions_greeting"
     ];
+    private array $requiredSettings = [
+        'title',
+        'bmlt_root_server',
+        'google_maps_api_key',
+        'twilio_account_sid',
+        'twilio_auth_token',
+        'mysql_hostname',
+        'mysql_username',
+        'mysql_password',
+        'mysql_database'
+    ];
+    private array $emailSettings = [
+        'smtp_host',
+        'smtp_username',
+        'smtp_password',
+        'smtp_secure',
+        'smtp_from_address',
+        'smtp_from_name'
+    ];
 
     private object $localizations;
     private string $shortLanguage;
@@ -349,6 +368,16 @@ class SettingsService
         }
 
         return (isset($session_id) ? ($shouldUriEncode ? "&amp;" : "&") . ("ysk=" . $session_id) : "");
+    }
+
+    public function minimalRequiredSettings(): array
+    {
+        return $this->requiredSettings;
+    }
+
+    public function emailSettings(): array
+    {
+        return $this->emailSettings;
     }
 
     public function getTimezoneList(): array

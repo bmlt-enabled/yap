@@ -39,7 +39,6 @@ class ConfigRepository
         );
     }
 
-
     public function adminPersistDbConfigById($id, $data)
     {
         return DB::update("UPDATE `config` SET `data`=? WHERE `id`=?", [

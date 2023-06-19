@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../_includes/constants.php';
 if (file_exists('config.php')) {
     define('URL', str_replace('installer.php', '', $_SERVER['REQUEST_URI']));
     header("Location: " . URL);
@@ -30,7 +29,7 @@ require_once 'spinner_dialog.php';
 
             Note: This wizard will not allow for upgrading from Yap 1.x, instead copy over your original configuration and refresh this page.</div>
         <div id="configuration">
-            <?php foreach ($GLOBALS['required_config_settings'] as $setting) { ?>
+            <?php foreach ($settings->minimalRequiredSettings() as $setting) { ?>
             <div class="input-group installerFieldSet">
                 <div class="input-group-prepend">
                             <span class="input-group-text">

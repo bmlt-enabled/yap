@@ -19,6 +19,13 @@ class GeocodingService
         );
     }
 
+    public function ping($address)
+    {
+        return json_decode(Http::get($this->googleMapsEndpoint
+            . "&address="
+            . urlencode($address)));
+    }
+
     public function getCoordinatesForAddress($address)
     {
         $coordinates = new Coordinates();
