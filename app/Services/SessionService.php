@@ -42,7 +42,7 @@ class SessionService
         while (true) {
             $config_from_db = $this->config->getConfig($lookup_id);
             if (isset($config_from_db)) {
-                $config_obj = json_decode($config_from_db['data']);
+                $config_obj = json_decode($config_from_db->data);
                 foreach ($this->settings->allowlist() as $setting => $value) {
                     if (isset($config_obj[0]->$setting) && !isset($config->$setting)) {
                         if (gettype($value['default']) === "array") {

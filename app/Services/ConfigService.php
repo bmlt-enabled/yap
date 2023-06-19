@@ -25,7 +25,7 @@ class ConfigService
     {
         $configs = $this->config->getAllDbData(DataType::YAP_CONFIG_V2);
         foreach ($configs as $config) {
-            if ($config['service_body_id'] == $service_body_id) {
+            if ($config->service_body_id == $service_body_id) {
                 return $config;
             }
         }
