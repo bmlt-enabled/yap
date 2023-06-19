@@ -253,7 +253,7 @@ class RootServerService
         }
     }
 
-    public function isServiceBodyHelplingCallInternallyRoutable($latitude, $longitude)
+    public function isServiceBodyHelplingCallInternallyRoutable($latitude, $longitude): bool
     {
         return !json_decode($this->settings->get('tomato_helpline_routing'))
             || $this->isBMLTServerOwned($latitude, $longitude);
@@ -271,5 +271,12 @@ class RootServerService
         $search_results = json_decode($this->http->get($bmlt_search_endpoint, 60));
         $root_server_uri_from_first_result = $search_results[0]->root_server_uri;
         return str_contains($root_server_uri_from_first_result, $this->settings->getAdminBMLTRootServer());
+    }
+
+    public function getServerInfo()
+    {
+        $bmlt_search_endpoint = sprintf(
+            '%s/client_interface/json/?switcher=GetServerInfo', $this->settings->getAdminBMLTRootServer());
+        return json_decode($this->http->get($bmlt_search_endpoint, 3600));
     }
 }

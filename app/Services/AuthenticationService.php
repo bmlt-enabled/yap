@@ -48,6 +48,6 @@ class AuthenticationService
 
     public function username()
     {
-        return ""; //$this->authenticationRepository->GetUserNameV1();
+        return $this->authenticationRepository->GetUserNameV1();
     }
 }

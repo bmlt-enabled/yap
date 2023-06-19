@@ -33,20 +33,3 @@ function insertSession($callsid)
     }
 }
 
-function getMisconfiguredPhoneNumbersAlerts($alert_id)
-{
-    $db = new Database();
-    $sql = sprintf("SELECT a.payload FROM alerts a
-INNER JOIN (select to_number, max(start_time) as start_time FROM records GROUP BY to_number) b
-ON a.payload = b.to_number and a.timestamp > b.start_time
-where alert_id = %s
-group by a.payload
-UNION
-SELECT a.payload FROM alerts a
-LEFT OUTER JOIN records b ON a.payload = b.to_number
-where alert_id = %s and b.to_number IS NULL", $alert_id, $alert_id);
-    $db->query($sql);
-    $resultset = $db->resultset();
-    $db->close();
-    return $resultset;
-}

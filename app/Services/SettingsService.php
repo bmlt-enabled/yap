@@ -103,7 +103,7 @@ class SettingsService
         "voicemail_greeting",
         "custom_extensions_greeting"
     ];
-    private array $required_settings = [
+    private array $requiredSettings = [
         'title',
         'bmlt_root_server',
         'google_maps_api_key',
@@ -113,6 +113,14 @@ class SettingsService
         'mysql_username',
         'mysql_password',
         'mysql_database'
+    ];
+    private array $emailSettings = [
+        'smtp_host',
+        'smtp_username',
+        'smtp_password',
+        'smtp_secure',
+        'smtp_from_address',
+        'smtp_from_name'
     ];
 
     private object $localizations;
@@ -364,7 +372,12 @@ class SettingsService
 
     public function minimalRequiredSettings(): array
     {
-        return $this->required_settings;
+        return $this->requiredSettings;
+    }
+
+    public function emailSettings(): array
+    {
+        return $this->emailSettings;
     }
 
     public function getTimezoneList(): array

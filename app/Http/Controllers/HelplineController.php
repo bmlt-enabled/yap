@@ -111,7 +111,7 @@ class HelplineController extends Controller
 
         if (!$request->has('ForceNumber')
             && (isset($_SESSION["override_service_body_id"])
-                || isServiceBodyHelplingCallInternallyRoutable($coordinates->latitude, $coordinates->longitude))) {
+                || $this->rootServer->isServiceBodyHelplingCallInternallyRoutable($coordinates->latitude, $coordinates->longitude))) {
             $serviceBodyCallHandling = $this->config->getCallHandling($service_body_id);
         }
 
@@ -230,7 +230,7 @@ class HelplineController extends Controller
         $serviceBodyCallHandling = $this->config->getCallHandling($this->settings->get('service_body_id'));
 
         if ($request->has('Debug') && intval($request->get('Debug')) == 1) {
-            echo var_dump(getCallConfig($request, $serviceBodyCallHandling));
+            echo var_dump($this->getCallConfig($request, $serviceBodyCallHandling));
             exit();
         }
 

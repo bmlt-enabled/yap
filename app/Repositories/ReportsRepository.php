@@ -195,6 +195,19 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
         );
     }
 
+    public function getMisconfiguredPhoneNumbersAlerts($alert_id)
+    {
+        return DB::select("SELECT a.payload FROM alerts a
+INNER JOIN (select to_number, max(start_time) as start_time FROM records GROUP BY to_number) b
+ON a.payload = b.to_number and a.timestamp > b.start_time
+where alert_id = ?
+group by a.payload
+UNION
+SELECT a.payload FROM alerts a
+LEFT OUTER JOIN records b ON a.payload = b.to_number
+where alert_id = ? and b.to_number IS NULL", [$alert_id, $alert_id]);
+    }
+
     public function lookupPinForCallSid($callsid)
     {
         return DB::select(
