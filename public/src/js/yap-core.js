@@ -1176,7 +1176,7 @@ function openServiceBodyCallHandling(service_body_id)
     spinnerDialog(true, "Retrieving Service Body Call Handling...", function () {
         var serviceBodyCallHandling = $("#serviceBodyCallHandling_" + service_body_id);
         loadFromAdminApi(null, service_body_id, '_YAP_CALL_HANDLING_V2_', function (data) {
-            if (data.length > 0) {
+            if (!$.isEmptyObject(data)) {
                 var dataSet = data['data'][0];
                 for (var key in dataSet) {
                     if (dataSet[key]) {

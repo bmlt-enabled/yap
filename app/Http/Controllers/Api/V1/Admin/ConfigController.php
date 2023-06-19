@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\ConfigRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use stdClass;
 
 class ConfigController extends Controller
 {
@@ -69,7 +70,7 @@ class ConfigController extends Controller
                 'data'=>json_decode($data[0]->data)
             ])->header("Content-Type", "application/json");
         } else {
-            return response()->json()->header("Content-Type", "application/json");
+              return response()->json(new stdClass())->header("Content-Type", "application/json");
         }
     }
 
