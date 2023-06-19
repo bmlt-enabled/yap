@@ -276,7 +276,9 @@ class RootServerService
     public function getServerInfo()
     {
         $bmlt_search_endpoint = sprintf(
-            '%s/client_interface/json/?switcher=GetServerInfo', $this->settings->getAdminBMLTRootServer());
+            '%s/client_interface/json/?switcher=GetServerInfo',
+            $this->settings->getAdminBMLTRootServer()
+        );
         return json_decode($this->http->get($bmlt_search_endpoint, 3600));
     }
 }

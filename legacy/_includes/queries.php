@@ -32,4 +32,3 @@ function insertSession($callsid)
         $db->close();
     }
 }
-

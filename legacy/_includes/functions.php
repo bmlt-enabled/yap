@@ -11,25 +11,15 @@ require_once 'migrations.php';
 if (isset($_GET["CallSid"])) {
     insertSession($_GET["CallSid"]);
 }
-$GLOBALS['version']  = "4.3.0";
 checkBlocklist();
 
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 // phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses
 
-class AlertId
-{
-    const STATUS_CALLBACK_MISSING = 1;
-}
-
 class AuthMechanism
 {
     const V1 = "_BMLT_AUTH_";
     const V2 = "_YAP_DB_AUTH_";
-}
-
-class CurlException extends Exception
-{
 }
 
 function checkBlocklist()

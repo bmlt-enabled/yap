@@ -16,13 +16,14 @@ class UpgradeAdvisorService
     protected ReportsService $reports;
     protected TwilioService $twilio;
 
-    public function __construct(SettingsService $settings,
-                                RootServerService $rootServer,
-                                GeocodingService $geocoding,
-                                TimeZoneService $timeZone,
-                                ReportsService $reports,
-                                TwilioService $twilio)
-    {
+    public function __construct(
+        SettingsService $settings,
+        RootServerService $rootServer,
+        GeocodingService $geocoding,
+        TimeZoneService $timeZone,
+        ReportsService $reports,
+        TwilioService $twilio
+    ) {
         $this->settings = $settings;
         $this->rootServer = $rootServer;
         $this->geocoding = $geocoding;
@@ -67,12 +68,12 @@ class UpgradeAdvisorService
                 return $this->getState(false, "Your Google Maps API key came back with the following error. " . $googleapi_settings->error_message. " Please make sure you have the Google Maps Geocoding API enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/", $warnings);
             }
 
-            $timezone_settings = $this->timeZone->getTimeZoneForCoordinates("34.2011137","-118.475058");
+            $timezone_settings = $this->timeZone->getTimeZoneForCoordinates("34.2011137", "-118.475058");
 
             if ($timezone_settings->status == "REQUEST_DENIED") {
                 return $this->getState(false, "Your Google Maps API key came back with the following error. " . $timezone_settings->errorMessage. " Please make sure you have the Google Time Zone API enabled and that the API key is entered properly and has no referer restrictions. You can check your key at the Google API console here: https://console.cloud.google.com/apis/", $warnings);
             }
-        } catch (CurlException $e) {
+        } catch (Exception $e) {
             return $this->getState(false, "HTTP Error connecting to Google Maps API, check your network settings.", $warnings);
         }
 
