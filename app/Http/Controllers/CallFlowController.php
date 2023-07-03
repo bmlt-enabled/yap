@@ -235,12 +235,6 @@ class CallFlowController extends Controller
             $gather->pause()->setLength("1");
         }
 
-        if ($searchDescription == $this->settings->word('meetings') && !json_decode($this->settings->get("sms_ask")) && !json_decode($this->settings->get("sms_disable"))) {
-            $gather->say($this->settings->word('search_results_by_sms'))
-                ->setVoice($this->settings->voice())
-                ->setLanguage($this->settings->get('language'));
-        }
-
         $locationSearchMethodSequence = $this->settings->getDigitMapSequence('digit_map_location_search_method');
         foreach ($locationSearchMethodSequence as $digit => $method) {
             if ($method == LocationSearchMethod::VOICE) {
@@ -1023,6 +1017,12 @@ class CallFlowController extends Controller
             if ($meeting_results->originalListCount == 0) {
             } elseif (count($filtered_list) == 0) {
             }
+        }
+
+        if (!json_decode($this->settings->get("sms_ask")) && !json_decode($this->settings->get("sms_disable"))) {
+            $twiml->say($this->settings->word('search_results_by_sms'))
+                ->setVoice($this->settings->voice())
+                ->setLanguage($this->settings->get('language'));
         }
 
         $results_counter = 0;
