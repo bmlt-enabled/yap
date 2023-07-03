@@ -4,6 +4,8 @@
 * Added feature for SPAD playback `spad_option`. 
 * Fix for incorrect calculation of total and missed calls metrics on reports page.
 * Fix for scenario when `sms_combine` is enabled and `sms_ask` is disabled.  [#706]
+
+### 4.2.10 (July 2, 2023)
 * Added explicit notification that SMS will be sent in response to meeting search request; reflected this in report. This is to satisfy regulatory requirements regarding explicit consent.
 
 ### 4.2.9 (June 18, 2023)
