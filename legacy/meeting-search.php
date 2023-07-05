@@ -49,12 +49,6 @@ $message = "";
         }
     }
 
-    if (!json_decode(setting("sms_ask")) && !json_decode(setting("sms_disable"))) { ?>
-        <Say voice="<?php echo voice(); ?>" language="<?php echo setting('language') ?>">
-            <?php echo word('search_results_by_sms') ?>
-        </Say>
-    <?php }
-
     $results_counter = 0;
     for ($i = 0; $i < count($filtered_list); $i++) {
         $results = getResultsString($filtered_list[$i]);
