@@ -595,10 +595,23 @@ function saveToAdminApi(service_body_id, data, data_type, parent_id, id, callbac
 
 function usersApi(data, action, callback)
 {
+    var method;
+    var url;
+    if (action === "save") {
+        url = "../api/v1/users";
+        method = "POST"
+    } else if (action === "edit") {
+        url = "../api/v1/users/" + data.id;
+        method = "PUT"
+    } else if (action === "delete") {
+        url = "../api/v1/users/" + data.id;
+        method = "DELETE"
+    }
+
     $.ajax({
         async: false,
-        type: "POST",
-        url: "users_api.php?action=" + action,
+        type: method,
+        url: url,
         data: JSON.stringify(data),
         dataType: "json",
         contentType: "application/json",

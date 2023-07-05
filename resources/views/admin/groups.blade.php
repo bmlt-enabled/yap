@@ -36,7 +36,7 @@
                         Name (required):
                         <input class="form-control form-control-sm" type="text" id="group_name" name="group_name">
                         Shared With Service Bodies (optional): <select size="10" multiple class="form-control form-control-sm" name="group_shared_service_bodies" id="group_shared_service_bodies">
-                            @foreach ($rootServer->getServiceBodies() as $service_body) { ?>
+                            @foreach ($serviceBodies as $service_body) { ?>
                             <option value="<?php echo $service_body->id; ?>"><?php echo $service_body->name; ?></option>
                             @endforeach
                         </select>
