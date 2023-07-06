@@ -10,6 +10,7 @@ use App\Services\AuthenticationService;
 use App\Services\AuthorizationService;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -53,6 +54,9 @@ class AdminController extends Controller
         $serviceBodiesEnabledForRouting = $this->config->getVolunteerRoutingEnabledServiceBodies();
         Sort::sortOnField($serviceBodiesEnabledForRouting, 'service_body_name');
 
+        $serviceBodies = $this->rootServer->getServiceBodies();
+        Sort::sortOnField($serviceBodies, 'name');
+
         $page = $request->route("page") == "" ? "index" : $request->route("page");
 
         $data = [
@@ -60,6 +64,7 @@ class AdminController extends Controller
             "isTopLevelAdmin" => $this->authz->isTopLevelAdmin(),
             "pages" => $this->pages,
             "rootServer" => $this->rootServer,
+            "serviceBodies" => $serviceBodies,
             "serviceBodiesForUser" => $serviceBodiesForUser,
             "serviceBodiesEnabledForRouting" => $serviceBodiesEnabledForRouting,
             "settings" => $this->settings,
@@ -78,7 +83,7 @@ class AdminController extends Controller
         return view(sprintf('admin/%s', $page), $data);
     }
 
-    public function login(Request $request): \Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse
+    public function login(Request $request): RedirectResponse
     {
         $auth = $this->authn->authenticate();
         if ($auth) {

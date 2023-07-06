@@ -5,6 +5,7 @@
 <a href="https://github.com/bmlt-enabled/yap/actions/workflows/unstable.yml"><img src="https://img.shields.io/github/actions/workflow/status/bmlt-enabled/yap/unstable.yml?branch=main" alt="Build Status"></a>
 <a href="https://raw.githubusercontent.com/bmlt-enabled/yap/main/LICENSE"><img src="https://img.shields.io/github/license/bmlt-enabled/yap"></a>
 <a href="https://codecov.io/gh/bmlt-enabled/yap" > 
+
  <img src="https://codecov.io/gh/bmlt-enabled/yap/branch/main/graph/badge.svg?token=9LZWU5WY7C"/> 
  </a>
 <a href="https://github.com/bmlt-enabled/yap/releases"><img src="https://img.shields.io/github/downloads/bmlt-enabled/yap/total"></a>
@@ -27,7 +28,7 @@ For setup instructions and general documentation please visit [https://yap.bmlt.
 
 # ⚠️ Major Refactor
 
-<img src="https://img.shields.io/badge/legacyleft-311-red"/> 
+<img src="https://img.shields.io/badge/legacyleft-277-red"/> 
 
 ```shell
 make legacy

@@ -33,46 +33,30 @@ class UserRepository
 
     public function editUser($data, $role)
     {
-        $stmt = "UPDATE `users` SET `name` = :name";
+        $stmt = "UPDATE `users` SET `name` = ?";
+        $vars = [$data->name];
+
         if (strlen($data->password) > 0) {
-            $stmt = $stmt . ", `password` = SHA2(:password, 256)";
+            $stmt = $stmt . ", `password` = SHA2(?, 256)";
+            array_push($vars, $data->password);
         }
 
         if ($role === 'admin') {
-            $stmt = $stmt . ", `username` = :username, `service_bodies` = :service_bodies";
+            $stmt = $stmt . ", `username` = ?, `service_bodies` = ?";
+            array_push($vars, $data->username);
+            array_push($vars, implode(",", $data->service_bodies));
         }
 
-        $stmt = $stmt . ", `permissions` = :permissions where `id` = :id";
-        $db = new Database();
-        $db->query($stmt);
-        $db->bind(':id', $data->id);
-        $db->bind(':name', $data->name);
-        $db->bind(':permissions', array_sum($data->permissions));
+        $stmt = $stmt . ", `permissions` = ? where `id` = ?";
+        array_push($vars, array_sum($data->permissions));
+        array_push($vars, $data->id);
 
-        if (strlen($data->password) > 0) {
-            $db->bind(':password', $data->password);
-        }
-
-        if ($role === 'admin') {
-            $db->bind(':username', $data->username);
-            $db->bind(':service_bodies', implode(",", $data->service_bodies));
-        }
-
-        $db->execute();
-        $db->close();
+        DB::update($stmt, $vars);
     }
 
     public function saveUser($data)
     {
-        $db = new Database();
-        $stmt = "INSERT INTO `users` (`name`, `username`, `password`, `permissions`, `service_bodies`, `is_admin`) VALUES (:name, :username, SHA2(:password, 256), :permissions, :service_bodies, 0)";
-        $db->query($stmt);
-        $db->bind(':name', $data->name);
-        $db->bind(':username', $data->username);
-        $db->bind(':password', $data->password);
-        $db->bind(":permissions", array_sum($data->permissions));
-        $db->bind(':service_bodies', implode(",", $data->service_bodies));
-        $db->execute();
-        $db->close();
+        DB::insert("INSERT INTO `users` (`name`, `username`, `password`, `permissions`, `service_bodies`, `is_admin`)
+            VALUES (?, ?, SHA2(?, 256), ?, ?, 0)", [$data->name, $data->username, $data->password, array_sum($data->permissions), implode(",", $data->service_bodies)]);
     }
 }
