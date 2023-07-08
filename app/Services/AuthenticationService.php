@@ -46,6 +46,20 @@ class AuthenticationService
         }
     }
 
+    public function verify() : bool
+    {
+        $verified = false;
+        if (isset($_SESSION['auth_mechanism'])) {
+            if ($_SESSION['auth_mechanism'] == AuthMechanism::V1) {
+                $verified = $this->authenticationRepository->verifyV1();
+            } else {
+                $verified = true;
+            }
+        }
+
+        return $verified;
+    }
+
     public function username()
     {
         return $this->authenticationRepository->GetUserNameV1();

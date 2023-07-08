@@ -12,17 +12,16 @@ class AdminV2Controller extends Controller
             ->with('rootUrl', $request->getBaseUrl());
     }
 
-    public function cacheClear()
-    {
-        // TODO: reimplement this with Laravel caching mechanism
-        require_once __DIR__ . '/../../../legacy/_includes/functions.php';
-        if (isset($_SESSION['auth_is_admin']) && $_SESSION['auth_is_admin'] == 1) {
-            clearCache();
-            return response()->json([
-                'status' => 'cache cleared'
-            ]);
-        } else {
-            abort(404);
-        }
-    }
+//    public function cacheClear()
+//    {
+//        // TODO: reimplement this with Laravel caching mechanism
+//        if (isset($_SESSION['auth_is_admin']) && $_SESSION['auth_is_admin'] == 1) {
+//            clearCache();
+//            return response()->json([
+//                'status' => 'cache cleared'
+//            ]);
+//        } else {
+//            abort(404);
+//        }
+//    }
 }

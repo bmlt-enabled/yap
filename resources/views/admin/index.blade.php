@@ -14,11 +14,11 @@
         <input type="checkbox" class="custom-control-input" id="darkSwitch" />
     </div>
     <form id="auth" class="form-signin" method="POST" action="admin/login">
-        <div id="admin_title"><?php echo isset($GLOBALS['admin_title']) ? $GLOBALS['admin_title'] : ""; ?></div>
+        <div id="admin_title">{{ $settings->has('admin_title') ? $settings->get('admin_title') : "" }}</div>
         <div id="yap-logo"></div>
         <div id="no-auth-message">
-            <?php echo isset($_REQUEST['auth']) ? $GLOBALS['not_authorized'] : "" ?>
-            <?php echo isset($_REQUEST['expired']) ? $GLOBALS['session_expired'] : "" ?>
+            {{ isset($_REQUEST['auth']) ? $settings->word('not_authorized') : "" }}
+            {{ isset($_REQUEST['expired']) ? $settings->word('session_expired') : "" }}
         </div>
         <label for="inputEmail" class="sr-only">{{ $settings->word("username") }}</label>
         <input autocomplete="username" name="username" type="username" id="inputUsername" class="form-control" placeholder="{{ $settings->word("username") }}" required autofocus>

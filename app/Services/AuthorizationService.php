@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Constants\AdminInterfaceRights;
-use App\Constants\AuthMechanism;
 use App\Models\RecordsEvents;
 
 class AuthorizationService

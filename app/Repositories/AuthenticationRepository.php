@@ -26,6 +26,17 @@ class AuthenticationRepository
         return $is_authed;
     }
 
+    public function verifyV1(): bool
+    {
+        $verify_endpoint = '/local_server/server_admin/xml.php?admin_action=get_permissions';
+        $res = $this->http->getWithAuth(sprintf("%s%s", $this->settings->getAdminBMLTRootServer(), $verify_endpoint));
+        if ($res == null) {
+            return false;
+        }
+
+        return !str_contains($res, 'NOT AUTHORIZED');
+    }
+
     public function authV2($username, $password): array
     {
         return DB::select(

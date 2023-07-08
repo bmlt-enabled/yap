@@ -9,9 +9,10 @@ Route::get("/admin/auth/rights", 'App\Http\Controllers\AuthController@rights');
 Route::get("/admin/auth/logout", 'App\Http\Controllers\AuthController@logout');
 Route::get("/admin/auth/timeout", 'App\Http\Controllers\AuthController@timeout');
 Route::get("/admin/auth/invalid", 'App\Http\Controllers\AuthController@invalid');
-Route::get("/admin", 'App\Http\Controllers\AdminController@index');
+Route::get("/admin", 'App\Http\Controllers\AdminController@index')->name("adminLogin");
 Route::post("/admin/login", 'App\Http\Controllers\AdminController@login');
-Route::get("/admin/{page}", 'App\Http\Controllers\AdminController@index');
+Route::get("/admin/{page}", 'App\Http\Controllers\AdminController@index')
+    ->middleware("authForAdminPortal");
 //Hiding the new UI for now.
 //Route::get("/adminv2{page}", 'App\Http\Controllers\AdminController@index')
 //    ->where('page', '.*');
