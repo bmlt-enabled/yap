@@ -15,6 +15,8 @@ Route::get("/admin/{page}", 'App\Http\Controllers\AdminController@index');
 //Hiding the new UI for now.
 //Route::get("/adminv2{page}", 'App\Http\Controllers\AdminController@index')
 //    ->where('page', '.*');
+Route::get("/bots/getMeetings", 'App\Http\Controllers\BotController@getMeetings');
+Route::get("/bots/getServiceBodyCoverage", 'App\Http\Controllers\BotController@getServiceBodyCoverage');
 Route::get("/msr/{latitude}/{longitude}", ['uses' => 'App\Http\Controllers\MeetingResultsController@index'])
     ->where(['latitude' => '.*', 'longitude' => '.*']);
 Route::delete("/admin/cache", 'App\Http\Controllers\AdminController@cacheClear');
