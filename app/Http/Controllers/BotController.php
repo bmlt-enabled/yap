@@ -14,7 +14,8 @@ class BotController extends Controller
         $this->results = $results;
     }
 
-    public function getMeetings(Request $request) {
+    public function getMeetings(Request $request)
+    {
         $meetings = $this->results->getMeetings(
             $request->has('latitude') ? $request->get('latitude') : null,
             $request->has('longitude') ? $request->get('longitude') : null,
