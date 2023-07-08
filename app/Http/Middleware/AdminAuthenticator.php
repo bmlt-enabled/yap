@@ -10,7 +10,8 @@ class AdminAuthenticator
 {
     private AuthenticationService $authn;
 
-    public function __construct(AuthenticationService $authn) {
+    public function __construct(AuthenticationService $authn)
+    {
         $this->authn = $authn;
     }
 
