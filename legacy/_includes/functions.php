@@ -10,8 +10,6 @@ if (isset($_GET["ysk"])) {
 if (isset($_GET["CallSid"])) {
     insertSession($_GET["CallSid"]);
 }
-checkBlocklist();
-
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 // phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses
 
@@ -19,20 +17,6 @@ class AuthMechanism
 {
     const V1 = "_BMLT_AUTH_";
     const V2 = "_YAP_DB_AUTH_";
-}
-
-function checkBlocklist()
-{
-    if (has_setting('blocklist') && strlen(setting('blocklist')) > 0 && isset($_REQUEST['Caller'])) {
-        $blocklist_items = explode(",", setting('blocklist'));
-        foreach ($blocklist_items as $blocklist_item) {
-            if (strpos($blocklist_item, $_REQUEST['Caller']) === 0) {
-                header("content-type: text/xml");
-                echo "<?xml version='1.0' encoding='UTF-8'?>\n<Response><Reject/></Response>";
-                exit;
-            }
-        }
-    }
 }
 
 function has_setting($name)
