@@ -7,7 +7,7 @@ use CurlException;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
-class UpgradeAdvisorService
+class UpgradeService
 {
     protected SettingsService $settings;
     protected RootServerService $rootServer;
@@ -15,6 +15,7 @@ class UpgradeAdvisorService
     protected TimeZoneService $timeZone;
     protected ReportsService $reports;
     protected TwilioService $twilio;
+    protected DatabaseMigrationsService $migrations;
 
     public function __construct(
         SettingsService $settings,
@@ -22,7 +23,8 @@ class UpgradeAdvisorService
         GeocodingService $geocoding,
         TimeZoneService $timeZone,
         ReportsService $reports,
-        TwilioService $twilio
+        TwilioService $twilio,
+        DatabaseMigrationsService $migrations
     ) {
         $this->settings = $settings;
         $this->rootServer = $rootServer;
@@ -30,6 +32,7 @@ class UpgradeAdvisorService
         $this->timeZone = $timeZone;
         $this->reports = $reports;
         $this->twilio = $twilio;
+        $this->migrations = $migrations;
     }
 
     public function getStatus()
@@ -128,7 +131,14 @@ class UpgradeAdvisorService
         } catch (Exception $e) {
             $build = $e->getMessage();
         }
-        return ["status"=>$status, "message"=>$message, "warnings"=>$warnings, "version"=>$this->settings->version(), "build"=>str_replace("\n", "", $build)];
+        return [
+            "status"=>$status,
+            "message"=>$message,
+            "warnings"=>$warnings,
+            "version"=>$this->settings->version(),
+            "db"=>$this->migrations->getVersion(),
+            "build"=>str_replace("\n", "", $build)
+        ];
     }
 
     private function isAllowedError($exceptionName)

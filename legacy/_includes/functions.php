@@ -7,7 +7,6 @@ if (isset($_GET["ysk"])) {
     session_id($_GET["ysk"]);
 }
 @session_start();
-require_once 'migrations.php';
 if (isset($_GET["CallSid"])) {
     insertSession($_GET["CallSid"]);
 }

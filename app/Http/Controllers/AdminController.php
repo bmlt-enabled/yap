@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\CallService;
 use App\Services\ConfigService;
-use App\Services\UpgradeAdvisorService;
+use App\Services\UpgradeService;
 use App\Utility\Sort;
 use App\Services\AuthenticationService;
 use App\Services\AuthorizationService;
@@ -21,7 +21,7 @@ class AdminController extends Controller
     protected AuthorizationService $authz;
     protected ConfigService $config;
     protected CallService $call;
-    protected UpgradeAdvisorService $upgradeAdvisor;
+    protected UpgradeService $upgradeAdvisor;
     private array $pages = ["Home", "Reports", "Service Bodies", "Schedules", "Settings", "Volunteers", "Groups"];
 
     public function __construct(
@@ -31,7 +31,7 @@ class AdminController extends Controller
         AuthorizationService  $authz,
         ConfigService         $config,
         CallService           $call,
-        UpgradeAdvisorService $upgradeAdvisor
+        UpgradeService $upgradeAdvisor
     ) {
         $this->settings = $settings;
         $this->rootServer = $rootServer;

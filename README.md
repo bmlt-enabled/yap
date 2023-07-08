@@ -28,7 +28,7 @@ For setup instructions and general documentation please visit [https://yap.bmlt.
 
 # ⚠️ Major Refactor
 
-<img src="https://img.shields.io/badge/legacyleft-277-red"/> 
+<img src="https://img.shields.io/badge/legacyleft-240-red"/> 
 
 ```shell
 make legacy
