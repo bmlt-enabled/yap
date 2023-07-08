@@ -206,7 +206,7 @@
                 <tr>
                     <th>
                         Shifts
-                        <button class="btn btn-sm btn-primary" onclick="addShift(this);return false;"><{{ $settings->word('add_shift') }}</button>
+                        <button class="btn btn-sm btn-primary" onclick="addShift(this);return false;">{{ $settings->word('add_shift') }}</button>
                         <button class="btn btn-sm btn-primary" onclick="add7DayShifts(this);return false;">{{ $settings->word('add_7_day_shifts') }}</button>
                         <button class="btn btn-sm btn-primary" onclick="add24by7Shifts(this);return false;">{{ $settings->word('add_24by7_shifts') }}</button>
                         <button class="btn btn-sm btn-danger" onclick="removeAllShifts(this);return false;">{{ $settings->word('remove_all_shifts') }}</button>
