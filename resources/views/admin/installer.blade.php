@@ -1,12 +1,5 @@
-<?php
-if (file_exists('config.php')) {
-    define('URL', str_replace('installer.php', '', $_SERVER['REQUEST_URI']));
-    header("Location: " . URL);
-    exit();
-}
-require_once 'spinner_dialog.php';
-?>
-    <!doctype html>
+@include('admin.partials.spinner')
+<!doctype html>
 <html lang="en">
 <head>
     <!-- Required meta tags -->
@@ -25,11 +18,9 @@ require_once 'spinner_dialog.php';
         <div id="wizardAlert" class="alert alert-danger" role="alert"></div>
         <div id="wizardInstructions">Welcome to the Yap Installer.  This tool was developed to help quickly construct your configuration with the basic settings.  You should refer to the documentation (<a target="_blank" href="https://bmlt.app/yap">https://bmlt.app/yap</a>) for adding additional settings after you have completed this process.
 
-            Once you have completed filling out all the fields and they are confirmed to be correct, you will copy the text in the box below and paste into a file at the root of your yap folder called <pre>config.php</pre>
-
-            Note: This wizard will not allow for upgrading from Yap 1.x, instead copy over your original configuration and refresh this page.</div>
+            Once you have completed filling out all the fields, and they are confirmed to be correct, you will copy the text in the box below and paste into a file at the root of your yap folder called <pre>config.php</pre></div>
         <div id="configuration">
-            <?php foreach ($settings->minimalRequiredSettings() as $setting) { ?>
+            @foreach ($minimalRequiredSettings as $setting)
             <div class="input-group installerFieldSet">
                 <div class="input-group-prepend">
                             <span class="input-group-text">
@@ -38,12 +29,12 @@ require_once 'spinner_dialog.php';
                 </div>
                 <input value="" name="<?php echo $setting ?>" type="text" id="input_<?php echo $setting ?>" class="form-control" required>
             </div>
-            <?php } ?>
+            @endforeach
             <button type="submit" class="btn btn-primary" id="generateConfigButton">Generate Config</button>
         </div>
     </form>
 </div>
-<script src="<?php echo url("/public/dist/js/yap.min.js")?>"></script>
+<script src="{{ url("/public/dist/js/yap.min.js") }}"></script>
 <script type="text/javascript">
     var checkForConfigFileInterval;
     initInstaller();
@@ -64,7 +55,7 @@ require_once 'spinner_dialog.php';
                 <div id="config-error-message"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="$('#wizardResultModal').modal('toggle')">Close</button>
             </div>
         </div>
     </div>

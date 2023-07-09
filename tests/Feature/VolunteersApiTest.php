@@ -7,6 +7,7 @@ use App\Repositories\ConfigRepository;
 use App\Models\VolunteerInfo;
 use App\Constants\VolunteerType;
 use App\Utility\VolunteerScheduleHelpers;
+use Tests\MiddlewareTests;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -16,6 +17,18 @@ beforeEach(function () {
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
     $_SESSION = null;
+
+    $this->midddleware = new MiddlewareTests();
+    $this->id = "200";
+    $this->serviceBodyId = "44";
+    $this->parentServiceBodyId = "43";
+    $this->data =  "{\"data\":{}}";
+    $this->configRepository = $this->midddleware->getAllDbData(
+        $this->id,
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $this->data
+    );
 });
 
 test('get schedule for service body phone volunteer', function () {
@@ -41,21 +54,18 @@ test('get schedule for service body phone volunteer', function () {
             "end_time"=>$shiftEnd,
         ]]))
     ]];
-    $service_body_id = "44";
-    $parent_service_body_id = "43";
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
-        $service_body_id,
+    $this->configRepository->shouldReceive("getDbData")->with(
+        $this->serviceBodyId,
         DataType::YAP_VOLUNTEERS_V2
     )->andReturn([(object)[
-        "service_body_id" => $service_body_id,
+        "service_body_id" => $this->serviceBodyId,
         "id" => "200",
-        "parent_id" => $parent_service_body_id,
+        "parent_id" => $this->parentServiceBodyId,
         "data" => json_encode($volunteer)
     ]]);
-    app()->instance(ConfigRepository::class, $repository);
+    app()->instance(ConfigRepository::class, $this->configRepository);
     $response = $this->call('GET', '/api/v1/volunteers/schedule', [
-        "service_body_id" => $service_body_id,
+        "service_body_id" => $this->serviceBodyId,
     ]);
     $volunteers = [];
     $volunteerInfo = new VolunteerInfo();
@@ -105,8 +115,7 @@ test('get schedule for service body sms volunteer', function () {
     ]];
     $service_body_id = "44";
     $parent_service_body_id = "43";
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
+    $this->configRepository->shouldReceive("getDbData")->with(
         $service_body_id,
         DataType::YAP_VOLUNTEERS_V2
     )->andReturn([(object)[
@@ -115,7 +124,7 @@ test('get schedule for service body sms volunteer', function () {
         "parent_id" => $parent_service_body_id,
         "data" => json_encode($volunteer)
     ]]);
-    app()->instance(ConfigRepository::class, $repository);
+    app()->instance(ConfigRepository::class, $this->configRepository);
     $response = $this->call('GET', '/api/v1/volunteers/schedule', [
         "service_body_id" => $service_body_id,
     ]);
@@ -169,8 +178,7 @@ test('return volunteers json', function () {
     ]];
     $service_body_id = "44";
     $parent_service_body_id = "43";
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
+    $this->configRepository->shouldReceive("getDbData")->with(
         $service_body_id,
         DataType::YAP_VOLUNTEERS_V2
     )->andReturn([(object)[
@@ -180,7 +188,7 @@ test('return volunteers json', function () {
         "data" => json_encode($volunteer)
     ]]);
 
-    app()->instance(ConfigRepository::class, $repository);
+    app()->instance(ConfigRepository::class, $this->configRepository);
     $response = $this->call('GET', '/api/v1/volunteers/download', [
         "service_body_id" => $service_body_id,
         "fmt" => "json"
@@ -232,8 +240,7 @@ test('return volunteers csv', function () {
     ]];
     $service_body_id = "44";
     $parent_service_body_id = "43";
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
+    $this->configRepository->shouldReceive("getDbData")->with(
         $service_body_id,
         DataType::YAP_VOLUNTEERS_V2
     )->andReturn([(object)[
@@ -243,7 +250,7 @@ test('return volunteers csv', function () {
         "data" => json_encode($volunteer)
     ]]);
 
-    app()->instance(ConfigRepository::class, $repository);
+    app()->instance(ConfigRepository::class, $this->configRepository);
     $response = $this->call('GET', '/api/v1/volunteers/download', [
         "service_body_id" => $service_body_id,
         "fmt" => "csv"
@@ -260,13 +267,12 @@ test('return volunteers csv', function () {
 
 test('return volunteers invalid service body id', function () {
     $service_body_id = "999999";
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
+    $this->configRepository->shouldReceive("getDbData")->with(
         $service_body_id,
         DataType::YAP_VOLUNTEERS_V2
     )->andReturn([]);
 
-    app()->instance(ConfigRepository::class, $repository);
+    app()->instance(ConfigRepository::class, $this->configRepository);
     $response = $this->call('GET', '/api/v1/volunteers/download', [
         "service_body_id" => $service_body_id,
         "fmt" => "json"
@@ -280,13 +286,12 @@ test('return volunteers invalid service body id', function () {
 
 test('return volunteers invalid format', function () {
     $service_body_id = "44";
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
+    $this->configRepository->shouldReceive("getDbData")->with(
         $service_body_id,
         DataType::YAP_VOLUNTEERS_V2
     )->andReturn([]);
 
-    app()->instance(ConfigRepository::class, $repository);
+    app()->instance(ConfigRepository::class, $this->configRepository);
     $response = $this->call('GET', '/api/v1/volunteers/download', [
         "service_body_id" => $service_body_id,
         "fmt" => "garbage"
@@ -306,8 +311,7 @@ test('get groups for service body', function () {
         "group_name"=>"Fake Group",
         "group_shared_service_bodies"=>[$service_body_id]
     ]];
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getAllDbData")->with(
+    $this->configRepository->shouldReceive("getAllDbData")->with(
         DataType::YAP_GROUPS_V2
     )->andReturn([(object)[
         "service_body_id" => $service_body_id,
@@ -315,7 +319,7 @@ test('get groups for service body', function () {
         "parent_id" => $parent_service_body_id,
         "data" => json_encode($group)
     ]]);
-    app()->instance(ConfigRepository::class, $repository);
+    app()->instance(ConfigRepository::class, $this->configRepository);
     $response = $this->call('GET', '/api/v1/volunteers/groups', [
         "service_body_id" => $service_body_id,
     ]);

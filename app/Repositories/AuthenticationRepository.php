@@ -19,11 +19,28 @@ class AuthenticationRepository
 
     public function authV1($username, $password): bool
     {
-        $auth_endpoint = ($this->settings->has('alt_auth_method') && $this->settings->get('alt_auth_method') ? '/index.php' : '/local_server/server_admin/xml.php');
-        $res = $this->http->post(sprintf("%s%s", $this->settings->getAdminBMLTRootServer(), $auth_endpoint), "admin_action=login&c_comdef_admin_login='.$username.'&c_comdef_admin_password='.urlencode($password)");
+        $endpoint = ($this->settings->has('alt_auth_method') && $this->settings->get('alt_auth_method') ? '/index.php' : '/local_server/server_admin/xml.php');
+        $res = $this->http->post(sprintf("%s%s", $this->settings->getAdminBMLTRootServer(), $endpoint), "admin_action=login&c_comdef_admin_login='.$username.'&c_comdef_admin_password='.urlencode($password)");
         $is_authed = preg_match('/^OK$/', str_replace(array("\r", "\n"), '', $res->body())) == 1;
         $_SESSION["bmlt_auth_session"] = $is_authed ? $this->getCookiesFromHeaders() : null;
         return $is_authed;
+    }
+
+    public function verifyV1(): bool
+    {
+        $endpoint = '/local_server/server_admin/xml.php?admin_action=get_permissions';
+        $res = $this->http->getWithAuth(sprintf("%s%s", $this->settings->getAdminBMLTRootServer(), $endpoint));
+        if ($res == null) {
+            return false;
+        }
+
+        return !str_contains($res, 'NOT AUTHORIZED');
+    }
+
+    public function logoutV1(): void
+    {
+        $endpoint = 'local_server/server_admin/xml.php?admin_action=logout';
+        $this->http->getWithAuth(sprintf("%s%s", $this->settings->getAdminBMLTRootServer(), $endpoint));
     }
 
     public function authV2($username, $password): array
@@ -45,7 +62,7 @@ class AuthenticationRepository
         return $_SESSION['auth_user_name_string'];
     }
 
-    private function getCookiesFromHeaders()
+    private function getCookiesFromHeaders(): array
     {
         $cookies = [];
 

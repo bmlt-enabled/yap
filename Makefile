@@ -64,7 +64,3 @@ deploy: bundle-deps bundle
 .PHONY: swagger
 swagger:
 	php artisan l5-swagger:generate
-
-.PHONY: legacy
-legacy:
-	cd legacy && find . -name '*.*' | xargs wc -l

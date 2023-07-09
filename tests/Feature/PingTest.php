@@ -10,7 +10,9 @@ beforeEach(function () {
 });
 
 test('ping with php extension', function () {
-    $response = $this->call('GET', '/ping.php');
+    $response = $this->call('GET', '/ping.php', [
+        //'ysk'=>'123'
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/plain; charset=UTF-8")

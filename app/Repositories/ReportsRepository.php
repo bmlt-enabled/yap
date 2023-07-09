@@ -166,7 +166,7 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
         );
     }
 
-    public function insertCallRecord($callRecord)
+    public function insertCallRecord($callRecord): void
     {
         date_default_timezone_set('UTC');
         DB::insert(
@@ -186,7 +186,7 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
         );
     }
 
-    public function insertAlert($alertId, $payload)
+    public function insertAlert($alertId, $payload): bool
     {
         date_default_timezone_set('UTC');
         return DB::insert(
@@ -195,7 +195,7 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
         );
     }
 
-    public function getMisconfiguredPhoneNumbersAlerts($alert_id)
+    public function getMisconfiguredPhoneNumbersAlerts($alert_id): array
     {
         return DB::select("SELECT a.payload FROM alerts a
 INNER JOIN (select to_number, max(start_time) as start_time FROM records GROUP BY to_number) b
@@ -208,7 +208,7 @@ LEFT OUTER JOIN records b ON a.payload = b.to_number
 where alert_id = ? and b.to_number IS NULL", [$alert_id, $alert_id]);
     }
 
-    public function lookupPinForCallSid($callsid)
+    public function lookupPinForCallSid($callsid): array
     {
         return DB::select(
             "SELECT pin FROM sessions where callsid = ? order by timestamp desc limit 1",
@@ -216,12 +216,12 @@ where alert_id = ? and b.to_number IS NULL", [$alert_id, $alert_id]);
         );
     }
 
-    public function getConferenceParticipant($callsid)
+    public function getConferenceParticipant($callsid): array
     {
         return DB::select("SELECT DISTINCT callsid, role FROM conference_participants WHERE callsid = ?", [$callsid]);
     }
 
-    public function setConferenceParticipant($friendlyname, $conferencesid, $callsid, $role)
+    public function setConferenceParticipant($friendlyname, $conferencesid, $callsid, $role): void
     {
         DB::insert(
             "INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`,`role`)
@@ -230,12 +230,24 @@ where alert_id = ? and b.to_number IS NULL", [$alert_id, $alert_id]);
         );
     }
 
-    public function isDialbackPinValid($pin)
+    public function isDialbackPinValid($pin): array
     {
         return DB::select(
             "SELECT from_number FROM sessions a INNER JOIN records b ON
         a.callsid = b.callsid where pin = ? order by start_time desc limit 1",
             [$pin]
         );
+    }
+
+    public function insertSession($callsid): void
+    {
+        $pin = $this->lookupPinForCallSid($callsid);
+
+        if (count($pin) == 0) {
+            DB::insert(
+                "INSERT INTO `sessions` (`callsid`,`pin`) VALUES (?, ?)",
+                [$callsid, rand(1000000, 9999999)]
+            );
+        }
     }
 }

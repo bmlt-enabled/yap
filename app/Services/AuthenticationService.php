@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Constants\AuthMechanism;
+use App\Constants\Http;
 use App\Repositories\AuthenticationRepository;
 
 class AuthenticationService
@@ -43,6 +44,33 @@ class AuthenticationService
             return true;
         } else {
             return false;
+        }
+    }
+
+    public function verify() : bool
+    {
+        $verified = false;
+        if (isset($_SESSION['auth_mechanism'])) {
+            if ($_SESSION['auth_mechanism'] == AuthMechanism::V1) {
+                $verified = $this->authenticationRepository->verifyV1();
+            } else {
+                $verified = true;
+            }
+        }
+
+        return $verified;
+    }
+
+    public function logout(): void
+    {
+        if (isset($_SESSION['auth_mechanism']) && $_SESSION['auth_mechanism'] == AuthMechanism::V1) {
+            if (isset($_SESSION['bmlt_auth_session']) && $_SESSION['bmlt_auth_session'] != null) {
+                $this->authenticationRepository->logoutV1();
+            }
+
+            session_unset();
+        } else {
+            session_unset();
         }
     }
 

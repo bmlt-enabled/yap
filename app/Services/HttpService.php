@@ -33,9 +33,9 @@ class HttpService
         ], $extraHeaders))->post($url, $data);
     }
 
-    public function getWithAuth($url, $ttl = 0) : Response
+    public function getWithAuth($url, $ttl = 0) : string
     {
-        return $this->get($url, $ttl, ["Cookie", $this->getBMLTAuthSessionCookies()]);
+        return $this->get($url, $ttl, ["Cookie: " . $this->getBMLTAuthSessionCookies()]);
     }
 
     private function getBMLTAuthSessionCookies(): string

@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\UpgradeAdvisorService;
+use App\Services\UpgradeService;
 use Exception;
 use Illuminate\Http\Request;
 use UpgradeAdvisor;
 
 class UpgradeAdvisorController extends Controller
 {
-    protected UpgradeAdvisorService $upgradeAdvisorService;
+    protected UpgradeService $upgradeAdvisorService;
 
-    public function __construct(UpgradeAdvisorService $upgradeAdvisorService)
+    public function __construct(UpgradeService $upgradeAdvisorService)
     {
         $this->upgradeAdvisorService = $upgradeAdvisorService;
     }
