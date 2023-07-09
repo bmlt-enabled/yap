@@ -14,6 +14,10 @@ beforeEach(function () {
     $_REQUEST = null;
     $_SESSION = null;
 
+    $this->fakeCallSid = "abcdefghij";
+    $this->middleware = new \Tests\MiddlewareTests();
+    $this->reportsRepository = $this->middleware->insertSession($this->fakeCallSid);
+
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [
         "username" => "fake",
@@ -44,14 +48,13 @@ test('join volunteer to conference', function () {
     $this->twilioClient->shouldReceive("conferences")->with($this->conferenceName)
         ->andReturn($conferenceContextMock);
 
-    $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository->shouldReceive("setConferenceParticipant")->withAnyArgs()->once();
+    $this->reportsRepository->shouldReceive("setConferenceParticipant")->withAnyArgs()->once();
 //    $reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
-    app()->instance(ReportsRepository::class, $reportsRepository);
+    app()->instance(ReportsRepository::class, $this->reportsRepository);
 
     $response = $this->call('GET', '/helpline-outdial-response.php', [
         "Called"=>"12125551212",
-        "CallSid"=>"fakeCallSid",
+        "CallSid"=>$this->fakeCallSid,
         "conference_name"=>$this->conferenceName,
         "service_body_id"=>"1"
     ]);
@@ -76,14 +79,13 @@ test('waiting for the volunteer to press 1 to answer the call', function () {
     $conferenceContextMock->participants = $participantListMock;
     $this->twilioClient->shouldReceive("conferences")->with($this->conferenceName)->andReturn($conferenceContextMock);
 
-    $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository->shouldReceive("setConferenceParticipant")->withAnyArgs()->once();
-    $reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
-    app()->instance(ReportsRepository::class, $reportsRepository);
+    $this->reportsRepository->shouldReceive("setConferenceParticipant")->withAnyArgs()->once();
+    $this->reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
+    app()->instance(ReportsRepository::class, $this->reportsRepository);
 
     $response = $this->call('GET', '/helpline-outdial-response.php', [
         "Called"=>"12125551212",
-        "CallSid"=>"fakeCallSid",
+        "CallSid"=>$this->fakeCallSid,
         "service_body_id"=>"1",
         "conference_name"=>$this->conferenceName
     ]);
@@ -108,10 +110,9 @@ test('volunteer called and auto answer capability enabled', function () {
     $conferenceContextMock->participants = $participantListMock;
     $this->twilioClient->shouldReceive("conferences")->with($this->conferenceName)->andReturn($conferenceContextMock);
 
-    $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository->shouldReceive("setConferenceParticipant")->withAnyArgs()->once();
-    $reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
-    app()->instance(ReportsRepository::class, $reportsRepository);
+    $this->reportsRepository->shouldReceive("setConferenceParticipant")->withAnyArgs()->once();
+    $this->reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
+    app()->instance(ReportsRepository::class, $this->reportsRepository);
 
     $settingsService = new SettingsService();
     $settingsService->set("volunteer_auto_answer", true);
@@ -119,7 +120,7 @@ test('volunteer called and auto answer capability enabled', function () {
 
     $response = $this->call('GET', '/helpline-outdial-response.php', [
         "Called"=>"12125551212",
-        "CallSid"=>"fakeCallSid",
+        "CallSid"=>$this->fakeCallSid,
         "service_body_id"=>"1",
         "conference_name"=>$this->conferenceName
     ]);
@@ -142,15 +143,14 @@ test('the caller hung up before the call was answered', function () {
     $conferenceContextMock->participants = $participantListMock;
     $this->twilioClient->shouldReceive("conferences")->with($this->conferenceName)->andReturn($conferenceContextMock);
 
-    $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository->shouldReceive("setConferenceParticipant")->withAnyArgs()->once();
-    $reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
-    app()->instance(ReportsRepository::class, $reportsRepository);
+    $this->reportsRepository->shouldReceive("setConferenceParticipant")->withAnyArgs()->once();
+    $this->reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
+    app()->instance(ReportsRepository::class, $this->reportsRepository);
 
     $response = $this->call('GET', '/helpline-outdial-response.php', [
         "Digits"=>"1",
         "Called"=>"12125551212",
-        "CallSid"=>"abc",
+        "CallSid"=>$this->fakeCallSid,
         "conference_name"=>$this->conferenceName
     ]);
     $response

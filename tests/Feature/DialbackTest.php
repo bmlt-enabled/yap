@@ -10,6 +10,10 @@ beforeEach(function () {
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
     $_SESSION = null;
+
+    $this->fakeCallSid = "abcdefghij";
+    $this->middleware = new \Tests\MiddlewareTests();
+    $this->reportsRepository = $this->middleware->insertSession($this->fakeCallSid);
 });
 
 test('dialback initial', function () {
@@ -31,19 +35,17 @@ test('dialback initial', function () {
 
 test('dialback dialer valid pin entry', function () {
     $fakePin = "123456";
-    $repository = Mockery::mock(ReportsRepository::class);
-    $repository->shouldReceive("insertCallRecord")->withAnyArgs();
-    $repository->shouldReceive("isDialbackPinValid")
+    $this->reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs();
+    $this->reportsRepository->shouldReceive("isDialbackPinValid")
         ->with("123456")
         ->andReturn(["123456"]);
-    app()->instance(ReportsRepository::class, $repository);
-    $fakeCallSid = "abcdefghij";
+    app()->instance(ReportsRepository::class, $this->reportsRepository);
     $called = "+12125551212";
     $response = $this->call(
         'GET',
         '/status.php',
         ["TimestampNow"=>"123",
-            "CallSid"=> $fakeCallSid,
+            "CallSid"=> $this->fakeCallSid,
             "Called"=>"+12125551212",
             "Caller"=>"+17325551212",
             "CallDuration"=>"120"]

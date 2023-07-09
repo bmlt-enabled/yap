@@ -198,7 +198,7 @@ class RootServerService
         return json_decode($this->http->get($bmlt_search_endpoint, 3600));
     }
 
-    private function getFormatString($formats, $ignore = false)
+    private function getFormatString($formats, $ignore = false): string
     {
         $formatsArray = $this->getIdsFormats($formats);
         $finalString = "";
@@ -209,7 +209,7 @@ class RootServerService
         return $finalString;
     }
 
-    private function getIdsFormats($types)
+    private function getIdsFormats($types): array
     {
         $typesArray = explode(",", $types);
         $finalFormats = array();
@@ -259,7 +259,7 @@ class RootServerService
             || $this->isBMLTServerOwned($latitude, $longitude);
     }
 
-    public function isBMLTServerOwned($latitude, $longitude)
+    public function isBMLTServerOwned($latitude, $longitude): bool
     {
         $bmlt_search_endpoint = sprintf(
             '%s/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s',

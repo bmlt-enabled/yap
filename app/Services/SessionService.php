@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\ServiceBodyFinder;
 use stdClass;
 
 class SessionService
@@ -18,7 +17,7 @@ class SessionService
         $this->rootServer = $rootServer;
     }
 
-    public function setConfigForService($service_body_id)
+    public function setConfigForService($service_body_id): void
     {
         if (intval($service_body_id) > 0) {
             $service_body_config = $this->getServiceBodyConfig($service_body_id);
@@ -34,7 +33,7 @@ class SessionService
         }
     }
 
-    private function getServiceBodyConfig($service_body_id)
+    private function getServiceBodyConfig($service_body_id): ?stdClass
     {
         $lookup_id = $service_body_id;
         $config = new StdClass();

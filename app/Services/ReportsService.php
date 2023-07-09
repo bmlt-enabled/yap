@@ -9,16 +9,21 @@ use function App\Http\Controllers\Api\V1\Admin\findMetric;
 
 class ReportsService
 {
-    private $rootServerService;
-    private $reportsRepository;
+    private RootServerService $rootServerService;
+    private ReportsRepository $reportsRepository;
+    private SettingsService $settingsService;
 
-    public function __construct(RootServerService $rootServerService, ReportsRepository $reportsRepository)
-    {
+    public function __construct(
+        RootServerService $rootServerService,
+        ReportsRepository $reportsRepository,
+        SettingsService $settingsService
+    ) {
         $this->rootServerService = $rootServerService;
         $this->reportsRepository = $reportsRepository;
+        $this->settingsService = $settingsService;
     }
 
-    private function getServiceBodies($serviceBodyId, $recurse)
+    private function getServiceBodies($serviceBodyId, $recurse): array
     {
         if (intval($serviceBodyId) == 0) {
             return array_column($this->rootServerService->getServiceBodiesForUser(true), "id");
@@ -29,7 +34,7 @@ class ReportsService
         }
     }
 
-    private function uniqueStdClassArray($array)
+    private function uniqueStdClassArray($array): array
     {
         $array = array_map('json_encode', $array);
         $array = array_unique($array);
@@ -102,7 +107,7 @@ class ReportsService
         return $metricsCollection;
     }
 
-    public function getMapMetricsCsv($serviceBodyId, $eventId, $date_range_start, $date_range_end, $recurse = false)
+    public function getMapMetricsCsv($serviceBodyId, $eventId, $date_range_start, $date_range_end, $recurse = false): string
     {
         $data = "lat,lon,name,desc\n";
         $metrics = $this->reportsRepository->getMapMetricByType(
@@ -128,7 +133,7 @@ class ReportsService
         return $data;
     }
 
-    public function getMapMetrics($serviceBodyId, $date_range_start, $date_range_end, $recurse = false)
+    public function getMapMetrics($serviceBodyId, $date_range_start, $date_range_end, $recurse = false): array
     {
         $results = [];
         $metrics = $this->reportsRepository->getMapMetrics(
@@ -157,7 +162,7 @@ class ReportsService
                 ? $this->uniqueStdClassArray(json_decode($callRecord->call_events)) : [];
 
             if (!isset($callEvents)) {
-                $this->settings->logDebug("callEvents issue");
+                $this->settingsService->logDebug("callEvents issue");
             }
 
             foreach ($callEvents as &$callEvent) {
@@ -174,7 +179,7 @@ class ReportsService
         return $response;
     }
 
-    public function getMisconfiguredPhoneNumbersAlerts($alertId)
+    public function getMisconfiguredPhoneNumbersAlerts($alertId): array
     {
         return $this->reportsRepository->getMisconfiguredPhoneNumbersAlerts($alertId);
     }

@@ -83,6 +83,11 @@ class AdminController extends Controller
         return view(sprintf('admin/%s', $page), $data);
     }
 
+    public function installer(Request $request)
+    {
+        return view('admin/installer');
+    }
+
     public function login(Request $request): RedirectResponse
     {
         $auth = $this->authn->authenticate();

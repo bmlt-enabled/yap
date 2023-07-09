@@ -1,5 +1,4 @@
-<?php require_once __DIR__ . '/../_includes/functions.php'; ?>
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <title>yap-viz</title>

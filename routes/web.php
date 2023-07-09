@@ -9,7 +9,8 @@ Route::get("/admin/auth/rights", 'App\Http\Controllers\AuthController@rights');
 Route::get("/admin/auth/logout", 'App\Http\Controllers\AuthController@logout');
 Route::get("/admin/auth/timeout", 'App\Http\Controllers\AuthController@timeout');
 Route::get("/admin/auth/invalid", 'App\Http\Controllers\AuthController@invalid');
-Route::get("/admin", 'App\Http\Controllers\AdminController@index')->name("adminLogin");
+Route::get("/admin", 'App\Http\Controllers\AdminController@index')->name('adminLogin');
+Route::post("/admin/installer", 'App\Http\Controllers\AdminController@installer')->name('installer');
 Route::post("/admin/login", 'App\Http\Controllers\AdminController@login');
 Route::get("/admin/{page}", 'App\Http\Controllers\AdminController@index')
     ->middleware("authForAdminPortal");
@@ -71,7 +72,7 @@ Route::get("/voicemail{ext}", 'App\Http\Controllers\VoicemailController@start')
     ->where('ext', $ext);
 Route::get("/post-call-action{ext}", 'App\Http\Controllers\CallFlowController@postCallAction')
     ->where('ext', $ext);
-Route::get("/upgrade-advisor{ext}", 'App\Http\Controllers\UpgradeAdvisorController@index')
+Route::get("upgrade-advisor{ext}", 'App\Http\Controllers\UpgradeAdvisorController@index')
     ->where('ext', $ext);
 Route::get("/lng-selector{ext}", 'App\Http\Controllers\CallFlowController@languageSelector')
     ->where('ext', $ext);

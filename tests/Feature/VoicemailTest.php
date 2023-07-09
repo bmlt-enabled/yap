@@ -3,6 +3,7 @@
 use App\Repositories\ConfigRepository;
 use Tests\FakeTwilioHttpClient;
 use App\Constants\DataType;
+use Tests\MiddlewareTests;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -14,19 +15,23 @@ beforeEach(function () {
     $_SESSION = null;
 
     new \Tests\TwilioMessagesCreateMock();
+    $this->id = "200";
+    $this->serviceBodyId = "44";
+    $this->parentServiceBodyId = "43";
+    $this->data =  "{\"data\":{}}";
 });
 
 test('voicemail standard response', function () {
-    $service_body_id = "44";
+    $service_body_id = $this->serviceBodyId;
     $_SESSION['override_service_body_id'] = $service_body_id;
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
-        '44',
+        $this->serviceBodyId,
         DataType::YAP_CALL_HANDLING_V2
     )->andReturn([(object)[
         "service_body_id" => $service_body_id,
-        "id" => "200",
-        "parent_id" => "43",
+        "id" => $this->id,
+        "parent_id" => $this->parentServiceBodyId,
         "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
     ]]);
     app()->instance(ConfigRepository::class, $repository);
@@ -34,7 +39,7 @@ test('voicemail standard response', function () {
     $response = $this->call('GET', '/voicemail.php', [
         "caller_id" => "+17325551212",
         "Caller" => "+12125551313",
-        "ysk" => "test"
+        //"ysk" => "test"
     ]);
 
     $response
@@ -50,7 +55,7 @@ test('voicemail standard response', function () {
 });
 
 test('voicemail custom prompt', function () {
-    $service_body_id = "44";
+    $service_body_id = $this->serviceBodyId;
     $_SESSION['override_service_body_id'] = $service_body_id;
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
@@ -58,8 +63,8 @@ test('voicemail custom prompt', function () {
         DataType::YAP_CALL_HANDLING_V2
     )->andReturn([(object)[
         "service_body_id" => $service_body_id,
-        "id" => "200",
-        "parent_id" => "43",
+        "id" => $this->id,
+        "parent_id" => $this->parentServiceBodyId,
         "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
     ]]);
     app()->instance(ConfigRepository::class, $repository);
@@ -67,7 +72,7 @@ test('voicemail custom prompt', function () {
     $response = $this->call('GET', '/voicemail.php', [
         "caller_id" => "+17325551212",
         "Caller" => "+12125551313",
-        "ysk" => "test"
+        //"ysk" => "test"
     ]);
 
     $response
