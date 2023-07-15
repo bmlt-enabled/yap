@@ -119,6 +119,22 @@ test('jft option enabled and selected', function () {
         ], false);
 });
 
+test('spad option enabled and selected', function () {
+    $_SESSION['override_spad_option'] = true;
+    $response = $this->call('GET', '/input-method.php', [
+        "Digits"=>"4"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">fetch-spad.php</Redirect>',
+            '</Response>'
+        ], false);
+});
+
 test('dialback selected', function () {
     $response = $this->call('GET', '/input-method.php', [
         "Digits"=>"9"
@@ -130,6 +146,28 @@ test('dialback selected', function () {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect method="GET">dialback.php</Redirect>',
+            '</Response>'
+        ], false);
+});
+
+test('menu with meeting search option with jft and spad enabled', function () {
+    $_SESSION['override_spad_option'] = true;
+    $_SESSION['override_jft_option'] = true;
+    $response = $this->call('GET', '/input-method.php', [
+        "Digits"=>"2"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=2" method="GET">',
+            '<Say voice="alice" language="en-US">press one to search for meetings by city or county</Say>',
+            '<Say voice="alice" language="en-US">press two to search for meetings by zip code</Say>',
+            '<Say voice="alice" language="en-US">press three to listen to the just for today</Say>',
+            '<Say voice="alice" language="en-US">press four to listen to the spiritual principle a day</Say>',
+            '</Gather>',
             '</Response>'
         ], false);
 });
@@ -155,6 +193,26 @@ test('custom extension configured and selected', function () {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect method="GET">custom-ext.php</Redirect>',
+            '</Response>'
+        ], false);
+});
+
+test('play custom title', function () {
+    $response = $this->call('GET', '/input-method.php', [
+        "Digits"=>"2",
+        "PlayTitle"=>"1"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=2" method="GET">',
+            '<Say voice="alice" language="en-US">Test Helpline</Say>',
+            '<Say voice="alice" language="en-US">press one to search for meetings by city or county</Say>',
+            '<Say voice="alice" language="en-US">press two to search for meetings by zip code</Say>',
+            '</Gather>',
             '</Response>'
         ], false);
 });

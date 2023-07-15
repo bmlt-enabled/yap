@@ -245,11 +245,11 @@ class CallFlowController extends Controller
                     ->setVoice($this->settings->voice())
                     ->setLanguage($this->settings->get('language'));
             } elseif ($method == SearchType::JFT && $searchType == SearchType::MEETINGS) {
-                $gather->say($this->settings->getWordForNumber($digit) . " " . $this->settings->word('to_listen_to_the_just_for_today'))
+                $gather->say($this->settings->getPressWord() . " " . $this->settings->getWordForNumber($digit) . " " . $this->settings->word('to_listen_to_the_just_for_today'))
                     ->setVoice($this->settings->voice())
                     ->setLanguage($this->settings->get('language'));
             } elseif ($method == SearchType::SPAD && $searchType == SearchType::MEETINGS) {
-                $gather->say($this->settings->getWordForNumber($digit) . " " . $this->settings->word('to_listen_to_the_spad'))
+                $gather->say($this->settings->getPressWord() . " " . $this->settings->getWordForNumber($digit) . " " . $this->settings->word('to_listen_to_the_spad'))
                     ->setVoice($this->settings->voice())
                     ->setLanguage($this->settings->get('language'));
             }
@@ -797,7 +797,7 @@ class CallFlowController extends Controller
             $service_body = $this->meetingResults
                 ->getServiceBodyCoverage($request->query("Latitude"), $request->query("Longitude"));
             $serviceBodyCallHandling   = $this->config->getCallHandling($service_body->id);
-            $tracker                   = $request->has("tracker") ? 0 : $request->query("tracker");
+            $tracker                   = $request->has("tracker") ? 0 : intval($request->query("tracker"));
 
             if ($serviceBodyCallHandling->sms_routing_enabled) {
                 $volunteer_routing_parameters = new VolunteerRoutingParameters();

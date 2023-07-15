@@ -28,7 +28,7 @@ class VolunteerService
         $this->settings = $settingsService;
     }
 
-    public function getHelplineSchedule($service_body_int)
+    public function getHelplineSchedule($service_body_int, $filtered = false): array
     {
         $volunteers = $this->getVolunteers($service_body_int);
         if (count($volunteers) > 0) {
@@ -38,7 +38,7 @@ class VolunteerService
                 return $a->sequence > $b->sequence ? 1 : -1;
             });
 
-            return VolunteerScheduleHelpers::filterOutPhoneNumber($finalSchedule);
+            return $filtered ? VolunteerScheduleHelpers::filterOutPhoneNumber($finalSchedule) : $finalSchedule;
         } else {
             throw new NoVolunteersException();
         }
@@ -81,7 +81,7 @@ class VolunteerService
     public function getHelplineVolunteersActiveNow($volunteer_routing_params): array
     {
         try {
-            $volunteers = json_decode($this->getHelplineSchedule($volunteer_routing_params->service_body_id));
+            $volunteers = $this->getHelplineSchedule($volunteer_routing_params->service_body_id);
             $activeNow = [];
             for ($v = 0; $v < count($volunteers); $v++) {
                 date_default_timezone_set($volunteers[$v]->time_zone);

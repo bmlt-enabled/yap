@@ -156,7 +156,7 @@
                                                 @if (gettype($value["default"]) === "array")
                                                 <option data-default="<?php echo str_replace("\"", "'", json_encode($value["default"])) ?>" value="<?php echo $setting?>"><?php echo $setting?></option>
                                                 @else
-                                                <option data-default="<?php echo \App\Utility\Format::getStringValue($value["default"]) ?>" value="<?php echo $setting?>"><?php echo $setting?></option>
+                                                <option data-default="{{ var_export($value["default"]) }}" value="<?php echo $setting?>"><?php echo $setting?></option>
                                                 @endif
                                                 @endforeach
                                             </select>

@@ -1,7 +1,9 @@
 @include('admin.partials.header')
 <script type="text/javascript">
     var sessionTimeoutMinutes = 20;
-    setInterval(function() { location.href='<?php echo ("auth/timeout")?>'; }, sessionTimeoutMinutes * 60000);
+    setInterval(function() {
+       location.href='<?php echo ("auth/timeout")?>';
+    }, sessionTimeoutMinutes * 60000);
 </script>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <a class="navbar-brand" href="#">Yap</a>

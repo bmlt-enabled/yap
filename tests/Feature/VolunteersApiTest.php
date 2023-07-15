@@ -3,11 +3,13 @@
 use App\Constants\DataType;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
+use App\Models\VolunteerData;
 use App\Repositories\ConfigRepository;
 use App\Models\VolunteerInfo;
 use App\Constants\VolunteerType;
 use App\Utility\VolunteerScheduleHelpers;
 use Tests\MiddlewareTests;
+use Tests\RepositoryMocks;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -153,44 +155,34 @@ test('get schedule for service body sms volunteer', function () {
 });
 
 test('return volunteers json', function () {
+    $serviceBodyId = "44";
+    $parentServiceBodyId = "43";
     $volunteer_name = "Corey";
     $volunteer_gender = VolunteerGender::UNSPECIFIED;
     $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
-    $volunteer_languages = ["en-US"];
     $volunteer_phone_number = "(555) 111-2222";
-    $shiftDay = 2;
+    $volunteer_languages = ["en-US"];
+    $shiftDay = 1;
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
-    $volunteer = [[
-        "volunteer_name"=>$volunteer_name,
-        "volunteer_phone_number"=>$volunteer_phone_number,
-        "volunteer_gender"=>$volunteer_gender,
-        "volunteer_responder"=>$volunteer_responder,
-        "volunteer_notes"=>"",
-        "volunteer_enabled"=>true,
-        "volunteer_shift_schedule"=>base64_encode(json_encode([[
-            "day"=>$shiftDay,
-            "tz"=>$shiftTz,
-            "start_time"=>$shiftStart,
-            "end_time"=>$shiftEnd,
-        ]]))
-    ]];
-    $service_body_id = "44";
-    $parent_service_body_id = "43";
-    $this->configRepository->shouldReceive("getDbData")->with(
-        $service_body_id,
-        DataType::YAP_VOLUNTEERS_V2
-    )->andReturn([(object)[
-        "service_body_id" => $service_body_id,
-        "id" => "200",
-        "parent_id" => $parent_service_body_id,
-        "data" => json_encode($volunteer)
-    ]]);
+
+    $repositoryMocks = new RepositoryMocks();
+    $repositoryMocks->getVolunteersMock(
+        $this->configRepository,
+        $volunteer_name,
+        $volunteer_gender,
+        $volunteer_responder,
+        $volunteer_languages,
+        $volunteer_phone_number,
+        1,
+        $serviceBodyId,
+        $parentServiceBodyId
+    );
 
     app()->instance(ConfigRepository::class, $this->configRepository);
     $response = $this->call('GET', '/api/v1/volunteers/download', [
-        "service_body_id" => $service_body_id,
+        "service_body_id" => $serviceBodyId,
         "fmt" => "json"
     ]);
 
@@ -215,53 +207,38 @@ test('return volunteers json', function () {
 });
 
 test('return volunteers csv', function () {
+    $serviceBodyId = "44";
+    $parentServiceBodyId = "43";
     $volunteer_name = "Corey";
     $volunteer_gender = VolunteerGender::UNSPECIFIED;
     $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
     $volunteer_languages = ["en-US"];
     $volunteer_phone_number = "(555) 111-2222";
-    $shiftDay = 2;
-    $shiftTz = "America/New_York";
-    $shiftStart = "12:00 AM";
-    $shiftEnd = "11:59 PM";
-    $volunteer = [[
-        "volunteer_name"=>$volunteer_name,
-        "volunteer_phone_number"=>$volunteer_phone_number,
-        "volunteer_gender"=>$volunteer_gender,
-        "volunteer_responder"=>$volunteer_responder,
-        "volunteer_notes"=>"",
-        "volunteer_enabled"=>true,
-        "volunteer_shift_schedule"=>base64_encode(json_encode([[
-            "day"=>$shiftDay,
-            "tz"=>$shiftTz,
-            "start_time"=>$shiftStart,
-            "end_time"=>$shiftEnd,
-        ]]))
-    ]];
-    $service_body_id = "44";
-    $parent_service_body_id = "43";
-    $this->configRepository->shouldReceive("getDbData")->with(
-        $service_body_id,
-        DataType::YAP_VOLUNTEERS_V2
-    )->andReturn([(object)[
-        "service_body_id" => $service_body_id,
-        "id" => "200",
-        "parent_id" => $parent_service_body_id,
-        "data" => json_encode($volunteer)
-    ]]);
+    $repositoryMocks = new RepositoryMocks();
+    $repositoryMocks->getVolunteersMock(
+        $this->configRepository,
+        $volunteer_name,
+        $volunteer_gender,
+        $volunteer_responder,
+        $volunteer_languages,
+        $volunteer_phone_number,
+        1,
+        $serviceBodyId,
+        $parentServiceBodyId
+    );
 
     app()->instance(ConfigRepository::class, $this->configRepository);
     $response = $this->call('GET', '/api/v1/volunteers/download', [
-        "service_body_id" => $service_body_id,
+        "service_body_id" => $serviceBodyId,
         "fmt" => "csv"
     ]);
 
-    $expectedResponse = "name,number,gender,responder,type,language,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"[{\"\"day\"\":2,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n";
+    $expectedResponse = "name,number,gender,responder,type,language,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n";
     $response
         ->assertContent($expectedResponse)
         ->assertHeader("Content-Type", "text/plain; charset=UTF-8")
         ->assertHeader("Content-Length", strlen($expectedResponse))
-        ->assertHeader("Content-Disposition", sprintf("attachment; filename=\"%s-map-metrics.csv\"", $service_body_id))
+        ->assertHeader("Content-Disposition", sprintf("attachment; filename=\"%s-map-metrics.csv\"", $serviceBodyId))
         ->assertStatus(200);
 });
 
