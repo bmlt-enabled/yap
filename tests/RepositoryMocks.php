@@ -4,7 +4,8 @@ namespace Tests;
 
 class RepositoryMocks
 {
-    public function getVolunteersMock($volunteer_name, $volunteer_gender, $volunteer_responder, $volunteer_languages ) {
+    public function getVolunteersMock($volunteer_name, $volunteer_gender, $volunteer_responder, $volunteer_languages)
+    {
         $shifts = [];
         for ($i = 1; $i <= 7; $i++) {
             $shifts[] = [
