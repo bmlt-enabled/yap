@@ -72,7 +72,6 @@ class CallFlowController extends Controller
                 $_SESSION["override_word_language"] = $selected_language;
                 $_SESSION["override_gather_language"] = $selected_language;
                 $_SESSION["override_language"] = $selected_language;
-                include_once __DIR__.'/../../../lang/'.$this->settings->getWordLanguage().'.php';
             }
         }
 
