@@ -150,6 +150,28 @@ test('dialback selected', function () {
         ], false);
 });
 
+test('menu with meeting search option with jft and spad enabled', function () {
+    $_SESSION['override_spad_option'] = true;
+    $_SESSION['override_jft_option'] = true;
+    $response = $this->call('GET', '/input-method.php', [
+        "Digits"=>"2"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=2" method="GET">',
+            '<Say voice="alice" language="en-US">press one to search for meetings by city or county</Say>',
+            '<Say voice="alice" language="en-US">press two to search for meetings by zip code</Say>',
+            '<Say voice="alice" language="en-US">press three to listen to the just for today</Say>',
+            '<Say voice="alice" language="en-US">press four to listen to the spiritual principle a day</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+});
+
 test('custom extension configured and selected', function () {
     $_SESSION['override_custom_extensions'] = [7 => '12125551212'];
     $_SESSION['override_digit_map_search_type'] = [
@@ -194,7 +216,6 @@ test('play custom title', function () {
             '</Response>'
         ], false);
 });
-
 
 test('invalid search', function () {
     $response = $this->call('GET', '/input-method.php', [

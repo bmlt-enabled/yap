@@ -1,5 +1,7 @@
 <?php
 
+use App\Services\SettingsService;
+use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
 
 beforeAll(function () {
@@ -15,7 +17,13 @@ beforeEach(function () {
 
     $_SESSION["initial_webhook"] = "https://example.org/index.php";
 
-    new \Tests\TwilioMessagesCreateMock();
+    $fakeHttpClient = new FakeTwilioHttpClient();
+    $this->twilioClient = mock('Twilio\Rest\Client', [
+        "username" => "fake",
+        "password" => "fake",
+        "httpClient" => $fakeHttpClient
+    ])->makePartial();
+    $this->twilioService = mock(TwilioService::class)->makePartial();
 });
 
 test('standard call ending', function () {
@@ -41,10 +49,22 @@ test('start over', function () {
 });
 
 test('send meeting results SMS', function () {
+    $settingsService = new SettingsService();
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(TwilioService::class, $this->twilioService);
+    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
+    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
+
+    // mocking TwilioRestClient->messages->create()
+    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+    $messageListMock->shouldReceive('create')
+        ->with(is_string(""), is_array([]))->times(2);
+    $this->twilioService->client()->messages = $messageListMock;
+
     $response = $this->call(
         'GET',
         '/post-call-action.php',
-        ["To" => "+15005550006", "From" => "+12125551212",
+        ["Digits"=>"1","To" => "+", "From" => "+12125551212",
             "Payload" => "[\"test message 1\", \"test message 2\"]"]
     );
     $response
@@ -59,10 +79,23 @@ test('send meeting results SMS', function () {
 
 test('send meeting results SMS with combine', function () {
     $_SESSION["override_sms_combine"] = true;
+
+    $settingsService = new SettingsService();
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(TwilioService::class, $this->twilioService);
+    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
+    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
+
+    // mocking TwilioRestClient->messages->create()
+    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+    $messageListMock->shouldReceive('create')
+        ->with(is_string(""), is_array([]))->once();
+    $this->twilioService->client()->messages = $messageListMock;
+
     $response = $this->call(
         'GET',
         '/post-call-action.php',
-        ["To" => $this->to, "From" => $this->from,
+        ["Digits"=>"1","To" => $this->to, "From" => $this->from,
             "Payload" => "[\"test message 1\", \"test message 2\"]"]
     );
     $response
@@ -73,4 +106,33 @@ test('send meeting results SMS with combine', function () {
             '<Response>',
             '<Say voice="alice" language="en-US">',
             'thank you for calling, goodbye</Say></Response>'], false);
+});
+
+test('send meeting results SMS with combine with infinite searching', function () {
+    $_SESSION["override_sms_combine"] = true;
+
+    $settingsService = new SettingsService();
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(TwilioService::class, $this->twilioService);
+    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
+    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
+
+    // mocking TwilioRestClient->messages->create()
+    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+    $messageListMock->shouldReceive('create')
+        ->with(is_string(""), is_array([]))->once();
+    $this->twilioService->client()->messages = $messageListMock;
+
+    $response = $this->call(
+        'GET',
+        '/post-call-action.php',
+        ["Digits"=>"3","To" => $this->to, "From" => $this->from,
+            "Payload" => "[\"test message 1\", \"test message 2\"]"]
+    );
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response><Redirect method="GET">https://example.org/index.php</Redirect></Response>'], false);
 });
