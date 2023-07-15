@@ -797,7 +797,7 @@ class CallFlowController extends Controller
             $service_body = $this->meetingResults
                 ->getServiceBodyCoverage($request->query("Latitude"), $request->query("Longitude"));
             $serviceBodyCallHandling   = $this->config->getCallHandling($service_body->id);
-            $tracker                   = $request->has("tracker") ? 0 : $request->query("tracker");
+            $tracker                   = $request->has("tracker") ? 0 : intval($request->query("tracker"));
 
             if ($serviceBodyCallHandling->sms_routing_enabled) {
                 $volunteer_routing_parameters = new VolunteerRoutingParameters();
