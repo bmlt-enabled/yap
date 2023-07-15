@@ -108,6 +108,36 @@ test('do nothing', function () {
 //        "parent_id" => "43",
 //        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
 //    ]])->once();
+//    $shifts = [];
+//    for ($i = 1; $i <= 7; $i++) {
+//        $shifts[] = [
+//            "day" => $i,
+//            "tz" => $shiftTz,
+//            "start_time" => $shiftStart,
+//            "end_time" => $shiftEnd,
+//        ];
+//    }
+//
+//    $volunteer = [[
+//        "volunteer_name"=>$volunteer_name,
+//        "volunteer_phone_number"=>"(555) 111-2222",
+//        "volunteer_gender"=>$volunteer_gender,
+//        "volunteer_responder"=>$volunteer_responder,
+//        "volunteer_languages"=>$volunteer_languages,
+//        "volunteer_notes"=>"",
+//        "volunteer_enabled"=>true,
+//        "volunteer_shift_schedule"=>base64_encode(json_encode($shifts))
+//    ]];
+//    $repository->shouldReceive("getDbData")->with(
+//        $this->serviceBodyId,
+//        DataType::YAP_VOLUNTEERS_V2
+//    )->andReturn([(object)[
+//        "service_body_id" => $this->serviceBodyId,
+//        "id" => "200",
+//        "parent_id" => $this->parentServiceBodyId,
+//        "data" => json_encode($volunteer)
+//    ]]);
+//
 //    app()->instance(ConfigRepository::class, $repository);
 //
 //    $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");

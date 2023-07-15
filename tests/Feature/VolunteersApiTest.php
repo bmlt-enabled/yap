@@ -3,6 +3,7 @@
 use App\Constants\DataType;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
+use App\Models\VolunteerData;
 use App\Repositories\ConfigRepository;
 use App\Models\VolunteerInfo;
 use App\Constants\VolunteerType;
@@ -162,20 +163,22 @@ test('return volunteers json', function () {
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
-    $volunteer = [[
-        "volunteer_name"=>$volunteer_name,
-        "volunteer_phone_number"=>$volunteer_phone_number,
-        "volunteer_gender"=>$volunteer_gender,
-        "volunteer_responder"=>$volunteer_responder,
-        "volunteer_notes"=>"",
-        "volunteer_enabled"=>true,
-        "volunteer_shift_schedule"=>base64_encode(json_encode([[
-            "day"=>$shiftDay,
-            "tz"=>$shiftTz,
-            "start_time"=>$shiftStart,
-            "end_time"=>$shiftEnd,
-        ]]))
-    ]];
+
+    $volunteerData = new VolunteerData();
+    $volunteerData->volunteer_name = $volunteer_name;
+    $volunteerData->volunteer_phone_number = "(555) 111-2222";
+    $volunteerData->volunteer_gender = $volunteer_gender;
+    $volunteerData->volunteer_responder = $volunteer_responder;
+    $volunteerData->volunteer_languages = $volunteer_languages;
+    $volunteerData->volunteer_notes = "";
+    $volunteerData->volunteer_enabled = true;
+    $volunteerData->volunteer_shift_schedule = base64_encode(json_encode([[
+        "day"=>$shiftDay,
+        "tz"=>$shiftTz,
+        "start_time"=>$shiftStart,
+        "end_time"=>$shiftEnd,
+    ]]));
+
     $service_body_id = "44";
     $parent_service_body_id = "43";
     $this->configRepository->shouldReceive("getDbData")->with(
@@ -185,7 +188,7 @@ test('return volunteers json', function () {
         "service_body_id" => $service_body_id,
         "id" => "200",
         "parent_id" => $parent_service_body_id,
-        "data" => json_encode($volunteer)
+        "data" => json_encode([$volunteerData])
     ]]);
 
     app()->instance(ConfigRepository::class, $this->configRepository);
@@ -224,20 +227,20 @@ test('return volunteers csv', function () {
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
-    $volunteer = [[
-        "volunteer_name"=>$volunteer_name,
-        "volunteer_phone_number"=>$volunteer_phone_number,
-        "volunteer_gender"=>$volunteer_gender,
-        "volunteer_responder"=>$volunteer_responder,
-        "volunteer_notes"=>"",
-        "volunteer_enabled"=>true,
-        "volunteer_shift_schedule"=>base64_encode(json_encode([[
-            "day"=>$shiftDay,
-            "tz"=>$shiftTz,
-            "start_time"=>$shiftStart,
-            "end_time"=>$shiftEnd,
-        ]]))
-    ]];
+    $volunteerData = new VolunteerData();
+    $volunteerData->volunteer_name = $volunteer_name;
+    $volunteerData->volunteer_phone_number = "(555) 111-2222";
+    $volunteerData->volunteer_gender = $volunteer_gender;
+    $volunteerData->volunteer_responder = $volunteer_responder;
+    $volunteerData->volunteer_languages = $volunteer_languages;
+    $volunteerData->volunteer_notes = "";
+    $volunteerData->volunteer_enabled = true;
+    $volunteerData->volunteer_shift_schedule = base64_encode(json_encode([[
+        "day"=>$shiftDay,
+        "tz"=>$shiftTz,
+        "start_time"=>$shiftStart,
+        "end_time"=>$shiftEnd,
+    ]]));
     $service_body_id = "44";
     $parent_service_body_id = "43";
     $this->configRepository->shouldReceive("getDbData")->with(
@@ -247,7 +250,7 @@ test('return volunteers csv', function () {
         "service_body_id" => $service_body_id,
         "id" => "200",
         "parent_id" => $parent_service_body_id,
-        "data" => json_encode($volunteer)
+        "data" => json_encode([$volunteerData])
     ]]);
 
     app()->instance(ConfigRepository::class, $this->configRepository);

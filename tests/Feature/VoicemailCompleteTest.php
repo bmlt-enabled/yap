@@ -4,6 +4,7 @@ use App\Constants\CycleAlgorithm;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
 use App\Constants\VolunteerType;
+use App\Models\VolunteerData;
 use App\Models\VolunteerRoutingParameters;
 use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;
@@ -79,7 +80,6 @@ test('voicemail complete send sms using primary contact', function () {
         ], false);
 });
 
-// TODO: will fix this test later once more of functions.php is refactored so that all the DB connections are mocked properly
 test('voicemail complete send sms using volunteer responder option', function () {
     $_SESSION['override_service_body_id'] = "44";
     $_REQUEST['CallSid'] = $this->callSid;
@@ -138,16 +138,17 @@ test('voicemail complete send sms using volunteer responder option', function ()
         ];
     }
 
-    $volunteer = [[
-        "volunteer_name"=>$volunteer_name,
-        "volunteer_phone_number"=>"(555) 111-2222",
-        "volunteer_gender"=>$volunteer_gender,
-        "volunteer_responder"=>$volunteer_responder,
-        "volunteer_languages"=>$volunteer_languages,
-        "volunteer_notes"=>"",
-        "volunteer_enabled"=>true,
-        "volunteer_shift_schedule"=>base64_encode(json_encode($shifts))
-    ]];
+    $volunteerData = new VolunteerData();
+    $volunteerData->volunteer_name = $volunteer_name;
+    $volunteerData->volunteer_phone_number = "(555) 111-2222";
+    $volunteerData->volunteer_gender = $volunteer_gender;
+    $volunteerData->volunteer_responder = $volunteer_responder;
+    $volunteerData->volunteer_languages = $volunteer_languages;
+    $volunteerData->volunteer_notes = "";
+    $volunteerData->volunteer_enabled = true;
+    $volunteerData->volunteer_shift_schedule = base64_encode(json_encode($shifts));
+
+    $volunteer = [$volunteerData];
     $repository->shouldReceive("getDbData")->with(
         $this->serviceBodyId,
         DataType::YAP_VOLUNTEERS_V2
