@@ -10,6 +10,7 @@ use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;
 use PHPMailer\PHPMailer\PHPMailer;
 use App\Constants\DataType;
+use Tests\RepositoryMocks;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -81,13 +82,15 @@ test('voicemail complete send sms using primary contact', function () {
 });
 
 test('voicemail complete send sms using volunteer responder option', function () {
-    $_SESSION['override_service_body_id'] = "44";
+    $serviceBodyId = "44";
+    $parentServiceBodyId = "43";
+    $_SESSION['override_service_body_id'] = $serviceBodyId;
     $_REQUEST['CallSid'] = $this->callSid;
     $_REQUEST['caller_number'] = $this->callerNumber;
     $_REQUEST['RecordingUrl'] = $this->recordingUrl;
 
     $volunteer_routing_parameters = new VolunteerRoutingParameters();
-    $volunteer_routing_parameters->service_body_id = 44;
+    $volunteer_routing_parameters->service_body_id = $serviceBodyId;
     $volunteer_routing_parameters->tracker = 0;
     $volunteer_routing_parameters->cycle_algorithm = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
     $volunteer_routing_parameters->volunteer_type = VolunteerType::PHONE;
@@ -111,53 +114,33 @@ test('voicemail complete send sms using volunteer responder option', function ()
 
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
-        '44',
+        $serviceBodyId,
         DataType::YAP_CALL_HANDLING_V2
     )->andReturn([(object)[
-        "service_body_id" => "44",
+        "service_body_id" => $serviceBodyId,
         "id" => "200",
-        "parent_id" => "43",
+        "parent_id" => $parentServiceBodyId,
         "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
     ]])->once();
 
     $volunteer_name = "Corey";
     $volunteer_gender = VolunteerGender::UNSPECIFIED;
     $volunteer_responder = VolunteerResponderOption::ENABLED;
+    $volunteer_phone_number = "(555) 111-2222";
     $volunteer_languages = ["en-US"];
-    $shiftTz = "America/New_York";
-    $shiftStart = "12:00 AM";
-    $shiftEnd = "11:59 PM";
 
-    $shifts = [];
-    for ($i = 1; $i <= 7; $i++) {
-        $shifts[] = [
-            "day" => $i,
-            "tz" => $shiftTz,
-            "start_time" => $shiftStart,
-            "end_time" => $shiftEnd,
-        ];
-    }
-
-    $volunteerData = new VolunteerData();
-    $volunteerData->volunteer_name = $volunteer_name;
-    $volunteerData->volunteer_phone_number = "(555) 111-2222";
-    $volunteerData->volunteer_gender = $volunteer_gender;
-    $volunteerData->volunteer_responder = $volunteer_responder;
-    $volunteerData->volunteer_languages = $volunteer_languages;
-    $volunteerData->volunteer_notes = "";
-    $volunteerData->volunteer_enabled = true;
-    $volunteerData->volunteer_shift_schedule = base64_encode(json_encode($shifts));
-
-    $volunteer = [$volunteerData];
-    $repository->shouldReceive("getDbData")->with(
-        $this->serviceBodyId,
-        DataType::YAP_VOLUNTEERS_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => json_encode($volunteer)
-    ]]);
+    $repositoryMocks = new RepositoryMocks();
+    $repositoryMocks->getVolunteersMock(
+        $repository,
+        $volunteer_name,
+        $volunteer_gender,
+        $volunteer_responder,
+        $volunteer_languages,
+        $volunteer_phone_number,
+        7,
+        $serviceBodyId,
+        $parentServiceBodyId
+    );
 
     app()->instance(ConfigRepository::class, $repository);
     $response = $this->call('GET', '/voicemail-complete.php', [
