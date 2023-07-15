@@ -175,6 +175,27 @@ test('custom extension configured and selected', function () {
         ], false);
 });
 
+test('play custom title', function () {
+    $response = $this->call('GET', '/input-method.php', [
+        "Digits"=>"2",
+        "PlayTitle"=>"1"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=2" method="GET">',
+            '<Say voice="alice" language="en-US">Test Helpline</Say>',
+            '<Say voice="alice" language="en-US">press one to search for meetings by city or county</Say>',
+            '<Say voice="alice" language="en-US">press two to search for meetings by zip code</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+});
+
+
 test('invalid search', function () {
     $response = $this->call('GET', '/input-method.php', [
         "Digits"=>"5"
