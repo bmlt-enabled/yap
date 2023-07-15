@@ -119,6 +119,22 @@ test('jft option enabled and selected', function () {
         ], false);
 });
 
+test('spad option enabled and selected', function () {
+    $_SESSION['override_spad_option'] = true;
+    $response = $this->call('GET', '/input-method.php', [
+        "Digits"=>"4"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">fetch-spad.php</Redirect>',
+            '</Response>'
+        ], false);
+});
+
 test('dialback selected', function () {
     $response = $this->call('GET', '/input-method.php', [
         "Digits"=>"9"

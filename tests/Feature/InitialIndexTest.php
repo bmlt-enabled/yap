@@ -100,3 +100,23 @@ test('initial call-in default with language selections', function () {
             '<Response><Redirect>lng-selector.php</Redirect></Response>',
         ], false);
 });
+
+test('selected language call flow', function () {
+    $_SESSION['override_language_selections'] = "en-US,es-US";
+    $response = $this->call("GET", '/', [
+        "Digits"=>"2"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="es-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="es-US">presione uno para encontrar alguien con quien hablar</Say>',
+            '<Say voice="alice" language="es-US">presione dos buscar reuniones</Say>',
+            '</Gather>',
+            '</Response>',
+        ], false);
+});
