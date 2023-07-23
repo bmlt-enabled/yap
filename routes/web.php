@@ -78,8 +78,6 @@ Route::get("/lng-selector{ext}", 'App\Http\Controllers\CallFlowController@langua
     ->where('ext', $ext);
 Route::get("/province-voice-input{ext}", 'App\Http\Controllers\CallFlowController@provinceVoiceInput')
     ->where('ext', $ext);
-Route::get("/helpline-sms{ext}", 'App\Http\Controllers\CallFlowController@helplineSms')
-    ->where('ext', $ext);
 Route::get("/helpline-answer-response{ext}", 'App\Http\Controllers\CallFlowController@helplineAnswerResponse')
     ->where('ext', $ext);
 Route::get("/helpline-outdial-response{ext}", 'App\Http\Controllers\CallFlowController@helplineOutdialResponse')

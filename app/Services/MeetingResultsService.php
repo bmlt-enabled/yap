@@ -119,7 +119,12 @@ class MeetingResultsService
 
     public function getServiceBodyCoverage($latitude, $longitude)
     {
-        $search_results = $this->rootServer->helplineSearch($latitude, $longitude);
+        $search_results = $this->rootServer->helplineSearch(
+            $latitude,
+            $longitude,
+            $this->settings->get('helpline_search_radius'),
+            $this->settings->get('call_routing_filter')
+        );
         $service_bodies = $this->rootServer->getServiceBodiesForRouting($latitude, $longitude);
         $already_checked = [];
 
@@ -136,7 +141,7 @@ class MeetingResultsService
             for ($i = 0; $i < count($service_bodies); $i++) {
                 if ($service_bodies[$i]->id == $service_body_id) {
                     if ((isset($service_bodies[$i]->helpline) && strlen($service_bodies[$i]->helpline) > 0)
-                        || $this->config->getServiceBodyCallHandling($service_bodies[$i]->id)->volunteer_routing_enabled) {
+                        || $this->config->getServiceBodyCallHandlingData($service_bodies[$i]->id)->volunteer_routing_enabled) {
                         return $service_bodies[$i];
                     } else {
                         $already_checked[] = $service_bodies[$i]->id;

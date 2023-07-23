@@ -8,6 +8,8 @@ use App\Services\RootServerService;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
+use Tests\MiddlewareTests;
+use Tests\RootServerMocks;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -19,8 +21,8 @@ beforeEach(function () {
     $_SESSION = null;
 
     $this->fakeCallSid = "abcdefghij";
-    $this->middleware = new \Tests\MiddlewareTests();
-    $this->rootServerMocks = new \Tests\RootServerMocks();
+    $this->middleware = new MiddlewareTests();
+    $this->rootServerMocks = new RootServerMocks();
     $this->reportsRepository = $this->middleware->insertSession($this->fakeCallSid);
 
     $fakeHttpClient = new FakeTwilioHttpClient();
@@ -352,4 +354,20 @@ test('initial callin with service body override', function () {
             '</Gather>',
             '</Response>',
             ], false);
+});
+
+test('initial call-in extension dial', function () {
+    $_SESSION['override_extension_dial'] = true;
+    $response = $this->get('/');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" finishOnKey="#" timeout="10" action="service-body-ext-response.php" method="GET">',
+            '<Say>Enter the service body ID, followed by the pound sign.</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
 });

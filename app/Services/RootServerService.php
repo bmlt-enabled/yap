@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Constants\AuthMechanism;
-use App\Constants\CacheType;
 use App\Utility\Sort;
 use CurlException;
 use Exception;
@@ -229,15 +228,15 @@ class RootServerService
         return $finalFormats;
     }
 
-    public function helplineSearch($latitude, $longitude)
+    public function helplineSearch($latitude, $longitude, $helplineSearchRadius, $callRoutingFilter)
     {
         $search_url = sprintf(
             "%s/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,service_body_bigint&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s%s",
             $this->getHelplineRoutingBMLTServer($latitude, $longitude),
             $latitude,
             $longitude,
-            $this->settings->get('helpline_search_radius'),
-            $this->settings->get('call_routing_filter')
+            $helplineSearchRadius,
+            $callRoutingFilter,
         );
 
         return json_decode($this->http->get($search_url, 60));
