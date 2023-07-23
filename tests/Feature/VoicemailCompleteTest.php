@@ -8,9 +8,11 @@ use App\Models\VolunteerData;
 use App\Models\VolunteerRoutingParameters;
 use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;
+use App\Services\RootServerService;
 use PHPMailer\PHPMailer\PHPMailer;
 use App\Constants\DataType;
 use Tests\RepositoryMocks;
+use Tests\RootServerMocks;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -21,6 +23,7 @@ beforeEach(function () {
     $_REQUEST = null;
     $_SESSION = null;
 
+    $this->rootServerMocks = new RootServerMocks();
     $this->serviceBodyId = "44";
     $this->parentServiceBodyId = "43";
     $this->utility = setupTwilioService();
@@ -30,6 +33,7 @@ beforeEach(function () {
 });
 
 test('voicemail complete send sms using primary contact', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = "44";
     $_REQUEST['CallSid'] = $this->callSid;
     $_REQUEST['caller_number'] = $this->callerNumber;
@@ -82,6 +86,7 @@ test('voicemail complete send sms using primary contact', function () {
 });
 
 test('voicemail complete send sms using volunteer responder option', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $serviceBodyId = "44";
     $parentServiceBodyId = "43";
     $_SESSION['override_service_body_id'] = $serviceBodyId;
@@ -160,6 +165,7 @@ test('voicemail complete send sms using volunteer responder option', function ()
 });
 
 test('voicemail complete send email using primary contact', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = "44";
     $this->utility->settings->set("smtp_host", "fake.host");
     $_REQUEST['CallSid'] = $this->callSid;

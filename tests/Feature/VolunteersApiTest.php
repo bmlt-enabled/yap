@@ -7,9 +7,11 @@ use App\Models\VolunteerData;
 use App\Repositories\ConfigRepository;
 use App\Models\VolunteerInfo;
 use App\Constants\VolunteerType;
+use App\Services\RootServerService;
 use App\Utility\VolunteerScheduleHelpers;
 use Tests\MiddlewareTests;
 use Tests\RepositoryMocks;
+use Tests\RootServerMocks;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -21,6 +23,7 @@ beforeEach(function () {
     $_SESSION = null;
 
     $this->midddleware = new MiddlewareTests();
+    $this->rootServerMocks = new RootServerMocks();
     $this->id = "200";
     $this->serviceBodyId = "44";
     $this->parentServiceBodyId = "43";
@@ -34,6 +37,7 @@ beforeEach(function () {
 });
 
 test('get schedule for service body phone volunteer', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $volunteer_name = "Corey";
     $volunteer_gender = VolunteerGender::UNSPECIFIED;
     $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
@@ -93,6 +97,7 @@ test('get schedule for service body phone volunteer', function () {
 });
 
 test('get schedule for service body sms volunteer', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $volunteer_name = "Corey";
     $volunteer_gender = VolunteerGender::UNSPECIFIED;
     $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
@@ -155,6 +160,7 @@ test('get schedule for service body sms volunteer', function () {
 });
 
 test('return volunteers json', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $serviceBodyId = "44";
     $parentServiceBodyId = "43";
     $volunteer_name = "Corey";
@@ -207,6 +213,7 @@ test('return volunteers json', function () {
 });
 
 test('return volunteers csv', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $serviceBodyId = "44";
     $parentServiceBodyId = "43";
     $volunteer_name = "Corey";
@@ -243,6 +250,7 @@ test('return volunteers csv', function () {
 });
 
 test('return volunteers invalid service body id', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = "999999";
     $this->configRepository->shouldReceive("getDbData")->with(
         $service_body_id,
@@ -262,6 +270,7 @@ test('return volunteers invalid service body id', function () {
 });
 
 test('return volunteers invalid format', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = "44";
     $this->configRepository->shouldReceive("getDbData")->with(
         $service_body_id,
@@ -281,6 +290,7 @@ test('return volunteers invalid format', function () {
 });
 
 test('get groups for service body', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = "44";
     $parent_service_body_id = "43";
     $id = "200";
