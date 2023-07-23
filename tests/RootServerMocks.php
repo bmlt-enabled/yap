@@ -9,7 +9,8 @@ class RootServerMocks
     private array $serviceBodies;
     private RootServerService $service;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->serviceBodies[] = (object)[
             "id"=>"44",
             "parent_id"=>"43",
@@ -26,7 +27,8 @@ class RootServerMocks
             ->withNoArgs()->andReturn($this->serviceBodies);
     }
 
-    public function getService() {
+    public function getService()
+    {
         return $this->service;
     }
 }

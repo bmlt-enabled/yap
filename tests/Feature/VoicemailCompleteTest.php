@@ -4,7 +4,6 @@ use App\Constants\CycleAlgorithm;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
 use App\Constants\VolunteerType;
-use App\Models\VolunteerData;
 use App\Models\VolunteerRoutingParameters;
 use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;

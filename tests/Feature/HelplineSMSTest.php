@@ -1,10 +1,12 @@
 <?php
 
 use App\Repositories\ConfigRepository;
+use App\Services\RootServerService;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use App\Constants\DataType;
 use Tests\FakeTwilioHttpClient;
+use Tests\RootServerMocks;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -16,9 +18,11 @@ beforeEach(function () {
     $_SESSION = null;
 
     $this->utility = setupTwilioService();
+    //$this->rootServerMocks = new RootServerMocks();
 });
 
 test('initial sms gateway default', function () {
+    // app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
     $messageListMock->shouldReceive('create')
