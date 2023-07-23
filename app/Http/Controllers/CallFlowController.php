@@ -787,15 +787,14 @@ class CallFlowController extends Controller
         return response($twiml)->header("Content-Type", "text/xml");
     }
 
-    public function helplineSms(Request $request)
+    public function helplineSms(Request $request, $latitude, $longitude)
     {
         try {
             if ($request->has("OriginalCallerId")) {
                 $original_caller_id = $request->query("OriginalCallerId");
             }
 
-            $service_body = $this->meetingResults
-                ->getServiceBodyCoverage($request->query("Latitude"), $request->query("Longitude"));
+            $service_body = $this->meetingResults->getServiceBodyCoverage($latitude, $longitude);
             $serviceBodyCallHandling   = $this->config->getCallHandling($service_body->id);
             $tracker                   = $request->has("tracker") ? 0 : intval($request->query("tracker"));
 
@@ -926,8 +925,7 @@ class CallFlowController extends Controller
         $sms_helpline_keyword = $this->settings->get("sms_helpline_keyword");
         if (str_contains(strtoupper($address), strtoupper($sms_helpline_keyword))) {
             if (strlen(trim(str_replace(strtoupper($sms_helpline_keyword), "", strtoupper($address)))) > 0) {
-                $twiml->redirect("helpline-sms.php?OriginalCallerId=" . $request->get("From") . "&To=" . $request->get("To") . "&Latitude=" . $coordinates->latitude . "&Longitude=" . $coordinates->longitude)
-                    ->setMethod("GET");
+                return self::helplineSms($request, $coordinates->latitude, $coordinates->longitude);
             } else {
                 $message = $this->settings->word('please_send_a_message_formatting_as') . " " . $sms_helpline_keyword . ", " . $this->settings->word('followed_by_your_location') . " " . $this->settings->word('for') . " " .  $this->settings->word('someone_to_talk_to');
                 $this->twilio->client()->messages->create($request->get("From"), array("from" => $request->get("To"), "body" => $message));

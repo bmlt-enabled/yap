@@ -232,3 +232,46 @@ test('invalid search', function () {
             '</Response>'
         ], false);
 });
+
+test('retry message loop with custom message', function () {
+    $response = $this->call('GET', '/input-method.php', [
+        "Retry"=>"1",
+        "RetryMessage"=>"You Failed Son!",
+        "Digits"=>"1",
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=1" method="GET">',
+            '<Say voice="alice" language="en-US">You Failed Son!</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">press one to search for someone to talk to by city or county</Say>',
+            '<Say voice="alice" language="en-US">press two to search for someone to talk to by zip code</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+});
+
+test('retry message loop with location message', function () {
+    $response = $this->call('GET', '/input-method.php', [
+        "Retry"=>"1",
+        "Digits"=>"1",
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=1" method="GET">',
+            '<Say voice="alice" language="en-US">sorry, could not find location, please retry your entry</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">press one to search for someone to talk to by city or county</Say>',
+            '<Say voice="alice" language="en-US">press two to search for someone to talk to by zip code</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+});

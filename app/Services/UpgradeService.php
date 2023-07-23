@@ -84,7 +84,7 @@ class UpgradeService
         if (count($alerts) > 0) {
             $misconfiguredPhoneNumbers = [];
             foreach ($alerts as $alert) {
-                array_push($misconfiguredPhoneNumbers, $alert['payload']);
+                $misconfiguredPhoneNumbers[] = $alert['payload'];
             }
 
             $warnings = sprintf("%s is/are phone numbers that are missing Twilio Call Status Changes Callback status.php webhook. This will not allow call reporting to work correctly.  For more information review the documentation page https://github.com/bmlt-enabled/yap/wiki/Call-Detail-Records.", implode(",", $misconfiguredPhoneNumbers));

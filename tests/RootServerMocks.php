@@ -7,7 +7,7 @@ use App\Services\RootServerService;
 class RootServerMocks
 {
     private array $serviceBodies;
-    private RootServerService $service;
+    public RootServerService $service;
 
     public function __construct()
     {
@@ -25,6 +25,8 @@ class RootServerMocks
         $this->service = mock(RootServerService::class)->makePartial();
         $this->service->shouldReceive("getServiceBodies")
             ->withNoArgs()->andReturn($this->serviceBodies);
+        $this->service->shouldReceive("getServiceBodiesForRouting")
+            ->withAnyArgs()->andReturn($this->serviceBodies);
     }
 
     public function getService()

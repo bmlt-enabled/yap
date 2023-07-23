@@ -1,10 +1,15 @@
 <?php
 
 use App\Constants\AlertId;
+use App\Constants\DataType;
+use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;
+use App\Services\RootServerService;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
+use Tests\MiddlewareTests;
+use Tests\RootServerMocks;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -16,7 +21,8 @@ beforeEach(function () {
     $_SESSION = null;
 
     $this->fakeCallSid = "abcdefghij";
-    $this->middleware = new \Tests\MiddlewareTests();
+    $this->middleware = new MiddlewareTests();
+    $this->rootServerMocks = new RootServerMocks();
     $this->reportsRepository = $this->middleware->insertSession($this->fakeCallSid);
 
     $fakeHttpClient = new FakeTwilioHttpClient();
@@ -310,22 +316,58 @@ test('initial callin without a status callback without actual status.php in it',
         ], false);
 });
 
-// TODO: load up some kind of service body configuration
-//test('initial callin with service body override', function () {
-//    $response = $this->call("GET", '/', [
-//        "override_service_body_id"=>2
-//    ]);
-//
-//    $response
-//        ->assertStatus(200)
-//        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-//        ->assertSeeInOrder([
-/*            '<?xml version="1.0" encoding="UTF-8"?>',*/
-//            '<Response>',
-//            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
-//            '<Pause length="2"/>',
-//            '<Play>https://crossroadsarea.org/wp-content/uploads/9/2018/08/crossroads_v4_greeting.mp3</Play>',
-//            '</Gather>',
-//            '</Response>',
-//            ], false);
-//});
+test('initial callin with service body override', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+    $repository = Mockery::mock(ConfigRepository::class);
+    $repository->shouldReceive("getDbData")->with(
+        '44',
+        DataType::YAP_CALL_HANDLING_V2
+    )->andReturn([(object)[
+        "service_body_id" => "44",
+        "id" => "200",
+        "parent_id" => "43",
+        "data" => "[{\"volunteer_routing\":\"volunteers_and_sms\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"https://fake.mp3\",\"override_en_US_voicemail_greeting\":\"\"}]"
+    ]])->once();
+    $repository->shouldReceive("getAllDbData")->with(
+        DataType::YAP_CONFIG_V2
+    )->andReturn([(object)[
+        "service_body_id" => "44",
+        "id" => "200",
+        "parent_id" => "43",
+        "data" => "[]"
+    ]])->times(2);
+    app()->instance(ConfigRepository::class, $repository);
+
+    $response = $this->call("GET", '/', [
+        "override_service_body_id"=>44
+    ]);
+
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
+            '<Pause length="2"/>',
+            '<Play>https://fake.mp3</Play>',
+            '</Gather>',
+            '</Response>',
+            ], false);
+});
+
+test('initial call-in extension dial', function () {
+    $_SESSION['override_extension_dial'] = true;
+    $response = $this->get('/');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" finishOnKey="#" timeout="10" action="service-body-ext-response.php" method="GET">',
+            '<Say>Enter the service body ID, followed by the pound sign.</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+});
