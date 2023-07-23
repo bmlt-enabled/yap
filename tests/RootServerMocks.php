@@ -17,7 +17,7 @@ class RootServerMocks
             "description"=>"Crossroads Area",
             "type"=>"AS",
             "url"=>"https://crossroadsarea.org",
-            "helpline"=>"888-777-5555",
+            "helpline"=>"888-557-1667|ww1",
             "world_id"=>"AS1234",
         ];
 

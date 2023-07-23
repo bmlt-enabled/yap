@@ -3,6 +3,8 @@
 use App\Repositories\ConfigRepository;
 use App\Constants\DataType;
 use App\Repositories\ReportsRepository;
+use App\Services\RootServerService;
+use Tests\RootServerMocks;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -12,6 +14,8 @@ beforeEach(function () {
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
     $_SESSION = null;
+
+    $this->rootServerMocks = new RootServerMocks();
 });
 
 test('force number', function () {
@@ -54,6 +58,7 @@ test('invalid entry', function () {
 });
 
 test('valid search, volunteer routing', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = 44;
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
@@ -95,6 +100,7 @@ test('valid search, volunteer routing', function () {
 });
 
 test('valid search, volunteer routing, announce service body name', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = 44;
     $_SESSION['override_announce_servicebody_volunteer_routing'] = true;
     $repository = Mockery::mock(ConfigRepository::class);
@@ -137,6 +143,7 @@ test('valid search, volunteer routing, announce service body name', function () 
 });
 
 test('valid search, helpline field routing', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = 44;
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
@@ -168,6 +175,7 @@ test('valid search, helpline field routing', function () {
 });
 
 test('valid search, volunteer direct', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = 44;
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")

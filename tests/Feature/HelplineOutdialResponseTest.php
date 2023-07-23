@@ -1,9 +1,11 @@
 <?php
 
 use App\Repositories\ReportsRepository;
+use App\Services\RootServerService;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
+use Tests\RootServerMocks;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -17,7 +19,7 @@ beforeEach(function () {
     $this->fakeCallSid = "abcdefghij";
     $this->middleware = new \Tests\MiddlewareTests();
     $this->reportsRepository = $this->middleware->insertSession($this->fakeCallSid);
-
+    $this->rootServerMocks = new RootServerMocks();
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [
         "username" => "fake",
@@ -40,6 +42,7 @@ beforeEach(function () {
 });
 
 test('join volunteer to conference', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     // mocking TwilioRestClient->conferences()->participants->read()
     $conferenceContextMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceContext");
     $participantListMock = mock("Twilio\Rest\Api\V2010\Account\Conference\ParticipantList");
@@ -72,6 +75,7 @@ test('join volunteer to conference', function () {
 });
 
 test('waiting for the volunteer to press 1 to answer the call', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     // mocking TwilioRestClient->conferences()->participants->read()
     $conferenceContextMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceContext");
     $participantListMock = mock("Twilio\Rest\Api\V2010\Account\Conference\ParticipantList");
@@ -103,6 +107,7 @@ test('waiting for the volunteer to press 1 to answer the call', function () {
 });
 
 test('volunteer called and auto answer capability enabled', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     // mocking TwilioRestClient->conferences()->participants->read()
     $conferenceContextMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceContext");
     $participantListMock = mock("Twilio\Rest\Api\V2010\Account\Conference\ParticipantList");
