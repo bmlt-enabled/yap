@@ -4,6 +4,8 @@ use App\Models\MetricsCollection;
 use App\Models\RecordType;
 use App\Constants\EventId;
 use App\Repositories\ReportsRepository;
+use App\Services\RootServerService;
+use Tests\RootServerMocks;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -13,9 +15,12 @@ beforeEach(function () {
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
     $_SESSION = null;
+
+    $this->rootServerMocks = new RootServerMocks();
 });
 
 test('validate sample cdr', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $repository = Mockery::mock(ReportsRepository::class);
     $service_body_id = "44";
     $id = "12312";
@@ -82,6 +87,7 @@ test('validate sample cdr', function () {
 });
 
 test('validate sample map metrics poi csv', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $repository = Mockery::mock(ReportsRepository::class);
     $service_body_id = "44";
     $date_range_start = "2023-01-01 000:00:00";
@@ -127,6 +133,7 @@ test('validate sample map metrics poi csv', function () {
 });
 
 test('validate sample metrics', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $repository = Mockery::mock(ReportsRepository::class);
     $service_body_id = "44";
     $date_range_start = "2023-01-03 00:00:00";
