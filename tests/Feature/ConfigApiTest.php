@@ -2,7 +2,9 @@
 
 use App\Repositories\ConfigRepository;
 use App\Constants\DataType;
+use App\Services\RootServerService;
 use Tests\MiddlewareTests;
+use Tests\RootServerMocks;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -18,6 +20,7 @@ beforeEach(function () {
     $this->serviceBodyId = "44";
     $this->parentServiceBodyId = "43";
     $this->data =  "{\"data\":{}}";
+    $this->rootServerMocks = new RootServerMocks();
     $this->configRepository = $this->midddleware->getAllDbData(
         $this->id,
         $this->serviceBodyId,
@@ -27,6 +30,8 @@ beforeEach(function () {
 });
 
 test('get config', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+
     $this->configRepository->shouldReceive("getDbData")->with(
         $this->serviceBodyId,
         DataType::YAP_CONFIG_V2
@@ -103,6 +108,8 @@ test('save group', function () {
 });
 
 test('save config', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+
     $this->configRepository->shouldReceive("adminPersistDbConfig")->with(
         $this->serviceBodyId,
         '',
@@ -124,6 +131,8 @@ test('save config', function () {
 });
 
 test('save config with parent id', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+
     $this->configRepository->shouldReceive("adminPersistDbConfig")->with(
         $this->serviceBodyId,
         '',
