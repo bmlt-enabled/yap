@@ -9,8 +9,10 @@ class RootServerMocks
     private array $serviceBodies;
     public RootServerService $service;
 
-    public function __construct()
+    public function __construct($setEmptyHelplineNumber = false)
     {
+        $helplineNumber = $setEmptyHelplineNumber ? null : "888-557-1667|ww1";
+
         $this->serviceBodies[] = (object)[
             "id"=>"44",
             "parent_id"=>"43",
@@ -18,7 +20,7 @@ class RootServerMocks
             "description"=>"Crossroads Area",
             "type"=>"AS",
             "url"=>"https://crossroadsarea.org",
-            "helpline"=>"888-557-1667|ww1",
+            "helpline"=>$helplineNumber,
             "world_id"=>"AS1234",
         ];
 

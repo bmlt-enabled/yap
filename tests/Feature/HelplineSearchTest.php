@@ -174,6 +174,40 @@ test('valid search, helpline field routing', function () {
         ], false);
 });
 
+test('valid search, helpline field routing, no helpline set in root server, use fallback number', function () {
+    $rootServerMocksWithNoHelplineField = new RootServerMocks(true);
+    app()->instance(RootServerService::class, $rootServerMocksWithNoHelplineField->getService());
+    $_SESSION['override_service_body_id'] = 44;
+    $_SESSION['override_fallback_number'] = '+15551112223';
+    $repository = Mockery::mock(ConfigRepository::class);
+    $repository->shouldReceive("getDbData")->with(
+        '44',
+        DataType::YAP_CALL_HANDLING_V2
+    )->andReturn([(object)[
+        "service_body_id" => "44",
+        "id" => "200",
+        "parent_id" => "43",
+        "data" => "[{\"volunteer_routing\":\"helpline_field\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
+    ]])->once();
+    app()->instance(ConfigRepository::class, $repository);
+    $response = $this->call('GET', '/helpline-search.php', [
+        'Address' => "Raleigh, NC",
+        'SearchType' => "1",
+        'Called' => "+12125551212",
+        'stub_google_maps_endpoint' => true
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">please stand by... relocating your call to... Crossroads Area</Say>',
+            '<Dial><Number sendDigits="w">+15551112223</Number></Dial>',
+            '</Response>'
+        ], false);
+});
+
 test('valid search, volunteer direct', function () {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = 44;
