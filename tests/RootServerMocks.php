@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Services\RootServerService;
+use App\Services\SettingsService;
 
 class RootServerMocks
 {

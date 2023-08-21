@@ -2,17 +2,16 @@
 
 namespace App\Services;
 
-use App\Constants\Http;
+use Illuminate\Support\Facades\App;
 
-class TimeZoneService
+class TimeZoneService extends Service
 {
-    protected SettingsService $settings;
     protected HttpService $http;
     private string $timeZoneEndpoint;
 
-    public function __construct(SettingsService $settings, HttpService $http)
+    public function __construct(HttpService $http)
     {
-        $this->settings = $settings;
+        parent::__construct(App::make(SettingsService::class));
         $this->http = $http;
         $this->timeZoneEndpoint = sprintf(
             "https://maps.googleapis.com/maps/api/timezone/json?key=%s",

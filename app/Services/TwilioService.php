@@ -2,19 +2,18 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\App;
 use Twilio\Exceptions\ConfigurationException;
 use Twilio\Rest\Client;
 
-class TwilioService
+class TwilioService extends Service
 {
     protected Client $client;
-    protected SettingsService $settings;
     const ANONYMOUS_NUMBER = "266696687";
 
-    public function __construct(SettingsService $settings)
+    public function __construct()
     {
-        $this->settings = $settings;
-
+        parent::__construct(App::make(SettingsService::class));
         try {
             $this->client = new Client(
                 $this->settings->get("twilio_account_sid"),
@@ -54,11 +53,6 @@ class TwilioService
                 "url" => $_SESSION['voicemail_url']
             ));
         }
-    }
-
-    public function settings(): SettingsService
-    {
-        return $this->settings;
     }
 
     private function mobileCheck()

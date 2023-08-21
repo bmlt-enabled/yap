@@ -7,21 +7,20 @@ use App\Models\MeetingResults;
 use Countable;
 use DateTime;
 use Exception;
+use Illuminate\Support\Facades\App;
 
-class MeetingResultsService
+class MeetingResultsService extends Service
 {
-    protected SettingsService $settings;
     protected RootServerService $rootServer;
     protected TimeZoneService $timeZone;
     protected ConfigService $config;
 
     public function __construct(
-        SettingsService $settings,
         RootServerService $rootServer,
         TimeZoneService $timeZone,
         ConfigService $config
     ) {
-        $this->settings = $settings;
+        parent::__construct(App::make(SettingsService::class));
         $this->rootServer = $rootServer;
         $this->timeZone = $timeZone;
         $this->config = $config;

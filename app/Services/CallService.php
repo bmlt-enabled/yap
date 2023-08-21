@@ -7,21 +7,20 @@ use App\Constants\SearchType;
 use App\Constants\SpecialPhoneNumber;
 use App\Repositories\ReportsRepository;
 use App\Repositories\VoicemailRepository;
+use Illuminate\Support\Facades\App;
 
-class CallService
+class CallService extends Service
 {
-    protected SettingsService $settings;
     protected ReportsRepository $reports;
     protected VoicemailRepository $voicemail;
     protected TwilioService $twilio;
 
     public function __construct(
-        SettingsService $settings,
         ReportsRepository $reports,
         TwilioService $twilio,
         VoicemailRepository $voicemail
     ) {
-        $this->settings = $settings;
+        parent::__construct(App::make(SettingsService::class));
         $this->reports = $reports;
         $this->twilio = $twilio;
         $this->voicemail = $voicemail;

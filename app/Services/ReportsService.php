@@ -5,22 +5,21 @@ use App\Constants\EventId;
 use App\Models\MetricsCollection;
 use App\Models\RecordType;
 use App\Repositories\ReportsRepository;
+use Illuminate\Support\Facades\App;
 use function App\Http\Controllers\Api\V1\Admin\findMetric;
 
-class ReportsService
+class ReportsService extends Service
 {
     private RootServerService $rootServerService;
     private ReportsRepository $reportsRepository;
-    private SettingsService $settingsService;
 
     public function __construct(
         RootServerService $rootServerService,
         ReportsRepository $reportsRepository,
-        SettingsService $settingsService
     ) {
+        parent::__construct(App::make(SettingsService::class));
         $this->rootServerService = $rootServerService;
         $this->reportsRepository = $reportsRepository;
-        $this->settingsService = $settingsService;
     }
 
     private function getServiceBodies($serviceBodyId, $recurse): array

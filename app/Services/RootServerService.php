@@ -6,15 +6,15 @@ use App\Constants\AuthMechanism;
 use App\Utility\Sort;
 use CurlException;
 use Exception;
+use Illuminate\Support\Facades\App;
 
-class RootServerService
+class RootServerService extends Service
 {
-    protected SettingsService $settings;
     protected HttpService $http;
 
-    public function __construct(SettingsService $settings, HttpService $http)
+    public function __construct(HttpService $http)
     {
-        $this->settings = $settings;
+        parent::__construct(App::make(SettingsService::class));
         $this->http = $http;
     }
 

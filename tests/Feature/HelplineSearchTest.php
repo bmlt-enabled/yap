@@ -4,6 +4,7 @@ use App\Repositories\ConfigRepository;
 use App\Constants\DataType;
 use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
+use App\Services\SettingsService;
 use Tests\RootServerMocks;
 
 beforeAll(function () {
@@ -15,6 +16,8 @@ beforeEach(function () {
     $_REQUEST = null;
     $_SESSION = null;
 
+    $settingsService = new SettingsService();
+    app()->instance(SettingsService::class, $settingsService);
     $this->rootServerMocks = new RootServerMocks();
 });
 
@@ -252,3 +255,49 @@ test('valid search, volunteer direct', function () {
             '</Response>'
         ], false);
 });
+
+//test('valid search, gender based routing', function () {
+//    $rootServerService = $this->rootServerMocks->getService();
+//    app()->instance(RootServerService::class, $rootServerService);
+//    $_REQUEST['stub_google_maps_endpoint'] = true;
+//    $_SESSION['Address'] = "27592";
+//    $repository = Mockery::mock(ConfigRepository::class);
+//    $repository->shouldReceive("getDbData")
+//        ->once()
+//        ->with('44', DataType::YAP_CALL_HANDLING_V2)
+//        ->andReturn([(object)[
+//            "service_body_id" => "44",
+//            "id" => "200",
+//            "parent_id" => "43",
+//            "data" => "[{\"volunteer_routing\":\"volunteers_redirect\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"1\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
+//        ]])
+//
+//        ->shouldReceive("getDbData")
+//        ->once()
+//        ->with('46', DataType::YAP_CALL_HANDLING_V2)
+//        ->andReturn([(object)[
+//            "service_body_id" => "46",
+//            "id" => "200",
+//            "parent_id" => "43",
+//            "data" => "[{\"volunteer_routing\":\"helpline_field\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"1\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
+//        ]]);
+//
+//    app()->instance(ConfigRepository::class, $repository);
+//    $response = $this->call('GET', '/helpline-search.php', [
+//        'Address' => "Raleigh, NC",
+//        'SearchType' => "1",
+//        'Called' => "+12125551212",
+//        'stub_google_maps_endpoint' => true
+//    ]);
+//    $response
+//        ->assertStatus(200)
+//        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+//        ->assertSeeInOrder([
+/*            '<?xml version="1.0" encoding="UTF-8"?>',*/
+//            '<Response>',
+//            '<Redirect method="GET">',
+//            'gender-routing.php?SearchType=1',
+//            '</Redirect>',
+//            '</Response>'
+//        ], false);
+//});

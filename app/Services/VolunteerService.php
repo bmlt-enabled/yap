@@ -15,17 +15,17 @@ use App\Repositories\ConfigRepository;
 use App\Utility\VolunteerRoutingHelpers;
 use App\Utility\VolunteerScheduleHelpers;
 use DateTime;
+use Illuminate\Support\Facades\App;
 use stdClass;
 
-class VolunteerService
+class VolunteerService extends Service
 {
     protected ConfigRepository $configRepository;
-    protected SettingsService $settings;
 
-    public function __construct(ConfigRepository $configRepository, SettingsService $settingsService)
+    public function __construct(ConfigRepository $configRepository)
     {
+        parent::__construct(App::make(SettingsService::class));
         $this->configRepository = $configRepository;
-        $this->settings = $settingsService;
     }
 
     public function getHelplineSchedule($service_body_int, $filtered = false): array

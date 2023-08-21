@@ -7,16 +7,16 @@ use App\Constants\ReadingType;
 use App\Utility\Sms;
 use DOMDocument;
 use DOMXPath;
+use Illuminate\Support\Facades\App;
 
-class ReadingService
+class ReadingService extends Service
 {
     protected HttpService $http;
-    protected SettingsService $settings;
 
-    public function __construct(HttpService $http, SettingsService $settings)
+    public function __construct(HttpService $http)
     {
+        parent::__construct(App::make(SettingsService::class));
         $this->http = $http;
-        $this->settings = $settings;
     }
 
     public function get($reading = ReadingType::JFT, $sms = false): array
