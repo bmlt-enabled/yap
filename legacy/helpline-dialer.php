@@ -76,7 +76,18 @@ if (isset($_REQUEST['Debug']) && intval($_REQUEST['Debug']) == 1) {
     exit();
 }
 
-$conferences = $twilioClient->conferences->read(array ("friendlyName" => $_REQUEST['FriendlyName'] ));
+$conferences = [];
+for ($i = 0; $i < 7; $i++) {
+    $conferences = $twilioClient->conferences->read(array ("friendlyName" => $_REQUEST['FriendlyName'] ));
+    if ($i > 0) {
+        log_debug("conferences eventual consistency issue, retry $i");
+    }
+    if (count($conferences)) {
+        break;
+    }
+    sleep(0.5);
+}
+
 if (count($conferences) > 0 && $conferences[0]->status != "completed") {
     $sms_body = word('you_have_an_incoming_phoneline_call_from') . " ";
 

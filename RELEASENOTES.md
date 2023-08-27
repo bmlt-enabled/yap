@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.2.11 (UNRELEASED)
+* Sometime in August 2023, Twilio introduced a change in API Behavior. The conferences API now seems to be eventually consistent. This change adds retry logic that addresses this timing issue.
+
 ### 4.2.10 (July 2, 2023)
 * Added explicit notification that SMS will be sent in response to meeting search request; reflected this in report. This is to satisfy regulatory requirements regarding explicit consent.
 
