@@ -234,8 +234,28 @@ class HelplineController extends Controller
             exit();
         }
 
-        $conferences = $this->twilio->client()->conferences
-            ->read(array ("friendlyName" => $request->get('FriendlyName')));
+        // Sometime in August 2023, Twilio introduced a change in API Behavior. The conferences API
+        // now seems to be eventually consistent. Sometimes we get the conference back on the first
+        // try, and other times it takes a few tries. Retrying every half second seems to get the
+        // job done after no more than about 4 retries in the worst case. We try up to 10 times just
+        // to be safe.
+        $conferences = array();
+        for ($i = 0; $i < 10; $i++) {
+            $conferences = $this->twilio->client()
+                ->conferences
+                ->read(array("friendlyName" => $request->get('FriendlyName')));
+
+            if ($i > 0) {
+                $this->settings->logDebug("conferences eventual consistency issue, retry $i");
+            }
+
+            if (count($conferences)) {
+                break;
+            }
+
+            sleep(0.5);
+        }
+
         if (count($conferences) > 0 && $conferences[0]->status != "completed") {
             $sms_body = $this->settings->word('you_have_an_incoming_phoneline_call_from') . " ";
 
