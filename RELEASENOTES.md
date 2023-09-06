@@ -1,6 +1,6 @@
 # Release Notes
 
-### 4.2.11 (UNRELEASED)
+### 4.2.11 (September 5, 2023)
 * Sometime in August 2023, Twilio introduced a change in API Behavior. The conferences API now seems to be eventually consistent. This change adds retry logic that addresses this timing issue.
 * User Agent updated to a more current one.
 
