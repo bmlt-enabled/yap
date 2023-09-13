@@ -51,6 +51,23 @@ test('initial call-in default', function () {
     ], false);
 });
 
+test('initial call-in default as a POST', function () {
+    $response = $this->post('/');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">Test Helpline</Say>',
+            '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
+            '<Say voice="alice" language="en-US">press two to search for meetings</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+});
+
 test('initial call-in with jft option enabled', function () {
     $_SESSION['override_jft_option'] = "true";
     $response = $this->get('/');
