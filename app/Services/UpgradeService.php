@@ -5,11 +5,11 @@ namespace App\Services;
 use App\Constants\AlertId;
 use CurlException;
 use Exception;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
-class UpgradeService
+class UpgradeService extends Service
 {
-    protected SettingsService $settings;
     protected RootServerService $rootServer;
     protected GeocodingService $geocoding;
     protected TimeZoneService $timeZone;
@@ -18,7 +18,6 @@ class UpgradeService
     protected DatabaseMigrationsService $migrations;
 
     public function __construct(
-        SettingsService $settings,
         RootServerService $rootServer,
         GeocodingService $geocoding,
         TimeZoneService $timeZone,
@@ -26,7 +25,7 @@ class UpgradeService
         TwilioService $twilio,
         DatabaseMigrationsService $migrations
     ) {
-        $this->settings = $settings;
+        parent::__construct(App::make(SettingsService::class));
         $this->rootServer = $rootServer;
         $this->geocoding = $geocoding;
         $this->timeZone = $timeZone;

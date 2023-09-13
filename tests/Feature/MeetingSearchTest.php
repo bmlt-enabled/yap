@@ -33,8 +33,8 @@ beforeEach(function () {
     $this->longitude = '-78.6382';
 });
 
-test('meeting search with odd coordinates on meeting lookup', function () {
-    $response = $this->call('GET', '/meeting-search.php', [
+test('meeting search with odd coordinates on meeting lookup', function ($method) {
+    $response = $this->call($method, '/meeting-search.php', [
         "Latitude" => 0,
         "Longitude" => 0,
     ]);
@@ -48,9 +48,9 @@ test('meeting search with odd coordinates on meeting lookup', function () {
             '<Redirect method="GET">input-method.php?Digits=2</Redirect>',
             '</Response>',
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('meeting search with valid latitude and longitude', function () {
+test('meeting search with valid latitude and longitude', function ($method) {
     $settingsService = new SettingsService();
     app()->instance(SettingsService::class, $settingsService);
     app()->instance(TwilioService::class, $this->twilioService);
@@ -80,7 +80,7 @@ test('meeting search with valid latitude and longitude', function () {
 //        ->once()
 //        ->andReturn(["carrier" => ["type" => "mobile"])
 
-    $response = $this->call('GET', '/meeting-search.php', [
+    $response = $this->call($method, '/meeting-search.php', [
         'Latitude' => $this->latitude,
         'Longitude' => $this->longitude
     ]);
@@ -133,9 +133,9 @@ test('meeting search with valid latitude and longitude', function () {
             '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('meeting search with valid latitude and longitude different results count max', function () {
+test('meeting search with valid latitude and longitude different results count max', function ($method) {
     $settingsService = new SettingsService();
     $settingsService->set('sms_combine', false);
     $settingsService->set('sms_ask', false);
@@ -159,7 +159,7 @@ test('meeting search with valid latitude and longitude different results count m
         ->andReturn($timezone);
     app()->instance(TimeZoneService::class, $timezoneService);
 
-    $response = $this->call('GET', '/meeting-search.php', [
+    $response = $this->call($method, '/meeting-search.php', [
         'Latitude' => $this->latitude,
         'Longitude' => $this->longitude
     ]);
@@ -197,9 +197,9 @@ test('meeting search with valid latitude and longitude different results count m
             '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('meeting search with valid latitude and longitude with sms ask', function () {
+test('meeting search with valid latitude and longitude with sms ask', function ($method) {
     $settingsService = new SettingsService();
     $settingsService->set("sms_ask", true);
     app()->instance(SettingsService::class, $settingsService);
@@ -212,7 +212,7 @@ test('meeting search with valid latitude and longitude with sms ask', function (
         ->andReturn($timezone);
     app()->instance(TimeZoneService::class, $timezoneService);
 
-    $response = $this->call('GET', '/meeting-search.php', [
+    $response = $this->call($method, '/meeting-search.php', [
         'Latitude' => $this->latitude,
         'Longitude' => $this->longitude
     ]);
@@ -266,9 +266,9 @@ test('meeting search with valid latitude and longitude with sms ask', function (
             '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('meeting search with valid latitude and longitude with sms combine', function () {
+test('meeting search with valid latitude and longitude with sms combine', function ($method) {
     $settingsService = new SettingsService();
     $settingsService->set('sms_combine', true);
     $settingsService->set('sms_ask', false);
@@ -291,7 +291,7 @@ test('meeting search with valid latitude and longitude with sms combine', functi
         ->with(is_string(""), is_array([]))->times(1);
     $this->twilioClient->messages = $messageListMock;
 
-    $response = $this->call('GET', '/meeting-search.php', [
+    $response = $this->call($method, '/meeting-search.php', [
         'Latitude' => $this->latitude,
         'Longitude' => $this->longitude
     ]);
@@ -342,4 +342,4 @@ test('meeting search with valid latitude and longitude with sms combine', functi
             '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);

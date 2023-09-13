@@ -22,71 +22,71 @@ Route::get("/bots/getServiceBodyCoverage", 'App\Http\Controllers\BotController@g
 Route::get("/msr/{latitude}/{longitude}", ['uses' => 'App\Http\Controllers\MeetingResultsController@index'])
     ->where(['latitude' => '.*', 'longitude' => '.*']);
 Route::delete("/admin/cache", 'App\Http\Controllers\AdminController@cacheClear');
-Route::get("/fetch-jft{ext}", 'App\Http\Controllers\FetchJFTController@index')
+Route::match(array('GET', 'POST'), "/fetch-jft{ext}", 'App\Http\Controllers\FetchJFTController@index')
     ->where('ext', $ext);
-Route::get("/fetch-spad{ext}", 'App\Http\Controllers\FetchJFTController@spad')
+Route::match(array('GET', 'POST'), "/fetch-spad{ext}", 'App\Http\Controllers\FetchJFTController@spad')
     ->where('ext', $ext);
-Route::get("/ping{ext}", 'App\Http\Controllers\PingController@index')
+Route::match(array('GET', 'POST'), "/ping{ext}", 'App\Http\Controllers\PingController@index')
     ->where('ext', $ext);
-Route::get("/", 'App\Http\Controllers\CallFlowController@index')
+Route::match(array('GET', 'POST'), "/", 'App\Http\Controllers\CallFlowController@index')
     ->where('ext', $ext);
-Route::get("/index{ext}", 'App\Http\Controllers\CallFlowController@index')
+Route::match(array('GET', 'POST'), "/index{ext}", 'App\Http\Controllers\CallFlowController@index')
     ->where('ext', $ext);
-Route::get("/input-method{ext}", 'App\Http\Controllers\CallFlowController@inputMethod')
+Route::match(array('GET', 'POST'), "/input-method{ext}", 'App\Http\Controllers\CallFlowController@inputMethod')
     ->where('ext', $ext);
-Route::get("/custom-ext{ext}", 'App\Http\Controllers\CallFlowController@customext')
+Route::match(array('GET', 'POST'), "/custom-ext{ext}", 'App\Http\Controllers\CallFlowController@customext')
     ->where('ext', $ext);
-Route::get("/input-method-result{ext}", 'App\Http\Controllers\CallFlowController@inputMethodResult')
+Route::match(array('GET', 'POST'), "/input-method-result{ext}", 'App\Http\Controllers\CallFlowController@inputMethodResult')
     ->where('ext', $ext);
-Route::get("/zip-input{ext}", 'App\Http\Controllers\CallFlowController@zipinput')
+Route::match(array('GET', 'POST'), "/zip-input{ext}", 'App\Http\Controllers\CallFlowController@zipinput')
     ->where('ext', $ext);
-Route::get("/city-or-county-voice-input{ext}", 'App\Http\Controllers\CallFlowController@cityorcountyinput')
+Route::match(array('GET', 'POST'), "/city-or-county-voice-input{ext}", 'App\Http\Controllers\CallFlowController@cityorcountyinput')
     ->where('ext', $ext);
-Route::get("/service-body-ext-response{ext}", 'App\Http\Controllers\CallFlowController@servicebodyextresponse')
+Route::match(array('GET', 'POST'), "/service-body-ext-response{ext}", 'App\Http\Controllers\CallFlowController@servicebodyextresponse')
     ->where('ext', $ext);
-Route::get("/gender-routing-response{ext}", 'App\Http\Controllers\CallFlowController@genderroutingresponse')
+Route::match(array('GET', 'POST'), "/gender-routing-response{ext}", 'App\Http\Controllers\CallFlowController@genderroutingresponse')
     ->where('ext', $ext);
-Route::get("/voice-input-result{ext}", 'App\Http\Controllers\CallFlowController@voiceinputresult')
+Route::match(array('GET', 'POST'), "/voice-input-result{ext}", 'App\Http\Controllers\CallFlowController@voiceinputresult')
     ->where('ext', $ext);
-Route::get("/address-lookup{ext}", 'App\Http\Controllers\CallFlowController@addresslookup')
+Route::match(array('GET', 'POST'), "/address-lookup{ext}", 'App\Http\Controllers\CallFlowController@addresslookup')
     ->where('ext', $ext);
-Route::get("/playlist{ext}", 'App\Http\Controllers\CallFlowController@playlist')
+Route::match(array('GET', 'POST'), "/playlist{ext}", 'App\Http\Controllers\CallFlowController@playlist')
     ->where('ext', $ext);
-Route::get("/fallback{ext}", 'App\Http\Controllers\CallFlowController@fallback')
+Route::match(array('GET', 'POST'), "/fallback{ext}", 'App\Http\Controllers\CallFlowController@fallback')
     ->where('ext', $ext);
-Route::get("/custom-ext-dialer{ext}", 'App\Http\Controllers\CallFlowController@customextdialer')
+Route::match(array('GET', 'POST'), "/custom-ext-dialer{ext}", 'App\Http\Controllers\CallFlowController@customextdialer')
     ->where('ext', $ext);
-Route::get("/dialback-dialer{ext}", 'App\Http\Controllers\CallFlowController@dialbackDialer')
+Route::match(array('GET', 'POST'), "/dialback-dialer{ext}", 'App\Http\Controllers\CallFlowController@dialbackDialer')
     ->where('ext', $ext);
-Route::get("/dialback{ext}", 'App\Http\Controllers\CallFlowController@dialback')
+Route::match(array('GET', 'POST'), "/dialback{ext}", 'App\Http\Controllers\CallFlowController@dialback')
     ->where('ext', $ext);
-Route::get("/gender-routing{ext}", 'App\Http\Controllers\CallFlowController@genderrouting')
+Route::match(array('GET', 'POST'), "/gender-routing{ext}", 'App\Http\Controllers\CallFlowController@genderrouting')
     ->where('ext', $ext);
-Route::get("/province-lookup-list-response{ext}", 'App\Http\Controllers\CallFlowController@provincelookuplistresponse')
+Route::match(array('GET', 'POST'), "/province-lookup-list-response{ext}", 'App\Http\Controllers\CallFlowController@provincelookuplistresponse')
     ->where('ext', $ext);
-Route::get("/status{ext}", 'App\Http\Controllers\CallFlowController@statusCallback')
+Route::match(array('GET', 'POST'), "/status{ext}", 'App\Http\Controllers\CallFlowController@statusCallback')
     ->where('ext', $ext);
-Route::get("/voicemail-complete{ext}", 'App\Http\Controllers\VoicemailController@complete')
+Route::match(array('GET', 'POST'), "/voicemail-complete{ext}", 'App\Http\Controllers\VoicemailController@complete')
     ->where('ext', $ext);
-Route::get("/voicemail{ext}", 'App\Http\Controllers\VoicemailController@start')
+Route::match(array('GET', 'POST'), "/voicemail{ext}", 'App\Http\Controllers\VoicemailController@start')
     ->where('ext', $ext);
-Route::get("/post-call-action{ext}", 'App\Http\Controllers\CallFlowController@postCallAction')
+Route::match(array('GET', 'POST'), "/post-call-action{ext}", 'App\Http\Controllers\CallFlowController@postCallAction')
     ->where('ext', $ext);
-Route::get("upgrade-advisor{ext}", 'App\Http\Controllers\UpgradeAdvisorController@index')
+Route::match(array('GET', 'POST'), "upgrade-advisor{ext}", 'App\Http\Controllers\UpgradeAdvisorController@index')
     ->where('ext', $ext);
-Route::get("/lng-selector{ext}", 'App\Http\Controllers\CallFlowController@languageSelector')
+Route::match(array('GET', 'POST'), "/lng-selector{ext}", 'App\Http\Controllers\CallFlowController@languageSelector')
     ->where('ext', $ext);
-Route::get("/province-voice-input{ext}", 'App\Http\Controllers\CallFlowController@provinceVoiceInput')
+Route::match(array('GET', 'POST'), "/province-voice-input{ext}", 'App\Http\Controllers\CallFlowController@provinceVoiceInput')
     ->where('ext', $ext);
-Route::get("/helpline-answer-response{ext}", 'App\Http\Controllers\CallFlowController@helplineAnswerResponse')
+Route::match(array('GET', 'POST'), "/helpline-answer-response{ext}", 'App\Http\Controllers\CallFlowController@helplineAnswerResponse')
     ->where('ext', $ext);
-Route::get("/helpline-outdial-response{ext}", 'App\Http\Controllers\CallFlowController@helplineOutdialResponse')
+Route::match(array('GET', 'POST'), "/helpline-outdial-response{ext}", 'App\Http\Controllers\CallFlowController@helplineOutdialResponse')
     ->where('ext', $ext);
-Route::get("/sms-gateway{ext}", 'App\Http\Controllers\CallFlowController@smsGateway')
+Route::match(array('GET', 'POST'), "/sms-gateway{ext}", 'App\Http\Controllers\CallFlowController@smsGateway')
     ->where('ext', $ext);
-Route::get("/meeting-search{ext}", 'App\Http\Controllers\CallFlowController@meetingSearch')
+Route::match(array('GET', 'POST'), "/meeting-search{ext}", 'App\Http\Controllers\CallFlowController@meetingSearch')
     ->where('ext', $ext);
-Route::get("/helpline-search{ext}", 'App\Http\Controllers\HelplineController@search')
+Route::match(array('GET', 'POST'), "/helpline-search{ext}", 'App\Http\Controllers\HelplineController@search')
     ->where('ext', $ext);
-Route::get("/helpline-dialer{ext}", 'App\Http\Controllers\HelplineController@dial')
+Route::match(array('GET', 'POST'), "/helpline-dialer{ext}", 'App\Http\Controllers\HelplineController@dial')
     ->where('ext', $ext);

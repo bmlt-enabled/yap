@@ -26,8 +26,8 @@ beforeEach(function () {
     app()->instance(TwilioService::class, $repository);
 });
 
-test('zip input for helpline lookup', function () {
-    $response = $this->call('GET', '/zip-input.php?SearchType=1');
+test('zip input for helpline lookup', function ($method) {
+    $response = $this->call($method, '/zip-input.php?SearchType=1');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -41,15 +41,15 @@ test('zip input for helpline lookup', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('zip input for 4 digit postal code', function () {
+test('zip input for 4 digit postal code', function ($method) {
     $settingsService = new SettingsService();
     $settingsService->setWord("override_please_enter_your_digit", "please enter your four digit");
     $settingsService->setWord("override_zip_code", "postal code");
     $settingsService->set("postal_code_length", 4);
     app()->instance(SettingsService::class, $settingsService);
-    $response = $this->call('GET', '/zip-input.php', ['SearchType'=>'2']);
+    $response = $this->call($method, '/zip-input.php', ['SearchType'=>'2']);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -63,10 +63,10 @@ test('zip input for 4 digit postal code', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('zip input for address lookup', function () {
-    $response = $this->call('GET', '/zip-input.php?SearchType=2');
+test('zip input for address lookup', function ($method) {
+    $response = $this->call($method, '/zip-input.php?SearchType=2');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -80,11 +80,11 @@ test('zip input for address lookup', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('zip input for address lookup with speech gathering', function () {
+test('zip input for address lookup with speech gathering', function ($method) {
     $_SESSION["override_speech_gathering"] = true;
-    $response = $this->call('GET', '/zip-input.php?SearchType=2');
+    $response = $this->call($method, '/zip-input.php?SearchType=2');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -98,11 +98,11 @@ test('zip input for address lookup with speech gathering', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('city or county voice input', function () {
+test('city or county voice input', function ($method) {
     $_REQUEST["SearchType"] = "1";
-    $response = $this->call('GET', '/city-or-county-voice-input.php?SearchType=1');
+    $response = $this->call($method, '/city-or-county-voice-input.php?SearchType=1');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -116,12 +116,12 @@ test('city or county voice input', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('city or county voice input with hints', function () {
+test('city or county voice input with hints', function ($method) {
     $_REQUEST["SearchType"] = "1";
     $_SESSION['override_gather_hints'] = "Raleigh,Lillington,Benson,Dunn";
-    $response = $this->call('GET', '/city-or-county-voice-input.php?SearchType=1');
+    $response = $this->call($method, '/city-or-county-voice-input.php?SearchType=1');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -135,4 +135,4 @@ test('city or county voice input with hints', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);

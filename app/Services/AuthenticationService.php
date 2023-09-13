@@ -5,18 +5,18 @@ namespace App\Services;
 use App\Constants\AuthMechanism;
 use App\Constants\Http;
 use App\Repositories\AuthenticationRepository;
+use Illuminate\Support\Facades\App;
 
-class AuthenticationService
+class AuthenticationService extends Service
 {
     protected AuthenticationRepository $authenticationRepository;
-    protected SettingsService $settings;
     protected RootServerService $rootServer;
     protected SessionService $session;
 
-    public function __construct(AuthenticationRepository $authenticationRepository, SettingsService $settings, RootServerService $rootServer, SessionService $session)
+    public function __construct(AuthenticationRepository $authenticationRepository, RootServerService $rootServer, SessionService $session)
     {
+        parent::__construct(App::make(SettingsService::class));
         $this->authenticationRepository = $authenticationRepository;
-        $this->settings = $settings;
         $this->rootServer = $rootServer;
         $this->session = $session;
     }

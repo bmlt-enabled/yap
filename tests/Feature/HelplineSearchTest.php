@@ -4,6 +4,7 @@ use App\Repositories\ConfigRepository;
 use App\Constants\DataType;
 use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
+use App\Services\SettingsService;
 use Tests\RootServerMocks;
 
 beforeAll(function () {
@@ -15,15 +16,17 @@ beforeEach(function () {
     $_REQUEST = null;
     $_SESSION = null;
 
+    $settingsService = new SettingsService();
+    app()->instance(SettingsService::class, $settingsService);
     $this->rootServerMocks = new RootServerMocks();
 });
 
-test('force number', function () {
+test('force number', function ($method) {
     $repository = Mockery::mock(ReportsRepository::class);
     $repository->shouldReceive("insertCallRecord")->withAnyArgs();
     $repository->shouldReceive("insertCallEventRecord")->withAnyArgs();
     app()->instance(ReportsRepository::class, $repository);
-    $response = $this->call('GET', '/helpline-search.php', [
+    $response = $this->call($method, '/helpline-search.php', [
         'SearchType' => "1",
         'Called' => "+12125551212",
         'ForceNumber' => '+19998887777',
@@ -37,11 +40,11 @@ test('force number', function () {
             '<Dial><Number sendDigits="w">+19998887777</Number>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
 
-test('invalid entry', function () {
-    $response = $this->call('GET', '/helpline-search.php', [
+test('invalid entry', function ($method) {
+    $response = $this->call($method, '/helpline-search.php', [
         'Address' => "Raleigh, NC",
         'SearchType' => "1",
         'Called' => "+12125551212",
@@ -55,9 +58,9 @@ test('invalid entry', function () {
             '<Redirect method="GET">input-method.php?Digits=1&amp;Retry=1&amp;RetryMessage=Couldn%27t+find+an+address+for+that+location.</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('valid search, volunteer routing', function () {
+test('valid search, volunteer routing', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = 44;
     $repository = Mockery::mock(ConfigRepository::class);
@@ -71,7 +74,7 @@ test('valid search, volunteer routing', function () {
         "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
     ]])->once();
     app()->instance(ConfigRepository::class, $repository);
-    $response = $this->call('GET', '/helpline-search.php', [
+    $response = $this->call($method, '/helpline-search.php', [
         'Address' => "Raleigh, NC",
         'SearchType' => "1",
         'Called' => "+12125551212",
@@ -97,9 +100,9 @@ test('valid search, volunteer routing', function () {
             '</Dial>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('valid search, volunteer routing, announce service body name', function () {
+test('valid search, volunteer routing, announce service body name', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = 44;
     $_SESSION['override_announce_servicebody_volunteer_routing'] = true;
@@ -114,7 +117,7 @@ test('valid search, volunteer routing, announce service body name', function () 
         "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
     ]])->once();
     app()->instance(ConfigRepository::class, $repository);
-    $response = $this->call('GET', '/helpline-search.php', [
+    $response = $this->call($method, '/helpline-search.php', [
         'Address' => "Raleigh, NC",
         'SearchType' => "1",
         'Called' => "+12125551212",
@@ -140,9 +143,9 @@ test('valid search, volunteer routing, announce service body name', function () 
             '</Dial>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('valid search, helpline field routing', function () {
+test('valid search, helpline field routing', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = 44;
     $repository = Mockery::mock(ConfigRepository::class);
@@ -156,7 +159,7 @@ test('valid search, helpline field routing', function () {
         "data" => "[{\"volunteer_routing\":\"helpline_field\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
     ]])->once();
     app()->instance(ConfigRepository::class, $repository);
-    $response = $this->call('GET', '/helpline-search.php', [
+    $response = $this->call($method, '/helpline-search.php', [
         'Address' => "Raleigh, NC",
         'SearchType' => "1",
         'Called' => "+12125551212",
@@ -172,9 +175,43 @@ test('valid search, helpline field routing', function () {
             '<Dial><Number sendDigits="ww1">888-557-1667</Number></Dial>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('valid search, volunteer direct', function () {
+test('valid search, helpline field routing, no helpline set in root server, use fallback number', function ($method) {
+    $rootServerMocksWithNoHelplineField = new RootServerMocks(true);
+    app()->instance(RootServerService::class, $rootServerMocksWithNoHelplineField->getService());
+    $_SESSION['override_service_body_id'] = 44;
+    $_SESSION['override_fallback_number'] = '+15551112223';
+    $repository = Mockery::mock(ConfigRepository::class);
+    $repository->shouldReceive("getDbData")->with(
+        '44',
+        DataType::YAP_CALL_HANDLING_V2
+    )->andReturn([(object)[
+        "service_body_id" => "44",
+        "id" => "200",
+        "parent_id" => "43",
+        "data" => "[{\"volunteer_routing\":\"helpline_field\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
+    ]])->once();
+    app()->instance(ConfigRepository::class, $repository);
+    $response = $this->call($method, '/helpline-search.php', [
+        'Address' => "Raleigh, NC",
+        'SearchType' => "1",
+        'Called' => "+12125551212",
+        'stub_google_maps_endpoint' => true
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">please stand by... relocating your call to... Crossroads Area</Say>',
+            '<Dial><Number sendDigits="w">+15551112223</Number></Dial>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
+test('valid search, volunteer direct', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = 44;
     $repository = Mockery::mock(ConfigRepository::class);
@@ -199,7 +236,7 @@ test('valid search, volunteer direct', function () {
         ]]);
 
     app()->instance(ConfigRepository::class, $repository);
-    $response = $this->call('GET', '/helpline-search.php', [
+    $response = $this->call($method, '/helpline-search.php', [
         'Address' => "Raleigh, NC",
         'SearchType' => "1",
         'Called' => "+12125551212",
@@ -217,4 +254,50 @@ test('valid search, volunteer direct', function () {
             '</Conference></Dial>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
+
+//test('valid search, gender based routing', function () {
+//    $rootServerService = $this->rootServerMocks->getService();
+//    app()->instance(RootServerService::class, $rootServerService);
+//    $_REQUEST['stub_google_maps_endpoint'] = true;
+//    $_SESSION['Address'] = "27592";
+//    $repository = Mockery::mock(ConfigRepository::class);
+//    $repository->shouldReceive("getDbData")
+//        ->once()
+//        ->with('44', DataType::YAP_CALL_HANDLING_V2)
+//        ->andReturn([(object)[
+//            "service_body_id" => "44",
+//            "id" => "200",
+//            "parent_id" => "43",
+//            "data" => "[{\"volunteer_routing\":\"volunteers_redirect\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"1\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
+//        ]])
+//
+//        ->shouldReceive("getDbData")
+//        ->once()
+//        ->with('46', DataType::YAP_CALL_HANDLING_V2)
+//        ->andReturn([(object)[
+//            "service_body_id" => "46",
+//            "id" => "200",
+//            "parent_id" => "43",
+//            "data" => "[{\"volunteer_routing\":\"helpline_field\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"1\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
+//        ]]);
+//
+//    app()->instance(ConfigRepository::class, $repository);
+//    $response = $this->call('GET', '/helpline-search.php', [
+//        'Address' => "Raleigh, NC",
+//        'SearchType' => "1",
+//        'Called' => "+12125551212",
+//        'stub_google_maps_endpoint' => true
+//    ]);
+//    $response
+//        ->assertStatus(200)
+//        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+//        ->assertSeeInOrder([
+/*            '<?xml version="1.0" encoding="UTF-8"?>',*/
+//            '<Response>',
+//            '<Redirect method="GET">',
+//            'gender-routing.php?SearchType=1',
+//            '</Redirect>',
+//            '</Response>'
+//        ], false);
+//});

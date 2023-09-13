@@ -2,18 +2,18 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\App;
 use stdClass;
 
-class SessionService
+class SessionService extends Service
 {
     protected ConfigService $config;
-    protected SettingsService $settings;
     protected RootServerService $rootServer;
 
-    public function __construct(ConfigService $config, SettingsService $settings, RootServerService $rootServer)
+    public function __construct(ConfigService $config, RootServerService $rootServer)
     {
+        parent::__construct(App::make(SettingsService::class));
         $this->config = $config;
-        $this->settings = $settings;
         $this->rootServer = $rootServer;
     }
 

@@ -7,21 +7,20 @@ use App\Constants\SearchType;
 use App\Constants\SpecialPhoneNumber;
 use App\Repositories\ReportsRepository;
 use App\Repositories\VoicemailRepository;
+use Illuminate\Support\Facades\App;
 
-class CallService
+class CallService extends Service
 {
-    protected SettingsService $settings;
     protected ReportsRepository $reports;
     protected VoicemailRepository $voicemail;
     protected TwilioService $twilio;
 
     public function __construct(
-        SettingsService $settings,
         ReportsRepository $reports,
         TwilioService $twilio,
         VoicemailRepository $voicemail
     ) {
-        $this->settings = $settings;
+        parent::__construct(App::make(SettingsService::class));
         $this->reports = $reports;
         $this->twilio = $twilio;
         $this->voicemail = $voicemail;
@@ -51,9 +50,9 @@ class CallService
         $response = "0";
 
         if ($request->has($field)) {
-            $response = $request->query($field);
+            $response = $request->get($field);
         } elseif ($request->has('SpeechResult')) {
-            $response = intval($request->query('SpeechResult'));
+            $response = intval($request->get('SpeechResult'));
         }
 
         if (count($expected_exacts) > 0 || count($expected_likes) > 0) {
@@ -168,9 +167,9 @@ class CallService
             && $this->settings->has('speech_gathering')
             && json_encode($this->settings->get('speech_gathering'))
             && $request->has('SpeechResult')) {
-            $digit = intval($request->query('SpeechResult'));
+            $digit = intval($request->get('SpeechResult'));
         } elseif ($request->has($field)) {
-            $digit = intval($request->query($field));
+            $digit = intval($request->get($field));
         } else {
             return null;
         }

@@ -1,4 +1,4 @@
-# Tomato Meeting Search
+# Aggregator Meeting Search
 ---
 
 This feature will use Tomato for finding meetings.

@@ -55,11 +55,11 @@ class ConfigController extends Controller
     public function index(Request $request)
     {
         if ($request->has('parent_id')) {
-            $data = $this->config->getDbDataByParentId($request->query('parent_id'), $request->query('data_type'));
-        } elseif ($request->query('data_type') === DataType::YAP_GROUPS_V2 && $request->has('id')) {
-            $data = $this->config->getDbDataById($request->query('id'), $request->query('data_type'));
+            $data = $this->config->getDbDataByParentId($request->get('parent_id'), $request->get('data_type'));
+        } elseif ($request->get('data_type') === DataType::YAP_GROUPS_V2 && $request->has('id')) {
+            $data = $this->config->getDbDataById($request->get('id'), $request->get('data_type'));
         } else {
-            $data = $this->config->getDbData($request->query('service_body_id'), $request->query('data_type'));
+            $data = $this->config->getDbData($request->get('service_body_id'), $request->get('data_type'));
         }
 
         if (count($data) > 0) {

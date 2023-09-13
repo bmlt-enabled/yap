@@ -75,7 +75,7 @@ class SettingsService
         'toll_free_province_bias' => ['description' => '/general/tollfree-province-bias' , 'default' => '', 'overridable' => true, 'hidden' => false],
         'tomato_helpline_routing' => ['description' => '/helpline/tomato-helpline-routing', 'default' => false, 'overridable' => true, 'hidden' => false],
         'tomato_meeting_search' => ['description' => '/meeting-search/tomato-meeting-search', 'default' => false, 'overridable' => true, 'hidden' => false],
-        'tomato_url' => ['description' => '' , 'default' => 'https://tomato.bmltenabled.org/main_server', 'overridable' => true, 'hidden' => false],
+        'tomato_url' => ['description' => '' , 'default' => 'https://aggregator.bmltenabled.org/main_server', 'overridable' => true, 'hidden' => false],
         'twilio_account_sid' => ['description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
         'twilio_auth_token' => ['description' => '', 'default' => '', 'overridable' => true, 'hidden' => true],
         'voice' => ['description' => '/general/language-options', 'default' => 'Polly.Kendra', 'overridable' => true, 'hidden' => false],

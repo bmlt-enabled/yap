@@ -3,16 +3,16 @@
 namespace App\Services;
 
 use App\Models\Coordinates;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 
-class GeocodingService
+class GeocodingService extends Service
 {
-    public SettingsService $settings;
     private string $googleMapsEndpoint;
 
-    public function __construct(SettingsService $settings)
+    public function __construct()
     {
-        $this->settings = $settings;
+        parent::__construct(App::make(SettingsService::class));
         $this->googleMapsEndpoint = sprintf(
             "https://maps.googleapis.com/maps/api/geocode/json?key=%s",
             $this->settings->get("google_maps_api_key")
@@ -26,7 +26,7 @@ class GeocodingService
             . urlencode($address)));
     }
 
-    public function getCoordinatesForAddress($address)
+    public function getCoordinatesForAddress($address): Coordinates
     {
         $coordinates = new Coordinates();
 

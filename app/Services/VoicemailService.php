@@ -3,26 +3,27 @@
 namespace App\Services;
 
 use Exception;
+use Illuminate\Support\Facades\App;
 use PHPMailer\PHPMailer\PHPMailer;
 use App\Constants\SmsDialbackOptions;
 
-class VoicemailService
+class VoicemailService extends Service
 {
     protected PHPMailer $mailer;
     protected TwilioService $twilio;
     protected CallService $call;
-    protected SettingsService $settings;
 
-    public function __construct(PHPMailer $mailer = null, TwilioService $twilio, CallService $call, SettingsService $settings)
+    public function __construct(PHPMailer $mailer = null, TwilioService $twilio, CallService $call)
     {
         if ($mailer == null) {
             $mailer = new PHPMailer(true);
         }
 
+        parent::__construct(App::make(SettingsService::class));
+
         $this->mailer = $mailer;
         $this->twilio = $twilio;
         $this->call = $call;
-        $this->settings = $settings;
     }
 
     public function sendSmsForVoicemail($callsid, $recordingUrl, $recipients, $serviceBodyCallHandling, $serviceBodyName, $callerNumber): void

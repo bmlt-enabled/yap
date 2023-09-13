@@ -41,7 +41,7 @@ beforeEach(function () {
     $this->twilioClient->conferences = $conferenceListMock;
 });
 
-test('join volunteer to conference', function () {
+test('join volunteer to conference', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     // mocking TwilioRestClient->conferences()->participants->read()
     $conferenceContextMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceContext");
@@ -55,7 +55,7 @@ test('join volunteer to conference', function () {
 //    $reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
     app()->instance(ReportsRepository::class, $this->reportsRepository);
 
-    $response = $this->call('GET', '/helpline-outdial-response.php', [
+    $response = $this->call($method, '/helpline-outdial-response.php', [
         "Called"=>"12125551212",
         "CallSid"=>$this->fakeCallSid,
         "conference_name"=>$this->conferenceName,
@@ -72,9 +72,9 @@ test('join volunteer to conference', function () {
             '<Hangup/>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('waiting for the volunteer to press 1 to answer the call', function () {
+test('waiting for the volunteer to press 1 to answer the call', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     // mocking TwilioRestClient->conferences()->participants->read()
     $conferenceContextMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceContext");
@@ -87,7 +87,7 @@ test('waiting for the volunteer to press 1 to answer the call', function () {
     $this->reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
     app()->instance(ReportsRepository::class, $this->reportsRepository);
 
-    $response = $this->call('GET', '/helpline-outdial-response.php', [
+    $response = $this->call($method, '/helpline-outdial-response.php', [
         "Called"=>"12125551212",
         "CallSid"=>$this->fakeCallSid,
         "service_body_id"=>"1",
@@ -104,9 +104,9 @@ test('waiting for the volunteer to press 1 to answer the call', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('volunteer called and auto answer capability enabled', function () {
+test('volunteer called and auto answer capability enabled', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     // mocking TwilioRestClient->conferences()->participants->read()
     $conferenceContextMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceContext");
@@ -123,7 +123,7 @@ test('volunteer called and auto answer capability enabled', function () {
     $settingsService->set("volunteer_auto_answer", true);
     app()->instance(SettingsService::class, $settingsService);
 
-    $response = $this->call('GET', '/helpline-outdial-response.php', [
+    $response = $this->call($method, '/helpline-outdial-response.php', [
         "Called"=>"12125551212",
         "CallSid"=>$this->fakeCallSid,
         "service_body_id"=>"1",
@@ -138,10 +138,10 @@ test('volunteer called and auto answer capability enabled', function () {
             '</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
 
-test('the caller hung up before the call was answered', function () {
+test('the caller hung up before the call was answered', function ($method) {
     $conferenceContextMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceContext");
     $participantListMock = mock("Twilio\Rest\Api\V2010\Account\Conference\ParticipantList");
     $participantListMock->shouldReceive("read")->andReturn();
@@ -152,7 +152,7 @@ test('the caller hung up before the call was answered', function () {
     $this->reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
     app()->instance(ReportsRepository::class, $this->reportsRepository);
 
-    $response = $this->call('GET', '/helpline-outdial-response.php', [
+    $response = $this->call($method, '/helpline-outdial-response.php', [
         "Digits"=>"1",
         "Called"=>"12125551212",
         "CallSid"=>$this->fakeCallSid,
@@ -169,4 +169,4 @@ test('the caller hung up before the call was answered', function () {
             '<Hangup/>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);

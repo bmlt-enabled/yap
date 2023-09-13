@@ -9,10 +9,10 @@ beforeEach(function () {
     $_SESSION = null;
 });
 
-test('get a SPAD', function () {
-    $response = $this->call('GET', '/fetch-spad.php');
+test('get a SPAD', function ($method) {
+    $response = $this->call($method, '/fetch-spad.php');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
         ->assertSeeText("All Rights Reserved", false);
-});
+})->with(['GET', 'POST']);

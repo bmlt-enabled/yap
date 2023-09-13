@@ -31,10 +31,10 @@ beforeEach(function () {
     app()->instance(ReportsRepository::class, $repository);
 });
 
-test('initial sms gateway default', function () {
+test('initial sms gateway default', function ($method) {
     $_REQUEST['stub_google_maps_endpoint'] = true;
     $this->callerIdInfo['Body'] = '27592';
-    $response = $this->call('GET', '/sms-gateway.php', $this->callerIdInfo);
+    $response = $this->call($method, '/sms-gateway.php', $this->callerIdInfo);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -44,9 +44,9 @@ test('initial sms gateway default', function () {
             '<Redirect method="GET">meeting-search.php?SearchType=1&amp;Latitude=35.5648713&amp;Longitude=-78.6682395</Redirect>',
             '</Response>',
     ], false);
-});
+})->with(['GET', 'POST']);
 
-test('initial sms gateway talk option without location', function () {
+test('initial sms gateway talk option without location', function ($method) {
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
     $messageListMock->shouldReceive('create')
         ->with($this->from, Mockery::on(function ($data) {
@@ -57,7 +57,7 @@ test('initial sms gateway talk option without location', function () {
 
     $_REQUEST['stub_google_maps_endpoint'] = true;
     $this->callerIdInfo['Body'] = 'talk';
-    $response = $this->call('GET', '/sms-gateway.php', $this->callerIdInfo);
+    $response = $this->call($method, '/sms-gateway.php', $this->callerIdInfo);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -65,13 +65,13 @@ test('initial sms gateway talk option without location', function () {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response/>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('initial sms gateway with a blackholed number', function () {
+test('initial sms gateway with a blackholed number', function ($method) {
     $_SESSION['override_sms_blackhole'] = "+19737771313";
     $this->callerIdInfo['Body'] = '27592';
     $response = $this->call(
-        'GET',
+        $method,
         '/sms-gateway.php',
         $this->callerIdInfo
     );
@@ -83,9 +83,9 @@ test('initial sms gateway with a blackholed number', function () {
             '<Response>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('sms to deliver the jft', function () {
+test('sms to deliver the jft', function ($method) {
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
     $this->utility->client->messages = $messageListMock;
@@ -97,7 +97,7 @@ test('sms to deliver the jft', function () {
     $_SESSION['override_jft_option'] = true;
     $this->callerIdInfo['Body'] = 'jFt';
     $response = $this->call(
-        'GET',
+        $method,
         '/sms-gateway.php',
         $this->callerIdInfo
     );
@@ -108,9 +108,9 @@ test('sms to deliver the jft', function () {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response/>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('sms to deliver the spad', function () {
+test('sms to deliver the spad', function ($method) {
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
     $this->utility->client->messages = $messageListMock;
@@ -122,7 +122,7 @@ test('sms to deliver the spad', function () {
     $_SESSION['override_spad_option'] = true;
     $this->callerIdInfo['Body'] = 'spad';
     $response = $this->call(
-        'GET',
+        $method,
         '/sms-gateway.php',
         $this->callerIdInfo
     );
@@ -133,4 +133,4 @@ test('sms to deliver the spad', function () {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response/>'
         ], false);
-});
+})->with(['GET', 'POST']);

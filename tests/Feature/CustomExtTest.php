@@ -9,9 +9,9 @@ beforeEach(function () {
     $_SESSION = null;
 });
 
-test('custom extensions', function () {
+test('custom extensions', function ($method) {
     $_SESSION['override_en_US_custom_extensions_greeting'] = "https://fake.org/test.mp3";
-    $response = $this->call('GET', '/custom-ext.php');
+    $response = $this->call($method, '/custom-ext.php');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -25,11 +25,11 @@ test('custom extensions', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('custom extensions dialer', function () {
+test('custom extensions dialer', function ($method) {
     $_SESSION["override_custom_extensions"] = [365 => '555-555-1212'];
-    $response = $this->call('GET', '/custom-ext-dialer.php?Called=%2B17183367631&Digits=365#');
+    $response = $this->call($method, '/custom-ext-dialer.php?Called=%2B17183367631&Digits=365#');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -41,4 +41,4 @@ test('custom extensions dialer', function () {
             '</Dial>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);

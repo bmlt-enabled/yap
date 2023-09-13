@@ -59,8 +59,8 @@ class VoicemailController extends Controller
         }
 
         $recordingStatusCallback = "voicemail-complete.php?service_body_id=".$this->settings->get("service_body_id").
-            "&caller_id=".urlencode($request->query("caller_id"))."&caller_number=".
-            urlencode($request->query("Caller")).$this->settings->getSessionLink(true);
+            "&caller_id=".urlencode($request->get("caller_id"))."&caller_number=".
+            urlencode($request->get("Caller")).$this->settings->getSessionLink(true);
 
         $twiml->record()
             ->setPlayBeep(true)

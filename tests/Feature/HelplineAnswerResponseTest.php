@@ -36,7 +36,7 @@ beforeEach(function () {
     $this->twilioClient->conferences = $conferenceListMock;
 });
 
-test('join volunteer to conference', function () {
+test('join volunteer to conference', function ($method) {
     // mocking TwilioRestClient->conferences()->participants->read()
     $conferenceContextMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceContext");
     $participantListMock = mock("Twilio\Rest\Api\V2010\Account\Conference\ParticipantList");
@@ -47,7 +47,7 @@ test('join volunteer to conference', function () {
     $_REQUEST['Digits'] = "1";
     $_REQUEST['Called'] = "12125551212";
     $_REQUEST['conference_name'] = $this->conferenceName;
-    $response = $this->call('GET', '/helpline-answer-response.php', [
+    $response = $this->call($method, '/helpline-answer-response.php', [
         "Digits"=>"1",
         "Called"=>"12125551212",
         "conference_name"=>"abc"
@@ -62,9 +62,9 @@ test('join volunteer to conference', function () {
         '</Dial>',
         '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('enough volunteers in conference, someone is talking to the caller already', function () {
+test('enough volunteers in conference, someone is talking to the caller already', function ($method) {
     // mocking TwilioRestClient->conferences()->participants->read()
     $conferenceContextMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceContext");
     $participantListMock = mock("Twilio\Rest\Api\V2010\Account\Conference\ParticipantList");
@@ -75,7 +75,7 @@ test('enough volunteers in conference, someone is talking to the caller already'
     $_REQUEST['Digits'] = "1";
     $_REQUEST['Called'] = "12125551212";
     $_REQUEST['conference_name'] = $this->conferenceName;
-    $response = $this->call('GET', '/helpline-answer-response.php', [
+    $response = $this->call($method, '/helpline-answer-response.php', [
         "Digits"=>"1",
         "Called"=>"12125551212",
         "conference_name"=>"abc"
@@ -90,9 +90,9 @@ test('enough volunteers in conference, someone is talking to the caller already'
             '<Hangup/>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('volunteer opts not to answer the call', function () {
+test('volunteer opts not to answer the call', function ($method) {
     $callSid = "def";
     $digits = "2";
     $called = "12125551212";
@@ -112,7 +112,7 @@ test('volunteer opts not to answer the call', function () {
     app()->instance(ReportsRepository::class, $reportsRepository);
 
     $_SESSION['no_answer_max'] = 5;
-    $response = $this->call('GET', '/helpline-answer-response.php', [
+    $response = $this->call($method, '/helpline-answer-response.php', [
         "Digits"=>$digits,
         "Called"=>$called,
         "CallSid"=>$callSid,
@@ -126,4 +126,4 @@ test('volunteer opts not to answer the call', function () {
             '<Hangup/>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);

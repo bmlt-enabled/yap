@@ -9,9 +9,9 @@ beforeEach(function () {
     $_SESSION = null;
 });
 
-test('search for address with speech text result with bad google api key', function () {
+test('search for address with speech text result with bad google api key', function ($method) {
     $_REQUEST['stub_google_maps_endpoint'] = false;
-    $response = $this->call('GET', '/address-lookup.php?SpeechResult=Raleigh, NC&SearchType=1');
+    $response = $this->call($method, '/address-lookup.php?SpeechResult=Raleigh, NC&SearchType=1');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -21,11 +21,11 @@ test('search for address with speech text result with bad google api key', funct
             '<Redirect method="GET">input-method.php?Digits=1&amp;Retry=1</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('search for address for someone to talk to with speech text result with google api key', function () {
+test('search for address for someone to talk to with speech text result with google api key', function ($method) {
     $_REQUEST['stub_google_maps_endpoint'] = true;
-    $response = $this->call('GET', '/address-lookup.php?SpeechResult=Raleigh, NC&SearchType=1');
+    $response = $this->call($method, '/address-lookup.php?SpeechResult=Raleigh, NC&SearchType=1');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -36,4 +36,4 @@ test('search for address for someone to talk to with speech text result with goo
             '<Redirect method="GET">meeting-search.php?Latitude=35.5648713&amp;Longitude=-78.6682395</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);

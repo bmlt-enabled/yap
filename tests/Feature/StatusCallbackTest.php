@@ -27,11 +27,11 @@ beforeEach(function () {
     $this->twilioService = mock(TwilioService::class)->makePartial();
 });
 
-test('status callback test', function () {
+test('status callback test', function ($method) {
     $this->reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs()->once();
     app()->instance(ReportsRepository::class, $this->reportsRepository);
     $response = $this->call(
-        'GET',
+        $method,
         '/status.php',
         ["TimestampNow"=>"123",
             "CallSid"=> $this->fakeCallSid,
@@ -42,9 +42,9 @@ test('status callback test', function () {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8");
-});
+})->with(['GET', 'POST']);
 
-test('status callback test without timestamp', function () {
+test('status callback test without timestamp', function ($method) {
     $settingsService = new SettingsService();
     app()->instance(SettingsService::class, instance: $settingsService);
     app()->instance(TwilioService::class, $this->twilioService);
@@ -65,7 +65,7 @@ test('status callback test without timestamp', function () {
     $this->reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs()->once();
     app()->instance(ReportsRepository::class, $this->reportsRepository);
     $response = $this->call(
-        'GET',
+        $method,
         '/status.php',
         [ "CallSid"=> $this->fakeCallSid,
             "Called"=>"+15005550006",
@@ -75,4 +75,4 @@ test('status callback test without timestamp', function () {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8");
-});
+})->with(['GET', 'POST']);

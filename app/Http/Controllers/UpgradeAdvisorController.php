@@ -18,7 +18,7 @@ class UpgradeAdvisorController extends Controller
 
     public function index(Request $request)
     {
-        if (!file_exists('config.php') && $request->query('status-check')) {
+        if (!file_exists('config.php') && $request->get('status-check')) {
             return response(json_encode(["status"=>false,"message"=>"Waiting for config.php to exist..."]))
                 ->header("Content-Type", "application/json");
         }

@@ -9,9 +9,9 @@ beforeEach(function () {
     $_SESSION = null;
 });
 
-test('get fallback', function () {
+test('get fallback', function ($method) {
     $_REQUEST['helpline_fallback'] = '+12125551212';
-    $response = $this->call('GET', '/fallback.php?helpline_fallback=+12125551212');
+    $response = $this->call($method, '/fallback.php?helpline_fallback=+12125551212');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -26,4 +26,4 @@ test('get fallback', function () {
             '</Dial>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);

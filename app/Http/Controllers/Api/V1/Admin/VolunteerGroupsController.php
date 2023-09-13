@@ -19,8 +19,8 @@ class VolunteerGroupsController extends Controller
     {
         return response()
             ->json($this->volunteerService->getGroupsForServiceBody(
-                $request->query("service_body_id"),
-                $request->query("manage")
+                $request->get("service_body_id"),
+                $request->get("manage")
             ))
             ->header("Content-Type", "application/json");
     }

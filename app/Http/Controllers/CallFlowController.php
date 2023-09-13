@@ -76,7 +76,7 @@ class CallFlowController extends Controller
         }
 
         if ($request->has('CallSid')) {
-            $phoneNumberSid = $this->twilio->client()->calls($request->query('CallSid'))->fetch()->phoneNumberSid;
+            $phoneNumberSid = $this->twilio->client()->calls($request->get('CallSid'))->fetch()->phoneNumberSid;
             $incomingPhoneNumber = $this->twilio->client()->incomingPhoneNumbers($phoneNumberSid)->fetch();
 
             if ($incomingPhoneNumber->statusCallback == null
@@ -86,7 +86,7 @@ class CallFlowController extends Controller
         }
 
         if ($request->has("override_service_body_id")) {
-            $this->config->getCallHandling($request->query("override_service_body_id"));
+            $this->config->getCallHandling($request->get("override_service_body_id"));
         }
 
         $promptset_name = str_replace("-", "_", $this->settings->getWordLanguage()) . "_greeting";
@@ -161,7 +161,7 @@ class CallFlowController extends Controller
         }
 
         $searchType = $this->call->getDigitResponse($request, 'digit_map_search_type', 'Digits');
-        $playTitle = $request->has('PlayTitle') ? $request->query('PlayTitle') : 0;
+        $playTitle = $request->has('PlayTitle') ? $request->get('PlayTitle') : 0;
 
         if ($searchType == SearchType::MEETINGS) {
             $this->call->insertCallEventRecord(EventId::MEETING_SEARCH);
@@ -178,7 +178,7 @@ class CallFlowController extends Controller
             return response($twiml)->header("Content-Type", "text/xml");
         } elseif ($searchType == SearchType::VOLUNTEERS) {
             if (isset($_SESSION['override_service_body_id'])) {
-                $twiml->redirect("helpline-search.php?Called=" . $request->query("Called") . $this->settings->getSessionLink(true))
+                $twiml->redirect("helpline-search.php?Called=" . $request->get("Called") . $this->settings->getSessionLink(true))
                     ->setMethod("GET");
                 return response($twiml)->header("Content-Type", "text/xml");
             }
@@ -187,7 +187,7 @@ class CallFlowController extends Controller
         } elseif ($searchType == SearchType::MEETINGS) {
             if (!strpos($this->settings->get('custom_query'), '{LATITUDE}')
                 || !strpos($this->settings->get('custom_query'), '{LONGITUDE}')) {
-                $twiml->redirect("meeting-search.php?Called=" . $request->query("Called"))
+                $twiml->redirect("meeting-search.php?Called=" . $request->get("Called"))
                     ->setMethod("GET");
                 return response($twiml)->header("Content-Type", "text/xml");
             }
@@ -227,7 +227,7 @@ class CallFlowController extends Controller
         }
 
         if ($request->has("Retry")) {
-            $retry_message = $request->has("RetryMessage") ? $request->query("RetryMessage") : $this->settings->word("could_not_find_location_please_retry_your_entry");
+            $retry_message = $request->has("RetryMessage") ? $request->get("RetryMessage") : $this->settings->word("could_not_find_location_please_retry_your_entry");
             $gather->say($retry_message)
                 ->setVoice($this->settings->voice())
                 ->setLanguage($this->settings->get("language"));
@@ -260,7 +260,7 @@ class CallFlowController extends Controller
 
     public function zipinput(Request $request)
     {
-        $searchType = $request->query("SearchType");
+        $searchType = $request->get("SearchType");
         if ($searchType == SearchType::VOLUNTEERS) {
             $action = sprintf("helpline-search.php?SearchType=%s", $searchType);
         } else {
@@ -306,7 +306,7 @@ class CallFlowController extends Controller
 
     public function cityorcountyinput(Request $request)
     {
-        $province = json_decode($this->settings->get('province_lookup')) ? $request->query("SpeechResult") : "";
+        $province = json_decode($this->settings->get('province_lookup')) ? $request->get("SpeechResult") : "";
         $twiml = new VoiceResponse();
         $gather = $twiml->gather()
             ->setLanguage($this->settings->get('gather_language'))
@@ -316,7 +316,7 @@ class CallFlowController extends Controller
             ->setSpeechTimeout("auto")
             ->setAction(sprintf(
                 "voice-input-result.php?SearchType=%s&Province=%s",
-                $request->query("SearchType"),
+                $request->get("SearchType"),
                 urlencode($province)
             ))
             ->setMethod('GET');
@@ -332,7 +332,7 @@ class CallFlowController extends Controller
         $twiml = new VoiceResponse();
         $twiml->redirect(sprintf(
             "helpline-search.php?override_service_body_id=%s",
-            $request->query('Digits')
+            $request->get('Digits')
         ), ["method" => "GET"]);
         return response($twiml)->header("Content-Type", "text/xml");
     }
@@ -352,7 +352,7 @@ class CallFlowController extends Controller
                 ->setMethod("GET");
         } else {
             $_SESSION['Gender'] = $gender;
-            $twiml->redirect(sprintf("helpline-search.php?SearchType=%s", $request->query('SearchType')))
+            $twiml->redirect(sprintf("helpline-search.php?SearchType=%s", $request->get('SearchType')))
                 ->setMethod('GET');
         }
 
@@ -361,7 +361,7 @@ class CallFlowController extends Controller
 
     public function playlist(Request $request)
     {
-        $items = $request->query("items");
+        $items = $request->get("items");
         $twiml = new VoiceResponse();
         $playlist_uris = explode(",", $items);
         foreach ($playlist_uris as $item) {
@@ -376,10 +376,10 @@ class CallFlowController extends Controller
     public function voiceinputresult(Request $request)
     {
         $province = ($this->settings->has('province_lookup')
-        && json_decode($this->settings->get('province_lookup')) ? $request->query('Province')
+        && json_decode($this->settings->get('province_lookup')) ? $request->get('Province')
             : $this->call->getProvince());
-        $speechResult = $request->query('SpeechResult');
-        $searchType = $request->query('SearchType');
+        $speechResult = $request->get('SpeechResult');
+        $searchType = $request->get('SearchType');
         $action = ($searchType == SearchType::VOLUNTEERS ? "helpline-search.php" : "address-lookup.php");
 
         $twiml = new VoiceResponse();
@@ -403,7 +403,7 @@ class CallFlowController extends Controller
         );
         $twiml = new VoiceResponse();
         if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) {
-            $twiml->redirect(sprintf("input-method.php?Digits=%s&Retry=1", $request->query('SearchType')))
+            $twiml->redirect(sprintf("input-method.php?Digits=%s&Retry=1", $request->get('SearchType')))
                 ->setMethod('GET');
         } else {
             $twiml->say(sprintf("%s %s", $this->settings->word('searching_meeting_information_for'), $coordinates->location))
@@ -439,8 +439,8 @@ class CallFlowController extends Controller
     public function customextdialer(Request $request)
     {
         $twiml = new VoiceResponse();
-        $dial = $twiml->dial()->setCallerId($request->query("Called"));
-        $dial->number($this->settings->get('custom_extensions')[str_replace("#", "", $request->query('Digits'))]);
+        $dial = $twiml->dial()->setCallerId($request->get("Called"));
+        $dial->number($this->settings->get('custom_extensions')[str_replace("#", "", $request->get('Digits'))]);
         return response($twiml)->header("Content-Type", "text/xml");
     }
 
@@ -463,14 +463,14 @@ class CallFlowController extends Controller
 
     public function dialbackDialer(Request $request)
     {
-        $dialbackPinValid = $this->call->isDialbackPinValid($request->query("Digits"));
+        $dialbackPinValid = $this->call->isDialbackPinValid($request->get("Digits"));
         $twiml = new VoiceResponse();
         if ($dialbackPinValid) {
             $twiml->say($this->settings->word('please_wait_while_we_connect_your_call'))
                 ->setVoice($this->settings->voice())
                 ->setLanguage($this->settings->get("language"));
-            $twiml->dial($request->query("Digits"))
-                ->setCallerId($request->query("Called"));
+            $twiml->dial($request->get("Digits"))
+                ->setCallerId($request->get("Called"));
         } else {
             $twiml->say("Invalid pin entry")
                 ->setVoice($this->settings->voice())
@@ -494,7 +494,7 @@ class CallFlowController extends Controller
             ->setInput($this->settings->getInputType())
             ->setTimeout(10)
             ->setSpeechTimeout("auto")
-            ->setAction(sprintf("gender-routing-response.php?SearchType=%s", $request->query("SearchType")))
+            ->setAction(sprintf("gender-routing-response.php?SearchType=%s", $request->get("SearchType")))
             ->setMethod('GET');
 
         $gather->say(sprintf(
@@ -514,7 +514,7 @@ class CallFlowController extends Controller
 
     public function provincelookuplistresponse(Request $request)
     {
-        $search_type = $request->query("SearchType");
+        $search_type = $request->get("SearchType");
         $province_lookup_item = $this->call->getIvrResponse(
             $request,
             range(1, count($this->settings->get('province_lookup_list')))
@@ -546,12 +546,12 @@ class CallFlowController extends Controller
     public function statusCallback(Request $request)
     {
         $callRecord = new CallRecord();
-        $callRecord->callSid = $request->query('CallSid');
-        $callRecord->to_number = $request->query('Called');
-        $callRecord->from_number = $request->query('Caller');
-        $callRecord->duration = intval($request->query('CallDuration'));
+        $callRecord->callSid = $request->get('CallSid');
+        $callRecord->to_number = $request->get('Called');
+        $callRecord->from_number = $request->get('Caller');
+        $callRecord->duration = intval($request->get('CallDuration'));
 
-        if ($request->query("TimestampNow")) {
+        if ($request->get("TimestampNow")) {
             $start_time = date("Y-m-d H:i:s");
             $end_time = date("Y-m-d H:i:s");
         } else {
@@ -562,7 +562,7 @@ class CallFlowController extends Controller
         $callRecord->start_time = $start_time;
         $callRecord->end_time = $end_time;
         $callRecord->type = RecordType::PHONE;
-        $callRecord->payload = json_encode($request->query->all());
+        $callRecord->payload = json_encode($request->all());
 
         $this->call->insertCallRecord($callRecord);
 
@@ -572,15 +572,15 @@ class CallFlowController extends Controller
 
     public function postCallAction(Request $request)
     {
-        $sms_messages = $request->query('Payload') ? json_decode(urldecode($request->query('Payload'))) : [];
+        $sms_messages = $request->get('Payload') ? json_decode(urldecode($request->get('Payload'))) : [];
         $digits = $this->call->getIvrResponse($request);
 
         $twiml = new VoiceResponse();
         if (($digits == 1 || $digits == 3) && count($sms_messages) > 0) {
             if ($this->settings->get("sms_combine")) {
                 $this->twilio->client()->messages->create(
-                    $request->query('From'),
-                    array("from" => $request->query('To'),
+                    $request->get('From'),
+                    array("from" => $request->get('To'),
                         "body" => implode(
                             "\n\n",
                             $sms_messages
@@ -589,8 +589,8 @@ class CallFlowController extends Controller
             } else {
                 for ($i = 0; $i < count($sms_messages); $i++) {
                     $this->twilio->client()->messages->create(
-                        $request->query('From'),
-                        array("from" => $request->query('To'), "body" => $sms_messages[$i])
+                        $request->get('From'),
+                        array("from" => $request->get('To'), "body" => $sms_messages[$i])
                     );
                 }
             }
@@ -662,7 +662,7 @@ class CallFlowController extends Controller
                     ->setNumDigits(1)
                     ->setTimeout(10)
                     ->setSpeechTimeout("auto")
-                    ->setAction("province-lookup-list-response.php?SearchType=".$request->query("SearchType"))
+                    ->setAction("province-lookup-list-response.php?SearchType=".$request->get("SearchType"))
                     ->setMethod("GET");
                 $gather->say($say)
                     ->setVoice($this->settings->voice())
@@ -676,7 +676,7 @@ class CallFlowController extends Controller
                 ->setInput("speech")
                 ->setTimeout(10)
                 ->setSpeechTimeout("auto")
-                ->setAction("city-or-county-voice-input.php?SearchType=".$request->query("SearchType"))
+                ->setAction("city-or-county-voice-input.php?SearchType=".$request->get("SearchType"))
                 ->setMethod("GET");
             $gather->say($say)
                 ->setVoice($this->settings->voice())
@@ -689,9 +689,9 @@ class CallFlowController extends Controller
     public function helplineAnswerResponse(Request $request)
     {
         $twiml = new VoiceResponse();
-        if ($request->query('Digits') == "1") {
+        if ($request->get('Digits') == "1") {
             $conferences = $this->twilio->client()->conferences
-                ->read(array ("friendlyName" => $request->query('conference_name') ));
+                ->read(array ("friendlyName" => $request->get('conference_name') ));
             $participants = $this->twilio->client()->conferences($conferences[0]->sid)->participants->read();
 
             if (count($participants) == 2) {
@@ -700,9 +700,9 @@ class CallFlowController extends Controller
                     ->setVoice($this->settings->voice())->setLanguage($this->settings->get('language'));
                 $twiml->hangup();
             } else {
-                $this->call->insertCallEventRecord(EventId::VOLUNTEER_IN_CONFERENCE, (object)["to_number" => $request->query('Called')]);
+                $this->call->insertCallEventRecord(EventId::VOLUNTEER_IN_CONFERENCE, (object)["to_number" => $request->get('Called')]);
                 $dial = $twiml->dial();
-                $dial->conference($request->query("conference_name"))
+                $dial->conference($request->get("conference_name"))
                     ->setStatusCallbackMethod("GET")
                     ->setStatusCallbackEvent("join")
                     ->setStartConferenceOnEnter("true")
@@ -712,13 +712,13 @@ class CallFlowController extends Controller
         } else {
             $this->call->insertCallEventRecord(
                 EventId::VOLUNTEER_REJECTED,
-                (object)["digits" => $request->query('Digits'),
-                    "to_number" => $request->query('Called')]
+                (object)["digits" => $request->get('Digits'),
+                    "to_number" => $request->get('Called')]
             );
             $this->twilio->incrementNoAnswerCount();
             $this->call->setConferenceParticipant(
-                $request->query('conference_name'),
-                $request->query('CallSid'),
+                $request->get('conference_name'),
+                $request->get('CallSid'),
                 CallRole::VOLUNTEER
             );
             $this->settings->logDebug("They rejected the call.");
@@ -731,14 +731,14 @@ class CallFlowController extends Controller
     public function helplineOutdialResponse(Request $request)
     {
         $conferences = $this->twilio->client()->conferences
-            ->read(array ("friendlyName" => $request->query('conference_name') ));
+            ->read(array ("friendlyName" => $request->get('conference_name') ));
         $participants = $this->twilio->client()->conferences($conferences[0]->sid)->participants->read();
 
         $twiml = new VoiceResponse();
         if (count($participants) == 2) {
             $this->call->setConferenceParticipant(
-                $request->query('conference_name'),
-                $request->query('CallSid'),
+                $request->get('conference_name'),
+                $request->get('CallSid'),
                 CallRole::VOLUNTEER
             );
             error_log("Enough volunteers have joined.  Hanging up this volunteer.");
@@ -748,23 +748,23 @@ class CallFlowController extends Controller
         } elseif (count($participants) > 0) {
             $this->call->insertCallEventRecord(
                 EventId::VOLUNTEER_ANSWERED,
-                (object)['to_number' => $request->query('Called')]
+                (object)['to_number' => $request->get('Called')]
             );
             $this->call->setConferenceParticipant(
-                $request->query('conference_name'),
-                $request->query('CallSid'),
+                $request->get('conference_name'),
+                $request->get('CallSid'),
                 CallRole::VOLUNTEER
             );
             error_log("Volunteer picked up or put to their voicemail, asking if they want to take the call, timing out after 15 seconds of no response.");
             if ($this->settings->has('volunteer_auto_answer') && $this->settings->get('volunteer_auto_answer')) {
-                $twiml->redirect("helpline-answer-response.php?Digits=1&conference_name=".$request->query('conference_name')."&service_body_id=" . $request->query('service_body_id') . $this->settings->getSessionLink(true))
+                $twiml->redirect("helpline-answer-response.php?Digits=1&conference_name=".$request->get('conference_name')."&service_body_id=" . $request->get('service_body_id') . $this->settings->getSessionLink(true))
                 ->setMethod("GET");
             } else {
                 $gather = $twiml->gather()
                     ->setActionOnEmptyResult(true)
                     ->setNumDigits("1")
                     ->setTimeout("15")
-                    ->setAction("helpline-answer-response.php?conference_name=".$request->query('conference_name')."&service_body_id=" . $request->query('service_body_id') . $this->settings->getSessionLink(true))
+                    ->setAction("helpline-answer-response.php?conference_name=".$request->get('conference_name')."&service_body_id=" . $request->get('service_body_id') . $this->settings->getSessionLink(true))
                     ->setMethod("GET");
                 $gather->say($this->settings->word('you_have_a_call_from_the_helpline'))
                     ->setVoice($this->settings->voice())
@@ -772,12 +772,12 @@ class CallFlowController extends Controller
             }
         } else {
             $this->call->setConferenceParticipant(
-                $request->query('conference_name'),
-                $request->query('CallSid'),
+                $request->get('conference_name'),
+                $request->get('CallSid'),
                 CallRole::CALLER
             );
             $this->call->insertCallEventRecord(EventID::VOLUNTEER_ANSWERED_BUT_CALLER_HUP, (object)[
-                'to_number' => $request->query('Called')]);
+                'to_number' => $request->get('Called')]);
             error_log("The caller hungup.");
             $twiml->say($this->settings->word('the_caller_hungup'))
                 ->setVoice($this->settings->voice())->setLanguage($this->settings->get('language'));
@@ -791,12 +791,12 @@ class CallFlowController extends Controller
     {
         try {
             if ($request->has("OriginalCallerId")) {
-                $original_caller_id = $request->query("OriginalCallerId");
+                $original_caller_id = $request->get("OriginalCallerId");
             }
 
             $service_body = $this->meetingResults->getServiceBodyCoverage($latitude, $longitude);
             $serviceBodyCallHandling   = $this->config->getCallHandling($service_body->id);
-            $tracker                   = $request->has("tracker") ? 0 : intval($request->query("tracker"));
+            $tracker                   = $request->has("tracker") ? 0 : intval($request->get("tracker"));
 
             if ($serviceBodyCallHandling->sms_routing_enabled) {
                 $volunteer_routing_parameters = new VolunteerRoutingParameters();
@@ -813,7 +813,7 @@ class CallFlowController extends Controller
                     $original_caller_id,
                     array(
                         "body" => $this->settings->word('your_request_has_been_received'),
-                        "from" => $request->query('To')
+                        "from" => $request->get('To')
                     )
                 );
 
@@ -833,7 +833,7 @@ class CallFlowController extends Controller
                                     $original_caller_id,
                                     $this->settings->word('please_call_or_text_them_back')
                                 ),
-                                "from" => $request->query('To')
+                                "from" => $request->get('To')
                             )
                         );
                     } else {
@@ -849,7 +849,7 @@ class CallFlowController extends Controller
                 $original_caller_id,
                 array(
                     "body" => $this->settings->word('could_not_find_a_volunteer'),
-                    "from" => $request->query('To')
+                    "from" => $request->get('To')
                 )
             );
         }
@@ -889,10 +889,10 @@ class CallFlowController extends Controller
         }
 
         if ($locationSearchMethod == LocationSearchMethod::VOICE) { // voice based
-            $twiml->redirect($action."?SearchType=".$request->query('SearchType')."&InputMethod=".LocationSearchMethod::VOICE)
+            $twiml->redirect($action."?SearchType=".$request->get('SearchType')."&InputMethod=".LocationSearchMethod::VOICE)
             ->setMethod("GET");
         } elseif ($locationSearchMethod == LocationSearchMethod::DTMF) {
-            $twiml->redirect("zip-input.php?SearchType=".$request->query('SearchType')."&InputMethod=".LocationSearchMethod::DTMF)
+            $twiml->redirect("zip-input.php?SearchType=".$request->get('SearchType')."&InputMethod=".LocationSearchMethod::DTMF)
             ->setMethod("GET");
         }
 
@@ -902,9 +902,9 @@ class CallFlowController extends Controller
     public function smsGateway(Request $request)
     {
         $callRecord = new CallRecord();
-        $callRecord->callSid = $request->query('SmsSid');
-        $callRecord->to_number = $request->query('To');
-        $callRecord->from_number = $request->query('From');
+        $callRecord->callSid = $request->get('SmsSid');
+        $callRecord->to_number = $request->get('To');
+        $callRecord->from_number = $request->get('From');
         $callRecord->duration = 0;
         $callRecord->start_time = date("Y-m-d H:i:s");
         $callRecord->end_time = date("Y-m-d H:i:s");

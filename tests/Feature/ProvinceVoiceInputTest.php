@@ -9,10 +9,10 @@ beforeEach(function () {
     $_SESSION = null;
 });
 
-test('province input list selection', function () {
+test('province input list selection', function ($method) {
     $_SESSION['override_province_lookup_list'] = ["North Carolina","South Carolina"];
     $_REQUEST['SearchType'] = 2;
-    $response = $this->call('GET', '/province-voice-input.php', ["SearchType"=>2]);
+    $response = $this->call($method, '/province-voice-input.php', ["SearchType"=>2]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -27,11 +27,11 @@ test('province input list selection', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('province input speech input', function () {
+test('province input speech input', function ($method) {
     $_REQUEST['SearchType'] = 2;
-    $response = $this->call('GET', '/province-voice-input.php', ["SearchType"=>2]);
+    $response = $this->call($method, '/province-voice-input.php', ["SearchType"=>2]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -45,4 +45,4 @@ test('province input speech input', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
