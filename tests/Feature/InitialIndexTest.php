@@ -34,8 +34,8 @@ beforeEach(function () {
     $this->twilioService = mock(TwilioService::class)->makePartial();
 });
 
-test('initial call-in default', function () {
-    $response = $this->get('/');
+test('initial call-in default', function ($method) {
+    $response = $this->call($method, '/');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -49,28 +49,11 @@ test('initial call-in default', function () {
             '</Gather>',
             '</Response>'
     ], false);
-});
+})->with(['GET', 'POST']);
 
-test('initial call-in default as a POST', function () {
-    $response = $this->post('/');
-    $response
-        ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
-            '<?xml version="1.0" encoding="UTF-8"?>',
-            '<Response>',
-            '<Pause length="2"/>',
-            '<Say voice="alice" language="en-US">Test Helpline</Say>',
-            '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
-            '<Say voice="alice" language="en-US">press two to search for meetings</Say>',
-            '</Gather>',
-            '</Response>'
-        ], false);
-});
-
-test('initial call-in with jft option enabled', function () {
+test('initial call-in with jft option enabled', function ($method) {
     $_SESSION['override_jft_option'] = "true";
-    $response = $this->get('/');
+    $response = $this->call($method, '/');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -86,11 +69,11 @@ test('initial call-in with jft option enabled', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('initial call-in with spad option enabled', function () {
+test('initial call-in with spad option enabled', function ($method) {
     $_SESSION['override_spad_option'] = "true";
-    $response = $this->get('/');
+    $response = $this->call($method, '/');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -106,12 +89,12 @@ test('initial call-in with spad option enabled', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('initial call-in with jft and spad option enabled', function () {
+test('initial call-in with jft and spad option enabled', function ($method) {
     $_SESSION['override_jft_option'] = "true";
     $_SESSION['override_spad_option'] = "true";
-    $response = $this->get('/');
+    $response = $this->call($method, '/');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -129,11 +112,11 @@ test('initial call-in with jft and spad option enabled', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('initial call-in default with language selections', function () {
+test('initial call-in default with language selections', function ($method) {
     $_SESSION['override_language_selections'] = "en-US,es-US";
-    $response = $this->get('/');
+    $response = $this->call($method, '/');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -141,11 +124,11 @@ test('initial call-in default with language selections', function () {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response><Redirect>lng-selector.php</Redirect></Response>',
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('selected language call flow', function () {
+test('selected language call flow', function ($method) {
     $_SESSION['override_language_selections'] = "en-US,es-US";
-    $response = $this->call("GET", '/', [
+    $response = $this->call($method, '/', [
         "Digits"=>"2"
     ]);
     $response
@@ -161,11 +144,11 @@ test('selected language call flow', function () {
             '</Gather>',
             '</Response>',
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('play custom promptset', function () {
+test('play custom promptset', function ($method) {
     $_SESSION['override_en_US_greeting'] = "https://example.org/fake.mp3";
-    $response = $this->call("GET", '/');
+    $response = $this->call($method, '/');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -178,12 +161,12 @@ test('play custom promptset', function () {
             '</Gather>',
             '</Response>',
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('play custom promptset in a different language with selection menu', function () {
+test('play custom promptset in a different language with selection menu', function ($method) {
     $_SESSION['override_language_selections'] = "en-US,es-US";
     $_SESSION['override_es_US_greeting'] = "https://example.org/fake_es.mp3";
-    $response = $this->call("GET", '/', [
+    $response = $this->call($method, '/', [
         'Digits' => "2"
     ]);
     $response
@@ -198,13 +181,13 @@ test('play custom promptset in a different language with selection menu', functi
             '</Gather>',
             '</Response>',
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('play custom promptset in a different language with single forced language', function () {
+test('play custom promptset in a different language with single forced language', function ($method) {
     $_SESSION['override_gather_language'] = "es-US";
     $_SESSION['override_word_language'] = "es-US";
     $_SESSION['override_es_US_greeting'] = "https://example.org/fake_es.mp3";
-    $response = $this->call("GET", '/');
+    $response = $this->call($method, '/');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -217,9 +200,9 @@ test('play custom promptset in a different language with single forced language'
             '</Gather>',
             '</Response>',
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('initial callin without a status callback', function () {
+test('initial callin without a status callback', function ($method) {
     $settingsService = new SettingsService();
     $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
     $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
@@ -256,7 +239,7 @@ test('initial callin without a status callback', function () {
     app()->instance(TwilioService::class, $this->twilioService);
     app()->instance(ReportsRepository::class, $this->reportsRepository);
 
-    $response = $this->call("GET", '/', [
+    $response = $this->call($method, '/', [
         'CallSid'=>$this->fakeCallSid
     ]);
 
@@ -274,9 +257,9 @@ test('initial callin without a status callback', function () {
             '</Gather>',
             '</Response>',
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('initial callin without a status callback without actual status.php in it', function () {
+test('initial callin without a status callback without actual status.php in it', function ($method) {
     $settingsService = new SettingsService();
     $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
     $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
@@ -313,7 +296,7 @@ test('initial callin without a status callback without actual status.php in it',
     app()->instance(TwilioService::class, $this->twilioService);
     app()->instance(ReportsRepository::class, $this->reportsRepository);
 
-    $response = $this->call("GET", '/', [
+    $response = $this->call($method, '/', [
         'CallSid'=>$this->fakeCallSid
     ]);
 
@@ -331,9 +314,9 @@ test('initial callin without a status callback without actual status.php in it',
             '</Gather>',
             '</Response>',
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('initial callin with service body override', function () {
+test('initial callin with service body override', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
@@ -355,7 +338,7 @@ test('initial callin with service body override', function () {
     ]])->times(2);
     app()->instance(ConfigRepository::class, $repository);
 
-    $response = $this->call("GET", '/', [
+    $response = $this->call($method, '/', [
         "override_service_body_id"=>44
     ]);
 
@@ -371,11 +354,11 @@ test('initial callin with service body override', function () {
             '</Gather>',
             '</Response>',
             ], false);
-});
+})->with(['GET', 'POST']);
 
-test('initial call-in extension dial', function () {
+test('initial call-in extension dial', function ($method) {
     $_SESSION['override_extension_dial'] = true;
-    $response = $this->get('/');
+    $response = $this->call($method, '/');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -387,4 +370,4 @@ test('initial call-in extension dial', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);

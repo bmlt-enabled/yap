@@ -16,8 +16,8 @@ beforeEach(function () {
     $this->reportsRepository = $this->middleware->insertSession($this->fakeCallSid);
 });
 
-test('dialback initial', function () {
-    $response = $this->get('/dialback.php');
+test('dialback initial', function ($method) {
+    $response = $this->call($method, '/dialback.php');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -31,9 +31,9 @@ test('dialback initial', function () {
             '</Gather>',
             '</Response>'
     ], false);
-});
+})->with(['GET', 'POST']);
 
-test('dialback dialer valid pin entry', function () {
+test('dialback dialer valid pin entry', function ($method) {
     $fakePin = "123456";
     $this->reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs();
     $this->reportsRepository->shouldReceive("isDialbackPinValid")
@@ -51,7 +51,7 @@ test('dialback dialer valid pin entry', function () {
             "CallDuration"=>"120"]
     );
     $response->assertStatus(200);
-    $response = $this->call('GET', '/dialback-dialer.php', ['Digits'=>$fakePin,'Called'=>$called]);
+    $response = $this->call($method, '/dialback-dialer.php', ['Digits'=>$fakePin,'Called'=>$called]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -64,9 +64,9 @@ test('dialback dialer valid pin entry', function () {
             '<Dial callerId="'.$called.'">'.$fakePin.'</Dial>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('dialback dialer invalid pin entry', function () {
+test('dialback dialer invalid pin entry', function ($method) {
     $repository = Mockery::mock(ReportsRepository::class);
     $repository->shouldReceive("insertCallRecord")->withAnyArgs();
     $repository->shouldReceive("isDialbackPinValid")
@@ -74,7 +74,7 @@ test('dialback dialer invalid pin entry', function () {
         ->andReturn([]);
     app()->instance(ReportsRepository::class, $repository);
     $_REQUEST['Digits'] = 123;
-    $response = $this->get('/dialback-dialer.php');
+    $response = $this->call($method, '/dialback-dialer.php');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -88,4 +88,4 @@ test('dialback dialer invalid pin entry', function () {
             '<Redirect>index.php</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);

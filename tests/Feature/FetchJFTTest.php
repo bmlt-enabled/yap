@@ -9,10 +9,10 @@ beforeEach(function () {
     $_SESSION = null;
 });
 
-test('get the JFT', function () {
-    $response = $this->call('GET', '/fetch-jft.php');
+test('get the JFT', function ($method) {
+    $response = $this->call($method, '/fetch-jft.php');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
         ->assertSeeText("Just for Today", false);
-});
+})->with(['GET', 'POST']);

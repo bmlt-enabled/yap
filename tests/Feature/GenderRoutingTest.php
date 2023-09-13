@@ -9,10 +9,10 @@ beforeEach(function () {
     $_SESSION = null;
 });
 
-test('invalid entry', function () {
+test('invalid entry', function ($method) {
     $_REQUEST['SearchType'] = "1";
     $_REQUEST['Digits'] = "7";
-    $response = $this->call('GET', '/gender-routing-response.php?SearchType=1&Digits=7');
+    $response = $this->call($method, '/gender-routing-response.php?SearchType=1&Digits=7');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -23,7 +23,7 @@ test('invalid entry', function () {
             '<Redirect method="GET">gender-routing.php</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
 test('selected option', function () {
     $_REQUEST['SearchType'] = "1";

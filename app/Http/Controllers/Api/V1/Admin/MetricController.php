@@ -20,10 +20,10 @@ class MetricController extends Controller
     public function index(Request $request): JsonResponse
     {
         $data = $this->reportsService->getMetrics(
-            $request->query("service_body_id"),
-            $request->query("date_range_start"),
-            $request->query("date_range_end"),
-            $request->query("recurse")
+            $request->get("service_body_id"),
+            $request->get("date_range_start"),
+            $request->get("date_range_end"),
+            $request->get("recurse")
         );
 
         return response()->json($data)

@@ -12,8 +12,8 @@ beforeEach(function () {
     $_SESSION = null;
 });
 
-test('language selector no languages set', function () {
-    $response = $this->call('GET', '/lng-selector.php');
+test('language selector no languages set', function ($method) {
+    $response = $this->call($method, '/lng-selector.php');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -24,13 +24,13 @@ test('language selector no languages set', function () {
             'language gateway options are not set, please refer to the documentation to utilize this feature.',
             '</Say><Hangup/></Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('language selector with languages set', function () {
+test('language selector with languages set', function ($method) {
     $settingsService = new SettingsService();
     $settingsService->set("language_selections", "en-US,es-US");
     app()->instance(SettingsService::class, $settingsService);
-    $response = $this->call('GET', '/lng-selector.php');
+    $response = $this->call($method, '/lng-selector.php');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -48,4 +48,4 @@ test('language selector with languages set', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);

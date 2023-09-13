@@ -21,7 +21,7 @@ beforeEach(function () {
     $this->data =  "{\"data\":{}}";
 });
 
-test('voicemail standard response', function () {
+test('voicemail standard response', function ($method) {
     $service_body_id = $this->serviceBodyId;
     $_SESSION['override_service_body_id'] = $service_body_id;
     $repository = Mockery::mock(ConfigRepository::class);
@@ -36,7 +36,7 @@ test('voicemail standard response', function () {
     ]]);
     app()->instance(ConfigRepository::class, $repository);
 
-    $response = $this->call('GET', '/voicemail.php', [
+    $response = $this->call($method, '/voicemail.php', [
         "caller_id" => "+17325551212",
         "Caller" => "+12125551313",
         //"ysk" => "test"
@@ -52,9 +52,9 @@ test('voicemail standard response', function () {
             '<Record playBeep="1" maxLength="120" timeout="15" recordingStatusCallback="voicemail-complete.php?service_body_id=44&amp;caller_id=%2B17325551212&amp;caller_number=%2B12125551313" recordingStatusCallbackMethod="GET"/>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('voicemail custom prompt', function () {
+test('voicemail custom prompt', function ($method) {
     $service_body_id = $this->serviceBodyId;
     $_SESSION['override_service_body_id'] = $service_body_id;
     $repository = Mockery::mock(ConfigRepository::class);
@@ -69,7 +69,7 @@ test('voicemail custom prompt', function () {
     ]]);
     app()->instance(ConfigRepository::class, $repository);
     $_SESSION['override_en_US_voicemail_greeting'] = "https://example.org/test.mp3";
-    $response = $this->call('GET', '/voicemail.php', [
+    $response = $this->call($method, '/voicemail.php', [
         "caller_id" => "+17325551212",
         "Caller" => "+12125551313",
         //"ysk" => "test"
@@ -85,4 +85,4 @@ test('voicemail custom prompt', function () {
             '<Record playBeep="1" maxLength="120" timeout="15" recordingStatusCallback="voicemail-complete.php?service_body_id=44&amp;caller_id=%2B17325551212&amp;caller_number=%2B12125551313" recordingStatusCallbackMethod="GET"/>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);

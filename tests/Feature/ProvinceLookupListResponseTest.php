@@ -9,11 +9,11 @@ beforeEach(function () {
     $_SESSION = null;
 });
 
-test('invalid entry with province input response', function () {
+test('invalid entry with province input response', function ($method) {
     $_SESSION['override_province_lookup_list'] = ["North Carolina","South Carolina"];
     $_REQUEST['Digits'] = 3;
     $_REQUEST['SearchType'] = 2;
-    $response = $this->call('GET', '/province-lookup-list-response.php?Digits=3&SearchType=2');
+    $response = $this->call($method, '/province-lookup-list-response.php?Digits=3&SearchType=2');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -23,13 +23,13 @@ test('invalid entry with province input response', function () {
             '<Say voice="alice" language="en-US">you might have an invalid entry</Say>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('valid entry with province input response', function () {
+test('valid entry with province input response', function ($method) {
     $_SESSION['override_province_lookup_list'] = ["North Carolina","South Carolina"];
     $_REQUEST['Digits'] = 2;
     $_REQUEST['SearchType'] = 2;
-    $response = $this->call('GET', '/province-lookup-list-response.php?SearchType=2&Digits=2');
+    $response = $this->call($method, '/province-lookup-list-response.php?SearchType=2&Digits=2');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -39,4 +39,4 @@ test('valid entry with province input response', function () {
             '<Redirect>city-or-county-voice-input.php?SearchType=2&amp;SpeechResult=South+Carolina</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);

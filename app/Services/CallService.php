@@ -50,9 +50,9 @@ class CallService extends Service
         $response = "0";
 
         if ($request->has($field)) {
-            $response = $request->query($field);
+            $response = $request->get($field);
         } elseif ($request->has('SpeechResult')) {
-            $response = intval($request->query('SpeechResult'));
+            $response = intval($request->get('SpeechResult'));
         }
 
         if (count($expected_exacts) > 0 || count($expected_likes) > 0) {
@@ -167,9 +167,9 @@ class CallService extends Service
             && $this->settings->has('speech_gathering')
             && json_encode($this->settings->get('speech_gathering'))
             && $request->has('SpeechResult')) {
-            $digit = intval($request->query('SpeechResult'));
+            $digit = intval($request->get('SpeechResult'));
         } elseif ($request->has($field)) {
-            $digit = intval($request->query($field));
+            $digit = intval($request->get($field));
         } else {
             return null;
         }

@@ -19,8 +19,8 @@ beforeEach(function () {
     ])->makePartial();
 });
 
-test('search for volunteers by city or county', function () {
-    $response = $this->call('GET', '/input-method-result.php', [
+test('search for volunteers by city or county', function ($method) {
+    $response = $this->call($method, '/input-method-result.php', [
         "SearchType"=>"1",
         "Digits"=>"1",
     ]);
@@ -33,10 +33,10 @@ test('search for volunteers by city or county', function () {
             '<Redirect method="GET">city-or-county-voice-input.php?SearchType=1&amp;InputMethod=4</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('search for volunteers by zip code', function () {
-    $response = $this->call('GET', '/input-method-result.php', [
+test('search for volunteers by zip code', function ($method) {
+    $response = $this->call($method, '/input-method-result.php', [
         "SearchType" => "1",
         "Digits" => "2"
     ]);
@@ -49,11 +49,11 @@ test('search for volunteers by zip code', function () {
             '<Redirect method="GET">zip-input.php?SearchType=1&amp;InputMethod=5</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('jft option', function () {
+test('jft option', function ($method) {
     $_SESSION['override_jft_option'] = true;
-    $response = $this->call('GET', '/input-method-result.php', [
+    $response = $this->call($method, '/input-method-result.php', [
         "Digits"=>"3"
     ]);
     $response
@@ -65,11 +65,11 @@ test('jft option', function () {
             '<Redirect method="GET">fetch-jft.php</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('spad option', function () {
+test('spad option', function ($method) {
     $_SESSION['override_spad_option'] = true;
-    $response = $this->call('GET', '/input-method-result.php', [
+    $response = $this->call($method, '/input-method-result.php', [
         "Digits"=>"4"
     ]);
     $response
@@ -81,7 +81,7 @@ test('spad option', function () {
             '<Redirect method="GET">fetch-spad.php</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
 test('city or county lookup', function () {
     $response = $this->call('GET', '/input-method-result.php', [

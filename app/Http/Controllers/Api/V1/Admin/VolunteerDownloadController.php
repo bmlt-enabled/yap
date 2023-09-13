@@ -19,8 +19,8 @@ class VolunteerDownloadController extends Controller
     public function index(Request $request)
     {
         try {
-            $report = $this->volunteerService->getVolunteersListReport($request->query("service_body_id"));
-            if ($request->query('fmt') == "csv") {
+            $report = $this->volunteerService->getVolunteersListReport($request->get("service_body_id"));
+            if ($request->get('fmt') == "csv") {
                 $handle = fopen('php://memory', 'rw');
                 try {
                     fputcsv($handle, array("name", "number", "gender", "responder", "type", "language", "shift_info"));
@@ -42,12 +42,12 @@ class VolunteerDownloadController extends Controller
                         ->header("Content-Length", strlen($data))
                         ->header("Content-Disposition", sprintf(
                             'attachment; filename="%s-map-metrics.csv"',
-                            $request->query("service_body_id")
+                            $request->get("service_body_id")
                         ));
                 } finally {
                     fclose($handle);
                 }
-            } elseif ($request->query('fmt') == "json") {
+            } elseif ($request->get('fmt') == "json") {
                 return response()->json($report)->header("Content-Type", "application/json");
             } else {
                 return response()->json()->header("Content-Type", "application/json");

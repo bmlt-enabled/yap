@@ -13,8 +13,8 @@ beforeEach(function () {
     $_SESSION = null;
 });
 
-test('search for volunteers', function () {
-    $response = $this->call('GET', '/input-method.php', [
+test('search for volunteers', function ($method) {
+    $response = $this->call($method, '/input-method.php', [
         "Digits"=>"1"
     ]);
     $response
@@ -29,14 +29,14 @@ test('search for volunteers', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('search for meetings', function () {
+test('search for meetings', function ($method) {
     $reportsRepository = Mockery::mock(ReportsRepository::class);
     $reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
     app()->instance(ReportsRepository::class, $reportsRepository);
 
-    $response = $this->call('GET', '/input-method.php', [
+    $response = $this->call($method, '/input-method.php', [
         "Digits"=>"2"
     ]);
     $response
@@ -51,11 +51,11 @@ test('search for meetings', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('search for meetings, disable postal code gathering', function () {
+test('search for meetings, disable postal code gathering', function ($method) {
     $_SESSION['override_disable_postal_code_gather'] = true;
-    $response = $this->call('GET', '/input-method.php', [
+    $response = $this->call($method, '/input-method.php', [
         "Digits"=>"2"
     ]);
     $response
@@ -67,11 +67,11 @@ test('search for meetings, disable postal code gathering', function () {
             '<Redirect method="GET">input-method-result.php?SearchType=2&amp;Digits=1</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('direct to volunteer search for a specific service body', function () {
+test('direct to volunteer search for a specific service body', function ($method) {
     $_SESSION['override_service_body_id'] = 44;
-    $response = $this->call('GET', '/input-method.php', [
+    $response = $this->call($method, '/input-method.php', [
         "Digits"=>"1",
         "Called"=>"123"
     ]);
@@ -84,11 +84,11 @@ test('direct to volunteer search for a specific service body', function () {
             '<Redirect method="GET">helpline-search.php?Called=123</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('search for volunteers without custom query', function () {
+test('search for volunteers without custom query', function ($method) {
     $_SESSION['override_custom_query'] = '&services=92';
-    $response = $this->call('GET', '/input-method.php', [
+    $response = $this->call($method, '/input-method.php', [
         "Digits"=>"2",
         "Called"=>"123"
     ]);
@@ -101,11 +101,11 @@ test('search for volunteers without custom query', function () {
             '<Redirect method="GET">meeting-search.php?Called=123</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('jft option enabled and selected', function () {
+test('jft option enabled and selected', function ($method) {
     $_SESSION['override_jft_option'] = true;
-    $response = $this->call('GET', '/input-method.php', [
+    $response = $this->call($method, '/input-method.php', [
         "Digits"=>"3"
     ]);
     $response
@@ -117,11 +117,11 @@ test('jft option enabled and selected', function () {
             '<Redirect method="GET">fetch-jft.php</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('spad option enabled and selected', function () {
+test('spad option enabled and selected', function ($method) {
     $_SESSION['override_spad_option'] = true;
-    $response = $this->call('GET', '/input-method.php', [
+    $response = $this->call($method, '/input-method.php', [
         "Digits"=>"4"
     ]);
     $response
@@ -133,10 +133,10 @@ test('spad option enabled and selected', function () {
             '<Redirect method="GET">fetch-spad.php</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('dialback selected', function () {
-    $response = $this->call('GET', '/input-method.php', [
+test('dialback selected', function ($method) {
+    $response = $this->call($method, '/input-method.php', [
         "Digits"=>"9"
     ]);
     $response
@@ -148,12 +148,12 @@ test('dialback selected', function () {
             '<Redirect method="GET">dialback.php</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('menu with meeting search option with jft and spad enabled', function () {
+test('menu with meeting search option with jft and spad enabled', function ($method) {
     $_SESSION['override_spad_option'] = true;
     $_SESSION['override_jft_option'] = true;
-    $response = $this->call('GET', '/input-method.php', [
+    $response = $this->call($method, '/input-method.php', [
         "Digits"=>"2"
     ]);
     $response
@@ -170,9 +170,9 @@ test('menu with meeting search option with jft and spad enabled', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('custom extension configured and selected', function () {
+test('custom extension configured and selected', function ($method) {
     $_SESSION['override_custom_extensions'] = [7 => '12125551212'];
     $_SESSION['override_digit_map_search_type'] = [
         '1' => SearchType::VOLUNTEERS,
@@ -183,7 +183,7 @@ test('custom extension configured and selected', function () {
         '9' => SearchType::DIALBACK
     ];
 
-    $response = $this->call('GET', '/input-method.php', [
+    $response = $this->call($method, '/input-method.php', [
         "Digits"=>"7"
     ]);
     $response
@@ -195,10 +195,10 @@ test('custom extension configured and selected', function () {
             '<Redirect method="GET">custom-ext.php</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('play custom title', function () {
-    $response = $this->call('GET', '/input-method.php', [
+test('play custom title', function ($method) {
+    $response = $this->call($method, '/input-method.php', [
         "Digits"=>"2",
         "PlayTitle"=>"1"
     ]);
@@ -215,10 +215,10 @@ test('play custom title', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('invalid search', function () {
-    $response = $this->call('GET', '/input-method.php', [
+test('invalid search', function ($method) {
+    $response = $this->call($method, '/input-method.php', [
         "Digits"=>"5"
     ]);
     $response
@@ -231,10 +231,10 @@ test('invalid search', function () {
             '<Redirect>index.php</Redirect>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('retry message loop with custom message', function () {
-    $response = $this->call('GET', '/input-method.php', [
+test('retry message loop with custom message', function ($method) {
+    $response = $this->call($method, '/input-method.php', [
         "Retry"=>"1",
         "RetryMessage"=>"You Failed Son!",
         "Digits"=>"1",
@@ -253,10 +253,10 @@ test('retry message loop with custom message', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('retry message loop with location message', function () {
-    $response = $this->call('GET', '/input-method.php', [
+test('retry message loop with location message', function ($method) {
+    $response = $this->call($method, '/input-method.php', [
         "Retry"=>"1",
         "Digits"=>"1",
     ]);
@@ -274,4 +274,4 @@ test('retry message loop with location message', function () {
             '</Gather>',
             '</Response>'
         ], false);
-});
+})->with(['GET', 'POST']);

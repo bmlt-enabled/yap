@@ -35,7 +35,7 @@ beforeEach(function () {
     $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
 });
 
-test('noop', function () {
+test('noop', function ($method) {
     $_SESSION['override_service_body_id'] = '44';
     $_SESSION['no_answer_max'] = 1;
     $_SESSION['master_callersid'] = $this->callSid;
@@ -49,7 +49,7 @@ test('noop', function () {
     $this->twilioClient->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
     $this->twilioClient->calls = $callContextMock;
 
-    $response = $this->call('GET', '/helpline-dialer.php', [
+    $response = $this->call($method, '/helpline-dialer.php', [
         'noop' => "1",
         'SearchType' => "1",
         'Called' => "+12125551212",
@@ -60,9 +60,9 @@ test('noop', function () {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json");
-});
+})->with(['GET', 'POST']);
 
-test('do nothing', function () {
+test('do nothing', function ($method) {
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
         '44',
@@ -85,7 +85,7 @@ test('do nothing', function () {
     $this->twilioClient->conferences = $conferenceListMock;
 
     $_SESSION['override_service_body_id'] = '44';
-    $response = $this->call('GET', '/helpline-dialer.php', [
+    $response = $this->call($method, '/helpline-dialer.php', [
         'SearchType' => "1",
         'Called' => "+12125551212",
         'ForceNumber' => '+19998887777',
@@ -94,7 +94,7 @@ test('do nothing', function () {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json");
-});
+})->with(['GET', 'POST']);
 
 // TODO: disabled until we refactor functions.php
 //test('force number', function () {

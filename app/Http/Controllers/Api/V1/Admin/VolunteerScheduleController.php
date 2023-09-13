@@ -20,7 +20,7 @@ class VolunteerScheduleController extends Controller
     public function index(Request $request) : JsonResponse
     {
         try {
-            $data = $this->volunteerService->getHelplineSchedule($request->query("service_body_id"), true);
+            $data = $this->volunteerService->getHelplineSchedule($request->get("service_body_id"), true);
         } catch (NoVolunteersException) {
             $data = [];
         }

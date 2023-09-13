@@ -31,7 +31,7 @@ beforeEach(function () {
     $this->recordingUrl = "file:///".getcwd()."/tests/fake";
 });
 
-test('voicemail complete send sms using primary contact', function () {
+test('voicemail complete send sms using primary contact', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = "44";
     $_REQUEST['CallSid'] = $this->callSid;
@@ -68,7 +68,7 @@ test('voicemail complete send sms using primary contact', function () {
         "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"2125551212\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
     ]])->once();
     app()->instance(ConfigRepository::class, $repository);
-    $response = $this->call('GET', '/voicemail-complete.php', [
+    $response = $this->call($method, '/voicemail-complete.php', [
         "caller_id" => "+17325551212",
         "CallSid" => $this->callSid,
         "RecordingUrl" => $this->recordingUrl,
@@ -82,9 +82,9 @@ test('voicemail complete send sms using primary contact', function () {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response/>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('voicemail complete send sms using volunteer responder option', function () {
+test('voicemail complete send sms using volunteer responder option', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $serviceBodyId = "44";
     $parentServiceBodyId = "43";
@@ -147,7 +147,7 @@ test('voicemail complete send sms using volunteer responder option', function ()
     );
 
     app()->instance(ConfigRepository::class, $repository);
-    $response = $this->call('GET', '/voicemail-complete.php', [
+    $response = $this->call($method, '/voicemail-complete.php', [
         "caller_id" => "+17325551212",
         "CallSid" => $this->callSid,
         "RecordingUrl" => $this->recordingUrl,
@@ -161,9 +161,9 @@ test('voicemail complete send sms using volunteer responder option', function ()
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response/>'
         ], false);
-});
+})->with(['GET', 'POST']);
 
-test('voicemail complete send email using primary contact', function () {
+test('voicemail complete send email using primary contact', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = "44";
     $this->utility->settings->set("smtp_host", "fake.host");
@@ -201,7 +201,7 @@ test('voicemail complete send email using primary contact', function () {
     $mailer->shouldReceive("send")->once();
     app()->instance(PHPMailer::class, $mailer);
 
-    $response = $this->call('GET', '/voicemail-complete.php', [
+    $response = $this->call($method, '/voicemail-complete.php', [
         "caller_id" => "+17325551212",
         "CallSid" => $this->callSid,
         "RecordingUrl" => $this->recordingUrl,
@@ -215,4 +215,4 @@ test('voicemail complete send email using primary contact', function () {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response/>'
         ], false);
-});
+})->with(['GET', 'POST']);

@@ -19,10 +19,10 @@ class CdrController extends Controller
     public function index(Request $request): JsonResponse
     {
         return response()->json($this->reportsService->getCallDetailRecords(
-            $request->query('service_body_id'),
-            $request->query('date_range_start'),
-            $request->query('date_range_end'),
-            $request->query('recurse')
+            $request->get('service_body_id'),
+            $request->get('date_range_start'),
+            $request->get('date_range_end'),
+            $request->get('recurse')
         ))->header("Content-Type", "application/json");
     }
 }
