@@ -15,4 +15,4 @@ static $bmlt_password = "";
 
 You will need to also ensure that PHP has write access to write to this folder, in order to store the authentication cookie from the BMLT root server.
 
-**NOTE: This will not work for the Tomato server, because there is no concept of authentication.**
+**NOTE: This will not work for the Aggregator server, because there is no concept of authentication.**
