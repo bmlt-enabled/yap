@@ -184,9 +184,9 @@ class HelplineController extends Controller
                         ->setInput("dtmf")
                         ->setTimeout(15)
                         ->setNumDigits(1)
-                        ->setAction("helpline-search.php?CaptchaVerified=1&ForceNumber="
+                        ->setAction(("helpline-search.php?CaptchaVerified=1&ForceNumber="
                         . urlencode($request->get('ForceNumber'))
-                        . $this->settings->getSessionLink(true) . " " . $waiting_message ? "&amp;WaitingMessage=1" : "");
+                        . $this->settings->getSessionLink(true) . ($waiting_message ? "&WaitingMessage=1" : "")));
 
                     $gather->say($this->settings->get('title') .  "..." . $this->settings->word('press_any_key_to_continue'))
                         ->setVoice($this->settings->voice())

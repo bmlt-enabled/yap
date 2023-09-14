@@ -42,6 +42,52 @@ test('force number', function ($method) {
         ], false);
 })->with(['GET', 'POST']);
 
+test('force number wth captcha', function ($method) {
+    $repository = Mockery::mock(ReportsRepository::class);
+    $repository->shouldReceive("insertCallRecord")->withAnyArgs();
+    $repository->shouldReceive("insertCallEventRecord")->withAnyArgs();
+    app()->instance(ReportsRepository::class, $repository);
+    $response = $this->call($method, '/helpline-search.php', [
+        'SearchType' => "1",
+        'Called' => "+12125551212",
+        'Captcha' => "1",
+        'ForceNumber' => '+19998887777',
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" hints="" input="dtmf" timeout="15" numDigits="1" action="helpline-search.php?CaptchaVerified=1&amp;ForceNumber=%2B19998887777">',
+            '<Dial><Number sendDigits="w">+19998887777</Number>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
+test('force number wth captcha w/waiting message querystring setting', function ($method) {
+    $repository = Mockery::mock(ReportsRepository::class);
+    $repository->shouldReceive("insertCallRecord")->withAnyArgs();
+    $repository->shouldReceive("insertCallEventRecord")->withAnyArgs();
+    app()->instance(ReportsRepository::class, $repository);
+    $response = $this->call($method, '/helpline-search.php', [
+        'SearchType' => "1",
+        'Called' => "+12125551212",
+        'Captcha' => "1",
+        'WaitingMessage' => "1",
+        'ForceNumber' => '+19998887777',
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" hints="" input="dtmf" timeout="15" numDigits="1" action="helpline-search.php?CaptchaVerified=1&amp;ForceNumber=%2B19998887777&amp;WaitingMessage=1">',
+            '<Dial><Number sendDigits="w">+19998887777</Number>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
 
 test('invalid entry', function ($method) {
     $response = $this->call($method, '/helpline-search.php', [

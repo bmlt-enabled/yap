@@ -5,8 +5,6 @@ use App\Constants\DataType;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
-use Twilio\Rest\Api\V2010\Account\CallInstance;
-use Twilio\Version;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -27,6 +25,8 @@ beforeEach(function () {
     $this->conferenceName = "abc";
     $this->voicemail_url = 'https://example.org/voicemail.php';
     $this->callSid = 'abc';
+    $this->serviceBodyId = "44";
+    $this->parentServiceBodyId = "43";
 
     $settingsService = new SettingsService();
     app()->instance(SettingsService::class, $settingsService);
@@ -96,16 +96,22 @@ test('do nothing', function ($method) {
         ->assertHeader("Content-Type", "application/json");
 })->with(['GET', 'POST']);
 
-// TODO: disabled until we refactor functions.php
 //test('force number', function () {
+//    $volunteer_name = "Corey";
+//    $volunteer_gender = VolunteerGender::UNSPECIFIED;
+//    $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
+//    $volunteer_languages = ["en-US"];
+//    $shiftTz = "America/New_York";
+//    $shiftStart = "12:00 AM";
+//    $shiftEnd = "11:59 PM";
 //    $repository = Mockery::mock(ConfigRepository::class);
 //    $repository->shouldReceive("getDbData")->with(
-//        '44',
+//        NULL,
 //        DataType::YAP_CALL_HANDLING_V2
 //    )->andReturn([(object)[
-//        "service_body_id" => "44",
+//        "service_body_id" => NULL,
 //        "id" => "200",
-//        "parent_id" => "43",
+//        "parent_id" => $this->parentServiceBodyId,
 //        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
 //    ]])->once();
 //    $shifts = [];
@@ -129,7 +135,7 @@ test('do nothing', function ($method) {
 //        "volunteer_shift_schedule"=>base64_encode(json_encode($shifts))
 //    ]];
 //    $repository->shouldReceive("getDbData")->with(
-//        $this->serviceBodyId,
+//        NULL,
 //        DataType::YAP_VOLUNTEERS_V2
 //    )->andReturn([(object)[
 //        "service_body_id" => $this->serviceBodyId,
@@ -176,7 +182,7 @@ test('do nothing', function ($method) {
 //    $GLOBALS['twilioClient'] = $this->twilioClient;
 //
 //    $_SESSION['override_service_body_id'] = '44';
-//    $response = $this->call('GET', '/helpline-dialer.php', [
+//    $response = $this->call('GET', '/helpline-search.php', [
 //        'SearchType' => "1",
 //        'Called' => "+12125551212",
 //        'ForceNumber' => '+19998887777',
