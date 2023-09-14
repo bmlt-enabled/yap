@@ -1,7 +1,5 @@
 <?php
 
-use App\Constants\VolunteerGender;
-use App\Constants\VolunteerResponderOption;
 use App\Repositories\ConfigRepository;
 use App\Constants\DataType;
 use App\Services\SettingsService;
