@@ -19,7 +19,7 @@ beforeEach(function () {
     $this->rootServerMocks = new RootServerMocks();
 });
 
-test('validate sample cdr', function () {
+test('validate sample cdr phone', function () {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $repository = Mockery::mock(ReportsRepository::class);
     $service_body_id = "44";
@@ -82,6 +82,116 @@ test('validate sample cdr', function () {
             ]],
             "last_page" => 1
         ])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('validate sample cdr sms', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+    $repository = Mockery::mock(ReportsRepository::class);
+    $service_body_id = "44";
+    $id = "12312";
+    $date_range_start = "2023-01-01 000:00:00";
+    $date_range_end = "2023-01-07 23:59:59";
+    $start_time = "2023-01-01 20:43:56Z";
+    $end_time = "2023-01-01 20:45:00Z";
+    $duration = 22;
+    $from_number = "+15555555555";
+    $to_number = "+18331112222";
+    $callsid = "abc123";
+    $sample_call_event = ([[
+        "event_id"=>EventId::VOICEMAIL,
+        "event_time"=>"2023-01-01 20:44:53Z",
+        "service_body_id"=>$service_body_id,
+        "meta"=>[
+            "url"=>"fake.mp3"
+        ]
+    ]]);
+    $repository->shouldReceive("getCallRecords")->with(
+        [$service_body_id],
+        $date_range_start,
+        $date_range_end
+    )->andReturn([(object)[
+        "id" => $id,
+        "start_time" => $start_time,
+        "end_time" => $end_time,
+        "duration" => $duration,
+        "from_number" => $from_number,
+        "to_number" => $to_number,
+        "callsid" => $callsid,
+        "service_body_id" => $service_body_id,
+        "type" => RecordType::SMS,
+        "call_events" => json_encode($sample_call_event)
+    ]]);
+    app()->instance(ReportsRepository::class, $repository);
+    $response = $this->call('GET', '/api/v1/reports/cdr', [
+        "service_body_id" => $service_body_id,
+        "date_range_start" => $date_range_start,
+        "date_range_end" => $date_range_end,
+    ]);
+    $sample_call_event[0]['parent_callsid'] = $callsid;
+    $sample_call_event[0]['event_name'] = EventId::getEventById($sample_call_event[0]['event_id']);
+    $sample_call_event[0]['meta'] = json_encode($sample_call_event[0]['meta']);
+    $response
+        ->assertJson([
+            "data" => [[
+                "call_events" => $sample_call_event,
+                "start_time" => $start_time,
+                "end_time" => $end_time,
+                "id" => $id,
+                "duration" => $duration,
+                "from_number" => $from_number,
+                "to_number" => $to_number,
+                "callsid" => $callsid,
+                "service_body_id" => $service_body_id,
+                "type" => RecordType::SMS,
+                "type_name" => RecordType::getTypeById(RecordType::SMS),
+            ]],
+            "last_page" => 1
+        ])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('validate sample map metrics', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+    $repository = Mockery::mock(ReportsRepository::class);
+    $service_body_id = "44";
+    $date_range_start = "2023-01-01 000:00:00";
+    $date_range_end = "2023-01-07 23:59:59";
+    $meta_sample = [
+        "gather"=>"Raleigh, NC",
+        "coordinates"=>[
+            "location"=>"Raleigh, NC, USA",
+            "latitude"=>35.7795897,
+            "longitude"=>-78.638178,
+        ]
+    ];
+    $repository->shouldReceive("getMapMetrics")->with(
+        [$service_body_id],
+        $date_range_start,
+        $date_range_end
+    )->andReturn([(object)[
+        "event_id"=>EventId::VOLUNTEER_SEARCH,
+        "meta"=>json_encode($meta_sample)
+    ]]);
+    app()->instance(ReportsRepository::class, $repository);
+    $response = $this->call('GET', '/api/v1/reports/mapmetrics', [
+        "service_body_id" => $service_body_id,
+        "date_range_start" => $date_range_start,
+        "date_range_end" => $date_range_end,
+        "event_id" => EventId::VOLUNTEER_SEARCH
+    ]);
+    $expectedContent = sprintf(
+        '[{"event_id":%s,"meta":"{\"gather\":\"%s\",\"coordinates\":{\"location\":\"%s\",\"latitude\":%s,\"longitude\":%s}}"}]',
+        EventId::VOLUNTEER_SEARCH,
+        $meta_sample['gather'],
+        $meta_sample['coordinates']['location'],
+        $meta_sample['coordinates']['latitude'],
+        $meta_sample['coordinates']['longitude'],
+    );
+    $response
+        ->assertContent($expectedContent)
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });
