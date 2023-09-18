@@ -912,7 +912,6 @@ class CallFlowController extends Controller
         $callRecord->payload = json_encode($_REQUEST);
 
         $this->call->insertCallRecord($callRecord);
-        $this->call->checkSMSBlackhole();
 
         $address = $request->get('Body');
         if (str_contains($address, ',')) {

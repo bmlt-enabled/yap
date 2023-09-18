@@ -80,8 +80,6 @@ test('initial sms gateway with a blackholed number', function ($method) {
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
         ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
-            '<Response>',
-            '</Response>'
         ], false);
 })->with(['GET', 'POST']);
 

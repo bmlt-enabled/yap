@@ -31,20 +31,6 @@ class CallService extends Service
         return $this->voicemail;
     }
 
-    public function checkSMSBlackhole()
-    {
-        if ($this->settings->has('sms_blackhole') && strlen($this->settings->get('sms_blackhole')) > 0
-            && isset($_REQUEST['From'])) {
-            $sms_blackhole_items = explode(",", ($this->settings->get('sms_blackhole')));
-            foreach ($sms_blackhole_items as $sms_blackhole_item) {
-                if (str_starts_with($sms_blackhole_item, $_REQUEST['From'])) {
-                    $this->insertCallEventRecord(EventId::SMS_BLACKHOLED);
-                    return;
-                }
-            }
-        }
-    }
-
     public function getIvrResponse($request, $expected_exacts = array(), $expected_likes = array(), $field = 'Digits')
     {
         $response = "0";
