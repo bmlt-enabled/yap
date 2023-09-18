@@ -30,7 +30,6 @@ class SmsBlackhole
     {
         if ($this->settings->has("sms_blackhole") &&
             strlen($this->settings->get("sms_blackhole") > 0) && $request->has("From")) {
-
             $sms_blackhole_items = explode(",", ($this->settings->get('sms_blackhole')));
             foreach ($sms_blackhole_items as $sms_blackhole_item) {
                 if (str_starts_with($sms_blackhole_item, $request->get('From'))) {
