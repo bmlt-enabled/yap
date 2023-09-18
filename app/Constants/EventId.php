@@ -25,7 +25,6 @@ class EventId
     const VOLUNTEER_SEARCH_SMS = 20;
     const JFT_LOOKUP_SMS = 21;
     const SMS_BLACKHOLED = 22;
-
     const SPAD_LOOKUP = 23;
     const SPAD_LOOKUP_SMS = 24;
 
