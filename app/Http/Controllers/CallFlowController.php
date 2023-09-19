@@ -972,6 +972,7 @@ class CallFlowController extends Controller
             );
             $results_count_num = count($meeting_results->filteredList) < $results_count ? count($meeting_results->filteredList) : $results_count;
         } catch (Exception $e) {
+            error_log($e);
             $twiml->redirect("fallback.php")
                 ->setMethod("GET");
             return response($twiml)->header("Content-Type", "text/xml");
@@ -985,8 +986,10 @@ class CallFlowController extends Controller
         $message = "";
 
         $isFromSmsGateway = $request->has("SmsSid");
+        $no_relevant_results = false;
         if (!$isFromSmsGateway) {
             if ($meeting_results->originalListCount == 0) {
+                $no_relevant_results = true;
                 $twiml->say($this->settings->word('no_results_found') . "... " .
                     $this->settings->word('you_might_have_invalid_entry') . "... " . $this->settings->word('try_again'))
                     ->setVoice($this->settings->voice())
@@ -994,6 +997,7 @@ class CallFlowController extends Controller
                 $twiml->redirect("input-method.php?Digits=2")
                     ->setMethod("GET");
             } elseif (count($filtered_list) == 0) {
+                $no_relevant_results = true;
                 $twiml->say($this->settings->word('there_are_no_other_meetings_for_today') . ".... " . $this->settings->word('try_again'))
                     ->setVoice($this->settings->voice())
                     ->setLanguage($this->settings->get("language"));
@@ -1015,7 +1019,11 @@ class CallFlowController extends Controller
             }
         }
 
-        if (!json_decode($this->settings->get("sms_ask")) && !json_decode($this->settings->get("sms_disable"))) {
+        if (!json_decode($this->settings->get("sms_ask")) &&
+            !json_decode($this->settings->get("sms_disable")) &&
+            !$no_relevant_results &&
+            !$suppress_voice_results
+        ) {
             $twiml->say($this->settings->word('search_results_by_sms'))
                 ->setVoice($this->settings->voice())
                 ->setLanguage($this->settings->get('language'));
