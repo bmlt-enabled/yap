@@ -137,7 +137,6 @@ test('meeting search with valid latitude and longitude suppressing voice results
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">5 meetings have been texted to you</Say>',
-            '<Say voice="alice" language="en-US">Meeting search results will also be sent to you by SMS text message.</Say>',
             '<Pause length="2"/>',
             '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
             '</Response>'

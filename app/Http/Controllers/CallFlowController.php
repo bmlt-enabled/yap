@@ -1021,7 +1021,8 @@ class CallFlowController extends Controller
 
         if (!json_decode($this->settings->get("sms_ask")) &&
             !json_decode($this->settings->get("sms_disable")) &&
-            !$no_relevant_results
+            !$no_relevant_results &&
+            !$suppress_voice_results
         ) {
             $twiml->say($this->settings->word('search_results_by_sms'))
                 ->setVoice($this->settings->voice())
