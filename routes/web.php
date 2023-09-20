@@ -19,9 +19,9 @@ Route::get("/bots/getServiceBodyCoverage", 'App\Http\Controllers\BotController@g
 Route::get("/msr/{latitude}/{longitude}", ['uses' => 'App\Http\Controllers\MeetingResultsController@index'])
     ->where(['latitude' => '.*', 'longitude' => '.*']);
 Route::delete("/admin/cache", 'App\Http\Controllers\AdminController@cacheClear');
-Route::match(array('GET', 'POST'), "/fetch-jft{ext}", 'App\Http\Controllers\FetchJFTController@index')
+Route::match(array('GET', 'POST'), "/fetch-jft{ext}", 'App\Http\Controllers\ReadingController@jft')
     ->where('ext', $ext);
-Route::match(array('GET', 'POST'), "/fetch-spad{ext}", 'App\Http\Controllers\FetchJFTController@spad')
+Route::match(array('GET', 'POST'), "/fetch-spad{ext}", 'App\Http\Controllers\ReadingController@spad')
     ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "/ping{ext}", 'App\Http\Controllers\PingController@index')
     ->where('ext', $ext);
