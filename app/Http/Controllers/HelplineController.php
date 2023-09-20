@@ -232,8 +232,9 @@ class HelplineController extends Controller
         $serviceBodyCallHandling = $this->config->getCallHandling($this->settings->get('service_body_id'));
 
         if ($request->has('Debug') && intval($request->get('Debug')) == 1) {
-            echo var_dump($this->getCallConfig($request, $serviceBodyCallHandling));
-            exit();
+            return response()
+                ->json($this->getCallConfig($request, $serviceBodyCallHandling))
+                ->header("Content-Type", "application/json");
         }
 
         // Sometime in August 2023, Twilio introduced a change in API Behavior. The conferences API

@@ -36,7 +36,7 @@ beforeEach(function () {
 });
 
 test('noop', function ($method) {
-    $_SESSION['override_service_body_id'] = '44';
+    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $_SESSION['no_answer_max'] = 1;
     $_SESSION['master_callersid'] = $this->callSid;
     $_SESSION['voicemail_url'] = $this->voicemail_url;
@@ -56,6 +56,25 @@ test('noop', function ($method) {
         'ForceNumber' => '+19998887777',
         'FriendlyName' => $this->conferenceName,
         'CallStatus' => 'no-answer',
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json");
+})->with(['GET', 'POST']);
+
+test('debug messages', function ($method) {
+    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
+    $_SESSION['no_answer_max'] = 1;
+    $_SESSION['master_callersid'] = $this->callSid;
+    $_SESSION['voicemail_url'] = $this->voicemail_url;
+
+    $response = $this->call($method, '/helpline-dialer.php', [
+        'Debug' => "1",
+        'SearchType' => "1",
+        'Called' => "+12125551212",
+        'ForceNumber' => '+19998887777',
+        'FriendlyName' => $this->conferenceName,
+        'CallStatus' => 'no-answer'
     ]);
     $response
         ->assertStatus(200)
