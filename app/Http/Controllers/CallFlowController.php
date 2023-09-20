@@ -23,6 +23,7 @@ use Exception;
 use App\Constants\LocationSearchMethod;
 use App\Constants\ReadingType;
 use App\Constants\SpecialPhoneNumber;
+use Illuminate\Support\Facades\Log;
 use Twilio\TwiML\VoiceResponse;
 use Illuminate\Http\Request;
 use App\Constants\VolunteerType;
@@ -972,7 +973,7 @@ class CallFlowController extends Controller
             );
             $results_count_num = count($meeting_results->filteredList) < $results_count ? count($meeting_results->filteredList) : $results_count;
         } catch (Exception $e) {
-            error_log($e);
+            Log::critical($e);
             $twiml->redirect("fallback.php")
                 ->setMethod("GET");
             return response($twiml)->header("Content-Type", "text/xml");

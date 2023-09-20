@@ -14,9 +14,6 @@ Route::post("/admin/installer", 'App\Http\Controllers\AdminController@installer'
 Route::post("/admin/login", 'App\Http\Controllers\AdminController@login');
 Route::get("/admin/{page}", 'App\Http\Controllers\AdminController@index')
     ->middleware("authForAdminPortal");
-//Hiding the new UI for now.
-//Route::get("/adminv2{page}", 'App\Http\Controllers\AdminController@index')
-//    ->where('page', '.*');
 Route::get("/bots/getMeetings", 'App\Http\Controllers\BotController@getMeetings');
 Route::get("/bots/getServiceBodyCoverage", 'App\Http\Controllers\BotController@getServiceBodyCoverage');
 Route::get("/msr/{latitude}/{longitude}", ['uses' => 'App\Http\Controllers\MeetingResultsController@index'])
