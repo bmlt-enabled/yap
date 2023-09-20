@@ -389,11 +389,4 @@ class SettingsService
     {
         return gmdate("Y-m-d H:i:s");
     }
-
-    public function logDebug($message): void
-    {
-        if ($this->has('debug') && boolval($this->get('debug'))) {
-            error_log($message);
-        }
-    }
 }

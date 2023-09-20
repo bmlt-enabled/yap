@@ -22,6 +22,8 @@ use Exception;
 use Illuminate\Http\Request;
 use App\Constants\SmsDialbackOptions;
 use App\Constants\SpecialPhoneNumber;
+use Illuminate\Support\Facades\Log;
+use Twilio\Exceptions\TwilioException;
 use Twilio\TwiML\VoiceResponse;
 
 class HelplineController extends Controller
@@ -246,7 +248,7 @@ class HelplineController extends Controller
                 ->read(array("friendlyName" => $request->get('FriendlyName')));
 
             if ($i > 0) {
-                $this->settings->logDebug("conferences eventual consistency issue, retry $i");
+                Log::debug("conferences eventual consistency issue, retry $i");
             }
 
             if (count($conferences)) {
@@ -287,7 +289,7 @@ class HelplineController extends Controller
                     );
                 }
 
-                $this->settings->logDebug("Next volunteer to call " . $callConfig->volunteer->phoneNumber);
+                Log::debug("Next volunteer to call " . $callConfig->volunteer->phoneNumber);
                 $participants = $this->twilio->client()->conferences($conferences[0]->sid)->participants->read();
 
                 // Do not call if the caller hung up.
@@ -299,9 +301,9 @@ class HelplineController extends Controller
                         if (strpos($callerNumber, "+") !== 0) {
                             $callerNumber .= "+" . trim($callerNumber);
                         }
-                        $this->settings->logDebug("callerNumber: " . $callerNumber . ", callerSid: " . $callerSid);
+                        Log::debug("callerNumber: " . $callerNumber . ", callerSid: " . $callerSid);
                         if ($callConfig->volunteer->phoneNumber == SpecialPhoneNumber::VOICE_MAIL || $callConfig->volunteer->phoneNumber == SpecialPhoneNumber::UNKNOWN) {
-                            $this->settings->logDebug("Calling voicemail.");
+                            Log::debug("Calling voicemail.");
                             $this->twilio->client()->calls($callerSid)->update(array(
                                 "method" => "GET",
                                 "url" => $callConfig->voicemail_url . "&caller_number=" . $callerNumber
@@ -309,7 +311,7 @@ class HelplineController extends Controller
                         } else {
                             foreach (explode(",", $callConfig->volunteer->phoneNumber) as $volunteer_number) {
                                 if ($serviceBodyCallHandling->volunteer_sms_notification_enabled) {
-                                    $this->settings->logDebug("Sending volunteer SMS notification: " . $callConfig->volunteer->phoneNumber);
+                                    Log::debug("Sending volunteer SMS notification: " . $callConfig->volunteer->phoneNumber);
                                     $dialbackString = $this->call->getDialbackString($callerSid, $callConfig->options['callerId'], SmsDialbackOptions::VOLUNTEER_NOTIFICATION);
                                     $this->twilio->client()->messages->create(
                                         $volunteer_number,
@@ -320,7 +322,7 @@ class HelplineController extends Controller
                                     );
                                 }
 
-                                $this->settings->logDebug("Calling: " . $callConfig->volunteer->phoneNumber);
+                                Log::debug("Calling: " . $callConfig->volunteer->phoneNumber);
                                 $this->call->insertCallEventRecord(EventId::VOLUNTEER_DIALED, (object)['to_number' => $volunteer_number]);
                                 $this->twilio->client()->calls->create(
                                     $volunteer_number,
@@ -329,8 +331,8 @@ class HelplineController extends Controller
                                 );
                             }
                         }
-                    } catch (\Twilio\Exceptions\TwilioException $e) {
-                        $this->settings->logDebug($e);
+                    } catch (TwilioException $e) {
+                        Log::critical($e);
                     }
                 }
             } elseif ($request->has('StatusCallbackEvent') && $request->get('StatusCallbackEvent') == 'participant-leave') {
@@ -338,10 +340,10 @@ class HelplineController extends Controller
                 $conference_participants = $this->twilio->client()->conferences($conference_sid)->participants;
                 foreach ($conference_participants as $participant) {
                     try {
-                        $this->settings->logDebug("Someone left the conference: " . $participant->callSid);
+                        Log::debug("Someone left the conference: " . $participant->callSid);
                         $this->twilio->client()->calls($participant->callSid)->update(array( 'status' => 'completed' ));
-                    } catch (\Twilio\Exceptions\TwilioException $e) {
-                        error_log($e);
+                    } catch (TwilioException $e) {
+                        Log::critical($e);
                     }
                 }
             }

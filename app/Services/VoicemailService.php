@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Exception;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use PHPMailer\PHPMailer\PHPMailer;
 use App\Constants\SmsDialbackOptions;
 
@@ -68,7 +69,7 @@ class VoicemailService extends Service
             $this->mailer->Subject = 'Helpline Voicemail from ' . $serviceBodyName;
             $this->mailer->send();
         } catch (Exception $e) {
-            $this->settings->logDebug('Message could not be sent. Mailer Error: ' . $this->mailer->ErrorInfo);
+            Log::critical('Message could not be sent. Mailer Error: ' . $this->mailer->ErrorInfo);
         }
     }
 }
