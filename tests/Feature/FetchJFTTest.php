@@ -1,29 +1,38 @@
 <?php
-//
-//use App\Services\SettingsService;
-//
-//beforeAll(function () {
-//    putenv("ENVIRONMENT=test");
-//});
-//
-//beforeEach(function () {
-//    @session_start();
-//    $_SERVER['REQUEST_URI'] = "/";
-//    $_REQUEST = null;
-//    $_SESSION = null;
-//});
-//
-//test('get the JFT in English', function ($method, $language) {
-//    $settingsService = new SettingsService();
-//    $settingsService->set("word_language", $language);
-//    app()->instance(SettingsService::class, $settingsService);
-//
-//    $response = $this->call($method, '/fetch-jft.php');
-//    $response
-//        ->assertStatus(200)
-//        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-//        ->assertSeeText("Just for Today", false);
-//})->with(['GET', 'POST'], ['en-US', 'en-AU']);
+
+use App\Services\HttpService;
+use App\Services\SettingsService;
+use Tests\Stubs;
+
+beforeAll(function () {
+    putenv("ENVIRONMENT=test");
+});
+
+beforeEach(function () {
+    @session_start();
+    $_SERVER['REQUEST_URI'] = "/";
+    $_REQUEST = null;
+    $_SESSION = null;
+});
+
+test('get the JFT in English', function ($method, $language) {
+    $settingsService = new SettingsService();
+    $settingsService->set("word_language", $language);
+    app()->instance(SettingsService::class, $settingsService);
+
+    $httpService = mock('App\Services\HttpService')->makePartial();
+    $httpService->shouldReceive('get')
+        ->withArgs(["https://www.jftna.org/jft/", 3600])
+        ->once()
+        ->andReturn(Stubs::jft_en());
+    app()->instance(HttpService::class, $httpService);
+
+    $response = $this->call($method, '/fetch-jft.php');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeText("Just for Today", false);
+})->with(['GET', 'POST'], ['en-US', 'en-AU']);
 //
 //test('get the JFT in Portuguese', function ($method, $language) {
 //    $settingsService = new SettingsService();

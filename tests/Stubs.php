@@ -37,7 +37,7 @@ class Stubs
         <td align="left">Let's admit it, in the world of Cat Anonymous, we're living in a kitty litter box of transparency. Our fellow feline aficionados have an uncanny insight into our lives—knowing who our favorite cat pals are, where we like to nap, how many toy mice we've "caught," and so on. And what they don't know, they'll certainly speculate upon.  <br/>We might feel a tad disgruntled when other cats gossip about our tabby tales, but if we retreat to our cardboard box hideaways and isolate ourselves to avoid catty chatter, we're missing out on the fur-ocious love, playful camaraderie, and unmatched wisdom that our fellow feline friends can provide. The purr-fect strategy to handle this feline frenzy is to embrace our whisker-twitching realities, accept our quirks and fur-vivacious ways, and live our nine lives according to our own cat principles. The more confident we become in our personal cat-tastic journey, our litter box choices, and the guidance we receive from the mysterious Great Catnip, the less we'll give a whisker about the opinions of other cats.<br><br></td>
     </tr>
     <tr>
-        <td align="left"><b>Just for Meow: I am wholeheartedly committed to being part of the Cat Anonymous community. The meow-nions of other cats will not deter my paws-itivity in my path of cat-tastic self-discovery.<br><br></td>
+        <td align="left"><b>Just for Today: I am wholeheartedly committed to being part of the Cat Anonymous community. The meow-nions of other cats will not deter my paws-itivity in my path of cat-tastic self-discovery.<br><br></td>
     </tr>
 
     <tr>
