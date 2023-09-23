@@ -1,9 +1,11 @@
 <?php
 
 use App\Repositories\ReportsRepository;
+use App\Services\HttpService;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
+use Tests\Stubs;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -83,6 +85,13 @@ test('initial sms gateway with a blackholed number', function ($method) {
 })->with(['GET', 'POST']);
 
 test('sms to deliver the jft', function ($method) {
+    $httpService = mock('App\Services\HttpService')->makePartial();
+    $httpService->shouldReceive('get')
+        ->withArgs(["https://www.jftna.org/jft/", 3600])
+        ->once()
+        ->andReturn(Stubs::jft_en());
+    app()->instance(HttpService::class, $httpService);
+
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
     $this->utility->client->messages = $messageListMock;
@@ -108,6 +117,13 @@ test('sms to deliver the jft', function ($method) {
 })->with(['GET', 'POST']);
 
 test('sms to deliver the spad', function ($method) {
+    $httpService = mock('App\Services\HttpService')->makePartial();
+    $httpService->shouldReceive('get')
+        ->withArgs(["https://www.spadna.org", 3600])
+        ->once()
+        ->andReturn(Stubs::spad_en());
+    app()->instance(HttpService::class, $httpService);
+
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
     $this->utility->client->messages = $messageListMock;
