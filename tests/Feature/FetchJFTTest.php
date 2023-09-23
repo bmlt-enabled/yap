@@ -1,6 +1,8 @@
 <?php
 
+use App\Services\HttpService;
 use App\Services\SettingsService;
+use Tests\Stubs;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -18,6 +20,13 @@ test('get the JFT in English', function ($method, $language) {
     $settingsService->set("word_language", $language);
     app()->instance(SettingsService::class, $settingsService);
 
+    $httpService = mock('App\Services\HttpService')->makePartial();
+    $httpService->shouldReceive('get')
+        ->withArgs(["https://www.jftna.org/jft/", 3600])
+        ->once()
+        ->andReturn(Stubs::jftEn());
+    app()->instance(HttpService::class, $httpService);
+
     $response = $this->call($method, '/fetch-jft.php');
     $response
         ->assertStatus(200)
@@ -29,6 +38,13 @@ test('get the JFT in Portuguese', function ($method, $language) {
     $settingsService = new SettingsService();
     $settingsService->set("word_language", $language);
     app()->instance(SettingsService::class, $settingsService);
+
+    $httpService = mock('App\Services\HttpService')->makePartial();
+    $httpService->shouldReceive('get')
+        ->withArgs(["http://www.na.org.br/meditacao", 3600])
+        ->once()
+        ->andReturn(Stubs::jftPt());
+    app()->instance(HttpService::class, $httpService);
 
     $response = $this->call($method, '/fetch-jft.php');
     $response
@@ -42,6 +58,13 @@ test('get the JFT in Spanish', function ($method, $language) {
     $settingsService->set("word_language", $language);
     app()->instance(SettingsService::class, $settingsService);
 
+    $httpService = mock('App\Services\HttpService')->makePartial();
+    $httpService->shouldReceive('get')
+        ->withArgs(["https://forozonalatino.org/sxh", 3600])
+        ->once()
+        ->andReturn(Stubs::jftEs());
+    app()->instance(HttpService::class, $httpService);
+
     $response = $this->call($method, '/fetch-jft.php');
     $response
         ->assertStatus(200)
@@ -54,9 +77,16 @@ test('get the JFT in French', function ($method, $language) {
     $settingsService->set("word_language", $language);
     app()->instance(SettingsService::class, $settingsService);
 
+    $httpService = mock('App\Services\HttpService')->makePartial();
+    $httpService->shouldReceive('get')
+        ->withArgs(["https://jpa.narcotiquesanonymes.org", 3600])
+        ->once()
+        ->andReturn(Stubs::jftFr());
+    app()->instance(HttpService::class, $httpService);
+
     $response = $this->call($method, '/fetch-jft.php');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeText("Juste pour aujourd’hui", false);
+        ->assertSeeText("NA World Services, Inc. All Rights Reserved", false);
 })->with(['GET', 'POST'], ['fr-FR', 'fr-CA']);

@@ -915,32 +915,33 @@ class CallFlowController extends Controller
         $this->call->insertCallRecord($callRecord);
 
         $address = $request->get('Body');
-        if (str_contains($address, ',')) {
-            $coordinates = $this->geocoding->getCoordinatesForAddress($address);
-        } else {
-            $coordinates = $this->geocoding->getCoordinatesForAddress($address . "," . $this->call->getProvince());
-        }
-
         $twiml = new VoiceResponse();
-        $sms_helpline_keyword = $this->settings->get("sms_helpline_keyword");
-        if (str_contains(strtoupper($address), strtoupper($sms_helpline_keyword))) {
-            if (strlen(trim(str_replace(strtoupper($sms_helpline_keyword), "", strtoupper($address)))) > 0) {
-                return self::helplineSms($request, $coordinates->latitude, $coordinates->longitude);
-            } else {
-                $message = $this->settings->word('please_send_a_message_formatting_as') . " " . $sms_helpline_keyword . ", " . $this->settings->word('followed_by_your_location') . " " . $this->settings->word('for') . " " .  $this->settings->word('someone_to_talk_to');
-                $this->twilio->client()->messages->create($request->get("From"), array("from" => $request->get("To"), "body" => $message));
-            }
-        } elseif (json_decode($this->settings->get('jft_option')) && str_contains(strtoupper($address), strtoupper('jft'))) {
+
+        if (json_decode($this->settings->get('jft_option')) && str_contains(strtoupper($address), strtoupper('jft'))) {
             $reading_chunks = $this->reading->get(ReadingType::JFT, true);
             for ($i = 0; $i < count($reading_chunks); $i++) {
                 $this->twilio->client()->messages->create($request->get("From"), array("from" => $request->get("To"), "body" => $reading_chunks[$i]));
             }
+            return response($twiml)->header("Content-Type", "text/xml");
         } elseif (json_decode($this->settings->get('spad_option')) && str_contains(strtoupper($address), strtoupper('spad'))) {
             $reading_chunks = $this->reading->get(ReadingType::SPAD, true);
             for ($i = 0; $i < count($reading_chunks); $i++) {
                 $this->twilio->client()->messages->create($request->get("From"), array("from" => $request->get("To"), "body" => $reading_chunks[$i]));
             }
+            return response($twiml)->header("Content-Type", "text/xml");
+        }
+
+        $sms_helpline_keyword = $this->settings->get("sms_helpline_keyword");
+        if (str_contains(strtoupper($address), strtoupper($sms_helpline_keyword))) {
+            if (strlen(trim(str_replace(strtoupper($sms_helpline_keyword), "", strtoupper($address)))) > 0) {
+                $coordinates = $this->geocodeAddress($address, $sms_helpline_keyword);
+                return self::helplineSms($request, $coordinates->latitude, $coordinates->longitude);
+            } else {
+                $message = $this->settings->word('please_send_a_message_formatting_as') . " " . $sms_helpline_keyword . ", " . $this->settings->word('followed_by_your_location') . " " . $this->settings->word('for') . " " .  $this->settings->word('someone_to_talk_to');
+                $this->twilio->client()->messages->create($request->get("From"), array("from" => $request->get("To"), "body" => $message));
+            }
         } else {
+            $coordinates = $this->geocodeAddress($address, $sms_helpline_keyword);
             $this->call->insertCallEventRecord(EventId::MEETING_SEARCH_SMS);
             $this->call->insertCallEventRecord(
                 EventId::MEETING_SEARCH_LOCATION_GATHERED,
@@ -1253,5 +1254,21 @@ class CallFlowController extends Controller
         }
 
         return $results_string;
+    }
+
+    /**
+     * @param mixed $address
+     * @return \App\Models\Coordinates
+     */
+    public function geocodeAddress(mixed $address, string $sms_helpline_keyword = ""): \App\Models\Coordinates
+    {
+        $sanitized_address = trim(str_replace($sms_helpline_keyword, "", $address));
+
+        if (str_contains($sanitized_address, ',') || preg_match('/[0-9]*/', $sanitized_address)) {
+            $coordinates = $this->geocoding->getCoordinatesForAddress($sanitized_address);
+        } else {
+            $coordinates = $this->geocoding->getCoordinatesForAddress($sanitized_address . "," . $this->call->getProvince());
+        }
+        return $coordinates;
     }
 }
