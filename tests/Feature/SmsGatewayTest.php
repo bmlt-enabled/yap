@@ -89,7 +89,7 @@ test('sms to deliver the jft', function ($method) {
     $httpService->shouldReceive('get')
         ->withArgs(["https://www.jftna.org/jft/", 3600])
         ->once()
-        ->andReturn(Stubs::jft_en());
+        ->andReturn(Stubs::jftEn());
     app()->instance(HttpService::class, $httpService);
 
     // mocking TwilioRestClient->messages->create()
@@ -121,7 +121,7 @@ test('sms to deliver the spad', function ($method) {
     $httpService->shouldReceive('get')
         ->withArgs(["https://www.spadna.org", 3600])
         ->once()
-        ->andReturn(Stubs::spad_en());
+        ->andReturn(Stubs::spadEn());
     app()->instance(HttpService::class, $httpService);
 
     // mocking TwilioRestClient->messages->create()

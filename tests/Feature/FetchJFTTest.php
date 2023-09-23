@@ -24,7 +24,7 @@ test('get the JFT in English', function ($method, $language) {
     $httpService->shouldReceive('get')
         ->withArgs(["https://www.jftna.org/jft/", 3600])
         ->once()
-        ->andReturn(Stubs::jft_en());
+        ->andReturn(Stubs::jftEn());
     app()->instance(HttpService::class, $httpService);
 
     $response = $this->call($method, '/fetch-jft.php');
@@ -43,7 +43,7 @@ test('get the JFT in Portuguese', function ($method, $language) {
     $httpService->shouldReceive('get')
         ->withArgs(["http://www.na.org.br/meditacao", 3600])
         ->once()
-        ->andReturn(Stubs::jft_pt());
+        ->andReturn(Stubs::jftPt());
     app()->instance(HttpService::class, $httpService);
 
     $response = $this->call($method, '/fetch-jft.php');
@@ -62,7 +62,7 @@ test('get the JFT in Spanish', function ($method, $language) {
     $httpService->shouldReceive('get')
         ->withArgs(["https://forozonalatino.org/sxh", 3600])
         ->once()
-        ->andReturn(Stubs::jft_es());
+        ->andReturn(Stubs::jftEs());
     app()->instance(HttpService::class, $httpService);
 
     $response = $this->call($method, '/fetch-jft.php');
@@ -81,7 +81,7 @@ test('get the JFT in French', function ($method, $language) {
     $httpService->shouldReceive('get')
         ->withArgs(["https://jpa.narcotiquesanonymes.org", 3600])
         ->once()
-        ->andReturn(Stubs::jft_fr());
+        ->andReturn(Stubs::jftFr());
     app()->instance(HttpService::class, $httpService);
 
     $response = $this->call($method, '/fetch-jft.php');
