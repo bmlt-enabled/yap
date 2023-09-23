@@ -15,7 +15,7 @@ class GeocodingRepository extends Repository
     {
         parent::__construct(App::make(SettingsService::class));
         $this->googleMapsEndpoint = sprintf(
-            "https://maps.googleapis.coma/maps/api/geocode/json?key=%s",
+            "https://maps.googleapis.com/maps/api/geocode/json?key=%s",
             $this->settings->get("google_maps_api_key")
         );
     }
