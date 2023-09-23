@@ -5,10 +5,7 @@ namespace Tests;
 use App\Constants\DataType;
 use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;
-use App\Services\SettingsService;
-use App\Services\TwilioService;
 use Mockery;
-use Twilio\Rest\Client;
 
 class MiddlewareTests
 {

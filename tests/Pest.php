@@ -1,22 +1,18 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Test Case
-|--------------------------------------------------------------------------
-|
-| The closure you provide to your test functions is always bound to a specific PHPUnit test
-| case class. By default, that class is "PHPUnit\Framework\TestCase". Of course, you may
-| need to change it using the "uses()" function to bind a different classes or traits.
-|
-*/
-
+use App\Repositories\DatabaseMigrationRepository;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
 use Tests\TwilioTestUtility;
 
-uses(Tests\TestCase::class)->in('Feature');
+// Called before each test.
+uses(Tests\TestCase::class)->beforeEach(function () {
+    $migrationsRepository = Mockery::mock(DatabaseMigrationRepository::class);
+    $migrationsRepository->shouldReceive('getVersion')
+        ->withNoArgs()->andReturn(100);
+    app()->instance(DatabaseMigrationRepository::class, $migrationsRepository);
+})->in('Feature');
 
 expect()->extend('toBeOne', function () {
     return $this->toBe(1);
