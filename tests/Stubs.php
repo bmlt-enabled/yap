@@ -4,6 +4,21 @@ namespace Tests;
 
 class Stubs
 {
+    public static function jft_pt()
+    {
+        return "Todos os direitos reservados à";
+    }
+
+    public static function jft_es()
+    {
+        return "Servicio del Foro Zonal Latinoamericano, Copyright 2017 NA World Services, Inc. Todos los Derechos Reservados.";
+    }
+
+    public static function jft_fr()
+    {
+        return "Juste pour aujourd’hui";
+    }
+
     public static function jft_en()
     {
         return <<<JFT
