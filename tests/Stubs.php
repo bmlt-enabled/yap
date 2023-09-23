@@ -4,7 +4,8 @@ namespace Tests;
 
 class Stubs
 {
-    public static function jft_en () {
+    public static function jft_en()
+    {
         return <<<JFT
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
@@ -56,7 +57,8 @@ class Stubs
 JFT;
     }
 
-    public static function spad_en () {
+    public static function spad_en()
+    {
         return <<<SPAD
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
@@ -105,6 +107,5 @@ JFT;
 
 </body></html>
 SPAD;
-
     }
 }
