@@ -17,8 +17,6 @@ beforeEach(function () {
     $_REQUEST = null;
     $_SESSION = null;
 
-    $settingsService = new SettingsService();
-    app()->instance(SettingsService::class, $settingsService);
     $this->rootServerMocks = new RootServerMocks();
 });
 
@@ -92,7 +90,7 @@ test('force number wth captcha w/waiting message querystring setting', function 
 
 test('invalid entry', function ($method) {
     $response = $this->call($method, '/helpline-search.php', [
-        'Address' => "Raleigh, NC",
+        'Digits' => "",
         'SearchType' => "1",
         'Called' => "+12125551212",
     ]);
@@ -125,7 +123,6 @@ test('valid search, volunteer routing', function ($method) {
         'Address' => "Raleigh, NC",
         'SearchType' => "1",
         'Called' => "+12125551212",
-        'stub_google_maps_endpoint' => true
     ]);
     $response
         ->assertStatus(200)
@@ -168,7 +165,6 @@ test('valid search, volunteer routing, announce service body name', function ($m
         'Address' => "Raleigh, NC",
         'SearchType' => "1",
         'Called' => "+12125551212",
-        'stub_google_maps_endpoint' => true
     ]);
     $response
         ->assertStatus(200)
@@ -210,7 +206,6 @@ test('valid search, helpline field routing', function ($method) {
         'Address' => "Raleigh, NC",
         'SearchType' => "1",
         'Called' => "+12125551212",
-        'stub_google_maps_endpoint' => true
     ]);
     $response
         ->assertStatus(200)
@@ -244,7 +239,6 @@ test('valid search, helpline field routing, no helpline set in root server, use 
         'Address' => "Raleigh, NC",
         'SearchType' => "1",
         'Called' => "+12125551212",
-        'stub_google_maps_endpoint' => true
     ]);
     $response
         ->assertStatus(200)
@@ -287,7 +281,6 @@ test('valid search, volunteer direct', function ($method) {
         'Address' => "Raleigh, NC",
         'SearchType' => "1",
         'Called' => "+12125551212",
-        'stub_google_maps_endpoint' => true
     ]);
     $response
         ->assertStatus(200)
@@ -306,7 +299,6 @@ test('valid search, volunteer direct', function ($method) {
 //test('valid search, gender based routing', function () {
 //    $rootServerService = $this->rootServerMocks->getService();
 //    app()->instance(RootServerService::class, $rootServerService);
-//    $_REQUEST['stub_google_maps_endpoint'] = true;
 //    $_SESSION['Address'] = "27592";
 //    $repository = Mockery::mock(ConfigRepository::class);
 //    $repository->shouldReceive("getDbData")
@@ -334,7 +326,6 @@ test('valid search, volunteer direct', function ($method) {
 //        'Address' => "Raleigh, NC",
 //        'SearchType' => "1",
 //        'Called' => "+12125551212",
-//        'stub_google_maps_endpoint' => true
 //    ]);
 //    $response
 //        ->assertStatus(200)

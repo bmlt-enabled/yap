@@ -66,14 +66,8 @@ class HelplineController extends Controller
             if (isset($_SESSION["override_service_body_id"])) {
                 $service_body_obj = $this->rootServer->getServiceBody($this->settings->get("service_body_id"));
             } else {
+                // TODO: Address is set for the session if you are using Gender routing.  This needs to be cleaned up as some technical debt from the pre-laravel version.
                 $address = $_SESSION['Address'] ?? $this->call->getIvrResponse($request);
-                if ($address == null) {
-//            $twiml->say(word('you_might_have_invalid_entry'))
-//                ->setVoice(voice())
-//                ->setLanguage(setting('language'));
-//            $twiml->redirect("index.php");
-//            return response($twiml)->header("Content-Type", "text/xml");
-                }
                 $coordinates  = $this->geocoding->getCoordinatesForAddress($address);
                 try {
                     if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) {

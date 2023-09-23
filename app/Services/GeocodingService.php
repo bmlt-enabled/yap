@@ -3,27 +3,18 @@
 namespace App\Services;
 
 use App\Models\Coordinates;
+use App\Repositories\GeocodingRepository;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 
 class GeocodingService extends Service
 {
-    private string $googleMapsEndpoint;
+    protected GeocodingRepository $geocodingRepository;
 
-    public function __construct()
+    public function __construct(GeocodingRepository $geocodingRepository)
     {
         parent::__construct(App::make(SettingsService::class));
-        $this->googleMapsEndpoint = sprintf(
-            "https://maps.googleapis.com/maps/api/geocode/json?key=%s",
-            $this->settings->get("google_maps_api_key")
-        );
-    }
-
-    public function ping($address)
-    {
-        return json_decode(Http::get($this->googleMapsEndpoint
-            . "&address="
-            . urlencode($address)));
+        $this->geocodingRepository = $geocodingRepository;
     }
 
     public function getCoordinatesForAddress($address): Coordinates
@@ -42,16 +33,7 @@ class GeocodingService extends Service
                 }
             }
 
-            if (isset($_REQUEST['stub_google_maps_endpoint']) && $_REQUEST['stub_google_maps_endpoint']) {
-                $map_details_response = json_encode(StubService::geocode());
-            } else {
-                $map_details_response = Http::get($this->googleMapsEndpoint
-                    . "&address="
-                    . urlencode($address)
-                    . "&components=" . urlencode($this->settings->get('location_lookup_bias')));
-            }
-
-            $map_details = json_decode($map_details_response);
+            $map_details = json_decode($this->geocodingRepository->getInfo($address));
 
             if (count($map_details->results) > 0) {
                 $coordinates->location = $map_details->results[0]->formatted_address;

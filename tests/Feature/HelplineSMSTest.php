@@ -46,7 +46,6 @@ test('initial sms gateway talk option using a different keyword', function ($met
     $this->utility->client->shouldReceive('getAccountSid')->andReturn("123");
 
     $_SESSION['override_sms_helpline_keyword'] = 'dude';
-    $_REQUEST['stub_google_maps_endpoint'] = true;
     $this->callerIdInfo['Body'] = 'dude 27592';
     $this->callerIdInfo['OriginalCallerId'] = '+19735551212';
     $this->callerIdInfo['To'] = '+12125551212';
@@ -183,7 +182,7 @@ test('initial sms helpline gateway with a volunteer', function ($method) {
     $response = $this->call($method, '/sms-gateway.php', [
         "OriginalCallerId" => '+19735551212',
         "To" => '+12125551212',
-        "Body"=>"talk Benson, NC"
+        "Body"=>"talk Raleigh, NC"
     ]);
     $response
         ->assertStatus(200)

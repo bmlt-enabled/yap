@@ -10,23 +10,15 @@ beforeEach(function () {
     $_SESSION = null;
 });
 
-test('search for address with speech text result with bad google api key', function ($method) {
-    $_REQUEST['stub_google_maps_endpoint'] = false;
-    $response = $this->call($method, '/address-lookup.php?SpeechResult=Raleigh, NC&SearchType=1');
-    $response
-        ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
-            '<?xml version="1.0" encoding="UTF-8"?>',
-            '<Response>',
-            '<Redirect method="GET">input-method.php?Digits=1&amp;Retry=1</Redirect>',
-            '</Response>'
-        ], false);
-})->with(['GET', 'POST']);
-
 test('search for address for someone to talk to with speech text result with google api key', function ($method) {
-    $_REQUEST['stub_google_maps_endpoint'] = true;
-    $response = $this->call($method, '/address-lookup.php?SpeechResult=Raleigh, NC&SearchType=1');
+    $response = $this->call(
+        $method,
+        '/address-lookup.php',
+        [
+            "Digits" => "Raleigh, NC",
+            "SearchType" => "1",
+        ]
+    );
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")

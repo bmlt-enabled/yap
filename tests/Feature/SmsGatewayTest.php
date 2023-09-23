@@ -33,7 +33,6 @@ beforeEach(function () {
 });
 
 test('initial sms gateway default', function ($method) {
-    $_REQUEST['stub_google_maps_endpoint'] = true;
     $this->callerIdInfo['Body'] = '27592';
     $response = $this->call($method, '/sms-gateway.php', $this->callerIdInfo);
     $response
@@ -56,7 +55,6 @@ test('initial sms gateway talk option without location', function ($method) {
         }));
     $this->utility->client->messages = $messageListMock;
 
-    $_REQUEST['stub_google_maps_endpoint'] = true;
     $this->callerIdInfo['Body'] = 'talk';
     $response = $this->call($method, '/sms-gateway.php', $this->callerIdInfo);
     $response
