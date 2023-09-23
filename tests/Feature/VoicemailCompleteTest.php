@@ -18,6 +18,7 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
+    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
     $_SESSION = null;
@@ -29,6 +30,13 @@ beforeEach(function () {
     $this->callSid = "abc123";
     $this->callerNumber = "+17325551212";
     $this->recordingUrl = "file:///".getcwd()."/tests/fake";
+
+    $reportsRepository = mock(ReportsRepository::class)->makePartial();
+    $reportsRepository->shouldReceive("insertCallEventRecord")
+        ->withAnyArgs()->once();
+    $reportsRepository->shouldReceive("lookupPinForCallSid")
+        ->withArgs([$this->callSid])->andReturn([4182804]);
+    app()->instance(ReportsRepository::class, $reportsRepository);
 });
 
 test('voicemail complete send sms using primary contact', function ($method) {
@@ -37,11 +45,6 @@ test('voicemail complete send sms using primary contact', function ($method) {
     $_REQUEST['CallSid'] = $this->callSid;
     $_REQUEST['caller_number'] = $this->callerNumber;
     $_REQUEST['RecordingUrl'] = $this->recordingUrl;
-
-    $reportsRepository = mock(ReportsRepository::class)->makePartial();
-    $reportsRepository->shouldReceive("insertCallEventRecord")
-        ->withAnyArgs()->once();
-    app()->instance(ReportsRepository::class, $reportsRepository);
 
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
@@ -145,8 +148,8 @@ test('voicemail complete send sms using volunteer responder option', function ($
         $serviceBodyId,
         $parentServiceBodyId
     );
-
     app()->instance(ConfigRepository::class, $repository);
+
     $response = $this->call($method, '/voicemail-complete.php', [
         "caller_id" => "+17325551212",
         "CallSid" => $this->callSid,
@@ -170,11 +173,6 @@ test('voicemail complete send email using primary contact', function ($method) {
     $_REQUEST['CallSid'] = $this->callSid;
     $_REQUEST['caller_number'] = $this->callerNumber;
     $_REQUEST['RecordingUrl'] = $this->recordingUrl;
-
-    $reportsRepository = mock(ReportsRepository::class)->makePartial();
-    $reportsRepository->shouldReceive("insertCallEventRecord")
-        ->withAnyArgs()->once();
-    app()->instance(ReportsRepository::class, $reportsRepository);
 
     // mocking TwilioRestClient->calls()->update();
     $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');

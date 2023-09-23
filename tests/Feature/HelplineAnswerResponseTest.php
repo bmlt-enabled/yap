@@ -11,6 +11,7 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
+    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
     $_SESSION = null;
@@ -108,6 +109,10 @@ test('volunteer opts not to answer the call', function ($method) {
         ->shouldReceive("setConferenceParticipant")
         ->withArgs([$this->conferenceName, $this->conferenceSid, $callSid, CallRole::VOLUNTEER])
         ->once();
+    $reportsRepository
+        ->shouldReceive("lookupPinForCallSid")
+        ->withArgs([$callSid])
+        ->andReturn([4182804]);
 
     app()->instance(ReportsRepository::class, $reportsRepository);
 

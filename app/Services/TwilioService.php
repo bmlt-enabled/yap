@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Twilio\Exceptions\ConfigurationException;
 use Twilio\Rest\Client;
 
@@ -20,7 +21,7 @@ class TwilioService extends Service
                 $this->settings->get("twilio_auth_token")
             );
         } catch (ConfigurationException $e) {
-            error_log("Missing Twilio Credentials");
+            Log::critical("Missing Twilio Credentials");
             throw $e;
         }
     }
@@ -47,7 +48,7 @@ class TwilioService extends Service
     {
         $_SESSION['no_answer_count'] = !isset($_SESSION['no_answer_count']) ? 1 : $_SESSION['no_answer_count'] + 1;
         if ($_SESSION['no_answer_count'] == $_SESSION['no_answer_max']) {
-            $this->settings()->logDebug("Call blasting no answer, calling voicemail.");
+            Log::debug("Call blasting no answer, calling voicemail.");
             $this->client()->calls($_SESSION['master_callersid'])->update(array(
                 "method" => "GET",
                 "url" => $_SESSION['voicemail_url']

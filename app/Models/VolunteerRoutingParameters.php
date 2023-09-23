@@ -9,7 +9,7 @@ use App\Constants\VolunteerType;
 
 class VolunteerRoutingParameters
 {
-    public int $service_body_id;
+    public string $service_body_id;
     public int $tracker;
     public int $cycle_algorithm = CycleAlgorithm::LINEAR_LOOP_FOREVER;
     public string $volunteer_type = VolunteerType::PHONE;

@@ -2,8 +2,6 @@
 
 namespace Tests;
 
-use Mockery;
-
 class TwilioMessagesCreateMock
 {
     private $twilioClient = null;

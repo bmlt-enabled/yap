@@ -7,7 +7,7 @@ use App\Services\ReadingService;
 use App\Services\SettingsService;
 use Twilio\TwiML\VoiceResponse;
 
-class FetchJFTController extends Controller
+class ReadingController extends Controller
 {
     protected ReadingService $reading;
     protected SettingsService $settings;
@@ -18,7 +18,7 @@ class FetchJFTController extends Controller
         $this->settings = $settings;
     }
 
-    public function index(ReadingService $reading, SettingsService $settings)
+    public function jft(ReadingService $reading, SettingsService $settings)
     {
         $jft_array = $this->reading->get(ReadingType::JFT);
         $twiml = new VoiceResponse();

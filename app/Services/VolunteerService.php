@@ -16,6 +16,7 @@ use App\Utility\VolunteerRoutingHelpers;
 use App\Utility\VolunteerScheduleHelpers;
 use DateTime;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use stdClass;
 
 class VolunteerService extends Service
@@ -105,7 +106,7 @@ class VolunteerService extends Service
     {
         try {
             $volunteers = $this->getHelplineVolunteersActiveNow($volunteer_routing_params);
-            $this->settings->logDebug("getHelplineVolunteer():: activeVolunteers: " . var_export($volunteers, true));
+            Log::debug("getHelplineVolunteer():: activeVolunteers: " . var_export($volunteers, true));
             if (isset($volunteers) && count($volunteers) > 0) {
                 if ($volunteer_routing_params->cycle_algorithm == CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL) {
                     if ($volunteer_routing_params->tracker > count($volunteers) - 1) {

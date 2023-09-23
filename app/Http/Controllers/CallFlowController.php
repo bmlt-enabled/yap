@@ -23,6 +23,7 @@ use Exception;
 use App\Constants\LocationSearchMethod;
 use App\Constants\ReadingType;
 use App\Constants\SpecialPhoneNumber;
+use Illuminate\Support\Facades\Log;
 use Twilio\TwiML\VoiceResponse;
 use Illuminate\Http\Request;
 use App\Constants\VolunteerType;
@@ -695,7 +696,7 @@ class CallFlowController extends Controller
             $participants = $this->twilio->client()->conferences($conferences[0]->sid)->participants->read();
 
             if (count($participants) == 2) {
-                error_log("Enough volunteers have joined.  Hanging up this volunteer.");
+                Log::debug("Enough volunteers have joined.  Hanging up this volunteer.");
                 $twiml->say($this->settings->word('volunteer_has_already_joined_the_call_goodbye'))
                     ->setVoice($this->settings->voice())->setLanguage($this->settings->get('language'));
                 $twiml->hangup();
@@ -721,7 +722,7 @@ class CallFlowController extends Controller
                 $request->get('CallSid'),
                 CallRole::VOLUNTEER
             );
-            $this->settings->logDebug("They rejected the call.");
+            Log::debug("They rejected the call.");
             $twiml->hangup();
         }
 
@@ -741,7 +742,7 @@ class CallFlowController extends Controller
                 $request->get('CallSid'),
                 CallRole::VOLUNTEER
             );
-            error_log("Enough volunteers have joined.  Hanging up this volunteer.");
+            Log::debug("Enough volunteers have joined.  Hanging up this volunteer.");
             $twiml->say($this->settings->word('volunteer_has_already_joined_the_call_goodbye'))
                 ->setVoice($this->settings->voice())->setLanguage($this->settings->get('language'));
             $twiml->hangup();
@@ -755,7 +756,7 @@ class CallFlowController extends Controller
                 $request->get('CallSid'),
                 CallRole::VOLUNTEER
             );
-            error_log("Volunteer picked up or put to their voicemail, asking if they want to take the call, timing out after 15 seconds of no response.");
+            Log::debug("Volunteer picked up or put to their voicemail, asking if they want to take the call, timing out after 15 seconds of no response.");
             if ($this->settings->has('volunteer_auto_answer') && $this->settings->get('volunteer_auto_answer')) {
                 $twiml->redirect("helpline-answer-response.php?Digits=1&conference_name=".$request->get('conference_name')."&service_body_id=" . $request->get('service_body_id') . $this->settings->getSessionLink(true))
                 ->setMethod("GET");
@@ -778,7 +779,7 @@ class CallFlowController extends Controller
             );
             $this->call->insertCallEventRecord(EventID::VOLUNTEER_ANSWERED_BUT_CALLER_HUP, (object)[
                 'to_number' => $request->get('Called')]);
-            error_log("The caller hungup.");
+            Log::debug("The caller hungup.");
             $twiml->say($this->settings->word('the_caller_hungup'))
                 ->setVoice($this->settings->voice())->setLanguage($this->settings->get('language'));
             $twiml->hangup();
@@ -837,14 +838,14 @@ class CallFlowController extends Controller
                             )
                         );
                     } else {
-                        $this->settings->logDebug("No phone number was found and no fallback number in primary_contact_number was found.");
+                        Log::debug("No phone number was found and no fallback number in primary_contact_number was found.");
                     }
                 }
             } else {
-                $this->settings->logDebug(sprintf("SMS Helpline capability not enabled for service body id: %s", $service_body->id));
+                Log::debug(sprintf("SMS Helpline capability not enabled for service body id: %s", $service_body->id));
             }
         } catch (Exception $e) {
-            $this->settings->logDebug($e);
+            Log::critical($e);
             $this->twilio->client()->messages->create(
                 $original_caller_id,
                 array(
@@ -972,7 +973,7 @@ class CallFlowController extends Controller
             );
             $results_count_num = count($meeting_results->filteredList) < $results_count ? count($meeting_results->filteredList) : $results_count;
         } catch (Exception $e) {
-            error_log($e);
+            Log::critical($e);
             $twiml->redirect("fallback.php")
                 ->setMethod("GET");
             return response($twiml)->header("Content-Type", "text/xml");

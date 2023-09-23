@@ -11,17 +11,18 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
+    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
     $_SESSION = null;
 
-    $this->midddleware = new MiddlewareTests();
+    $this->middleware = new MiddlewareTests();
     $this->id = "200";
     $this->serviceBodyId = "44";
     $this->parentServiceBodyId = "43";
     $this->data =  "{\"data\":{}}";
     $this->rootServerMocks = new RootServerMocks();
-    $this->configRepository = $this->midddleware->getAllDbData(
+    $this->configRepository = $this->middleware->getAllDbData(
         $this->id,
         $this->serviceBodyId,
         $this->parentServiceBodyId,

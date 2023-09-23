@@ -1,10 +1,12 @@
 <?php
 
+use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
+use Tests\MiddlewareTests;
 use Tests\RootServerMocks;
 
 beforeAll(function () {
@@ -12,12 +14,13 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
+    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
     $_SESSION = null;
 
     $this->fakeCallSid = "abcdefghij";
-    $this->middleware = new \Tests\MiddlewareTests();
+    $this->middleware = new MiddlewareTests();
     $this->reportsRepository = $this->middleware->insertSession($this->fakeCallSid);
     $this->rootServerMocks = new RootServerMocks();
     $fakeHttpClient = new FakeTwilioHttpClient();
@@ -39,6 +42,20 @@ beforeEach(function () {
     $conferenceListMock->shouldReceive("read")->with(['friendlyName' => $this->conferenceName])
         ->andReturn(json_decode('[{"sid":"'.$this->conferenceName.'"}]'));
     $this->twilioClient->conferences = $conferenceListMock;
+
+    $this->id = "200";
+    $this->serviceBodyId = "44";
+    $this->parentServiceBodyId = "43";
+    $this->data =  "{\"data\":{}}";
+
+    $configRepository = mock(ConfigRepository::class)->makePartial();
+    $this->configRepository = $this->middleware->getAllDbData(
+        $this->id,
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $this->data
+    );
+    app()->instance(ConfigRepository::class, $this->configRepository);
 });
 
 test('join volunteer to conference', function ($method) {

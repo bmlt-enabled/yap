@@ -3,14 +3,14 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Mockery\MockInterface;
+use Twilio\Rest\Client;
 
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
 
     public string $conferenceName;
-    /**
-     * @var \Mockery\Mock|(\Mockery\MockInterface&\Twilio\Rest\Client)
-     */
-    public \Mockery\Mock|\Mockery\MockInterface|\Twilio\Rest\Client $twilioClient;
+    public MockInterface|Client $twilioClient;
+    public MockInterface $configRepository;
 }

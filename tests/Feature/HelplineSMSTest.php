@@ -7,6 +7,7 @@ use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
 use App\Constants\DataType;
 use App\Services\SettingsService;
+use App\Services\TwilioService;
 use Tests\MiddlewareTests;
 use Tests\RootServerMocks;
 
@@ -15,6 +16,7 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
+    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
     $_SESSION = null;
@@ -41,9 +43,19 @@ test('initial sms gateway talk option using a different keyword', function ($met
     $reportsRepository = Mockery::mock(ReportsRepository::class);
     $reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs();
     app()->instance(ReportsRepository::class, $reportsRepository);
+    $this->utility->client->shouldReceive('getAccountSid')->andReturn("123");
+
     $_SESSION['override_sms_helpline_keyword'] = 'dude';
     $_REQUEST['stub_google_maps_endpoint'] = true;
     $this->callerIdInfo['Body'] = 'dude 27592';
+    $this->callerIdInfo['OriginalCallerId'] = '+19735551212';
+    $this->callerIdInfo['To'] = '+12125551212';
+    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+    $messageListMock->shouldReceive('create')
+        ->withArgs(['+19735551212', [
+            "body" => 'could not find a volunteer for the location, please retry your request.',
+            "from" => '+12125551212']])->times(1);
+    $this->utility->client->messages = $messageListMock;
     $response = $this->call(
         $method,
         '/sms-gateway.php',

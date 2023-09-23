@@ -21,6 +21,8 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\SessionKey::class,
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
         \App\Http\Middleware\ConfigCheck::class,
         \App\Http\Middleware\DatabaseMigrations::class,
         \App\Http\Middleware\CallSession::class,
@@ -46,6 +48,7 @@ class Kernel extends HttpKernel
 
         'api' => [
             'throttle:api',
+            \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];

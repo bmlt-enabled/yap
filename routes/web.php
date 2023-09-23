@@ -14,17 +14,14 @@ Route::post("/admin/installer", 'App\Http\Controllers\AdminController@installer'
 Route::post("/admin/login", 'App\Http\Controllers\AdminController@login');
 Route::get("/admin/{page}", 'App\Http\Controllers\AdminController@index')
     ->middleware("authForAdminPortal");
-//Hiding the new UI for now.
-//Route::get("/adminv2{page}", 'App\Http\Controllers\AdminController@index')
-//    ->where('page', '.*');
 Route::get("/bots/getMeetings", 'App\Http\Controllers\BotController@getMeetings');
 Route::get("/bots/getServiceBodyCoverage", 'App\Http\Controllers\BotController@getServiceBodyCoverage');
 Route::get("/msr/{latitude}/{longitude}", ['uses' => 'App\Http\Controllers\MeetingResultsController@index'])
     ->where(['latitude' => '.*', 'longitude' => '.*']);
 Route::delete("/admin/cache", 'App\Http\Controllers\AdminController@cacheClear');
-Route::match(array('GET', 'POST'), "/fetch-jft{ext}", 'App\Http\Controllers\FetchJFTController@index')
+Route::match(array('GET', 'POST'), "/fetch-jft{ext}", 'App\Http\Controllers\ReadingController@jft')
     ->where('ext', $ext);
-Route::match(array('GET', 'POST'), "/fetch-spad{ext}", 'App\Http\Controllers\FetchJFTController@spad')
+Route::match(array('GET', 'POST'), "/fetch-spad{ext}", 'App\Http\Controllers\ReadingController@spad')
     ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "/ping{ext}", 'App\Http\Controllers\PingController@index')
     ->where('ext', $ext);
