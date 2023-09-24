@@ -1,8 +1,7 @@
 <h1 align="center">yap</h1>
 <h1 align="center">
 <a href="https://github.com/bmlt-enabled/yap/releases/latest"><img src="https://img.shields.io/github/v/release/bmlt-enabled/yap"></a>
-<a href="https://php.net"><img src="https://img.shields.io/badge/php-%5E8.1-%238892BF
-" alt="PHP Programming Language"></a>
+<a href="https://php.net"><img src="https://img.shields.io/badge/php-%5E8.1-%238892BF" alt="PHP Programming Language"></a>
 <a href="https://github.com/bmlt-enabled/yap/actions/workflows/unstable.yml"><img src="https://img.shields.io/github/actions/workflow/status/bmlt-enabled/yap/unstable.yml?branch=main" alt="Build Status"></a>
 <a href="https://raw.githubusercontent.com/bmlt-enabled/yap/main/LICENSE"><img src="https://img.shields.io/github/license/bmlt-enabled/yap"></a>
 <a href="https://codecov.io/gh/bmlt-enabled/yap" > 
