@@ -2,6 +2,7 @@
 
 use App\Constants\CallRole;
 use App\Constants\EventId;
+use App\Models\RecordType;
 use App\Repositories\ReportsRepository;
 use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
@@ -98,12 +99,14 @@ test('volunteer opts not to answer the call', function ($method) {
     $digits = "2";
     $called = "12125551212";
 
-    $reportsRepository = Mockery::mock(ReportsRepository::class)->makePartial();
+    $reportsRepository = Mockery::mock(ReportsRepository::class);
     $reportsRepository
         ->shouldReceive("insertCallEventRecord")
-        ->withArgs([
-            EventId::VOLUNTEER_REJECTED,
-            Mockery::any()])
+        ->withArgs([$callSid, EventId::VOLUNTEER_REJECTED, null, json_encode((object)['digits'=>$digits,'to_number'=>$called]), RecordType::PHONE])
+        ->once();
+    $reportsRepository
+        ->shouldReceive("insertSession")
+        ->withArgs([$callSid])
         ->once();
     $reportsRepository
         ->shouldReceive("setConferenceParticipant")

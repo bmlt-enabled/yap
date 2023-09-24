@@ -1,6 +1,8 @@
 <?php
 
+use App\Constants\EventId;
 use App\Constants\SearchType;
+use App\Models\RecordType;
 use App\Repositories\ReportsRepository;
 
 beforeAll(function () {
@@ -12,6 +14,9 @@ beforeEach(function () {
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
     $_SESSION = null;
+
+    $this->callSid = "abc123";
+    $this->called = "+19998887777";
 });
 
 test('search for volunteers', function ($method) {
@@ -34,11 +39,19 @@ test('search for volunteers', function ($method) {
 
 test('search for meetings', function ($method) {
     $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
+    $reportsRepository->shouldReceive("insertCallEventRecord")
+        ->withArgs([$this->callSid, EventId::MEETING_SEARCH, null, null, RecordType::PHONE])
+        ->once();
+    $reportsRepository
+        ->shouldReceive("insertSession")
+        ->withArgs([$this->callSid])
+        ->once();
     app()->instance(ReportsRepository::class, $reportsRepository);
 
     $response = $this->call($method, '/input-method.php', [
-        "Digits"=>"2"
+        "Digits"=>"2",
+        "CallSid"=>$this->callSid,
+        "Called"=>$this->called,
     ]);
     $response
         ->assertStatus(200)

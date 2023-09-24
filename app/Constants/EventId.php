@@ -27,6 +27,7 @@ class EventId
     const SMS_BLACKHOLED = 22;
     const SPAD_LOOKUP = 23;
     const SPAD_LOOKUP_SMS = 24;
+    const VOLUNTEER_SEARCH_FORCE_DIALED = 25;
 
     public static function getEventById($id)
     {
@@ -79,6 +80,8 @@ class EventId
                 return "SPAD Lookup";
             case self::SPAD_LOOKUP_SMS:
                 return "SPAD Lookup via SMS";
+            case self::VOLUNTEER_SEARCH_FORCE_DIALED:
+                return "Volunteer Search Force Dial";
         }
     }
 }

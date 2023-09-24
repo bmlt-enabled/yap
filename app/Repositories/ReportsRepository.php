@@ -142,33 +142,17 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
         return $resultset;
     }
 
-    public function insertCallEventRecord($eventid, $meta = null): void
+    public function insertCallEventRecord($callSid, $eventId, $serviceBodyId, $metaAsJson, $type): void
     {
-        if (isset($_REQUEST['CallSid'])) {
-            $callSid = $_REQUEST['CallSid'];
-            $type = RecordType::PHONE;
-        } elseif (isset($_REQUEST['SmsSid'])) {
-            $callSid = $_REQUEST['SmsSid'];
-            $type = RecordType::SMS;
-        } else {
-            return;
-        }
-
-        $meta_as_json = isset($meta) ? json_encode($meta) : null;
-
-        $service_body_id = $this->settings->get('service_body_id');
-        date_default_timezone_set('UTC');
-
         DB::insert(
             "INSERT INTO `records_events` (`callsid`,`event_id`,`event_time`,`service_body_id`,`meta`, `type`)
             VALUES (?, ?, ?, ?, ?, ?)",
-            [$callSid, $eventid, $this->settings->getCurrentTime(), $service_body_id, $meta_as_json, $type]
+            [$callSid, $eventId, $this->settings->getCurrentTime(), $serviceBodyId, $metaAsJson, $type]
         );
     }
 
     public function insertCallRecord($callRecord): void
     {
-        date_default_timezone_set('UTC');
         DB::insert(
             "INSERT INTO `records`
             (`callsid`,`from_number`,`to_number`,`duration`,`start_time`,`end_time`,`payload`,`type`)
@@ -188,7 +172,6 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
 
     public function insertAlert($alertId, $payload): bool
     {
-        date_default_timezone_set('UTC');
         return DB::insert(
             "INSERT INTO `alerts` (`timestamp`,`alert_id`,`payload`) VALUES (?, ?, ?)",
             [gmdate("Y-m-d H:i:s"), $alertId, $payload]
