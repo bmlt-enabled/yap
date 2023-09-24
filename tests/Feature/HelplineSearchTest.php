@@ -8,6 +8,7 @@ use App\Constants\DataType;
 use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
+use Illuminate\Testing\Assert;
 use Tests\MiddlewareTests;
 use Tests\RootServerMocks;
 
@@ -268,11 +269,6 @@ test('valid search, volunteer routing, announce service body name', function ($m
 })->with(['GET', 'POST']);
 
 test('valid search, helpline field routing', function ($method) {
-    $coordinates = new Coordinates();
-    $coordinates->latitude = 35.5648713;
-    $coordinates->longitude =-78.6682395;
-    $coordinates->location = "Raleigh, NC, USA";
-    $meta_as_json = json_encode((object)['gather' => 'Raleigh, NC', 'coordinates' => $coordinates]);
     $repository = Mockery::mock(ReportsRepository::class);
             $repository->shouldReceive("insertCallEventRecord")
                 ->withArgs([$this->callSid, EventId::VOLUNTEER_SEARCH, 44, null, RecordType::PHONE])
@@ -316,6 +312,55 @@ test('valid search, helpline field routing', function ($method) {
             '<Dial><Number sendDigits="ww1">888-557-1667</Number></Dial>',
             '</Response>'
         ], false);
+})->with(['GET', 'POST']);
+
+test('valid search with address, volunteer gender routing enabled and choice not selected so far', function ($method) {
+    $coordinates = new Coordinates();
+    $coordinates->latitude = 35.5648713;
+    $coordinates->longitude =-78.6682395;
+    $coordinates->location = "Willow Spring, NC 27592, USA";
+    $meta_as_json = json_encode((object)['gather' => '27592', 'coordinates' => $coordinates]);
+    $repository = Mockery::mock(ReportsRepository::class);
+    $repository
+        ->shouldReceive("insertCallEventRecord")
+        ->withArgs([$this->callSid, EventId::VOLUNTEER_SEARCH, null, $meta_as_json, RecordType::PHONE])
+        ->once();
+    $repository
+        ->shouldReceive("insertSession")
+        ->withArgs([$this->callSid])
+        ->once();
+    app()->instance(ReportsRepository::class, $repository);
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+    $repository = Mockery::mock(ConfigRepository::class);
+    $repository->shouldReceive("getDbData")->with(
+        '44',
+        DataType::YAP_CALL_HANDLING_V2
+    )->andReturn([(object)[
+        "service_body_id" => "44",
+        "id" => "200",
+        "parent_id" => "43",
+        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"1\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
+    ]])->once();
+    app()->instance(ConfigRepository::class, $repository);
+
+    $address = "27592";
+    $response = $this->call($method, '/helpline-search.php', [
+        'Digits' => $address,
+        'SearchType' => "1",
+        "CallSid"=>$this->callSid,
+        'Called' => "+12125551212",
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">gender-routing.php?SearchType=1</Redirect>',
+            '</Response>'
+        ], false);
+
+    Assert::assertTrue($_SESSION['Address'] == $address);
 })->with(['GET', 'POST']);
 
 test('valid search, helpline field routing, no helpline set in root server, use fallback number', function ($method) {
