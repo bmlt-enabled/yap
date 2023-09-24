@@ -10,7 +10,6 @@ jobs:
     strategy:
       matrix:
         php:
-          - "8.0"
           - "8.1"
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -56,16 +55,9 @@ jobs:
         run: vendor/squizlabs/php_codesniffer/bin/phpcs
 
       - name: Test w/Code Coverage
-        if: matrix.php == '8.0'
         run: |
           cp config.test.php config.php
           make coverage-xml
-
-      - name: Send coverage data to codecov.io
-        if: matrix.php == '8.0'
-        uses: codecov/codecov-action@v3
-        with:
-          files: coverage.xml
 
       - uses: act10ns/slack@v1
         with:
@@ -79,7 +71,7 @@ jobs:
     strategy:
       matrix:
         php:
-          - "8.0"
+          - "8.1"
     permissions:
       id-token: write
       contents: write
@@ -143,4 +135,3 @@ jobs:
           steps: ${{ toJson(steps) }}
           channel: '#yap-automation'
         if: failure()
-
