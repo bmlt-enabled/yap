@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Constants\EventId;
-use App\Repositories\ReportsRepository;
+use App\Services\CallService;
 use App\Services\SettingsService;
 use Closure;
 use Illuminate\Http\Request;
@@ -13,12 +13,12 @@ class SmsBlackhole
 {
 
     private SettingsService $settings;
-    private ReportsRepository $reportsRepository;
+    private CallService $callService;
 
-    public function __construct(SettingsService $settings, ReportsRepository $reportsRepository)
+    public function __construct(SettingsService $settings, CallService $callService)
     {
         $this->settings = $settings;
-        $this->reportsRepository = $reportsRepository;
+        $this->callService = $callService;
     }
 
     /**
@@ -33,7 +33,7 @@ class SmsBlackhole
             $sms_blackhole_items = explode(",", ($this->settings->get('sms_blackhole')));
             foreach ($sms_blackhole_items as $sms_blackhole_item) {
                 if (str_starts_with($sms_blackhole_item, $request->get('From'))) {
-                    $this->reportsRepository->insertCallEventRecord(EventId::SMS_BLACKHOLED);
+                    $this->callService->insertCallEventRecord(EventId::SMS_BLACKHOLED);
                     return response()->view('blackhole')->header("Content-Type", "text/xml");
                 }
             }

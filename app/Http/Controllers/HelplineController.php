@@ -111,7 +111,12 @@ class HelplineController extends Controller
             $serviceBodyCallHandling = $this->config->getCallHandling($service_body_id);
         }
 
-        if (isset($address)) {
+        if ($request->has('ForceNumber')) {
+            $this->call->insertCallEventRecord(
+                EventId::VOLUNTEER_SEARCH_FORCE_DIALED,
+                (object)['number'=>$request->get('ForceNumber')]
+            );
+        } else if (isset($address)) {
             $this->call->insertCallEventRecord(
                 EventId::VOLUNTEER_SEARCH,
                 (object)['gather' => $address, 'coordinates' => isset($coordinates) ? $coordinates : null]

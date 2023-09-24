@@ -1,9 +1,7 @@
 <?php
 
-use App\Models\Coordinates;
 use App\Repositories\DatabaseMigrationRepository;
 use App\Repositories\GeocodingRepository;
-use App\Services\GeocodingService;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
@@ -11,9 +9,6 @@ use Tests\TwilioTestUtility;
 
 // Called before each test.
 uses(Tests\TestCase::class)->beforeEach(function () {
-//    $settingsService = new SettingsService();
-//    app()->instance(SettingsService::class, $settingsService);
-
     $migrationsRepository = Mockery::mock(DatabaseMigrationRepository::class);
     $migrationsRepository->shouldReceive('getVersion')
         ->withNoArgs()->andReturn(100);

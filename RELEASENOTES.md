@@ -4,6 +4,7 @@
 * Added feature for SPAD playback `spad_option`. 
 * Fix for incorrect calculation of total and missed calls metrics on reports page.
 * Fix for scenario when `sms_combine` is enabled and `sms_ask` is disabled.  [#706]
+* Yap now requires PHP version 8.1 and higher.
 
 ### 4.2.11 (September 5, 2023)
 * Sometime in August 2023, Twilio introduced a change in API Behavior. The conferences API now seems to be eventually consistent. This change adds retry logic that addresses this timing issue.

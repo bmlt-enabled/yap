@@ -2,8 +2,8 @@
 
 namespace Tests;
 
+use App\Services\HttpService;
 use App\Services\RootServerService;
-use App\Services\SettingsService;
 
 class RootServerMocks
 {
@@ -25,7 +25,7 @@ class RootServerMocks
             "world_id"=>"AS1234",
         ];
 
-        $this->service = mock(RootServerService::class)->makePartial();
+        $this->service = mock(RootServerService::class, [app(HttpService::class)])->makePartial();
         $this->service->shouldReceive("getServiceBodies")
             ->withNoArgs()->andReturn($this->serviceBodies);
         $this->service->shouldReceive("getServiceBodiesForRouting")

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Constants\EventId;
 use App\Constants\SearchType;
 use App\Constants\SpecialPhoneNumber;
+use App\Models\RecordType;
 use App\Repositories\ReportsRepository;
 use App\Repositories\VoicemailRepository;
 use Illuminate\Support\Facades\App;
@@ -65,18 +66,34 @@ class CallService extends Service
         return $response;
     }
 
-    public function insertCallEventRecord($eventid, $meta = null): void
+    public function insertCallEventRecord($eventId, $meta = null): void
     {
-        $this->reports->insertCallEventRecord($eventid, $meta);
+
+        if (request()->has('CallSid')) {
+            $callSid = request()->get('CallSid');
+            $type = RecordType::PHONE;
+        } elseif (request()->has('SmsSid')) {
+            $callSid = request()->get('SmsSid');
+            $type = RecordType::SMS;
+        } else {
+            return;
+        }
+
+        $metaAsJson = isset($meta) ? json_encode($meta) : null;
+        $serviceBodyId = $this->settings->get('service_body_id');
+        date_default_timezone_set('UTC');
+        $this->reports->insertCallEventRecord($callSid, $eventId, $serviceBodyId, $metaAsJson, $type);
     }
 
     public function insertCallRecord($callRecord): void
     {
+        date_default_timezone_set('UTC');
         $this->reports->insertCallRecord($callRecord);
     }
 
     public function insertAlert($alertId, $payload): void
     {
+        date_default_timezone_set('UTC');
         $this->reports->insertAlert($alertId, $payload);
     }
 
