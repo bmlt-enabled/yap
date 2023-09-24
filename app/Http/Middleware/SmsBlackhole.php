@@ -3,11 +3,9 @@
 namespace App\Http\Middleware;
 
 use App\Constants\EventId;
-use App\Repositories\ReportsRepository;
 use App\Services\CallService;
 use App\Services\SettingsService;
 use Closure;
-use Grpc\Call;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
