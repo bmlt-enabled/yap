@@ -1,13 +1,13 @@
 <?php
 
-use App\Services\SettingsService;
-
-$settings = new SettingsService();
-putenv(sprintf("DB_HOSTNAME=%s", $settings->get('mysql_hostname')));
-putenv(sprintf("DB_USERNAME=%s", $settings->get('mysql_username')));
-putenv(sprintf("DB_PASSWORD=%s", $settings->get('mysql_password')));
-putenv(sprintf("DB_DATABASE=%s", $settings->get('mysql_database')));
-putenv(sprintf("DB_PORT=%s", $settings->has('mysql_port') ? $settings->get('mysql_port')  : 3306));
+@include(!getenv("ENVIRONMENT") ? base_path() . '/config.php' :
+    base_path() . '/config.' . getenv("ENVIRONMENT") . '.php');
+$settings = get_defined_vars();
+putenv(sprintf("DB_HOSTNAME=%s", $settings['mysql_hostname']));
+putenv(sprintf("DB_USERNAME=%s", $settings['mysql_username']));
+putenv(sprintf("DB_PASSWORD=%s", $settings['mysql_password']));
+putenv(sprintf("DB_DATABASE=%s", $settings['mysql_database']));
+putenv(sprintf("DB_PORT=%s", $settings['mysql_port'] ?? 3306));
 
 return [
 

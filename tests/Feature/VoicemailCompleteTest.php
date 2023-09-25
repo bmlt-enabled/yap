@@ -1,6 +1,7 @@
 <?php
 
 use App\Constants\CycleAlgorithm;
+use App\Constants\SmtpPorts;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
 use App\Constants\VolunteerType;
@@ -8,6 +9,7 @@ use App\Models\VolunteerRoutingParameters;
 use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
+use Illuminate\Testing\Assert;
 use PHPMailer\PHPMailer\PHPMailer;
 use App\Constants\DataType;
 use Tests\RepositoryMocks;
@@ -166,13 +168,12 @@ test('voicemail complete send sms using volunteer responder option', function ($
         ], false);
 })->with(['GET', 'POST']);
 
-test('voicemail complete send email using primary contact', function ($method) {
+test('voicemail complete send email using primary contact', function ($method, $smtp_alt_port, $smtp_secure) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = "44";
     $this->utility->settings->set("smtp_host", "fake.host");
-    $_REQUEST['CallSid'] = $this->callSid;
-    $_REQUEST['caller_number'] = $this->callerNumber;
-    $_REQUEST['RecordingUrl'] = $this->recordingUrl;
+    $this->utility->settings->set("smtp_alt_port", $smtp_alt_port);
+    $this->utility->settings->set("smtp_secure", $smtp_secure);
 
     // mocking TwilioRestClient->calls()->update();
     $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
@@ -180,7 +181,9 @@ test('voicemail complete send email using primary contact', function ($method) {
         ->with(Mockery::on(function ($data) {
             return $data['status'] == "completed";
         }));
-    $this->utility->client->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
+    $this->utility->client->shouldReceive('calls')
+        ->with($this->callSid)
+        ->andReturn($callContextMock);
 
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
@@ -196,7 +199,10 @@ test('voicemail complete send email using primary contact', function ($method) {
     app()->instance(ConfigRepository::class, $repository);
 
     $mailer = Mockery::mock(PHPMailer::class)->makePartial();
-    $mailer->shouldReceive("send")->once();
+    $mailer
+        ->shouldReceive("send")
+        ->withNoArgs()
+        ->once();
     app()->instance(PHPMailer::class, $mailer);
 
     $response = $this->call($method, '/voicemail-complete.php', [
@@ -213,4 +219,16 @@ test('voicemail complete send email using primary contact', function ($method) {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response/>'
         ], false);
-})->with(['GET', 'POST']);
+
+    if ($smtp_secure) {
+        if ($smtp_secure == SmtpPorts::TLS) {
+            Assert::assertTrue($mailer->Port == SmtpPorts::TLS);
+        } else if ($smtp_secure == SmtpPorts::SSL) {
+            Assert::assertTrue($mailer->Port == SmtpPorts::SSL);
+        }
+    } else if (isset($smtp_alt_port)) {
+        Assert::assertTrue($mailer->Port == $smtp_alt_port);
+    } else {
+        Assert::assertTrue($mailer->Port == SmtpPorts::PLAIN);
+    }
+})->with(['GET', 'POST'], [null, 2525], [null, 'tls', 'ssl', 'bad']);

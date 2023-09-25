@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\RecordType;
 use App\Repositories\ReportsRepository;
 use App\Services\SessionService;
 use Closure;

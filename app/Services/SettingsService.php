@@ -7,6 +7,7 @@ use App\Constants\MeetingResultSort;
 use App\Constants\SearchType;
 use App\Constants\SettingSource;
 use App\Models\Localizations;
+use App\Models\RecordType;
 use DateTimeZone;
 
 class SettingsService
@@ -168,8 +169,8 @@ class SettingsService
     public function get($name)
     {
         if (isset($this->allowlist[$name]) && $this->allowlist[$name]['overridable']) {
-            if (isset($_REQUEST[$name]) && $this->allowlist[$name]['hidden'] !== true) {
-                return $_REQUEST[$name];
+            if (request()->has($name) && $this->allowlist[$name]['hidden'] !== true) {
+                return request()->get($name);
             } elseif (isset($_SESSION["override_" . $name])) {
                 return $_SESSION["override_" . $name];
             }
@@ -186,7 +187,7 @@ class SettingsService
 
     public function source($name): string
     {
-        if (isset($_REQUEST[$name])) {
+        if (request()->has($name)) {
             return SettingSource::QUERYSTRING;
         } else if (isset($_SESSION["override_" . $name])) {
             return SettingSource::SESSION;
@@ -357,10 +358,10 @@ class SettingsService
 
     public function getSessionLink($shouldUriEncode = false): string
     {
-        if (isset($_REQUEST['ysk'])) {
-            $session_id = $_REQUEST['ysk'];
-        } elseif (isset($_REQUEST['PHPSESSID'])) {
-            $session_id = $_REQUEST['PHPSESSID'];
+        if (request()->has('ysk')) {
+            $session_id = request()->get('ysk');
+        } elseif (request()->has('PHPSESSID')) {
+            $session_id = request()->get('PHPSESSID');
         } elseif (isset($_COOKIE['PHPSESSID'])) {
             $session_id = $_COOKIE['PHPSESSID'];
         } else {

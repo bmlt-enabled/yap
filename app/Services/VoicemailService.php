@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\SmtpPorts;
 use Exception;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -55,9 +56,9 @@ class VoicemailService extends Service
             if ($this->settings->has('smtp_alt_port')) {
                 $this->mailer->Port = $this->settings->get('smtp_alt_port');
             } elseif ($this->settings->get('smtp_secure') == 'tls') {
-                $this->mailer->Port = 587;
+                $this->mailer->Port = SmtpPorts::TLS;
             } elseif ($this->settings->get('smtp_secure') == 'ssl') {
-                $this->mailer->Port = 465;
+                $this->mailer->Port = SmtpPorts::SSL;
             }
             $this->mailer->setFrom($this->settings->get('smtp_from_address'), $this->settings->get('smtp_from_name'));
             $this->mailer->isHTML(true);

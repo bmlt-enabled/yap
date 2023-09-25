@@ -21,8 +21,6 @@ beforeEach(function () {
     $this->from = "+15005550006";
     $this->to = "+15005550007";
     $this->message = "test message";
-    $_REQUEST['To'] = $this->to;
-    $_REQUEST['From'] = $this->from;
 
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [
@@ -128,7 +126,9 @@ test('meeting search with valid latitude and longitude suppressing voice results
 
     $response = $this->call($method, '/meeting-search.php', [
         'Latitude' => $this->latitude,
-        'Longitude' => $this->longitude
+        'Longitude' => $this->longitude,
+        'To' => $this->to,
+        'From' => $this->from,
     ]);
 
     $response
@@ -176,7 +176,9 @@ test('meeting search with valid latitude and longitude', function ($method) {
 
     $response = $this->call($method, '/meeting-search.php', [
         'Latitude' => $this->latitude,
-        'Longitude' => $this->longitude
+        'Longitude' => $this->longitude,
+        'To' => $this->to,
+        'From' => $this->from,
     ]);
 
     $response
@@ -255,7 +257,9 @@ test('meeting search with valid latitude and longitude different results count m
 
     $response = $this->call($method, '/meeting-search.php', [
         'Latitude' => $this->latitude,
-        'Longitude' => $this->longitude
+        'Longitude' => $this->longitude,
+        'To' => $this->to,
+        'From' => $this->from,
     ]);
     $response
         ->assertStatus(200)
@@ -387,7 +391,9 @@ test('meeting search with valid latitude and longitude with sms combine', functi
 
     $response = $this->call($method, '/meeting-search.php', [
         'Latitude' => $this->latitude,
-        'Longitude' => $this->longitude
+        'Longitude' => $this->longitude,
+        'To' => $this->to,
+        'From' => $this->from,
     ]);
     $response
         ->assertStatus(200)
