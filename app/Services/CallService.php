@@ -9,22 +9,26 @@ use App\Models\RecordType;
 use App\Repositories\ReportsRepository;
 use App\Repositories\VoicemailRepository;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Request;
 
 class CallService extends Service
 {
     protected ReportsRepository $reports;
     protected VoicemailRepository $voicemail;
     protected TwilioService $twilio;
+    protected Request $request;
 
     public function __construct(
         ReportsRepository $reports,
         TwilioService $twilio,
-        VoicemailRepository $voicemail
+        VoicemailRepository $voicemail,
+        Request $request
     ) {
         parent::__construct(App::make(SettingsService::class));
         $this->reports = $reports;
         $this->twilio = $twilio;
         $this->voicemail = $voicemail;
+        $this->request = $request;
     }
 
     public function getVoicemail()
@@ -68,7 +72,6 @@ class CallService extends Service
 
     public function insertCallEventRecord($eventId, $meta = null): void
     {
-
         if (request()->has('CallSid')) {
             $callSid = request()->get('CallSid');
             $type = RecordType::PHONE;
@@ -118,10 +121,10 @@ class CallService extends Service
     {
         if ($serviceBodyCallHandling->forced_caller_id_enabled) {
             return $serviceBodyCallHandling->forced_caller_id_number;
-        } else if (isset($_REQUEST["Caller"])) {
-            return $_REQUEST["Caller"];
-        } else if (isset($_REQUEST['caller_id'])) {
-            return $_REQUEST['caller_id'];
+        } else if (request()->has("Caller")) {
+            return request()->get("Caller");
+        } else if (request()->has("caller_id")) {
+            return request()->get("caller_id");
         } else {
             return SpecialPhoneNumber::UNKNOWN;
         }
@@ -190,8 +193,8 @@ class CallService extends Service
             return "";
         } elseif ($this->settings->has('toll_province_bias')) {
             return $this->settings->get('toll_province_bias');
-        } elseif (isset($_REQUEST['ToState']) && strlen($_REQUEST['ToState']) > 0) {
-            return $_REQUEST['ToState']; // Retrieved from Twilio metadata
+        } elseif (request()->has('ToState') && strlen(request()->get('ToState')) > 0) {
+            return request()->get('ToState'); // Retrieved from Twilio metadata
         } elseif ($this->settings->has('toll_free_province_bias')) {
             return $this->settings->get('toll_free_province_bias'); // Override for Tollfree
         } else {

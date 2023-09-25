@@ -241,7 +241,6 @@ class HelplineController extends Controller
         // try, and other times it takes a few tries. Retrying every half second seems to get the
         // job done after no more than about 4 retries in the worst case. We try up to 10 times just
         // to be safe.
-        $conferences = array();
         for ($i = 0; $i < 10; $i++) {
             $conferences = $this->twilio->client()
                 ->conferences

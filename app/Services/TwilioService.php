@@ -36,11 +36,11 @@ class TwilioService extends Service
         $this->client()->calls($callSid)->update(array('status' => 'completed'));
     }
 
-    public function sendSms($message): void
+    public function sendSms($message, $from, $to): void
     {
-        if (isset($_REQUEST['From']) && isset($_REQUEST['To'])
-            && str_replace("+", "", $_REQUEST["From"]) != self::ANONYMOUS_NUMBER && $this->mobileCheck()) {
-            $this->client()->messages->create($_REQUEST['From'], array("from" => $_REQUEST['To'], "body" => $message));
+        if (isset($from) && isset($to)
+            && str_replace("+", "", $from) != self::ANONYMOUS_NUMBER && $this->mobileCheck($from)) {
+            $this->client()->messages->create($from, array("from" => $to, "body" => $message));
         }
     }
 
@@ -56,12 +56,12 @@ class TwilioService extends Service
         }
     }
 
-    private function mobileCheck()
+    private function mobileCheck($from)
     {
         if (!isset($_SESSION['is_mobile'])) {
             $is_mobile = true;
             if ($this->settings()->has('mobile_check') && json_decode($this->settings()->get('mobile_check'))) {
-                $phone_number = $this->client()->lookups->v1->phoneNumbers($_REQUEST['From'])
+                $phone_number = $this->client()->lookups->v1->phoneNumbers($from)
                     ->fetch(array("type" => "carrier"));
                 if ($phone_number->carrier['type'] !== 'mobile') {
                     $is_mobile = false;

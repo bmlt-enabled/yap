@@ -1108,7 +1108,7 @@ class CallFlowController extends Controller
             if (json_decode($this->settings->get("sms_ask")) && !$isFromSmsGateway) {
                 array_push($sms_messages, $message);
             } else {
-                $this->twilio->sendSms($message);
+                $this->twilio->sendSms($message, request('From'), request('To'));
             }
         } elseif (!$sms_disable) {
             $results_counter = 0;
@@ -1140,7 +1140,7 @@ class CallFlowController extends Controller
                 if (json_decode($this->settings->get("sms_combine")) || (json_decode($this->settings->get("sms_ask")) && !$isFromSmsGateway)) {
                     array_push($sms_messages, $message);
                 } else {
-                    $this->twilio->sendSms($message);
+                    $this->twilio->sendSms($message, request('From'), request('To'));
                 }
 
                 $results_counter++;
@@ -1150,7 +1150,7 @@ class CallFlowController extends Controller
             }
 
             if (json_decode($this->settings->get("sms_combine")) && !json_decode($this->settings->get("sms_ask"))) {
-                $this->twilio->sendSms(implode("\n\n", $sms_messages));
+                $this->twilio->sendSms(implode("\n\n", $sms_messages), request('From'), request('To'));
             }
         }
 
