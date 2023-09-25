@@ -16,7 +16,8 @@ test('get fallback', function ($method) {
         '/fallback.php',
         [
             'helpline_fallback' => '+12125551212',
-        ]);
+        ]
+    );
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
