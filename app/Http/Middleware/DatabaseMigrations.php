@@ -2,9 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Repositories\ConfigRepository;
-use App\Repositories\DatabaseMigrationRepository;
-use App\Services\ConfigService;
 use App\Services\DatabaseMigrationsService;
 use App\Services\SettingsService;
 use Closure;

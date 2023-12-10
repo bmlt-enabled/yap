@@ -3,13 +3,9 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Constants\AuthMechanism;
-use App\Constants\DataType;
 use App\Http\Controllers\Controller;
-use App\Repositories\ConfigRepository;
 use App\Services\RootServerService;
-use App\Services\SettingsService;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class RootServerServiceBodiesController extends Controller
 {

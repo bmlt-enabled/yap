@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Services\UpgradeService;
 use Exception;
 use Illuminate\Http\Request;
-use UpgradeAdvisor;
 
 class UpgradeAdvisorController extends Controller
 {

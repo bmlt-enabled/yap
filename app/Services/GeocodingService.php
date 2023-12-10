@@ -17,6 +17,11 @@ class GeocodingService extends Service
         $this->geocodingRepository = $geocodingRepository;
     }
 
+    public function ping($address)
+    {
+        return $this->geocodingRepository->ping($address);
+    }
+
     public function getCoordinatesForAddress($address): Coordinates
     {
         $coordinates = new Coordinates();
