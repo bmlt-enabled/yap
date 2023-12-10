@@ -156,7 +156,7 @@ class ReportsService extends Service
         $callRecords = $this->reportsRepository->getCallRecords($service_body_ids, $date_range_start, $date_range_end);
 
         foreach ($callRecords as &$callRecord) {
-            $callRecord->type_name = RecordType::getTypeById($callRecord->type);
+                $callRecord->type_name = RecordType::getTypeById($callRecord->type);
             $callEvents = isset($callRecord->call_events)
                 ? $this->uniqueStdClassArray(json_decode($callRecord->call_events)) : [];
 

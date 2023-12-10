@@ -50,7 +50,8 @@ class RootServerService extends Service
 
             if ($include_general) {
                 $service_bodies[] = (object)[
-                    "id" => "0"
+                    "id" => "0",
+                    "name" => "All"
                 ];
             }
         } else {

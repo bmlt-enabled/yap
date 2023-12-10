@@ -124,8 +124,8 @@ WHERE r.start_time >= ? AND r.start_time <= ?",
             [$guid, $date_range_start, $date_range_end, $guid, $date_range_start, $date_range_end,]
         );
 
-        DB::statement(DB::raw("SET @@session.sql_mode = (SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))"));
-        DB::statement(DB::raw("SET @@session.group_concat_max_len = 4294967295;"));
+        DB::statement("SET @@session.sql_mode = (SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
+        DB::statement("SET @@session.group_concat_max_len = 4294967295;");
         $resultset = DB::select(sprintf("SELECT r.`id`,CONCAT(r.`start_time`, 'Z') as start_time,CONCAT(r.`end_time`, 'Z') as end_time,r.`duration`,r.`from_number`,r.`to_number`,r.`callsid`,re.`service_body_id`,IFNULL(r.`type`, 1) as `type`,
 CONCAT('[', GROUP_CONCAT('{\"meta\":', IFNULL(re.meta, '{}'), ',\"event_id\":', re.event_id, ',\"event_time\":\"', re.event_time, 'Z\",\"service_body_id\":', COALESCE(re.service_body_id, 0), '}' ORDER BY re.event_time DESC SEPARATOR ','), ']') as call_events
 FROM (SELECT ire.id,ire.callsid, ire.event_time,ire.event_id,ircp.service_body_id,meta FROM records_events ire
