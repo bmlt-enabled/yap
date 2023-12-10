@@ -1,8 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Constants\AuthMechanism;
-use App\Constants\Http;
 use App\Services\AuthenticationService;
 use App\Services\AuthorizationService;
 use App\Services\SettingsService;
