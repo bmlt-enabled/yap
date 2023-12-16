@@ -32,12 +32,13 @@ beforeEach(function () {
     $this->callSid = "abc123";
     $this->callerNumber = "+17325551212";
     $this->recordingUrl = "file:///".getcwd()."/tests/fake";
+    $expectedPin = 4182804;
 
     $reportsRepository = mock(ReportsRepository::class)->makePartial();
     $reportsRepository->shouldReceive("insertCallEventRecord")
         ->withAnyArgs()->once();
     $reportsRepository->shouldReceive("lookupPinForCallSid")
-        ->withArgs([$this->callSid])->andReturn([4182804]);
+        ->withArgs([$this->callSid])->andReturn([$expectedPin]);
     app()->instance(ReportsRepository::class, $reportsRepository);
 });
 

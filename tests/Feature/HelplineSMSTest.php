@@ -21,6 +21,8 @@ beforeEach(function () {
     $_REQUEST = null;
     $_SESSION = null;
 
+    $this->utility = setupTwilioService();
+
     $this->settings = new SettingsService();
     app()->instance(SettingsService::class, $this->settings);
 
@@ -37,6 +39,8 @@ beforeEach(function () {
         $this->parentServiceBodyId,
         $this->data
     );
+    $this->from = '+12125551212';
+    $this->to = '+19735551212';
 });
 
 test('initial sms helpline gateway default when there is no volunteer', function ($method) {
@@ -44,7 +48,7 @@ test('initial sms helpline gateway default when there is no volunteer', function
     $reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs();
     $reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs();
     app()->instance(ReportsRepository::class, $reportsRepository);
-    $results[] = (object)["service_body_bigint"=>"44"];
+    $results[] = (object)["service_body_bigint"=>$this->serviceBodyId];
     $this->rootServerMocks->getService()
         ->shouldReceive("helplineSearch")
         ->withAnyArgs()->andReturn($results);
@@ -54,13 +58,25 @@ test('initial sms helpline gateway default when there is no volunteer', function
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+//    $messageListMock->shouldReceive('create')
+//        ->withArgs([$this->to, [
+//            'body' => 'could not find a volunteer for the location, please retry your request.',
+//            'from' => $this->from]])->times(1);
     $messageListMock->shouldReceive('create')
-        ->withArgs(['+19735551212', [
-            "body" => 'could not find a volunteer for the location, please retry your request.',
-            "from" => '+12125551212']])->times(1);
+        ->withArgs([$this->to, [
+            "body" => 'Thank you and your request has been received.  A volunteer should be responding to you shortly.',
+            "from" => $this->from]])->times(1);
     $this->utility->client->messages = $messageListMock;
 
     $repository = Mockery::mock(ConfigRepository::class);
+    $repository->shouldReceive("getDbData")->with(44, DataType::YAP_VOLUNTEERS_V2)
+        ->andReturn([(object)[
+            "service_body_id" => $this->serviceBodyId,
+            "id" => "200",
+            "parent_id" => $this->parentServiceBodyId,
+            "data" => json_encode([])
+        ]])->once();
+
     $repository->shouldReceive("getDbData")->with(
         '44',
         DataType::YAP_CALL_HANDLING_V2
@@ -71,10 +87,11 @@ test('initial sms helpline gateway default when there is no volunteer', function
         "data" => "[{\"volunteer_routing\":\"volunteers_and_sms\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
     ]])->once();
     app()->instance(ConfigRepository::class, $repository);
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     $response = $this->call($method, '/sms-gateway.php', [
-        "OriginalCallerId" => '+19735551212',
-        "To" => '+12125551212',
+        "OriginalCallerId" => $this->to,
+        "To" => $this->from,
         "Body" => "talk blah"
     ]);
     $response
