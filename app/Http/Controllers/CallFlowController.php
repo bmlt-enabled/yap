@@ -974,7 +974,11 @@ class CallFlowController extends Controller
             );
             $results_count_num = count($meeting_results->filteredList) < $results_count ? count($meeting_results->filteredList) : $results_count;
         } catch (Exception $e) {
-            Log::critical($e);
+            if (!isset($meeting_results->meetings)) {
+                Log::debug(sprintf("No meetings found for search criteria, using fallback.  Criteria: %s", $request->fullUrl()));
+            } else {
+                Log::critical($e);
+            }
             $twiml->redirect("fallback.php")
                 ->setMethod("GET");
             return response($twiml)->header("Content-Type", "text/xml");
