@@ -13,7 +13,7 @@ beforeEach(function () {
     $_SESSION = null;
 });
 
-test('version test', function($method) {
+test('version test', function ($method) {
 
     $settings = new SettingsService();
     app()->instance(SettingsService::class, $settings);
@@ -24,9 +24,10 @@ test('version test', function($method) {
         ->assertJson([
             'version' => $settings->version(),
         ]);
-})->with(['GET', 'POST']);;
+})->with(['GET', 'POST']);
+;
 
-test('version test as jsonp', function($method) {
+test('version test as jsonp', function ($method) {
     $settings = new SettingsService();
     app()->instance(SettingsService::class, $settings);
     $response = $this->call($method, '/version?callback=bro');
@@ -34,7 +35,8 @@ test('version test as jsonp', function($method) {
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/javascript")
         ->assertSeeText(sprintf("bro({\"version\":\"%s\"})", $settings->version()), false);
-})->with(['GET', 'POST']);;
+})->with(['GET', 'POST']);
+;
 
 //test('bad google maps api key', function () {
 //    $settings = new SettingsService();
