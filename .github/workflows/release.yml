@@ -51,6 +51,10 @@ jobs:
 
   create_release:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php:
+          - "8.1"
     needs: [ lint ]
     name: Create release
     permissions:
