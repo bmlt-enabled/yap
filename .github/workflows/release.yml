@@ -14,7 +14,7 @@ jobs:
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         id: code-checkout
 
       - name: Validate composer.json and composer.lock
@@ -62,7 +62,7 @@ jobs:
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         id: code-checkout
 
       - name: php ${{ matrix.php }} 🐘
@@ -100,7 +100,7 @@ jobs:
           - "8.1"
     needs: [ lint, create_release ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         id: code-checkout
 
       - name: php ${{ matrix.php }} 🐘
