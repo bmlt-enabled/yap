@@ -66,7 +66,7 @@ jobs:
           cp config.test.php config.php
           make coverage-xml
 
-      - uses: act10ns/slack@v1
+      - uses: act10ns/slack@v2
         with:
           status: ${{ job.status }}
           steps: ${{ toJson(steps) }}
@@ -143,7 +143,7 @@ jobs:
         run: |
           aws s3 cp artifacts/${ARTIFACT_FILENAME} s3://${{ secrets.S3_BUCKET }}/yap/${ARTIFACT_FILENAME}
 
-      - uses: act10ns/slack@v1
+      - uses: act10ns/slack@v2
         with:
           status: ${{ job.status }}
           steps: ${{ toJson(steps) }}
