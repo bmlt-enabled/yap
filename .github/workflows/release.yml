@@ -42,7 +42,7 @@ jobs:
         id: php-codesniffer
         run: vendor/squizlabs/php_codesniffer/bin/phpcs
 
-      - uses: act10ns/slack@v1
+      - uses: act10ns/slack@v2
         with:
           status: ${{ job.status }}
           steps: ${{ toJson(steps) }}
@@ -162,7 +162,7 @@ jobs:
           asset_name: ${{ steps.prepare_artifact_metadata.outputs.ARTIFACT_NAME }}
           asset_content_type: application/zip
 
-      - uses: act10ns/slack@v1
+      - uses: act10ns/slack@v2
         with:
           status: ${{ job.status }}
           steps: ${{ toJson(steps) }}
