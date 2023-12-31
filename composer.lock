@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4374b289b645e542e2c2f08d1ef761b0",
+    "content-hash": "8702c6fbf4a8dd80d0f58b6218ea63b8",
     "packages": [
         {
             "name": "bmlt-enabled/bmlt-root-server-php-client",
