@@ -12,8 +12,8 @@ use DateTimeZone;
 
 class SettingsService
 {
-    private $version = "4.3.0";
-    private $allowlist = [
+    private string $version = "4.3.0";
+    private array $allowlist = [
         'announce_servicebody_volunteer_routing' => ['description' => '/helpline/announce_servicebody_volunteer_routing' , 'default' => false, 'overridable' => true, 'hidden' => false],
         'blocklist' => ['description' => '/general/blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
         'bmlt_root_server' => ['description' => 'The root server to use.' , 'default' => '', 'overridable' => false, 'hidden' => false],

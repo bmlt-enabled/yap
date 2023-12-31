@@ -26,6 +26,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\ConfigCheck::class,
         \App\Http\Middleware\DatabaseMigrations::class,
         \App\Http\Middleware\CallSession::class,
+        \App\Http\Middleware\JsonpMiddleware::class,
     ];
 
     /**

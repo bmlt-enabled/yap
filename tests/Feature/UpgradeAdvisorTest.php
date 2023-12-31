@@ -13,6 +13,31 @@ beforeEach(function () {
     $_SESSION = null;
 });
 
+test('version test', function ($method) {
+
+    $settings = new SettingsService();
+    app()->instance(SettingsService::class, $settings);
+    $response = $this->call($method, '/version');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json")
+        ->assertJson([
+            'version' => $settings->version(),
+        ]);
+})->with(['GET', 'POST']);
+;
+
+test('version test as jsonp', function ($method) {
+    $settings = new SettingsService();
+    app()->instance(SettingsService::class, $settings);
+    $response = $this->call($method, '/version?callback=bro');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "application/javascript")
+        ->assertSeeText(sprintf("bro({\"version\":\"%s\"})", $settings->version()), false);
+})->with(['GET', 'POST']);
+;
+
 //test('bad google maps api key', function () {
 //    $settings = new SettingsService();
 //    $GLOBALS['google_maps_endpoint'] = 'https://maps.googleapis.com/maps/api/geocode/json?key=bad_key';

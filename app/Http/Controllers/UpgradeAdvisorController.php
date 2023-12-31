@@ -29,4 +29,10 @@ class UpgradeAdvisorController extends Controller
                 ->header("Content-Type", "application/json");
         }
     }
+
+    public function version()
+    {
+        return response(json_encode(["version"=>$this->upgradeAdvisorService->settings()->version()]))
+            ->header("Content-Type", "application/json");
+    }
 }

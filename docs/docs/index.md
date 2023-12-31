@@ -6,7 +6,7 @@ sidebar_position: 1
 
 # Yap
 
-Recommended to use PHP 8.1 or greater.
+Recommended to use PHP 8.2 or greater.
 
 Yap requires MySQL 5.7 or greater and an Apache-based webserver with `mod_rewrite` enabled.
 

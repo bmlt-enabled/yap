@@ -1,21 +1,21 @@
 {
     "require": {
-        "php": "^8.1.0",
-        "bmlt-enabled/bmlt-root-server-php-client": "^1.0",
-        "darkaonline/l5-swagger": "^8.5",
-        "guzzlehttp/guzzle": "^7.2",
-        "laravel/framework": "^10.23",
-        "laravel/tinker": "^2.7",
-        "phpmailer/phpmailer": "^6.0",
-        "twilio/sdk": "^6.44"
+        "php": "^8.2.0",
+        "bmlt-enabled/bmlt-root-server-php-client": "^1.0.4",
+        "darkaonline/l5-swagger": "^8.5.2",
+        "guzzlehttp/guzzle": "^7.8.1",
+        "laravel/framework": "^10.39.0",
+        "laravel/tinker": "^2.8.2",
+        "phpmailer/phpmailer": "^6.9.1",
+        "twilio/sdk": "^6.44.4"
     },
     "require-dev": {
-        "fakerphp/faker": "^1.9.1",
-        "mockery/mockery": "^1.4.4",
-        "nunomaduro/collision": "^7.8",
-        "pestphp/pest-plugin-laravel": "^2.3",
-        "phpunit/phpunit": "^10.3",
-        "squizlabs/php_codesniffer": "^3.7"
+        "fakerphp/faker": "^1.23.0",
+        "mockery/mockery": "^1.6.7",
+        "nunomaduro/collision": "^7.10.0",
+        "pestphp/pest-plugin-laravel": "^2.x-dev",
+        "phpunit/phpunit": "10.4.1",
+        "squizlabs/php_codesniffer": "^3.8.0"
     },
     "config": {
         "optimize-autoloader": true,
