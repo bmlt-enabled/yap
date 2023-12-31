@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         php:
-          - "8.2"
+          - "8.1"
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -78,7 +78,7 @@ jobs:
     strategy:
       matrix:
         php:
-          - "8.2"
+          - "8.1"
     permissions:
       id-token: write
       contents: write

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "92f8d38dc7b1b849302327f8bdf25d24",
+    "content-hash": "51daeac19fbe3a6a1fe37cae67187dd6",
     "packages": [
         {
             "name": "bmlt-enabled/bmlt-root-server-php-client",
@@ -9120,7 +9120,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.2.0"
+        "php": "^8.1.0"
     },
     "platform-dev": [],
     "plugin-api-version": "2.6.0"
