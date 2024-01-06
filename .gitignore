@@ -15,7 +15,6 @@ public/js/*.js
 !daterangepicker.js
 !daterangepicker.css
 yap.iml
-package-lock.json
 yarn-error.log
 /node_modules
 /public/hot
