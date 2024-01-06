@@ -50,7 +50,7 @@
         "gulp-concat": "^2.6.1",
         "gulp-declare": "^0.3.0",
         "gulp-handlebars": "^5.0.2",
-        "gulp-less": "^4.0.1",
+        "gulp-less": "^5.0.0",
         "gulp-minify": "^3.1.0",
         "gulp-notify": "^4.0.0",
         "gulp-order": "^1.2.0",
