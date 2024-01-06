@@ -32,14 +32,13 @@
         "leaflet-fullscreen": "^1.0.2",
         "moment": "^2.29.4",
         "plotly.js-dist": "^2.0.0",
-        "popper.js": "^1.15.0",
+        "@popperjs/core": "^2.11.6",
         "react-router-dom": "^6.8.1",
         "tabulator-tables": "4.9.3",
         "xlsx": "^0.18.5"
     },
     "devDependencies": {
         "@babel/preset-react": "^7.18.6",
-        "@popperjs/core": "^2.11.6",
         "@vitejs/plugin-react": "^4.0.0",
         "axios": "^1.0.0",
         "bootstrap": "^5.2.3",
