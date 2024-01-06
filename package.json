@@ -34,7 +34,7 @@
         "plotly.js-dist": "^2.0.0",
         "popper.js": "^1.15.0",
         "react-router-dom": "^6.8.1",
-        "tabulator-tables": "4.9.3",
+        "tabulator-tables": "5.5.2",
         "xlsx": "^0.18.5"
     },
     "devDependencies": {
