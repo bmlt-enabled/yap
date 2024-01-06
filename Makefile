@@ -1,7 +1,7 @@
 .PHONY: run
 run:
 	composer install
-	yarn install
+	npm install
 	docker-compose up --build
 
 .PHONY: lint
@@ -32,8 +32,8 @@ test:
 
 .PHONY: bundle-deps
 bundle-deps:
-	yarn install
-	yarn global add gulp-cli
+	npm install
+	npm install -g gulp-cli
 
 .PHONY: bundle
 bundle:
