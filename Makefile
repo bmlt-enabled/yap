@@ -33,7 +33,6 @@ test:
 .PHONY: bundle-deps
 bundle-deps:
 	npm install
-	npm install -g gulp-cli
 
 .PHONY: bundle
 bundle:
