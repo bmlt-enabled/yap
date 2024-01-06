@@ -67,6 +67,22 @@ test('search for meetings', function ($method) {
         ], false);
 })->with(['GET', 'POST']);
 
+test('search for volunteres, disable postal code gathering', function ($method) {
+    $_SESSION['override_disable_postal_code_gather'] = true;
+    $response = $this->call($method, '/input-method.php', [
+        "Digits"=>"1"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">input-method-result.php?SearchType=1&amp;Digits=1</Redirect>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
 test('search for meetings, disable postal code gathering', function ($method) {
     $_SESSION['override_disable_postal_code_gather'] = true;
     $response = $this->call($method, '/input-method.php', [
@@ -84,6 +100,24 @@ test('search for meetings, disable postal code gathering', function ($method) {
 })->with(['GET', 'POST']);
 
 test('direct to volunteer search for a specific service body', function ($method) {
+    $_SESSION['override_service_body_id'] = 44;
+    $response = $this->call($method, '/input-method.php', [
+        "Digits"=>"1",
+        "Called"=>"123"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">helpline-search.php?Called=123</Redirect>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
+test('direct to volunteer search for a specific service body with postal code gather disabled', function ($method) {
+    $_SESSION['override_disable_postal_code_gather'] = true;
     $_SESSION['override_service_body_id'] = 44;
     $response = $this->call($method, '/input-method.php', [
         "Digits"=>"1",
