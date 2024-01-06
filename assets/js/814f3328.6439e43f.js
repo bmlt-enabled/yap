@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkyapdocs=self.webpackChunkyapdocs||[]).push([[2535],{5641:e=>{e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Merging Yap Servers","permalink":"/blog/merging-yap-post","unlisted":false},{"title":"Excluding a custom format from a Yap query","permalink":"/blog/excluding-format-post","unlisted":false}]}')}}]);
