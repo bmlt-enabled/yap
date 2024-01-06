@@ -62,7 +62,7 @@ class ConfigRepository
                 "SELECT MAX(id) as id FROM `config` WHERE `service_body_id`=? AND `data_type`=?",
                 [$service_body_id, $data_type]
             );
-            return $result[0]['id'];
+            return $result[0]->id;
         } else {
             if (isset($parent_id) && $parent_id > 0) {
                 DB::insert(

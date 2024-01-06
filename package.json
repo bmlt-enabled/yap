@@ -35,7 +35,7 @@
         "popper.js": "^1.15.0",
         "react-router-dom": "^6.8.1",
         "tabulator-tables": "4.5.3",
-        "xlsx": "0.17.1"
+        "xlsx": "^0.18.5"
     },
     "devDependencies": {
         "@babel/preset-react": "^7.18.6",

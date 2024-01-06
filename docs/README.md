@@ -16,7 +16,7 @@ To install and run the website locally to view your changes while your making th
 $ npm install
 ```
 
-After installing you can then run.
+After installing, you can then run.
 
 ```
 $ npm run start
@@ -26,4 +26,4 @@ This command starts a local development server and opens up a browser window. Mo
 
 ## Deployment
 
-The website is hosted as a github page and is deployed upon merges to `main`.
+The website is hosted as a GitHub page and is deployed upon merges to `main`.
