@@ -25,7 +25,7 @@
         </div>
     </div>
     <script type="text/javascript">
-        var service_bodies = {{ json_encode($rootServer->getServiceBodies()) }};
+        var service_bodies = {!! json_encode($rootServer->getServiceBodies()) !!};
         function getServiceBodyById(id) {
             if (id === 0) return { id: "0", name: "General" };
 
