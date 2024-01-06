@@ -74,6 +74,7 @@ function initReports(dataLoadedCallback)
         layout: "fitColumns",
         responsiveLayout: "hide",
         tooltips: true,
+        height:"800px",
         addRowPos: "top",
         history: true,
         pagination: "remote",
@@ -104,7 +105,7 @@ function initReports(dataLoadedCallback)
             $(".subTableHolder").hide();
         },
         movableColumns: true,
-        resizableRows: true,
+        resizableRows: false,
         printAsHtml: true,
         printHeader: "<h3>Call Detail Records<h3>",
         printFooter: "",
