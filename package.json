@@ -40,7 +40,7 @@
     "devDependencies": {
         "@babel/preset-react": "^7.18.6",
         "@popperjs/core": "^2.11.6",
-        "@vitejs/plugin-react": "^2.2.0",
+        "@vitejs/plugin-react": "^4.0.0",
         "axios": "^0.21",
         "bootstrap": "^5.2.3",
         "cross-env": "^7.0",
