@@ -173,6 +173,7 @@ class CallFlowController extends Controller
         }
 
         if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETINGS)
+            && !isset($_SESSION['override_service_body_id'])
             && json_decode($this->settings->get('disable_postal_code_gather'))) {
             $twiml->redirect("input-method-result.php?SearchType=" . $searchType . "&Digits=1")
                 ->setMethod("GET");
