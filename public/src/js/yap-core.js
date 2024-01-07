@@ -1311,6 +1311,7 @@ function deleteGroup()
             contentType: "application/json",
             complete: function () {
                 spinnerDialog(false);
+                location.reload();
             },
             timeout: 60000
         });

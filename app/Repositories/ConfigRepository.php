@@ -2,6 +2,7 @@
 namespace App\Repositories;
 
 use App\Constants\DataType;
+use App\Constants\Status;
 use Illuminate\Support\Facades\DB;
 
 class ConfigRepository
@@ -9,33 +10,36 @@ class ConfigRepository
     public function getDbDataByParentId($parent_id, $data_type): array
     {
         return DB::select(
-            'SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `parent_id`= ? AND `data_type`= ?',
-            [$parent_id, $data_type]
+            'SELECT `data`,`service_body_id`,`id`,`parent_id`
+                FROM `config` WHERE `parent_id`= ? AND `data_type`= ? AND IFNULL(`status`,0)<>?',
+            [$parent_id, $data_type, Status::DELETED]
         );
     }
 
     public function getDbDataById($id, $data_type): array
     {
         return DB::select(
-            'SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `id`=? AND `data_type`=?',
-            [$id, $data_type]
+            'SELECT `data`,`service_body_id`,`id`,`parent_id`
+                FROM `config` WHERE `id`=? AND `data_type`=? AND IFNULL(`status`,0)<>?',
+            [$id, $data_type, Status::DELETED]
         );
     }
 
     public function getDbData($service_body_id, $data_type): array
     {
         return DB::select(
-            "SELECT `data`,`service_body_id`,`id`,`parent_id` FROM `config` WHERE `service_body_id`=?
-                                                                 AND `data_type`=?",
-            [$service_body_id, $data_type]
+            "SELECT `data`,`service_body_id`,`id`,`parent_id`
+                FROM `config` WHERE `service_body_id`=? AND `data_type`=? AND IFNULL(`status`,0)<>?",
+            [$service_body_id, $data_type. Status::DELETED]
         );
     }
 
     public function getAllDbData($data_type): array
     {
         return DB::select(
-            "SELECT `id`,`data`,`service_body_id`,`parent_id` FROM `config` WHERE `data_type`=?",
-            [$data_type]
+            "SELECT `id`,`data`,`service_body_id`,`parent_id`
+                FROM `config` WHERE `data_type`=? AND IFNULL(`status`,0)<>?",
+            [$data_type, Status::DELETED]
         );
     }
 
