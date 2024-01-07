@@ -1265,11 +1265,13 @@ function groupsPage()
             spinnerDialog(true, "Retrieving Group Volunteers...", function () {
                 loadGroupVolunteers($("#group_id").val(), $("#service_body_id").val(), function () {
                     $("#editGroupButton").show();
+                    $("#deleteGroupButton").show();
                     spinnerDialog(false);
                 })
             });
         } else {
             $("#editGroupButton").hide();
+            $("#deleteGroupButton").hide();
         }
     });
 
@@ -1295,6 +1297,24 @@ function addGroup()
     $("#group_name").val("");
     $("#group_shared_service_bodies").val("");
     $("#addGroupDialog").modal('show');
+
+    return false;
+}
+
+function deleteGroup()
+{
+    spinnerDialog(true, "Deleting Group...", function () {
+        $.ajax({
+            async: false,
+            type: "DELETE",
+            url: "../api/v1/config/" + $("#group_id").val(),
+            contentType: "application/json",
+            complete: function () {
+                spinnerDialog(false);
+            },
+            timeout: 60000
+        });
+    });
 
     return false;
 }

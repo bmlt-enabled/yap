@@ -86,6 +86,25 @@ test('get groups', function () {
     $response->assertStatus(200);
 });
 
+test('get groups, ignore those that are deleted', function () {
+    $this->configRepository->shouldReceive("getDbDataById")->with(
+        $this->id,
+        DataType::YAP_GROUPS_V2
+    )->andReturn([(object)[
+        "service_body_id" => $this->serviceBodyId,
+        "id" => $this->id,
+        "parent_id" => $this->parentServiceBodyId,
+        "data" => $this->data
+    ]]);
+    app()->instance(ConfigRepository::class, $this->configRepository);
+
+    $response = $this->call('GET', '/api/v1/config', [
+        "id" => $this->id,
+        "data_type" => DataType::YAP_GROUPS_V2
+    ]);
+    $response->assertStatus(200);
+});
+
 test('get by parent id', function () {
     $this->configRepository->shouldReceive("getDbDataByParentId")->with(
         $this->parentServiceBodyId,

@@ -20,7 +20,7 @@
         <button class="btn btn-sm btn-warning volunteer-manage-buttons" id="editGroupButton" onclick="return editGroup();"
                 style="display:none;">{{ $settings->word('edit') }}
         </button>
-        <button class="btn btm-sm btn-danger volunteer-manage-buttons" id="deleteGroupButton" onclick="return deleteGroup();"
+        <button class="btn btn-sm btn-danger volunteer-manage-buttons" id="deleteGroupButton" onclick="return deleteGroup();"
                 style="display:none;">{{ $settings->word('delete') }}
         </button>
     </form>
