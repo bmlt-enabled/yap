@@ -11,7 +11,7 @@ const order = require('gulp-order');
 let jsCoreFiles = [
     'node_modules/jquery/dist/jquery.js',
     'node_modules/jquery-ui-dist/jquery-ui.js',
-    'node_modules/@popperjs/core/dist/umd/popper.js',
+    'node_modules/popper.js/dist/umd/popper.js',
     'node_modules/bootstrap/dist/js/bootstrap.js',
     'node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.js',
     'node_modules/dark-mode-switch/dark-mode-switch.min.js',

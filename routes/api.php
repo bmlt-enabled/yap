@@ -11,7 +11,7 @@ Route::group([
     //'middleware' => ['auth:api']
 ], function () {
     Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
-    Route::resource('config', 'ConfigController')->only(['index', 'store']);
+    Route::resource('config', 'ConfigController')->only(['index', 'store', 'destroy']);
     Route::resource('users', 'UserController')->only(['index', 'store', 'destroy', 'update']);
     Route::resource('volunteers/schedule', 'VolunteerScheduleController')->only(['index']);
     Route::resource('volunteers/download', 'VolunteerDownloadController')->only(['index']);

@@ -93,4 +93,9 @@ class ConfigController extends Controller
 
         return response("");
     }
+
+    public function destroy($id): Response
+    {
+        return response($this->config->deleteDbConfigById($id));
+    }
 }

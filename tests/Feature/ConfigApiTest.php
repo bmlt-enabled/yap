@@ -51,6 +51,22 @@ test('get config', function () {
     $response->assertStatus(200);
 });
 
+test('get config for invalid service body', function () {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+
+    $this->configRepository->shouldReceive("getDbData")->with(
+        99,
+        DataType::YAP_CONFIG_V2
+    )->andReturn([]);
+    app()->instance(ConfigRepository::class, $this->configRepository);
+
+    $response = $this->call('GET', '/api/v1/config', [
+        "service_body_id" => 99,
+        "data_type" => DataType::YAP_CONFIG_V2
+    ]);
+    $response->assertStatus(200);
+});
+
 test('get groups', function () {
     $this->configRepository->shouldReceive("getDbDataById")->with(
         $this->id,
@@ -152,5 +168,15 @@ test('save config with parent id', function () {
         "data_type" => DataType::YAP_CONFIG_V2,
         "parent_id" => $this->parentServiceBodyId
     ]);
+    $response->assertStatus(200);
+});
+
+test('delete group', function () {
+    $this->configRepository->shouldReceive("deleteDbConfigById")->with(
+        $this->id,
+    )->andReturn(1);
+    app()->instance(ConfigRepository::class, $this->configRepository);
+
+    $response = $this->call('DELETE', sprintf('/api/v1/config/%s', $this->id));
     $response->assertStatus(200);
 });
