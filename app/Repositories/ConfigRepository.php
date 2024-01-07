@@ -30,7 +30,7 @@ class ConfigRepository
         return DB::select(
             "SELECT `data`,`service_body_id`,`id`,`parent_id`
                 FROM `config` WHERE `service_body_id`=? AND `data_type`=? AND IFNULL(`status`,0)<>?",
-            [$service_body_id, $data_type. Status::DELETED]
+            [$service_body_id, $data_type, Status::DELETED]
         );
     }
 
