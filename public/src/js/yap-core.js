@@ -1019,30 +1019,42 @@ var wrapFunction = function (fn, context, params) {
 
 function addShift(e)
 {
-    $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
-    $("#shiftVolunteerName").html($(e).closest(".volunteerCard").find("#volunteer_name").val());
-    $("#selectShiftDialog").attr({
-        "volunteer_id": $(e).closest(".volunteerCard").attr("id"),
-        "day_id": $(e).attr("data-shiftid")
+    $("#selectShiftDialog").on('shown.bs.modal', function (event) {
+        $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
+        $(event.target).find("#shiftVolunteerName").html($(e).closest(".volunteerCard").find("#volunteer_name").val());
+        $("#selectShiftDialog").attr({
+            "volunteer_id": $(e).closest(".volunteerCard").attr("id"),
+            "day_id": $(e).attr("data-shiftid")
+        });
+        $("#day_of_the_week").prop("disabled", false);
+        $(event.target).find("#shift_type").val("PHONE")
     });
+
     $("#selectShiftDialog").modal("show");
 }
 
 function add7DayShifts(e)
 {
-    $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
-    $("#shiftVolunteerName").html($(e).closest(".volunteerCard").find("#volunteer_name").val());
-    $("#selectRepeatShiftDialog").attr({
-        "volunteer_id": $(e).closest(".volunteerCard").attr("id"),
-        "day_id": $(e).attr("data-shiftid")
+    $("#selectRepeatShiftDialog").on('shown.bs.modal', function (event) {
+        $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
+        $(event.target).find("#shiftVolunteerName").html($(e).closest(".volunteerCard").find("#volunteer_name").val());
+        $("#selectRepeatShiftDialog").attr({
+            "volunteer_id": $(e).closest(".volunteerCard").attr("id"),
+            "day_id": $(e).attr("data-shiftid")
+        });
     });
+
     $("#selectRepeatShiftDialog").modal("show");
 }
 
 function add24by7Shifts(e)
 {
-    $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
-    $("#selectTimeZoneDialog").attr("data-volunteerid", $(e).closest(".volunteerCard").attr("id"));
+    $("#selectTimeZoneDialog").on('shown.bs.modal', function (event) {
+        $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
+        $(event.target).find("#shiftVolunteerName").html($(e).closest(".volunteerCard").find("#volunteer_name").val());
+        $("#selectTimeZoneDialog").attr("data-volunteerid", $(e).closest(".volunteerCard").attr("id"));
+    });
+
     $("#selectTimeZoneDialog").modal("show");
 }
 
@@ -1110,11 +1122,36 @@ function saveShift(e)
             "type": type
         };
 
+        removeShift(e)
         renderShift(volunteer_id, shiftInfoObj);
         $("#selectShiftDialog").modal("hide");
     } else {
         $("#selectShiftDialogValidation").html("Shift start time should be before end time.").show().fadeOut(5000);
     }
+}
+
+function editShift(e)
+{
+    $("#selectShiftDialog").on('shown.bs.modal', function (event) {
+        $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
+        $(event.target).find("#shiftVolunteerName").html($(e).closest(".volunteerCard").find("#volunteer_name").val());
+        var closestShiftDialog = $(e).closest(".shiftCard");
+        var data = JSON.parse($(closestShiftDialog).attr("data"));
+        $("#day_of_the_week").val(data.day);
+        $("#day_of_the_week").prop("disabled", true);
+        var dialog = $("#selectShiftDialog");
+        dialog.find("#time_zone").val(data.tz)
+        dialog.find("#start_time_hour").val(data.start_time.split(":")[0])
+        dialog.find("#start_time_minute").val(data.start_time.split(":")[1].split(" ")[0])
+        dialog.find("#start_time_division").val(data.start_time.split(":")[1].split(" ")[1])
+        dialog.find("#end_time_hour").val(data.end_time.split(":")[0])
+        dialog.find("#end_time_minute").val(data.end_time.split(":")[1].split(" ")[0])
+        dialog.find("#end_time_division").val(data.end_time.split(":")[1].split(" ")[1])
+        var type = data.type !== "" || data.type === undefined ? data.type : "PHONE"
+        dialog.find("#shift_type").val(type)
+    });
+
+    $("#selectShiftDialog").modal("show");
 }
 
 function removeShift(e)
