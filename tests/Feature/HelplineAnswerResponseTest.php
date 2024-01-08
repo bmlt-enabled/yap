@@ -2,6 +2,7 @@
 
 use App\Constants\CallRole;
 use App\Constants\EventId;
+use App\Constants\TwilioCallStatus;
 use App\Models\RecordType;
 use App\Repositories\ReportsRepository;
 use App\Services\TwilioService;
@@ -30,6 +31,7 @@ beforeEach(function () {
 
     $this->conferenceName = "abc";
     $this->conferenceSid = "ijk";
+    $this->voicemail_url = "https://example.org/voicemail.php";
 
     // mocking TwilioRestClient->conferences->read()
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
@@ -120,6 +122,112 @@ test('volunteer opts not to answer the call', function ($method) {
     app()->instance(ReportsRepository::class, $reportsRepository);
 
     $_SESSION['no_answer_max'] = 5;
+    $response = $this->call($method, '/helpline-answer-response.php', [
+        "Digits"=>$digits,
+        "Called"=>$called,
+        "CallSid"=>$callSid,
+        "conference_name"=>$this->conferenceName
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<Response>',
+            '<Hangup/>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
+test('no volunteers opt to answer the call, sent to voicemail', function ($method) {
+    $callSid = "def";
+    $digits = "2";
+    $called = "12125551212";
+
+    $reportsRepository = Mockery::mock(ReportsRepository::class);
+    $reportsRepository
+        ->shouldReceive("insertCallEventRecord")
+        ->withArgs([$callSid, EventId::VOLUNTEER_REJECTED, null, json_encode((object)['digits'=>$digits,'to_number'=>$called]), RecordType::PHONE])
+        ->once();
+    $reportsRepository
+        ->shouldReceive("insertSession")
+        ->withArgs([$callSid])
+        ->once();
+    $reportsRepository
+        ->shouldReceive("setConferenceParticipant")
+        ->withArgs([$this->conferenceName, $this->conferenceSid, $callSid, CallRole::VOLUNTEER])
+        ->once();
+    $reportsRepository
+        ->shouldReceive("lookupPinForCallSid")
+        ->withArgs([$callSid])
+        ->andReturn([4182804]);
+
+    app()->instance(ReportsRepository::class, $reportsRepository);
+
+    $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
+    $callContextMock->shouldReceive('update')
+        ->with(Mockery::on(function ($data) {
+            return $data['method'] == "GET" && $data['url'] == $this->voicemail_url;
+        }))->once();
+    $callInstance = mock('\Twilio\Rest\Api\V2010\Account\CallInstance');
+    $callInstance->status = TwilioCallStatus::INPROGRESS;
+    $callContextMock->shouldReceive('fetch')->withNoArgs()->andReturn($callInstance);
+    $this->twilioClient->shouldReceive('calls')->with($callSid)->andReturn($callContextMock);
+    $this->twilioClient->calls = $callContextMock;
+
+    $_SESSION['no_answer_max'] = 1;
+    $_SESSION['master_callersid'] = $callSid;
+    $_SESSION['voicemail_url'] = $this->voicemail_url;
+    $response = $this->call($method, '/helpline-answer-response.php', [
+        "Digits"=>$digits,
+        "Called"=>$called,
+        "CallSid"=>$callSid,
+        "conference_name"=>$this->conferenceName
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<Response>',
+            '<Hangup/>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
+test('no volunteers opt to answer the call, caller hung up before being sent to voicemail', function ($method) {
+    $callSid = "def";
+    $digits = "2";
+    $called = "12125551212";
+
+    $reportsRepository = Mockery::mock(ReportsRepository::class);
+    $reportsRepository
+        ->shouldReceive("insertCallEventRecord")
+        ->withArgs([$callSid, EventId::VOLUNTEER_REJECTED, null, json_encode((object)['digits'=>$digits,'to_number'=>$called]), RecordType::PHONE])
+        ->once();
+    $reportsRepository
+        ->shouldReceive("insertSession")
+        ->withArgs([$callSid])
+        ->once();
+    $reportsRepository
+        ->shouldReceive("setConferenceParticipant")
+        ->withArgs([$this->conferenceName, $this->conferenceSid, $callSid, CallRole::VOLUNTEER])
+        ->once();
+    $reportsRepository
+        ->shouldReceive("lookupPinForCallSid")
+        ->withArgs([$callSid])
+        ->andReturn([4182804]);
+
+    app()->instance(ReportsRepository::class, $reportsRepository);
+
+    $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
+    $callInstance = mock('\Twilio\Rest\Api\V2010\Account\CallInstance');
+    $callInstance->status = TwilioCallStatus::COMPLETED;
+    $callContextMock->shouldReceive('fetch')->withNoArgs()->andReturn($callInstance);
+    $this->twilioClient->shouldReceive('calls')->with($callSid)->andReturn($callContextMock);
+    $this->twilioClient->calls = $callContextMock;
+
+    $_SESSION['no_answer_max'] = 1;
+    $_SESSION['master_callersid'] = $callSid;
+    $_SESSION['voicemail_url'] = $this->voicemail_url;
     $response = $this->call($method, '/helpline-answer-response.php', [
         "Digits"=>$digits,
         "Called"=>$called,

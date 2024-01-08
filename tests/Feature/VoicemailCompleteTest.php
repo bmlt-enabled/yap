@@ -2,6 +2,7 @@
 
 use App\Constants\CycleAlgorithm;
 use App\Constants\SmtpPorts;
+use App\Constants\TwilioCallStatus;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
 use App\Constants\VolunteerType;
@@ -59,7 +60,7 @@ test('voicemail complete send sms using primary contact', function ($method) {
     $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
     $callContextMock->shouldReceive('update')
         ->with(Mockery::on(function ($data) {
-            return $data['status'] == "completed";
+            return $data['status'] == TwilioCallStatus::COMPLETED;
         }));
     $this->utility->client->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
 
@@ -118,7 +119,7 @@ test('voicemail complete send sms using volunteer responder option', function ($
     $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
     $callContextMock->shouldReceive('update')
         ->with(Mockery::on(function ($data) {
-            return $data['status'] == "completed";
+            return $data['status'] == TwilioCallStatus::COMPLETED;
         }));
     $this->utility->client->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
 
@@ -180,7 +181,7 @@ test('voicemail complete send email using primary contact', function ($method, $
     $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
     $callContextMock->shouldReceive('update')
         ->with(Mockery::on(function ($data) {
-            return $data['status'] == "completed";
+            return $data['status'] == TwilioCallStatus::COMPLETED;
         }));
     $this->utility->client->shouldReceive('calls')
         ->with($this->callSid)
