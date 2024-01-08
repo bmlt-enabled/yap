@@ -244,6 +244,7 @@
     </div>
     <div id="shiftCardFooter" class="card-footer">
         <div id="shiftRemove" class="float-right">
+            <button class="btn btn-sm btn-primary" type="button" onclick="editShift(this);return false;">{{ $settings->word('edit') }}</button>
             <button class="btn btn-sm btn-danger" type="button" onclick="removeShift(this);return false;">{{ $settings->word('remove') }}</button>
         </div>
     </div>
