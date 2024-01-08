@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Constants\CallRole;
 use App\Constants\CycleAlgorithm;
 use App\Constants\EventId;
+use App\Constants\TwilioCallStatus;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
 use App\Constants\VolunteerType;
@@ -221,7 +222,7 @@ class HelplineController extends Controller
     public function dial(Request $request)
     {
         if ($request->has('noop')) {
-            if ($request->has('CallStatus') && $request->get('CallStatus') == 'no-answer') {
+            if ($request->has('CallStatus') && $request->get('CallStatus') == TwilioCallStatus::NOANSWER) {
                 $this->twilio->incrementNoAnswerCount();
             }
 
@@ -257,7 +258,7 @@ class HelplineController extends Controller
             sleep(0.5);
         }
 
-        if (count($conferences) > 0 && $conferences[0]->status != "completed") {
+        if (count($conferences) > 0 && $conferences[0]->status != TwilioCallStatus::COMPLETED) {
             $sms_body = $this->settings->word('you_have_an_incoming_phoneline_call_from') . " ";
 
             if ($request->has('StatusCallbackEvent') && $request->get('StatusCallbackEvent') == 'participant-join' &&
@@ -276,10 +277,10 @@ class HelplineController extends Controller
 
             // Make timeout configurable per volunteer
             if (( $request->has('SequenceNumber') && intval($request->get('SequenceNumber')) == 1 ) ||
-                ( $request->has('CallStatus') && ($request->get('CallStatus') == 'no-answer' || $request->get('CallStatus') == 'completed' ))) {
+                ( $request->has('CallStatus') && ($request->get('CallStatus') == TwilioCallStatus::NOANSWER || $request->get('CallStatus') == TwilioCallStatus::COMPLETED ))) {
                 $callConfig = $this->getCallConfig($request, $serviceBodyCallHandling);
 
-                if ($request->has('CallStatus') && $request->get('CallStatus') == 'no-answer') {
+                if ($request->has('CallStatus') && $request->get('CallStatus') == TwilioCallStatus::NOANSWER) {
                     $this->call->insertCallEventRecord(EventId::VOLUNTEER_NOANSWER, (object)['to_number' => $request->get('Called')]);
                     $this->call->setConferenceParticipant(
                         $request->get('FriendlyName'),
@@ -340,7 +341,7 @@ class HelplineController extends Controller
                 foreach ($conference_participants as $participant) {
                     try {
                         Log::debug("Someone left the conference: " . $participant->callSid);
-                        $this->twilio->client()->calls($participant->callSid)->update(array( 'status' => 'completed' ));
+                        $this->twilio->client()->calls($participant->callSid)->update(array( 'status' => TwilioCallStatus::COMPLETED ));
                     } catch (TwilioException $e) {
                         Log::critical($e);
                     }

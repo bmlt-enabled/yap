@@ -2,6 +2,7 @@
 
 use App\Constants\CallRole;
 use App\Constants\EventId;
+use App\Constants\TwilioCallStatus;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
 use App\Models\RecordType;
@@ -55,6 +56,9 @@ test('noop', function ($method) {
         ->with(Mockery::on(function ($data) {
             return $data['method'] == "GET" && $data['url'] == $this->voicemail_url;
         }))->once();
+    $callInstance = mock('\Twilio\Rest\Api\V2010\Account\CallInstance');
+    $callInstance->status = TwilioCallStatus::INPROGRESS;
+    $callContextMock->shouldReceive('fetch')->withNoArgs()->andReturn($callInstance);
     $this->twilioClient->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
     $this->twilioClient->calls = $callContextMock;
 
@@ -64,7 +68,7 @@ test('noop', function ($method) {
         'Called' => "+12125551212",
         'ForceNumber' => '+19998887777',
         'FriendlyName' => $this->conferenceName,
-        'CallStatus' => 'no-answer',
+        'CallStatus' => TwilioCallStatus::NOANSWER,
     ]);
     $response
         ->assertStatus(200)
@@ -276,7 +280,7 @@ test('mark the caller as having entered the conference for reporting purposes', 
                 $this->conferenceName,
                 $this->caller
             ),
-            "statusCallbackEvent" => "completed",
+            "statusCallbackEvent" => TwilioCallStatus::COMPLETED,
             "statusCallbackMethod" => "GET",
             "timeout" => 20,
             "callerId" => $this->caller,

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\TwilioCallStatus;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Twilio\Exceptions\ConfigurationException;
@@ -33,7 +34,7 @@ class TwilioService extends Service
 
     public function hup($callSid): void
     {
-        $this->client()->calls($callSid)->update(array('status' => 'completed'));
+        $this->client()->calls($callSid)->update(array('status' => TwilioCallStatus::COMPLETED));
     }
 
     public function sendSms($message, $from, $to): void
@@ -48,11 +49,15 @@ class TwilioService extends Service
     {
         $_SESSION['no_answer_count'] = !isset($_SESSION['no_answer_count']) ? 1 : $_SESSION['no_answer_count'] + 1;
         if ($_SESSION['no_answer_count'] == $_SESSION['no_answer_max']) {
-            Log::debug("Call blasting no answer, calling voicemail.");
-            $this->client()->calls($_SESSION['master_callersid'])->update(array(
-                "method" => "GET",
-                "url" => $_SESSION['voicemail_url']
-            ));
+            if ($this->client()->calls($_SESSION['master_callersid'])->fetch()->status === TwilioCallStatus::INPROGRESS) {
+                Log::debug("Call blasting no answer, calling voicemail.");
+                $this->client()->calls($_SESSION['master_callersid'])->update(array(
+                    "method" => "GET",
+                    "url" => $_SESSION['voicemail_url']
+                ));
+            } else {
+                Log::debug("Caller hung up before we could send to voicemail.");
+            }
         }
     }
 
