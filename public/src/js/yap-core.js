@@ -1122,7 +1122,8 @@ function saveShift(e)
             "type": type
         };
 
-        removeShift(e)
+        var pointer = $(closestShiftDialog).attr("pointer");
+        removeShift($(`button[pointer=${pointer}]`).closest(".shiftCard"))
         renderShift(volunteer_id, shiftInfoObj);
         $("#selectShiftDialog").modal("hide");
     } else {
@@ -1130,13 +1131,24 @@ function saveShift(e)
     }
 }
 
+function generateRandomId() {
+    return (Math.random() + 1).toString(36).substring(2);
+}
+
 function editShift(e)
 {
+    var randomId = generateRandomId()
+    $(e).attr("pointer", randomId)
     $("#selectShiftDialog").on('shown.bs.modal', function (event) {
         $(".time_zone_selector").val(Intl.DateTimeFormat().resolvedOptions().timeZone);
         $(event.target).find("#shiftVolunteerName").html($(e).closest(".volunteerCard").find("#volunteer_name").val());
-        var closestShiftDialog = $(e).closest(".shiftCard");
-        var data = JSON.parse($(closestShiftDialog).attr("data"));
+        $(event.target).attr("pointer", randomId);
+        var closestShiftCard = $(e).closest(".shiftCard");
+        var data = JSON.parse($(closestShiftCard).attr("data"));
+        $("#selectShiftDialog").attr({
+            "volunteer_id": $(e).closest(".volunteerCard").attr("id"),
+            "day_id": data.day
+        });
         $("#day_of_the_week").val(data.day);
         $("#day_of_the_week").prop("disabled", true);
         var dialog = $("#selectShiftDialog");
@@ -1147,7 +1159,7 @@ function editShift(e)
         dialog.find("#end_time_hour").val(data.end_time.split(":")[0])
         dialog.find("#end_time_minute").val(data.end_time.split(":")[1].split(" ")[0])
         dialog.find("#end_time_division").val(data.end_time.split(":")[1].split(" ")[1])
-        var type = data.type !== "" || data.type === undefined ? data.type : "PHONE"
+        var type = data.type !== "" && data.type !== undefined ? data.type : "PHONE"
         dialog.find("#shift_type").val(type)
     });
 
