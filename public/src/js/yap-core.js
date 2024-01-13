@@ -438,6 +438,32 @@ function includeVolunteers()
 
 function saveVolunteers(data_type)
 {
+    let allGood = true;
+    let badOnes = [];
+    let volunteerCards = $(".volunteerCard").not("#volunteerCardTemplate")
+    for (let volunteerCard of volunteerCards) {
+        let phoneNumberField = $(volunteerCard).find(".volunteerPhoneNumber")
+        if (!libphonenumber.parsePhoneNumber(phoneNumberField.val(), "US").isValid()) {
+            phoneNumberField.addClass("border-danger")
+            badOnes.push($(volunteerCard).find(".volunteerName").val())
+            allGood = false;
+        } else {
+            phoneNumberField.removeClass("border-danger")
+        }
+    }
+
+    let alert = $("#volunteer_saved_alert");
+    if (!allGood) {
+        alert.addClass("alert-danger");
+        alert.html(`Invalid phone number(s) detected for ${badOnes.join(", ")}`);
+        alert.show();
+        alert.fadeOut(5000);
+        return false;
+    } else {
+        alert.hide()
+        alert.removeClass("alert-danger");
+    }
+
     $("#save-volunteers").addClass('disabled');
     spinnerDialog(true, "Saving Volunteers...", function () {
         var volunteerCards = $("#volunteerCards").children();

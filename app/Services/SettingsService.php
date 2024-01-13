@@ -51,6 +51,7 @@ class SettingsService
         'meeting_result_sort' => ['description' => '/meeting-search/sorting-results' , 'default' => MeetingResultSort::TODAY, 'overridable' => true, 'hidden' => false],
         'meeting_search_radius' => ['description' => '/meeting-search/meeting-search-radius' , 'default' => -50, 'overridable' => true, 'hidden' => false],
         'mobile_check' => ['description' => '/meeting-search/mobile-check' , 'default' => false, 'overridable' => true, 'hidden' => false],
+        'phone_number_validation' => ['description' => '/general/phone-number-validation' , 'default' => 'US', 'overridable' => true, 'hidden' => false],
         'postal_code_length' => ['description' => '/general/postal-code-lengths' , 'default' => 5, 'overridable' => true, 'hidden' => false],
         'province_lookup' => ['description' => '/general/stateprovince-lookup' , 'default' => false, 'overridable' => true, 'hidden' => false],
         'province_lookup_list' => ['description' => '/general/stateprovince-lookup' , 'default' => [], 'overridable' => true, 'hidden' => false],

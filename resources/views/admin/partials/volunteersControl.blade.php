@@ -170,7 +170,7 @@
                     Volunteer Name:
                 </div>
                 <div class="col-xs-4 volunteer-name-text" style="float: left;">
-                    <input type="text" class="form-control form-control-sm" id="volunteer_name" name="volunteer_name">
+                    <input type="text" class="form-control form-control-sm volunteerName" id="volunteer_name" name="volunteer_name">
                 </div>
                 <div class="col-xs-4 expand-button">
                     <button class="btn btn-sm btn-outline-info volunteerCardBodyToggleButton" type="button" onclick="toggleCardDetails(this);return false;">+</button>
@@ -182,7 +182,7 @@
         </div>
         <div class="card-body volunteerCardBody collapse">
             <div class="form-group form-row form-inline">
-                Phone Number:  <input type="text" class="form-control form-control-sm" id="volunteer_phone_number" name="volunteer_phone_number">
+                Phone Number:  <input type="text" class="form-control form-control-sm volunteerPhoneNumber" id="volunteer_phone_number" name="volunteer_phone_number">
             </div>
             <div class="form-group form-row form-inline">
                 Gender: <select class="form-control form-control-sm" name="volunteer_gender" id="volunteer_gender">

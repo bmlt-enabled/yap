@@ -16,6 +16,7 @@ let jsCoreFiles = [
     'node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.js',
     'node_modules/dark-mode-switch/dark-mode-switch.min.js',
     'node_modules/jquery-validation/dist/jquery.validate.min.js',
+    'node_modules/libphonenumber-js/bundle/libphonenumber-min.js',
     'public/src/js/yap-core.js',
 ];
 
