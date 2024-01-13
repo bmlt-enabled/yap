@@ -2,7 +2,7 @@
     <div id="newVolunteerDialog" class="col-sm" style="display:none;">
         <div class="form-group">
             <button id="add-volunteer" class="btn btn-sm btn-primary volunteer-manage-buttons" type="button" onclick="includeVolunteers();">{{ $settings->word('add_volunteer') }}</button>
-            <button id="save-volunteers" class="btn btn-sm btn-success volunteer-manage-buttons" type="button" onclick="saveVolunteers('<?php echo $dataType?>');">{{ $settings->word('save_volunteers') }}</button>
+            <button id="save-volunteers" class="btn btn-sm btn-success volunteer-manage-buttons" type="button" onclick="saveVolunteers('{{ $dataType }}', '{{ $settings->get("phone_number_validation") }}')">{{ $settings->word('save_volunteers') }}</button>
             <button id="include-group" class="btn btn-sm btn-warning volunteer-manage-buttons" type="button" onclick="showGroupsModal();" style="display: none;">{{ $settings->word('include_group') }}</button>
             <button id="volunteers-download-list-csv" class="btn btn-sm btn-secondary volunteer-manage-buttons" type="button" style="display: none;">Volunteer List (CSV)</button>
             <button id="volunteers-download-list-json" class="btn btn-sm btn-secondary volunteer-manage-buttons" type="button" style="display: none;">Volunteer List (JSON)</button>
