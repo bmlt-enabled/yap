@@ -52,6 +52,36 @@ test('initial call-in default', function ($method) {
     ], false);
 })->with(['GET', 'POST']);
 
+test('initial call-in default after going to the admin page', function ($method) {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+    $repository = Mockery::mock(ConfigRepository::class);
+    $repository->shouldReceive("getAllDbData")->with(
+        DataType::YAP_CALL_HANDLING_V2
+    )->andReturn([(object)[
+        "service_body_id" => "44",
+        "id" => "200",
+        "parent_id" => "43",
+        "data" => "[{\"volunteer_routing\":\"volunteers_and_sms\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"https://fake.mp3\",\"override_en_US_voicemail_greeting\":\"\"}]"
+    ]])->once();
+    app()->instance(ConfigRepository::class, $repository);
+    $this->call('GET', '/admin');
+
+    $response = $this->call($method, '/');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">Test Helpline</Say>',
+            '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
+            '<Say voice="alice" language="en-US">press two to search for meetings</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
 test('initial call-in with jft option enabled', function ($method) {
     $_SESSION['override_jft_option'] = "true";
     $response = $this->call($method, '/');
