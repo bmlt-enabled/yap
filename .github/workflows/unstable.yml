@@ -66,6 +66,12 @@ jobs:
           cp config.test.php config.php
           make coverage-xml
 
+      - name: Send coverage data to codecov.io
+        if: matrix.php == '8.1'
+        uses: codecov/codecov-action@v3.1.1
+        with:
+          files: coverage.xml
+
       - uses: act10ns/slack@v2
         with:
           status: ${{ job.status }}
