@@ -47,7 +47,7 @@ class ConfigService
         $helpline_enabled = array();
 
         for ($x = 0; $x < count($all_helpline_data); $x++) {
-            $config = $this->getServiceBodyCallHandlingData($all_helpline_data[$x]);
+            $config = $this->getServiceBodyCallHandlingData($all_helpline_data[$x], false);
             if ($config->volunteer_routing_enabled || $config->sms_routing_enabled) {
                 for ($y = 0; $y < count($service_bodies); $y++) {
                     if ($config->service_body_id == intval($service_bodies[$y]->id)) {
@@ -63,7 +63,7 @@ class ConfigService
         return $helpline_enabled;
     }
 
-    public function getServiceBodyCallHandlingData($helplineData): ServiceBodyCallHandling
+    public function getServiceBodyCallHandlingData($helplineData, $setOverrides = true): ServiceBodyCallHandling
     {
         $config = new ServiceBodyCallHandling();
         if (isset($helplineData)) {
@@ -71,9 +71,11 @@ class ConfigService
             if (isset($data)) {
                 $config->service_body_id = $helplineData->service_body_id;
 
-                foreach ($data as $key => $value) {
-                    if (str_starts_with($key, 'override_') && strlen($value) > 0) {
-                        $_SESSION[$key] = $value;
+                if ($setOverrides) {
+                    foreach ($data as $key => $value) {
+                        if (str_starts_with($key, 'override_') && strlen($value) > 0) {
+                            $_SESSION[$key] = $value;
+                        }
                     }
                 }
 

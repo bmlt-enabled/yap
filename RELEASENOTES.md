@@ -9,6 +9,7 @@
 * Fix for incorrect calculation of total and missed calls metrics on reports page.
 * Fix for scenario when `sms_combine` is enabled and `sms_ask` is disabled. [#706]
 * Fix to check that if postal code gathering is disabled and a service body override it set, that the service body override takes precedence. [#818]
+* Fix for a condition where if you visit the `/admin` page before `/` you would receive service body overrides in your session.
 * All endpoints can now receive a `callback` querystring parameter that returns JSONP if it's a JSON response endpoint.
 * Yap now requires PHP version 8.1 and higher.
 
