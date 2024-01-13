@@ -30,6 +30,7 @@
         "jquery-validation": "^1.19.5",
         "leaflet": "^1.9.3",
         "leaflet-fullscreen": "^1.0.2",
+        "libphonenumber-js": "^1.10.53",
         "moment": "^2.29.4",
         "plotly.js-dist": "^2.0.0",
         "popper.js": "^1.16.1",
