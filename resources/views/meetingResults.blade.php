@@ -8,27 +8,27 @@
     <style type="text/css">
         #bmlt-map { display: none; }
     </style>
-    <script src="{{ url("/public/dist/croutonjs/yap-meeting-results.min.js") }}"></script>
-    <script type="text/javascript">
-        var crouton = new Crouton({
-            root_server: "{{ $rootServerUrl }}",
-            theme: "sezf",
-            template_path: "{{ url("/public/dist/croutonjs/templates") }}",
-            has_languages: "1",
-            time_format: "H:mm (h:mma) z",
-            filter_tabs: 0,
-            map_search: {
-                latitude: {{ $latitude }},
-                longitude: {{ $longitude }},
-                coordinates_search: true,
-                width: -100
-            }
-        });
-
-        crouton.render();
-    </script>
+    <script src="{{ url("/public/dist/croutonjs/yap-meeting-results.js") }}"></script>
 </head>
 <body>
 <div id="bmlt-tabs"></div>
 </body>
 </html>
+<script type="text/javascript">
+    var crouton = new Crouton({
+        root_server: "{{ $rootServerUrl }}",
+        theme: "sezf",
+        template_path: "{{ url("/public/dist/croutonjs/templates") }}",
+        has_languages: "1",
+        time_format: "H:mm (h:mma) z",
+        filter_tabs: 0,
+        map_search: {
+            latitude: {{ $latitude }},
+            longitude: {{ $longitude }},
+            coordinates_search: true,
+            width: -100
+        }
+    });
+
+    crouton.render();
+</script>
