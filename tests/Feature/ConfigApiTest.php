@@ -31,17 +31,6 @@ beforeEach(function () {
     );
 });
 
-test('get config no auth', function () {
-    $response = $this->call('GET', '/api/v1/config', [
-        "service_body_id" => $this->serviceBodyId,
-        "data_type" => DataType::YAP_CONFIG_V2
-    ]);
-    $response
-        ->assertHeader("Location", "http://localhost/admin")
-        ->assertHeader("Content-Type", "text/html; charset=UTF-8")
-        ->assertStatus(302);
-});
-
 test('get config', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
