@@ -3,12 +3,11 @@
 use App\Http\Controllers\Api\V1\Admin\SwaggerController;
 use Illuminate\Support\Facades\Route;
 
-// TODO: implement auth later
 Route::group([
     'prefix' => 'v1',
     'as' => 'api.',
     'namespace' => 'App\Http\Controllers\Api\V1\Admin',
-    //'middleware' => ['auth:api']
+    'middleware' => ['authForAdminPortal']
 ], function () {
     Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
     Route::resource('config', 'ConfigController')->only(['index', 'store', 'destroy']);

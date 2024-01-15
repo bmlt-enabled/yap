@@ -1,9 +1,9 @@
 <?php
 
+use App\Constants\AuthMechanism;
 use App\Constants\DataType;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
-use App\Models\VolunteerData;
 use App\Repositories\ConfigRepository;
 use App\Models\VolunteerInfo;
 use App\Constants\VolunteerType;
@@ -38,6 +38,7 @@ beforeEach(function () {
 });
 
 test('get schedule for service body phone volunteer', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $volunteer_name = "Corey";
     $volunteer_gender = VolunteerGender::UNSPECIFIED;
@@ -98,6 +99,7 @@ test('get schedule for service body phone volunteer', function () {
 });
 
 test('get schedule for service body sms volunteer', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $volunteer_name = "Corey";
     $volunteer_gender = VolunteerGender::UNSPECIFIED;
@@ -161,6 +163,7 @@ test('get schedule for service body sms volunteer', function () {
 });
 
 test('return volunteers json', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $serviceBodyId = "44";
     $parentServiceBodyId = "43";
@@ -214,6 +217,7 @@ test('return volunteers json', function () {
 });
 
 test('return volunteers csv', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $serviceBodyId = "44";
     $parentServiceBodyId = "43";
@@ -251,6 +255,7 @@ test('return volunteers csv', function () {
 });
 
 test('return volunteers invalid service body id', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = "999999";
     $this->configRepository->shouldReceive("getDbData")->with(
@@ -271,6 +276,7 @@ test('return volunteers invalid service body id', function () {
 });
 
 test('return volunteers invalid format', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = "44";
     $this->configRepository->shouldReceive("getDbData")->with(
@@ -291,6 +297,7 @@ test('return volunteers invalid format', function () {
 });
 
 test('get groups for service body', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = "44";
     $parent_service_body_id = "43";
@@ -321,4 +328,14 @@ test('get groups for service body', function () {
         ]])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
+});
+
+test('get groups for service body no auth', function () {
+    $response = $this->call('GET', '/api/v1/volunteers/groups', [
+        "service_body_id" => 0,
+    ]);
+    $response
+        ->assertHeader("Location", "http://localhost/admin")
+        ->assertHeader("Content-Type", "text/html; charset=UTF-8")
+        ->assertStatus(302);
 });

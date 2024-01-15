@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\AuthMechanism;
 use App\Constants\EventId;
 use App\Models\EventStatus;
 
@@ -15,6 +16,7 @@ beforeEach(function () {
 });
 
 test('returns data', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(EventStatus::class, Mockery::mock(EventStatus::class, function ($mock) {
         $mock->shouldReceive('all')->once();
     }));
@@ -23,6 +25,14 @@ test('returns data', function () {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json");
+});
+
+test('returns data no auth', function () {
+    $response = $this->get('/api/v1/events/status');
+    $response
+        ->assertStatus(302)
+        ->assertHeader("Location", "http://localhost/admin")
+        ->assertHeader("Content-Type", "text/html; charset=UTF-8");
 });
 
 test('test event ids', function () {

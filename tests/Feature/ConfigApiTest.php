@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\AuthMechanism;
 use App\Repositories\ConfigRepository;
 use App\Constants\DataType;
 use App\Services\RootServerService;
@@ -31,6 +32,7 @@ beforeEach(function () {
 });
 
 test('get config', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     $this->configRepository->shouldReceive("getDbData")->with(
@@ -52,6 +54,7 @@ test('get config', function () {
 });
 
 test('get config for invalid service body', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     $this->configRepository->shouldReceive("getDbData")->with(
@@ -68,6 +71,7 @@ test('get config for invalid service body', function () {
 });
 
 test('get groups', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     $this->configRepository->shouldReceive("getDbDataById")->with(
         $this->id,
         DataType::YAP_GROUPS_V2
@@ -87,6 +91,7 @@ test('get groups', function () {
 });
 
 test('get by parent id', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     $this->configRepository->shouldReceive("getDbDataByParentId")->with(
         $this->parentServiceBodyId,
         DataType::YAP_CONFIG_V2
@@ -106,6 +111,7 @@ test('get by parent id', function () {
 });
 
 test('save group', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     $this->configRepository->shouldReceive("adminPersistDbConfigById")->with(
         $this->id,
         ''
@@ -125,6 +131,7 @@ test('save group', function () {
 });
 
 test('save config', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     $this->configRepository->shouldReceive("adminPersistDbConfig")->with(
@@ -148,6 +155,7 @@ test('save config', function () {
 });
 
 test('save config with parent id', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     $this->configRepository->shouldReceive("adminPersistDbConfig")->with(
@@ -172,6 +180,7 @@ test('save config with parent id', function () {
 });
 
 test('delete group', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     $this->configRepository->shouldReceive("deleteDbConfigById")->with(
         $this->id,
     )->andReturn(1);
@@ -179,4 +188,21 @@ test('delete group', function () {
 
     $response = $this->call('DELETE', sprintf('/api/v1/config/%s', $this->id));
     $response->assertStatus(200);
+});
+
+test('get config no auth', function () {
+    $this->configRepository = Mockery::mock(ConfigRepository::class);
+    $this->configRepository->shouldReceive("getAllDbData")->with(
+        DataType::YAP_CONFIG_V2
+    )->andReturn([(object)[]]);
+    app()->instance(ConfigRepository::class, $this->configRepository);
+
+    $response = $this->call('GET', '/api/v1/config', [
+        "service_body_id" => 0,
+        "data_type" => DataType::YAP_CONFIG_V2
+    ]);
+    $response
+        ->assertHeader("Location", "http://localhost/admin")
+        ->assertHeader("Content-Type", "text/html; charset=UTF-8")
+        ->assertStatus(302);
 });
