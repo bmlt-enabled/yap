@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\MetricsCollection;
+use App\Constants\AuthMechanism;
 use App\Models\RecordType;
 use App\Constants\EventId;
 use App\Repositories\ConfigRepository;
@@ -37,7 +37,21 @@ beforeEach(function () {
     app()->instance(ConfigRepository::class, $this->configRepository);
 });
 
+
+test('get cdr no auth', function () {
+    $response = $this->call('GET', '/api/v1/reports/cdr', [
+        "service_body_id" => '',
+        "date_range_start" => '',
+        "date_range_end" => '',
+    ]);
+    $response
+        ->assertHeader("Location", "http://localhost/admin")
+        ->assertHeader("Content-Type", "text/html; charset=UTF-8")
+        ->assertStatus(302);
+});
+
 test('validate sample cdr phone', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $repository = Mockery::mock(ReportsRepository::class);
     $service_body_id = "44";
@@ -105,6 +119,7 @@ test('validate sample cdr phone', function () {
 });
 
 test('validate sample cdr sms', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $repository = Mockery::mock(ReportsRepository::class);
     $service_body_id = "44";
@@ -172,6 +187,7 @@ test('validate sample cdr sms', function () {
 });
 
 test('validate sample map metrics', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $repository = Mockery::mock(ReportsRepository::class);
     $service_body_id = "44";
@@ -215,6 +231,7 @@ test('validate sample map metrics', function () {
 });
 
 test('validate sample map metrics poi csv', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $repository = Mockery::mock(ReportsRepository::class);
     $service_body_id = "44";
@@ -261,6 +278,7 @@ test('validate sample map metrics poi csv', function () {
 });
 
 test('validate sample metrics', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $repository = Mockery::mock(ReportsRepository::class);
     $service_body_id = "44";
