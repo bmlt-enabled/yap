@@ -31,17 +31,6 @@ beforeEach(function () {
     );
 });
 
-test('get config no auth', function () {
-    $response = $this->call('GET', '/api/v1/config', [
-        "service_body_id" => $this->serviceBodyId,
-        "data_type" => DataType::YAP_CONFIG_V2
-    ]);
-    $response
-        ->assertHeader("Location", "http://localhost/admin")
-        ->assertHeader("Content-Type", "text/html; charset=UTF-8")
-        ->assertStatus(302);
-});
-
 test('get config', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
@@ -199,4 +188,21 @@ test('delete group', function () {
 
     $response = $this->call('DELETE', sprintf('/api/v1/config/%s', $this->id));
     $response->assertStatus(200);
+});
+
+test('get config no auth', function () {
+    $this->configRepository = Mockery::mock(ConfigRepository::class);
+    $this->configRepository->shouldReceive("getAllDbData")->with(
+        DataType::YAP_CONFIG_V2
+    )->andReturn([(object)[]]);
+    app()->instance(ConfigRepository::class, $this->configRepository);
+
+    $response = $this->call('GET', '/api/v1/config', [
+        "service_body_id" => 0,
+        "data_type" => DataType::YAP_CONFIG_V2
+    ]);
+    $response
+        ->assertHeader("Location", "http://localhost/admin")
+        ->assertHeader("Content-Type", "text/html; charset=UTF-8")
+        ->assertStatus(302);
 });
