@@ -5,7 +5,7 @@
 * Added the ability to delete groups. [#680]
 * Added phone number validation for volunteers. Default is for US phone numbers, but can be configured, review the documentation for options. [#704]
 * Added the ability to edit a single shift for a volunteer. [#824]
-* Fix for scenario when no volunteers answer and caller hangs up before transfered to voicemail [#570]
+* Fix for scenario when no volunteers answer and caller hangs up before transferred to voicemail [#570]
 * Fix for incorrect calculation of total and missed calls metrics on reports page.
 * Fix for scenario when `sms_combine` is enabled and `sms_ask` is disabled. [#706]
 * Fix to check that if postal code gathering is disabled and a service body override it set, that the service body override takes precedence. [#818]
