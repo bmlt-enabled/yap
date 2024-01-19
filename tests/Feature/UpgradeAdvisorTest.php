@@ -58,9 +58,6 @@ test('test with misconfigured phone number', function ($method) {
     $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
     $geocodingService = mock(GeocodingService::class)->makePartial();
     app()->instance(SettingsService::class, instance: $settingsService);
-//
-//    $databaseMigrationService = mock(DatabaseMigrationsService::class)->makePartial();
-//    app()->instance(DatabaseMigrationsService::class, $databaseMigrationService);
 
     $geocodingService
         ->shouldReceive("ping")
