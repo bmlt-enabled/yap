@@ -20,9 +20,16 @@ class AuthenticationRepository
     public function authV1($username, $password): bool
     {
         $endpoint = ($this->settings->has('alt_auth_method') && $this->settings->get('alt_auth_method') ? '/index.php' : '/local_server/server_admin/xml.php');
-        $res = $this->http->post(sprintf("%s%s", $this->settings->getAdminBMLTRootServer(), $endpoint), "admin_action=login&c_comdef_admin_login='.$username.'&c_comdef_admin_password='.urlencode($password)");
+        $res = $this->http->post(
+            sprintf("%s%s", $this->settings->getAdminBMLTRootServer(), $endpoint),
+            [
+                "admin_action" => "login",
+                "c_comdef_admin_login" => $username,
+                "c_comdef_admin_password" => urlencode($password)
+            ]
+        );
         $is_authed = preg_match('/^OK$/', str_replace(array("\r", "\n"), '', $res->body())) == 1;
-        $_SESSION["bmlt_auth_session"] = $is_authed ? $this->getCookiesFromHeaders() : null;
+        $_SESSION["bmlt_auth_session"] = $is_authed ? $this->getCookiesFromHeaders($res->cookies()) : null;
         return $is_authed;
     }
 
@@ -62,14 +69,14 @@ class AuthenticationRepository
         return $_SESSION['auth_user_name_string'];
     }
 
-    private function getCookiesFromHeaders(): array
+    private function getCookiesFromHeaders($cookies): array
     {
-        $cookies = [];
+        $cookieStore = [];
 
-        foreach ($GLOBALS['curlResponseHeaders']['set-cookie'] as $cookie) {
-            array_push($cookies, explode(";", $cookie)[0]);
+        foreach ($cookies as $cookie) {
+            $cookieStore[] = sprintf("%s=%s", $cookie->getName(), $cookie->getValue());
         }
 
-        return $cookies;
+        return $cookieStore;
     }
 }
