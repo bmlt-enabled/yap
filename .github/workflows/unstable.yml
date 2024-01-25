@@ -65,6 +65,8 @@ jobs:
         run: |
           cp config.test.php config.php
           make coverage-xml
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
 
       - name: Send coverage data to codecov.io
         if: matrix.php == '8.1'
