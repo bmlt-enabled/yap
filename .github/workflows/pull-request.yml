@@ -68,6 +68,8 @@ jobs:
         run: |
           cp config.test.php config.php
           vendor/bin/pest --log-junit tests/test-results.xml
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2

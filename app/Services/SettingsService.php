@@ -167,6 +167,22 @@ class SettingsService
         return !is_null($this->get($name));
     }
 
+    public function geocodingApiUri(): string
+    {
+        return sprintf(
+            "https://maps.googleapis.com/maps/api/geocode/json?key=%s",
+            $this->get("google_maps_api_key")
+        );
+    }
+
+    public function timezoneApiUri(): string
+    {
+        return sprintf(
+            "https://maps.googleapis.com/maps/api/timezone/json?key=%s",
+            $this->get("google_maps_api_key")
+        );
+    }
+
     public function get($name)
     {
         if (isset($this->allowlist[$name]) && $this->allowlist[$name]['overridable']) {
@@ -177,7 +193,9 @@ class SettingsService
             }
         }
 
-        if (isset($this->settings[$name])) {
+        if ($name == "google_maps_api_key" && env("GOOGLE_MAPS_API_KEY")) {
+            return env("GOOGLE_MAPS_API_KEY");
+        } else if (isset($this->settings[$name])) {
             return $this->settings[$name];
         } elseif (isset($this->allowlist[$name]['default'])) {
             return $this->allowlist[$name]['default'];
