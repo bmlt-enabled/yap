@@ -25,7 +25,7 @@
 <ol start="2">
 <li>Begin an export from your source yap server, select only data and exclude the flags table.  See the screenshot below.  (Use a self-contained file)</li>
 </ol>
-<p><img loading="lazy" alt="MySQL Export" src="https://yapdocs.com/assets/images/mysql-export-e5f71a6ce1c368a20c842f3ab6a8bca5.png" width="618" height="656" class="img_ev3q"></p>
+<p><img decoding="async" loading="lazy" alt="MySQL Export" src="https://yapdocs.com/assets/images/mysql-export-e5f71a6ce1c368a20c842f3ab6a8bca5.png" width="618" height="656" class="img_ev3q"></p>
 <ol start="3">
 <li>After the file has been exported run the below on your system.  In the below example, “export.sql” is the file exported from Step 2 above.</li>
 </ol>
