@@ -448,6 +448,11 @@ test('meeting search with valid latitude and longitude with sms combine', functi
 test('meeting search with valid latitude and longitude with pronunciation override', function ($method) {
     $settingsService = new SettingsService();
     $settingsService->set('result_count_max', 3);
+    $settingsService->set('pronunciations', [[
+        "source"=>"Auburn",
+        "target"=>"Ohhh-it-burns"
+    ]]);
+    app()->instance(SettingsService::class, $settingsService);
     $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
     $timezoneService = mock(TimeZoneService::class)->makePartial();
     $timezoneService->shouldReceive('getTimeZoneForCoordinates')
@@ -467,7 +472,7 @@ test('meeting search with valid latitude and longitude with pronunciation overri
         ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Say voice="alice" language="en-US">meeting information found, listing the top 5 results</Say>',
+            '<Say voice="alice" language="en-US">meeting information found, listing the top 3 results</Say>',
             '<Say voice="alice" language="en-US">Meeting search results will also be sent to you by SMS text message.</Say>',
             '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 1</Say>',
@@ -489,7 +494,7 @@ test('meeting search with valid latitude and longitude with pronunciation overri
             '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
             '<Pause length="1"/>',
-            '<Say voice="alice" language="en-US">99 South St, Awwwwburnn, NY</Say>',
+            '<Say voice="alice" language="en-US">99 South St, Ohhh-it-burns, NY</Say>',
             '<Pause length="2"/>',
             '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
             '</Response>'

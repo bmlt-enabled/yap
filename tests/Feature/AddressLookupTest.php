@@ -1,4 +1,7 @@
 <?php
+
+use App\Services\SettingsService;
+
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
@@ -53,6 +56,12 @@ test('search by zip code for meeting information with speech text result with go
 })->with(['GET', 'POST']);
 
 test('search by zip code for meeting information with speech text result and pronunciation override with google api key', function ($method) {
+    $settingsService = new SettingsService();
+    $settingsService->set('pronunciations', [[
+        "source"=>"Yakima",
+        "target"=>"UkEEma"
+    ]]);
+    app()->instance(SettingsService::class, $settingsService);
     $response = $this->call(
         $method,
         '/address-lookup.php',
