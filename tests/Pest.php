@@ -9,6 +9,7 @@ use Tests\TwilioTestUtility;
 
 // Called before each test.
 uses(Tests\TestCase::class)->beforeEach(function () {
+    env("ENVIRONMENT", "test");
     $migrationsRepository = Mockery::mock(DatabaseMigrationRepository::class);
     $migrationsRepository->shouldReceive('getVersion')
         ->withNoArgs()->andReturn(100);

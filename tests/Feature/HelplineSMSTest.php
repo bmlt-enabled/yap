@@ -30,8 +30,8 @@ beforeEach(function () {
     $this->utility = setupTwilioService();
     $this->rootServerMocks = new RootServerMocks();
     $this->id = "200";
-    $this->serviceBodyId = "44";
-    $this->parentServiceBodyId = "43";
+    $this->serviceBodyId = "1053";
+    $this->parentServiceBodyId = "1052";
     $this->data =  "{\"data\":{}}";
     $this->configRepository = $this->midddleware->getAllDbData(
         $this->id,
@@ -69,7 +69,8 @@ test('initial sms helpline gateway default when there is no volunteer', function
     $this->utility->client->messages = $messageListMock;
 
     $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(44, DataType::YAP_VOLUNTEERS_V2)
+    $repository->shouldReceive("getDbData")
+        ->with($this->serviceBodyId, DataType::YAP_VOLUNTEERS_V2)
         ->andReturn([(object)[
             "service_body_id" => $this->serviceBodyId,
             "id" => "200",
@@ -78,12 +79,12 @@ test('initial sms helpline gateway default when there is no volunteer', function
         ]])->once();
 
     $repository->shouldReceive("getDbData")->with(
-        '44',
+        $this->serviceBodyId,
         DataType::YAP_CALL_HANDLING_V2
     )->andReturn([(object)[
-        "service_body_id" => "44",
+        "service_body_id" => $this->serviceBodyId,
         "id" => "200",
-        "parent_id" => "43",
+        "parent_id" => $this->parentServiceBodyId,
         "data" => "[{\"volunteer_routing\":\"volunteers_and_sms\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
     ]])->once();
     app()->instance(ConfigRepository::class, $repository);
@@ -105,7 +106,7 @@ test('initial sms helpline gateway with a volunteer', function ($method) {
     $reportsRepository = Mockery::mock(ReportsRepository::class);
     $reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs();
     app()->instance(ReportsRepository::class, $reportsRepository);
-    $results[] = (object)["service_body_bigint"=>"44"];
+    $results[] = (object)["service_body_bigint"=>$this->serviceBodyId];
     $this->rootServerMocks->getService()
         ->shouldReceive("helplineSearch")
         ->withAnyArgs()->andReturn($results);
@@ -149,7 +150,8 @@ test('initial sms helpline gateway with a volunteer', function ($method) {
             "end_time"=>$shiftEnd,
         ]]))
     ]];
-    $this->configRepository->shouldReceive("getDbData")->with(44, DataType::YAP_VOLUNTEERS_V2)
+    $this->configRepository->shouldReceive("getDbData")
+        ->with($this->serviceBodyId, DataType::YAP_VOLUNTEERS_V2)
         ->andReturn([(object)[
         "service_body_id" => $this->serviceBodyId,
         "id" => "200",
@@ -173,7 +175,7 @@ test('initial sms helpline gateway with a volunteer', function ($method) {
     $response = $this->call($method, '/sms-gateway.php', [
         "OriginalCallerId" => '+19735551212',
         "To" => '+12125551212',
-        "Body"=>"talk Raleigh, NC"
+        "Body"=>"talk Geneva, NY"
     ]);
     $response
         ->assertStatus(200)
@@ -186,7 +188,7 @@ test('initial sms helpline gateway with a volunteer with a different keyword', f
     $reportsRepository = Mockery::mock(ReportsRepository::class);
     $reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs();
     app()->instance(ReportsRepository::class, $reportsRepository);
-    $results[] = (object)["service_body_bigint"=>"44"];
+    $results[] = (object)["service_body_bigint"=>$this->serviceBodyId];
     $this->rootServerMocks->getService()
         ->shouldReceive("helplineSearch")
         ->withAnyArgs()->andReturn($results);
@@ -230,7 +232,8 @@ test('initial sms helpline gateway with a volunteer with a different keyword', f
             "end_time"=>$shiftEnd,
         ]]))
     ]];
-    $this->configRepository->shouldReceive("getDbData")->with(44, DataType::YAP_VOLUNTEERS_V2)
+    $this->configRepository->shouldReceive("getDbData")
+        ->with($this->serviceBodyId, DataType::YAP_VOLUNTEERS_V2)
         ->andReturn([(object)[
             "service_body_id" => $this->serviceBodyId,
             "id" => "200",

@@ -1,6 +1,6 @@
 <?php
 static $title = "Test Helpline";
-static $bmlt_root_server = "https://bmlt.sezf.org/main_server";
+static $bmlt_root_server = "https://latest.aws.bmlt.app/main_server";
 static $mysql_hostname = "127.0.0.1";
 static $mysql_username = "root";
 static $mysql_password = "yap_root_password";
