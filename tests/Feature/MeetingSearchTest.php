@@ -444,3 +444,54 @@ test('meeting search with valid latitude and longitude with sms combine', functi
             '</Response>',
         ], false);
 })->with(['GET', 'POST']);
+
+test('meeting search with valid latitude and longitude with pronunciation override', function ($method) {
+    $settingsService = new SettingsService();
+    $settingsService->set('result_count_max', 3);
+    $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
+    $timezoneService = mock(TimeZoneService::class)->makePartial();
+    $timezoneService->shouldReceive('getTimeZoneForCoordinates')
+        ->withArgs([$this->latitude, $this->longitude])
+        ->once()
+        ->andReturn($timezone);
+    app()->instance(TimeZoneService::class, $timezoneService);
+
+    $response = $this->call($method, '/meeting-search.php', [
+        'Latitude' => $this->latitude,
+        'Longitude' => $this->longitude,
+        'Timestamp' => '2024-02-19 00:00:00'
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">meeting information found, listing the top 5 results</Say>',
+            '<Say voice="alice" language="en-US">Meeting search results will also be sent to you by SMS text message.</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 1</Say>',
+            '<Say voice="alice" language="en-US">Step up and Be Free</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:00 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">128 Main street, Clifton Springs, NY</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 2</Say>',
+            '<Say voice="alice" language="en-US">A New Way of Life</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">27 West Genesee Street, Clyde, NY</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 3</Say>',
+            '<Say voice="alice" language="en-US">Ties That Bind Us Together</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">99 South St, Awwwwburnn, NY</Say>',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);

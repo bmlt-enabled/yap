@@ -2,6 +2,7 @@
 
 ### 4.3.0 (UNRELEASED)
 * Added feature for SPAD playback `spad_option`.
+* Added the ability to refine the spoken pronunciation of locations. [#917]
 * Added the ability to delete groups. [#680]
 * Added phone number validation for volunteers. Default is for US phone numbers, but can be configured, review the documentation for options. [#704]
 * Added the ability to edit a single shift for a volunteer. [#824]

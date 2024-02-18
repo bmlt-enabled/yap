@@ -408,7 +408,7 @@ class CallFlowController extends Controller
             $twiml->redirect(sprintf("input-method.php?Digits=%s&Retry=1", $request->get('SearchType')))
                 ->setMethod('GET');
         } else {
-            $twiml->say(sprintf("%s %s", $this->settings->word('searching_meeting_information_for'), str_replace("Yakima", "UkEEma", $coordinates->location)))
+            $twiml->say(sprintf("%s %s", $this->settings->word('searching_meeting_information_for'), $this->pronunciationReplacement($coordinates->location)))
                 ->setVoice($this->settings->voice())
                 ->setLanguage($this->settings->get("language"));
             $twiml->redirect(sprintf(
@@ -1063,7 +1063,7 @@ class CallFlowController extends Controller
 
                 for ($ll = 0; $ll < count($results['location']); $ll++) {
                     $twiml->pause()->setLength(1);
-                    $twiml->say($results['location'][$ll])
+                    $twiml->say($this->pronunciationReplacement($results['location'][$ll]))
                         ->setVoice($this->settings->voice())
                         ->setLanguage($this->settings->get("language"));
                 }
@@ -1274,5 +1274,14 @@ class CallFlowController extends Controller
             $coordinates = $this->geocoding->getCoordinatesForAddress($sanitized_address . "," . $this->call->getProvince());
         }
         return $coordinates;
+    }
+
+    private function pronunciationReplacement($subject): string
+    {
+        foreach ($this->settings->get("pronunciations") as $item) {
+            return str_replace($item['source'], $item['target'], $subject);
+        }
+
+        return $subject;
     }
 }

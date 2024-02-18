@@ -55,6 +55,7 @@ class SettingsService
         'postal_code_length' => ['description' => '/general/postal-code-lengths' , 'default' => 5, 'overridable' => true, 'hidden' => false],
         'province_lookup' => ['description' => '/general/stateprovince-lookup' , 'default' => false, 'overridable' => true, 'hidden' => false],
         'province_lookup_list' => ['description' => '/general/stateprovince-lookup' , 'default' => [], 'overridable' => true, 'hidden' => false],
+        'pronunciations' => ['descriptions' => '/meeting-search/pronunciations', 'default' => [], 'overridable' => true, 'hidden' => false],
         'result_count_max' => ['description' => '/meeting-search/results-counts-maximums' , 'default' => 5, 'overridable' => true, 'hidden' => false],
         'say_links' => ['description' => '/meeting-search/say-links', 'default' => false, 'overridable' => true, 'hidden' => false],
         'service_body_id' => ['description' => '', 'default' => null, 'overridable' => true, 'hidden' => false],
