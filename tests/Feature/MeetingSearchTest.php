@@ -30,8 +30,8 @@ beforeEach(function () {
     ])->makePartial();
     $this->twilioService = mock(TwilioService::class)->makePartial();
 
-    $this->latitude = '35.7796';
-    $this->longitude = '-78.6382';
+    $this->latitude = "42.867970";
+    $this->longitude = "-76.985573";
 });
 
 test('meeting search with a failure on BMLT server exception', function ($method) {
