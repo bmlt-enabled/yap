@@ -20,8 +20,7 @@ class BotController extends Controller
             $request->has('latitude') ? $request->get('latitude') : null,
             $request->has('longitude') ? $request->get('longitude') : null,
             $request->has('results_count') ? $request->get('results_count') : 5,
-            $request->has('today') ? $request->get('today') : null,
-            $request->has('tomorrow') ? $request->get('tomorrow') : null
+            $request->has('today') ? $request->get('today') : null
         );
         return response()->json($meetings)->header("Content-Type", "application/json");
     }

@@ -26,23 +26,27 @@ class MeetingResultsService extends Service
         $this->config = $config;
     }
 
-    public function getMeetings($latitude, $longitude, $results_count, $today = null, $tomorrow = null)
+    public function getMeetings($latitude, $longitude, $results_count, $today = null)
     {
+        $tomorrow = null;
+        $anchored = true;
         if ($latitude != null & $longitude != null) {
             $this->setTimeZoneForLatitudeAndLongitude($latitude, $longitude);
-            $graced_date_time = (new DateTime())->modify(sprintf("-%s minutes", $this->settings->get('grace_minutes')));
             if ($today == null) {
-                $today = $graced_date_time->format("w") + 1;
+                $today = (new DateTime())->modify(sprintf("-%s minutes", $this->settings->get('grace_minutes')));
+            } else {
+                $anchored = false;
+                $today = new DateTime($today);
             }
-            if ($tomorrow == null) {
-                $tomorrow = $graced_date_time->modify("+24 hours")->format("w") + 1;
-            }
+
+            $tomorrow = clone $today;
+            $tomorrow->modify("+24 hours");
         }
 
         $meeting_results = new MeetingResults();
-        $meeting_results = $this->meetingSearch($meeting_results, $latitude, $longitude, $today);
+        $meeting_results = $this->meetingSearch($meeting_results, $latitude, $longitude, $today, $anchored);
         if (count($meeting_results->filteredList) < $results_count) {
-            $meeting_results = $this->meetingSearch($meeting_results, $latitude, $longitude, $tomorrow);
+            $meeting_results = $this->meetingSearch($meeting_results, $latitude, $longitude, $tomorrow, $anchored);
         }
 
         if ($meeting_results->originalListCount > 0) {
@@ -52,11 +56,11 @@ class MeetingResultsService extends Service
                     $meeting_results->filteredList[0]->longitude
                 );
 
-                $today = (new DateTime())->format("w") + 1;
+                $today = new DateTime();
             }
 
             $sort_day_start = $this->settings->get('meeting_result_sort') == MeetingResultSort::TODAY
-                ? $today : $this->settings->get('meeting_result_sort');
+                ? ($today->format("w") + 1) : $this->settings->get('meeting_result_sort');
 
             $days = array_column($meeting_results->filteredList, 'weekday_tinyint');
             $today_str = strval($sort_day_start);
@@ -69,8 +73,14 @@ class MeetingResultsService extends Service
         return $meeting_results;
     }
 
-    public function meetingSearch($meeting_results, $latitude, $longitude, $day)
+    public function meetingSearch($meeting_results, $latitude, $longitude, $timestamp, $anchored = true)
     {
+        if ($timestamp != null) {
+            $day = $timestamp->format("w") + 1;
+        } else {
+            $day = null;
+        }
+
         $search_results = $this->rootServer->searchForMeetings($latitude, $longitude, $day);
         if (is_array($search_results->meetings) || $search_results->meetings instanceof Countable) {
             $meeting_results->originalListCount += count($search_results->meetings);
@@ -87,7 +97,7 @@ class MeetingResultsService extends Service
                     continue;
                 }
 
-                if (strpos($this->settings->get('custom_query'), "{DAY}")) {
+                if ($anchored && strpos($this->settings->get('custom_query'), "{DAY}")) {
                     if (!$this->isItPastTime(
                         $search_results->meetings[$i]->weekday_tinyint,
                         $search_results->meetings[$i]->start_time

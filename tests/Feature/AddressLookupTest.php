@@ -10,7 +10,7 @@ beforeEach(function () {
     $_SESSION = null;
 });
 
-test('search by address for someone to talk to with speech text result with google api key', function ($method) {
+test('search by address for meeting information with speech text result with google api key', function ($method) {
     $response = $this->call(
         $method,
         '/address-lookup.php',
@@ -31,7 +31,7 @@ test('search by address for someone to talk to with speech text result with goog
         ], false);
 })->with(['GET', 'POST']);
 
-test('search by zip code for someone to talk to with speech text result with google api key', function ($method) {
+test('search by zip code for meeting information with speech text result with google api key', function ($method) {
     $response = $this->call(
         $method,
         '/address-lookup.php',
@@ -48,6 +48,27 @@ test('search by zip code for someone to talk to with speech text result with goo
             '<Response>',
             '<Say voice="alice" language="en-US">searching meeting information for Willow Spring, NC 27592, USA</Say>',
             '<Redirect method="GET">meeting-search.php?Latitude=35.5648713&amp;Longitude=-78.6682395</Redirect>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
+test('search by zip code for meeting information with speech text result and pronunciation override with google api key', function ($method) {
+    $response = $this->call(
+        $method,
+        '/address-lookup.php',
+        [
+            "Digits" => "98901",
+            "SearchType" => "2",
+        ]
+    );
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">searching meeting information for UkEEma, WA 98901, USA</Say>',
+            '<Redirect method="GET">meeting-search.php?Latitude=46.6140435&amp;Longitude=-120.4454218</Redirect>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);

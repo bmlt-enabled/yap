@@ -408,7 +408,7 @@ class CallFlowController extends Controller
             $twiml->redirect(sprintf("input-method.php?Digits=%s&Retry=1", $request->get('SearchType')))
                 ->setMethod('GET');
         } else {
-            $twiml->say(sprintf("%s %s", $this->settings->word('searching_meeting_information_for'), $coordinates->location))
+            $twiml->say(sprintf("%s %s", $this->settings->word('searching_meeting_information_for'), str_replace("Yakima", "UkEEma", $coordinates->location)))
                 ->setVoice($this->settings->voice())
                 ->setLanguage($this->settings->get("language"));
             $twiml->redirect(sprintf(
@@ -970,8 +970,7 @@ class CallFlowController extends Controller
                 $latitude,
                 $longitude,
                 $results_count,
-                null,
-                null
+                $request->get("Timestamp")
             );
             $results_count_num = count($meeting_results->filteredList) < $results_count ? count($meeting_results->filteredList) : $results_count;
         } catch (Exception $e) {
