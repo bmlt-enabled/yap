@@ -27,8 +27,8 @@ beforeEach(function () {
     $_SESSION = null;
 
     $this->rootServerMocks = new RootServerMocks();
-    $this->serviceBodyId = "44";
-    $this->parentServiceBodyId = "43";
+    $this->serviceBodyId = "1053";
+    $this->parentServiceBodyId = "1052";
     $this->utility = setupTwilioService();
     $this->callSid = "abc123";
     $this->callerNumber = "+17325551212";
@@ -45,7 +45,7 @@ beforeEach(function () {
 
 test('voicemail complete send sms using primary contact', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $_SESSION['override_service_body_id'] = "44";
+    $_SESSION['override_service_body_id'] = "1053";
     $_REQUEST['CallSid'] = $this->callSid;
     $_REQUEST['caller_number'] = $this->callerNumber;
     $_REQUEST['RecordingUrl'] = $this->recordingUrl;
@@ -66,12 +66,12 @@ test('voicemail complete send sms using primary contact', function ($method) {
 
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
-        '44',
+        $this->serviceBodyId,
         DataType::YAP_CALL_HANDLING_V2
     )->andReturn([(object)[
-        "service_body_id" => "44",
+        "service_body_id" => $this->serviceBodyId,
         "id" => "200",
-        "parent_id" => "43",
+        "parent_id" => $this->parentServiceBodyId,
         "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"2125551212\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
     ]])->once();
     app()->instance(ConfigRepository::class, $repository);
@@ -93,8 +93,8 @@ test('voicemail complete send sms using primary contact', function ($method) {
 
 test('voicemail complete send sms using volunteer responder option', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $serviceBodyId = "44";
-    $parentServiceBodyId = "43";
+    $serviceBodyId = $this->serviceBodyId;
+    $parentServiceBodyId = $this->parentServiceBodyId;
     $_SESSION['override_service_body_id'] = $serviceBodyId;
     $_REQUEST['CallSid'] = $this->callSid;
     $_REQUEST['caller_number'] = $this->callerNumber;
@@ -172,7 +172,7 @@ test('voicemail complete send sms using volunteer responder option', function ($
 
 test('voicemail complete send email using primary contact', function ($method, $smtp_alt_port, $smtp_secure) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $_SESSION['override_service_body_id'] = "44";
+    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $this->utility->settings->set("smtp_host", "fake.host");
     $this->utility->settings->set("smtp_alt_port", $smtp_alt_port);
     $this->utility->settings->set("smtp_secure", $smtp_secure);
@@ -189,12 +189,12 @@ test('voicemail complete send email using primary contact', function ($method, $
 
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
-        '44',
+        $this->serviceBodyId,
         DataType::YAP_CALL_HANDLING_V2
     )->andReturn([(object)[
-        "service_body_id" => "44",
+        "service_body_id" => $this->serviceBodyId,
         "id" => "200",
-        "parent_id" => "43",
+        "parent_id" => $this->parentServiceBodyId,
         "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"dude@bro.com\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
     ]])->once();
 
