@@ -40,3 +40,9 @@ This only works locally right now.
 
 1. Run `make swagger`.
 2. Browse to `/api/documentation`
+
+# Testing
+
+After cloning, add a file called `.env.testing` with the value `GOOGLE_MAPS_API_KEY=<value>`.  Then run `make test`.
+
+To run code coverage, you can run `make coverage`.
