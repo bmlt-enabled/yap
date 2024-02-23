@@ -134,7 +134,7 @@ test('meeting search with valid latitude and longitude suppressing voice results
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSee([
+        ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">5 meetings have been texted to you</Say>',
@@ -179,55 +179,54 @@ test('meeting search with valid latitude and longitude', function ($method) {
         'Longitude' => $this->longitude,
         'To' => $this->to,
         'From' => $this->from,
+        'Timestamp' => '2024-02-19 00:00:00'
     ]);
 
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertDontSee("post-call-action.php")
-        ->assertSee([
+        ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Say voice="alice" language="en-US">meeting information found, listing the top 5 results',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">meeting information found, listing the top 5 results</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 1</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">Step up and Be Free</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:00 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">128 Main street, Clifton Springs, NY</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 2</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">A New Way of Life</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">27 West Genesee Street, Clyde, NY</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 3</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">Ties That Bind Us Together</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">99 South St, Auburn, NY</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 4</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">Courage to Change</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 10:15 AM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">12 South Street, Auburn, NY</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 5</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">Eye of the Hurricane</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">1008 Main St., East Rochester, NY</Say>',
             '<Pause length="2"/>',
             '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
-            '</Response>'
+            '</Response>',
         ], false);
 })->with(['GET', 'POST']);
 
@@ -260,37 +259,38 @@ test('meeting search with valid latitude and longitude different results count m
         'Longitude' => $this->longitude,
         'To' => $this->to,
         'From' => $this->from,
+        'Timestamp' => '2024-02-19 00:00:00'
     ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
         ->assertDontSee("post-call-action.php")
-        ->assertSee([
+        ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Say voice="alice" language="en-US">meeting information found, listing the top 3 results',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">meeting information found, listing the top 3 results</Say>',
+            '<Say voice="alice" language="en-US">Meeting search results will also be sent to you by SMS text message.</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 1</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">Step up and Be Free</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:00 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">128 Main street, Clifton Springs, NY</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 2</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">A New Way of Life</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">27 West Genesee Street, Clyde, NY</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 3</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">Ties That Bind Us Together</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">99 South St, Auburn, NY</Say>',
             '<Pause length="2"/>',
             '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
             '</Response>'
@@ -312,7 +312,8 @@ test('meeting search with valid latitude and longitude with sms ask', function (
 
     $response = $this->call($method, '/meeting-search.php', [
         'Latitude' => $this->latitude,
-        'Longitude' => $this->longitude
+        'Longitude' => $this->longitude,
+        'Timestamp' => '2024-02-19 00:00:00'
     ]);
     $response
         ->assertStatus(200)
@@ -321,48 +322,48 @@ test('meeting search with valid latitude and longitude with sms ask', function (
         ->assertSee([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Say voice="alice" language="en-US">meeting information found, listing the top 5 results',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">meeting information found, listing the top 5 results</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 1</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">Step up and Be Free</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:00 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">128 Main street, Clifton Springs, NY</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 2</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">A New Way of Life</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">27 West Genesee Street, Clyde, NY</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 3</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">Ties That Bind Us Together</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">99 South St, Auburn, NY</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 4</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">Courage to Change</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 10:15 AM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">12 South Street, Auburn, NY</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 5</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">Eye of the Hurricane</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">1008 Main St., East Rochester, NY</Say>',
             '<Pause length="2"/>',
-            '<Gather numDigits="1" timeout="10" speechTimeout="auto" input="dtmf" action="post-call-action.php',
-            '<Say voice="alice" language="en-US">press one if you would like these results to be texted to you.</Say></Gather>',
+            '<Gather numDigits="1" timeout="10" speechTimeout="auto" input="dtmf" action="post-call-action',
+            '<Say voice="alice" language="en-US">press one if you would like these results to be texted to you.</Say>',
+            '</Gather>',
             '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
-            '</Response>'
+            '</Response>',
         ], false);
 })->with(['GET', 'POST']);
 
@@ -394,50 +395,106 @@ test('meeting search with valid latitude and longitude with sms combine', functi
         'Longitude' => $this->longitude,
         'To' => $this->to,
         'From' => $this->from,
+        'Timestamp' => '2024-02-19 00:00:00'
     ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSee([
+        ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Say voice="alice" language="en-US">meeting information found, listing the top 5 results',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">meeting information found, listing the top 5 results</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 1</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">Step up and Be Free</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:00 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">128 Main street, Clifton Springs, NY</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 2</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">A New Way of Life</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">27 West Genesee Street, Clyde, NY</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 3</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">Ties That Bind Us Together</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">99 South St, Auburn, NY</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 4</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">Courage to Change</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 10:15 AM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">12 South Street, Auburn, NY</Say>',
+            '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 5</Say>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
-            '<Say voice="alice" language="en-US">',
-            '</Say><Pause length="1"/>',
+            '<Say voice="alice" language="en-US">Eye of the Hurricane</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">1008 Main St., East Rochester, NY</Say>',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
+            '</Response>',
+        ], false);
+})->with(['GET', 'POST']);
+
+test('meeting search with valid latitude and longitude with pronunciation override', function ($method) {
+    $settingsService = new SettingsService();
+    $settingsService->set('result_count_max', 3);
+    $settingsService->set('pronunciations', [[
+        "source"=>"Auburn",
+        "target"=>"Ohhh-it-burns"
+    ]]);
+    app()->instance(SettingsService::class, $settingsService);
+    $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
+    $timezoneService = mock(TimeZoneService::class)->makePartial();
+    $timezoneService->shouldReceive('getTimeZoneForCoordinates')
+        ->withArgs([$this->latitude, $this->longitude])
+        ->once()
+        ->andReturn($timezone);
+    app()->instance(TimeZoneService::class, $timezoneService);
+
+    $response = $this->call($method, '/meeting-search.php', [
+        'Latitude' => $this->latitude,
+        'Longitude' => $this->longitude,
+        'Timestamp' => '2024-02-19 00:00:00'
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrder([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">meeting information found, listing the top 3 results</Say>',
+            '<Say voice="alice" language="en-US">Meeting search results will also be sent to you by SMS text message.</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 1</Say>',
+            '<Say voice="alice" language="en-US">Step up and Be Free</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:00 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">128 Main street, Clifton Springs, NY</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 2</Say>',
+            '<Say voice="alice" language="en-US">A New Way of Life</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">27 West Genesee Street, Clyde, NY</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 3</Say>',
+            '<Say voice="alice" language="en-US">Ties That Bind Us Together</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">99 South St, Ohhh-it-burns, NY</Say>',
             '<Pause length="2"/>',
             '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
             '</Response>'
