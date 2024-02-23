@@ -70,7 +70,7 @@ jobs:
 
       - name: Send coverage data to codecov.io
         if: matrix.php == '8.1'
-        uses: codecov/codecov-action@v4.0.1
+        uses: codecov/codecov-action@v4.0.2
         with:
           files: coverage.xml
 
