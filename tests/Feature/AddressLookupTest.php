@@ -77,7 +77,7 @@ test('search by zip code for meeting information with speech text result and pro
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">searching meeting information for Skwim, WA 98382, USA</Say>',
-            '<Redirect method="GET">meeting-search.php?Latitude=48.0772936&amp;Longitude=-123.1319107</Redirect>',
+            '<Redirect method="GET">meeting-search.php?Latitude=48.0217704&amp;Longitude=-123.1273844</Redirect>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
