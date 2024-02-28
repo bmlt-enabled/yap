@@ -66,7 +66,7 @@ test('search by zip code for meeting information with speech text result and pro
         $method,
         '/address-lookup.php',
         [
-            "Digits" => "98901",
+            "Digits" => "98382",
             "SearchType" => "2",
         ]
     );
@@ -76,8 +76,8 @@ test('search by zip code for meeting information with speech text result and pro
         ->assertSeeInOrder([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Say voice="alice" language="en-US">searching meeting information for UkEEma, WA 98901, USA</Say>',
-            '<Redirect method="GET">meeting-search.php?Latitude=46.6140435&amp;Longitude=-120.4454218</Redirect>',
+            '<Say voice="alice" language="en-US">searching meeting information for Skwim, WA 98382, USA</Say>',
+            '<Redirect method="GET">meeting-search.php?Latitude=48.0772936&amp;Longitude=-123.1319107</Redirect>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
