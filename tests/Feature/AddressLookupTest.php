@@ -58,8 +58,8 @@ test('search by zip code for meeting information with speech text result with go
 test('search by zip code for meeting information with speech text result and pronunciation override with google api key', function ($method) {
     $settingsService = new SettingsService();
     $settingsService->set('pronunciations', [[
-        "source"=>"Yakima",
-        "target"=>"UkEEma"
+        "source"=>"Sequim",
+        "target"=>"Skwim"
     ]]);
     app()->instance(SettingsService::class, $settingsService);
     $response = $this->call(
