@@ -451,6 +451,9 @@ test('meeting search with valid latitude and longitude with pronunciation overri
     $settingsService->set('pronunciations', [[
         "source"=>"Auburn",
         "target"=>"Ohhh-it-burns"
+    ], [
+        "source"=>"Clifton Springs",
+        "target"=>"Cliftonnnn Springs"
     ]]);
     app()->instance(SettingsService::class, $settingsService);
     $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
@@ -480,7 +483,7 @@ test('meeting search with valid latitude and longitude with pronunciation overri
             '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">starts at Monday 7:00 PM</Say>',
             '<Pause length="1"/>',
-            '<Say voice="alice" language="en-US">128 Main street, Clifton Springs, NY</Say>',
+            '<Say voice="alice" language="en-US">128 Main street, Cliftonnnn Springs, NY</Say>',
             '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 2</Say>',
             '<Say voice="alice" language="en-US">A New Way of Life</Say>',

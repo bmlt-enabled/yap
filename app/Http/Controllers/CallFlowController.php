@@ -1279,7 +1279,7 @@ class CallFlowController extends Controller
     private function pronunciationReplacement($subject): string
     {
         foreach ($this->settings->get("pronunciations") as $item) {
-            return str_replace($item['source'], $item['target'], $subject);
+            $subject = str_replace($item['source'], $item['target'], $subject);
         }
 
         return $subject;
