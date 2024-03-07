@@ -25,7 +25,7 @@ test('search by address for meeting information with speech text result with goo
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">searching meeting information for Raleigh, NC, USA</Say>',
@@ -46,7 +46,7 @@ test('search by zip code for meeting information with speech text result with go
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">searching meeting information for Willow Spring, NC 27592, USA</Say>',
@@ -73,7 +73,7 @@ test('search by zip code for meeting information with speech text result and pro
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">searching meeting information for Skwim, WA 98382, USA</Say>',

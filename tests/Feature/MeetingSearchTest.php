@@ -48,7 +48,7 @@ test('meeting search with a failure on BMLT server exception', function ($method
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response><Redirect method="GET">fallback.php</Redirect></Response>',
         ], false);
@@ -74,7 +74,7 @@ test('meeting search with no more results today', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">',
@@ -94,8 +94,9 @@ test('meeting search with odd coordinates on meeting lookup', function ($method)
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
         ->assertDontSee("post-call-action.php")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
             '<Say voice="alice" language="en-US">no results found... you might have an invalid entry... try again</Say>',
             '<Redirect method="GET">input-method.php?Digits=2</Redirect>',
             '</Response>',
@@ -134,7 +135,7 @@ test('meeting search with valid latitude and longitude suppressing voice results
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">5 meetings have been texted to you</Say>',
@@ -185,7 +186,7 @@ test('meeting search with valid latitude and longitude', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">meeting information found, listing the top 5 results</Say>',
@@ -265,11 +266,10 @@ test('meeting search with valid latitude and longitude different results count m
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
         ->assertDontSee("post-call-action.php")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">meeting information found, listing the top 3 results</Say>',
-            '<Say voice="alice" language="en-US">Meeting search results will also be sent to you by SMS text message.</Say>',
             '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 1</Say>',
             '<Say voice="alice" language="en-US">Step up and Be Free</Say>',
@@ -319,7 +319,7 @@ test('meeting search with valid latitude and longitude with sms ask', function (
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
         ->assertSee("post-call-action.php")
-        ->assertSee([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">meeting information found, listing the top 5 results</Say>',
@@ -359,7 +359,7 @@ test('meeting search with valid latitude and longitude with sms ask', function (
             '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">1008 Main St., East Rochester, NY</Say>',
             '<Pause length="2"/>',
-            '<Gather numDigits="1" timeout="10" speechTimeout="auto" input="dtmf" action="post-call-action',
+            '<Gather numDigits="1" timeout="10" speechTimeout="auto" input="dtmf" action="post-call-action.php?Payload=%5B%22Step+up+and+Be+Free+Monday+7%3A00+PM%2C+128+Main+street%2C+Clifton+Springs%2C+NY%22%2C%22A+New+Way+of+Life+Monday+6%3A30+PM%2C+27+West+Genesee+Street%2C+Clyde%2C+NY%22%2C%22Ties+That+Bind+Us+Together+Monday+6%3A30+PM%2C+99+South+St%2C+Auburn%2C+NY%22%2C%22Courage+to+Change+Monday+10%3A15+AM%2C+12+South+Street%2C+Auburn%2C+NY%22%2C%22Eye+of+the+Hurricane+Monday+7%3A30+PM%2C+1008+Main+St.%2C+East+Rochester%2C+NY%22%5D" method="GET">',
             '<Say voice="alice" language="en-US">press one if you would like these results to be texted to you.</Say>',
             '</Gather>',
             '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
@@ -400,7 +400,7 @@ test('meeting search with valid latitude and longitude with sms combine', functi
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">meeting information found, listing the top 5 results</Say>',
@@ -472,11 +472,10 @@ test('meeting search with valid latitude and longitude with pronunciation overri
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">meeting information found, listing the top 3 results</Say>',
-            '<Say voice="alice" language="en-US">Meeting search results will also be sent to you by SMS text message.</Say>',
             '<Pause length="1"/>',
             '<Say voice="alice" language="en-US">number 1</Say>',
             '<Say voice="alice" language="en-US">Step up and Be Free</Say>',

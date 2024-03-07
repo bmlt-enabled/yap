@@ -11,6 +11,7 @@ use App\Constants\VolunteerResponderOption;
 use App\Constants\VolunteerType;
 use App\Models\VolunteerRoutingParameters;
 use App\Services\CallService;
+use App\Services\ConferenceService;
 use App\Services\ConfigService;
 use App\Services\GeocodingService;
 use App\Services\MeetingResultsService;
@@ -37,6 +38,7 @@ class HelplineController extends Controller
     protected GeocodingService $geocoding;
     protected MeetingResultsService $meetingResults;
     protected TwilioService $twilio;
+    protected ConferenceService $conference;
 
     public function __construct(
         ConfigService    $config,
@@ -47,6 +49,7 @@ class HelplineController extends Controller
         GeocodingService $geocoding,
         MeetingResultsService $meetingResults,
         TwilioService $twilio,
+        ConferenceService $conference,
     ) {
         $this->config = $config;
         $this->volunteers = $volunteers;
@@ -56,6 +59,7 @@ class HelplineController extends Controller
         $this->geocoding = $geocoding;
         $this->meetingResults = $meetingResults;
         $this->twilio = $twilio;
+        $this->conference = $conference;
     }
 
     public function search(Request $request)
@@ -162,7 +166,7 @@ class HelplineController extends Controller
             }
 
             $dial = $twiml->dial();
-            $dial->conference($this->call->getConferenceName($calculated_service_body_id))
+            $dial->conference($this->conference->getConferenceName($calculated_service_body_id))
                 ->setWaitUrl($serviceBodyCallHandling->moh_count == 1 ? $serviceBodyCallHandling->moh : "playlist.php?items=" . $serviceBodyCallHandling->moh)
                 ->setStatusCallback("helpline-dialer.php?service_body_id=" . $calculated_service_body_id . "&Caller=" . $request->get('Called') . $this->settings->getSessionLink(true))
                 ->setStartConferenceOnEnter("false")
