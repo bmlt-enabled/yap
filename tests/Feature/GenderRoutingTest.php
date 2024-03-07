@@ -17,7 +17,7 @@ test('invalid entry', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">you might have an invalid entry</Say>',
@@ -33,7 +33,7 @@ test('selected option', function () {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect method="GET">helpline-search.php?SearchType=1</Redirect>',
@@ -48,7 +48,7 @@ test('initial gender selection', function () {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" hints="" input="dtmf" timeout="10" speechTimeout="auto" action="gender-routing-response.php?SearchType=1" method="GET">',
@@ -66,7 +66,7 @@ test('initial gender selection with no preference option enabled', function () {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" hints="" input="dtmf" timeout="10" speechTimeout="auto" action="gender-routing-response.php?SearchType=1" method="GET">',

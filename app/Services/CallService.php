@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Constants\EventId;
 use App\Constants\SearchType;
 use App\Constants\SpecialPhoneNumber;
 use App\Models\RecordType;
@@ -98,11 +97,6 @@ class CallService extends Service
     {
         date_default_timezone_set('UTC');
         $this->reports->insertAlert($alertId, $payload);
-    }
-
-    public function getConferenceName($service_body_id): string
-    {
-        return $service_body_id . "_" . rand(1000000, 9999999) . "_" . time();
     }
 
     public function setConferenceParticipant($friendlyname, $callsid, $role): void

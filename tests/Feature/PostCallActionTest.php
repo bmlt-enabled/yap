@@ -32,7 +32,7 @@ test('standard call ending', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">',
@@ -44,7 +44,7 @@ test('start over', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response><Redirect method="GET">https://example.org/index.php</Redirect></Response>'], false);
 })->with(['GET', 'POST']);
@@ -71,7 +71,7 @@ test('send meeting results SMS', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">',
@@ -102,7 +102,7 @@ test('send meeting results SMS with combine', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">',
@@ -133,7 +133,7 @@ test('send meeting results SMS with combine with infinite searching', function (
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response><Redirect method="GET">https://example.org/index.php</Redirect></Response>'], false);
 })->with(['GET', 'POST']);

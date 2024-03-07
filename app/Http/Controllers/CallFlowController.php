@@ -214,6 +214,15 @@ class CallFlowController extends Controller
             return response($twiml)->header("Content-Type", "text/xml");
         }
 
+        if ($searchType == SearchType::MEETINGS &&
+            !json_decode($this->settings->get("sms_ask")) &&
+            !json_decode($this->settings->get("sms_disable"))
+        ) {
+            $twiml->say($this->settings->word('search_results_by_sms'))
+                ->setVoice($this->settings->voice())
+                ->setLanguage($this->settings->get('language'));
+        }
+
         $gather = $twiml->gather()
             ->setLanguage($this->settings->get('gather_language'))
             ->setInput($this->settings->getInputType())
@@ -649,6 +658,15 @@ class CallFlowController extends Controller
         $province_lookup_list = $this->settings->get('province_lookup_list');
         $twiml = new VoiceResponse();
         if (count($province_lookup_list) > 0) {
+            $gather = $twiml->gather()
+                ->setLanguage($this->settings->get("gather_language"))
+                ->setHints($this->settings->get('gather_hints'))
+                ->setInput($this->settings->getInputType())
+                ->setNumDigits(1)
+                ->setTimeout(10)
+                ->setSpeechTimeout("auto")
+                ->setAction("province-lookup-list-response.php?SearchType=".$request->get("SearchType"))
+                ->setMethod("GET");
             for ($i = 0; $i < count($province_lookup_list); $i++) {
                 $say = sprintf(
                     "%s %s %s %s",
@@ -657,15 +675,6 @@ class CallFlowController extends Controller
                     $this->settings->getPressWord(),
                     $this->settings->getWordForNumber($i + 1)
                 );
-                $gather = $twiml->gather()
-                    ->setLanguage($this->settings->get("gather_language"))
-                    ->setHints($this->settings->get('gather_hints'))
-                    ->setInput($this->settings->getInputType())
-                    ->setNumDigits(1)
-                    ->setTimeout(10)
-                    ->setSpeechTimeout("auto")
-                    ->setAction("province-lookup-list-response.php?SearchType=".$request->get("SearchType"))
-                    ->setMethod("GET");
                 $gather->say($say)
                     ->setVoice($this->settings->voice())
                     ->setLanguage($this->settings->get("language"));
@@ -992,10 +1001,8 @@ class CallFlowController extends Controller
         $message = "";
 
         $isFromSmsGateway = $request->has("SmsSid");
-        $no_relevant_results = false;
         if (!$isFromSmsGateway) {
             if ($meeting_results->originalListCount == 0) {
-                $no_relevant_results = true;
                 $twiml->say($this->settings->word('no_results_found') . "... " .
                     $this->settings->word('you_might_have_invalid_entry') . "... " . $this->settings->word('try_again'))
                     ->setVoice($this->settings->voice())
@@ -1003,7 +1010,6 @@ class CallFlowController extends Controller
                 $twiml->redirect("input-method.php?Digits=2")
                     ->setMethod("GET");
             } elseif (count($filtered_list) == 0) {
-                $no_relevant_results = true;
                 $twiml->say($this->settings->word('there_are_no_other_meetings_for_today') . ".... " . $this->settings->word('try_again'))
                     ->setVoice($this->settings->voice())
                     ->setLanguage($this->settings->get("language"));
@@ -1023,16 +1029,6 @@ class CallFlowController extends Controller
             if ($meeting_results->originalListCount == 0) {
             } elseif (count($filtered_list) == 0) {
             }
-        }
-
-        if (!json_decode($this->settings->get("sms_ask")) &&
-            !json_decode($this->settings->get("sms_disable")) &&
-            !$no_relevant_results &&
-            !$suppress_voice_results
-        ) {
-            $twiml->say($this->settings->word('search_results_by_sms'))
-                ->setVoice($this->settings->voice())
-                ->setLanguage($this->settings->get('language'));
         }
 
         $results_counter = 0;

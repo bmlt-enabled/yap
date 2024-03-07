@@ -43,9 +43,10 @@ test('initial call-in default', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
             '<Pause length="2"/>',
             '<Say voice="alice" language="en-US">Test Helpline</Say>',
             '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
@@ -73,9 +74,10 @@ test('initial call-in default after going to the admin page', function ($method)
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
             '<Pause length="2"/>',
             '<Say voice="alice" language="en-US">Test Helpline</Say>',
             '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
@@ -91,9 +93,10 @@ test('initial call-in with jft option enabled', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
             '<Pause length="2"/>',
             '<Say voice="alice" language="en-US">Test Helpline</Say>',
             '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
@@ -111,9 +114,10 @@ test('initial call-in with spad option enabled', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
             '<Pause length="2"/>',
             '<Say voice="alice" language="en-US">Test Helpline</Say>',
             '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
@@ -132,9 +136,10 @@ test('initial call-in with jft and spad option enabled', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
             '<Pause length="2"/>',
             '<Say voice="alice" language="en-US">Test Helpline</Say>',
             '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
@@ -154,7 +159,7 @@ test('initial call-in default with language selections', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response><Redirect>lng-selector.php</Redirect></Response>',
         ], false);
@@ -168,7 +173,7 @@ test('selected language call flow', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="es-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
@@ -186,7 +191,7 @@ test('play custom promptset', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
@@ -206,7 +211,7 @@ test('play custom promptset in a different language with selection menu', functi
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="es-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
@@ -225,7 +230,7 @@ test('play custom promptset in a different language with single forced language'
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="es-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
@@ -280,7 +285,7 @@ test('initial callin without a status callback', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
@@ -337,7 +342,7 @@ test('initial callin without a status callback without actual status.php in it',
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
@@ -379,7 +384,7 @@ test('initial callin with service body override', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
@@ -396,7 +401,7 @@ test('initial call-in extension dial', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="dtmf" finishOnKey="#" timeout="10" action="service-body-ext-response.php" method="GET">',

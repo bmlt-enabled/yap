@@ -1,7 +1,6 @@
 <?php
 
 use App\Repositories\DatabaseMigrationRepository;
-use App\Repositories\GeocodingRepository;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;

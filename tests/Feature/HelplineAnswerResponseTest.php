@@ -59,7 +59,8 @@ test('join volunteer to conference', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Dial>',
             sprintf('<Conference statusCallbackMethod="GET" statusCallbackEvent="join" startConferenceOnEnter="true" endConferenceOnExit="true" beep="false">%s</Conference>', $this->conferenceName),
@@ -87,7 +88,8 @@ test('enough volunteers in conference, someone is talking to the caller already'
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">',
             'A volunteer has already joined the call... goodbye</Say>',
@@ -131,7 +133,8 @@ test('volunteer opts not to answer the call', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Hangup/>',
             '</Response>'
@@ -186,7 +189,8 @@ test('no volunteers opt to answer the call, sent to voicemail', function ($metho
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Hangup/>',
             '</Response>'
@@ -237,7 +241,8 @@ test('no volunteers opt to answer the call, caller hung up before being sent to 
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Hangup/>',
             '</Response>'

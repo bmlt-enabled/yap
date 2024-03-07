@@ -18,10 +18,11 @@ test('invalid entry with province input response', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">you might have an invalid entry</Say>',
+            '<Redirect method="GET">province-voice-input.php?SearchType=2</Redirect>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
@@ -34,7 +35,7 @@ test('valid entry with province input response', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect>city-or-county-voice-input.php?SearchType=2&amp;SpeechResult=South+Carolina</Redirect>',

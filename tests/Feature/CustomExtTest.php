@@ -16,7 +16,7 @@ test('custom extensions', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="dtmf" finishOnKey="#" timeout="15" action="custom-ext-dialer.php" method="GET">',
@@ -34,7 +34,7 @@ test('custom extensions dialer', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Dial callerId="+17183367631">',

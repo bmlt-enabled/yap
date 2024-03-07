@@ -6,6 +6,8 @@ use App\Models\RecordType;
 use App\Repositories\ConfigRepository;
 use App\Constants\DataType;
 use App\Repositories\ReportsRepository;
+use App\Services\CallService;
+use App\Services\ConferenceService;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
 use Illuminate\Testing\Assert;
@@ -51,10 +53,12 @@ test('force number', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Dial><Number sendDigits="w">+19998887777</Number>',
+            '<Dial>',
+            '<Number sendDigits="w">+19998887777</Number>',
+            '</Dial>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
@@ -73,11 +77,16 @@ test('force number wth captcha', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" hints="" input="dtmf" timeout="15" numDigits="1" action="helpline-search.php?CaptchaVerified=1&amp;ForceNumber=%2B19998887777">',
-            '<Dial><Number sendDigits="w">+19998887777</Number>',
+            '<Say voice="alice" language="en-US">Test Helpline...press any key to continue</Say>',
+            '</Gather>',
+            '<Hangup/>',
+            '<Dial>',
+            '<Number sendDigits="w">+19998887777</Number>',
+            '</Dial>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
@@ -97,11 +106,16 @@ test('force number wth captcha w/waiting message querystring setting', function 
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" hints="" input="dtmf" timeout="15" numDigits="1" action="helpline-search.php?CaptchaVerified=1&amp;ForceNumber=%2B19998887777&amp;WaitingMessage=1">',
-            '<Dial><Number sendDigits="w">+19998887777</Number>',
+            '<Say voice="alice" language="en-US">Test Helpline...press any key to continue</Say>',
+            '</Gather>',
+            '<Hangup/>',
+            '<Dial>',
+            '<Number sendDigits="w">+19998887777</Number>',
+            '</Dial>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
@@ -115,7 +129,7 @@ test('invalid entry', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect method="GET">input-method.php?Digits=1&amp;Retry=1&amp;RetryMessage=Couldn%27t+find+an+address+for+that+location.</Redirect>',
@@ -127,6 +141,13 @@ test('valid search, volunteer routing, by location', function ($method) {
     $settings = new SettingsService();
     app()->instance(SettingsService::class, $settings);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+    $conferenceService = Mockery::mock(ConferenceService::class)->makePartial();
+    $conferenceService->shouldReceive("getConferenceName")
+        ->with('1053')
+        ->andReturn("1053_fake_conference")
+        ->once();
+    app()->instance(ConferenceService::class, $conferenceService);
+
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(
         '1053',
@@ -146,20 +167,12 @@ test('valid search, volunteer routing, by location', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">please wait while we connect your call</Say>',
             '<Dial>',
-            '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical"',
-            'statusCallback="helpline-dialer.php?service_body_id=1053&amp;Caller=+12125551212"',
-            'startConferenceOnEnter="false"',
-            'endConferenceOnExit="true"',
-            'statusCallbackMethod="GET"',
-            'statusCallbackEvent="start join end leave"',
-            'waitMethod="GET"',
-            'beep="false">',
-            '</Conference>',
+            '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical" statusCallback="helpline-dialer.php?service_body_id=1053&amp;Caller=+12125551212" startConferenceOnEnter="false" endConferenceOnExit="true" statusCallbackMethod="GET" statusCallbackEvent="start join end leave" waitMethod="GET" beep="false">1053_fake_conference</Conference>',
             '</Dial>',
             '</Response>'
         ], false);
@@ -167,6 +180,12 @@ test('valid search, volunteer routing, by location', function ($method) {
 
 
 test('valid search, volunteer routing', function ($method) {
+    $conferenceService = Mockery::mock(ConferenceService::class)->makePartial();
+    $conferenceService->shouldReceive("getConferenceName")
+        ->with('1053')
+        ->andReturn("1053_fake_conference")
+        ->once();
+    app()->instance(ConferenceService::class, $conferenceService);
     $repository = Mockery::mock(ReportsRepository::class);
     $repository
         ->shouldReceive("insertCallEventRecord")
@@ -179,8 +198,8 @@ test('valid search, volunteer routing', function ($method) {
     app()->instance(ReportsRepository::class, $repository);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
+    $configRepository = Mockery::mock(ConfigRepository::class);
+    $configRepository->shouldReceive("getDbData")->with(
         $this->serviceBodyId,
         DataType::YAP_CALL_HANDLING_V2
     )->andReturn([(object)[
@@ -189,7 +208,8 @@ test('valid search, volunteer routing', function ($method) {
         "parent_id" => $this->parentServiceBodyId,
         "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
     ]])->once();
-    app()->instance(ConfigRepository::class, $repository);
+    app()->instance(ConfigRepository::class, $configRepository);
+
     $response = $this->call($method, '/helpline-search.php', [
         'SearchType' => "1",
         "CallSid"=>$this->callSid,
@@ -198,19 +218,13 @@ test('valid search, volunteer routing', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">please wait while we connect your call</Say>',
             '<Dial>',
-            '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical"',
-            'statusCallback="helpline-dialer.php?service_body_id=1053&amp;Caller=+12125551212"',
-            'startConferenceOnEnter="false"',
-            'endConferenceOnExit="true"',
-            'statusCallbackMethod="GET"',
-            'statusCallbackEvent="start join end leave"',
-            'waitMethod="GET"',
-            'beep="false">',
+            '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical" statusCallback="helpline-dialer.php?service_body_id=1053&amp;Caller=+12125551212" startConferenceOnEnter="false" endConferenceOnExit="true" statusCallbackMethod="GET" statusCallbackEvent="start join end leave" waitMethod="GET" beep="false">',
+            '1053_fake_conference',
             '</Conference>',
             '</Dial>',
             '</Response>'
@@ -218,6 +232,13 @@ test('valid search, volunteer routing', function ($method) {
 })->with(['GET', 'POST']);
 
 test('valid search, volunteer routing, announce service body name', function ($method) {
+    $conferenceService = Mockery::mock(ConferenceService::class)->makePartial();
+    $conferenceService->shouldReceive("getConferenceName")
+        ->with('1053')
+        ->andReturn("1053_fake_conference")
+        ->once();
+    app()->instance(ConferenceService::class, $conferenceService);
+
     $repository = Mockery::mock(ReportsRepository::class);
     $repository
         ->shouldReceive("insertCallEventRecord")
@@ -251,19 +272,13 @@ test('valid search, volunteer routing, announce service body name', function ($m
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">please stand by... relocating your call to Finger Lakes Area Service</Say>',
             '<Dial>',
-            '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical"',
-            'statusCallback="helpline-dialer.php?service_body_id=1053&amp;Caller=+12125551212"',
-            'startConferenceOnEnter="false"',
-            'endConferenceOnExit="true"',
-            'statusCallbackMethod="GET"',
-            'statusCallbackEvent="start join end leave"',
-            'waitMethod="GET"',
-            'beep="false">',
+            '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical" statusCallback="helpline-dialer.php?service_body_id=1053&amp;Caller=+12125551212" startConferenceOnEnter="false" endConferenceOnExit="true" statusCallbackMethod="GET" statusCallbackEvent="start join end leave" waitMethod="GET" beep="false">',
+            '1053_fake_conference',
             '</Conference>',
             '</Dial>',
             '</Response>'
@@ -307,7 +322,7 @@ test('valid search, helpline field routing', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">please stand by... relocating your call to... Finger Lakes Area Service</Say>',
@@ -355,7 +370,7 @@ test('valid search with address, volunteer gender routing enabled and choice not
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect method="GET">gender-routing.php?SearchType=1</Redirect>',
@@ -389,7 +404,7 @@ test('valid search, helpline field routing, no helpline set in root server, use 
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">please stand by... relocating your call to... Finger Lakes Area Service</Say>',
@@ -400,6 +415,13 @@ test('valid search, helpline field routing, no helpline set in root server, use 
 
 test('valid search, volunteer direct', function ($method) {
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
+    $conferenceService = Mockery::mock(ConferenceService::class)->makePartial();
+    $conferenceService->shouldReceive("getConferenceName")
+        ->with('46')
+        ->andReturn("46_fake_conference")
+        ->once();
+    app()->instance(ConferenceService::class, $conferenceService);
+
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")
         ->once()
@@ -429,13 +451,15 @@ test('valid search, volunteer direct', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">please wait while we connect your call</Say>',
             '<Dial>',
             '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical" statusCallback="helpline-dialer.php?service_body_id=46&amp;Caller=+12125551212" startConferenceOnEnter="false" endConferenceOnExit="true" statusCallbackMethod="GET" statusCallbackEvent="start join end leave" waitMethod="GET" beep="false">',
-            '</Conference></Dial>',
+            '46_fake_conference',
+            '</Conference>',
+            '</Dial>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
@@ -474,7 +498,7 @@ test('valid search, volunteer direct', function ($method) {
 //    $response
 //        ->assertStatus(200)
 //        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-//        ->assertSeeInOrder([
+//        ->assertSeeInOrderExact([
 /*            '<?xml version="1.0" encoding="UTF-8"?>',*/
 //            '<Response>',
 //            '<Redirect method="GET">',

@@ -1,5 +1,4 @@
 <?php
-
 use App\Constants\EventId;
 use App\Constants\SearchType;
 use App\Models\RecordType;
@@ -26,7 +25,7 @@ test('search for volunteers', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=1" method="GET">',
@@ -56,9 +55,10 @@ test('search for meetings', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
+            '<Say voice="alice" language="en-US">Meeting search results will also be sent to you by SMS text message.</Say>',
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=2" method="GET">',
             '<Say voice="alice" language="en-US">press one to search for meetings by city or county</Say>',
             '<Say voice="alice" language="en-US">press two to search for meetings by zip code</Say>',
@@ -67,7 +67,7 @@ test('search for meetings', function ($method) {
         ], false);
 })->with(['GET', 'POST']);
 
-test('search for volunteres, disable postal code gathering', function ($method) {
+test('search for volunteers, disable postal code gathering', function ($method) {
     $_SESSION['override_disable_postal_code_gather'] = true;
     $response = $this->call($method, '/input-method.php', [
         "Digits"=>"1"
@@ -75,7 +75,7 @@ test('search for volunteres, disable postal code gathering', function ($method) 
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect method="GET">input-method-result.php?SearchType=1&amp;Digits=1</Redirect>',
@@ -91,7 +91,7 @@ test('search for meetings, disable postal code gathering', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect method="GET">input-method-result.php?SearchType=2&amp;Digits=1</Redirect>',
@@ -108,7 +108,7 @@ test('direct to volunteer search for a specific service body', function ($method
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect method="GET">helpline-search.php?Called=123</Redirect>',
@@ -126,7 +126,7 @@ test('direct to volunteer search for a specific service body with postal code ga
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect method="GET">helpline-search.php?Called=123</Redirect>',
@@ -143,7 +143,7 @@ test('search for volunteers without custom query', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect method="GET">meeting-search.php?Called=123</Redirect>',
@@ -159,7 +159,7 @@ test('jft option enabled and selected', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect method="GET">fetch-jft.php</Redirect>',
@@ -175,7 +175,7 @@ test('spad option enabled and selected', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect method="GET">fetch-spad.php</Redirect>',
@@ -190,7 +190,7 @@ test('dialback selected', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect method="GET">dialback.php</Redirect>',
@@ -207,9 +207,10 @@ test('menu with meeting search option with jft and spad enabled', function ($met
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
+            '<Say voice="alice" language="en-US">Meeting search results will also be sent to you by SMS text message.</Say>',
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=2" method="GET">',
             '<Say voice="alice" language="en-US">press one to search for meetings by city or county</Say>',
             '<Say voice="alice" language="en-US">press two to search for meetings by zip code</Say>',
@@ -237,7 +238,7 @@ test('custom extension configured and selected', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect method="GET">custom-ext.php</Redirect>',
@@ -253,9 +254,10 @@ test('play custom title', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
+            '<Say voice="alice" language="en-US">Meeting search results will also be sent to you by SMS text message.</Say>',
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=2" method="GET">',
             '<Say voice="alice" language="en-US">Test Helpline</Say>',
             '<Say voice="alice" language="en-US">press one to search for meetings by city or county</Say>',
@@ -272,7 +274,7 @@ test('invalid search', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">you might have an invalid entry</Say>',
@@ -290,7 +292,7 @@ test('retry message loop with custom message', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=1" method="GET">',
@@ -311,7 +313,7 @@ test('retry message loop with location message', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=1" method="GET">',

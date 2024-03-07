@@ -32,7 +32,7 @@ test('zip input for helpline lookup', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="dtmf" numDigits="5" timeout="10" action="helpline-search.php?SearchType=1" method="GET">',
@@ -54,7 +54,7 @@ test('zip input for 4 digit postal code', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="dtmf" numDigits="4" timeout="10" action="address-lookup.php?SearchType=2" method="GET">',
@@ -71,7 +71,7 @@ test('zip input for address lookup', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="dtmf" numDigits="5" timeout="10" action="address-lookup.php?SearchType=2" method="GET">',
@@ -89,7 +89,7 @@ test('zip input for address lookup with speech gathering', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="speech dtmf" numDigits="5" timeout="10" action="address-lookup.php?SearchType=2" method="GET" speechTimeout="auto">',
@@ -107,7 +107,7 @@ test('city or county voice input', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="speech" hints="" timeout="10" speechTimeout="auto" action="voice-input-result.php?SearchType=1&amp;Province=" method="GET">',
@@ -126,7 +126,7 @@ test('city or county voice input with hints', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
-        ->assertSeeInOrder([
+        ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="speech" hints="Raleigh,Lillington,Benson,Dunn" timeout="10" speechTimeout="auto" action="voice-input-result.php?SearchType=1&amp;Province=" method="GET">',
