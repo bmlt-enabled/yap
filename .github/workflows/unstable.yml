@@ -19,7 +19,7 @@ jobs:
         image: 'mysql/mysql-server:8.0'
         env:
           MYSQL_ROOT_PASSWORD: yap_root_password
-          MYSQL_DATABASE: yap
+          MYSQL_DATABASE: yap_test
           MYSQL_ROOT_HOST: '%'
         ports:
           - 3106:3306
@@ -27,6 +27,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         id: code-checkout
+
+      - name: hydrate test database
+        id: hydrate-test-database
+        run: |
+          mysql -uroot -p"$MYSQL_ROOT_PASSWORD" --port=3106 --host=127.0.0.1 --database=yap_test < tests/yap_test.sql
+        env:
+          MYSQL_ROOT_PASSWORD: yap_root_password
 
       - name: php ${{ matrix.php }} 🐘
         id: setup-php
@@ -64,6 +71,7 @@ jobs:
       - name: Test w/Code Coverage
         run: |
           cp config.test.php config.php
+          cp .env.pipeline .env
           make coverage-xml
         env:
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}

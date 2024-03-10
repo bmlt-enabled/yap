@@ -4,7 +4,6 @@ use function PHPUnit\Framework\assertMatchesRegularExpression;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
-    include __DIR__ . '/../../lang/en-US.php';
 });
 
 beforeEach(function () {

@@ -81,6 +81,10 @@ class HelplineController extends Controller
 
                     $service_body_obj = $this->meetingResults
                         ->getServiceBodyCoverage($coordinates->latitude, $coordinates->longitude);
+
+                    if ($service_body_obj == null) {
+                        throw new Exception("Couldn't find service body coverage for that location.");
+                    }
                 } catch (Exception $e) {
                     $twiml->redirect("input-method.php?Digits=" . $request->get("SearchType") . "&Retry=1&RetryMessage=" . urlencode($e->getMessage()))
                         ->setMethod("GET");

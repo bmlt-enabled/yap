@@ -141,8 +141,6 @@ class SettingsService
                 $this->allowlist[str_replace("-", "_", $available_language_key) . "_" . $available_prompt] = [ 'description' => '', 'default' => null, 'overridable' => true, 'hidden' => false];
                 $this->allowlist[str_replace("-", "_", $available_language_key) . "_voice"] = [ 'description' => '', 'default' => 'alice', 'overridable' => true, 'hidden' => false];
             }
-
-            $this->localizations->setLocalization($available_language_key, @include(base_path() . '/lang/' .$available_language_key.'.php'));
         }
 
         $this->shortLanguage = $this->getWordLanguage() === "da-DK" ? "dk" : explode("-", $this->getWordLanguage())[0];

@@ -456,7 +456,7 @@ function saveVolunteers(data_type, countryCode)
         let alert = $("#volunteer_saved_alert");
         if (!allGood) {
             alert.addClass("alert-danger");
-            alert.html(`Invalid phone number(s) detected for ${badOnes.join(", ")}`);
+            alert.html(`Invalid phone number(s) detected for ${badOnes.join(", ")}.  Must contain correct length and country code preceded by +.`);
             alert.show();
             alert.fadeOut(5000);
             return false;

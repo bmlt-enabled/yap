@@ -22,6 +22,7 @@ test('search by address for meeting information with speech text result with goo
             "SearchType" => "1",
         ]
     );
+
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")

@@ -12,7 +12,7 @@ class RootServerMocks
 
     public function __construct($setEmptyHelplineNumber = false)
     {
-        $helplineNumber = $setEmptyHelplineNumber ? null : "888-557-1667|ww1";
+        $helplineNumber = $setEmptyHelplineNumber ? "" : "888-557-1667|ww1";
 
         $this->serviceBodies[] = (object)[
             "id"=>"1053",
