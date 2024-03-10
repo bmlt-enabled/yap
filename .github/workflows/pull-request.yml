@@ -74,6 +74,7 @@ jobs:
         id: run-tests
         run: |
           cp config.test.php config.php
+          cp .env.pipeline .env
           vendor/bin/pest --log-junit tests/test-results.xml
         env:
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}

@@ -71,6 +71,7 @@ jobs:
       - name: Test w/Code Coverage
         run: |
           cp config.test.php config.php
+          cp .env.pipeline .env
           make coverage-xml
         env:
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
