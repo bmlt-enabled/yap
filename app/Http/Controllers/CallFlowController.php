@@ -80,10 +80,12 @@ class CallFlowController extends Controller
             $phoneNumberSid = $this->twilio->client()->calls($request->get('CallSid'))->fetch()->phoneNumberSid;
             $incomingPhoneNumber = $this->twilio->client()->incomingPhoneNumbers($phoneNumberSid)->fetch();
 
-            Log::debug(sprintf("Alert debugging:: phoneNumberSid:%s, incomingPhoneNumber:%s, statusCallback:%s",
+            Log::debug(sprintf(
+                "Alert debugging:: phoneNumberSid:%s, incomingPhoneNumber:%s, statusCallback:%s",
                 $phoneNumberSid,
                 $incomingPhoneNumber,
-                $incomingPhoneNumber->statusCallback));
+                $incomingPhoneNumber->statusCallback
+            ));
 
             if ($incomingPhoneNumber->statusCallback == null
                 || !str_contains($incomingPhoneNumber->statusCallback, "status.php")) {
