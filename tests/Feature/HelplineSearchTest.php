@@ -120,7 +120,7 @@ test('force number wth captcha w/waiting message querystring setting', function 
         ], false);
 })->with(['GET', 'POST']);
 
-test('invalid entry', function ($method) {
+test('invalid address', function ($method) {
     $response = $this->call($method, '/helpline-search.php', [
         'Digits' => "",
         'SearchType' => "1",
@@ -133,6 +133,23 @@ test('invalid entry', function ($method) {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Redirect method="GET">input-method.php?Digits=1&amp;Retry=1&amp;RetryMessage=Couldn%27t+find+an+address+for+that+location.</Redirect>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
+test('Unable to find service body coverage for a location.', function ($method) {
+    $response = $this->call($method, '/helpline-search.php', [
+        'Digits' => "Brooklyn, NC",
+        'SearchType' => "1",
+        'Called' => "+12125551212",
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">input-method.php?Digits=1&amp;Retry=1&amp;RetryMessage=Couldn%27t+find+service+body+coverage+for+that+location.</Redirect>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
