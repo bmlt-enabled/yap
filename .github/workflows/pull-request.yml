@@ -34,7 +34,7 @@ jobs:
       - name: hydrate test database
         id: hydrate-test-database
         run: |
-          mysql -uroot -p"$MYSQL_ROOT_PASSWORD" < tests/yap_test.sql
+          mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -P3106 < tests/yap_test.sql
         env:
           MYSQL_ROOT_PASSWORD: yap_root_password
 
