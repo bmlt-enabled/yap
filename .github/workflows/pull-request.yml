@@ -22,7 +22,7 @@ jobs:
         image: 'mysql/mysql-server:8.0'
         env:
           MYSQL_ROOT_PASSWORD: yap_root_password
-          MYSQL_DATABASE: yap
+          MYSQL_DATABASE: yap_test
           MYSQL_ROOT_HOST: '%'
         ports:
           - 3106:3306
@@ -30,6 +30,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         id: code-checkout
+
+      - name: hydrate test database
+        id: hydrate-test-database
+        run: |
+          mysql -uroot -p"$MYSQL_ROOT_PASSWORD" < tests/yap_test.sql
+        env:
+          MYSQL_ROOT_PASSWORD: yap_root_password
 
       - name: php ${{ matrix.php }} 🐘
         id: setup-php
