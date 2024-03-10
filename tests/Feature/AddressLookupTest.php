@@ -14,7 +14,6 @@ beforeEach(function () {
 });
 
 test('search by address for meeting information with speech text result with google api key', function ($method) {
-    $this->withoutExceptionHandling();
     $response = $this->call(
         $method,
         '/address-lookup.php',
