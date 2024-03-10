@@ -272,7 +272,6 @@ test('valid search with coordinates override, volunteer routing, announce servic
         ->withArgs([$this->callSid])
         ->once();
     app()->instance(ReportsRepository::class, $repository);
-    $this->withoutExceptionHandling();
     $response = $this->call($method, '/helpline-search.php', [
         'Digits' => "Geneva, NY",
         'SearchType' => "1",
