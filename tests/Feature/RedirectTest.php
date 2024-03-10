@@ -11,8 +11,9 @@ beforeEach(function () {
 });
 
 test('service body extension response', function ($method) {
-    $_REQUEST['Digits'] = 1;
-    $response = $this->call($method, '/service-body-ext-response.php?Digits=1');
+    $response = $this->call($method, '/service-body-ext-response.php', [
+        "Digits" => "1"
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -25,9 +26,10 @@ test('service body extension response', function ($method) {
 })->with(['GET', 'POST']);
 
 test('voice input result for someone to talk to', function ($method) {
-    $_REQUEST['SpeechResult'] = "Raleigh";
-    $_REQUEST['SearchType'] = "1";
-    $response = $this->call($method, '/voice-input-result.php?SpeechResult=Raleigh&SearchType=1');
+    $response = $this->call($method, '/voice-input-result.php', [
+        "SpeechResult" => "Raleigh",
+        "SearchType" => "1",
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
@@ -39,10 +41,65 @@ test('voice input result for someone to talk to', function ($method) {
         ], false);
 })->with(['GET', 'POST']);
 
+test('voice input result for someone to talk to with a New York phone number', function ($method) {
+    $response = $this->call($method, '/voice-input-result.php', [
+        "SpeechResult" => "Raleigh",
+        "SearchType" => "1",
+        "ToState" => "NY"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">helpline-search.php?Digits=Raleigh%2C+NY&amp;SearchType=1</Redirect>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
+test('voice input result for someone to talk to with a New York phone number but North Carolina toll phone number bias', function ($method) {
+    $_SESSION['override_toll_province_bias'] = "NC";
+    $response = $this->call($method, '/voice-input-result.php', [
+        "SpeechResult" => "Raleigh",
+        "SearchType" => "1",
+        "ToState" => "NY"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">helpline-search.php?Digits=Raleigh%2C+NC&amp;SearchType=1</Redirect>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
+test('voice input result for someone to talk to with a toll free phone number bias', function ($method) {
+    $_SESSION['override_toll_free_province_bias'] = "NC";
+    $response = $this->call($method, '/voice-input-result.php', [
+        "SpeechResult" => "Raleigh",
+        "SearchType" => "1"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">helpline-search.php?Digits=Raleigh%2C+NC&amp;SearchType=1</Redirect>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
 test('voice input result for meeting lookup', function ($method) {
     $_REQUEST['SpeechResult'] = "Raleigh";
     $_REQUEST['SearchType'] = "2";
-    $response = $this->call($method, '/voice-input-result.php?SpeechResult=Raleigh&SearchType=2');
+    $response = $this->call($method, '/voice-input-result.php', [
+        "SpeechResult" => "Raleigh",
+        "SearchType" => "2"
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
