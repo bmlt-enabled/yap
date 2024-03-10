@@ -2,6 +2,7 @@
 
 use App\Constants\AlertId;
 use App\Constants\DataType;
+use App\Constants\SearchType;
 use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
@@ -55,6 +56,49 @@ test('initial call-in default', function ($method) {
             '</Response>'
     ], false);
 })->with(['GET', 'POST']);
+
+test('initial call-in default with lengthier initial pause', function ($method) {
+    $_SESSION["override_initial_pause"] = 5;
+    $response = $this->call($method, '/');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
+            '<Pause length="5"/>',
+            '<Say voice="alice" language="en-US">Test Helpline</Say>',
+            '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
+            '<Say voice="alice" language="en-US">press two to search for meetings</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
+test('initial call-in default with altered menu options', function ($method) {
+    $_SESSION['override_digit_map_search_type'] = [
+        '3' => SearchType::MEETINGS,
+        '4' => SearchType::VOLUNTEERS,
+    ];
+    $response = $this->call($method, '/');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">Test Helpline</Say>',
+            '<Say voice="alice" language="en-US">press three to search for meetings</Say>',
+            '<Say voice="alice" language="en-US">press four to find someone to talk to</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
+
 
 test('initial call-in default after going to the admin page', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
