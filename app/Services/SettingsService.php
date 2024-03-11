@@ -28,7 +28,7 @@ class SettingsService
         'disable_postal_code_gather' => ['description' => '/general/disabling-postal-code-gathering', 'default' => false, 'overridable' => true, 'hidden' => false],
         'docs_base' => ['description' => '', 'default' => 'https://yap.bmlt.app', 'overridable' => true, 'hidden' => true],
         'extension_dial' => ['description' => '/helpline/extension-dial', 'default' => false, 'overridable' => true, 'hidden' => false],
-        'fallback_number' => ['description' => '/general/fallback' , 'default' => '', 'overridable' => true, 'hidden' => false],
+        'fallback_number' => ['description' => '/general/fallback' , 'default' => null, 'overridable' => true, 'hidden' => false],
         'gather_hints' => ['description' => '/general/voice-recognition-options' , 'default' => '', 'overridable' => true, 'hidden' => false],
         'gather_language' => ['description' => '/general/voice-recognition-options' , 'default' => 'en-US', 'overridable' => true, 'hidden' => false],
         'gender_no_preference' => ['description' => '/helpline/specialized-routing', 'default' => false, 'overridable' => true, 'hidden' => false],

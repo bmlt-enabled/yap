@@ -83,7 +83,21 @@ class HelplineController extends Controller
                         ->getServiceBodyCoverage($coordinates->latitude, $coordinates->longitude);
 
                     if ($service_body_obj == null) {
-                        throw new Exception("Couldn't find service body coverage for that location.");
+                        if ($this->settings->has("fallback_number")) {
+                            $dial_string = $this->settings->get("fallback_number");
+                            $exploded_result = explode("|", $dial_string);
+                            $phone_number = isset($exploded_result[0]) ? $exploded_result[0] : "";
+                            $extension = isset($exploded_result[1]) ? $exploded_result[1] : "w";
+                            $this->call->insertCallEventRecord(
+                                EventId::HELPLINE_ROUTE,
+                                (object)["helpline_number" => $phone_number, "extension" => $extension]
+                            );
+                            $dial = $twiml->dial();
+                            $dial->number($phone_number)->setSendDigits($extension);
+                            return response($twiml)->header("Content-Type", "text/xml");
+                        } else {
+                            throw new Exception("Couldn't find service body coverage for that location.");
+                        }
                     }
                 } catch (Exception $e) {
                     $twiml->redirect("input-method.php?Digits=" . $request->get("SearchType") . "&Retry=1&RetryMessage=" . urlencode($e->getMessage()))
