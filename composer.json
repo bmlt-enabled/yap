@@ -7,7 +7,7 @@
         "laravel/framework": "^10.39.0",
         "laravel/tinker": "^2.8.2",
         "phpmailer/phpmailer": "^6.9.1",
-        "twilio/sdk": "^6.44.4"
+        "twilio/sdk": "^7.0.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23.0",
