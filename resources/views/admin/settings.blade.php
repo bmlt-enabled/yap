@@ -22,7 +22,7 @@
                     @if (!$value['hidden'])
                         <tr>
                             <td>{{ $key }}
-                                @if (isset($value['description']) && $value['description'] != "")
+                                @if (!empty($value['description']))
                                     <a href="{{ $settings->get("docs_base") }}{{ $value['description'] }}"
                                        target="_blank">📖</a>
                                 @endif
