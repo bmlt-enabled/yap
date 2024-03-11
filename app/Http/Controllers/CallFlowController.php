@@ -1231,7 +1231,7 @@ class CallFlowController extends Controller
             }
 
             if ($this->settings->has('include_map_link') && json_decode($this->settings->get('include_map_link'))) {
-                array_push($results_string["location_links"], sprintf("https://maps.google.com/maps?q=%s,%s&hl=%s", $filtered_list->latitude, $filtered_list->longitude, $GLOBALS['short_language']));
+                array_push($results_string["location_links"], sprintf("https://maps.google.com/maps?q=%s,%s&hl=%s", $filtered_list->latitude, $filtered_list->longitude, $this->settings->get('short_language')));
             }
         }
 

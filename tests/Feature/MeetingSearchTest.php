@@ -502,3 +502,382 @@ test('meeting search with valid latitude and longitude with pronunciation overri
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
+
+test('meeting search with valid latitude and longitude with sms summary page', function ($method) {
+    $settingsService = new SettingsService();
+    $settingsService->set('sms_summary_page', true);
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(TwilioService::class, $this->twilioService);
+    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
+    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
+
+    $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
+    $timezoneService = mock(TimeZoneService::class)->makePartial();
+    $timezoneService->shouldReceive('getTimeZoneForCoordinates')
+        ->withArgs([$this->latitude, $this->longitude])
+        ->once()
+        ->andReturn($timezone);
+    app()->instance(TimeZoneService::class, $timezoneService);
+
+    // mocking TwilioRestClient->messages->create()
+    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+    $messageListMock->shouldReceive('create')
+        ->withArgs([$this->from, ["from" => $this->to, "body" => sprintf("Meeting Results, click here: https://localhost/msr/%s/%s", $this->latitude, $this->longitude)]])
+        ->once();
+    $this->twilioClient->messages = $messageListMock;
+
+    $response = $this->call($method, '/meeting-search.php', [
+        'Latitude' => $this->latitude,
+        'Longitude' => $this->longitude,
+        'To' => $this->to,
+        'From' => $this->from,
+        'Timestamp' => '2024-02-19 00:00:00'
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">meeting information found, listing the top 5 results</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 1</Say>',
+            '<Say voice="alice" language="en-US">Step up and Be Free</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:00 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">128 Main street, Clifton Springs, NY</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 2</Say>',
+            '<Say voice="alice" language="en-US">A New Way of Life</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">27 West Genesee Street, Clyde, NY</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 3</Say>',
+            '<Say voice="alice" language="en-US">Ties That Bind Us Together</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">99 South St, Auburn, NY</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 4</Say>',
+            '<Say voice="alice" language="en-US">Courage to Change</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 10:15 AM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">12 South Street, Auburn, NY</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 5</Say>',
+            '<Say voice="alice" language="en-US">Eye of the Hurricane</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">1008 Main St., East Rochester, NY</Say>',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
+            '</Response>',
+        ], false);
+})->with(['GET', 'POST']);
+
+test('meeting search with map links', function ($method) {
+    $settingsService = new SettingsService();
+    $settingsService->set('include_map_link', true);
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(TwilioService::class, $this->twilioService);
+    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
+    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
+
+    $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
+    $timezoneService = mock(TimeZoneService::class)->makePartial();
+    $timezoneService->shouldReceive('getTimeZoneForCoordinates')
+        ->withArgs([$this->latitude, $this->longitude])
+        ->once()
+        ->andReturn($timezone);
+    app()->instance(TimeZoneService::class, $timezoneService);
+
+    // mocking TwilioRestClient->messages->create()
+    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+    $messageListMock->shouldReceive('create')
+        ->withArgs([$this->from, ["from" => $this->to, "body" => "Step up and Be Free Monday 7:00 PM, 128 Main street, Clifton Springs, NY https://maps.google.com/maps?q=42.9613734,-77.1205486&hl="]])
+        ->once();
+    $messageListMock->shouldReceive('create')
+        ->withArgs([$this->from, ["from" => $this->to, "body" => "A New Way of Life Monday 6:30 PM, 27 West Genesee Street, Clyde, NY https://maps.google.com/maps?q=43.0851169,-76.872356&hl="]])
+        ->once();
+    $messageListMock->shouldReceive('create')
+        ->withArgs([$this->from, ["from" => $this->to, "body" => "Ties That Bind Us Together Monday 6:30 PM, 99 South St, Auburn, NY https://maps.google.com/maps?q=42.923231,-76.566373&hl="]])
+        ->once();
+    $messageListMock->shouldReceive('create')
+        ->withArgs([$this->from, ["from" => $this->to, "body" => "Courage to Change Monday 10:15 AM, 12 South Street, Auburn, NY https://maps.google.com/maps?q=42.9313221,-76.5656656&hl="]])
+        ->once();
+    $messageListMock->shouldReceive('create')
+        ->withArgs([$this->from, ["from" => $this->to, "body" => "Eye of the Hurricane Monday 7:30 PM, 1008 Main St., East Rochester, NY https://maps.google.com/maps?q=43.1066,-77.487084&hl="]])
+        ->once();
+
+    $this->twilioClient->messages = $messageListMock;
+
+    $response = $this->call($method, '/meeting-search.php', [
+        'Latitude' => $this->latitude,
+        'Longitude' => $this->longitude,
+        'To' => $this->to,
+        'From' => $this->from,
+        'Timestamp' => '2024-02-19 00:00:00'
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">meeting information found, listing the top 5 results</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 1</Say>',
+            '<Say voice="alice" language="en-US">Step up and Be Free</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:00 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">128 Main street, Clifton Springs, NY</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 2</Say>',
+            '<Say voice="alice" language="en-US">A New Way of Life</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">27 West Genesee Street, Clyde, NY</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 3</Say>',
+            '<Say voice="alice" language="en-US">Ties That Bind Us Together</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 6:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">99 South St, Auburn, NY</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 4</Say>',
+            '<Say voice="alice" language="en-US">Courage to Change</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 10:15 AM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">12 South Street, Auburn, NY</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 5</Say>',
+            '<Say voice="alice" language="en-US">Eye of the Hurricane</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">1008 Main St., East Rochester, NY</Say>',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
+            '</Response>',
+        ], false);
+})->with(['GET', 'POST']);
+
+test('meeting search with location text', function ($method) {
+    $settingsService = new SettingsService();
+    $settingsService->set('include_location_text', true);
+    $settingsService->set('result_count_max', 1);
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(TwilioService::class, $this->twilioService);
+    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
+    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
+
+    $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
+    $timezoneService = mock(TimeZoneService::class)->makePartial();
+    $timezoneService->shouldReceive('getTimeZoneForCoordinates')
+        ->withArgs([$this->latitude, $this->longitude])
+        ->once()
+        ->andReturn($timezone);
+    app()->instance(TimeZoneService::class, $timezoneService);
+
+    // mocking TwilioRestClient->messages->create()
+    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+    $messageListMock->shouldReceive('create')
+        ->withArgs([$this->from, ["from" => $this->to, "body" => "Step up and Be Free Monday 7:00 PM, Clifton springs Hospital, 128 Main street, Clifton Springs, NY"]])
+        ->once();
+
+    $this->twilioClient->messages = $messageListMock;
+
+    $response = $this->call($method, '/meeting-search.php', [
+        'Latitude' => $this->latitude,
+        'Longitude' => $this->longitude,
+        'To' => $this->to,
+        'From' => $this->from,
+        'Timestamp' => '2024-02-19 00:00:00'
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">meeting information found, listing the top 1 results</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 1</Say>',
+            '<Say voice="alice" language="en-US">Step up and Be Free</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:00 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">Clifton springs Hospital</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">128 Main street, Clifton Springs, NY</Say>',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
+            '</Response>',
+        ], false);
+})->with(['GET', 'POST']);
+
+test('meeting search with distance details in miles', function ($method) {
+    $settingsService = new SettingsService();
+    $settingsService->set('include_distance_details', 'mi');
+    $settingsService->set('result_count_max', 1);
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(TwilioService::class, $this->twilioService);
+    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
+    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
+
+    $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
+    $timezoneService = mock(TimeZoneService::class)->makePartial();
+    $timezoneService->shouldReceive('getTimeZoneForCoordinates')
+        ->withArgs([$this->latitude, $this->longitude])
+        ->once()
+        ->andReturn($timezone);
+    app()->instance(TimeZoneService::class, $timezoneService);
+
+    // mocking TwilioRestClient->messages->create()
+    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+    $messageListMock->shouldReceive('create')
+        ->withArgs([$this->from, ["from" => $this->to, "body" => "Step up and Be Free Monday 7:00 PM, 128 Main street, Clifton Springs, NY (9 mi)"]])
+        ->once();
+
+    $this->twilioClient->messages = $messageListMock;
+
+    $response = $this->call($method, '/meeting-search.php', [
+        'Latitude' => $this->latitude,
+        'Longitude' => $this->longitude,
+        'To' => $this->to,
+        'From' => $this->from,
+        'Timestamp' => '2024-02-19 00:00:00'
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">meeting information found, listing the top 1 results</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 1</Say>',
+            '<Say voice="alice" language="en-US">Step up and Be Free</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:00 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">128 Main street, Clifton Springs, NY</Say>',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
+            '</Response>',
+        ], false);
+})->with(['GET', 'POST']);
+
+test('meeting search with distance details in km', function ($method) {
+    $settingsService = new SettingsService();
+    $settingsService->set('include_distance_details', 'km');
+    $settingsService->set('result_count_max', 1);
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(TwilioService::class, $this->twilioService);
+    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
+    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
+
+    $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
+    $timezoneService = mock(TimeZoneService::class)->makePartial();
+    $timezoneService->shouldReceive('getTimeZoneForCoordinates')
+        ->withArgs([$this->latitude, $this->longitude])
+        ->once()
+        ->andReturn($timezone);
+    app()->instance(TimeZoneService::class, $timezoneService);
+
+    // mocking TwilioRestClient->messages->create()
+    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+    $messageListMock->shouldReceive('create')
+        ->withArgs([$this->from, ["from" => $this->to, "body" => "Step up and Be Free Monday 7:00 PM, 128 Main street, Clifton Springs, NY (15 km)"]])
+        ->once();
+
+    $this->twilioClient->messages = $messageListMock;
+    $response = $this->call($method, '/meeting-search.php', [
+        'Latitude' => $this->latitude,
+        'Longitude' => $this->longitude,
+        'To' => $this->to,
+        'From' => $this->from,
+        'Timestamp' => '2024-02-19 00:00:00'
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">meeting information found, listing the top 1 results</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 1</Say>',
+            '<Say voice="alice" language="en-US">Step up and Be Free</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:00 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">128 Main street, Clifton Springs, NY</Say>',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
+            '</Response>',
+        ], false);
+})->with(['GET', 'POST']);
+
+test('meeting search with say links', function ($method) {
+    $settingsService = new SettingsService();
+    $settingsService->set('say_links', true);
+    $settingsService->set('include_format_details', ['TC', 'VM', 'HY']);
+    $settingsService->set('result_count_max', 1);
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(TwilioService::class, $this->twilioService);
+    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
+    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
+
+    $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
+    $timezoneService = mock(TimeZoneService::class)->makePartial();
+    $timezoneService->shouldReceive('getTimeZoneForCoordinates')
+        ->withArgs([$this->latitude, $this->longitude])
+        ->once()
+        ->andReturn($timezone);
+    app()->instance(TimeZoneService::class, $timezoneService);
+
+    // mocking TwilioRestClient->messages->create()
+    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+    $messageListMock->shouldReceive('create')
+        ->withArgs([$this->from, ["from" => $this->to, "body" => "Step up and Be Free Monday 7:00 PM, 128 Main street, Clifton Springs, NY"]])
+        ->once();
+
+    $this->twilioClient->messages = $messageListMock;
+    $this->withoutExceptionHandling();
+    $response = $this->call($method, '/meeting-search.php', [
+        'Latitude' => $this->latitude,
+        'Longitude' => $this->longitude,
+        'To' => $this->to,
+        'From' => $this->from,
+        'Timestamp' => '2024-02-19 00:00:00'
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">meeting information found, listing the top 1 results</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 1</Say>',
+            '<Say voice="alice" language="en-US">Step up and Be Free</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:00 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">128 Main street, Clifton Springs, NY</Say>',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
+            '</Response>',
+        ], false);
+})->with(['GET', 'POST']);
