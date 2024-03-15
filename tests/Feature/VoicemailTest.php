@@ -50,7 +50,7 @@ test('voicemail standard response', function ($method) {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">please leave a message after the tone, hang up when finished</Say>',
-            '<Record playBeep="1" maxLength="120" timeout="15" recordingStatusCallback="voicemail-complete.php?service_body_id=44&amp;caller_id=%2B17325551212&amp;caller_number=%2B12125551313" recordingStatusCallbackMethod="GET"/>',
+            '<Record playBeep="1" maxLength="120" timeout="15" recordingStatusCallback="voicemail-complete.php?service_body_id=44&amp;caller_id=%2B17325551212&amp;caller_number=%2B12125551313&amp;ysk=fake" recordingStatusCallbackMethod="GET"/>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
@@ -83,7 +83,7 @@ test('voicemail custom prompt', function ($method) {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Play>https://example.org/test.mp3</Play>',
-            '<Record playBeep="1" maxLength="120" timeout="15" recordingStatusCallback="voicemail-complete.php?service_body_id=44&amp;caller_id=%2B17325551212&amp;caller_number=%2B12125551313" recordingStatusCallbackMethod="GET"/>',
+            '<Record playBeep="1" maxLength="120" timeout="15" recordingStatusCallback="voicemail-complete.php?service_body_id=44&amp;caller_id=%2B17325551212&amp;caller_number=%2B12125551313&amp;ysk=fake" recordingStatusCallbackMethod="GET"/>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);

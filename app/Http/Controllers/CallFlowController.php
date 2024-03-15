@@ -187,7 +187,7 @@ class CallFlowController extends Controller
             return response($twiml)->header("Content-Type", "text/xml");
         } elseif ($searchType == SearchType::VOLUNTEERS) {
             if (isset($_SESSION['override_service_body_id'])) {
-                $twiml->redirect("helpline-search.php?Called=" . $request->get("Called") . $this->settings->getSessionLink(true))
+                $twiml->redirect("helpline-search.php?Called=" . $request->get("Called") . $this->settings->getSessionLink())
                     ->setMethod("GET");
                 return response($twiml)->header("Content-Type", "text/xml");
             }
@@ -775,14 +775,14 @@ class CallFlowController extends Controller
             );
             Log::debug("Volunteer picked up or put to their voicemail, asking if they want to take the call, timing out after 15 seconds of no response.");
             if ($this->settings->has('volunteer_auto_answer') && $this->settings->get('volunteer_auto_answer')) {
-                $twiml->redirect("helpline-answer-response.php?Digits=1&conference_name=".$request->get('conference_name')."&service_body_id=" . $request->get('service_body_id') . $this->settings->getSessionLink(true))
+                $twiml->redirect("helpline-answer-response.php?Digits=1&conference_name=".$request->get('conference_name')."&service_body_id=" . $request->get('service_body_id') . $this->settings->getSessionLink())
                 ->setMethod("GET");
             } else {
                 $gather = $twiml->gather()
                     ->setActionOnEmptyResult(true)
                     ->setNumDigits("1")
                     ->setTimeout("15")
-                    ->setAction("helpline-answer-response.php?conference_name=".$request->get('conference_name')."&service_body_id=" . $request->get('service_body_id') . $this->settings->getSessionLink(true))
+                    ->setAction("helpline-answer-response.php?conference_name=".$request->get('conference_name')."&service_body_id=" . $request->get('service_body_id') . $this->settings->getSessionLink())
                     ->setMethod("GET");
                 $gather->say($this->settings->word('you_have_a_call_from_the_helpline'))
                     ->setVoice($this->settings->voice())

@@ -111,7 +111,7 @@ test('direct to volunteer search for a specific service body', function ($method
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Redirect method="GET">helpline-search.php?Called=123</Redirect>',
+            '<Redirect method="GET">helpline-search.php?Called=123&amp;ysk=fake</Redirect>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
@@ -129,7 +129,7 @@ test('direct to volunteer search for a specific service body with postal code ga
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Redirect method="GET">helpline-search.php?Called=123</Redirect>',
+            '<Redirect method="GET">helpline-search.php?Called=123&amp;ysk=fake</Redirect>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);

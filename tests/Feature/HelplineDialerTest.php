@@ -270,12 +270,12 @@ test('mark the caller as having entered the conference for reporting purposes', 
         ->withArgs([$volunteer_phone_number, $this->caller, [
             "method" => "GET",
             "url" => sprintf(
-                "https://localhost/helpline-outdial-response.php?conference_name=%s&service_body_id=%s",
+                "https://localhost/helpline-outdial-response.php?conference_name=%s&service_body_id=%s&ysk=fake",
                 $this->conferenceName,
                 $this->serviceBodyId
             ),
             "statusCallback" => sprintf(
-                "https://localhost/helpline-dialer.php?service_body_id=%s&tracker=1&FriendlyName=%s&OriginalCallerId=%s",
+                "https://localhost/helpline-dialer.php?service_body_id=%s&tracker=1&FriendlyName=%s&OriginalCallerId=%s&ysk=fake",
                 $this->serviceBodyId,
                 $this->conferenceName,
                 $this->caller
@@ -314,6 +314,7 @@ test('mark the caller as having entered the conference for reporting purposes', 
         ->once();
     app()->instance(ReportsRepository::class, $reportsRepository);
 
+    $this->withoutExceptionHandling();
     $response = $this->call($method, '/helpline-dialer.php', [
         'CallSid'=>$this->callSid,
         'SearchType' => "1",

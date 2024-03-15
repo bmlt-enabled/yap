@@ -384,7 +384,7 @@ class SettingsService
         }
     }
 
-    public function getSessionLink($shouldUriEncode = false): string
+    public function getSessionLink(): string
     {
         if (request()->has('ysk')) {
             $session_id = request()->get('ysk');
@@ -396,7 +396,7 @@ class SettingsService
             $session_id = null;
         }
 
-        return (isset($session_id) ? ($shouldUriEncode ? "&amp;" : "&") . ("ysk=" . $session_id) : "");
+        return (isset($session_id) ? "&" . ("ysk=" . $session_id) : "");
     }
 
     public function minimalRequiredSettings(): array
