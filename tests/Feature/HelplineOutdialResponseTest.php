@@ -117,7 +117,7 @@ test('waiting for the volunteer to press 1 to answer the call', function ($metho
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Gather actionOnEmptyResult="1" numDigits="1" timeout="15" action="helpline-answer-response.php?conference_name=abc&amp;service_body_id=1" method="GET">',
+            '<Gather actionOnEmptyResult="1" numDigits="1" timeout="15" action="helpline-answer-response.php?conference_name=abc&amp;service_body_id=1&amp;ysk=fake" method="GET">',
             '<Say voice="alice" language="en-US">',
             'you have a call from the helpline, press 1 to accept.  press any other key to hangup.</Say>',
             '</Gather>',
@@ -154,7 +154,7 @@ test('volunteer called and auto answer capability enabled', function ($method) {
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Redirect method="GET">helpline-answer-response.php?Digits=1&amp;conference_name=abc&amp;service_body_id=1',
+            '<Redirect method="GET">helpline-answer-response.php?Digits=1&amp;conference_name=abc&amp;service_body_id=1&amp;ysk=fake',
             '</Redirect>',
             '</Response>'
         ], false);

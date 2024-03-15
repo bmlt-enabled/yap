@@ -12,7 +12,7 @@ use DateTimeZone;
 
 class SettingsService
 {
-    private string $version = "4.3.0";
+    private string $version = "4.3.1";
     private array $allowlist = [
         'announce_servicebody_volunteer_routing' => ['description' => '/helpline/announce_servicebody_volunteer_routing' , 'default' => false, 'overridable' => true, 'hidden' => false],
         'blocklist' => ['description' => '/general/blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -128,6 +128,7 @@ class SettingsService
 
     private object $localizations;
     private string $shortLanguage;
+    private bool $randomConferences = true;
 
     public function __construct()
     {
@@ -226,6 +227,16 @@ class SettingsService
                 return $digit;
             }
         }
+    }
+
+    public function disableRandomConferences()
+    {
+        $this->randomConferences = false;
+    }
+
+    public function isRandomConferencesEnabled()
+    {
+        return $this->randomConferences;
     }
 
     public function getDigitMapSequence($setting)
@@ -374,7 +385,7 @@ class SettingsService
         }
     }
 
-    public function getSessionLink($shouldUriEncode = false): string
+    public function getSessionLink(): string
     {
         if (request()->has('ysk')) {
             $session_id = request()->get('ysk');
@@ -386,7 +397,7 @@ class SettingsService
             $session_id = null;
         }
 
-        return (isset($session_id) ? ($shouldUriEncode ? "&amp;" : "&") . ("ysk=" . $session_id) : "");
+        return (isset($session_id) ? "&" . ("ysk=" . $session_id) : "");
     }
 
     public function minimalRequiredSettings(): array
