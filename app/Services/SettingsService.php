@@ -234,7 +234,8 @@ class SettingsService
         $this->randomConferences = false;
     }
 
-    public function isRandomConferencesEnabled() {
+    public function isRandomConferencesEnabled()
+    {
         return $this->randomConferences;
     }
 
