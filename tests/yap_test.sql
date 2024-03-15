@@ -54,7 +54,7 @@ CREATE TABLE `cache` (
   `value` longtext,
   `expiry` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -138,7 +138,7 @@ CREATE TABLE `config` (
   `status` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `service_body_id_data_type_parent_id_UNIQUE` (`service_body_id`,`data_type`,`parent_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -147,6 +147,7 @@ CREATE TABLE `config` (
 
 LOCK TABLES `config` WRITE;
 /*!40000 ALTER TABLE `config` DISABLE KEYS */;
+INSERT INTO `config` VALUES (1,1060,'[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"no_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]','_YAP_CALL_HANDLING_V2_',NULL,NULL),(2,1060,'[{\"volunteer_name\":\"Danny G\",\"volunteer_phone_number\":\"12125551212\",\"volunteer_gender\":\"0\",\"volunteer_responder\":\"0\",\"volunteer_shift_schedule\":\"W3siZGF5IjoxLCJ0eiI6IkFtZXJpY2EvTmV3X1lvcmsiLCJzdGFydF90aW1lIjoiMTI6MDAgQU0iLCJlbmRfdGltZSI6IjExOjU5IFBNIiwidHlwZSI6IlBIT05FIn0seyJkYXkiOjIsInR6IjoiQW1lcmljYS9OZXdfWW9yayIsInN0YXJ0X3RpbWUiOiIxMjowMCBBTSIsImVuZF90aW1lIjoiMTE6NTkgUE0iLCJ0eXBlIjoiUEhPTkUifSx7ImRheSI6MywidHoiOiJBbWVyaWNhL05ld19Zb3JrIiwic3RhcnRfdGltZSI6IjEyOjAwIEFNIiwiZW5kX3RpbWUiOiIxMTo1OSBQTSIsInR5cGUiOiJQSE9ORSJ9LHsiZGF5Ijo0LCJ0eiI6IkFtZXJpY2EvTmV3X1lvcmsiLCJzdGFydF90aW1lIjoiMTI6MDAgQU0iLCJlbmRfdGltZSI6IjExOjU5IFBNIiwidHlwZSI6IlBIT05FIn0seyJkYXkiOjUsInR6IjoiQW1lcmljYS9OZXdfWW9yayIsInN0YXJ0X3RpbWUiOiIxMjowMCBBTSIsImVuZF90aW1lIjoiMTE6NTkgUE0iLCJ0eXBlIjoiUEhPTkUifSx7ImRheSI6NiwidHoiOiJBbWVyaWNhL05ld19Zb3JrIiwic3RhcnRfdGltZSI6IjEyOjAwIEFNIiwiZW5kX3RpbWUiOiIxMTo1OSBQTSIsInR5cGUiOiJQSE9ORSJ9LHsiZGF5Ijo3LCJ0eiI6IkFtZXJpY2EvTmV3X1lvcmsiLCJzdGFydF90aW1lIjoiMTI6MDAgQU0iLCJlbmRfdGltZSI6IjExOjU5IFBNIiwidHlwZSI6IlBIT05FIn1d\",\"volunteer_notes\":\"\",\"volunteer_enabled\":\"true\"},{\"volunteer_name\":\"Bro Bro\",\"volunteer_phone_number\":\"19195552222\",\"volunteer_gender\":\"0\",\"volunteer_responder\":\"0\",\"volunteer_shift_schedule\":\"W3siZGF5IjoxLCJ0eiI6IkFtZXJpY2EvTmV3X1lvcmsiLCJzdGFydF90aW1lIjoiMTI6MDAgQU0iLCJlbmRfdGltZSI6IjExOjU5IFBNIiwidHlwZSI6IlBIT05FIn0seyJkYXkiOjIsInR6IjoiQW1lcmljYS9OZXdfWW9yayIsInN0YXJ0X3RpbWUiOiIxMjowMCBBTSIsImVuZF90aW1lIjoiMTE6NTkgUE0iLCJ0eXBlIjoiUEhPTkUifSx7ImRheSI6MywidHoiOiJBbWVyaWNhL05ld19Zb3JrIiwic3RhcnRfdGltZSI6IjEyOjAwIEFNIiwiZW5kX3RpbWUiOiIxMTo1OSBQTSIsInR5cGUiOiJQSE9ORSJ9LHsiZGF5Ijo0LCJ0eiI6IkFtZXJpY2EvTmV3X1lvcmsiLCJzdGFydF90aW1lIjoiMTI6MDAgQU0iLCJlbmRfdGltZSI6IjExOjU5IFBNIiwidHlwZSI6IlBIT05FIn0seyJkYXkiOjUsInR6IjoiQW1lcmljYS9OZXdfWW9yayIsInN0YXJ0X3RpbWUiOiIxMjowMCBBTSIsImVuZF90aW1lIjoiMTE6NTkgUE0iLCJ0eXBlIjoiUEhPTkUifSx7ImRheSI6NiwidHoiOiJBbWVyaWNhL05ld19Zb3JrIiwic3RhcnRfdGltZSI6IjEyOjAwIEFNIiwiZW5kX3RpbWUiOiIxMTo1OSBQTSIsInR5cGUiOiJQSE9ORSJ9LHsiZGF5Ijo3LCJ0eiI6IkFtZXJpY2EvTmV3X1lvcmsiLCJzdGFydF90aW1lIjoiMTI6MDAgQU0iLCJlbmRfdGltZSI6IjExOjU5IFBNIiwidHlwZSI6IlBIT05FIn1d\",\"volunteer_notes\":\"\",\"volunteer_enabled\":\"true\"}]','_YAP_VOLUNTEERS_V2_',NULL,NULL);
 /*!40000 ALTER TABLE `config` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -274,7 +275,7 @@ CREATE TABLE `records` (
   `type` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_records_callsid` (`callsid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -283,6 +284,7 @@ CREATE TABLE `records` (
 
 LOCK TABLES `records` WRITE;
 /*!40000 ALTER TABLE `records` DISABLE KEYS */;
+INSERT INTO `records` VALUES (1,'CA31becca54c79565ad919b867bb56cf60','2024-03-11 01:55:21','2024-03-11 01:55:28','+19739316239','+19193559674','{\"Called\":\"+19193559674\",\"ToState\":\"NC\",\"CallerCountry\":\"US\",\"Direction\":\"inbound\",\"Timestamp\":\"Mon, 11 Mar 2024 01:55:28 +0000\",\"CallbackSource\":\"call-progress-events\",\"CallerState\":\"NJ\",\"ToZip\":\"27502\",\"SequenceNumber\":\"0\",\"To\":\"+19193559674\",\"CallSid\":\"CA31becca54c79565ad919b867bb56cf60\",\"ToCountry\":\"US\",\"CallerZip\":\"07055\",\"CalledZip\":\"27502\",\"ApiVersion\":\"2010-04-01\",\"CallStatus\":\"completed\",\"CalledCity\":\"APEX\",\"Duration\":\"1\",\"From\":\"+19739316239\",\"CallDuration\":\"7\",\"AccountSid\":\"ACcb1815ec24d4d4451331adb60cc94a58\",\"CalledCountry\":\"US\",\"CallerCity\":\"PASSAIC\",\"ToCity\":\"APEX\",\"FromCountry\":\"US\",\"Caller\":\"+19739316239\",\"FromCity\":\"PASSAIC\",\"CalledState\":\"NC\",\"FromZip\":\"07055\",\"FromState\":\"NJ\"}',7,1);
 /*!40000 ALTER TABLE `records` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -357,7 +359,7 @@ CREATE TABLE `users` (
   `service_bodies` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username_UNIQUE` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -366,6 +368,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (1,'admin','admin','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',0,1,'2024-03-11 19:43:57',NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -378,4 +381,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-10 14:31:21
+-- Dump completed on 2024-03-15  0:10:28
