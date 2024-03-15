@@ -12,7 +12,7 @@ use DateTimeZone;
 
 class SettingsService
 {
-    private string $version = "4.3.0";
+    private string $version = "4.3.1";
     private array $allowlist = [
         'announce_servicebody_volunteer_routing' => ['description' => '/helpline/announce_servicebody_volunteer_routing' , 'default' => false, 'overridable' => true, 'hidden' => false],
         'blocklist' => ['description' => '/general/blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
