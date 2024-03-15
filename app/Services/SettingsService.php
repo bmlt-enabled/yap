@@ -128,6 +128,7 @@ class SettingsService
 
     private object $localizations;
     private string $shortLanguage;
+    private bool $randomConferences = true;
 
     public function __construct()
     {
@@ -226,6 +227,15 @@ class SettingsService
                 return $digit;
             }
         }
+    }
+
+    public function disableRandomConferences()
+    {
+        $this->randomConferences = false;
+    }
+
+    public function isRandomConferencesEnabled() {
+        return $this->randomConferences;
     }
 
     public function getDigitMapSequence($setting)

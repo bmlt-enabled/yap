@@ -184,7 +184,7 @@ class HelplineController extends Controller
             }
 
             $dial = $twiml->dial();
-            $dial->conference($this->conference->getConferenceName($calculated_service_body_id))
+            $dial->conference($this->conference->getConferenceName($calculated_service_body_id, $this->settings->isRandomConferencesEnabled()))
                 ->setWaitUrl($serviceBodyCallHandling->moh_count == 1 ? $serviceBodyCallHandling->moh : "playlist.php?items=" . $serviceBodyCallHandling->moh)
                 ->setStatusCallback("helpline-dialer.php?service_body_id=" . $calculated_service_body_id . "&Caller=" . $request->get('Called') . $this->settings->getSessionLink(true))
                 ->setStartConferenceOnEnter("false")
