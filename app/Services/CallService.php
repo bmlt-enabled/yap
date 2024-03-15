@@ -106,7 +106,7 @@ class CallService extends Service
         $this->reports->setConferenceParticipant($friendlyname, $conferencesid, $callsid, $role);
     }
 
-    public function getConferencePartipant($callsid): array
+    public function getConferenceParticipant($callsid)
     {
         return $this->reports->getConferenceParticipant($callsid);
     }

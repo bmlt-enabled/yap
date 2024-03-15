@@ -371,10 +371,10 @@ class HelplineController extends Controller
                 }
             }
         } elseif ($request->has('StatusCallbackEvent') && $request->get('StatusCallbackEvent') == 'participant-leave') {
-            $participant = $this->call->getConferencePartipant($request->get('CallSid'));
-            if ($participant['role'] == CallRole::CALLER) {
+            $participant = $this->call->getConferenceParticipant($request->get('CallSid'));
+            if ($participant->role == CallRole::CALLER) {
                 $this->call->insertCallEventRecord(EventId::CALLER_HUP);
-            } elseif ($participant['role'] == CallRole::VOLUNTEER) {
+            } elseif ($participant == CallRole::VOLUNTEER) {
                 $this->call->insertCallEventRecord(EventId::VOLUNTEER_HUP);
             }
         }
