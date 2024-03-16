@@ -136,8 +136,8 @@ class CallService extends Service
                     "Tap to dialback: %s,,,%s,,,%s#.  PIN: %s",
                     $dialbackNumber,
                     $dialback_digit_map_digit,
-                    $pin_lookup[0]['pin'],
-                    $pin_lookup[0]['pin']
+                    $pin_lookup[0]->pin,
+                    $pin_lookup[0]->pin
                 );
             }
         }
