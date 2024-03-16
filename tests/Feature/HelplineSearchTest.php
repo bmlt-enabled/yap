@@ -428,7 +428,6 @@ test('valid search, helpline field routing, no helpline set in root server, use 
     $_SESSION['override_fallback_number'] = $fallback_number;
     $rootServer = new RootServerMocks(true);
     app()->instance(RootServerService::class, $rootServer->getService());
-    $this->withoutExceptionHandling();
     $response = $this->call($method, '/helpline-search.php', [
         'Digits' => "Brooklyn, NY",
         'SearchType' => "1",

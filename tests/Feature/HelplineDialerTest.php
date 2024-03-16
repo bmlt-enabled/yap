@@ -62,8 +62,6 @@ test('noop', function ($method) {
     $this->twilioClient->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
     $this->twilioClient->calls = $callContextMock;
 
-    $this->withoutExceptionHandling();
-
     $response = $this->call($method, '/helpline-dialer.php', [
         'noop' => "1",
         'SearchType' => "1",
@@ -315,8 +313,6 @@ test('mark the caller as having entered the conference for reporting purposes', 
         ->withArgs([$this->conferenceName, $this->conferenceName, $this->callSid, CallRole::CALLER])
         ->once();
     app()->instance(ReportsRepository::class, $reportsRepository);
-
-    $this->withoutExceptionHandling();
     $response = $this->call($method, '/helpline-dialer.php', [
         'CallSid'=>$this->callSid,
         'SearchType' => "1",
@@ -483,8 +479,6 @@ test('caller leaves the call', function ($method) {
         ->andReturn([])
         ->times(10);
     $this->twilioClient->conferences = $conferenceListMock;
-
-    $this->withoutExceptionHandling();
     $response = $this->call($method, '/helpline-dialer.php', [
         'CallSid'=>$callsid,
         'SearchType' => "1",
@@ -514,8 +508,6 @@ test('volunteer leave the call', function ($method) {
         ->andReturn([])
         ->times(10);
     $this->twilioClient->conferences = $conferenceListMock;
-
-    $this->withoutExceptionHandling();
     $response = $this->call($method, '/helpline-dialer.php', [
         'CallSid'=>$callsid,
         'SearchType' => "1",

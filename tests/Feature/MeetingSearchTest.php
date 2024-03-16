@@ -854,7 +854,6 @@ test('meeting search with say links', function ($method) {
         ->once();
 
     $this->twilioClient->messages = $messageListMock;
-    $this->withoutExceptionHandling();
     $response = $this->call($method, '/meeting-search.php', [
         'Latitude' => $this->latitude,
         'Longitude' => $this->longitude,
