@@ -110,7 +110,7 @@ CREATE TABLE `conference_participants` (
   UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `idx_conference_participants_callsid` (`callsid`),
   KEY `idx_conference_participants_conferencesid` (`conferencesid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -119,6 +119,7 @@ CREATE TABLE `conference_participants` (
 
 LOCK TABLES `conference_participants` WRITE;
 /*!40000 ALTER TABLE `conference_participants` DISABLE KEYS */;
+INSERT INTO `conference_participants` VALUES (1,'2024-03-15 23:04:18','CF9a278c2cef72c7ca16eccf0a03972958','CA460d1728a3e07606f36aaa8879a7fbd3','1060_5246011_1710543855',1),(2,'2024-03-16 00:57:07','abc','abc','abc',1),(3,'2024-03-16 00:57:22','abc','abc','abc',1),(4,'2024-03-16 00:57:42','abc','abc','abc',1),(5,'2024-03-16 00:57:42','abc','abc','abc',1),(6,'2024-03-16 00:57:55','abc','abc','abc',1),(7,'2024-03-16 00:57:55','abc','abc','abc',1),(8,'2024-03-16 00:58:01','abc','abc','abc',1),(9,'2024-03-16 00:58:01','abc','abc','abc',1),(10,'2024-03-16 00:58:44','abc','abc','abc',1),(11,'2024-03-16 00:58:44','abc','abc','abc',1);
 /*!40000 ALTER TABLE `conference_participants` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -275,7 +276,7 @@ CREATE TABLE `records` (
   `type` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_records_callsid` (`callsid`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -284,7 +285,7 @@ CREATE TABLE `records` (
 
 LOCK TABLES `records` WRITE;
 /*!40000 ALTER TABLE `records` DISABLE KEYS */;
-INSERT INTO `records` VALUES (1,'CA31becca54c79565ad919b867bb56cf60','2024-03-11 01:55:21','2024-03-11 01:55:28','+19739316239','+19193559674','{\"Called\":\"+19193559674\",\"ToState\":\"NC\",\"CallerCountry\":\"US\",\"Direction\":\"inbound\",\"Timestamp\":\"Mon, 11 Mar 2024 01:55:28 +0000\",\"CallbackSource\":\"call-progress-events\",\"CallerState\":\"NJ\",\"ToZip\":\"27502\",\"SequenceNumber\":\"0\",\"To\":\"+19193559674\",\"CallSid\":\"CA31becca54c79565ad919b867bb56cf60\",\"ToCountry\":\"US\",\"CallerZip\":\"07055\",\"CalledZip\":\"27502\",\"ApiVersion\":\"2010-04-01\",\"CallStatus\":\"completed\",\"CalledCity\":\"APEX\",\"Duration\":\"1\",\"From\":\"+19739316239\",\"CallDuration\":\"7\",\"AccountSid\":\"ACcb1815ec24d4d4451331adb60cc94a58\",\"CalledCountry\":\"US\",\"CallerCity\":\"PASSAIC\",\"ToCity\":\"APEX\",\"FromCountry\":\"US\",\"Caller\":\"+19739316239\",\"FromCity\":\"PASSAIC\",\"CalledState\":\"NC\",\"FromZip\":\"07055\",\"FromState\":\"NJ\"}',7,1);
+INSERT INTO `records` VALUES (1,'CA31becca54c79565ad919b867bb56cf60','2024-03-11 01:55:21','2024-03-11 01:55:28','+19739316239','+19193559674','{\"Called\":\"+19193559674\",\"ToState\":\"NC\",\"CallerCountry\":\"US\",\"Direction\":\"inbound\",\"Timestamp\":\"Mon, 11 Mar 2024 01:55:28 +0000\",\"CallbackSource\":\"call-progress-events\",\"CallerState\":\"NJ\",\"ToZip\":\"27502\",\"SequenceNumber\":\"0\",\"To\":\"+19193559674\",\"CallSid\":\"CA31becca54c79565ad919b867bb56cf60\",\"ToCountry\":\"US\",\"CallerZip\":\"07055\",\"CalledZip\":\"27502\",\"ApiVersion\":\"2010-04-01\",\"CallStatus\":\"completed\",\"CalledCity\":\"APEX\",\"Duration\":\"1\",\"From\":\"+19739316239\",\"CallDuration\":\"7\",\"AccountSid\":\"ACcb1815ec24d4d4451331adb60cc94a58\",\"CalledCountry\":\"US\",\"CallerCity\":\"PASSAIC\",\"ToCity\":\"APEX\",\"FromCountry\":\"US\",\"Caller\":\"+19739316239\",\"FromCity\":\"PASSAIC\",\"CalledState\":\"NC\",\"FromZip\":\"07055\",\"FromState\":\"NJ\"}',7,1),(2,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:03:53','2024-03-15 23:05:30','+19739316239','+19193559674','{\"Called\":\"+19193559674\",\"ToState\":\"NC\",\"CallerCountry\":\"US\",\"Direction\":\"inbound\",\"Timestamp\":\"Fri, 15 Mar 2024 23:05:30 +0000\",\"CallbackSource\":\"call-progress-events\",\"CallerState\":\"NJ\",\"ToZip\":\"27502\",\"SequenceNumber\":\"0\",\"To\":\"+19193559674\",\"CallSid\":\"CA460d1728a3e07606f36aaa8879a7fbd3\",\"ToCountry\":\"US\",\"CallerZip\":\"07055\",\"CalledZip\":\"27502\",\"ApiVersion\":\"2010-04-01\",\"CallStatus\":\"completed\",\"CalledCity\":\"APEX\",\"Duration\":\"2\",\"From\":\"+19739316239\",\"CallDuration\":\"97\",\"AccountSid\":\"ACcb1815ec24d4d4451331adb60cc94a58\",\"CalledCountry\":\"US\",\"CallerCity\":\"PASSAIC\",\"ToCity\":\"APEX\",\"FromCountry\":\"US\",\"Caller\":\"+19739316239\",\"FromCity\":\"PASSAIC\",\"CalledState\":\"NC\",\"FromZip\":\"07055\",\"FromState\":\"NJ\"}',97,1);
 /*!40000 ALTER TABLE `records` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -306,7 +307,7 @@ CREATE TABLE `records_events` (
   PRIMARY KEY (`id`),
   KEY `idx_records_events_service_body_id` (`service_body_id`),
   KEY `idx_records_events_callsid` (`callsid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -315,6 +316,7 @@ CREATE TABLE `records_events` (
 
 LOCK TABLES `records_events` WRITE;
 /*!40000 ALTER TABLE `records_events` DISABLE KEYS */;
+INSERT INTO `records_events` VALUES (1,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:04:15',1,NULL,'{\"gather\":\"Buffalo, NY\",\"coordinates\":{\"location\":\"Buffalo, NY, USA\",\"latitude\":42.88644679999999,\"longitude\":-78.8783689}}',1),(2,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:04:18',10,1060,NULL,1),(3,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:04:19',5,1060,'{\"to_number\":\"12125551212\"}',1),(4,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:23:50',13,4400,NULL,1),(5,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:23:51',13,4400,NULL,1),(6,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:25:53',13,4400,NULL,1),(7,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:25:53',13,4400,NULL,1),(8,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:26:13',13,4400,NULL,1),(9,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:26:13',13,4400,NULL,1),(10,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:27:12',13,4400,NULL,1),(11,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:27:13',13,4400,NULL,1),(12,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:27:18',13,4400,NULL,1),(13,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:27:18',13,4400,NULL,1),(14,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:27:46',13,4400,NULL,1),(15,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:27:46',13,4400,NULL,1),(16,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:27:57',13,4400,NULL,1),(17,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:27:57',13,4400,NULL,1),(18,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:28:28',13,4400,NULL,1),(19,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:28:28',13,4400,NULL,1),(20,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:28:39',13,4400,NULL,1),(21,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:28:39',13,4400,NULL,1),(22,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:28:49',13,4400,NULL,1),(23,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:28:49',13,4400,NULL,1),(24,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:29:10',13,4400,NULL,1),(25,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:29:10',13,4400,NULL,1),(26,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:29:45',13,4400,NULL,1),(27,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:29:45',13,4400,NULL,1),(28,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:30:03',13,4400,NULL,1),(29,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:30:03',13,4400,NULL,1),(30,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:30:14',13,4400,NULL,1),(31,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:30:14',13,4400,NULL,1),(32,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:30:25',13,4400,NULL,1),(33,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:30:25',13,4400,NULL,1),(34,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:30:42',13,4400,NULL,1),(35,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:30:42',13,4400,NULL,1),(36,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:31:13',13,4400,NULL,1),(37,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:31:13',13,4400,NULL,1),(38,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:31:23',13,4400,NULL,1),(39,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:31:23',13,4400,NULL,1),(40,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:31:49',13,4400,NULL,1),(41,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:31:49',13,4400,NULL,1),(42,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:32:00',13,4400,NULL,1),(43,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:32:00',13,4400,NULL,1),(44,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:32:14',13,4400,NULL,1),(45,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:32:14',13,4400,NULL,1),(46,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:32:27',13,4400,NULL,1),(47,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:32:27',13,4400,NULL,1),(48,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-16 00:09:06',13,4400,NULL,1),(49,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-16 00:09:06',13,4400,NULL,1),(50,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-16 00:48:39',13,4400,NULL,1),(51,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-16 00:48:39',13,4400,NULL,1),(52,'abc','2024-03-16 00:57:07',10,4400,NULL,1),(53,'abc','2024-03-16 00:57:22',10,4400,NULL,1),(54,'abc','2024-03-16 00:57:42',10,4400,NULL,1),(55,'abc','2024-03-16 00:57:42',5,4400,'{\"to_number\":\"(732) 566-5232\"}',1),(56,'abc','2024-03-16 00:57:42',10,4400,NULL,1),(57,'abc','2024-03-16 00:57:42',5,4400,'{\"to_number\":\"(732) 566-5232\"}',1),(58,'abc','2024-03-16 00:57:55',10,4400,NULL,1),(59,'abc','2024-03-16 00:57:55',5,4400,'{\"to_number\":\"(732) 566-5232\"}',1),(60,'abc','2024-03-16 00:57:55',10,4400,NULL,1),(61,'abc','2024-03-16 00:57:55',5,4400,'{\"to_number\":\"(732) 566-5232\"}',1),(62,'abc','2024-03-16 00:58:01',10,4400,NULL,1),(63,'abc','2024-03-16 00:58:01',5,4400,'{\"to_number\":\"(732) 566-5232\"}',1),(64,'abc','2024-03-16 00:58:01',10,4400,NULL,1),(65,'abc','2024-03-16 00:58:01',5,4400,'{\"to_number\":\"(732) 566-5232\"}',1),(66,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-16 00:58:01',13,4400,NULL,1),(67,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-16 00:58:01',13,4400,NULL,1),(68,'abc','2024-03-16 00:58:44',10,4400,NULL,1),(69,'abc','2024-03-16 00:58:44',5,4400,'{\"to_number\":\"(732) 566-5232\"}',1),(70,'abc','2024-03-16 00:58:44',10,4400,NULL,1),(71,'abc','2024-03-16 00:58:44',5,4400,'{\"to_number\":\"(732) 566-5232\"}',1),(72,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-16 00:58:44',13,4400,NULL,1),(73,'CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-16 00:58:44',13,4400,NULL,1);
 /*!40000 ALTER TABLE `records_events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -338,6 +340,7 @@ CREATE TABLE `sessions` (
 
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
+INSERT INTO `sessions` VALUES ('CA31becca54c79565ad919b867bb56cf60','2024-03-11 01:55:21',2916149),('abc','2024-03-15 22:58:47',4532979),('CA460d1728a3e07606f36aaa8879a7fbd3','2024-03-15 23:03:52',8723858);
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -381,4 +384,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-15  0:10:28
+-- Dump completed on 2024-03-15 21:00:05

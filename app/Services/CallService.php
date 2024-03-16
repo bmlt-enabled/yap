@@ -106,7 +106,7 @@ class CallService extends Service
         $this->reports->setConferenceParticipant($friendlyname, $conferencesid, $callsid, $role);
     }
 
-    public function getConferencePartipant($callsid): array
+    public function getConferenceParticipant($callsid)
     {
         return $this->reports->getConferenceParticipant($callsid);
     }
@@ -136,8 +136,8 @@ class CallService extends Service
                     "Tap to dialback: %s,,,%s,,,%s#.  PIN: %s",
                     $dialbackNumber,
                     $dialback_digit_map_digit,
-                    $pin_lookup[0]['pin'],
-                    $pin_lookup[0]['pin']
+                    $pin_lookup[0]->pin,
+                    $pin_lookup[0]->pin
                 );
             }
         }

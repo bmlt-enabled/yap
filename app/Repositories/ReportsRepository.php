@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\RecordType;
 use App\Services\SettingsService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ReportsRepository
@@ -199,9 +200,13 @@ where alert_id = ? and b.to_number IS NULL", [$alert_id, $alert_id]);
         );
     }
 
-    public function getConferenceParticipant($callsid): array
+    public function getConferenceParticipant($callsid)
     {
-        return DB::select("SELECT DISTINCT callsid, role FROM conference_participants WHERE callsid = ?", [$callsid]);
+        return DB::table("conference_participants")
+            ->select(["callsid", "role"])
+            ->where('callsid', $callsid)
+            ->distinct()
+            ->first();
     }
 
     public function setConferenceParticipant($friendlyname, $conferencesid, $callsid, $role): void
