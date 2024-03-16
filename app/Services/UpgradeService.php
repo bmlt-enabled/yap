@@ -110,7 +110,7 @@ class UpgradeService extends Service
 
         if ($this->settings->has('smtp_host')) {
             foreach ($this->settings->emailSettings() as $setting) {
-                if ($this->settings->has($setting)) {
+                if (!$this->settings->has($setting)) {
                     return $this->getState(false, "Missing required email setting: " . $setting, $warnings);
                 }
             }
