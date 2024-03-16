@@ -90,7 +90,10 @@ class AdminController extends Controller
 
     public function login(Request $request): RedirectResponse
     {
-        $auth = $this->authn->authenticate();
+        $username = $_POST['username'] ?? $request->post('username');
+        $password = $_POST['password'] ?? $request->post('password');
+
+        $auth = $this->authn->authenticate($username, $password);
         if ($auth) {
             return redirect("admin/home");
         } else {

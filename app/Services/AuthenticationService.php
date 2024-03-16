@@ -21,11 +21,11 @@ class AuthenticationService extends Service
         $this->session = $session;
     }
 
-    public function authenticate() : bool
+    public function authenticate($username, $password) : bool
     {
-        $auth_v2_result = $this->authenticationRepository->authV2($_POST['username'], $_POST['password']);
+        $auth_v2_result = $this->authenticationRepository->authV2($username, $password);
         if (count($auth_v2_result) == 1) {
-            $_SESSION['username'] = $_POST['username'];
+            $_SESSION['username'] = $username;
             $_SESSION['auth_mechanism'] = AuthMechanism::V2;
             $_SESSION['auth_user_name_string'] = $auth_v2_result[0]->name;
             $_SESSION['auth_is_admin'] = $auth_v2_result[0]->is_admin;
@@ -36,12 +36,17 @@ class AuthenticationService extends Service
             $this->session->setConfigForService($_SESSION['auth_service_bodies_rights'][0]);
 
             return true;
-        } elseif ($this->settings->get("bmlt_auth") && $this->authenticationRepository->authV1($_POST['username'], $_POST['password'])) {
-            $_SESSION['username'] = $_POST['username'];
+        } elseif ($this->settings->get("bmlt_auth") && $this->authenticationRepository->authV1($username, $password)) {
+            $_SESSION['username'] = $username;
             $_SESSION['auth_mechanism'] = AuthMechanism::V1;
-            $_SESSION['auth_service_bodies_rights'] = $this->rootServer->getServiceBodiesRightsIds();
-            $this->session->setConfigForService($_SESSION['auth_service_bodies_rights'][0]);
-            return true;
+            $rights = $this->rootServer->getServiceBodiesRightsIds();
+            if (count($rights)) {
+                $_SESSION['auth_service_bodies_rights'] = $rights;
+                $this->session->setConfigForService($rights[0]);
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }

@@ -95,7 +95,7 @@ class RootServerService extends Service
                 $service_bodies_for_user = json_decode($this->http->getWithAuth($url));
 
                 if ($service_bodies_for_user == null) {
-                    return null;
+                    return array();
                 }
 
                 if (!is_array($service_bodies_for_user->service_body)) {
