@@ -1,7 +1,8 @@
 # Release Notes
 
 ### 4.3.1 (UNRELEASED)
-* 
+* Fixes for call blasting and post call handling [#960]
+* Fixes for invalid SMTP settings error message in the upgrade advisor.
 
 ### 4.3.0 (March 11, 2024)
 * Added feature for SPAD playback `spad_option`.
