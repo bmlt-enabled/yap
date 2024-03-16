@@ -112,6 +112,62 @@ test('test with misconfigured phone number', function ($method) {
         );
 })->with(['GET', 'POST']);
 
+test('test with smtp settings missing', function ($method) {
+    $settingsService = new SettingsService();
+    $settingsService->set("smtp_host", "bro");
+    $settingsService->set("smtp_username", "bro");
+    $settingsService->set("smtp_password", "bro");
+    $settingsService->set("smtp_secure", false);
+    $settingsService->set("smtp_from_address", "bro@bro.com");
+    $settingsService->set("smtp_from_name", "name");
+    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
+    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
+    $geocodingService = mock(GeocodingService::class)->makePartial();
+    app()->instance(SettingsService::class, instance: $settingsService);
+
+    $geocodingService
+        ->shouldReceive("ping")
+        ->withArgs(["91409"])
+        ->andReturn((object)['status' => 'OK'])
+        ->once();
+    app()->instance(GeocodingService::class, $geocodingService);
+
+    $timezoneService = mock(TimeZoneService::class)->makePartial();
+    $timezoneService
+        ->shouldReceive("getTimeZoneForCoordinates")
+        ->withAnyArgs()
+        ->andReturn((object)['status' => 'OK'])
+        ->once();
+    app()->instance(TimeZoneService::class, $timezoneService);
+
+    $this->twilioService->client()->shouldReceive('getAccountSid')->andReturn("123");
+    $incomingPhoneNumberContext = mock('\Twilio\Rest\Api\V2010\Account\InstanceContext');
+    $incomingPhoneNumberInstance= mock('\Twilio\Rest\Api\V2010\Account\IncomingPhoneNumberInstance');
+    $incomingPhoneNumberInstance->voiceUrl = "http://localhost:3100/yap/index.php";
+    $incomingPhoneNumberContext->shouldReceive('read')->withNoArgs()
+        ->andReturn([$incomingPhoneNumberInstance])->once();
+
+    // mocking TwilioRestClient->incomingPhoneNumbers->read();
+    $this->twilioService->client()->incomingPhoneNumbers = $incomingPhoneNumberContext;
+
+    app()->instance(TwilioService::class, $this->twilioService);
+
+    $response = $this->call($method, '/upgrade-advisor.php');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json")
+        ->assertJson(
+            [
+                "status"=>true,
+                "message"=>"Ready To Yap!",
+                "warnings"=>sprintf(""),
+                "version"=>$settingsService->version(),
+                "db"=>100,
+                "build"=>"local"
+            ]
+        );
+})->with(['GET', 'POST']);
+
 //test('bad google maps api key', function () {
 //    $settings = new SettingsService();
 //    $GLOBALS['google_maps_endpoint'] = 'https://maps.googleapis.com/maps/api/geocode/json?key=bad_key';
