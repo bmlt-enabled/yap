@@ -374,7 +374,7 @@ class HelplineController extends Controller
             $participant = $this->call->getConferenceParticipant($request->get('CallSid'));
             if ($participant->role == CallRole::CALLER) {
                 $this->call->insertCallEventRecord(EventId::CALLER_HUP);
-            } elseif ($participant == CallRole::VOLUNTEER) {
+            } elseif ($participant->role == CallRole::VOLUNTEER) {
                 $this->call->insertCallEventRecord(EventId::VOLUNTEER_HUP);
             }
         }

@@ -468,8 +468,39 @@ test('mark the caller as having entered the conference for reporting purposes, w
         ->assertHeader("Content-Type", "application/json");
 })->with(['GET', 'POST']);
 
-test('participant leave', function ($method) {
+test('caller leaves the call', function ($method) {
     $callsid = "CA460d1728a3e07606f36aaa8879a7fbd3";
+    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
+    $_SESSION['no_answer_max'] = 1;
+    $_SESSION['master_callersid'] = $callsid;
+    $_SESSION['voicemail_url'] = $this->voicemail_url;
+
+    $this->volunteer_phone_number = "(732) 566-5232";
+
+    $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
+    $conferenceListMock->shouldReceive("read")
+        ->with(['friendlyName' => $this->conferenceName])
+        ->andReturn([])
+        ->times(10);
+    $this->twilioClient->conferences = $conferenceListMock;
+
+    $this->withoutExceptionHandling();
+    $response = $this->call($method, '/helpline-dialer.php', [
+        'CallSid'=>$callsid,
+        'SearchType' => "1",
+        'Called' => "+12125551212",
+        'Caller' => $this->caller,
+        'FriendlyName' => $this->conferenceName,
+        'StatusCallbackEvent' => 'participant-leave',
+        'SequenceNumber' => 2
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json");
+})->with(['GET', 'POST']);
+
+test('volunteer leave the call', function ($method) {
+    $callsid = "CA460d1728a3e07606f36aaa8879a7fbd2";
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $_SESSION['no_answer_max'] = 1;
     $_SESSION['master_callersid'] = $callsid;
