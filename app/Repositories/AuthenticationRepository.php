@@ -26,7 +26,7 @@ class AuthenticationRepository
             [
                 "admin_action" => "login",
                 "c_comdef_admin_login" => $username,
-                "c_comdef_admin_password" => urlencode($password)
+                "c_comdef_admin_password" => $password
             ]
         );
         $is_authed = preg_match('/^OK$/', str_replace(array("\r", "\n"), '', $res->body())) == 1;
