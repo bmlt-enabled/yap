@@ -20,12 +20,13 @@ class AuthenticationRepository
     public function authV1($username, $password): bool
     {
         $endpoint = ($this->settings->has('alt_auth_method') && $this->settings->get('alt_auth_method') ? '/index.php' : '/local_server/server_admin/xml.php');
+        $baseUrl = sprintf("%s%s", $this->settings->getAdminBMLTRootServer(), $endpoint);
         $res = $this->http->post(
-            sprintf("%s%s", $this->settings->getAdminBMLTRootServer(), $endpoint),
+            $baseUrl,
             [
                 "admin_action" => "login",
                 "c_comdef_admin_login" => $username,
-                "c_comdef_admin_password" => urlencode($password)
+                "c_comdef_admin_password" => $password
             ]
         );
         $is_authed = preg_match('/^OK$/', str_replace(array("\r", "\n"), '', $res->body())) == 1;

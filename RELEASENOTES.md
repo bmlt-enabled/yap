@@ -1,7 +1,10 @@
 # Release Notes
 
+### 4.3.2 (UNRELEASED)
+* Fixes some admin logins for BMLT users with special characters. [#973]
+
 ### 4.3.1 (March 19, 2024)
-* Fixes for call blasting and post call handling [#960]
+* Fixes for call blasting and post call handling. [#960]
 * Fixes for invalid SMTP settings error message in the upgrade advisor.
 * Fixes for when a BMLT user login happens and no service body rights have been assigned.
 
