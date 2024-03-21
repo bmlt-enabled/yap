@@ -444,9 +444,10 @@ function saveVolunteers(data_type, countryCode)
         let volunteerCards = $(".volunteerCard").not("#volunteerCardTemplate")
         for (let volunteerCard of volunteerCards) {
             let phoneNumberField = $(volunteerCard).find(".volunteerPhoneNumber")
-            if (!libphonenumber.parsePhoneNumber(phoneNumberField.val(), countryCode).isValid()) {
+            if (phoneNumberField.val() === "" || !libphonenumber.parsePhoneNumber(phoneNumberField.val(), countryCode).isValid()) {
                 phoneNumberField.addClass("border-danger")
-                badOnes.push($(volunteerCard).find(".volunteerName").val())
+                let volunteerName = $(volunteerCard).find(".volunteerName").val()
+                badOnes.push(volunteerName !== "" ? volunteerName : `Empty Volunteer Card ${$(volunteerCard).find("#volunteerSequence").html()}`)
                 allGood = false;
             } else {
                 phoneNumberField.removeClass("border-danger")
