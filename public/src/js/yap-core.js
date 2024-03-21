@@ -444,13 +444,21 @@ function saveVolunteers(data_type, countryCode)
         let volunteerCards = $(".volunteerCard").not("#volunteerCardTemplate")
         for (let volunteerCard of volunteerCards) {
             let phoneNumberField = $(volunteerCard).find(".volunteerPhoneNumber")
-            if (phoneNumberField.val() === "" || !libphonenumber.parsePhoneNumber(phoneNumberField.val(), countryCode).isValid()) {
+            try {
+                if (phoneNumberField.val() === "" || !libphonenumber.parsePhoneNumber(phoneNumberField.val(), countryCode).isValid()) {
+                    phoneNumberField.addClass("border-danger")
+                    let volunteerName = $(volunteerCard).find(".volunteerName").val()
+                    badOnes.push(volunteerName !== "" ? volunteerName : `Empty Volunteer Card ${$(volunteerCard).find("#volunteerSequence").html()}`)
+                    allGood = false;
+                } else {
+                    //
+                    phoneNumberField.removeClass("border-danger")
+                }
+            } catch (error) {
                 phoneNumberField.addClass("border-danger")
                 let volunteerName = $(volunteerCard).find(".volunteerName").val()
                 badOnes.push(volunteerName !== "" ? volunteerName : `Empty Volunteer Card ${$(volunteerCard).find("#volunteerSequence").html()}`)
                 allGood = false;
-            } else {
-                phoneNumberField.removeClass("border-danger")
             }
         }
 
