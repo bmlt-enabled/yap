@@ -446,7 +446,6 @@ function volunteersValidationHandling(phoneNumberField, volunteerCard)
 function saveVolunteers(data_type, countryCode)
 {
     if (countryCode !== "") {
-        let allGood;
         let badOnes = [];
         let volunteerCards = $(".volunteerCard").not("#volunteerCardTemplate")
         for (let volunteerCard of volunteerCards) {
@@ -462,8 +461,7 @@ function saveVolunteers(data_type, countryCode)
             }
         }
 
-        allGood = badOnes.length === 0;
-
+        let allGood = badOnes.length === 0;
         let alert = $("#volunteer_saved_alert");
         if (!allGood) {
             alert.addClass("alert-danger");
