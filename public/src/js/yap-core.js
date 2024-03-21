@@ -436,6 +436,14 @@ function includeVolunteers()
     includeVolunteer({"volunteer_name": ""});
 }
 
+function volunteersValidationHandling(phoneNumberField, volunteerCard)
+{
+    phoneNumberField.addClass("border-danger");
+    let volunteerName = $(volunteerCard).find(".volunteerName").val();
+    badOnes.push(volunteerName !== "" ? volunteerName : `Empty Volunteer Card ${$(volunteerCard).find("#volunteerSequence").html()}`);
+    return false;
+}
+
 function saveVolunteers(data_type, countryCode)
 {
     if (countryCode !== "") {
@@ -446,19 +454,12 @@ function saveVolunteers(data_type, countryCode)
             let phoneNumberField = $(volunteerCard).find(".volunteerPhoneNumber")
             try {
                 if (phoneNumberField.val() === "" || !libphonenumber.parsePhoneNumber(phoneNumberField.val(), countryCode).isValid()) {
-                    phoneNumberField.addClass("border-danger")
-                    let volunteerName = $(volunteerCard).find(".volunteerName").val()
-                    badOnes.push(volunteerName !== "" ? volunteerName : `Empty Volunteer Card ${$(volunteerCard).find("#volunteerSequence").html()}`)
-                    allGood = false;
+                    allGood = volunteersValidationHandling(phoneNumberField, volunteerCard);
                 } else {
-                    //
                     phoneNumberField.removeClass("border-danger")
                 }
             } catch (error) {
-                phoneNumberField.addClass("border-danger")
-                let volunteerName = $(volunteerCard).find(".volunteerName").val()
-                badOnes.push(volunteerName !== "" ? volunteerName : `Empty Volunteer Card ${$(volunteerCard).find("#volunteerSequence").html()}`)
-                allGood = false;
+                allGood = volunteersValidationHandling(phoneNumberField, volunteerCard);
             }
         }
 
