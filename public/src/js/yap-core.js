@@ -461,9 +461,8 @@ function saveVolunteers(data_type, countryCode)
             }
         }
 
-        let allGood = badOnes.length === 0;
         let alert = $("#volunteer_saved_alert");
-        if (!allGood) {
+        if (badOnes.length > 0) {
             alert.addClass("alert-danger");
             alert.html(`Invalid phone number(s) detected for ${badOnes.join(", ")}.  Must contain correct length and country code preceded by +.`);
             alert.show();
