@@ -51,6 +51,16 @@ test('version test as jsonp', function ($method) {
         ->assertSeeText(sprintf("bro({\"version\":\"%s\"})", $settings->version()), false);
 })->with(['GET', 'POST']);
 
+test('version test check cors headers', function ($method) {
+    $settings = new SettingsService();
+    app()->instance(SettingsService::class, $settings);
+    $response = $this->call($method, '/version');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Access-Control-Allow-Origin", "*")
+        ->assertSeeText(sprintf("{\"version\":\"%s\"}", $settings->version()), false);
+})->with(['GET', 'POST']);
+
 test('test with misconfigured phone number', function ($method) {
     $misconfiguredNumber = "+18889822614";
     $settingsService = new SettingsService();
