@@ -2,7 +2,8 @@
 
 ### 4.3.2 (UNRELEASED)
 * Fixes some admin logins for BMLT users with special characters. [#973]
-* Fixes validation for when there is no phone number set for volunteers on the Admin interface [#975]
+* Fixes validation for when there is no phone number set for volunteers on the Admin interface. [#975]
+* Improvements for CORS handling.
 
 ### 4.3.1 (March 19, 2024)
 * Fixes for call blasting and post call handling. [#960]
