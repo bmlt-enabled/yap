@@ -169,7 +169,7 @@ function getMetricsData()
             var actions = ['Volunteer (CALL)', 'Meetings (CALL)', 'Just For Today (CALL)', 'Volunteer (SMS)', 'Meetings (SMS)', 'Just For Today (SMS)'];
             var actions_plots = [1, 2, 3, 19, 20, 21];
             var plots = {"1": [], "2": [], "3": [], "19": [], "20": [], "21": []};
-            for (var item of data['metrics']) {
+            for (let item of data['metrics']) {
                 plots[JSON.parse(item['data'])['searchType']].push({
                     'x': item['timestamp'],
                     'y': item['counts']
@@ -184,11 +184,11 @@ function getMetricsData()
             $("#summary-volunteer-sms").html("0");
 
             for (var item of data['summary']) {
-                if (item['event_id'] === "2") {
+                if (item['event_id'] === 2) {
                     $("#summary-meetingsearch-calls").html(item['counts'])
-                } else if (item['event_id'] === "19") {
+                } else if (item['event_id'] === 19) {
                     $("#summary-meetingsearch-sms").html(item['counts'])
-                } else if (item['event_id'] === "20") {
+                } else if (item['event_id'] === 20) {
                     $("#summary-volunteer-sms").html(item['counts'])
                 }
             }
@@ -196,7 +196,7 @@ function getMetricsData()
             var totalCalls = data['calls'].length;
             var missedCalls = 0;
             $("#summary-volunteer-calls").html(totalCalls)
-            for (var item of data['calls']) {
+            for (let item of data['calls']) {
                 var answeredCount = parseInt(item['answered_count']);
                 var missedCount = parseInt(item['missed_count']);
                 if (answeredCount === 0 && missedCount > 0) {

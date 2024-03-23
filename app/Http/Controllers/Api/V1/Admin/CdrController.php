@@ -22,7 +22,7 @@ class CdrController extends Controller
             $request->get('service_body_id'),
             $request->get('date_range_start'),
             $request->get('date_range_end'),
-            $request->get('recurse')
+            filter_var($request->get('recurse'), FILTER_VALIDATE_BOOLEAN)
         ))->header("Content-Type", "application/json");
     }
 }
