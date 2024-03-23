@@ -174,6 +174,8 @@ test('voicemail complete send email using primary contact', function ($method, $
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $this->utility->settings->set("smtp_host", "fake.host");
+    $this->utility->settings->set("smtp_username", "fake@user");
+    $this->utility->settings->set("smtp_password", "fake@password");
     $this->utility->settings->set("smtp_alt_port", $smtp_alt_port);
     $this->utility->settings->set("smtp_secure", $smtp_secure);
 
