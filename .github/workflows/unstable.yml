@@ -14,16 +14,6 @@ jobs:
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-    services:
-      db-tests:
-        image: 'mysql/mysql-server:8.0'
-        env:
-          MYSQL_ROOT_PASSWORD: yap_root_password
-          MYSQL_DATABASE: yap_test
-          MYSQL_ROOT_HOST: '%'
-        ports:
-          - 3106:3306
-
     steps:
       - uses: actions/checkout@v4
         id: code-checkout

@@ -14,13 +14,10 @@ beforeEach(function () {
 });
 
 test('login to authenticate with a BMLT user and a user with no rights', function () {
-    $response = $this->post(
+    $this->post(
         '/admin/login',
         ["username"=>"yap","password"=>"CoreysGoryStory"]
-    );
-
-    $response
-        ->assertStatus(302)
+    )->assertStatus(302)
         ->assertHeader("Location", 'http://localhost/admin/auth/invalid')
         ->assertHeader("Content-Type", "text/html; charset=UTF-8");
 });

@@ -171,12 +171,7 @@ test('valid search, volunteer routing, by location', function ($method) {
     $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
 
-    ConfigData::create([
-        "service_body_id"=>$serviceBodyId,
-        "parent_id"=>$parentServiceBodyId,
-        "data"=>json_encode([$serviceBodyCallHandlingData]),
-        "data_type"=>DataType::YAP_CALL_HANDLING_V2
-    ]);
+    ConfigData::createCallHandling($serviceBodyId, $parentServiceBodyId, $serviceBodyCallHandlingData);
 
     $response = $this->call($method, '/helpline-search.php', [
         'Digits' => "Buffalo, NY",

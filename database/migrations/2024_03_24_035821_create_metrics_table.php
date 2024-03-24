@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('metrics', function (Blueprint $table) {
-            $table->integer('id', true)->unique('id_unique');
+            $table->integer('id', true)->unique('id_metrics_unique');
             $table->timestamp('timestamp')->useCurrent();
             $table->text('data');
             $table->unsignedInteger('service_body_id')->nullable();

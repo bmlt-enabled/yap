@@ -8,8 +8,7 @@ use Tests\FakeTwilioHttpClient;
 use Tests\TestCase;
 use Tests\TwilioTestUtility;
 
-uses(RefreshDatabase::class)->in('Feature');
-uses(TestCase::class)->beforeEach(function () {
+uses(TestCase::class, RefreshDatabase::class)->beforeEach(function () {
     env("ENVIRONMENT", "test");
     $_COOKIE["PHPSESSID"] = "fake";
     $migrationsRepository = Mockery::mock(DatabaseMigrationRepository::class);
