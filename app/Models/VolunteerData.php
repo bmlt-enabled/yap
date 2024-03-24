@@ -13,7 +13,8 @@ class VolunteerData
     public bool $volunteer_enabled;
     public string $volunteer_shift_schedule;
 
-    public function get247Schedule() {
+    public function get247Schedule()
+    {
         $shiftTz = "America/New_York";
         $shiftStart = "12:00 AM";
         $shiftEnd = "11:59 PM";
