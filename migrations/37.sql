@@ -1,1 +1,0 @@
-ALTER TABLE `config` CHANGE COLUMN `data` `data` MEDIUMTEXT NOT NULL;

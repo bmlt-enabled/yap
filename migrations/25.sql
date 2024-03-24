@@ -1,1 +1,0 @@
-DROP TABLE cache_records_records_conference_participants;

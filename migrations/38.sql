@@ -1,1 +1,0 @@
-ALTER TABLE `config` ADD COLUMN `status` int(11) DEFAULT NULL;
