@@ -74,7 +74,7 @@ class ConfigController extends Controller
         }
     }
 
-    public function store(Request $request): Response
+    public function store(Request $request)
     {
         $data = $request->getContent();
 
@@ -91,11 +91,12 @@ class ConfigController extends Controller
             );
         }
 
-        return response("");
+        return self::index($request);
     }
 
-    public function destroy($id): Response
+    public function destroy($id)
     {
-        return response($this->config->deleteDbConfigById($id));
+        $this->config->deleteDbConfigById($id);
+        return response()->json()->header("Content-Type", "application/json");
     }
 }

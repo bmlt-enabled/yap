@@ -1,12 +1,15 @@
 <?php
 
+use App\Constants\CycleAlgorithm;
 use App\Constants\EventId;
+use App\Constants\VolunteerRoutingType;
+use App\Models\ConfigData;
 use App\Models\Coordinates;
 use App\Models\RecordType;
+use App\Models\ServiceBodyCallHandling;
 use App\Repositories\ConfigRepository;
 use App\Constants\DataType;
 use App\Repositories\ReportsRepository;
-use App\Services\CallService;
 use App\Services\ConferenceService;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
@@ -158,6 +161,18 @@ test('valid search, volunteer routing, by location', function ($method) {
     $settings = new SettingsService();
     $settings->disableRandomConferences();
     app()->instance(SettingsService::class, $settings);
+
+    $serviceBodyId = 1060; // Buffalo Area
+    $parentServiceBodyId = 1059; // Western New York Region
+
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
+
+    ConfigData::createCallHandling($serviceBodyId, $parentServiceBodyId, $serviceBodyCallHandlingData);
+
     $response = $this->call($method, '/helpline-search.php', [
         'Digits' => "Buffalo, NY",
         'SearchType' => "1",

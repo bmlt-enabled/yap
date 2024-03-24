@@ -5,13 +5,13 @@ use App\Constants\EventId;
 use App\Constants\TwilioCallStatus;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
+use App\Models\ConferenceParticipant;
 use App\Models\RecordType;
 use App\Repositories\ConfigRepository;
 use App\Constants\DataType;
 use App\Repositories\ReportsRepository;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
-use Illuminate\Testing\Assert;
 use Tests\FakeTwilioHttpClient;
 
 beforeAll(function () {
@@ -479,6 +479,13 @@ test('caller leaves the call', function ($method) {
         ->andReturn([])
         ->times(10);
     $this->twilioClient->conferences = $conferenceListMock;
+
+    ConferenceParticipant::create([
+       "conferencesid"=>"abc123",
+       "callsid"=>$callsid,
+       "friendlyname"=>$this->conferenceName,
+       "role"=>CallRole::VOLUNTEER
+    ]);
     $response = $this->call($method, '/helpline-dialer.php', [
         'CallSid'=>$callsid,
         'SearchType' => "1",
@@ -508,6 +515,14 @@ test('volunteer leave the call', function ($method) {
         ->andReturn([])
         ->times(10);
     $this->twilioClient->conferences = $conferenceListMock;
+
+    ConferenceParticipant::create([
+        "conferencesid"=>"abc123",
+        "callsid"=>$callsid,
+        "friendlyname"=>$this->conferenceName,
+        "role"=>CallRole::VOLUNTEER
+    ]);
+
     $response = $this->call($method, '/helpline-dialer.php', [
         'CallSid'=>$callsid,
         'SearchType' => "1",

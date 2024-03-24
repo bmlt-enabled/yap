@@ -11,6 +11,7 @@ class ServiceBodyCallHandling
     public $service_body_name;
     public $service_body_parent_id;
     public $service_body_parent_name;
+    public $volunteer_routing;
     public $volunteer_routing_enabled = false;
     public $volunteer_routing_redirect = false;
     public $volunteer_routing_redirect_id = 0;

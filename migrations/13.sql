@@ -1,1 +1,0 @@
-ALTER TABLE users ADD COLUMN service_bodies TEXT DEFAULT NULL;

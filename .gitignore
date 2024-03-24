@@ -38,3 +38,4 @@ test-report.xml
 tests/reports
 coverage.xml
 .phpunit.cache
+memory
