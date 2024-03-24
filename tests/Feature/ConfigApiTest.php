@@ -1,7 +1,7 @@
 <?php
 
 use App\Constants\AuthMechanism;
-use App\Models\Config;
+use App\Models\ConfigData;
 use App\Repositories\ConfigRepository;
 use App\Constants\DataType;
 use App\Services\RootServerService;
@@ -36,7 +36,7 @@ test('get config from endpoint', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
-    Config::create([
+    ConfigData::create([
         "service_body_id"=>$this->serviceBodyId,
         "parent_id"=>$this->parentServiceBodyId,
         "data"=>$this->data,
@@ -54,7 +54,7 @@ test('get config for invalid service body', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
-    Config::create([
+    ConfigData::create([
         "service_body_id"=>99,
         "parent_id"=>$this->parentServiceBodyId,
         "data"=>$this->data,
@@ -71,7 +71,7 @@ test('get config for invalid service body', function () {
 test('get groups', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
 
-    Config::create([
+    ConfigData::create([
         "service_body_id"=>$this->serviceBodyId,
         "parent_id"=>$this->parentServiceBodyId,
         "data"=>$this->data,
@@ -88,7 +88,7 @@ test('get groups', function () {
 test('get by parent id', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
 
-    Config::create([
+    ConfigData::create([
         "service_body_id"=>$this->serviceBodyId,
         "parent_id"=>$this->parentServiceBodyId,
         "data"=>$this->data,
@@ -105,7 +105,7 @@ test('get by parent id', function () {
 test('save group', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
 
-    Config::create([
+    ConfigData::create([
         "service_body_id"=>$this->serviceBodyId,
         "parent_id"=>$this->parentServiceBodyId,
         "data"=>$this->data,

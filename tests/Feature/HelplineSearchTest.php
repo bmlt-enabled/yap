@@ -3,7 +3,7 @@
 use App\Constants\CycleAlgorithm;
 use App\Constants\EventId;
 use App\Constants\VolunteerRoutingType;
-use App\Models\Config;
+use App\Models\ConfigData;
 use App\Models\Coordinates;
 use App\Models\RecordType;
 use App\Models\ServiceBodyCallHandling;
@@ -171,7 +171,7 @@ test('valid search, volunteer routing, by location', function ($method) {
     $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
 
-    Config::create([
+    ConfigData::create([
         "service_body_id"=>$serviceBodyId,
         "parent_id"=>$parentServiceBodyId,
         "data"=>json_encode([$serviceBodyCallHandlingData]),
