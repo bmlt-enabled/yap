@@ -1,6 +1,7 @@
 <?php
 
 use App\Constants\AuthMechanism;
+use App\Models\Config;
 use App\Repositories\ConfigRepository;
 use App\Constants\DataType;
 use App\Services\RootServerService;
@@ -21,7 +22,7 @@ beforeEach(function () {
     $this->id = "200";
     $this->serviceBodyId = "44";
     $this->parentServiceBodyId = "43";
-    $this->data =  "{\"data\":{}}";
+    $this->data =  "[{}]";
     $this->rootServerMocks = new RootServerMocks();
     $this->configRepository = $this->middleware->getAllDbData(
         $this->id,
@@ -31,20 +32,16 @@ beforeEach(function () {
     );
 });
 
-test('get config', function () {
+test('get config from endpoint', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
-    $this->configRepository->shouldReceive("getDbData")->with(
-        $this->serviceBodyId,
-        DataType::YAP_CONFIG_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => $this->id,
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => $this->data
-    ]]);
-    app()->instance(ConfigRepository::class, $this->configRepository);
+    Config::create([
+        "service_body_id"=>$this->serviceBodyId,
+        "parent_id"=>$this->parentServiceBodyId,
+        "data"=>$this->data,
+        "data_type"=>DataType::YAP_CONFIG_V2
+    ]);
 
     $response = $this->call('GET', '/api/v1/config', [
         "service_body_id" => $this->serviceBodyId,
@@ -57,11 +54,12 @@ test('get config for invalid service body', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
-    $this->configRepository->shouldReceive("getDbData")->with(
-        99,
-        DataType::YAP_CONFIG_V2
-    )->andReturn([]);
-    app()->instance(ConfigRepository::class, $this->configRepository);
+    Config::create([
+        "service_body_id"=>99,
+        "parent_id"=>$this->parentServiceBodyId,
+        "data"=>$this->data,
+        "data_type"=>DataType::YAP_CONFIG_V2
+    ]);
 
     $response = $this->call('GET', '/api/v1/config', [
         "service_body_id" => 99,
@@ -72,16 +70,13 @@ test('get config for invalid service body', function () {
 
 test('get groups', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    $this->configRepository->shouldReceive("getDbDataById")->with(
-        $this->id,
-        DataType::YAP_GROUPS_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => $this->id,
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => $this->data
-    ]]);
-    app()->instance(ConfigRepository::class, $this->configRepository);
+
+    Config::create([
+        "service_body_id"=>$this->serviceBodyId,
+        "parent_id"=>$this->parentServiceBodyId,
+        "data"=>$this->data,
+        "data_type"=>DataType::YAP_GROUPS_V2
+    ]);
 
     $response = $this->call('GET', '/api/v1/config', [
         "id" => $this->id,
@@ -92,16 +87,13 @@ test('get groups', function () {
 
 test('get by parent id', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    $this->configRepository->shouldReceive("getDbDataByParentId")->with(
-        $this->parentServiceBodyId,
-        DataType::YAP_CONFIG_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => $this->id,
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => $this->data
-    ]]);
-    app()->instance(ConfigRepository::class, $this->configRepository);
+
+    Config::create([
+        "service_body_id"=>$this->serviceBodyId,
+        "parent_id"=>$this->parentServiceBodyId,
+        "data"=>$this->data,
+        "data_type"=>DataType::YAP_CONFIG_V2
+    ]);
 
     $response = $this->call('GET', '/api/v1/config', [
         "parent_id" => $this->parentServiceBodyId,
@@ -112,16 +104,13 @@ test('get by parent id', function () {
 
 test('save group', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    $this->configRepository->shouldReceive("adminPersistDbConfigById")->with(
-        $this->id,
-        ''
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => $this->id,
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => $this->data
-    ]]);
-    app()->instance(ConfigRepository::class, $this->configRepository);
+
+    Config::create([
+        "service_body_id"=>$this->serviceBodyId,
+        "parent_id"=>$this->parentServiceBodyId,
+        "data"=>$this->data,
+        "data_type"=>DataType::YAP_GROUPS_V2
+    ]);
 
     $response = $this->call('POST', '/api/v1/config', [
         "id" => $this->id,

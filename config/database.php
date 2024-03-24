@@ -74,7 +74,7 @@ return [
     |
     */
 
-    'migrations' => 'migrations',
+    'migrations' => 'migrations_v2',
 
 
 ];

@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\User;
+
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
@@ -36,13 +38,18 @@ test('login to authenticate with a BMLT user and a user with rights', function (
 });
 
 test('login to authenticate with a yap admin user', function () {
+    User::create([
+        "name"=>"admin",
+        "username"=>"admin",
+        "password"=>hash("sha256", "admin"),
+        "permissions"=>0,
+        "is_admin"=>1
+    ]);
+
     $response = $this->post(
         '/admin/login',
         ["username"=>"admin","password"=>"admin"]
     );
-
-    $this->withoutExceptionHandling();
-
     $response
         ->assertStatus(302)
         ->assertHeader("Location", 'http://localhost/admin/home')

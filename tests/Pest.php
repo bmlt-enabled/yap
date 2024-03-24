@@ -3,11 +3,13 @@
 use App\Repositories\DatabaseMigrationRepository;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\FakeTwilioHttpClient;
+use Tests\TestCase;
 use Tests\TwilioTestUtility;
 
-// Called before each test.
-uses(Tests\TestCase::class)->beforeEach(function () {
+uses(RefreshDatabase::class)->in('Feature');
+uses(TestCase::class)->beforeEach(function () {
     env("ENVIRONMENT", "test");
     $_COOKIE["PHPSESSID"] = "fake";
     $migrationsRepository = Mockery::mock(DatabaseMigrationRepository::class);
