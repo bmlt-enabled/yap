@@ -172,7 +172,6 @@ test('test with smtp settings missing', function ($method) {
                 "message"=>"Ready To Yap!",
                 "warnings"=>sprintf(""),
                 "version"=>$settingsService->version(),
-                "db"=>100,
                 "build"=>"local"
             ]
         );
