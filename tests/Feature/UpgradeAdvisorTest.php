@@ -2,7 +2,6 @@
 
 use App\Constants\AlertId;
 use App\Repositories\ReportsRepository;
-use App\Services\DatabaseMigrationsService;
 use App\Services\GeocodingService;
 use App\Services\SettingsService;
 use App\Services\TimeZoneService;
@@ -116,7 +115,6 @@ test('test with misconfigured phone number', function ($method) {
                 "message"=>"Ready To Yap!",
                 "warnings"=>sprintf("%s is/are phone numbers that are missing Twilio Call Status Changes Callback status.php webhook. This will not allow call reporting to work correctly.  For more information review the documentation page https://github.com/bmlt-enabled/yap/wiki/Call-Detail-Records.", $misconfiguredNumber),
                 "version"=>$settingsService->version(),
-                "db"=>100,
                 "build"=>"local"
             ]
         );

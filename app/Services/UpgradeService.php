@@ -15,7 +15,6 @@ class UpgradeService extends Service
     protected TimeZoneService $timeZone;
     protected ReportsService $reports;
     protected TwilioService $twilio;
-    protected DatabaseMigrationsService $migrations;
 
     public function __construct(
         RootServerService $rootServer,
@@ -23,7 +22,6 @@ class UpgradeService extends Service
         TimeZoneService $timeZone,
         ReportsService $reports,
         TwilioService $twilio,
-        DatabaseMigrationsService $migrations
     ) {
         parent::__construct(App::make(SettingsService::class));
         $this->rootServer = $rootServer;
@@ -31,7 +29,6 @@ class UpgradeService extends Service
         $this->timeZone = $timeZone;
         $this->reports = $reports;
         $this->twilio = $twilio;
-        $this->migrations = $migrations;
     }
 
     public function getStatus()
@@ -135,7 +132,6 @@ class UpgradeService extends Service
             "message"=>$message,
             "warnings"=>$warnings,
             "version"=>$this->settings->version(),
-            "db"=>$this->migrations->getVersion(),
             "build"=>str_replace("\n", "", $build)
         ];
     }

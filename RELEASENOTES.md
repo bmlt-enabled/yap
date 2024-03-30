@@ -3,6 +3,7 @@
 ### 4.3.3 (UNRELEASED)
 * Fix for reports where they are always recursing service bodies regardless of the setting [#980]
 * Fix for metrics counts summaries.
+* Using native Laravel database migrations.
 
 ### 4.3.2 (March 21, 2024)
 * Fixes some admin logins for BMLT users with special characters. [#973]
