@@ -61,6 +61,11 @@ return [
                 PDO::ATTR_STRINGIFY_FETCHES => false,
             ]) : [],
         ],
+        'sqlite_testing' => [
+            'driver' => 'sqlite',
+            'database' => 'memory',
+            'prefix' => '',
+        ]
     ],
 
     /*
@@ -74,7 +79,7 @@ return [
     |
     */
 
-    'migrations' => 'migrations',
+    'migrations' => 'migrations_v2',
 
 
 ];

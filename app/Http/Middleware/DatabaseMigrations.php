@@ -6,6 +6,7 @@ use App\Services\DatabaseMigrationsService;
 use App\Services\SettingsService;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 
 class DatabaseMigrations
 {
@@ -28,7 +29,7 @@ class DatabaseMigrations
     public function handle(Request $request, Closure $next)
     {
         if ($this->settings->has('mysql_hostname')) {
-            $this->migrations->catchup();
+            Artisan::call("migrate");
         }
 
         return $next($request);

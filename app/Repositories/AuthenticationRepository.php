@@ -53,9 +53,10 @@ class AuthenticationRepository
 
     public function authV2($username, $password): array
     {
+        $passwordHash = hash('sha256', $password);
         return DB::select(
-            'SELECT id, name, username, password, is_admin, permissions, service_bodies FROM `users` WHERE `username` = ? AND `password` = SHA2(?, 256)',
-            [$username, $password]
+            'SELECT id, name, username, password, is_admin, permissions, service_bodies FROM `users` WHERE `username` = ? AND `password` = ?',
+            [$username, $passwordHash]
         );
     }
 

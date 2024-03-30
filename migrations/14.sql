@@ -1,1 +1,0 @@
-DROP TABLE users_service_bodies;

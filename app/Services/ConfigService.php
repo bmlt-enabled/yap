@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Constants\DataType;
 use App\Constants\SpecialPhoneNumber;
+use App\Constants\VolunteerRoutingType;
+use App\Constants\VolunteerType;
 use App\Repositories\ConfigRepository;
 use App\Models\ServiceBodyCallHandling;
 use App\Repositories\UserRepository;
@@ -79,8 +81,8 @@ class ConfigService
                     }
                 }
 
-                $config->volunteer_routing_enabled = str_contains($data->volunteer_routing, "volunteers");
-                $config->volunteer_routing_redirect = $data->volunteer_routing == "volunteers_redirect";
+                $config->volunteer_routing_enabled = str_contains($data->volunteer_routing, VolunteerRoutingType::VOLUNTEERS);
+                $config->volunteer_routing_redirect = $data->volunteer_routing == VolunteerRoutingType::VOLUNTEERS_REDIRECT;
                 $config->volunteer_routing_redirect_id = $config->volunteer_routing_redirect ?
                     $data->volunteers_redirect_id : 0;
                 $config->forced_caller_id_enabled = isset($data->forced_caller_id)
@@ -103,7 +105,7 @@ class ConfigService
                     ? $data->primary_contact_email : "";
                 $config->moh = isset($data->moh) && strlen($data->moh) > 0 ? $data->moh : $config->moh;
                 $config->moh_count = count(explode(",", $config->moh));
-                $config->sms_routing_enabled = $data->volunteer_routing == "volunteers_and_sms";
+                $config->sms_routing_enabled = $data->volunteer_routing == VolunteerRoutingType::VOLUNTEERS_AND_SMS;
                 $config->sms_strategy = isset($data->sms_strategy) ?
                     intval($data->sms_strategy) : $config->sms_strategy;
             }
