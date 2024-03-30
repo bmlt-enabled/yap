@@ -1,6 +1,5 @@
 <?php
 
-use App\Repositories\DatabaseMigrationRepository;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -11,10 +10,6 @@ use Tests\TwilioTestUtility;
 uses(TestCase::class, RefreshDatabase::class)->beforeEach(function () {
     env("ENVIRONMENT", "test");
     $_COOKIE["PHPSESSID"] = "fake";
-    $migrationsRepository = Mockery::mock(DatabaseMigrationRepository::class);
-    $migrationsRepository->shouldReceive('getVersion')
-        ->withNoArgs()->andReturn(100);
-    app()->instance(DatabaseMigrationRepository::class, $migrationsRepository);
 })->in('Feature');
 
 function setupTwilioService(): TwilioTestUtility

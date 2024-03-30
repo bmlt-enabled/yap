@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Services\DatabaseMigrationsService;
 use App\Services\SettingsService;
 use Closure;
 use Illuminate\Http\Request;
@@ -10,12 +9,10 @@ use Illuminate\Support\Facades\Artisan;
 
 class DatabaseMigrations
 {
-    private DatabaseMigrationsService $migrations;
     private SettingsService $settings;
 
-    public function __construct(DatabaseMigrationsService $migrations, SettingsService $settings)
+    public function __construct(SettingsService $settings)
     {
-        $this->migrations = $migrations;
         $this->settings = $settings;
     }
 
