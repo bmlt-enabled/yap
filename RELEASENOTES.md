@@ -3,6 +3,7 @@
 ### 4.3.3 (UNRELEASED)
 * Fix for reports where they are always recursing service bodies regardless of the setting [#980]
 * Fix for metrics counts summaries.
+* Removing `file_get_contents()` usage to support some cases where servers may be misconfigured.
 * Using native Laravel database migrations.
 
 ### 4.3.2 (March 21, 2024)

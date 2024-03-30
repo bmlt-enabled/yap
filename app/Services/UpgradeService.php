@@ -7,6 +7,7 @@ use CurlException;
 use Exception;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class UpgradeService extends Service
 {
@@ -123,7 +124,7 @@ class UpgradeService extends Service
     private function getState($status = null, $message = null, $warnings = "")
     {
         try {
-            $build = file_get_contents("build.txt", false);
+            $build = Storage::get("build.txt");
         } catch (Exception $e) {
             $build = $e->getMessage();
         }
