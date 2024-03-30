@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Constants\EventId;
 use App\Constants\VolunteerResponderOption;
+use App\Exceptions\NoVolunteersException;
 use App\Services\CallService;
 use App\Services\ConfigService;
 use App\Services\RootServerService;
@@ -12,6 +13,7 @@ use App\Services\TwilioService;
 use App\Services\VoicemailService;
 use App\Services\VolunteerService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Twilio\TwiML\VoiceResponse;
 
 class VoicemailController extends Controller
@@ -101,24 +103,28 @@ class VoicemailController extends Controller
             );
         }
 
-        if (isset($_SESSION["volunteer_routing_parameters"])) {
-            $volunteer_routing_options = $_SESSION["volunteer_routing_parameters"];
-            $volunteer_routing_options->volunteer_responder = VolunteerResponderOption::ENABLED;
-            $volunteers = $this->volunteers->getHelplineVolunteersActiveNow($volunteer_routing_options);
-            $recipients = [];
-            foreach ($volunteers as $volunteer) {
-                $recipients[] = $volunteer->contact;
+        try {
+            if (isset($_SESSION["volunteer_routing_parameters"])) {
+                $volunteer_routing_options = $_SESSION["volunteer_routing_parameters"];
+                $volunteer_routing_options->volunteer_responder = VolunteerResponderOption::ENABLED;
+                $volunteers = $this->volunteers->getHelplineVolunteersActiveNow($volunteer_routing_options);
+                $recipients = [];
+                foreach ($volunteers as $volunteer) {
+                    $recipients[] = $volunteer->contact;
+                }
+                if (count($volunteers) > 0) {
+                    $this->voicemail->sendSmsForVoicemail(
+                        $callSid,
+                        $recordingUrl,
+                        $recipients,
+                        $serviceBodyCallHandling,
+                        $serviceBodyName,
+                        $callerNumber
+                    );
+                }
             }
-            if (count($volunteers) > 0) {
-                $this->voicemail->sendSmsForVoicemail(
-                    $callSid,
-                    $recordingUrl,
-                    $recipients,
-                    $serviceBodyCallHandling,
-                    $serviceBodyName,
-                    $callerNumber
-                );
-            }
+        } catch (NoVolunteersException $nve) {
+            Log::debug("complete() :: " . $nve);
         }
 
         if ($serviceBodyCallHandling->primary_contact_email_enabled && $this->settings->has('smtp_host')) {

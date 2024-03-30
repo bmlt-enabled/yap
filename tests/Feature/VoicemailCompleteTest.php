@@ -32,7 +32,7 @@ beforeEach(function () {
     $this->utility = setupTwilioService();
     $this->callSid = "abc123";
     $this->callerNumber = "+17325551212";
-    $this->recordingUrl = "file:///".getcwd()."/tests/fake";
+    $this->recordingUrl = "https://example.org/tests/fake";
     $expectedPin = 4182804;
 
     $reportsRepository = mock(ReportsRepository::class)->makePartial();
@@ -184,10 +184,10 @@ test('voicemail complete send email using primary contact', function ($method, $
     $callContextMock->shouldReceive('update')
         ->with(Mockery::on(function ($data) {
             return $data['status'] == TwilioCallStatus::COMPLETED;
-        }));
+        }))->once();
     $this->utility->client->shouldReceive('calls')
         ->with($this->callSid)
-        ->andReturn($callContextMock);
+        ->andReturn($callContextMock)->once();
 
     $repository = Mockery::mock(ConfigRepository::class);
     $repository->shouldReceive("getDbData")->with(

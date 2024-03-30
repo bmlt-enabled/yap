@@ -124,7 +124,7 @@ jobs:
           DISABLE_NOTIFIER=true make deploy
           unzip ${ARTIFACT_FILENAME}
           rm ${ARTIFACT_FILENAME}
-          echo ${GITHUB_SHA} > ${ARTIFACT_FILE}/build.txt
+          echo ${GITHUB_SHA} > ${ARTIFACT_FILE}/storage/app/build.txt
           cp -R vendor ${ARTIFACT_FILE}/
           mkdir -p ${ARTIFACT_FILE}/public/dist && cp -R public/dist/. ${ARTIFACT_FILE}/public/dist
           find ./${ARTIFACT_FILE} -type d | xargs chmod 755

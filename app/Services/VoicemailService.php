@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Constants\SmtpPorts;
 use Exception;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use PHPMailer\PHPMailer\PHPMailer;
 use App\Constants\SmsDialbackOptions;
@@ -65,12 +66,14 @@ class VoicemailService extends Service
             foreach ($recipients as $recipient) {
                 $this->mailer->addAddress($recipient);
             }
-            $this->mailer->addStringAttachment(file_get_contents($recordingUrl . ".mp3"), $recordingUrl . ".mp3");
+            $recordingUrlWithExtension = sprintf("%s.mp3", $recordingUrl);
+            $recordingDataString = Http::get($recordingUrlWithExtension);
+            $this->mailer->addStringAttachment($recordingDataString, $recordingUrlWithExtension);
             $this->mailer->Body = "You have a message from the " . $serviceBodyName . " helpline from caller " . $callerNumber . ", " . $recordingUrl. ".mp3";
             $this->mailer->Subject = 'Helpline Voicemail from ' . $serviceBodyName;
             $this->mailer->send();
         } catch (Exception $e) {
-            Log::critical('Message could not be sent. Mailer Error: ' . $this->mailer->ErrorInfo);
+            Log::critical('Message could not be sent. Mailer Error: ' . $e);
         }
     }
 }

@@ -28,9 +28,7 @@ For setup instructions and general documentation please visit [https://yap.bmlt.
 
 # ⚠️ Major Refactor
 
-Currently we are in the process of doing a major overhaul of the codebase, by migrating all the legacy PHP to a more Laravel-like structure.  This will improve the stability and maintainability.  Also, as part of this change, we are making the code more testable which will help us track code paths more effectively.  We also plan to redo the frontend part of it migrating from a Bootstrap/Jquery structure to React.
-
-All the legacy components has been migrated.  We are doing some final testing now.
+Currently we are in the process of doing a major overhaul of the codebase.  This will improve the stability and maintainability.  Also, as part of this change, we are making the code more testable which will help us track code paths more effectively.  All the PHP code has been migrated, however there are some remaining database components that are not in a Laravel-like structure.
 
 In a future release we will refactor the frontend by building a new React application to consume the rebuilt APIs, that work has partially started but has been put on pause.
 
