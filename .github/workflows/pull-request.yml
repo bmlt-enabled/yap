@@ -65,6 +65,7 @@ jobs:
           npx cypress run
         env:
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          APP_DEBUG: true
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v3
