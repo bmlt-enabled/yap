@@ -1,7 +1,6 @@
 describe('Login', () => {
 
     beforeEach(() => {
-        // runs before each test in the block
         cy.visit('/admin')
     });
 
