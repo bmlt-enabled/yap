@@ -60,7 +60,7 @@ jobs:
           cp .env.pipeline .env
           vendor/bin/pest --log-junit tests/test-results.xml
           docker build . -t yap
-          docker run -d -p 3100:80 -e APP_DEBUG=true -e ENVIRONMENT=test -e GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY -v .:/var/www/html/yap yap
+          docker run -d -p 3100:80 -e ENVIRONMENT=test -e GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY -v .:/var/www/html/yap yap
           npm install
           npx cypress run
         env:
