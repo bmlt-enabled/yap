@@ -30,13 +30,6 @@ test-deps:
 test:
 	php artisan test
 
-.PHONY: test-e2e
-test-e2e:
-	docker build . -t yap
-	docker run -d -p 3200:80 -e ENVIRONMENT=test -e GOOGLE_MAPS_API_KEY=AIzaSyCqGVmdEEF5W0rrcI1DaVN1KTtpXfkw4RY -v .:/var/www/html/yap --name=yap yap
-	CYPRESS_BASE_URL=http://127.0.0.1:3200/yap npx cypress run
-	docker stop yap && docker rm yap
-
 .PHONY: bundle-deps
 bundle-deps:
 	npm install
