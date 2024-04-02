@@ -83,6 +83,13 @@ jobs:
           name: cypress-screenshots
           path: cypress/screenshots
 
+      - name: Upload laravel.log
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: laravel-log
+          path: storage/logs/laravel.log
+
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
