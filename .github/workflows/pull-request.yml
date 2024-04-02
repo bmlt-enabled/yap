@@ -80,14 +80,14 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: cypress-screenshots
+          name: ${{ matrix.php }}-cypress-screenshots
           path: cypress/screenshots
 
       - name: Upload laravel.log
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: laravel-log
+          name: ${{ matrix.php }}-laravel-log
           path: storage/logs/laravel.log
 
       - name: Publish Test Results
