@@ -17,5 +17,3 @@ runs:
       uses: codecov/codecov-action@v4.1.1
       with:
         files: src/coverage.xml
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
