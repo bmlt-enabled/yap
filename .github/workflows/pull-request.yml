@@ -60,6 +60,7 @@ jobs:
         with:
           php_version: ${{ matrix.php }}
           args: --prefer-dist --no-progress
+          working_dir: src
 
       - name: PHPCS checker
         id: php-codesniffer
