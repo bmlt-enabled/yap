@@ -1,0 +1,12 @@
+name: lint
+description: "Lint"
+
+runs:
+  using: composite
+  steps:
+    - name: PHPCS checker
+      id: php-codesniffer
+      run: |
+        cd src
+        vendor/squizlabs/php_codesniffer/bin/phpcs
+      shell: bash

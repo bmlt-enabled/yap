@@ -1,0 +1,31 @@
+name: install-deps
+description: "Installs Dependencies"
+
+runs:
+  using: composite
+  steps:
+    - name: Validate composer.json
+      id: composer-validate
+      run: |
+        cd src
+        composer validate
+      shell: bash
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v4
+      with:
+        path: src/vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+
+    - name: Install dependencies
+      if: steps.composer-cache.outputs.cache-hit != 'true'
+      id: install-dependencies
+      uses: php-actions/composer@v6
+      with:
+        php_version: ${{ matrix.php }}
+        php_extensions: xdebug
+        args: --prefer-dist --no-progress --no-suggest
+        working_dir: src

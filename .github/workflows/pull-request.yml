@@ -7,8 +7,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     strategy:
       fail-fast: false
       matrix:
@@ -31,72 +29,14 @@ jobs:
       - uses: actions/checkout@v4
         id: code-checkout
 
-      - name: php ${{ matrix.php }} 🐘
-        id: setup-php
-        uses: shivammathur/setup-php@2.30.1
-        with:
-          php-version: ${{ matrix.php }}
-          tools: composer:v2.4.1
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
 
-      - name: Validate composer.json and composer.lock
-        id: composer-validate
-        run: |
-          cd src
-          composer validate
+      - name: Install Dependencies
+        uses: ./.github/actions/install-deps
 
-      - name: Cache Composer packages
-        id: composer-cache
-        uses: actions/cache@v4
-        with:
-          path: src/vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php-
-
-      - name: Install dependencies
-        if: steps.composer-cache.outputs.cache-hit != 'true'
-        id: install-dependencies
-        uses: php-actions/composer@v6
-        with:
-          php_version: ${{ matrix.php }}
-          args: --prefer-dist --no-progress
-          working_dir: src
-
-      - name: PHPCS checker
-        id: php-codesniffer
-        run: |
-          cd src && vendor/squizlabs/php_codesniffer/bin/phpcs
+      - name: Lint
+        uses: ./.github/actions/lint
 
       - name: Test
-        id: run-tests
-        run: |
-          cd src
-          cp config.test.php config.php
-          cp .env.pipeline .env
-          vendor/bin/pest --log-junit tests/test-results.xml
-          npm install
-          gulp
-          env ENVIRONMENT=test php artisan serve &
-          env CYPRESS_BASE_URL=http://127.0.0.1:8000 npx cypress run
-        env:
-          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
-
-      - name: Upload screenshots
-        uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: ${{ matrix.php }}-cypress-screenshots
-          path: src/cypress/screenshots
-
-      - name: Upload laravel.log
-        uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: ${{ matrix.php }}-laravel-log
-          path: src/storage/logs/laravel.log
-
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          junit_files: "src/tests/*.xml"
+        uses: ./.github/actions/test

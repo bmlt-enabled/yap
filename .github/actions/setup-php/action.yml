@@ -1,0 +1,12 @@
+name: setup-php
+description: "Setup PHP"
+
+runs:
+  using: composite
+  steps:
+    - name: php ${{ matrix.php }} 🐘
+      id: setup-php
+      uses: shivammathur/setup-php@2.30.1
+      with:
+        php-version: ${{ matrix.php }}
+        tools: composer:v2.4.1
