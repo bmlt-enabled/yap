@@ -24,7 +24,7 @@ class ConfigCheck
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!file_exists('config.php') && !str_ends_with($request->url(), 'installer')) {
+        if (!file_exists('../config.php') && !str_ends_with($request->url(), 'installer')) {
             return response()->view(
                 'admin/installer',
                 ['minimalRequiredSettings'=>$this->settingsService->minimalRequiredSettings()]

@@ -14,6 +14,6 @@
     </div>
 </div>
 @include('admin.partials.footer')
-<link rel='stylesheet' href='<?php echo url("/public/dist/css/yap-schedule.min.css")?>' />
-<script src='<?php echo url("/public/dist/js/yap-schedule.min.js")?>'></script>
+<link rel='stylesheet' href='<?php echo url("dist/css/yap-schedule.min.css")?>' />
+<script src='<?php echo url("dist/js/yap-schedule.min.js")?>'></script>
 <script type="text/javascript">$(function(){schedulePage()})</script>

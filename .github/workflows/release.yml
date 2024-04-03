@@ -25,7 +25,7 @@ jobs:
         id: composer-cache
         uses: actions/cache@v4
         with:
-          path: vendor
+          path: src/vendor
           key: ${{ runner.os }}-lint-php-${{ matrix.php }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-lint-php-${{ matrix.php }}-
@@ -40,14 +40,7 @@ jobs:
 
       - name: PHPCS checker
         id: php-codesniffer
-        run: vendor/squizlabs/php_codesniffer/bin/phpcs
-
-      - uses: act10ns/slack@v2
-        with:
-          status: ${{ job.status }}
-          steps: ${{ toJson(steps) }}
-          channel: '#yap-automation'
-        if: failure()
+        run: src/vendor/squizlabs/php_codesniffer/bin/phpcs
 
   create_release:
     runs-on: ubuntu-latest
@@ -75,6 +68,7 @@ jobs:
       - name: Generate release notes
         id: generate_release_notes
         run: |
+          cd src
           curl -LO https://raw.githubusercontent.com/bmlt-enabled/release-notes-tool/master/gh-release-notes.sh
           chmod +x gh-release-notes.sh
           ./gh-release-notes.sh RELEASENOTES.md "###"
@@ -89,7 +83,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
-          body_path: "changelog.txt"
+          body_path: "src/changelog.txt"
           prerelease: ${{ env.RELEASE_TYPE }}
 
   package:
@@ -114,7 +108,7 @@ jobs:
         id: composer-cache
         uses: actions/cache@v4
         with:
-          path: vendor
+          path: src/vendor
           key: ${{ runner.os }}-php-${{ matrix.php }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-php-${{ matrix.php }}-
@@ -130,6 +124,7 @@ jobs:
       - name: Build package
         id: build-package
         run: |
+          cd src
           export ARTIFACT_FILE=yap-${GITHUB_REF##*/}
           export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
           git archive --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
@@ -149,7 +144,7 @@ jobs:
       - name: Prepare artifact metadata
         id: prepare_artifact_metadata
         run: |
-          echo ::set-output name=ARTIFACT_PATH::./yap-${GITHUB_REF##*/}.zip
+          echo ::set-output name=ARTIFACT_PATH::src/yap-${GITHUB_REF##*/}.zip
           echo ::set-output name=ARTIFACT_NAME::yap-${GITHUB_REF##*/}.zip
 
       - name: Upload Release
@@ -161,10 +156,3 @@ jobs:
           asset_path: ${{ steps.prepare_artifact_metadata.outputs.ARTIFACT_PATH }}
           asset_name: ${{ steps.prepare_artifact_metadata.outputs.ARTIFACT_NAME }}
           asset_content_type: application/zip
-
-      - uses: act10ns/slack@v2
-        with:
-          status: ${{ job.status }}
-          steps: ${{ toJson(steps) }}
-          channel: '#yap-automation'
-        if: failure()
