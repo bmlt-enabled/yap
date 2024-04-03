@@ -49,10 +49,11 @@ jobs:
 
       - name: PHPCS checker
         id: php-codesniffer
-        run: vendor/squizlabs/php_codesniffer/bin/phpcs
+        run: src/vendor/squizlabs/php_codesniffer/bin/phpcs
 
       - name: Test w/Code Coverage
         run: |
+          cd src
           cp config.test.php config.php
           cp .env.pipeline .env
           make coverage-xml
@@ -63,16 +64,9 @@ jobs:
         if: matrix.php == '8.1'
         uses: codecov/codecov-action@v4.1.1
         with:
-          files: coverage.xml
+          files: src/coverage.xml
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-      - uses: act10ns/slack@v2
-        with:
-          status: ${{ job.status }}
-          steps: ${{ toJson(steps) }}
-          channel: '#yap-automation'
-        if: failure()
 
   package:
     runs-on: ubuntu-latest
@@ -101,7 +95,7 @@ jobs:
         id: composer-cache
         uses: actions/cache@v4
         with:
-          path: vendor
+          path: src/vendor
           key: ${{ runner.os }}-php-${{ matrix.php }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-php-${{ matrix.php }}-
@@ -117,6 +111,7 @@ jobs:
       - name: Build package
         id: build-package
         run: |
+          cd src
           export ARTIFACT_FILE=yap-${GITHUB_RUN_NUMBER}-${GITHUB_SHA}
           export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
           echo "ARTIFACT_FILENAME=${ARTIFACT_FILENAME}" >> $GITHUB_ENV
@@ -142,11 +137,4 @@ jobs:
 
       - name: copy artifact to s3
         run: |
-          aws s3 cp artifacts/${ARTIFACT_FILENAME} s3://${{ secrets.S3_BUCKET }}/yap/${ARTIFACT_FILENAME}
-
-      - uses: act10ns/slack@v2
-        with:
-          status: ${{ job.status }}
-          steps: ${{ toJson(steps) }}
-          channel: '#yap-automation'
-        if: failure()
+          aws s3 cp src/artifacts/${ARTIFACT_FILENAME} s3://${{ secrets.S3_BUCKET }}/yap/${ARTIFACT_FILENAME}

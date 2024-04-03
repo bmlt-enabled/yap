@@ -76,12 +76,12 @@ test('get groups', function () {
     );
 
     $this->call('GET', '/api/v1/config', [
-        "id" => 1,
+        "id" => 3,
         "data_type" => DataType::YAP_GROUPS_V2
     ])->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([
-            "id"=>1,
+            "id"=>3,
             "service_body_id"=>$this->serviceBodyId,
             "parent_id"=>$this->parentServiceBodyId,
             "data"=>[$groupData]
@@ -104,7 +104,7 @@ test('get by parent id', function () {
     ])->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([
-            "id"=>1,
+            "id"=>4,
             "service_body_id"=>$this->serviceBodyId,
             "parent_id"=>$this->parentServiceBodyId,
             "data"=>[$configData]
@@ -122,7 +122,7 @@ test('save group', function () {
     $response->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([
-            "id"=>1,
+            "id"=>5,
             "service_body_id"=>$this->serviceBodyId,
             "parent_id"=>$this->parentServiceBodyId,
             "data"=>$groupData
@@ -142,7 +142,7 @@ test('save config', function () {
     $response->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([
-            "id"=>1,
+            "id"=>6,
             "service_body_id"=>$this->serviceBodyId,
             "parent_id"=>$this->parentServiceBodyId,
             "data"=>$serviceBodyConfigData
@@ -167,7 +167,7 @@ test('save config with parent id', function () {
     $response->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([
-            "id"=>1,
+            "id"=>7,
             "service_body_id"=>$this->serviceBodyId,
             "parent_id"=>$this->parentServiceBodyId,
             "data"=>$serviceBodyConfigData

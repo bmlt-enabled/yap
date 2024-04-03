@@ -17,6 +17,16 @@ jobs:
           - "8.2"
           - "8.3"
 
+    services:
+      db-tests:
+        image: 'mysql/mysql-server:8.0'
+        env:
+          MYSQL_ROOT_PASSWORD: yap_root_password
+          MYSQL_DATABASE: yap_test
+          MYSQL_ROOT_HOST: '%'
+        ports:
+          - 3106:3306
+
     steps:
       - uses: actions/checkout@v4
         id: code-checkout
@@ -30,13 +40,15 @@ jobs:
 
       - name: Validate composer.json and composer.lock
         id: composer-validate
-        run: composer validate
+        run: |
+          cd src
+          composer validate
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v4
         with:
-          path: vendor
+          path: src/vendor
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-php-
@@ -48,29 +60,43 @@ jobs:
         with:
           php_version: ${{ matrix.php }}
           args: --prefer-dist --no-progress
+          working_dir: src
 
       - name: PHPCS checker
         id: php-codesniffer
-        run: vendor/squizlabs/php_codesniffer/bin/phpcs
+        run: |
+          cd src && vendor/squizlabs/php_codesniffer/bin/phpcs
 
       - name: Test
         id: run-tests
         run: |
+          cd src
           cp config.test.php config.php
           cp .env.pipeline .env
           vendor/bin/pest --log-junit tests/test-results.xml
+          npm install
+          gulp
+          env ENVIRONMENT=test php artisan serve &
+          env CYPRESS_BASE_URL=http://127.0.0.1:8000 npx cypress run
         env:
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: ${{ matrix.php }}-cypress-screenshots
+          path: src/cypress/screenshots
+
+      - name: Upload laravel.log
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: ${{ matrix.php }}-laravel-log
+          path: src/storage/logs/laravel.log
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          junit_files: "tests/*.xml"
-
-      - uses: act10ns/slack@v2
-        with:
-          status: ${{ job.status }}
-          steps: ${{ toJson(steps) }}
-          channel: '#yap-automation'
-        if: failure()
+          junit_files: "src/tests/*.xml"

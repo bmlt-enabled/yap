@@ -1,18 +1,18 @@
 .PHONY: run
 run:
-	composer install
-	npm install
-	docker-compose up --build
+	cd src; composer install
+	cd src; npm install
+	cd src; env ENVIRONMENT=test php artisan serve
 
 .PHONY: lint
 lint:
-	find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l
-	composer install
-	vendor/squizlabs/php_codesniffer/bin/phpcs
+	cd src; find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l
+	cd src; composer install
+	cd src; vendor/squizlabs/php_codesniffer/bin/phpcs
 
 .PHONY: lint-fix
 lint-fix:
-	vendor/squizlabs/php_codesniffer/bin/phpcbf
+	cd src; vendor/squizlabs/php_codesniffer/bin/phpcbf
 
 .PHONY: simulate
 simulate:
@@ -20,46 +20,42 @@ simulate:
 
 .PHONY: debug
 debug:
-	docker-compose up --build
-
-.PHONY: test-deps
-test-deps:
-	pecl install xdebug-3.1.5
+	cd docker; docker-compose up --build
 
 .PHONY: test
 test:
-	php artisan test
+	cd src; php artisan test
 
 .PHONY: bundle-deps
 bundle-deps:
-	npm install
+	cd src; npm install
 
 .PHONY: bundle
 bundle:
-	gulp
+	cd src; gulp
 
 .PHONY: watch
 watch:
-	gulp watch
+	cd src; gulp watch
 
 .PHONY: coverage-xml
 coverage-xml:
-	XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-clover coverage.xml
+	cd src; XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-clover coverage.xml
 
 .PHONY: coverage
 coverage:
-	XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-html tests/reports/coverage
+	cd src; XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-html tests/reports/coverage
 
 .PHONY: cache-clear
 cache-clear:
-	php artisan route:clear
-	php artisan cache:clear
-	php artisan config:clear
-	php artisan view:clear
+	cd src; php artisan route:clear
+	cd src; php artisan cache:clear
+	cd src; php artisan config:clear
+	cd src; php artisan view:clear
 
 .PHONY: deploy
 deploy: bundle-deps bundle
 
 .PHONY: swagger
 swagger:
-	php artisan l5-swagger:generate
+	cd src; php artisan l5-swagger:generate

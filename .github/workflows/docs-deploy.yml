@@ -4,14 +4,14 @@ on:
   push:
     branches: [ 'main' ]
     paths:
-      - 'docs/**'
+      - 'src/docs/**'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: 'docs'
+        working-directory: 'src/docs'
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v4.1.1
@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: 18.x
           cache: npm
-          cache-dependency-path: docs/package-lock.json
+          cache-dependency-path: src/docs/package-lock.json
 
       - name: Install and Build 🔧
         run: |
@@ -30,4 +30,4 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4.5.0
         with:
           branch: gh-pages
-          folder: docs/build
+          folder: src/docs/build
