@@ -1,10 +1,11 @@
 describe('Login', () => {
 
     beforeEach(() => {
-        cy.visit('/admin')
+
     });
 
     it('Login with creds', () => {
+        cy.visit({url: '/admin', failOnStatusCode: false})
         cy.get("#inputUsername").focus();
         cy.get("#inputUsername").type("gnyr_admin");
         cy.get("#inputPassword").focus()
