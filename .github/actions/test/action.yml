@@ -1,0 +1,38 @@
+name: test
+description: "Test"
+
+runs:
+  using: composite
+  steps:
+    - name: Test
+      id: run-tests
+      run: |
+        cd src
+        cp config.test.php config.php
+        cp .env.pipeline .env
+        vendor/bin/pest --log-junit tests/test-results.xml
+        npm install
+        gulp
+        env ENVIRONMENT=test php artisan serve &
+        env CYPRESS_BASE_URL=http://127.0.0.1:8000 npx cypress run
+      shell: bash
+
+    - name: Upload screenshots
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: ${{ matrix.php }}-cypress-screenshots
+        path: src/cypress/screenshots
+
+    - name: Upload laravel.log
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: ${{ matrix.php }}-laravel-log
+        path: src/storage/logs/laravel.log
+
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        junit_files: "src/tests/*.xml"

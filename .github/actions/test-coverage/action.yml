@@ -1,0 +1,21 @@
+name: test-with-coverage
+description: "Test w/Coverage"
+
+runs:
+  using: composite
+  steps:
+    - name: Test w/Code Coverage
+      run: |
+        cd src
+        cp config.test.php config.php
+        cp .env.pipeline .env
+        make coverage-xml
+      shell: bash
+
+    - name: Send coverage data to codecov.io
+      if: matrix.php == '8.1'
+      uses: codecov/codecov-action@v4.1.1
+      with:
+        files: src/coverage.xml
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
