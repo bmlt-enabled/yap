@@ -74,8 +74,9 @@ jobs:
           cp config.test.php config.php
           cp .env.pipeline .env
           vendor/bin/pest --log-junit tests/test-results.xml
-          env ENVIRONMENT=test php artisan serve &
           npm install
+          gulp
+          env ENVIRONMENT=test php artisan serve &
           env CYPRESS_BASE_URL=http://127.0.0.1:8000 npx cypress run
         env:
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
