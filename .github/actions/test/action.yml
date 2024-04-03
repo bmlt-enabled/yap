@@ -15,8 +15,6 @@ runs:
         gulp
         env ENVIRONMENT=test php artisan serve &
         env CYPRESS_BASE_URL=http://127.0.0.1:8000 npx cypress run
-      env:
-        GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
       shell: bash
 
     - name: Upload screenshots

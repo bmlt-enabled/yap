@@ -10,8 +10,6 @@ runs:
         cp config.test.php config.php
         cp .env.pipeline .env
         make coverage-xml
-      env:
-        GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
       shell: bash
 
     - name: Send coverage data to codecov.io
