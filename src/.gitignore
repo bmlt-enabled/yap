@@ -22,7 +22,7 @@ storage/debugbar
 vendor
 .env
 .env.backup
-env.testing
+.env.testing
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
