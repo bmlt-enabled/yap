@@ -64,7 +64,8 @@ jobs:
 
       - name: PHPCS checker
         id: php-codesniffer
-        run: src/vendor/squizlabs/php_codesniffer/bin/phpcs
+        run: |
+          cd src && vendor/squizlabs/php_codesniffer/bin/phpcs
 
       - name: Test
         id: run-tests
