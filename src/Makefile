@@ -12,50 +12,46 @@ lint:
 
 .PHONY: lint-fix
 lint-fix:
-	cd src; vendor/squizlabs/php_codesniffer/bin/phpcbf
+	vendor/squizlabs/php_codesniffer/bin/phpcbf
 
 .PHONY: simulate
 simulate:
 	ngrok http 3100
 
-.PHONY: debug
-debug:
-	cd docker; docker-compose up --build
-
 .PHONY: test
 test:
-	cd src; php artisan test
+	php artisan test
 
 .PHONY: bundle-deps
 bundle-deps:
-	cd src; npm install
+	npm install
 
 .PHONY: bundle
 bundle:
-	cd src; gulp
+	gulp
 
 .PHONY: watch
 watch:
-	cd src; gulp watch
+	gulp watch
 
 .PHONY: coverage-xml
 coverage-xml:
-	cd src; XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-clover coverage.xml
+	XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-clover coverage.xml
 
 .PHONY: coverage
 coverage:
-	cd src; XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-html tests/reports/coverage
+	XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-html tests/reports/coverage
 
 .PHONY: cache-clear
 cache-clear:
-	cd src; php artisan route:clear
-	cd src; php artisan cache:clear
-	cd src; php artisan config:clear
-	cd src; php artisan view:clear
+	php artisan route:clear
+	php artisan cache:clear
+	php artisan config:clear
+	php artisan view:clear
 
 .PHONY: deploy
 deploy: bundle-deps bundle
 
 .PHONY: swagger
 swagger:
-	cd src; php artisan l5-swagger:generate
+	php artisan l5-swagger:generate
