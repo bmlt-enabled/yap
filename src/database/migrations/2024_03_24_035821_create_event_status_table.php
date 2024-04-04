@@ -13,15 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('event_status', function (Blueprint $table) {
-            $table->bigInteger('id', true)->unique('id_unique');
-            $table->string('callsid')->nullable();
-            $table->integer('status')->nullable();
-            $table->integer('event_id')->nullable();
-            $table->timestamps();
+        if (!Schema::hasTable('event_status')) {
+            Schema::create('event_status', function (Blueprint $table) {
+                $table->bigInteger('id', true)->unique('id_unique');
+                $table->string('callsid')->nullable();
+                $table->integer('status')->nullable();
+                $table->integer('event_id')->nullable();
+                $table->timestamps();
 
-            //$table->primary(['id']);
-        });
+                //$table->primary(['id']);
+            });
+        }
     }
 
     /**

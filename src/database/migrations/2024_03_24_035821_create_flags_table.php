@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('flags', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->string('flag_name', 50)->unique('flag_name_unique');
-            $table->integer('flag_setting');
-            $table->timestamp('timestamp')->useCurrent();
-        });
+        if (!Schema::hasTable('flags')) {
+            Schema::create('flags', function (Blueprint $table) {
+                $table->integer('id', true);
+                $table->string('flag_name', 50)->unique('flag_name_unique');
+                $table->integer('flag_setting');
+                $table->timestamp('timestamp')->useCurrent();
+            });
+        }
     }
 
     /**

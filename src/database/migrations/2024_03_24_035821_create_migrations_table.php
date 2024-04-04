@@ -13,11 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('migrations', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->string('version', 45)->nullable();
-            $table->timestamp('timestamp')->useCurrent();
-        });
+        if (!Schema::hasTable('migrations')) {
+            Schema::create('migrations', function (Blueprint $table) {
+                $table->integer('id', true);
+                $table->string('version', 45)->nullable();
+                $table->timestamp('timestamp')->useCurrent();
+            });
+        }
     }
 
     /**

@@ -13,16 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->string('name');
-            $table->string('username', 45)->unique('username_unique');
-            $table->string('password');
-            $table->integer('permissions')->default(0);
-            $table->integer('is_admin')->nullable();
-            $table->timestamp('created_on')->useCurrent();
-            $table->text('service_bodies')->nullable();
-        });
+        if (!Schema::hasTable('users')) {
+            Schema::create('users', function (Blueprint $table) {
+                $table->integer('id', true);
+                $table->string('name');
+                $table->string('username', 45)->unique('username_unique');
+                $table->string('password');
+                $table->integer('permissions')->default(0);
+                $table->integer('is_admin')->nullable();
+                $table->timestamp('created_on')->useCurrent();
+                $table->text('service_bodies')->nullable();
+            });
+        }
     }
 
     /**

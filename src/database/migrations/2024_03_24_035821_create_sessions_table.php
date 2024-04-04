@@ -13,11 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('sessions', function (Blueprint $table) {
-            $table->string('callsid');
-            $table->timestamp('timestamp')->useCurrent();
-            $table->integer('pin');
-        });
+        if (!Schema::hasTable('sessions')) {
+            Schema::create('sessions', function (Blueprint $table) {
+                $table->string('callsid');
+                $table->timestamp('timestamp')->useCurrent();
+                $table->integer('pin');
+            });
+        }
     }
 
     /**
