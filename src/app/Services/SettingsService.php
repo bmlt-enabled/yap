@@ -324,10 +324,6 @@ class SettingsService
 
     public function word($name, $language = null)
     {
-        if ($name == "city_or_county") {
-            print("break");
-        }
-
         if ($language == null) {
             $language = $this->getWordLanguage();
         }
