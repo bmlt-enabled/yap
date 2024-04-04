@@ -19,7 +19,6 @@ return new class extends Migration
             $table->mediumText('data');
             $table->string('data_type', 45);
             $table->unsignedInteger('parent_id')->nullable();
-            $table->integer('status')->nullable();
 
             $table->unique(['service_body_id', 'data_type', 'parent_id'], 'service_body_id_data_type_parent_id_unique');
         });
