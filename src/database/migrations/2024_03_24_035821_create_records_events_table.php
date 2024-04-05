@@ -13,15 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('records_events', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->string('callsid')->index('idx_records_events_callsid');
-            $table->timestamp('event_time')->nullable();
-            $table->integer('event_id');
-            $table->integer('service_body_id')->nullable()->index('idx_records_events_service_body_id');
-            $table->text('meta')->nullable();
-            $table->integer('type')->nullable();
-        });
+        if (!Schema::hasTable('records_events')) {
+            Schema::create('records_events', function (Blueprint $table) {
+                $table->integer('id', true);
+                $table->string('callsid')->index('idx_records_events_callsid');
+                $table->timestamp('event_time')->nullable();
+                $table->integer('event_id');
+                $table->integer('service_body_id')->nullable()->index('idx_records_events_service_body_id');
+                $table->text('meta')->nullable();
+                $table->integer('type')->nullable();
+            });
+        }
     }
 
     /**

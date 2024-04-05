@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('cache_records_conference_participants', function (Blueprint $table) {
-            $table->string('parent_callsid', 100)->nullable()->index('idx_rcp_parent_parent_callsid');
-            $table->string('callsid', 100)->nullable()->index('idx_rcp_parent_callsid');
-            $table->string('guid', 36)->nullable();
-            $table->integer('service_body_id')->nullable();
-        });
+        if (!Schema::hasTable('cache_records_conference_participants')) {
+            Schema::create('cache_records_conference_participants', function (Blueprint $table) {
+                $table->string('parent_callsid', 100)->nullable()->index('idx_rcp_parent_parent_callsid');
+                $table->string('callsid', 100)->nullable()->index('idx_rcp_parent_callsid');
+                $table->string('guid', 36)->nullable();
+                $table->integer('service_body_id')->nullable();
+            });
+        }
     }
 
     /**

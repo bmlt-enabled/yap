@@ -1,14 +1,14 @@
 .PHONY: run
 run:
-	cd src; composer install
-	cd src; npm install
-	cd src; env ENVIRONMENT=test php artisan serve
+	composer install
+	npm install
+	env ENVIRONMENT=test php artisan serve
 
 .PHONY: lint
 lint:
-	cd src; find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l
-	cd src; composer install
-	cd src; vendor/squizlabs/php_codesniffer/bin/phpcs
+	find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l
+	composer install
+	vendor/squizlabs/php_codesniffer/bin/phpcs
 
 .PHONY: lint-fix
 lint-fix:

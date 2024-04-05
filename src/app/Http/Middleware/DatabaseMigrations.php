@@ -26,7 +26,7 @@ class DatabaseMigrations
     public function handle(Request $request, Closure $next)
     {
         if ($this->settings->has('mysql_hostname')) {
-            Artisan::call("migrate");
+            Artisan::call("migrate", array('--force' => true));
         }
 
         return $next($request);

@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('cache', function (Blueprint $table) {
-            $table->bigInteger('id', true);
-            $table->longText('key')->nullable();
-            $table->longText('value')->nullable();
-            $table->integer('expiry')->nullable();
-        });
+        if (!Schema::hasTable('cache')) {
+            Schema::create('cache', function (Blueprint $table) {
+                $table->bigInteger('id', true);
+                $table->longText('key')->nullable();
+                $table->longText('value')->nullable();
+                $table->integer('expiry')->nullable();
+            });
+        }
     }
 
     /**

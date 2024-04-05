@@ -13,16 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('conference_participants', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->timestamp('timestamp')->useCurrent();
-            $table->string('conferencesid', 100)->index('idx_conference_participants_conferencesid');
-            $table->string('callsid', 100)->index('idx_conference_participants_callsid');
-            $table->string('friendlyname', 100);
-            $table->integer('role');
+        if (!Schema::hasTable('conference_participants')) {
+            Schema::create('conference_participants', function (Blueprint $table) {
+                $table->integer('id', true);
+                $table->timestamp('timestamp')->useCurrent();
+                $table->string('conferencesid', 100)->index('idx_conference_participants_conferencesid');
+                $table->string('callsid', 100)->index('idx_conference_participants_callsid');
+                $table->string('friendlyname', 100);
+                $table->integer('role');
 
-            ///$table->primary(['id']);
-        });
+                ///$table->primary(['id']);
+            });
+        }
     }
 
     /**

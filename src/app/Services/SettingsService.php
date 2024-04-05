@@ -144,6 +144,14 @@ class SettingsService
         }
 
         $this->shortLanguage = $this->getWordLanguage() === "da-DK" ? "dk" : explode("-", $this->getWordLanguage())[0];
+
+        foreach ($_SESSION ?? [] as $session_key => $session_value) {
+            $language = $this->getWordLanguage();
+            $stripped_key_test = str_replace("override_", "", $session_key);
+            if (isset($this->localizations->getLocalization($language)[$stripped_key_test])) {
+                $this->localizations->getLocalization($language)[$session_key] = $session_value;
+            }
+        }
     }
 
     public function getShortLanguage(): string

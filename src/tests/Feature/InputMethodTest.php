@@ -3,6 +3,7 @@ use App\Constants\EventId;
 use App\Constants\SearchType;
 use App\Models\RecordType;
 use App\Repositories\ReportsRepository;
+use App\Services\SettingsService;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -30,6 +31,25 @@ test('search for volunteers', function ($method) {
             '<Response>',
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=1" method="GET">',
             '<Say voice="alice" language="en-US">press one to search for someone to talk to by city or county</Say>',
+            '<Say voice="alice" language="en-US">press two to search for someone to talk to by zip code</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
+test('search for volunteers with word overrides', function ($method) {
+    $_SESSION['override_city_or_county'] = "city or suburb";
+    $response = $this->call($method, '/input-method.php', [
+        "Digits"=>"1"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=1" method="GET">',
+            '<Say voice="alice" language="en-US">press one to search for someone to talk to by city or suburb</Say>',
             '<Say voice="alice" language="en-US">press two to search for someone to talk to by zip code</Say>',
             '</Gather>',
             '</Response>'

@@ -13,13 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('alerts', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->timestamp('timestamp')->nullable();
-            $table->integer('alert_id');
-            $table->longText('payload')->nullable();
-            $table->integer('status')->nullable();
-        });
+        if (!Schema::hasTable('alerts')) {
+            Schema::create('alerts', function (Blueprint $table) {
+                $table->integer('id', true);
+                $table->timestamp('timestamp')->nullable();
+                $table->integer('alert_id');
+                $table->longText('payload')->nullable();
+                $table->integer('status')->nullable();
+            });
+        }
     }
 
     /**
