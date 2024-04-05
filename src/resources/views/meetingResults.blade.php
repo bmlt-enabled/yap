@@ -4,11 +4,11 @@
     <title>Meetings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href='https://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="{{ url("dist/croutonjs/yap-meeting-results.min.css") }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset("dist/croutonjs/yap-meeting-results.min.css") }}" />
     <style type="text/css">
         #bmlt-map { display: none; }
     </style>
-    <script src="{{ url("dist/croutonjs/yap-meeting-results.js") }}"></script>
+    <script src="{{ asset("dist/croutonjs/yap-meeting-results.js") }}"></script>
 </head>
 <body>
 <div id="bmlt-tabs"></div>
@@ -18,7 +18,7 @@
     var crouton = new Crouton({
         root_server: "{{ $rootServerUrl }}",
         theme: "sezf",
-        template_path: "{{ url("dist/croutonjs/templates") }}",
+        template_path: "{{ asset("dist/croutonjs/templates") }}",
         has_languages: "1",
         time_format: "H:mm (h:mma) z",
         filter_tabs: 0,
