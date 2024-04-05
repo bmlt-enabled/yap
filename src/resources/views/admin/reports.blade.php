@@ -1,5 +1,5 @@
 @include('admin.partials.nav')
-<link rel="stylesheet" href="<?php echo url("dist/css/yap-reports.min.css")?>">
+<link rel="stylesheet" href="<?php echo asset("dist/css/yap-reports.min.css")?>">
 <div class="container">
     <div id="reports-top-controls-container">
         <div id="reports-servicebodies-dropdown-container">
@@ -74,15 +74,15 @@
         <div id="events-table" style="display:none;"></div>
     </div>
 </div>
-<script src="<?php echo url("dist/js/yap-reports.js")?>"></script>
+<script src="<?php echo asset("dist/js/yap-reports.js")?>"></script>
 @include('admin.partials.footer')
-<script type="text/javascript" src="<?php echo url("dist/js/daterangepicker.js") ?>"></script>
-<link rel="stylesheet" type="text/css" href="<?php echo url("dist/css/daterangepicker.css") ?>" />
+<script type="text/javascript" src="<?php echo asset("dist/js/daterangepicker.js") ?>"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo asset("dist/css/daterangepicker.css") ?>" />
 <script type="text/javascript">
-    var darkTheme = "<?php echo url("dist/css/yap-tabulator-dark.min.css")?>";
-    var lightTheme = "<?php echo url("dist/css/yap-tabulator-dark.min.css")?>";
-    var meetingsMarker = "<?php echo url("dist/img/green_marker.png") ?>";
-    var volunteersMarker = "<?php echo url("dist/img/orange_marker.png") ?>";
+    var darkTheme = "<?php echo asset("dist/css/yap-tabulator-dark.min.css")?>";
+    var lightTheme = "<?php echo asset("dist/css/yap-tabulator-dark.min.css")?>";
+    var meetingsMarker = "<?php echo asset("dist/img/green_marker.png") ?>";
+    var volunteersMarker = "<?php echo asset("dist/img/orange_marker.png") ?>";
 
     var start = moment().subtract(29, 'days');
     var end = moment();

@@ -91,6 +91,7 @@ jobs:
           rm ${ARTIFACT_FILENAME}
           echo ${GITHUB_SHA} > ${ARTIFACT_FILE}/storage/app/build.txt
           cp -R vendor ${ARTIFACT_FILE}/
+          cp .env.production ${ARTIFACT_FILE}/.env
           mkdir -p ${ARTIFACT_FILE}/public/dist && cp -R public/dist/. ${ARTIFACT_FILE}/public/dist
           find ./${ARTIFACT_FILE} -type d | xargs chmod 755
           find ./${ARTIFACT_FILE} -name '*.php' | xargs chmod 644

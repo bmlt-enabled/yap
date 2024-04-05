@@ -12,7 +12,7 @@ runs:
         cp .env.pipeline .env
         vendor/bin/pest --log-junit tests/test-results.xml
         npm install
-        gulp
+        DISABLE_NOTIFIER=true gulp
         env ENVIRONMENT=test php artisan serve &
         env CYPRESS_BASE_URL=http://127.0.0.1:8000 npx cypress run
       shell: bash
