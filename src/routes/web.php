@@ -27,6 +27,8 @@ Route::match(array('GET', 'POST'), "/ping{ext}", 'App\Http\Controllers\PingContr
     ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "/", 'App\Http\Controllers\CallFlowController@index')
     ->where('ext', $ext);
+Route::match(array('GET', 'POST'), "/info", 'App\Http\Controllers\CallFlowController@info')
+    ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "/index{ext}", 'App\Http\Controllers\CallFlowController@index')
     ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "/input-method{ext}", 'App\Http\Controllers\CallFlowController@inputMethod')

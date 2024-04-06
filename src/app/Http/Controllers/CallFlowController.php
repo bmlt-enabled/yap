@@ -59,6 +59,15 @@ class CallFlowController extends Controller
         $this->config = $config;
     }
 
+    public function info(Request $request)
+    {
+        if (getenv("PHPINFO")) {
+            return response(phpinfo());
+        } else {
+            return response("404", 404);
+        }
+    }
+
     public function index(Request $request)
     {
         $digit = $this->call->getDigitResponse($request, 'language_selections', 'Digits');

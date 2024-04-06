@@ -5882,16 +5882,16 @@
         },
         {
             "name": "twilio/sdk",
-            "version": "7.16.1",
+            "version": "7.16.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twilio/twilio-php.git",
-                "reference": "f97c450e8fb9eb1906a7862a5b58d6fe90b245a5"
+                "reference": "02ad214b0cc9fc513bd67df251d54aed8901284f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/f97c450e8fb9eb1906a7862a5b58d6fe90b245a5",
-                "reference": "f97c450e8fb9eb1906a7862a5b58d6fe90b245a5",
+                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/02ad214b0cc9fc513bd67df251d54aed8901284f",
+                "reference": "02ad214b0cc9fc513bd67df251d54aed8901284f",
                 "shasum": ""
             },
             "require": {
@@ -5929,9 +5929,9 @@
             ],
             "support": {
                 "issues": "https://github.com/twilio/twilio-php/issues",
-                "source": "https://github.com/twilio/twilio-php/tree/7.16.1"
+                "source": "https://github.com/twilio/twilio-php/tree/7.16.2"
             },
-            "time": "2024-03-12T09:18:13+00:00"
+            "time": "2024-04-01T10:34:42+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -8914,16 +8914,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.9.0",
+            "version": "3.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "d63cee4890a8afaf86a22e51ad4d97c91dd4579b"
+                "reference": "267a4405fff1d9c847134db3a3c92f1ab7f77909"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/d63cee4890a8afaf86a22e51ad4d97c91dd4579b",
-                "reference": "d63cee4890a8afaf86a22e51ad4d97c91dd4579b",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/267a4405fff1d9c847134db3a3c92f1ab7f77909",
+                "reference": "267a4405fff1d9c847134db3a3c92f1ab7f77909",
                 "shasum": ""
             },
             "require": {
@@ -8990,7 +8990,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2024-02-16T15:06:51+00:00"
+            "time": "2024-03-31T21:03:09+00:00"
         },
         {
             "name": "ta-tikoma/phpunit-architecture-test",

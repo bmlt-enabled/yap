@@ -7,6 +7,15 @@
  * @author   Taylor Otwell <taylor@laravel.com>
  */
 
+// Get the current URL path
+$requestUri = $_SERVER['REQUEST_URI'];
+
+// Remove the base path from the URL
+$newUri = str_replace("/public/", "/", str_replace("/yap/", "/", $requestUri));
+
+// Update the request URI
+$_SERVER['REQUEST_URI'] = $newUri;
+
 $uri = urldecode(
     parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? ''
 );
