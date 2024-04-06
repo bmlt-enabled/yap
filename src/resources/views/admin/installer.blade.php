@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="<?php echo asset("dist/css/yap.min.css")?>">
+    <link rel="stylesheet" href="<?php echo url("/public/dist/css/yap.min.css")?>">
     <title>Yap Admin</title>
 </head>
 <body>
@@ -34,7 +34,7 @@
         </div>
     </form>
 </div>
-<script src="{{ asset("dist/js/yap.min.js") }}"></script>
+<script src="{{ url("/public/dist/js/yap.min.js") }}"></script>
 <script type="text/javascript">
     var checkForConfigFileInterval;
     initInstaller();
