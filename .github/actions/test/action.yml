@@ -14,7 +14,7 @@ runs:
         npm install
         DISABLE_NOTIFIER=true gulp
         env ENVIRONMENT=test php artisan serve &
-        env CYPRESS_BASE_URL=http://127.0.0.1:8000 npx cypress run
+        env CYPRESS_BASE_URL=http://127.0.0.1:8000/yap npx cypress run
       shell: bash
 
     - name: Upload screenshots

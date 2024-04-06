@@ -4,11 +4,9 @@ run:
 	npm install
 	env ENVIRONMENT=test php artisan serve
 
-.PHONY: cypress-container-test
-cypress-container-test:
-	docker-compose -f docker/docker-compose-cypress.yml up --build
-	env CYPRESS_BASE_URL=http://127.0.0.1:3100/yap npx cypress run
-	docker-compose -f docker/docker-compose-cypress.yml down
+.PHONY: e2e-test
+e2e-test:
+	env CYPRESS_BASE_URL=http://127.0.0.1:8000/yap npx cypress run
 
 .PHONY: lint
 lint:
