@@ -45,6 +45,7 @@ jobs:
         id: generate_release_notes
         run: |
           cd src
+          cp ../RELEASENOTES.md .
           curl -LO https://raw.githubusercontent.com/bmlt-enabled/release-notes-tool/master/gh-release-notes.sh
           chmod +x gh-release-notes.sh
           ./gh-release-notes.sh RELEASENOTES.md "###"
