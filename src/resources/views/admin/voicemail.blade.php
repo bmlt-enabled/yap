@@ -1,5 +1,5 @@
 @include('admin.partials.nav')
-<link rel="stylesheet" href="<?php echo asset("dist/css/yap-reports.min.css")?>">
+<link rel="stylesheet" href="<?php echo url("/public/dist/css/yap-reports.min.css")?>">
 <div class="container">
     <div class="alert alert-success" role="alert" style="display:none;" id="voicemail-deleted-alert">
         Saved.
@@ -10,10 +10,10 @@
     </h3>
     <div id="voicemail-table"></div>
 @include('admin.partials.footer')
-    <script src="<?php echo asset("dist/js/yap-reports.min.js")?>"></script>
+    <script src="<?php echo url("/public/dist/js/yap-reports.min.js")?>"></script>
     <script type="text/javascript">
-        var darkTheme = "<?php echo asset("dist/css/yap-tabulator-dark.min.css")?>";
-        var lightTheme = "<?php echo asset("dist/css/yap-tabulator-dark.min.css")?>";
+        var darkTheme = "<?php echo url("/public/dist/css/yap-tabulator-dark.min.css")?>";
+        var lightTheme = "<?php echo url("/public/dist/css/yap-tabulator-dark.min.css")?>";
         loadTabulatorTheme();
         var data = <?php echo json_encode($voicemail->get($_REQUEST['service_body_id']))?>;
         var table = new Tabulator("#voicemail-table", {
