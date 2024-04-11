@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9475b6389c4bad3962d76a1e5f0d3c8d",
+    "content-hash": "f9aa3a20b2c41189b1e6f4c108271b89",
     "packages": [
         {
             "name": "bmlt-enabled/bmlt-root-server-php-client",
@@ -5882,16 +5882,16 @@
         },
         {
             "name": "twilio/sdk",
-            "version": "7.16.2",
+            "version": "8.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twilio/twilio-php.git",
-                "reference": "02ad214b0cc9fc513bd67df251d54aed8901284f"
+                "reference": "750ecf56e1a8627823d182ed3b3d6e7f79e41820"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/02ad214b0cc9fc513bd67df251d54aed8901284f",
-                "reference": "02ad214b0cc9fc513bd67df251d54aed8901284f",
+                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/750ecf56e1a8627823d182ed3b3d6e7f79e41820",
+                "reference": "750ecf56e1a8627823d182ed3b3d6e7f79e41820",
                 "shasum": ""
             },
             "require": {
@@ -5929,9 +5929,9 @@
             ],
             "support": {
                 "issues": "https://github.com/twilio/twilio-php/issues",
-                "source": "https://github.com/twilio/twilio-php/tree/7.16.2"
+                "source": "https://github.com/twilio/twilio-php/tree/8.0.0"
             },
-            "time": "2024-04-01T10:34:42+00:00"
+            "time": "2024-04-04T14:57:48+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
