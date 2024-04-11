@@ -77,6 +77,7 @@ jobs:
           echo ${GITHUB_SHA} > ${ARTIFACT_FILE}/storage/app/build.txt
           cp -R vendor ${ARTIFACT_FILE}/
           cp ../LICENSE .
+          cp ../RELEASENOTES.md .
           mkdir -p ${ARTIFACT_FILE}/public/dist && cp -R public/dist/. ${ARTIFACT_FILE}/public/dist
           find ./${ARTIFACT_FILE} -type d | xargs chmod 755
           find ./${ARTIFACT_FILE} -name '*.php' | xargs chmod 644
