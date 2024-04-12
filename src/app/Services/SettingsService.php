@@ -145,7 +145,7 @@ class SettingsService
 
         $this->shortLanguage = $this->getWordLanguage() === "da-DK" ? "dk" : explode("-", $this->getWordLanguage())[0];
 
-        foreach($this->settings as $setting_key => $setting_value) {
+        foreach ($this->settings as $setting_key => $setting_value) {
             $this->setLocalizationOverride($setting_key, $setting_value);
         }
 
