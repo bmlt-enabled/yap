@@ -145,12 +145,12 @@ class SettingsService
 
         $this->shortLanguage = $this->getWordLanguage() === "da-DK" ? "dk" : explode("-", $this->getWordLanguage())[0];
 
+        foreach($this->settings as $setting_key => $setting_value) {
+            $this->setLocalizationOverride($setting_key, $setting_value);
+        }
+
         foreach ($_SESSION ?? [] as $session_key => $session_value) {
-            $language = $this->getWordLanguage();
-            $stripped_key_test = str_replace("override_", "", $session_key);
-            if (isset($this->localizations->getLocalization($language)[$stripped_key_test])) {
-                $this->localizations->getLocalization($language)[$session_key] = $session_value;
-            }
+            $this->setLocalizationOverride($session_key, $session_value);
         }
     }
 
@@ -425,5 +425,19 @@ class SettingsService
     public function getCurrentTime(): string
     {
         return gmdate("Y-m-d H:i:s");
+    }
+
+    /**
+     * @param int|string $session_key
+     * @param mixed $session_value
+     * @return void
+     */
+    public function setLocalizationOverride(int|string $session_key, mixed $session_value): void
+    {
+        $language = $this->getWordLanguage();
+        $stripped_key_test = str_replace("override_", "", $session_key);
+        if (isset($this->localizations->getLocalization($language)[$stripped_key_test])) {
+            $this->localizations->getLocalization($language)[$session_key] = $session_value;
+        }
     }
 }

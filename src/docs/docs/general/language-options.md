@@ -2,7 +2,7 @@
 
 ---
 
-There is a concept of language resource files.  You will notice them in the `lang/` folder.  Please open a ticket if you would like to contribute to translating to another language.
+There is a concept of language resource files.  You will notice them in the `app/Models/Localizations.php` file.  Please open a ticket if you would like to contribute to translating to another language.
 
 You can also override any of the language prompts in the `config.php` file. 
 
@@ -11,8 +11,6 @@ For example, say you wanted to still use English, but change the "city or county
 ```php
 static $override_city_or_county = "city or suburb";
 ```
-
-You can see the full listing in the `lang/en-US.php` which always has the full latest listing of the voice prompts.
 
 You can also change the spoken language accent.  There is a wide variety.  See the Twilio documentation for more details: [https://www.twilio.com/docs/voice/twiml/say#attributes-language](https://www.twilio.com/docs/voice/twiml/say#attributes-language).  There are also some additional voices available here as well [https://www.twilio.com/docs/voice/twiml/say/text-speech#voices](https://www.twilio.com/docs/voice/twiml/say/text-speech#voices).
 
@@ -43,4 +41,4 @@ Voices can be configured for every language option.  For example for Spanish:
 es_US_voice = "Polly.Penelope";
 ```
 
-**New Yap 3.0** If you want to route calls to volunteers by language, see the section on Language in [Specialized Routing](../../helpline/specialized-routing/).
+If you want to route calls to volunteers by language, see the section on Language in [Specialized Routing](../../helpline/specialized-routing/).

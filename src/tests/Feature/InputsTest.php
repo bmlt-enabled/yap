@@ -112,7 +112,7 @@ test('city or county voice input', function ($method) {
             '<Response>',
             '<Gather language="en-US" input="speech" hints="" timeout="10" speechTimeout="auto" action="voice-input-result.php?SearchType=1&amp;Province=" method="GET">',
             '<Say voice="alice" language="en-US">',
-            'please say the name of the city or county',
+            'please say the name of the city or suburb',
             '</Say>',
             '</Gather>',
             '</Response>'
@@ -131,7 +131,7 @@ test('city or county voice input with hints', function ($method) {
             '<Response>',
             '<Gather language="en-US" input="speech" hints="Raleigh,Lillington,Benson,Dunn" timeout="10" speechTimeout="auto" action="voice-input-result.php?SearchType=1&amp;Province=" method="GET">',
             '<Say voice="alice" language="en-US">',
-            'please say the name of the city or county',
+            'please say the name of the city or suburb',
             '</Say>',
             '</Gather>',
             '</Response>'

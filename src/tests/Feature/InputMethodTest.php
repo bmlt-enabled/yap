@@ -30,15 +30,15 @@ test('search for volunteers', function ($method) {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=1" method="GET">',
-            '<Say voice="alice" language="en-US">press one to search for someone to talk to by city or county</Say>',
+            '<Say voice="alice" language="en-US">press one to search for someone to talk to by city or suburb</Say>',
             '<Say voice="alice" language="en-US">press two to search for someone to talk to by zip code</Say>',
             '</Gather>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
 
-test('search for volunteers with word overrides', function ($method) {
-    $_SESSION['override_city_or_county'] = "city or suburb";
+test('search for volunteers with word overrides with session', function ($method) {
+    $_SESSION['override_city_or_county'] = "foo or bar";
     $response = $this->call($method, '/input-method.php', [
         "Digits"=>"1"
     ]);
@@ -49,7 +49,26 @@ test('search for volunteers with word overrides', function ($method) {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=1" method="GET">',
-            '<Say voice="alice" language="en-US">press one to search for someone to talk to by city or suburb</Say>',
+            '<Say voice="alice" language="en-US">press one to search for someone to talk to by foo or bar</Say>',
+            '<Say voice="alice" language="en-US">press two to search for someone to talk to by zip code</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
+test('search for volunteers with word overrides with querystring', function ($method) {
+    $response = $this->call($method, '/input-method.php', [
+        "Digits"=>"1",
+        "override_city_or_county" => "bar or foo"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=1" method="GET">',
+            '<Say voice="alice" language="en-US">press one to search for someone to talk to by bar or foo</Say>',
             '<Say voice="alice" language="en-US">press two to search for someone to talk to by zip code</Say>',
             '</Gather>',
             '</Response>'
@@ -80,7 +99,7 @@ test('search for meetings', function ($method) {
             '<Response>',
             '<Say voice="alice" language="en-US">Meeting search results will also be sent to you by SMS text message.</Say>',
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=2" method="GET">',
-            '<Say voice="alice" language="en-US">press one to search for meetings by city or county</Say>',
+            '<Say voice="alice" language="en-US">press one to search for meetings by city or suburb</Say>',
             '<Say voice="alice" language="en-US">press two to search for meetings by zip code</Say>',
             '</Gather>',
             '</Response>'
@@ -232,7 +251,7 @@ test('menu with meeting search option with jft and spad enabled', function ($met
             '<Response>',
             '<Say voice="alice" language="en-US">Meeting search results will also be sent to you by SMS text message.</Say>',
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=2" method="GET">',
-            '<Say voice="alice" language="en-US">press one to search for meetings by city or county</Say>',
+            '<Say voice="alice" language="en-US">press one to search for meetings by city or suburb</Say>',
             '<Say voice="alice" language="en-US">press two to search for meetings by zip code</Say>',
             '<Say voice="alice" language="en-US">press three to listen to the just for today</Say>',
             '<Say voice="alice" language="en-US">press four to listen to the spiritual principle a day</Say>',
@@ -280,7 +299,7 @@ test('play custom title', function ($method) {
             '<Say voice="alice" language="en-US">Meeting search results will also be sent to you by SMS text message.</Say>',
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=2" method="GET">',
             '<Say voice="alice" language="en-US">Test Helpline</Say>',
-            '<Say voice="alice" language="en-US">press one to search for meetings by city or county</Say>',
+            '<Say voice="alice" language="en-US">press one to search for meetings by city or suburb</Say>',
             '<Say voice="alice" language="en-US">press two to search for meetings by zip code</Say>',
             '</Gather>',
             '</Response>'
@@ -318,7 +337,7 @@ test('retry message loop with custom message', function ($method) {
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=1" method="GET">',
             '<Say voice="alice" language="en-US">You Failed Son!</Say>',
             '<Pause length="1"/>',
-            '<Say voice="alice" language="en-US">press one to search for someone to talk to by city or county</Say>',
+            '<Say voice="alice" language="en-US">press one to search for someone to talk to by city or suburb</Say>',
             '<Say voice="alice" language="en-US">press two to search for someone to talk to by zip code</Say>',
             '</Gather>',
             '</Response>'
@@ -339,7 +358,7 @@ test('retry message loop with location message', function ($method) {
             '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=1" method="GET">',
             '<Say voice="alice" language="en-US">sorry, could not find location, please retry your entry</Say>',
             '<Pause length="1"/>',
-            '<Say voice="alice" language="en-US">press one to search for someone to talk to by city or county</Say>',
+            '<Say voice="alice" language="en-US">press one to search for someone to talk to by city or suburb</Say>',
             '<Say voice="alice" language="en-US">press two to search for someone to talk to by zip code</Say>',
             '</Gather>',
             '</Response>'
