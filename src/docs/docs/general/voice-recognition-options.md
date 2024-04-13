@@ -17,7 +17,7 @@ Each hint may not be more than 100 characters (including spaces).  You can use u
 static $gather_hints = "";
 ```
 
-**New Yap 3.x** Voice recognition for input gathering is turned on by default, to turn it off you can do the following.
+Voice recognition for input gathering is turned on by default, to turn it off you can do the following.
 
 ```php
 static $speech_gathering = false;
