@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.3.4 (UNRELEASED)
+* Fix for dialback dialing [#1021]
+
 ### 4.3.3 (May 1, 2024)
 * Fix for reports where they are always recursing service bodies regardless of the setting [#980]
 * Fix for metrics counts summaries.

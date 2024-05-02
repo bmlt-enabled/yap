@@ -6,14 +6,19 @@
 4. Run `make run`. 
 5. Browse to http://localhost:3100/yap in your web browser.
 
----
+### Testing
 
-### PHP files left to migrate to true Laravel.
+After cloning, add a file called `.env.testing` with the value `GOOGLE_MAPS_API_KEY=<value>`.  Then run `make test`.
 
-* Non-Admin - 19 Left, 20 Done
-* Admin - 29 Left
+To run code coverage, you can run `make coverage`.
 
-* 2000 or so lines of code in functions.php.
-* A few other "utility" operations in legacy/_includes
-* 2 additional "api" items.
-* Database migrations to use Laravel database migrations.
+### Seeing 500 errors during tests.
+
+Use `$this->withoutExceptionHandling()` in your test classes to see the underlying 500 error during your tests.
+
+### API Docs (WIP)
+
+This only works locally right now.
+
+1. Run `make swagger`.
+2. Browse to `/api/documentation`
