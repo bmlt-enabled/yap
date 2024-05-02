@@ -59,15 +59,6 @@ class CallFlowController extends Controller
         $this->config = $config;
     }
 
-    public function info(Request $request)
-    {
-        if (getenv("PHPINFO")) {
-            return response(phpinfo());
-        } else {
-            return response("404", 404);
-        }
-    }
-
     public function index(Request $request)
     {
         $digit = $this->call->getDigitResponse($request, 'language_selections', 'Digits');
@@ -490,14 +481,15 @@ class CallFlowController extends Controller
 
     public function dialbackDialer(Request $request)
     {
-        $dialbackPinValid = $this->call->isDialbackPinValid($request->get("Digits"));
+        $dialbackNumber = $this->call->getNumberForDialbackPin($request->get("Digits"));
         $twiml = new VoiceResponse();
-        if ($dialbackPinValid) {
+        if ($dialbackNumber) {
             $twiml->say($this->settings->word('please_wait_while_we_connect_your_call'))
                 ->setVoice($this->settings->voice())
                 ->setLanguage($this->settings->get("language"));
-            $twiml->dial($request->get("Digits"))
-                ->setCallerId($request->get("Called"));
+            $twiml->dial()
+                ->setCallerId($request->get("Called"))
+                ->number($dialbackNumber[0]->from_number);
         } else {
             $twiml->say("Invalid pin entry")
                 ->setVoice($this->settings->voice())

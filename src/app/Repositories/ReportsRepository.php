@@ -218,7 +218,7 @@ where alert_id = ? and b.to_number IS NULL", [$alert_id, $alert_id]);
         );
     }
 
-    public function isDialbackPinValid($pin): array
+    public function getNumberForDialbackPin($pin): array
     {
         return DB::select(
             "SELECT from_number FROM sessions a INNER JOIN records b ON
