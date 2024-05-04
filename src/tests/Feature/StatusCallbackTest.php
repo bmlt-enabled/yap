@@ -42,7 +42,7 @@ test('status callback test', function ($method) {
     );
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8");
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8");
 })->with(['GET', 'POST']);
 
 test('status callback test without timestamp', function ($method) {
@@ -75,5 +75,5 @@ test('status callback test without timestamp', function ($method) {
     );
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8");
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8");
 })->with(['GET', 'POST']);

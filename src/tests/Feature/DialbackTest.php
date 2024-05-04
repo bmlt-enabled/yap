@@ -26,7 +26,7 @@ test('dialback initial', function ($method) {
     $response = $this->call($method, '/dialback.php');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -62,7 +62,7 @@ test('dialback dialer valid pin entry', function ($method) {
     $responseDialbackDialer = $this->call($method, '/dialback-dialer.php', ['Digits'=>$fakePin,'Called'=>$called]);
     $responseDialbackDialer
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -100,7 +100,7 @@ test('dialback dialer invalid pin entry', function ($method) {
     $response = $this->call($method, '/dialback-dialer.php');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',

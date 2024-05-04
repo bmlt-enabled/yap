@@ -17,7 +17,7 @@ test('invalid entry with province input response', function ($method) {
     $response = $this->call($method, '/province-lookup-list-response.php?Digits=3&SearchType=2');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -34,7 +34,7 @@ test('valid entry with province input response', function ($method) {
     $response = $this->call($method, '/province-lookup-list-response.php?SearchType=2&Digits=2');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',

@@ -31,7 +31,7 @@ test('standard call ending', function ($method) {
     $response = $this->call($method, '/post-call-action.php');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -43,7 +43,7 @@ test('start over', function ($method) {
     $response = $this->call($method, '/post-call-action.php', ["Digits"=>"2"]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response><Redirect method="GET">https://example.org/index.php</Redirect></Response>'], false);
@@ -70,7 +70,7 @@ test('send meeting results SMS', function ($method) {
     );
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -101,7 +101,7 @@ test('send meeting results SMS with combine', function ($method) {
     );
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -132,7 +132,7 @@ test('send meeting results SMS with combine with infinite searching', function (
     );
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response><Redirect method="GET">https://example.org/index.php</Redirect></Response>'], false);

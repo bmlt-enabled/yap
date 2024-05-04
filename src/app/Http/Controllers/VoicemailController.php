@@ -71,7 +71,7 @@ class VoicemailController extends Controller
             ->setRecordingStatusCallback($recordingStatusCallback)
             ->setRecordingStatusCallbackMethod("GET");
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function complete(Request $request)
@@ -133,6 +133,6 @@ class VoicemailController extends Controller
         }
 
         $twiml = new VoiceResponse();
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 }

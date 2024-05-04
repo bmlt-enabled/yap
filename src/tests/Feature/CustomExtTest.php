@@ -15,7 +15,7 @@ test('custom extensions', function ($method) {
     $response = $this->call($method, '/custom-ext.php');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -33,7 +33,7 @@ test('custom extensions dialer', function ($method) {
     $response = $this->call($method, '/custom-ext-dialer.php?Called=%2B17183367631&Digits=365#');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',

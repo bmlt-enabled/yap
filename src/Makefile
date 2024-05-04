@@ -32,11 +32,11 @@ bundle-deps:
 
 .PHONY: bundle
 bundle:
-	gulp
+	node_modules/.bin/gulp
 
 .PHONY: watch
 watch:
-	gulp watch
+	node_modules/.bin/gulp watch
 
 .PHONY: coverage-xml
 coverage-xml:

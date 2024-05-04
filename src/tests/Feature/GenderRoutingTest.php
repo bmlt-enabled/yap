@@ -16,7 +16,7 @@ test('invalid entry', function ($method) {
     $response = $this->call($method, '/gender-routing-response.php?SearchType=1&Digits=7');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -32,7 +32,7 @@ test('selected option', function () {
     $response = $this->call('GET', '/gender-routing-response.php?Digits=1&SearchType=1');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -47,7 +47,7 @@ test('initial gender selection', function () {
     $response = $this->call('GET', '/gender-routing.php?Digits=1&SearchType=1');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -65,7 +65,7 @@ test('initial gender selection with no preference option enabled', function () {
     $response = $this->call('GET', '/gender-routing.php?SearchType=1');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
