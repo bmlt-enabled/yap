@@ -67,7 +67,7 @@ class CallFlowController extends Controller
         if (strlen($this->settings->get('language_selections')) > 0) {
             if ($digit == null) {
                 $twiml->redirect("lng-selector.php");
-                return response($twiml)->header("Content-Type", "text/xml");
+                return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
             } else {
                 $selected_language = explode(",", $this->settings->get('language_selections'))[intval($digit) - 1];
                 $_SESSION["override_word_language"] = $selected_language;
@@ -150,7 +150,7 @@ class CallFlowController extends Controller
             }
         }
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function inputMethod(Request $request)
@@ -165,7 +165,7 @@ class CallFlowController extends Controller
                 ->setVoice($this->settings->voice())
                 ->setLanguage($this->settings->get('language'));
             $twiml->redirect("index.php");
-            return response($twiml)->header("Content-Type", "text/xml");
+            return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
         }
 
         $searchType = $this->call->getDigitResponse($request, 'digit_map_search_type', 'Digits');
@@ -184,12 +184,12 @@ class CallFlowController extends Controller
             && json_decode($this->settings->get('disable_postal_code_gather'))) {
             $twiml->redirect("input-method-result.php?SearchType=" . $searchType . "&Digits=1")
                 ->setMethod("GET");
-            return response($twiml)->header("Content-Type", "text/xml");
+            return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
         } elseif ($searchType == SearchType::VOLUNTEERS) {
             if (isset($_SESSION['override_service_body_id'])) {
                 $twiml->redirect("helpline-search.php?Called=" . $request->get("Called") . $this->settings->getSessionLink())
                     ->setMethod("GET");
-                return response($twiml)->header("Content-Type", "text/xml");
+                return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
             }
 
             $searchDescription = $this->settings->word('someone_to_talk_to');
@@ -198,27 +198,27 @@ class CallFlowController extends Controller
                 || !strpos($this->settings->get('custom_query'), '{LONGITUDE}')) {
                 $twiml->redirect("meeting-search.php?Called=" . $request->get("Called"))
                     ->setMethod("GET");
-                return response($twiml)->header("Content-Type", "text/xml");
+                return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
             }
 
             $searchDescription = $this->settings->word('meetings');
         } elseif ($searchType == SearchType::JFT) {
             $twiml->redirect("fetch-jft.php")
                 ->setMethod("GET");
-            return response($twiml)->header("Content-Type", "text/xml");
+            return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
         } elseif ($searchType == SearchType::SPAD) {
             $twiml->redirect("fetch-spad.php")
                 ->setMethod("GET");
-            return response($twiml)->header("Content-Type", "text/xml");
+            return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
         } elseif ($searchType == SearchType::DIALBACK) {
             $twiml->redirect("dialback.php")
                 ->setMethod("GET");
-            return response($twiml)->header("Content-Type", "text/xml");
+            return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
         } elseif ($searchType == SearchType::CUSTOM_EXTENSIONS
             && count($this->settings->get('custom_extensions')) > 0) {
             $twiml->redirect("custom-ext.php")
                 ->setMethod("GET");
-            return response($twiml)->header("Content-Type", "text/xml");
+            return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
         }
 
         if ($searchType == SearchType::MEETINGS &&
@@ -273,7 +273,7 @@ class CallFlowController extends Controller
             }
         }
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function zipinput(Request $request)
@@ -304,7 +304,7 @@ class CallFlowController extends Controller
             ->setVoice($this->settings->voice())
             ->setLanguage($this->settings->get('language'));
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function customext()
@@ -319,7 +319,7 @@ class CallFlowController extends Controller
             ->setMethod("GET");
 
         $gather->play($this->settings->get(str_replace("-", "_", $this->settings->getWordLanguage()) . "_custom_extensions_greeting"));
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function cityorcountyinput(Request $request)
@@ -342,7 +342,7 @@ class CallFlowController extends Controller
             ->setVoice($this->settings->voice())
             ->setLanguage($this->settings->get('language'));
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function servicebodyextresponse(Request $request)
@@ -352,7 +352,7 @@ class CallFlowController extends Controller
             "helpline-search.php?override_service_body_id=%s",
             $request->get('Digits')
         ), ["method" => "GET"]);
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function genderroutingresponse(Request $request)
@@ -374,7 +374,7 @@ class CallFlowController extends Controller
                 ->setMethod('GET');
         }
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function playlist(Request $request)
@@ -388,7 +388,7 @@ class CallFlowController extends Controller
         $twiml->redirect(sprintf("playlist.php?items=%s", $items));
 
         return response($twiml)
-            ->header("Content-Type", "text/xml");
+            ->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function voiceinputresult(Request $request)
@@ -408,7 +408,7 @@ class CallFlowController extends Controller
             $searchType
         ))->setMethod('GET');
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function addresslookup(Request $request)
@@ -434,7 +434,7 @@ class CallFlowController extends Controller
             ))->setMethod('GET');
         }
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function fallback()
@@ -451,7 +451,7 @@ class CallFlowController extends Controller
         ))->setVoice($this->settings->voice())->setLanguage($this->settings->get("language"));
         $twiml->dial()->number($phone_number, ['sendDigits' => $extension]);
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function customextdialer(Request $request)
@@ -459,7 +459,7 @@ class CallFlowController extends Controller
         $twiml = new VoiceResponse();
         $dial = $twiml->dial()->setCallerId($request->get("Called"));
         $dial->number($this->settings->get('custom_extensions')[str_replace("#", "", $request->get('Digits'))]);
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function dialback(Request $request)
@@ -476,7 +476,7 @@ class CallFlowController extends Controller
             ->setVoice($this->settings->voice())
             ->setLanguage($this->settings->get("language"));
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function dialbackDialer(Request $request)
@@ -498,7 +498,7 @@ class CallFlowController extends Controller
             $twiml->redirect("index.php");
         }
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function genderrouting(Request $request)
@@ -528,7 +528,7 @@ class CallFlowController extends Controller
         ))
             ->setVoice($this->settings->voice())
             ->setLanguage($this->settings->get('language'));
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function provincelookuplistresponse(Request $request)
@@ -545,7 +545,7 @@ class CallFlowController extends Controller
                 ->setLanguage($this->settings->get("language"));
             $twiml->redirect(sprintf("province-voice-input.php?SearchType=%s", $search_type))
                 ->setMethod("GET");
-            return response($twiml)->header("Content-Type", "text/xml");
+            return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
         }
 
         $this->call->insertCallEventRecord(
@@ -559,7 +559,7 @@ class CallFlowController extends Controller
             urlencode($this->settings->get('province_lookup_list')[$province_lookup_item - 1])
         ));
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function statusCallback(Request $request)
@@ -586,7 +586,7 @@ class CallFlowController extends Controller
         $this->call->insertCallRecord($callRecord);
 
         $twiml = new VoiceResponse();
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function postCallAction(Request $request)
@@ -624,7 +624,7 @@ class CallFlowController extends Controller
                 ->setLanguage($this->settings->get("language"));
         }
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function languageSelector(Request $request)
@@ -658,7 +658,7 @@ class CallFlowController extends Controller
             }
         }
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function provinceVoiceInput(Request $request)
@@ -702,7 +702,7 @@ class CallFlowController extends Controller
                 ->setLanguage($this->settings->get("language"));
         }
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function helplineAnswerResponse(Request $request)
@@ -744,7 +744,7 @@ class CallFlowController extends Controller
             $twiml->hangup();
         }
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function helplineOutdialResponse(Request $request)
@@ -803,7 +803,7 @@ class CallFlowController extends Controller
             $twiml->hangup();
         }
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function helplineSms(Request $request, $latitude, $longitude)
@@ -874,7 +874,7 @@ class CallFlowController extends Controller
         }
 
         $twiml = new VoiceResponse();
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function inputMethodResult(Request $request)
@@ -889,16 +889,16 @@ class CallFlowController extends Controller
                 ->setVoice($this->settings->voice())
                 ->setLanguage($this->settings->get('language'));
             $twiml->redirect("index.php");
-            return response($twiml)->header("Content-Type", "text/xml");
+            return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
         }
 
         $locationSearchMethod = $this->call->getDigitResponse($request, 'digit_map_location_search_method', 'Digits');
         if ($locationSearchMethod == SearchType::JFT) {
             $twiml->redirect("fetch-jft.php")->setMethod("GET");
-            return response($twiml)->header("Content-Type", "text/xml");
+            return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
         } elseif ($locationSearchMethod == SearchType::SPAD) {
             $twiml->redirect("fetch-spad.php")->setMethod("GET");
-            return response($twiml)->header("Content-Type", "text/xml");
+            return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
         }
 
         if ($this->settings->has('province_lookup') && json_decode($this->settings->get('province_lookup'))) {
@@ -915,7 +915,7 @@ class CallFlowController extends Controller
             ->setMethod("GET");
         }
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function smsGateway(Request $request)
@@ -940,13 +940,13 @@ class CallFlowController extends Controller
             for ($i = 0; $i < count($reading_chunks); $i++) {
                 $this->twilio->client()->messages->create($request->get("From"), array("from" => $request->get("To"), "body" => $reading_chunks[$i]));
             }
-            return response($twiml)->header("Content-Type", "text/xml");
+            return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
         } elseif (json_decode($this->settings->get('spad_option')) && str_contains(strtoupper($address), strtoupper('spad'))) {
             $reading_chunks = $this->reading->get(ReadingType::SPAD, true);
             for ($i = 0; $i < count($reading_chunks); $i++) {
                 $this->twilio->client()->messages->create($request->get("From"), array("from" => $request->get("To"), "body" => $reading_chunks[$i]));
             }
-            return response($twiml)->header("Content-Type", "text/xml");
+            return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
         }
 
         $sms_helpline_keyword = $this->settings->get("sms_helpline_keyword");
@@ -969,7 +969,7 @@ class CallFlowController extends Controller
                 ->setMethod("GET");
         }
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function meetingSearch(Request $request)
@@ -998,7 +998,7 @@ class CallFlowController extends Controller
             }
             $twiml->redirect("fallback.php")
                 ->setMethod("GET");
-            return response($twiml)->header("Content-Type", "text/xml");
+            return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
         }
 
         $filtered_list = $meeting_results->filteredList;
@@ -1197,7 +1197,7 @@ class CallFlowController extends Controller
                 ->setLanguage($this->settings->get("language"));
         }
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     private function getResultsString($filtered_list)

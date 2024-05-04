@@ -94,7 +94,7 @@ class HelplineController extends Controller
                             );
                             $dial = $twiml->dial();
                             $dial->number($phone_number)->setSendDigits($extension);
-                            return response($twiml)->header("Content-Type", "text/xml");
+                            return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
                         } else {
                             throw new Exception("Couldn't find service body coverage for that location.");
                         }
@@ -102,7 +102,7 @@ class HelplineController extends Controller
                 } catch (Exception $e) {
                     $twiml->redirect("input-method.php?Digits=" . $request->get("SearchType") . "&Retry=1&RetryMessage=" . urlencode($e->getMessage()))
                         ->setMethod("GET");
-                    return response($twiml)->header("Content-Type", "text/xml");
+                    return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
                 }
             }
 
@@ -157,7 +157,7 @@ class HelplineController extends Controller
 
                 $searchType = $request->get("SearchType") ?? "-1";
                 $twiml->redirect("gender-routing.php?SearchType=" . urlencode($searchType))->setMethod("GET");
-                return response($twiml)->header("Content-Type", "text/xml");
+                return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
             } elseif ($serviceBodyCallHandling->volunteer_routing_redirect
                 && $serviceBodyCallHandling->volunteer_routing_redirect_id > 0) {
                 $calculated_service_body_id = $serviceBodyCallHandling->volunteer_routing_redirect_id;
@@ -239,7 +239,7 @@ class HelplineController extends Controller
                 ->setMethod("GET");
         }
 
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function dial(Request $request)

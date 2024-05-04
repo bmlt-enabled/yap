@@ -32,7 +32,7 @@ class CallBlocklist
             $blocklistItems = explode(",", $this->settings->get('blocklist'));
             foreach ($blocklistItems as $blocklistItem) {
                 if (str_starts_with($blocklistItem, $request->get('Caller'))) {
-                    return response()->view('rejectCall')->header("Content-Type", "text/xml");
+                    return response()->view('rejectCall')->header("Content-Type", "text/xml; charset=utf-8");
                 }
             }
         }

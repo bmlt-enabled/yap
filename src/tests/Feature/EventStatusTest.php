@@ -32,7 +32,7 @@ test('returns data no auth', function () {
     $response
         ->assertStatus(302)
         ->assertHeader("Location", "http://localhost/admin")
-        ->assertHeader("Content-Type", "text/html; charset=UTF-8");
+        ->assertHeader("Content-Type", "text/html; charset=utf-8");
 });
 
 test('test event ids', function () {

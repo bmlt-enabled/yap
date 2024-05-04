@@ -34,7 +34,7 @@ class SmsBlackhole
             foreach ($sms_blackhole_items as $sms_blackhole_item) {
                 if (str_starts_with($sms_blackhole_item, $request->get('From'))) {
                     $this->callService->insertCallEventRecord(EventId::SMS_BLACKHOLED);
-                    return response()->view('blackhole')->header("Content-Type", "text/xml");
+                    return response()->view('blackhole')->header("Content-Type", "text/xml; charset=utf-8");
                 }
             }
         }

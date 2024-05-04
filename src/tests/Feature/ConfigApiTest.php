@@ -195,6 +195,6 @@ test('get config no auth', function () {
     ]);
     $response
         ->assertHeader("Location", "http://localhost/admin")
-        ->assertHeader("Content-Type", "text/html; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/html; charset=utf-8")
         ->assertStatus(302);
 });
