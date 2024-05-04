@@ -50,4 +50,17 @@ class ConfigData extends Model
             "data_type"=>DataType::YAP_GROUPS_V2
         ]);
     }
+
+    public static function createVolunteer(
+        int $serviceBodyId,
+        int $parentServiceBodyId,
+        object $volunteerConfiguration
+    ) : void {
+        self::create([
+            "service_body_id"=>$serviceBodyId,
+            "parent_id"=>$parentServiceBodyId,
+            "data"=>json_encode([$volunteerConfiguration]),
+            "data_type"=>DataType::YAP_VOLUNTEERS_V2
+        ]);
+    }
 }
