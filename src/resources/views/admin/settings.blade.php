@@ -8,7 +8,7 @@
                 Clear Database Cache
             </button>
             <?php } ?>
-            <table class="table table-striped table-borderless table-responsive">
+            <table id="settingsTable" class="table table-striped table-borderless table-responsive">
                 <thead>
                 <tr>
                     <th scope="col">Setting</th>
