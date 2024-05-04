@@ -16,7 +16,7 @@ test('service body extension response', function ($method) {
     ]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -32,7 +32,7 @@ test('voice input result for someone to talk to', function ($method) {
     ]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -49,7 +49,7 @@ test('voice input result for someone to talk to with a New York phone number', f
     ]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -67,7 +67,7 @@ test('voice input result for someone to talk to with a New York phone number but
     ]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -84,7 +84,7 @@ test('voice input result for someone to talk to with a toll free phone number bi
     ]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -102,7 +102,7 @@ test('voice input result for meeting lookup', function ($method) {
     ]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',

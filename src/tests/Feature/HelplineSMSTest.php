@@ -97,7 +97,7 @@ test('initial sms helpline gateway default when there is no volunteer', function
     ]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
     ], false);
 })->with(['GET', 'POST']);
@@ -179,7 +179,7 @@ test('initial sms helpline gateway with a volunteer', function ($method) {
     ]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
         ], false);
 })->with(['GET', 'POST']);
@@ -262,7 +262,7 @@ test('initial sms helpline gateway with a volunteer with a different keyword', f
     ]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
         ], false);
 })->with(['GET', 'POST']);

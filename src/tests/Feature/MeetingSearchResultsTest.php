@@ -17,7 +17,7 @@ test('meeting seating results', function () {
     $response = $this->get('/msr/35.560471/-78.670792');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/html; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/html; charset=utf-8")
         ->assertSeeInOrder([
             '<html lang="en">',
             '<head>',

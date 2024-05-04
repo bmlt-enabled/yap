@@ -17,7 +17,7 @@ test('language selector no languages set', function ($method) {
     $response = $this->call($method, '/lng-selector.php');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -34,7 +34,7 @@ test('language selector with languages set', function ($method) {
     $response = $this->call($method, '/lng-selector.php');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',

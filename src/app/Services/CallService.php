@@ -155,9 +155,9 @@ class CallService extends Service
         return 0;
     }
 
-    public function isDialbackPinValid($pin): array
+    public function getNumberForDialbackPin($pin): array
     {
-        return $this->reports->isDialbackPinValid($pin);
+        return $this->reports->getNumberForDialbackPin($pin);
     }
 
     public function getDigitResponse($request, $setting, $field = 'SearchType')

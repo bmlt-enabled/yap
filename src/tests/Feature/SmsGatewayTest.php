@@ -39,7 +39,7 @@ test('initial sms gateway default', function ($method) {
     $response = $this->call($method, '/sms-gateway.php', $this->callerIdInfo);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -61,7 +61,7 @@ test('initial sms gateway talk option without location', function ($method) {
     $response = $this->call($method, '/sms-gateway.php', $this->callerIdInfo);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response/>'
@@ -78,7 +78,7 @@ test('initial sms gateway with a blackholed number', function ($method) {
     );
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
         ], false);
@@ -109,7 +109,7 @@ test('sms to deliver the jft', function ($method) {
     );
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response/>'
@@ -141,7 +141,7 @@ test('sms to deliver the spad', function ($method) {
     );
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response/>'

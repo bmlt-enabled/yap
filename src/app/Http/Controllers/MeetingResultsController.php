@@ -25,7 +25,7 @@ class MeetingResultsController extends Controller
                     'rootServerUrl' => $this->settingsService->getBMLTRootServer()
                 ],
                 200,
-                ['contentType' => 'text/html']
+                ['Content-Type' => 'text/html; charset=utf-8']
             );
         } else {
             return response("404", 404);

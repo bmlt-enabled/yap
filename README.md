@@ -25,22 +25,3 @@ For setup instructions and general documentation please visit [https://yap.bmlt.
 
 * Latest Releases: [https://github.com/bmlt-enabled/yap/releases](https://github.com/bmlt-enabled/yap/releases)
 * Bleeding Edge: [https://archives.bmlt.app/index.html#yap](https://archives.bmlt.app/index.html#yap)
-
-# ⚠️ Major Refactor
-
-Currently we are in the process of doing a major overhaul of the codebase.  This will improve the stability and maintainability.  Also, as part of this change, we are making the code more testable which will help us track code paths more effectively.  All the PHP code has been migrated, however there are some remaining database components that are not in a Laravel-like structure.
-
-In a future release we will refactor the frontend by building a new React application to consume the rebuilt APIs, that work has partially started but has been put on pause.
-
-# API Docs (WIP)
-
-This only works locally right now.
-
-1. Run `make swagger`.
-2. Browse to `/api/documentation`
-
-# Testing
-
-After cloning, add a file called `.env.testing` with the value `GOOGLE_MAPS_API_KEY=<value>`.  Then run `make test`.
-
-To run code coverage, you can run `make coverage`.

@@ -30,6 +30,6 @@ test('get service bodies no auth', function () {
     $response = $this->call('GET', '/api/v1/rootServer/servicebodies');
     $response
         ->assertHeader("Location", "http://localhost/admin")
-        ->assertHeader("Content-Type", "text/html; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/html; charset=utf-8")
         ->assertStatus(302);
 });

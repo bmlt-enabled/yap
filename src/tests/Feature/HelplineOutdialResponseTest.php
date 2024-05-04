@@ -81,7 +81,7 @@ test('join volunteer to conference', function ($method) {
 
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -113,7 +113,7 @@ test('waiting for the volunteer to press 1 to answer the call', function ($metho
     ]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -150,7 +150,7 @@ test('volunteer called and auto answer capability enabled', function ($method) {
     ]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -180,7 +180,7 @@ test('the caller hung up before the call was answered', function ($method) {
     ]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',

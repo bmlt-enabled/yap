@@ -27,7 +27,7 @@ class ReadingController extends Controller
                 ->setVoice($this->settings->voice())
                 ->setLanguage($this->settings->get('language'));
         }
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
     public function spad()
@@ -39,6 +39,6 @@ class ReadingController extends Controller
                 ->setVoice($this->settings->voice())
                 ->setLanguage($this->settings->get('language'));
         }
-        return response($twiml)->header("Content-Type", "text/xml");
+        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 }

@@ -1,6 +1,10 @@
 <?php
 
+use App\Models\Record;
+use App\Models\Session;
 use App\Repositories\ReportsRepository;
+use Carbon\Carbon;
+use Twilio\TwiML\VoiceResponse;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -14,6 +18,7 @@ beforeEach(function () {
 
     $this->fakeCallSid = "abcdefghij";
     $this->middleware = new \Tests\MiddlewareTests();
+    $this->utility = setupTwilioService();
     $this->reportsRepository = $this->middleware->insertSession($this->fakeCallSid);
 });
 
@@ -21,7 +26,7 @@ test('dialback initial', function ($method) {
     $response = $this->call($method, '/dialback.php');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -36,49 +41,66 @@ test('dialback initial', function ($method) {
 
 test('dialback dialer valid pin entry', function ($method) {
     $fakePin = "123456";
-    $this->reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs();
-    $this->reportsRepository->shouldReceive("isDialbackPinValid")
-        ->with("123456")
-        ->andReturn(["123456"]);
-    app()->instance(ReportsRepository::class, $this->reportsRepository);
     $called = "+12125551212";
-    $response = $this->call(
-        'GET',
-        '/status.php',
-        ["TimestampNow"=>"123",
-            "CallSid"=> $this->fakeCallSid,
-            "Called"=>"+12125551212",
-            "Caller"=>"+17325551212",
-            "CallDuration"=>"120"]
+    $caller = "+17325551212";
+    $dialbackNumber = "+19732129999";
+    $this->reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs();
+    app()->instance(ReportsRepository::class, $this->reportsRepository);
+
+    Record::generate(
+        $this->fakeCallSid,
+        Carbon::now(),
+        Carbon::now(),
+        $dialbackNumber,
+        $called,
+        "",
+        60,
+        1
     );
-    $response->assertStatus(200);
-    $response = $this->call($method, '/dialback-dialer.php', ['Digits'=>$fakePin,'Called'=>$called]);
-    $response
+    Session::generate($this->fakeCallSid, $fakePin);
+
+    $responseDialbackDialer = $this->call($method, '/dialback-dialer.php', ['Digits'=>$fakePin,'Called'=>$called]);
+    $responseDialbackDialer
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">',
             'please wait while we connect your call',
             '</Say>',
-            '<Dial callerId="'.$called.'">'.$fakePin.'</Dial>',
+            '<Dial callerId="'.$called.'">',
+            '<Number>'. $dialbackNumber. '</Number>',
+            '</Dial>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
 
 test('dialback dialer invalid pin entry', function ($method) {
-    $repository = Mockery::mock(ReportsRepository::class);
+    $fakePin = "123456";
+    $called = "+12125551212";
+    $dialbackNumber = "+19732129999";
+    $repository = Mockery::mock(ReportsRepository::class)->makePartial();
     $repository->shouldReceive("insertCallRecord")->withAnyArgs();
-    $repository->shouldReceive("isDialbackPinValid")
-        ->with(null)
-        ->andReturn([]);
     app()->instance(ReportsRepository::class, $repository);
+
+    Record::generate(
+        $this->fakeCallSid,
+        Carbon::now(),
+        Carbon::now(),
+        $dialbackNumber,
+        $called,
+        "",
+        60,
+        1
+    );
+    Session::generate($this->fakeCallSid, $fakePin);
+
     $_REQUEST['Digits'] = 123;
     $response = $this->call($method, '/dialback-dialer.php');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',

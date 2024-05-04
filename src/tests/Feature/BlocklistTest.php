@@ -18,7 +18,7 @@ test('test the blocklist with an exact match', function ($method) {
     ]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact(["<?xml version='1.0' encoding='UTF-8'?><Response><Reject/></Response>"], false);
 })->with(['GET', 'POST']);
 
@@ -30,6 +30,6 @@ test('test the blocklist without a match', function ($method) {
     ]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertDontSee(["<?xml version='1.0' encoding='UTF-8'?><Response><Reject/></Response>"], false);
 })->with(['GET', 'POST']);

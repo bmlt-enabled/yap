@@ -31,7 +31,7 @@ test('zip input for helpline lookup', function ($method) {
     $response = $this->call($method, '/zip-input.php?SearchType=1');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -53,7 +53,7 @@ test('zip input for 4 digit postal code', function ($method) {
     $response = $this->call($method, '/zip-input.php', ['SearchType'=>'2']);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -70,7 +70,7 @@ test('zip input for address lookup', function ($method) {
     $response = $this->call($method, '/zip-input.php?SearchType=2');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -88,7 +88,7 @@ test('zip input for address lookup with speech gathering', function ($method) {
     $response = $this->call($method, '/zip-input.php?SearchType=2');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -106,7 +106,7 @@ test('city or county voice input', function ($method) {
     $response = $this->call($method, '/city-or-county-voice-input.php?SearchType=1');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
@@ -125,7 +125,7 @@ test('city or county voice input with hints', function ($method) {
     $response = $this->call($method, '/city-or-county-voice-input.php?SearchType=1');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',

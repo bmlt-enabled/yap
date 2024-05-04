@@ -14,6 +14,6 @@ test('get a SPAD', function ($method) {
     $response = $this->call($method, '/fetch-spad.php');
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "text/xml; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeText("All Rights Reserved", false);
 })->with(['GET', 'POST']);

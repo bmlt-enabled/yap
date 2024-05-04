@@ -19,7 +19,7 @@ test('login to authenticate with a BMLT user and a user with no rights', functio
         ["username"=>"yap","password"=>"CoreysGoryStory"]
     )->assertStatus(302)
         ->assertHeader("Location", 'http://localhost/admin/auth/invalid')
-        ->assertHeader("Content-Type", "text/html; charset=UTF-8");
+        ->assertHeader("Content-Type", "text/html; charset=utf-8");
 });
 
 test('login to authenticate with a BMLT user and a user with rights', function () {
@@ -31,7 +31,7 @@ test('login to authenticate with a BMLT user and a user with rights', function (
     $response
         ->assertStatus(302)
         ->assertHeader("Location", 'http://localhost/admin/home')
-        ->assertHeader("Content-Type", "text/html; charset=UTF-8");
+        ->assertHeader("Content-Type", "text/html; charset=utf-8");
 });
 
 test('login to authenticate with a yap admin user', function () {
@@ -50,5 +50,5 @@ test('login to authenticate with a yap admin user', function () {
     $response
         ->assertStatus(302)
         ->assertHeader("Location", 'http://localhost/admin/home')
-        ->assertHeader("Content-Type", "text/html; charset=UTF-8");
+        ->assertHeader("Content-Type", "text/html; charset=utf-8");
 });
