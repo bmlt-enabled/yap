@@ -245,7 +245,8 @@ class HelplineController extends Controller
     public function dial(Request $request)
     {
         if ($request->has('noop')) {
-            if ($request->has('CallStatus') && $request->get('CallStatus') == TwilioCallStatus::NOANSWER) {
+            if ($request->has('CallStatus') &&
+                ($request->get('CallStatus') == TwilioCallStatus::NOANSWER || $request->get('CallStatus') == TwilioCallStatus::FAILED)) {
                 $this->twilio->incrementNoAnswerCount();
             }
 
@@ -298,13 +299,21 @@ class HelplineController extends Controller
                 }
             }
 
-            // Make timeout configurable per volunteer
+            // TODO: Make timeout configurable per volunteer
             if (( $request->has('SequenceNumber') && intval($request->get('SequenceNumber')) == 1 ) ||
-                ( $request->has('CallStatus') && ($request->get('CallStatus') == TwilioCallStatus::NOANSWER || $request->get('CallStatus') == TwilioCallStatus::COMPLETED ))) {
+                ( $request->has('CallStatus') && ($request->get('CallStatus') == TwilioCallStatus::NOANSWER || $request->get('CallStatus') == TwilioCallStatus::COMPLETED || $request->get('CallStatus') == TwilioCallStatus::FAILED ))) {
                 $callConfig = $this->getCallConfig($request, $serviceBodyCallHandling);
 
                 if ($request->has('CallStatus') && $request->get('CallStatus') == TwilioCallStatus::NOANSWER) {
                     $this->call->insertCallEventRecord(EventId::VOLUNTEER_NOANSWER, (object)['to_number' => $request->get('Called')]);
+                    $this->call->setConferenceParticipant(
+                        $request->get('FriendlyName'),
+                        $request->get('CallSid'),
+                        CallRole::VOLUNTEER
+                    );
+                } else if ($request->has('CallStatus') && $request->get('CallStatus') == TwilioCallStatus::FAILED) {
+                    Log::error(sprintf("Volunteer Call Failed %s: %s", $request->get('Called'), $request->get('ErrorMessage')));
+                    $this->call->insertCallEventRecord(EventId::VOLUNTEER_NUMBER_BAD, (object)['to_number' => $request->get('Called'), 'error' => $request->get('ErrorMessage')]);
                     $this->call->setConferenceParticipant(
                         $request->get('FriendlyName'),
                         $request->get('CallSid'),
