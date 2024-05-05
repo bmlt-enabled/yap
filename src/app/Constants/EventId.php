@@ -29,6 +29,7 @@ class EventId
     const SPAD_LOOKUP_SMS = 24;
     const VOLUNTEER_SEARCH_FORCE_DIALED = 25;
     const VOLUNTEER_NUMBER_BAD = 26;
+    const VOLUNTEER_NUMBER_BUSY = 27;
 
     public static function getEventById($id)
     {
@@ -85,6 +86,8 @@ class EventId
                 return "Volunteer Search Force Dial";
             case self::VOLUNTEER_NUMBER_BAD:
                 return "Volunteer Number is Bad";
+            case self::VOLUNTEER_NUMBER_BUSY:
+                return "Volunteer Number is Busy";
         }
     }
 }

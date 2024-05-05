@@ -11,6 +11,8 @@ use App\Models\ConferenceParticipant;
 use App\Models\ConfigData;
 use App\Models\RecordType;
 use App\Models\ServiceBodyCallHandling;
+use App\Models\VolunteerData;
+use App\Models\VolunteerInfo;
 use App\Repositories\ConfigRepository;
 use App\Constants\DataType;
 use App\Repositories\ReportsRepository;
@@ -116,28 +118,21 @@ test('debug messages', function ($method) {
         ];
     }
 
-    $volunteer = [[
-        "volunteer_name"=>$volunteer_name,
-        "volunteer_phone_number"=>"(555) 111-2222",
-        "volunteer_gender"=>$volunteer_gender,
-        "volunteer_responder"=>$volunteer_responder,
-        "volunteer_languages"=>$volunteer_languages,
-        "volunteer_notes"=>"",
-        "volunteer_enabled"=>true,
-        "volunteer_shift_schedule"=>base64_encode(json_encode($shifts))
-    ]];
-    $this->configRepository = Mockery::mock(ConfigRepository::class)->makePartial();
-    $this->configRepository->shouldReceive("getDbData")->with(
-        $this->serviceBodyId,
-        DataType::YAP_VOLUNTEERS_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => json_encode($volunteer)
-    ]]);
+    $volunteer = new VolunteerData();
+    $volunteer->volunteer_name = $volunteer_name;
+    $volunteer->volunteer_phone_number = "(555) 111-2222";
+    $volunteer->volunteer_gender = $volunteer_gender;
+    $volunteer->volunteer_responder = $volunteer_responder;
+    $volunteer->volunteer_languages = $volunteer_languages;
+    $volunteer->volunteer_notes = "";
+    $volunteer->volunteer_enabled = true;
+    $volunteer->volunteer_shift_schedule = base64_encode(json_encode($shifts));
 
-    app()->instance(ConfigRepository::class, $this->configRepository);
+    ConfigData::createVolunteer(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $volunteer,
+    );
 
     $response = $this->call($method, '/helpline-dialer.php', [
         'Debug' => "1",
@@ -224,27 +219,21 @@ test('mark the caller as having entered the conference for reporting purposes', 
         ];
     }
 
-    $volunteer = [[
-        "volunteer_name"=>$volunteer_name,
-        "volunteer_phone_number"=>$volunteer_phone_number,
-        "volunteer_gender"=>$volunteer_gender,
-        "volunteer_responder"=>$volunteer_responder,
-        "volunteer_languages"=>$volunteer_languages,
-        "volunteer_notes"=>"",
-        "volunteer_enabled"=>true,
-        "volunteer_shift_schedule"=>base64_encode(json_encode($shifts))
-    ]];
-    $this->configRepository->shouldReceive("getDbData")->with(
-        $this->serviceBodyId,
-        DataType::YAP_VOLUNTEERS_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => json_encode($volunteer)
-    ]]);
+    $volunteer = new VolunteerData();
+    $volunteer->volunteer_name = $volunteer_name;
+    $volunteer->volunteer_phone_number = $volunteer_phone_number;
+    $volunteer->volunteer_gender = $volunteer_gender;
+    $volunteer->volunteer_responder = $volunteer_responder;
+    $volunteer->volunteer_languages = $volunteer_languages;
+    $volunteer->volunteer_notes = "";
+    $volunteer->volunteer_enabled = true;
+    $volunteer->volunteer_shift_schedule = base64_encode(json_encode($shifts));
 
-    app()->instance(ConfigRepository::class, $this->configRepository);
+    ConfigData::createVolunteer(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $volunteer,
+    );
 
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $conferenceListMock->shouldReceive("read")
@@ -381,27 +370,21 @@ test('mark the caller as having entered the conference for reporting purposes, w
         ];
     }
 
-    $volunteer = [[
-        "volunteer_name"=>$volunteer_name,
-        "volunteer_phone_number"=>$volunteer_phone_number,
-        "volunteer_gender"=>$volunteer_gender,
-        "volunteer_responder"=>$volunteer_responder,
-        "volunteer_languages"=>$volunteer_languages,
-        "volunteer_notes"=>"",
-        "volunteer_enabled"=>true,
-        "volunteer_shift_schedule"=>base64_encode(json_encode($shifts))
-    ]];
-    $this->configRepository->shouldReceive("getDbData")->with(
-        $this->serviceBodyId,
-        DataType::YAP_VOLUNTEERS_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => json_encode($volunteer)
-    ]]);
+    $volunteer = new VolunteerData();
+    $volunteer->volunteer_name = $volunteer_name;
+    $volunteer->volunteer_phone_number = $volunteer_phone_number;
+    $volunteer->volunteer_gender = $volunteer_gender;
+    $volunteer->volunteer_responder = $volunteer_responder;
+    $volunteer->volunteer_languages = $volunteer_languages;
+    $volunteer->volunteer_notes = "";
+    $volunteer->volunteer_enabled = true;
+    $volunteer->volunteer_shift_schedule = base64_encode(json_encode($shifts));
 
-    app()->instance(ConfigRepository::class, $this->configRepository);
+    ConfigData::createVolunteer(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $volunteer,
+    );
 
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $conferenceListMock->shouldReceive("read")
@@ -478,7 +461,7 @@ test('mark the caller as having entered the conference for reporting purposes, w
         ->assertHeader("Content-Type", "application/json");
 })->with(['GET', 'POST']);
 
-test('an invalid outgoing call happens with linear and voicemail and one volunteer', function ($method) {
+test('an invalid or busy outgoing call happens with linear and voicemail and one volunteer', function ($method, $twilioCallStatus) {
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $_SESSION['no_answer_max'] = 1;
     $_SESSION['master_callersid'] = $this->callSid;
@@ -517,27 +500,21 @@ test('an invalid outgoing call happens with linear and voicemail and one volunte
         ];
     }
 
-    $volunteer = [[
-        "volunteer_name"=>$volunteer_name,
-        "volunteer_phone_number"=>$volunteer_phone_number,
-        "volunteer_gender"=>$volunteer_gender,
-        "volunteer_responder"=>$volunteer_responder,
-        "volunteer_languages"=>$volunteer_languages,
-        "volunteer_notes"=>"",
-        "volunteer_enabled"=>true,
-        "volunteer_shift_schedule"=>base64_encode(json_encode($shifts))
-    ]];
-    $this->configRepository->shouldReceive("getDbData")->with(
-        $this->serviceBodyId,
-        DataType::YAP_VOLUNTEERS_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => json_encode($volunteer)
-    ]]);
+    $volunteer = new VolunteerData();
+    $volunteer->volunteer_name = $volunteer_name;
+    $volunteer->volunteer_phone_number = $volunteer_phone_number;
+    $volunteer->volunteer_gender = $volunteer_gender;
+    $volunteer->volunteer_responder = $volunteer_responder;
+    $volunteer->volunteer_languages = $volunteer_languages;
+    $volunteer->volunteer_notes = "";
+    $volunteer->volunteer_enabled = true;
+    $volunteer->volunteer_shift_schedule = base64_encode(json_encode($shifts));
 
-    app()->instance(ConfigRepository::class, $this->configRepository);
+    ConfigData::createVolunteer(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $volunteer,
+    );
 
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $conferenceListMock->shouldReceive("read")
@@ -607,15 +584,25 @@ test('an invalid outgoing call happens with linear and voicemail and one volunte
             return $data['from'] == $this->caller && !empty($data['body'][0]);
         }));
 
+    $eventId = 0;
+    $payload = "";
+    if ($twilioCallStatus === TwilioCallStatus::FAILED) {
+        $eventId = EventId::VOLUNTEER_NUMBER_BAD;
+        $payload = ["to_number"=>$this->volunteer_phone_number, "error"=>"invalid phone number"];
+    } elseif ($twilioCallStatus === TwilioCallStatus::BUSY) {
+        $eventId = EventId::VOLUNTEER_NUMBER_BUSY;
+        $payload = ["to_number"=>$this->volunteer_phone_number];
+    }
+
     $reportsRepository = Mockery::mock(ReportsRepository::class);
     $reportsRepository->shouldReceive('insertSession')
         ->with($this->callSid)
         ->once();
     $reportsRepository->shouldReceive('insertCallEventRecord')
         ->withArgs([$this->callSid,
-            EventId::VOLUNTEER_NUMBER_BAD,
+            $eventId,
             $this->serviceBodyId,
-            json_encode((object)["to_number"=>$this->volunteer_phone_number, "error"=>"invalid phone number"]),
+            json_encode((object)$payload),
             RecordType::PHONE])
         ->once();
     $reportsRepository->shouldReceive('setConferenceParticipant')
@@ -629,7 +616,7 @@ test('an invalid outgoing call happens with linear and voicemail and one volunte
         'OriginalCallerId' => "19193559674",
         'FriendlyName' => $this->conferenceName,
         'Direction' => 'outbound-api',
-        'CallStatus' => 'failed',
+        'CallStatus' => $twilioCallStatus,
         'CallbackSource' => 'call-progress-events',
         'ErrorMessage' => 'invalid phone number',
         'tracker' => 1
@@ -637,9 +624,9 @@ test('an invalid outgoing call happens with linear and voicemail and one volunte
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json");
-})->with(['GET', 'POST']);
+})->with(['GET', 'POST'], [TwilioCallStatus::FAILED, TwilioCallStatus::BUSY]);
 
-test('an invalid outgoing call happens with linear and voicemail and two volunteers', function ($method) {
+test('an invalid or busy outgoing call happens with linear and voicemail and two volunteers', function ($method, $twilioCallStatus) {
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $_SESSION['no_answer_max'] = 1;
     $_SESSION['master_callersid'] = $this->callSid;
@@ -681,36 +668,31 @@ test('an invalid outgoing call happens with linear and voicemail and two volunte
         ];
     }
 
-    $volunteer = [[
-        "volunteer_name"=>$volunteer_name,
-        "volunteer_phone_number"=>$volunteer_phone_number,
-        "volunteer_gender"=>$volunteer_gender,
-        "volunteer_responder"=>$volunteer_responder,
-        "volunteer_languages"=>$volunteer_languages,
-        "volunteer_notes"=>"",
-        "volunteer_enabled"=>true,
-        "volunteer_shift_schedule"=>base64_encode(json_encode($shifts))
-    ],[
-        "volunteer_name"=>$volunteer_name_2,
-        "volunteer_phone_number"=>$this->volunteer_phone_number_2,
-        "volunteer_gender"=>$volunteer_gender,
-        "volunteer_responder"=>$volunteer_responder,
-        "volunteer_languages"=>$volunteer_languages,
-        "volunteer_notes"=>"",
-        "volunteer_enabled"=>true,
-        "volunteer_shift_schedule"=>base64_encode(json_encode($shifts))
-    ]];
-    $this->configRepository->shouldReceive("getDbData")->with(
-        $this->serviceBodyId,
-        DataType::YAP_VOLUNTEERS_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => json_encode($volunteer)
-    ]]);
+    $volunteer1 = new VolunteerData();
+    $volunteer1->volunteer_name = $volunteer_name;
+    $volunteer1->volunteer_phone_number = $this->volunteer_phone_number;
+    $volunteer1->volunteer_gender = $volunteer_gender;
+    $volunteer1->volunteer_responder = $volunteer_responder;
+    $volunteer1->volunteer_languages = $volunteer_languages;
+    $volunteer1->volunteer_notes = "";
+    $volunteer1->volunteer_enabled = true;
+    $volunteer1->volunteer_shift_schedule = base64_encode(json_encode($shifts));
 
-    app()->instance(ConfigRepository::class, $this->configRepository);
+    $volunteer2 = new VolunteerData();
+    $volunteer2->volunteer_name = $volunteer_name_2;
+    $volunteer2->volunteer_phone_number = $this->volunteer_phone_number_2;
+    $volunteer2->volunteer_gender = $volunteer_gender;
+    $volunteer2->volunteer_responder = $volunteer_responder;
+    $volunteer2->volunteer_languages = $volunteer_languages;
+    $volunteer2->volunteer_notes = "";
+    $volunteer2->volunteer_enabled = true;
+    $volunteer2->volunteer_shift_schedule = base64_encode(json_encode($shifts));
+
+    ConfigData::createVolunteers(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        [$volunteer1, $volunteer2],
+    );
 
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $conferenceListMock->shouldReceive("read")
@@ -784,11 +766,20 @@ test('an invalid outgoing call happens with linear and voicemail and two volunte
     $reportsRepository->shouldReceive('insertSession')
         ->with($this->callSid)
         ->once();
+
+    if ($twilioCallStatus === TwilioCallStatus::FAILED) {
+        $eventId = EventId::VOLUNTEER_NUMBER_BAD;
+        $payload = ["to_number"=>$this->volunteer_phone_number, "error"=>"invalid phone number"];
+    } elseif ($twilioCallStatus === TwilioCallStatus::BUSY) {
+        $eventId = EventId::VOLUNTEER_NUMBER_BUSY;
+        $payload = ["to_number"=>$this->volunteer_phone_number];
+    }
+
     $reportsRepository->shouldReceive('insertCallEventRecord')
         ->withArgs([$this->callSid,
-            EventId::VOLUNTEER_NUMBER_BAD,
+            $eventId,
             $this->serviceBodyId,
-            json_encode((object)["to_number"=>$this->volunteer_phone_number, "error"=>"invalid phone number"]),
+            json_encode((object)$payload),
             RecordType::PHONE])
         ->once();
     $reportsRepository->shouldReceive('insertCallEventRecord')
@@ -810,7 +801,7 @@ test('an invalid outgoing call happens with linear and voicemail and two volunte
         'OriginalCallerId' => $this->caller,
         'FriendlyName' => $this->conferenceName,
         'Direction' => 'outbound-api',
-        'CallStatus' => 'failed',
+        'CallStatus' => $twilioCallStatus,
         'CallbackSource' => 'call-progress-events',
         'ErrorMessage' => 'invalid phone number',
         'tracker' => 1
@@ -818,9 +809,9 @@ test('an invalid outgoing call happens with linear and voicemail and two volunte
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json");
-})->with(['GET', 'POST']);
+})->with(['GET', 'POST'], [TwilioCallStatus::FAILED, TwilioCallStatus::BUSY]);
 
-test('an invalid outgoing call happens with blasting and voicemail and one volunteer', function ($method) {
+test('an invalid or busy outgoing call happens with blasting and voicemail and one volunteer', function ($method, $twilioCallStatus) {
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $_SESSION['no_answer_max'] = 1;
     $_SESSION['master_callersid'] = $this->callSid;
@@ -859,27 +850,21 @@ test('an invalid outgoing call happens with blasting and voicemail and one volun
         ];
     }
 
-    $volunteer = [[
-        "volunteer_name"=>$volunteer_name,
-        "volunteer_phone_number"=>$volunteer_phone_number,
-        "volunteer_gender"=>$volunteer_gender,
-        "volunteer_responder"=>$volunteer_responder,
-        "volunteer_languages"=>$volunteer_languages,
-        "volunteer_notes"=>"",
-        "volunteer_enabled"=>true,
-        "volunteer_shift_schedule"=>base64_encode(json_encode($shifts))
-    ]];
-    $this->configRepository->shouldReceive("getDbData")->with(
-        $this->serviceBodyId,
-        DataType::YAP_VOLUNTEERS_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => json_encode($volunteer)
-    ]]);
+    $volunteer = new VolunteerData();
+    $volunteer->volunteer_name = $volunteer_name;
+    $volunteer->volunteer_phone_number = $this->volunteer_phone_number;
+    $volunteer->volunteer_gender = $volunteer_gender;
+    $volunteer->volunteer_responder = $volunteer_responder;
+    $volunteer->volunteer_languages = $volunteer_languages;
+    $volunteer->volunteer_notes = "";
+    $volunteer->volunteer_enabled = true;
+    $volunteer->volunteer_shift_schedule = base64_encode(json_encode($shifts));
 
-    app()->instance(ConfigRepository::class, $this->configRepository);
+    ConfigData::createVolunteer(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $volunteer,
+    );
 
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $this->twilioClient->conferences = $conferenceListMock;
@@ -948,7 +933,7 @@ test('an invalid outgoing call happens with blasting and voicemail and one volun
         'OriginalCallerId' => "19193559674",
         'FriendlyName' => $this->conferenceName,
         'Direction' => 'outbound-api',
-        'CallStatus' => 'failed',
+        'CallStatus' => $twilioCallStatus,
         'CallbackSource' => 'call-progress-events',
         'ErrorMessage' => 'invalid phone number',
         'tracker' => 1,
@@ -957,9 +942,9 @@ test('an invalid outgoing call happens with blasting and voicemail and one volun
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json");
-})->with(['GET', 'POST']);
+})->with(['GET', 'POST'], [TwilioCallStatus::FAILED, TwilioCallStatus::BUSY]);
 
-test('an invalid outgoing call happens with blasting and voicemail and two volunteers', function ($method) {
+test('an invalid or busy outgoing call happens with blasting and voicemail and two volunteers', function ($method, $twilioCallStatus) {
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $_SESSION['no_answer_max'] = 1;
     $_SESSION['master_callersid'] = $this->callSid;
@@ -1001,36 +986,31 @@ test('an invalid outgoing call happens with blasting and voicemail and two volun
         ];
     }
 
-    $volunteer = [[
-        "volunteer_name"=>$volunteer_name,
-        "volunteer_phone_number"=>$volunteer_phone_number,
-        "volunteer_gender"=>$volunteer_gender,
-        "volunteer_responder"=>$volunteer_responder,
-        "volunteer_languages"=>$volunteer_languages,
-        "volunteer_notes"=>"",
-        "volunteer_enabled"=>true,
-        "volunteer_shift_schedule"=>base64_encode(json_encode($shifts))
-    ],[
-        "volunteer_name"=>$volunteer_name_2,
-        "volunteer_phone_number"=>$this->volunteer_phone_number_2,
-        "volunteer_gender"=>$volunteer_gender,
-        "volunteer_responder"=>$volunteer_responder,
-        "volunteer_languages"=>$volunteer_languages,
-        "volunteer_notes"=>"",
-        "volunteer_enabled"=>true,
-        "volunteer_shift_schedule"=>base64_encode(json_encode($shifts))
-    ]];
-    $this->configRepository->shouldReceive("getDbData")->with(
-        $this->serviceBodyId,
-        DataType::YAP_VOLUNTEERS_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => json_encode($volunteer)
-    ]]);
+    $volunteer1 = new VolunteerData();
+    $volunteer1->volunteer_name = $volunteer_name;
+    $volunteer1->volunteer_phone_number = $this->volunteer_phone_number;
+    $volunteer1->volunteer_gender = $volunteer_gender;
+    $volunteer1->volunteer_responder = $volunteer_responder;
+    $volunteer1->volunteer_languages = $volunteer_languages;
+    $volunteer1->volunteer_notes = "";
+    $volunteer1->volunteer_enabled = true;
+    $volunteer1->volunteer_shift_schedule = base64_encode(json_encode($shifts));
 
-    app()->instance(ConfigRepository::class, $this->configRepository);
+    $volunteer2 = new VolunteerData();
+    $volunteer2->volunteer_name = $volunteer_name_2;
+    $volunteer2->volunteer_phone_number = $this->volunteer_phone_number_2;
+    $volunteer2->volunteer_gender = $volunteer_gender;
+    $volunteer2->volunteer_responder = $volunteer_responder;
+    $volunteer2->volunteer_languages = $volunteer_languages;
+    $volunteer2->volunteer_notes = "";
+    $volunteer2->volunteer_enabled = true;
+    $volunteer2->volunteer_shift_schedule = base64_encode(json_encode($shifts));
+
+    ConfigData::createVolunteers(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        [$volunteer1, $volunteer2],
+    );
 
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $this->twilioClient->conferences = $conferenceListMock;
@@ -1099,7 +1079,7 @@ test('an invalid outgoing call happens with blasting and voicemail and two volun
         'OriginalCallerId' => "19193559674",
         'FriendlyName' => $this->conferenceName,
         'Direction' => 'outbound-api',
-        'CallStatus' => 'failed',
+        'CallStatus' => $twilioCallStatus,
         'CallbackSource' => 'call-progress-events',
         'ErrorMessage' => 'invalid phone number',
         'tracker' => 1,
@@ -1108,7 +1088,7 @@ test('an invalid outgoing call happens with blasting and voicemail and two volun
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json");
-})->with(['GET', 'POST']);
+})->with(['GET', 'POST'], [TwilioCallStatus::FAILED, TwilioCallStatus::BUSY]);
 
 test('caller leaves the call', function ($method) {
     $callsid = "CA460d1728a3e07606f36aaa8879a7fbd3";

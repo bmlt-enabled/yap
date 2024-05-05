@@ -2,7 +2,7 @@
 
 ### 4.3.4 (UNRELEASED)
 * Fix for dialback dialing. [#1021]
-* Fix for when an invalid or out of service number is specified for a volunteer. [#971]
+* Fix for when an invalid or busy number is specified for a volunteer. [#971]
 
 ### 4.3.3 (May 1, 2024)
 * Fix for reports where they are always recursing service bodies regardless of the setting [#980]
