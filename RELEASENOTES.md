@@ -1,6 +1,6 @@
 # Release Notes
 
-### 4.3.4 (UNRELEASED)
+### 4.3.4 (May 5, 2024)
 * Fix for dialback dialing. [#1021]
 * Fix for when an invalid or busy number is specified for a volunteer. [#971]
 
