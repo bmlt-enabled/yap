@@ -74,7 +74,6 @@ function initReports(dataLoadedCallback)
         layout: "fitColumns",
         responsiveLayout: "hide",
         tooltips: true,
-        height:"800px",
         addRowPos: "top",
         history: true,
         pagination: "remote",
@@ -92,26 +91,17 @@ function initReports(dataLoadedCallback)
                 }
             }
 
-            $(".subTableHolder").toggle();
-
             eventsTable.setData(events);
-
             return response;
         },
         dataLoaded: function (data) {
             dataLoadedCallback(data)
-        },
-        pageLoaded: function (pageno) {
-            $(".subTableHolder").hide();
         },
         movableColumns: true,
         resizableRows: false,
         printAsHtml: true,
         printHeader: "<h3>Call Detail Records<h3>",
         printFooter: "",
-        rowClick: function (e, row) {
-            $("#subTableId_" + row.getData().id).toggle();
-        },
         initialSort: [
             {column:"start_time", dir:"desc"},
         ],
@@ -122,34 +112,47 @@ function initReports(dataLoadedCallback)
             {title:"From", field:"from_number"},
             {title:"To", field:"to_number"},
             {title:"Type", field:"type_name"},
-            {title:"Call Events", field:"call_events", visible: false, download: true, formatter: function (cell, formatterParams, onRendered) {
-                    return JSON.stringify(cell.getValue());
-            }}
+            {title:"Events",
+                field:"call_events",
+                width: 100,
+                hozAlign: "center",
+                formatter: function() {
+                    return "🔎";
+                },
+                cellClick: function(e, cell) {
+                    $("#events-modal-table").html("");
+                    $("#callEventsDetails").on('shown.bs.modal', function(e) {
+                        console.log(cell.getRow().getData())
+                        new Tabulator("#call-detail-modal-table", {
+                            layout: "fitColumns",
+                            tooltips: true,
+                            addRowPos: "top",
+                            data: [cell.getRow().getData()],
+                            columns: [
+                                {title:"Start Time", field:"start_time", mutator: toCurrentTimezone },
+                                {title:"End Time", field:"end_time", mutator: toCurrentTimezone },
+                                {title:"Duration (s)", field:"duration"},
+                                {title:"From", field:"from_number"},
+                                {title:"To", field:"to_number"},
+                                {title:"Type", field:"type_name"},
+                            ],
+                        });
+
+                        new Tabulator("#events-modal-table", {
+                            layout: "fitColumns",
+                            tooltips: true,
+                            addRowPos: "top",
+                            data: cell.getValue(),
+                            columns: eventsTableColumns,
+                            initialSort:[
+                                {column:"event_time", dir:"desc"},
+                            ],
+                        });
+                    })
+                    $("#callEventsDetails").modal("show");
+                }
+            }
         ],
-        rowFormatter: function (row) {
-            //create and style holder elements
-            var holderEl = document.createElement("div");
-            var tableEl = document.createElement("div");
-
-            holderEl.style.boxSizing = "border-box";
-            holderEl.style.padding = "10px 30px 10px 10px";
-            holderEl.style.borderTop = "1px solid #333";
-            holderEl.style.borderBotom = "1px solid #333";
-            holderEl.style.background = "#ddd";
-            holderEl.setAttribute('class', 'subTableHolder');
-            holderEl.setAttribute('id', 'subTableId_' + row.getData().id);
-            tableEl.style.border = "1px solid #333";
-            tableEl.setAttribute('class', 'eventsSubtable');
-            holderEl.appendChild(tableEl);
-            row.getElement().appendChild(holderEl);
-
-            var subTable = new Tabulator(tableEl, {
-                layout: "fitColumns",
-                tooltips: true,
-                data: row.getData().call_events,
-                columns: eventsTableColumns
-            });
-        }
     });
 
     var eventsTable = new Tabulator("#events-table", {

@@ -2,6 +2,8 @@
 
 ### 4.3.5 (UNRELEASED)
 * Fix for BMLT based logins not working in some cases.
+* Fix for call detail records table on the Reports page that wouldn't render all records.  Call events are now in a modal window with a magnifying glass that triggers the open. [#1034] 
+* Fix for auto expanding call details on mobile by eliminating sub tables and moving the events to a modal window. [#610]
 
 ### 4.3.4 (May 5, 2024)
 * Fix for dialback dialing. [#1021]
