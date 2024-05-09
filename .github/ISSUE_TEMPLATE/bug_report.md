@@ -3,17 +3,21 @@ name: Bug report
 about: Create a report to help us improve
 title: ''
 labels: ''
-assignees: ''
+assignees: '@dgershman'
 
 ---
 
 **Describe the bug**
-A clear and concise description of what the bug is.
+
 
 **What version are you running?**
-Enter the version number.
 
-**Did this happen on prior versions to the one you are running?**
+
+**What PHP version are you running?**
+
+
+**Did this happen on prior versions to the one you are running (if so what version)?**
+
 
 **To Reproduce**
 Steps to reproduce the behavior:

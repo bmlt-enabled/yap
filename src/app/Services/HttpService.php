@@ -26,6 +26,13 @@ class HttpService
         ], $extraHeaders))->post($url, $data);
     }
 
+    public function postAsForm($url, $data, $extraHeaders = []) : Response
+    {
+        return Http::withHeaders(array_merge([
+            "User-Agent"=>self::USER_AGENT
+        ], $extraHeaders))->asForm()->post($url, $data);
+    }
+
     public function getWithAuth($url, $ttl = 0) : string
     {
         return $this->get($url, $ttl, ["Cookie" => $this->getBMLTAuthSessionCookies()]);
