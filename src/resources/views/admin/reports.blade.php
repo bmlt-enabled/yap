@@ -73,6 +73,25 @@
         <div id="cdr-table"></div>
         <div id="events-table" style="display:none;"></div>
     </div>
+    <div class="modal fade" id="callEventsDetails" tabindex="-1" role="dialog" aria-labelledby="callEventsDetails" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Call Events</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="call-detail-modal-table"></div>
+                    <div id="events-modal-table"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <script src="<?php echo url("/public/dist/js/yap-reports.js")?>"></script>
 @include('admin.partials.footer')
