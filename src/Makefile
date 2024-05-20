@@ -1,8 +1,11 @@
 .PHONY: run
-run:
+run: serve
 	composer install
 	npm install
-	env ENVIRONMENT=test php artisan serve
+
+.PHONY: serve
+serve:
+	env ENVIRONMENT=test php -S 127.0.0.1:8000 -t . server.php
 
 .PHONY: e2e-test
 e2e-test:
