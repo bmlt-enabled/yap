@@ -1,7 +1,13 @@
 <?php
 
+use App\Constants\CycleAlgorithm;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
+use App\Constants\VolunteerRoutingType;
+use App\Constants\VolunteerType;
+use App\Models\ConfigData;
+use App\Models\ServiceBodyCallHandling;
+use App\Models\VolunteerData;
 use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
@@ -26,14 +32,14 @@ beforeEach(function () {
     $this->settings = new SettingsService();
     app()->instance(SettingsService::class, $this->settings);
 
-    $this->midddleware = new MiddlewareTests();
+    $this->middleware = new MiddlewareTests();
     $this->utility = setupTwilioService();
     $this->rootServerMocks = new RootServerMocks();
     $this->id = "200";
     $this->serviceBodyId = "1053";
     $this->parentServiceBodyId = "1052";
     $this->data =  "{\"data\":{}}";
-    $this->configRepository = $this->midddleware->getAllDbData(
+    $this->configRepository = $this->middleware->getAllDbData(
         $this->id,
         $this->serviceBodyId,
         $this->parentServiceBodyId,
@@ -47,6 +53,36 @@ test('initial sms helpline gateway default when there is no volunteer', function
     $reportsRepository = Mockery::mock(ReportsRepository::class);
     $reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs();
     $reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs();
+
+    $volunteer_name = "Corey";
+    $volunteer_gender = VolunteerGender::UNSPECIFIED;
+    $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
+    $volunteer_languages = ["en-US"];
+    $shiftTz = "America/New_York";
+    $shiftStart = "12:00 AM";
+    $shiftEnd = "11:59 PM";
+
+    $shifts = [];
+    for ($i = 1; $i <= 7; $i++) {
+        $shifts[] = [
+            "day" => $i,
+            "tz" => $shiftTz,
+            "start_time" => $shiftStart,
+            "end_time" => $shiftEnd,
+            "type" => VolunteerType::SMS
+        ];
+    }
+
+    $volunteer = new VolunteerData();
+    $volunteer->volunteer_name = $volunteer_name;
+    $volunteer->volunteer_phone_number = '(732) 555-1111';
+    $volunteer->volunteer_gender = $volunteer_gender;
+    $volunteer->volunteer_responder = $volunteer_responder;
+    $volunteer->volunteer_languages = $volunteer_languages;
+    $volunteer->volunteer_notes = "";
+    $volunteer->volunteer_enabled = true;
+    $volunteer->volunteer_shift_schedule = base64_encode(json_encode($shifts));
+
     app()->instance(ReportsRepository::class, $reportsRepository);
     $results[] = (object)["service_body_bigint"=>$this->serviceBodyId];
     $this->rootServerMocks->getService()
@@ -56,38 +92,39 @@ test('initial sms helpline gateway default when there is no volunteer', function
         ->shouldReceive("isBMLTServerOwned")
         ->withNoArgs()->andReturn(true);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
-//    $messageListMock->shouldReceive('create')
-//        ->withArgs([$this->to, [
-//            'body' => 'could not find a volunteer for the location, please retry your request.',
-//            'from' => $this->from]])->times(1);
     $messageListMock->shouldReceive('create')
         ->withArgs([$this->to, [
             "body" => 'Thank you and your request has been received.  A volunteer should be responding to you shortly.',
             "from" => $this->from]])->times(1);
+    $messageListMock->shouldReceive('create')
+        ->withArgs([$volunteer->volunteer_phone_number, [
+            "body" => sprintf('Helpline: someone is requesting SMS help from %s please text or call them back.', $this->to),
+            "from" => $this->from]])->times(1);
     $this->utility->client->messages = $messageListMock;
 
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")
-        ->with($this->serviceBodyId, DataType::YAP_VOLUNTEERS_V2)
-        ->andReturn([(object)[
-            "service_body_id" => $this->serviceBodyId,
-            "id" => "200",
-            "parent_id" => $this->parentServiceBodyId,
-            "data" => json_encode([])
-        ]])->once();
-
-    $repository->shouldReceive("getDbData")->with(
+    ConfigData::createVolunteer(
         $this->serviceBodyId,
-        DataType::YAP_CALL_HANDLING_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => "[{\"volunteer_routing\":\"volunteers_and_sms\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-    ]])->once();
-    app()->instance(ConfigRepository::class, $repository);
+        $this->parentServiceBodyId,
+        $volunteer,
+    );
+
+    $this->withoutExceptionHandling();
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS_AND_SMS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
+    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
+
+    ConfigData::createCallHandling(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $serviceBodyCallHandlingData
+    );
+
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     $response = $this->call($method, '/sms-gateway.php', [
