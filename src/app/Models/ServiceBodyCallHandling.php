@@ -29,4 +29,6 @@ class ServiceBodyCallHandling
     public $moh_count = 1;
     public $sms_routing_enabled = false;
     public $sms_strategy = CycleAlgorithm::RANDOM_LOOP_FOREVER;
+    public $override_en_US_greeting;
+    public $override_en_US_voicemail_greeting;
 }
