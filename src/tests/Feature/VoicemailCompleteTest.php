@@ -53,10 +53,23 @@ test('voicemail complete send sms using primary contact', function ($method) {
     $_REQUEST['caller_number'] = $this->callerNumber;
     $_REQUEST['RecordingUrl'] = $this->recordingUrl;
 
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
+    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
+    $serviceBodyCallHandlingData->primary_contact = "2125551212";
+
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
     $messageListMock->shouldReceive('create')
-        ->with(is_string(""), is_array([]))->once();
+        ->withArgs([$serviceBodyCallHandlingData->primary_contact, [
+            "from" => $this->callerNumber,
+            "body" => sprintf('You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link %s.mp3. ',
+                $this->callerNumber,
+                $this->recordingUrl),
+            ]])->times(1);
     $this->utility->client->messages = $messageListMock;
 
     // mocking TwilioRestClient->calls()->update();
@@ -68,14 +81,6 @@ test('voicemail complete send sms using primary contact', function ($method) {
     $this->utility->client->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
     $this->withoutExceptionHandling();
 
-    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
-    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
-    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
-    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
-    $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
-    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
-    $serviceBodyCallHandlingData->primary_contact = "2125551212";
-
     ConfigData::createCallHandling(
         $this->serviceBodyId,
         $this->parentServiceBodyId,
@@ -83,7 +88,7 @@ test('voicemail complete send sms using primary contact', function ($method) {
     );
 
     $response = $this->call($method, '/voicemail-complete.php', [
-        "caller_id" => "+17325551212",
+        "caller_id" => $this->callerNumber,
         "CallSid" => $this->callSid,
         "RecordingUrl" => $this->recordingUrl,
         "caller_number" => $this->callerNumber,
