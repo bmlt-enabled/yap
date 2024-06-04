@@ -5,7 +5,10 @@ use App\Constants\SmtpPorts;
 use App\Constants\TwilioCallStatus;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
+use App\Constants\VolunteerRoutingType;
 use App\Constants\VolunteerType;
+use App\Models\ConfigData;
+use App\Models\ServiceBodyCallHandling;
 use App\Models\VolunteerRoutingParameters;
 use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;
@@ -45,7 +48,7 @@ beforeEach(function () {
 
 test('voicemail complete send sms using primary contact', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $_SESSION['override_service_body_id'] = "1053";
+    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $_REQUEST['CallSid'] = $this->callSid;
     $_REQUEST['caller_number'] = $this->callerNumber;
     $_REQUEST['RecordingUrl'] = $this->recordingUrl;
@@ -63,18 +66,22 @@ test('voicemail complete send sms using primary contact', function ($method) {
             return $data['status'] == TwilioCallStatus::COMPLETED;
         }));
     $this->utility->client->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
+    $this->withoutExceptionHandling();
 
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
+    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
+    $serviceBodyCallHandlingData->primary_contact = "2125551212";
+
+    ConfigData::createCallHandling(
         $this->serviceBodyId,
-        DataType::YAP_CALL_HANDLING_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"2125551212\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-    ]])->once();
-    app()->instance(ConfigRepository::class, $repository);
+        $this->parentServiceBodyId,
+        $serviceBodyCallHandlingData
+    );
+
     $response = $this->call($method, '/voicemail-complete.php', [
         "caller_id" => "+17325551212",
         "CallSid" => $this->callSid,

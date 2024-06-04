@@ -22,6 +22,7 @@ class ServiceBodyCallHandling
     public $gender_routing_enabled = false;
     public $call_strategy = CycleAlgorithm::LINEAR_LOOP_FOREVER;
     public $primary_contact_number_enabled = false;
+    public $primary_contact; // TODO: need to kill this off
     public $primary_contact_number = SpecialPhoneNumber::UNKNOWN;
     public $primary_contact_email_enabled = false;
     public $primary_contact_email;

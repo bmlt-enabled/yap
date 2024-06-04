@@ -25,8 +25,7 @@ beforeEach(function () {
 });
 
 test('voicemail standard response', function ($method) {
-    $service_body_id = $this->serviceBodyId;
-    $_SESSION['override_service_body_id'] = $service_body_id;
+    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
 
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
@@ -60,8 +59,7 @@ test('voicemail standard response', function ($method) {
 })->with(['GET', 'POST']);
 
 test('voicemail custom prompt', function ($method) {
-    $service_body_id = $this->serviceBodyId;
-    $_SESSION['override_service_body_id'] = $service_body_id;
+    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $_SESSION['override_en_US_voicemail_greeting'] = "https://example.org/test.mp3";
 
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
@@ -76,12 +74,10 @@ test('voicemail custom prompt', function ($method) {
         $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
-    
 
     $response = $this->call($method, '/voicemail.php', [
         "caller_id" => "+17325551212",
         "Caller" => "+12125551313",
-        //"ysk" => "test"
     ]);
 
     $response
