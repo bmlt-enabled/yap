@@ -46,6 +46,8 @@ beforeEach(function () {
     app()->instance(ReportsRepository::class, $reportsRepository);
 });
 
+// TODO: add a test that gets the voicemail complete link for dialback
+
 test('voicemail complete send sms using primary contact', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
@@ -66,9 +68,11 @@ test('voicemail complete send sms using primary contact', function ($method) {
     $messageListMock->shouldReceive('create')
         ->withArgs([$serviceBodyCallHandlingData->primary_contact, [
             "from" => $this->callerNumber,
-            "body" => sprintf('You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link %s.mp3. ',
+            "body" => sprintf(
+                'You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link %s.mp3. ',
                 $this->callerNumber,
-                $this->recordingUrl),
+                $this->recordingUrl
+            ),
             ]])->times(1);
     $this->utility->client->messages = $messageListMock;
 
