@@ -291,7 +291,6 @@ test('voicemail complete send sms using volunteer responder option and dialback 
         ], false);
 })->with(['GET', 'POST']);
 
-
 test('voicemail complete send email using primary contact', function ($method, $smtp_alt_port, $smtp_secure) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
