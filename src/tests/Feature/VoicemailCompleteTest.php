@@ -204,11 +204,22 @@ test('voicemail complete send sms using volunteer responder option', function ($
 test('voicemail complete send email using primary contact', function ($method, $smtp_alt_port, $smtp_secure) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
-    $this->utility->settings->set("smtp_host", "fake.host");
-    $this->utility->settings->set("smtp_username", "fake@user");
-    $this->utility->settings->set("smtp_password", "fake@password");
+    $smtp_host = "fake.host";
+    $smtp_username = "fake@user";
+    $smtp_password = "fake@password";
+
+    $this->utility->settings->set("smtp_host", $smtp_host);
+    $this->utility->settings->set("smtp_username", $smtp_username);
+    $this->utility->settings->set("smtp_password", $smtp_password);
     $this->utility->settings->set("smtp_alt_port", $smtp_alt_port);
     $this->utility->settings->set("smtp_secure", $smtp_secure);
+
+    $smtp_from_name = "bro bro";
+    $smtp_from_address = "son@my.com";
+
+    $this->utility->settings->set("smtp_from_name", $smtp_from_name);
+    $this->utility->settings->set("smtp_from_address", $smtp_from_address);
+
 
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
@@ -216,7 +227,7 @@ test('voicemail complete send email using primary contact', function ($method, $
     $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
     $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
-    $serviceBodyCallHandlingData->primary_contact_email = "dude@bro.net";
+    $serviceBodyCallHandlingData->primary_contact_email = "dude@bro.net,chief@home.org";
 
     // mocking TwilioRestClient->calls()->update();
     $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
@@ -255,6 +266,23 @@ test('voicemail complete send email using primary contact', function ($method, $
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response/>'
         ], false);
+
+    Assert::assertTrue($mailer->Host == $smtp_host);
+    Assert::assertTrue($mailer->Username == $smtp_username);
+    Assert::assertTrue($mailer->Password == $smtp_password);
+    Assert::assertTrue($mailer->SMTPAuth);
+    Assert::assertTrue($mailer->From == $smtp_from_address);
+    Assert::assertTrue($mailer->FromName == $smtp_from_name);
+    Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
+    Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
+    Assert::assertTrue($mailer->Body == sprintf("You have a message from the Finger Lakes Area Service helpline from caller %s, https://example.org/tests/fake.mp3", $this->callerNumber));
+    Assert::assertTrue($mailer->Subject == "Helpline Voicemail from Finger Lakes Area Service");
+    Assert::assertTrue($mailer->getAttachments()[0][1] == "https://example.org/tests/fake.mp3");
+    Assert::assertTrue($mailer->getAttachments()[0][2] == "fake.mp3");
+    Assert::assertTrue($mailer->getAttachments()[0][3] == "base64");
+    Assert::assertTrue($mailer->getAttachments()[0][4] == "audio/mpeg");
+    Assert::assertTrue($mailer->getAttachments()[0][5]);
+    Assert::assertTrue($mailer->getAttachments()[0][6] == "attachment");
 
     if ($smtp_secure) {
         if ($smtp_secure == SmtpPorts::TLS) {
