@@ -9,6 +9,7 @@ use App\Constants\VolunteerRoutingType;
 use App\Constants\VolunteerType;
 use App\Models\ConfigData;
 use App\Models\ServiceBodyCallHandling;
+use App\Models\VolunteerData;
 use App\Models\VolunteerRoutingParameters;
 use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;
@@ -83,7 +84,6 @@ test('voicemail complete send sms using primary contact', function ($method) {
             return $data['status'] == TwilioCallStatus::COMPLETED;
         }));
     $this->utility->client->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
-    $this->withoutExceptionHandling();
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
@@ -109,15 +109,40 @@ test('voicemail complete send sms using primary contact', function ($method) {
 
 test('voicemail complete send sms using volunteer responder option', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $serviceBodyId = $this->serviceBodyId;
-    $parentServiceBodyId = $this->parentServiceBodyId;
-    $_SESSION['override_service_body_id'] = $serviceBodyId;
+    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $_REQUEST['CallSid'] = $this->callSid;
     $_REQUEST['caller_number'] = $this->callerNumber;
     $_REQUEST['RecordingUrl'] = $this->recordingUrl;
+    $shiftTz = "America/New_York";
+    $shiftStart = "12:00 AM";
+    $shiftEnd = "11:59 PM";
+
+    $shifts = [];
+    for ($i = 1; $i <= 7; $i++) {
+        $shifts[] = [
+            "day" => $i,
+            "tz" => $shiftTz,
+            "start_time" => $shiftStart,
+            "end_time" => $shiftEnd,
+        ];
+    }
+
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
+    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
+
+    $volunteer = new VolunteerData();
+    $volunteer->volunteer_name = "Corey";
+    $volunteer->volunteer_phone_number = "(555) 111-2222";
+    $volunteer->volunteer_responder = VolunteerResponderOption::ENABLED;
+    $volunteer->volunteer_enabled = true;
+    $volunteer->volunteer_shift_schedule = base64_encode(json_encode($shifts));
 
     $volunteer_routing_parameters = new VolunteerRoutingParameters();
-    $volunteer_routing_parameters->service_body_id = $serviceBodyId;
+    $volunteer_routing_parameters->service_body_id = $this->serviceBodyId;
     $volunteer_routing_parameters->tracker = 0;
     $volunteer_routing_parameters->cycle_algorithm = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
     $volunteer_routing_parameters->volunteer_type = VolunteerType::PHONE;
@@ -128,7 +153,14 @@ test('voicemail complete send sms using volunteer responder option', function ($
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
     $messageListMock->shouldReceive('create')
-        ->with(is_string(""), is_array([]))->once();
+        ->withArgs([$volunteer->volunteer_phone_number, [
+            "from" => $this->callerNumber,
+            "body" => sprintf(
+                'You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link %s.mp3. ',
+                $this->callerNumber,
+                $this->recordingUrl
+            ),
+        ]])->times(1);
     $this->utility->client->messages = $messageListMock;
 
     // mocking TwilioRestClient->calls()->update();
@@ -139,36 +171,19 @@ test('voicemail complete send sms using volunteer responder option', function ($
         }));
     $this->utility->client->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
 
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
-        $serviceBodyId,
-        DataType::YAP_CALL_HANDLING_V2
-    )->andReturn([(object)[
-        "service_body_id" => $serviceBodyId,
-        "id" => "200",
-        "parent_id" => $parentServiceBodyId,
-        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-    ]])->once();
-
-    $volunteer_name = "Corey";
-    $volunteer_gender = VolunteerGender::UNSPECIFIED;
-    $volunteer_responder = VolunteerResponderOption::ENABLED;
-    $volunteer_phone_number = "(555) 111-2222";
-    $volunteer_languages = ["en-US"];
-
-    $repositoryMocks = new RepositoryMocks();
-    $repositoryMocks->getVolunteersMock(
-        $repository,
-        $volunteer_name,
-        $volunteer_gender,
-        $volunteer_responder,
-        $volunteer_languages,
-        $volunteer_phone_number,
-        7,
-        $serviceBodyId,
-        $parentServiceBodyId
+    ConfigData::createVolunteer(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $volunteer
     );
-    app()->instance(ConfigRepository::class, $repository);
+
+    ConfigData::createCallHandling(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $serviceBodyCallHandlingData
+    );
+
+    $this->withoutExceptionHandling();
 
     $response = $this->call($method, '/voicemail-complete.php', [
         "caller_id" => "+17325551212",
