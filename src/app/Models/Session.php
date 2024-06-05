@@ -18,4 +18,15 @@ class Session extends Model
             "pin"=>$pin
         ]);
     }
+
+    public static function getPin($callSid): int
+    {
+        $pinData = self::query()->select(['pin'])
+            ->where('callsid', $callSid)
+            ->orderBy('timestamp')
+            ->limit(1)
+            ->first(['pin']);
+
+        return (int)$pinData?->pin;
+    }
 }
