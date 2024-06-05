@@ -1,19 +1,21 @@
 <?php
 
 use App\Constants\CycleAlgorithm;
+use App\Constants\SmsDialbackOptions;
 use App\Constants\SmtpPorts;
 use App\Constants\TwilioCallStatus;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
+use App\Constants\VolunteerRoutingType;
 use App\Constants\VolunteerType;
+use App\Models\ConfigData;
+use App\Models\ServiceBodyCallHandling;
+use App\Models\Session;
+use App\Models\VolunteerData;
 use App\Models\VolunteerRoutingParameters;
-use App\Repositories\ConfigRepository;
-use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
 use Illuminate\Testing\Assert;
 use PHPMailer\PHPMailer\PHPMailer;
-use App\Constants\DataType;
-use Tests\RepositoryMocks;
 use Tests\RootServerMocks;
 
 beforeAll(function () {
@@ -33,27 +35,34 @@ beforeEach(function () {
     $this->callSid = "abc123";
     $this->callerNumber = "+17325551212";
     $this->recordingUrl = "https://example.org/tests/fake";
-    $expectedPin = 4182804;
-
-    $reportsRepository = mock(ReportsRepository::class)->makePartial();
-    $reportsRepository->shouldReceive("insertCallEventRecord")
-        ->withAnyArgs()->once();
-    $reportsRepository->shouldReceive("lookupPinForCallSid")
-        ->withArgs([$this->callSid])->andReturn([$expectedPin]);
-    app()->instance(ReportsRepository::class, $reportsRepository);
 });
 
 test('voicemail complete send sms using primary contact', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $_SESSION['override_service_body_id'] = "1053";
+    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $_REQUEST['CallSid'] = $this->callSid;
     $_REQUEST['caller_number'] = $this->callerNumber;
     $_REQUEST['RecordingUrl'] = $this->recordingUrl;
 
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
+    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
+    $serviceBodyCallHandlingData->primary_contact = "2125551212";
+
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
     $messageListMock->shouldReceive('create')
-        ->with(is_string(""), is_array([]))->once();
+        ->withArgs([$serviceBodyCallHandlingData->primary_contact, [
+            "from" => $this->callerNumber,
+            "body" => sprintf(
+                'You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link %s.mp3. ',
+                $this->callerNumber,
+                $this->recordingUrl
+            ),
+            ]])->times(1);
     $this->utility->client->messages = $messageListMock;
 
     // mocking TwilioRestClient->calls()->update();
@@ -64,19 +73,14 @@ test('voicemail complete send sms using primary contact', function ($method) {
         }));
     $this->utility->client->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
 
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
+    ConfigData::createCallHandling(
         $this->serviceBodyId,
-        DataType::YAP_CALL_HANDLING_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"2125551212\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-    ]])->once();
-    app()->instance(ConfigRepository::class, $repository);
+        $this->parentServiceBodyId,
+        $serviceBodyCallHandlingData
+    );
+
     $response = $this->call($method, '/voicemail-complete.php', [
-        "caller_id" => "+17325551212",
+        "caller_id" => $this->callerNumber,
         "CallSid" => $this->callSid,
         "RecordingUrl" => $this->recordingUrl,
         "caller_number" => $this->callerNumber,
@@ -93,15 +97,40 @@ test('voicemail complete send sms using primary contact', function ($method) {
 
 test('voicemail complete send sms using volunteer responder option', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $serviceBodyId = $this->serviceBodyId;
-    $parentServiceBodyId = $this->parentServiceBodyId;
-    $_SESSION['override_service_body_id'] = $serviceBodyId;
+    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $_REQUEST['CallSid'] = $this->callSid;
     $_REQUEST['caller_number'] = $this->callerNumber;
     $_REQUEST['RecordingUrl'] = $this->recordingUrl;
+    $shiftTz = "America/New_York";
+    $shiftStart = "12:00 AM";
+    $shiftEnd = "11:59 PM";
+
+    $shifts = [];
+    for ($i = 1; $i <= 7; $i++) {
+        $shifts[] = [
+            "day" => $i,
+            "tz" => $shiftTz,
+            "start_time" => $shiftStart,
+            "end_time" => $shiftEnd,
+        ];
+    }
+
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
+    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
+
+    $volunteer = new VolunteerData();
+    $volunteer->volunteer_name = "Corey";
+    $volunteer->volunteer_phone_number = "(555) 111-2222";
+    $volunteer->volunteer_responder = VolunteerResponderOption::ENABLED;
+    $volunteer->volunteer_enabled = true;
+    $volunteer->volunteer_shift_schedule = base64_encode(json_encode($shifts));
 
     $volunteer_routing_parameters = new VolunteerRoutingParameters();
-    $volunteer_routing_parameters->service_body_id = $serviceBodyId;
+    $volunteer_routing_parameters->service_body_id = $this->serviceBodyId;
     $volunteer_routing_parameters->tracker = 0;
     $volunteer_routing_parameters->cycle_algorithm = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
     $volunteer_routing_parameters->volunteer_type = VolunteerType::PHONE;
@@ -112,7 +141,14 @@ test('voicemail complete send sms using volunteer responder option', function ($
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
     $messageListMock->shouldReceive('create')
-        ->with(is_string(""), is_array([]))->once();
+        ->withArgs([$volunteer->volunteer_phone_number, [
+            "from" => $this->callerNumber,
+            "body" => sprintf(
+                'You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link %s.mp3. ',
+                $this->callerNumber,
+                $this->recordingUrl
+            ),
+        ]])->times(1);
     $this->utility->client->messages = $messageListMock;
 
     // mocking TwilioRestClient->calls()->update();
@@ -123,36 +159,117 @@ test('voicemail complete send sms using volunteer responder option', function ($
         }));
     $this->utility->client->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
 
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
-        $serviceBodyId,
-        DataType::YAP_CALL_HANDLING_V2
-    )->andReturn([(object)[
-        "service_body_id" => $serviceBodyId,
-        "id" => "200",
-        "parent_id" => $parentServiceBodyId,
-        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-    ]])->once();
-
-    $volunteer_name = "Corey";
-    $volunteer_gender = VolunteerGender::UNSPECIFIED;
-    $volunteer_responder = VolunteerResponderOption::ENABLED;
-    $volunteer_phone_number = "(555) 111-2222";
-    $volunteer_languages = ["en-US"];
-
-    $repositoryMocks = new RepositoryMocks();
-    $repositoryMocks->getVolunteersMock(
-        $repository,
-        $volunteer_name,
-        $volunteer_gender,
-        $volunteer_responder,
-        $volunteer_languages,
-        $volunteer_phone_number,
-        7,
-        $serviceBodyId,
-        $parentServiceBodyId
+    ConfigData::createVolunteer(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $volunteer
     );
-    app()->instance(ConfigRepository::class, $repository);
+
+    ConfigData::createCallHandling(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $serviceBodyCallHandlingData
+    );
+
+    $response = $this->call($method, '/voicemail-complete.php', [
+        "caller_id" => "+17325551212",
+        "CallSid" => $this->callSid,
+        "RecordingUrl" => $this->recordingUrl,
+        "caller_number" => $this->callerNumber,
+    ]);
+
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response/>'
+        ], false);
+})->with(['GET', 'POST']);
+
+test('voicemail complete send sms using volunteer responder option and dialback enabled', function ($method) {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
+    $_REQUEST['CallSid'] = $this->callSid;
+    $_REQUEST['caller_number'] = $this->callerNumber;
+    $_REQUEST['RecordingUrl'] = $this->recordingUrl;
+
+    $this->utility->reports->insertSession($this->callSid);
+    $this->utility->settings->set('sms_dialback_options', SmsDialbackOptions::VOICEMAIL_NOTIFICATION);
+
+    $shiftTz = "America/New_York";
+    $shiftStart = "12:00 AM";
+    $shiftEnd = "11:59 PM";
+
+    $shifts = [];
+    for ($i = 1; $i <= 7; $i++) {
+        $shifts[] = [
+            "day" => $i,
+            "tz" => $shiftTz,
+            "start_time" => $shiftStart,
+            "end_time" => $shiftEnd,
+        ];
+    }
+
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
+    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
+
+    $volunteer = new VolunteerData();
+    $volunteer->volunteer_name = "Corey";
+    $volunteer->volunteer_phone_number = "(555) 111-2222";
+    $volunteer->volunteer_responder = VolunteerResponderOption::ENABLED;
+    $volunteer->volunteer_enabled = true;
+    $volunteer->volunteer_shift_schedule = base64_encode(json_encode($shifts));
+
+    $volunteer_routing_parameters = new VolunteerRoutingParameters();
+    $volunteer_routing_parameters->service_body_id = $this->serviceBodyId;
+    $volunteer_routing_parameters->tracker = 0;
+    $volunteer_routing_parameters->cycle_algorithm = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
+    $volunteer_routing_parameters->volunteer_type = VolunteerType::PHONE;
+    $volunteer_routing_parameters->volunteer_gender = VolunteerGender::UNSPECIFIED;
+    $volunteer_routing_parameters->volunteer_language = "en-US";
+    $_SESSION["volunteer_routing_parameters"] = $volunteer_routing_parameters;
+
+    $pin = Session::getPin($this->callSid);
+
+    // mocking TwilioRestClient->messages->create()
+    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+    $messageListMock->shouldReceive('create')
+        ->withArgs([$volunteer->volunteer_phone_number, [
+            "from" => $this->callerNumber,
+            "body" => sprintf(
+                'You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link %s.mp3. Tap to dialback: +17325551212,,,9,,,%s#.  PIN: %s',
+                $this->callerNumber,
+                $this->recordingUrl,
+                $pin,
+                $pin
+            ),
+        ]])->times(1);
+    $this->utility->client->messages = $messageListMock;
+
+    // mocking TwilioRestClient->calls()->update();
+    $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
+    $callContextMock->shouldReceive('update')
+        ->with(Mockery::on(function ($data) {
+            return $data['status'] == TwilioCallStatus::COMPLETED;
+        }));
+    $this->utility->client->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
+
+    ConfigData::createVolunteer(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $volunteer
+    );
+
+    ConfigData::createCallHandling(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $serviceBodyCallHandlingData
+    );
 
     $response = $this->call($method, '/voicemail-complete.php', [
         "caller_id" => "+17325551212",
@@ -173,11 +290,30 @@ test('voicemail complete send sms using volunteer responder option', function ($
 test('voicemail complete send email using primary contact', function ($method, $smtp_alt_port, $smtp_secure) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
-    $this->utility->settings->set("smtp_host", "fake.host");
-    $this->utility->settings->set("smtp_username", "fake@user");
-    $this->utility->settings->set("smtp_password", "fake@password");
+    $smtp_host = "fake.host";
+    $smtp_username = "fake@user";
+    $smtp_password = "fake@password";
+
+    $this->utility->settings->set("smtp_host", $smtp_host);
+    $this->utility->settings->set("smtp_username", $smtp_username);
+    $this->utility->settings->set("smtp_password", $smtp_password);
     $this->utility->settings->set("smtp_alt_port", $smtp_alt_port);
     $this->utility->settings->set("smtp_secure", $smtp_secure);
+
+    $smtp_from_name = "bro bro";
+    $smtp_from_address = "son@my.com";
+
+    $this->utility->settings->set("smtp_from_name", $smtp_from_name);
+    $this->utility->settings->set("smtp_from_address", $smtp_from_address);
+
+
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
+    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
+    $serviceBodyCallHandlingData->primary_contact_email = "dude@bro.net,chief@home.org";
 
     // mocking TwilioRestClient->calls()->update();
     $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
@@ -189,25 +325,18 @@ test('voicemail complete send email using primary contact', function ($method, $
         ->with($this->callSid)
         ->andReturn($callContextMock)->once();
 
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
-        $this->serviceBodyId,
-        DataType::YAP_CALL_HANDLING_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"dude@bro.com\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-    ]])->once();
-
-    app()->instance(ConfigRepository::class, $repository);
-
     $mailer = Mockery::mock(PHPMailer::class)->makePartial();
     $mailer
         ->shouldReceive("send")
         ->withNoArgs()
         ->once();
     app()->instance(PHPMailer::class, $mailer);
+
+    ConfigData::createCallHandling(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $serviceBodyCallHandlingData,
+    );
 
     $response = $this->call($method, '/voicemail-complete.php', [
         "caller_id" => "+17325551212",
@@ -223,6 +352,23 @@ test('voicemail complete send email using primary contact', function ($method, $
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response/>'
         ], false);
+
+    Assert::assertTrue($mailer->Host == $smtp_host);
+    Assert::assertTrue($mailer->Username == $smtp_username);
+    Assert::assertTrue($mailer->Password == $smtp_password);
+    Assert::assertTrue($mailer->SMTPAuth);
+    Assert::assertTrue($mailer->From == $smtp_from_address);
+    Assert::assertTrue($mailer->FromName == $smtp_from_name);
+    Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
+    Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
+    Assert::assertTrue($mailer->Body == sprintf("You have a message from the Finger Lakes Area Service helpline from caller %s, https://example.org/tests/fake.mp3", $this->callerNumber));
+    Assert::assertTrue($mailer->Subject == "Helpline Voicemail from Finger Lakes Area Service");
+    Assert::assertTrue($mailer->getAttachments()[0][1] == "https://example.org/tests/fake.mp3");
+    Assert::assertTrue($mailer->getAttachments()[0][2] == "fake.mp3");
+    Assert::assertTrue($mailer->getAttachments()[0][3] == "base64");
+    Assert::assertTrue($mailer->getAttachments()[0][4] == "audio/mpeg");
+    Assert::assertTrue($mailer->getAttachments()[0][5]);
+    Assert::assertTrue($mailer->getAttachments()[0][6] == "attachment");
 
     if ($smtp_secure) {
         if ($smtp_secure == SmtpPorts::TLS) {

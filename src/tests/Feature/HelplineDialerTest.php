@@ -12,9 +12,7 @@ use App\Models\ConfigData;
 use App\Models\RecordType;
 use App\Models\ServiceBodyCallHandling;
 use App\Models\VolunteerData;
-use App\Models\VolunteerInfo;
 use App\Repositories\ConfigRepository;
-use App\Constants\DataType;
 use App\Repositories\ReportsRepository;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
@@ -478,7 +476,6 @@ test('an invalid or busy outgoing call happens with linear and voicemail and one
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
 
-    $this->configRepository = Mockery::mock(ConfigRepository::class)->makePartial();
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
     $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
@@ -646,7 +643,6 @@ test('an invalid or busy outgoing call happens with linear and voicemail and two
     $volunteer_name_2 = "Rocky";
     $this->volunteer_phone_number_2 = "(212) 555-5555";
 
-    $this->configRepository = Mockery::mock(ConfigRepository::class)->makePartial();
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
     $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
@@ -828,7 +824,6 @@ test('an invalid or busy outgoing call happens with blasting and voicemail and o
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
 
-    $this->configRepository = Mockery::mock(ConfigRepository::class)->makePartial();
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
     $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
@@ -964,7 +959,6 @@ test('an invalid or busy outgoing call happens with blasting and voicemail and t
     $volunteer_name_2 = "Rocky";
     $this->volunteer_phone_number_2 = "(212) 555-5555";
 
-    $this->configRepository = Mockery::mock(ConfigRepository::class)->makePartial();
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
     $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;

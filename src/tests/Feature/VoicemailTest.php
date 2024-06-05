@@ -1,9 +1,9 @@
 <?php
 
-use App\Repositories\ConfigRepository;
-use Tests\FakeTwilioHttpClient;
-use App\Constants\DataType;
-use Tests\MiddlewareTests;
+use App\Constants\CycleAlgorithm;
+use App\Constants\VolunteerRoutingType;
+use App\Models\ConfigData;
+use App\Models\ServiceBodyCallHandling;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -23,19 +23,20 @@ beforeEach(function () {
 });
 
 test('voicemail standard response', function ($method) {
-    $service_body_id = $this->serviceBodyId;
-    $_SESSION['override_service_body_id'] = $service_body_id;
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
+    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
+
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
+    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
+
+    ConfigData::createCallHandling(
         $this->serviceBodyId,
-        DataType::YAP_CALL_HANDLING_V2
-    )->andReturn([(object)[
-        "service_body_id" => $service_body_id,
-        "id" => $this->id,
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-    ]]);
-    app()->instance(ConfigRepository::class, $repository);
+        $this->parentServiceBodyId,
+        $serviceBodyCallHandlingData
+    );
 
     $response = $this->call($method, '/voicemail.php', [
         "caller_id" => "+17325551212",
@@ -56,24 +57,25 @@ test('voicemail standard response', function ($method) {
 })->with(['GET', 'POST']);
 
 test('voicemail custom prompt', function ($method) {
-    $service_body_id = $this->serviceBodyId;
-    $_SESSION['override_service_body_id'] = $service_body_id;
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
-        '44',
-        DataType::YAP_CALL_HANDLING_V2
-    )->andReturn([(object)[
-        "service_body_id" => $service_body_id,
-        "id" => $this->id,
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-    ]]);
-    app()->instance(ConfigRepository::class, $repository);
+    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $_SESSION['override_en_US_voicemail_greeting'] = "https://example.org/test.mp3";
+
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
+    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
+
+    ConfigData::createCallHandling(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $serviceBodyCallHandlingData
+    );
+
     $response = $this->call($method, '/voicemail.php', [
         "caller_id" => "+17325551212",
         "Caller" => "+12125551313",
-        //"ysk" => "test"
     ]);
 
     $response
