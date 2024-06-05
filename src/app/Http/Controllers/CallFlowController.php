@@ -7,6 +7,7 @@ use App\Constants\EventId;
 use App\Constants\SearchType;
 use App\Constants\VolunteerGender;
 use App\Models\CallRecord;
+use App\Models\Coordinates;
 use App\Models\RecordType;
 use App\Models\VolunteerRoutingParameters;
 use App\Services\CallService;
@@ -1266,9 +1267,9 @@ class CallFlowController extends Controller
 
     /**
      * @param mixed $address
-     * @return \App\Models\Coordinates
+     * @return Coordinates
      */
-    public function geocodeAddress(mixed $address, string $sms_helpline_keyword = ""): \App\Models\Coordinates
+    public function geocodeAddress(mixed $address, string $sms_helpline_keyword = ""): Coordinates
     {
         $sanitized_address = trim(str_replace($sms_helpline_keyword, "", $address));
 

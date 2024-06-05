@@ -8,6 +8,8 @@ use Exception;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Twilio\Exceptions\ConfigurationException;
+use Twilio\Exceptions\RestException;
 
 class UpgradeService extends Service
 {
@@ -98,9 +100,9 @@ class UpgradeService extends Service
                     }
                 }
             }
-        } catch (\Twilio\Exceptions\RestException $e) {
+        } catch (RestException $e) {
             return $this->getState(false, "Twilio Rest Error: " . $e->getMessage(), $warnings);
-        } catch (\Twilio\Exceptions\ConfigurationException $e) {
+        } catch (ConfigurationException $e) {
             if ($this->isAllowedError("twilioMissingCredentials")) {
                 return $this->getState(false, "Twilio Configuration Error: " . $e->getMessage(), $warnings);
             }
