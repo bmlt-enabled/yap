@@ -210,6 +210,14 @@ test('voicemail complete send email using primary contact', function ($method, $
     $this->utility->settings->set("smtp_alt_port", $smtp_alt_port);
     $this->utility->settings->set("smtp_secure", $smtp_secure);
 
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
+    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
+    $serviceBodyCallHandlingData->primary_contact_email = "dude@bro.net";
+
     // mocking TwilioRestClient->calls()->update();
     $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
     $callContextMock->shouldReceive('update')
@@ -220,25 +228,18 @@ test('voicemail complete send email using primary contact', function ($method, $
         ->with($this->callSid)
         ->andReturn($callContextMock)->once();
 
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
-        $this->serviceBodyId,
-        DataType::YAP_CALL_HANDLING_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"dude@bro.com\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-    ]])->once();
-
-    app()->instance(ConfigRepository::class, $repository);
-
     $mailer = Mockery::mock(PHPMailer::class)->makePartial();
     $mailer
         ->shouldReceive("send")
         ->withNoArgs()
         ->once();
     app()->instance(PHPMailer::class, $mailer);
+
+    ConfigData::createCallHandling(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $serviceBodyCallHandlingData,
+    );
 
     $response = $this->call($method, '/voicemail-complete.php', [
         "caller_id" => "+17325551212",
