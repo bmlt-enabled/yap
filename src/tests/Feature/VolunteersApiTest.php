@@ -271,33 +271,21 @@ test('return volunteers invalid format', function () {
 test('get groups for service body', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $service_body_id = "44";
-    $parent_service_body_id = "43";
-    $id = "200";
-    $group = [[
-        "group_name"=>"Fake Group",
-        "group_shared_service_bodies"=>[$service_body_id]
-    ]];
-    $this->configRepository->shouldReceive("getAllDbData")->with(
-        DataType::YAP_GROUPS_V2
-    )->andReturn([(object)[
-        "service_body_id" => $service_body_id,
-        "id" => $id,
-        "parent_id" => $parent_service_body_id,
-        "data" => json_encode($group)
-    ]]);
-    app()->instance(ConfigRepository::class, $this->configRepository);
-    $response = $this->call('GET', '/api/v1/volunteers/groups', [
-        "service_body_id" => $service_body_id,
-    ]);
+    $groupData = ["group_name"=>"Fake Group", "group_shared_service_bodies"=>[$this->serviceBodyId]];
 
-    $response
-        ->assertSimilarJson([[
-            "data"=>json_encode($group),
-            "id"=>$id,
-            "parent_id"=>$parent_service_body_id,
-            "service_body_id"=>$service_body_id
-        ]])
+    ConfigData::createGroup(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        (object)$groupData,
+    );
+
+    $this->call('GET', '/api/v1/volunteers/groups', [
+        "service_body_id" => $this->serviceBodyId,
+    ])->assertJson([[
+            "id"=>3,
+            "service_body_id"=>intval($this->serviceBodyId),
+            "parent_id"=>intval($this->parentServiceBodyId),
+            "data"=>json_encode([$groupData])]])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });
