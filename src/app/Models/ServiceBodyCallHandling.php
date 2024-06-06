@@ -19,6 +19,7 @@ class ServiceBodyCallHandling
     public $forced_caller_id_number = SpecialPhoneNumber::UNKNOWN;
     public $call_timeout = 20;
     public $volunteer_sms_notification_enabled = false;
+    public $gender_routing = false;
     public $gender_routing_enabled = false;
     public $call_strategy = CycleAlgorithm::LINEAR_LOOP_FOREVER;
     public $primary_contact_number_enabled = false;
