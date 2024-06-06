@@ -256,12 +256,7 @@ test('return volunteers invalid format', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = "44";
-    $this->configRepository->shouldReceive("getDbData")->with(
-        $service_body_id,
-        DataType::YAP_VOLUNTEERS_V2
-    )->andReturn([]);
 
-    app()->instance(ConfigRepository::class, $this->configRepository);
     $response = $this->call('GET', '/api/v1/volunteers/download', [
         "service_body_id" => $service_body_id,
         "fmt" => "garbage"
