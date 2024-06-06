@@ -1,6 +1,5 @@
 <?php
 
-use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
@@ -46,16 +45,6 @@ beforeEach(function () {
     $this->id = "200";
     $this->serviceBodyId = "44";
     $this->parentServiceBodyId = "43";
-    $this->data =  "{\"data\":{}}";
-
-    $configRepository = mock(ConfigRepository::class)->makePartial();
-    $this->configRepository = $this->middleware->getAllDbData(
-        $this->id,
-        $this->serviceBodyId,
-        $this->parentServiceBodyId,
-        $this->data
-    );
-    app()->instance(ConfigRepository::class, $this->configRepository);
 });
 
 test('join volunteer to conference', function ($method) {
