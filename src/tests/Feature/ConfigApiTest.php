@@ -2,11 +2,8 @@
 
 use App\Constants\AuthMechanism;
 use App\Models\ConfigData;
-use App\Repositories\ConfigRepository;
 use App\Constants\DataType;
 use App\Services\RootServerService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\MiddlewareTests;
 use Tests\RootServerMocks;
 
 beforeAll(function () {
@@ -183,12 +180,6 @@ test('delete group', function () {
 });
 
 test('get config no auth', function () {
-    $this->configRepository = Mockery::mock(ConfigRepository::class);
-    $this->configRepository->shouldReceive("getAllDbData")->with(
-        DataType::YAP_CONFIG_V2
-    )->andReturn([(object)[]]);
-    app()->instance(ConfigRepository::class, $this->configRepository);
-
     $response = $this->call('GET', '/api/v1/config', [
         "service_body_id" => 0,
         "data_type" => DataType::YAP_CONFIG_V2
