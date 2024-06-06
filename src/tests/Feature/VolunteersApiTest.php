@@ -279,10 +279,12 @@ test('get groups for service body', function () {
         (object)$groupData,
     );
 
+    $id = ConfigData::select('id')->orderBy('id', 'desc')->first()->id;
+
     $this->call('GET', '/api/v1/volunteers/groups', [
         "service_body_id" => $this->serviceBodyId,
     ])->assertJson([[
-            "id"=>3,
+            "id"=>$id,
             "service_body_id"=>intval($this->serviceBodyId),
             "parent_id"=>intval($this->parentServiceBodyId),
             "data"=>json_encode([$groupData])]])
