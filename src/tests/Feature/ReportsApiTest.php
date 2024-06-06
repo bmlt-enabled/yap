@@ -3,7 +3,6 @@
 use App\Constants\AuthMechanism;
 use App\Models\RecordType;
 use App\Constants\EventId;
-use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
 use Tests\MiddlewareTests;
@@ -25,16 +24,6 @@ beforeEach(function () {
     $this->id = "200";
     $this->serviceBodyId = "44";
     $this->parentServiceBodyId = "43";
-    $this->data =  "{\"data\":{}}";
-
-    $configRepository = mock(ConfigRepository::class)->makePartial();
-    $this->configRepository = $this->middleware->getAllDbData(
-        $this->id,
-        $this->serviceBodyId,
-        $this->parentServiceBodyId,
-        $this->data
-    );
-    app()->instance(ConfigRepository::class, $this->configRepository);
 });
 
 
