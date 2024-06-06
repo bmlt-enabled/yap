@@ -7,8 +7,6 @@ use App\Models\ConfigData;
 use App\Models\Coordinates;
 use App\Models\RecordType;
 use App\Models\ServiceBodyCallHandling;
-use App\Repositories\ConfigRepository;
-use App\Constants\DataType;
 use App\Repositories\ReportsRepository;
 use App\Services\ConferenceService;
 use App\Services\RootServerService;
