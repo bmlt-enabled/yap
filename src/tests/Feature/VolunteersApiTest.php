@@ -94,51 +94,40 @@ test('get schedule for service body phone volunteer', function () {
 test('get schedule for service body sms volunteer', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $volunteer_name = "Corey";
-    $volunteer_gender = VolunteerGender::UNSPECIFIED;
-    $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
     $shiftDay = 2;
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
-    $volunteer = [[
-        "volunteer_name"=>$volunteer_name,
-        "volunteer_phone_number"=>"(555) 111-2222",
-        "volunteer_gender"=>$volunteer_gender,
-        "volunteer_responder"=>$volunteer_responder,
-        "volunteer_notes"=>"",
-        "volunteer_enabled"=>true,
-        "volunteer_shift_schedule"=>base64_encode(json_encode([[
-            "day"=>$shiftDay,
-            "tz"=>$shiftTz,
-            "start_time"=>$shiftStart,
-            "end_time"=>$shiftEnd,
-            "type"=>VolunteerType::SMS
-        ]]))
-    ]];
-    $service_body_id = "44";
-    $parent_service_body_id = "43";
-    $this->configRepository->shouldReceive("getDbData")->with(
-        $service_body_id,
-        DataType::YAP_VOLUNTEERS_V2
-    )->andReturn([(object)[
-        "service_body_id" => $service_body_id,
-        "id" => "200",
-        "parent_id" => $parent_service_body_id,
-        "data" => json_encode($volunteer)
-    ]]);
-    app()->instance(ConfigRepository::class, $this->configRepository);
+
+    $volunteerData = new VolunteerData();
+    $volunteerData->volunteer_name = "Corey";
+    $volunteerData->volunteer_phone_number = "(555) 111-2222";
+    $volunteerData->volunteer_enabled = true;
+    $volunteerData->volunteer_shift_schedule = base64_encode(json_encode([[
+        "day"=>$shiftDay,
+        "tz"=>$shiftTz,
+        "start_time"=>$shiftStart,
+        "end_time"=>$shiftEnd,
+        "type"=>VolunteerType::SMS
+    ]]));
+
+    ConfigData::createVolunteer(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $volunteerData,
+    );
+
     $response = $this->call('GET', '/api/v1/volunteers/schedule', [
-        "service_body_id" => $service_body_id,
+        "service_body_id" => $this->serviceBodyId,
     ]);
 
     $volunteers = [];
     $volunteerInfo = new VolunteerInfo();
-    $volunteerInfo->color = "#e3eb4f";
-    $volunteerInfo->title = sprintf("%s (%s) ", $volunteer_name, VolunteerType::SMS);
-    $volunteerInfo->gender = $volunteer_gender;
+    $volunteerInfo->color = "#872e11";
+    $volunteerInfo->title = sprintf("%s (%s)", $volunteerData->volunteer_name, VolunteerType::SMS);
+    $volunteerInfo->gender = VolunteerGender::UNSPECIFIED;
     $volunteerInfo->language = ["en-US"];
-    $volunteerInfo->responder = $volunteer_responder;
+    $volunteerInfo->responder = VolunteerResponderOption::UNSPECIFIED;
     $volunteerInfo->sequence = 0;
     $volunteerInfo->time_zone = $shiftTz;
     $volunteerInfo->weekday = "Monday";
