@@ -14,11 +14,13 @@ class ServiceBodyCallHandling
     public $volunteer_routing;
     public $volunteer_routing_enabled = false;
     public $volunteer_routing_redirect = false;
-    public $volunteer_routing_redirect_id = 0;
+    public $volunteers_redirect_id = 0;
+    public $volunteer_routing_redirect_id = 0; // TODO: this probably needs to be encapsulated
     public $forced_caller_id_enabled = false;
     public $forced_caller_id_number = SpecialPhoneNumber::UNKNOWN;
     public $call_timeout = 20;
     public $volunteer_sms_notification_enabled = false;
+    public $gender_routing = false;
     public $gender_routing_enabled = false;
     public $call_strategy = CycleAlgorithm::LINEAR_LOOP_FOREVER;
     public $primary_contact_number_enabled = false;

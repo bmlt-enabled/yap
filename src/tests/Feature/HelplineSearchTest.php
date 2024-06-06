@@ -7,8 +7,6 @@ use App\Models\ConfigData;
 use App\Models\Coordinates;
 use App\Models\RecordType;
 use App\Models\ServiceBodyCallHandling;
-use App\Repositories\ConfigRepository;
-use App\Constants\DataType;
 use App\Repositories\ReportsRepository;
 use App\Services\ConferenceService;
 use App\Services\RootServerService;
@@ -212,17 +210,17 @@ test('valid search, volunteer routing', function ($method) {
     app()->instance(ReportsRepository::class, $repository);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
-    $configRepository = Mockery::mock(ConfigRepository::class);
-    $configRepository->shouldReceive("getDbData")->with(
+
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+
+    ConfigData::createCallHandling(
         $this->serviceBodyId,
-        DataType::YAP_CALL_HANDLING_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-    ]])->once();
-    app()->instance(ConfigRepository::class, $configRepository);
+        $this->parentServiceBodyId,
+        $serviceBodyCallHandlingData
+    );
 
     $response = $this->call($method, '/helpline-search.php', [
         'SearchType' => "1",
@@ -310,17 +308,18 @@ test('valid search, volunteer routing, announce service body name', function ($m
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $_SESSION['override_announce_servicebody_volunteer_routing'] = true;
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
+
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+
+    ConfigData::createCallHandling(
         $this->serviceBodyId,
-        DataType::YAP_CALL_HANDLING_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-    ]])->once();
-    app()->instance(ConfigRepository::class, $repository);
+        $this->parentServiceBodyId,
+        $serviceBodyCallHandlingData
+    );
+
     $response = $this->call($method, '/helpline-search.php', [
         'Digits' => "Geneva, NY",
         'SearchType' => "1",
@@ -360,17 +359,17 @@ test('valid search, helpline field routing', function ($method) {
     app()->instance(ReportsRepository::class, $repository);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
+
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+
+    ConfigData::createCallHandling(
         $this->serviceBodyId,
-        DataType::YAP_CALL_HANDLING_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => "[{\"volunteer_routing\":\"helpline_field\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-    ]])->once();
-    app()->instance(ConfigRepository::class, $repository);
+        $this->parentServiceBodyId,
+        $serviceBodyCallHandlingData
+    );
+
     $response = $this->call($method, '/helpline-search.php', [
         'Digits' => "Geneva, NY",
         'SearchType' => "1",
@@ -406,17 +405,20 @@ test('valid search with address, volunteer gender routing enabled and choice not
         ->once();
     app()->instance(ReportsRepository::class, $repository);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")->with(
+
+    // TODO: clean this class up so that certain things are encapsulated versus now
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
+    $serviceBodyCallHandlingData->gender_routing = true;
+
+    ConfigData::createCallHandling(
         $this->serviceBodyId,
-        DataType::YAP_CALL_HANDLING_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"1\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-    ]])->once();
-    app()->instance(ConfigRepository::class, $repository);
+        $this->parentServiceBodyId,
+        $serviceBodyCallHandlingData
+    );
 
     $address = "14456";
     $response = $this->call($method, '/helpline-search.php', [
@@ -468,28 +470,30 @@ test('valid search, volunteer direct', function ($method) {
         ->once();
     app()->instance(ConferenceService::class, $conferenceService);
 
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")
-        ->once()
-        ->with($this->serviceBodyId, DataType::YAP_CALL_HANDLING_V2)
-        ->andReturn([(object)[
-            "service_body_id" => $this->serviceBodyId,
-            "id" => "200",
-            "parent_id" => $this->parentServiceBodyId,
-            "data" => "[{\"volunteer_routing\":\"volunteers_redirect\",\"volunteers_redirect_id\":\"46\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-        ]])
+    // TODO: clean this class up so that certain things are encapsulated versus now
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS_REDIRECT;
+    $serviceBodyCallHandlingData->volunteers_redirect_id = 46;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
 
-        ->shouldReceive("getDbData")
-        ->once()
-        ->with('46', DataType::YAP_CALL_HANDLING_V2)
-        ->andReturn([(object)[
-            "service_body_id" => "46",
-            "id" => "200",
-            "parent_id" => $this->parentServiceBodyId,
-            "data" => "[{\"volunteer_routing\":\"helpline_field\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-        ]]);
+    ConfigData::createCallHandling(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $serviceBodyCallHandlingData
+    );
 
-    app()->instance(ConfigRepository::class, $repository);
+    $redirectedServiceBody = new ServiceBodyCallHandling();
+    $redirectedServiceBody->volunteer_routing = VolunteerRoutingType::HELPLINE_FIELD;
+    $redirectedServiceBody->service_body_id = 46;
+    $redirectedServiceBody->volunteer_routing_enabled = true;
+
+    ConfigData::createCallHandling(
+        46,
+        $this->parentServiceBodyId,
+        $redirectedServiceBody
+    );
+
     $response = $this->call($method, '/helpline-search.php', [
         'SearchType' => "1",
         'Called' => "+12125551212",
@@ -509,47 +513,3 @@ test('valid search, volunteer direct', function ($method) {
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
-
-//test('valid search, gender based routing', function () {
-//    $rootServerService = $this->rootServerMocks->getService();
-//    app()->instance(RootServerService::class, $rootServerService);
-//    $_SESSION['Address'] = "27592";
-//    $repository = Mockery::mock(ConfigRepository::class);
-//    $repository->shouldReceive("getDbData")
-//        ->once()
-//        ->with('44', DataType::YAP_CALL_HANDLING_V2)
-//        ->andReturn([(object)[
-//            "service_body_id" => "44",
-//            "id" => "200",
-//            "parent_id" => "43",
-//            "data" => "[{\"volunteer_routing\":\"volunteers_redirect\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"1\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-//        ]])
-//
-//        ->shouldReceive("getDbData")
-//        ->once()
-//        ->with('46', DataType::YAP_CALL_HANDLING_V2)
-//        ->andReturn([(object)[
-//            "service_body_id" => "46",
-//            "id" => "200",
-//            "parent_id" => "43",
-//            "data" => "[{\"volunteer_routing\":\"helpline_field\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"1\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-//        ]]);
-//
-//    app()->instance(ConfigRepository::class, $repository);
-//    $response = $this->call('GET', '/helpline-search.php', [
-//        'Address' => "Raleigh, NC",
-//        'SearchType' => "1",
-//        'Called' => "+12125551212",
-//    ]);
-//    $response
-//        ->assertStatus(200)
-//        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
-//        ->assertSeeInOrderExact([
-/*            '<?xml version="1.0" encoding="UTF-8"?>',*/
-//            '<Response>',
-//            '<Redirect method="GET">',
-//            'gender-routing.php?SearchType=1',
-//            '</Redirect>',
-//            '</Response>'
-//        ], false);
-//});

@@ -12,7 +12,6 @@ use App\Models\ConfigData;
 use App\Models\RecordType;
 use App\Models\ServiceBodyCallHandling;
 use App\Models\VolunteerData;
-use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
@@ -194,7 +193,6 @@ test('mark the caller as having entered the conference for reporting purposes', 
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
-    $this->configRepository = Mockery::mock(ConfigRepository::class)->makePartial();
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
     $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
@@ -346,7 +344,6 @@ test('mark the caller as having entered the conference for reporting purposes, w
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
-    $this->configRepository = Mockery::mock(ConfigRepository::class)->makePartial();
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
     $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
@@ -1156,103 +1153,3 @@ test('volunteer leave the call', function ($method) {
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json");
 })->with(['GET', 'POST']);
-
-
-//test('force number', function () {
-//    $volunteer_name = "Corey";
-//    $volunteer_gender = VolunteerGender::UNSPECIFIED;
-//    $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
-//    $volunteer_languages = ["en-US"];
-//    $shiftTz = "America/New_York";
-//    $shiftStart = "12:00 AM";
-//    $shiftEnd = "11:59 PM";
-//    $repository = Mockery::mock(ConfigRepository::class);
-//    $repository->shouldReceive("getDbData")->with(
-//        NULL,
-//        DataType::YAP_CALL_HANDLING_V2
-//    )->andReturn([(object)[
-//        "service_body_id" => NULL,
-//        "id" => "200",
-//        "parent_id" => $this->parentServiceBodyId,
-//        "data" => "[{\"volunteer_routing\":\"volunteers\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-//    ]])->once();
-//    $shifts = [];
-//    for ($i = 1; $i <= 7; $i++) {
-//        $shifts[] = [
-//            "day" => $i,
-//            "tz" => $shiftTz,
-//            "start_time" => $shiftStart,
-//            "end_time" => $shiftEnd,
-//        ];
-//    }
-//
-//    $volunteer = [[
-//        "volunteer_name"=>$volunteer_name,
-//        "volunteer_phone_number"=>"(555) 111-2222",
-//        "volunteer_gender"=>$volunteer_gender,
-//        "volunteer_responder"=>$volunteer_responder,
-//        "volunteer_languages"=>$volunteer_languages,
-//        "volunteer_notes"=>"",
-//        "volunteer_enabled"=>true,
-//        "volunteer_shift_schedule"=>base64_encode(json_encode($shifts))
-//    ]];
-//    $repository->shouldReceive("getDbData")->with(
-//        NULL,
-//        DataType::YAP_VOLUNTEERS_V2
-//    )->andReturn([(object)[
-//        "service_body_id" => $this->serviceBodyId,
-//        "id" => "200",
-//        "parent_id" => $this->parentServiceBodyId,
-//        "data" => json_encode($volunteer)
-//    ]]);
-
-//    app()->instance(ConfigRepository::class, $repository);
-//
-//    $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
-//    $conferenceListMock->shouldReceive("read")
-//        ->with(['friendlyName' => $this->conferenceName])
-//        ->andReturn(json_decode(
-//            '[{"status":"in-progress","sid":"'.$this->conferenceName.'"}]'
-//        ))
-//        ->once();
-//    $this->twilioClient->conferences = $conferenceListMock;
-//
-//    // mocking TwilioRestClient->conferences()->participants->read()
-//    $conferenceContextMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceContext");
-//    $participantListMock = mock("Twilio\Rest\Api\V2010\Account\Conference\ParticipantList");
-//    $participantListMock->shouldReceive("read")
-//        ->andReturn(json_decode('[{"callSid":"abc"}]'));
-//    $conferenceContextMock->participants = $participantListMock;
-//    $this->twilioClient->shouldReceive("conferences")->with($this->conferenceName)->andReturn($conferenceContextMock);
-//
-//    $callInstance = mock('Twilio\Rest\Api\V2010\Account\CallInstance')->makePartial();
-//    $callInstance->from = "+15557770000";
-//
-//    $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
-//    $callContextMock->shouldReceive('fetch')
-//        ->with()
-//        ->andReturn($callInstance);
-//    $this->twilioClient->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
-//
-//    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
-//    $this->twilioClient->messages = $messageListMock;
-//    $messageListMock->shouldReceive('create')
-//        ->with("placeholder", Mockery::on(function ($data) {
-//            return $data['from'] == $this->to && !empty($data['body'][0]);
-//        }));
-//
-//    $GLOBALS['twilioClient'] = $this->twilioClient;
-//
-//    $_SESSION['override_service_body_id'] = '44';
-//    $response = $this->call('GET', '/helpline-search.php', [
-//        'SearchType' => "1",
-//        'Called' => "+12125551212",
-//        'ForceNumber' => '+19998887777',
-//        'FriendlyName' => $this->conferenceName,
-//        'SequenceNumber' => "1",
-//        'CallStatus' => 'completed',
-//    ]);
-//    $response
-//        ->assertStatus(200)
-//        ->assertHeader("Content-Type", "application/json");
-//});
