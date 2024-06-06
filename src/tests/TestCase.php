@@ -14,7 +14,6 @@ abstract class TestCase extends BaseTestCase
 
     public string $conferenceName;
     public MockInterface|Client $twilioClient;
-    public MockInterface $configRepository;
 
     protected function createTestResponse($response)
     {
