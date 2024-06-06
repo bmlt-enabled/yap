@@ -1,12 +1,10 @@
 <?php
 
 use App\Constants\AlertId;
-use App\Constants\DataType;
 use App\Constants\SearchType;
 use App\Constants\VolunteerRoutingType;
 use App\Models\ConfigData;
 use App\Models\ServiceBodyCallHandling;
-use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
@@ -105,16 +103,6 @@ test('initial call-in default with altered menu options', function ($method) {
 
 test('initial call-in default after going to the admin page', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getAllDbData")->with(
-        DataType::YAP_CALL_HANDLING_V2
-    )->andReturn([(object)[
-        "service_body_id" => $this->serviceBodyId,
-        "id" => "200",
-        "parent_id" => $this->parentServiceBodyId,
-        "data" => "[{\"volunteer_routing\":\"volunteers_and_sms\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"https://fake.mp3\",\"override_en_US_voicemail_greeting\":\"\"}]"
-    ]])->once();
-    app()->instance(ConfigRepository::class, $repository);
     $this->call('GET', '/admin');
 
     $response = $this->call($method, '/');
