@@ -494,30 +494,6 @@ test('valid search, volunteer direct', function ($method) {
         $redirectedServiceBody
     );
 
-    $this->withoutExceptionHandling();
-//
-//    $repository = Mockery::mock(ConfigRepository::class);
-//    $repository->shouldReceive("getDbData")
-//        ->once()
-//        ->with($this->serviceBodyId, DataType::YAP_CALL_HANDLING_V2)
-//        ->andReturn([(object)[
-//            "service_body_id" => $this->serviceBodyId,
-//            "id" => "200",
-//            "parent_id" => $this->parentServiceBodyId,
-//            "data" => "[{\"volunteer_routing\":\"volunteers_redirect\",\"volunteers_redirect_id\":\"46\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-//        ]])
-//
-//        ->shouldReceive("getDbData")
-//        ->once()
-//        ->with('46', DataType::YAP_CALL_HANDLING_V2)
-//        ->andReturn([(object)[
-//            "service_body_id" => "46",
-//            "id" => "200",
-//            "parent_id" => $this->parentServiceBodyId,
-//            "data" => "[{\"volunteer_routing\":\"helpline_field\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-//        ]]);
-//
-//    app()->instance(ConfigRepository::class, $repository);
     $response = $this->call($method, '/helpline-search.php', [
         'SearchType' => "1",
         'Called' => "+12125551212",
@@ -537,47 +513,3 @@ test('valid search, volunteer direct', function ($method) {
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
-
-//test('valid search, gender based routing', function () {
-//    $rootServerService = $this->rootServerMocks->getService();
-//    app()->instance(RootServerService::class, $rootServerService);
-//    $_SESSION['Address'] = "27592";
-//    $repository = Mockery::mock(ConfigRepository::class);
-//    $repository->shouldReceive("getDbData")
-//        ->once()
-//        ->with('44', DataType::YAP_CALL_HANDLING_V2)
-//        ->andReturn([(object)[
-//            "service_body_id" => "44",
-//            "id" => "200",
-//            "parent_id" => "43",
-//            "data" => "[{\"volunteer_routing\":\"volunteers_redirect\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"1\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-//        ]])
-//
-//        ->shouldReceive("getDbData")
-//        ->once()
-//        ->with('46', DataType::YAP_CALL_HANDLING_V2)
-//        ->andReturn([(object)[
-//            "service_body_id" => "46",
-//            "id" => "200",
-//            "parent_id" => "43",
-//            "data" => "[{\"volunteer_routing\":\"helpline_field\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"1\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-//        ]]);
-//
-//    app()->instance(ConfigRepository::class, $repository);
-//    $response = $this->call('GET', '/helpline-search.php', [
-//        'Address' => "Raleigh, NC",
-//        'SearchType' => "1",
-//        'Called' => "+12125551212",
-//    ]);
-//    $response
-//        ->assertStatus(200)
-//        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
-//        ->assertSeeInOrderExact([
-/*            '<?xml version="1.0" encoding="UTF-8"?>',*/
-//            '<Response>',
-//            '<Redirect method="GET">',
-//            'gender-routing.php?SearchType=1',
-//            '</Redirect>',
-//            '</Response>'
-//        ], false);
-//});
