@@ -12,7 +12,6 @@ use App\Models\ConfigData;
 use App\Models\RecordType;
 use App\Models\ServiceBodyCallHandling;
 use App\Models\VolunteerData;
-use App\Repositories\ConfigRepository;
 use App\Repositories\ReportsRepository;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
@@ -194,7 +193,6 @@ test('mark the caller as having entered the conference for reporting purposes', 
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
-    $this->configRepository = Mockery::mock(ConfigRepository::class)->makePartial();
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
     $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
@@ -346,7 +344,6 @@ test('mark the caller as having entered the conference for reporting purposes, w
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
-    $this->configRepository = Mockery::mock(ConfigRepository::class)->makePartial();
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
     $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
