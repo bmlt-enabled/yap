@@ -472,28 +472,54 @@ test('valid search, volunteer direct', function ($method) {
         ->once();
     app()->instance(ConferenceService::class, $conferenceService);
 
-    $repository = Mockery::mock(ConfigRepository::class);
-    $repository->shouldReceive("getDbData")
-        ->once()
-        ->with($this->serviceBodyId, DataType::YAP_CALL_HANDLING_V2)
-        ->andReturn([(object)[
-            "service_body_id" => $this->serviceBodyId,
-            "id" => "200",
-            "parent_id" => $this->parentServiceBodyId,
-            "data" => "[{\"volunteer_routing\":\"volunteers_redirect\",\"volunteers_redirect_id\":\"46\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-        ]])
+    // TODO: clean this class up so that certain things are encapsulated versus now
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS_REDIRECT;
+    $serviceBodyCallHandlingData->volunteers_redirect_id = 46;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
 
-        ->shouldReceive("getDbData")
-        ->once()
-        ->with('46', DataType::YAP_CALL_HANDLING_V2)
-        ->andReturn([(object)[
-            "service_body_id" => "46",
-            "id" => "200",
-            "parent_id" => $this->parentServiceBodyId,
-            "data" => "[{\"volunteer_routing\":\"helpline_field\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
-        ]]);
+    ConfigData::createCallHandling(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $serviceBodyCallHandlingData
+    );
 
-    app()->instance(ConfigRepository::class, $repository);
+    $redirectedServiceBody = new ServiceBodyCallHandling();
+    $redirectedServiceBody->volunteer_routing = VolunteerRoutingType::HELPLINE_FIELD;
+    $redirectedServiceBody->service_body_id = 46;
+    $redirectedServiceBody->volunteer_routing_enabled = true;
+
+    ConfigData::createCallHandling(
+        46,
+        $this->parentServiceBodyId,
+        $redirectedServiceBody
+    );
+
+    $this->withoutExceptionHandling();
+//
+//    $repository = Mockery::mock(ConfigRepository::class);
+//    $repository->shouldReceive("getDbData")
+//        ->once()
+//        ->with($this->serviceBodyId, DataType::YAP_CALL_HANDLING_V2)
+//        ->andReturn([(object)[
+//            "service_body_id" => $this->serviceBodyId,
+//            "id" => "200",
+//            "parent_id" => $this->parentServiceBodyId,
+//            "data" => "[{\"volunteer_routing\":\"volunteers_redirect\",\"volunteers_redirect_id\":\"46\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
+//        ]])
+//
+//        ->shouldReceive("getDbData")
+//        ->once()
+//        ->with('46', DataType::YAP_CALL_HANDLING_V2)
+//        ->andReturn([(object)[
+//            "service_body_id" => "46",
+//            "id" => "200",
+//            "parent_id" => $this->parentServiceBodyId,
+//            "data" => "[{\"volunteer_routing\":\"helpline_field\",\"volunteers_redirect_id\":\"\",\"forced_caller_id\":\"\",\"call_timeout\":\"\",\"gender_routing\":\"0\",\"call_strategy\":\"1\",\"volunteer_sms_notification\":\"send_sms\",\"sms_strategy\":\"2\",\"primary_contact\":\"\",\"primary_contact_email\":\"\",\"moh\":\"\",\"override_en_US_greeting\":\"\",\"override_en_US_voicemail_greeting\":\"\"}]"
+//        ]]);
+//
+//    app()->instance(ConfigRepository::class, $repository);
     $response = $this->call($method, '/helpline-search.php', [
         'SearchType' => "1",
         'Called' => "+12125551212",
