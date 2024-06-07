@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Constants\SearchType;
 use App\Constants\SpecialPhoneNumber;
+use App\Models\Alert;
 use App\Models\RecordType;
 use App\Repositories\ReportsRepository;
 use App\Repositories\VoicemailRepository;
@@ -93,10 +94,9 @@ class CallService extends Service
         $this->reports->insertCallRecord($callRecord);
     }
 
-    public function insertAlert($alertId, $payload): void
+    public function createMisconfiguredPhoneNumberAlert(string $phoneNumber): void
     {
-        date_default_timezone_set('UTC');
-        $this->reports->insertAlert($alertId, $payload);
+        Alert::createMisconfiguredPhoneNumberAlert($phoneNumber);
     }
 
     public function setConferenceParticipant($friendlyname, $callsid, $role): void

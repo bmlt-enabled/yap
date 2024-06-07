@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Constants\AlertId;
+use App\Models\Alert;
 use App\Models\RecordType;
 use App\Services\SettingsService;
 use Illuminate\Database\Eloquent\Collection;
@@ -168,14 +170,6 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
                     $callRecord->payload,
                     $callRecord->type
                 ]
-        );
-    }
-
-    public function insertAlert($alertId, $payload): bool
-    {
-        return DB::insert(
-            "INSERT INTO `alerts` (`timestamp`,`alert_id`,`payload`) VALUES (?, ?, ?)",
-            [gmdate("Y-m-d H:i:s"), $alertId, $payload]
         );
     }
 

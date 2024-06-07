@@ -16,6 +16,7 @@ class Alert extends Model
     public static function createMisconfiguredPhoneNumberAlert(
         string $phoneNumber
     ) : void {
+        date_default_timezone_set('UTC');
         self::create([
             "alert_id"=>AlertId::STATUS_CALLBACK_MISSING,
             "payload"=>$phoneNumber,

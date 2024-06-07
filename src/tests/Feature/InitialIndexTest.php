@@ -3,6 +3,7 @@
 use App\Constants\AlertId;
 use App\Constants\SearchType;
 use App\Constants\VolunteerRoutingType;
+use App\Models\Alert;
 use App\Models\ConfigData;
 use App\Models\ServiceBodyCallHandling;
 use App\Repositories\ReportsRepository;
@@ -307,8 +308,7 @@ test('initial callin without a status callback', function ($method) {
     $this->twilioService->client()->shouldReceive('incomingPhoneNumbers')
         ->withArgs([$fakePhoneNumberSid])->andReturn($incomingPhoneNumberContext)->once();
 
-    $this->reportsRepository->shouldReceive("insertAlert")
-        ->withArgs([AlertId::STATUS_CALLBACK_MISSING, $fakePhoneNumber])->once();
+    Alert::createMisconfiguredPhoneNumberAlert($fakePhoneNumber);
 
     app()->instance(TwilioService::class, $this->twilioService);
     app()->instance(ReportsRepository::class, $this->reportsRepository);
@@ -364,8 +364,7 @@ test('initial callin without a status callback without actual status.php in it',
     $this->twilioService->client()->shouldReceive('incomingPhoneNumbers')
         ->withArgs([$fakePhoneNumberSid])->andReturn($incomingPhoneNumberContext)->once();
 
-    $this->reportsRepository->shouldReceive("insertAlert")
-        ->withArgs([AlertId::STATUS_CALLBACK_MISSING, $fakePhoneNumber])->once();
+    Alert::createMisconfiguredPhoneNumberAlert($fakePhoneNumber);
 
     app()->instance(TwilioService::class, $this->twilioService);
     app()->instance(ReportsRepository::class, $this->reportsRepository);

@@ -1,8 +1,6 @@
 <?php
 
-use App\Constants\AlertId;
 use App\Models\Alert;
-use App\Repositories\ReportsRepository;
 use App\Services\GeocodingService;
 use App\Services\SettingsService;
 use App\Services\TimeZoneService;
