@@ -1,6 +1,7 @@
 <?php
 
 use App\Constants\AlertId;
+use App\Models\Alert;
 use App\Repositories\ReportsRepository;
 use App\Services\GeocodingService;
 use App\Services\SettingsService;
@@ -83,15 +84,7 @@ test('test with misconfigured phone number', function ($method) {
         ->once();
     app()->instance(TimeZoneService::class, $timezoneService);
 
-    $reportsRepository = mock(ReportsRepository::class)->makePartial();
-    $reportsRepository
-        ->shouldReceive("getMisconfiguredPhoneNumbersAlerts")
-        ->withArgs([AlertId::STATUS_CALLBACK_MISSING])
-        ->andReturn([(object)[
-            'payload'=>$misconfiguredNumber
-        ]])
-        ->once();
-    app()->instance(ReportsRepository::class, $reportsRepository);
+    Alert::createMisconfiguredPhoneNumberAlert($misconfiguredNumber);
 
     $this->twilioService->client()->shouldReceive('getAccountSid')->andReturn("123");
     $incomingPhoneNumberContext = mock('\Twilio\Rest\Api\V2010\Account\InstanceContext');
