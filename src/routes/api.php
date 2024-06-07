@@ -11,6 +11,7 @@ Route::group([
 ], function () {
     Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
     Route::resource('config', 'ConfigController')->only(['index', 'store', 'destroy']);
+    Route::resource('volunteers', 'ConfigureVolunteersController')->only(['index', 'store', 'destroy', 'update']);
     Route::resource('users', 'UserController')->only(['index', 'store', 'destroy', 'update']);
     Route::resource('volunteers/schedule', 'VolunteerScheduleController')->only(['index']);
     Route::resource('volunteers/download', 'VolunteerDownloadController')->only(['index']);

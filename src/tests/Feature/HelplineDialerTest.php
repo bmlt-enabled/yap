@@ -157,6 +157,8 @@ test('do nothing', function ($method) {
         $serviceBodyCallHandlingData
     );
 
+    $this->withoutExceptionHandling();
+
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $conferenceListMock->shouldReceive("read")
         ->with(['friendlyName' => $this->conferenceName])

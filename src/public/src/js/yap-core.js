@@ -662,8 +662,7 @@ function usersApi(data, action, callback)
 
 function loadFromAdminApi(parent_id, service_body_id, data_type, callback)
 {
-    $.getJSON("../api/v1/config?service_body_id=" + service_body_id
-        + "&data_type=" + data_type
+    $.getJSON("../api/v1/volunteers?service_body_id=" + service_body_id
         + (parent_id !== null ? "&parent_id=" + parent_id : ""), function (data) {
             callback(data)
         });
