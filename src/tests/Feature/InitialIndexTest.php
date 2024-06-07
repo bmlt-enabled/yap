@@ -1,12 +1,10 @@
 <?php
 
-use App\Constants\AlertId;
 use App\Constants\SearchType;
 use App\Constants\VolunteerRoutingType;
 use App\Models\Alert;
 use App\Models\ConfigData;
 use App\Models\ServiceBodyCallHandling;
-use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
@@ -27,7 +25,6 @@ beforeEach(function () {
     $this->fakeCallSid = "abcdefghij";
     $this->middleware = new MiddlewareTests();
     $this->rootServerMocks = new RootServerMocks();
-    $this->reportsRepository = $this->middleware->insertSession($this->fakeCallSid);
 
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [
@@ -311,7 +308,6 @@ test('initial callin without a status callback', function ($method) {
     Alert::createMisconfiguredPhoneNumberAlert($fakePhoneNumber);
 
     app()->instance(TwilioService::class, $this->twilioService);
-    app()->instance(ReportsRepository::class, $this->reportsRepository);
 
     $response = $this->call($method, '/', [
         'CallSid'=>$this->fakeCallSid
@@ -365,9 +361,7 @@ test('initial callin without a status callback without actual status.php in it',
         ->withArgs([$fakePhoneNumberSid])->andReturn($incomingPhoneNumberContext)->once();
 
     Alert::createMisconfiguredPhoneNumberAlert($fakePhoneNumber);
-
     app()->instance(TwilioService::class, $this->twilioService);
-    app()->instance(ReportsRepository::class, $this->reportsRepository);
 
     $response = $this->call($method, '/', [
         'CallSid'=>$this->fakeCallSid
