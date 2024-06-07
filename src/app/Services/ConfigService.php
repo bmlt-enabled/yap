@@ -6,6 +6,7 @@ use App\Constants\DataType;
 use App\Constants\SpecialPhoneNumber;
 use App\Constants\VolunteerRoutingType;
 use App\Constants\VolunteerType;
+use App\Models\ConfigData;
 use App\Repositories\ConfigRepository;
 use App\Models\ServiceBodyCallHandling;
 use App\Repositories\UserRepository;
@@ -37,7 +38,7 @@ class ConfigService
 
     public function getCallHandling($serviceBodyId): ServiceBodyCallHandling
     {
-        $helplineData = $this->config->getDbData($serviceBodyId, DataType::YAP_CALL_HANDLING_V2);
+        $helplineData = ConfigData::getCallHandling(intval($serviceBodyId));
         return count($helplineData) > 0 ? $this->getServiceBodyCallHandlingData($helplineData[0])
             : $this->getServiceBodyCallHandlingData(null);
     }

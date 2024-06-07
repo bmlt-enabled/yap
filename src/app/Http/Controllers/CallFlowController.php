@@ -6,6 +6,7 @@ use App\Constants\AlertId;
 use App\Constants\EventId;
 use App\Constants\SearchType;
 use App\Constants\VolunteerGender;
+use App\Models\Alert;
 use App\Models\CallRecord;
 use App\Models\Coordinates;
 use App\Models\RecordType;
@@ -90,7 +91,7 @@ class CallFlowController extends Controller
 
             if ($incomingPhoneNumber->statusCallback == null
                 || !str_contains($incomingPhoneNumber->statusCallback, "status.php")) {
-                $this->call->insertAlert(AlertId::STATUS_CALLBACK_MISSING, $incomingPhoneNumber->phoneNumber);
+                $this->call->createMisconfiguredPhoneNumberAlert($incomingPhoneNumber->phoneNumber);
             }
         }
 

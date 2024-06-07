@@ -8,6 +8,7 @@ use App\Constants\SpecialPhoneNumber;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
 use App\Exceptions\NoVolunteersException;
+use App\Models\ConfigData;
 use App\Models\Volunteer;
 use App\Models\VolunteerInfo;
 use App\Models\VolunteerReportInfo;
@@ -47,7 +48,7 @@ class VolunteerService extends Service
 
     public function getVolunteers($service_body_id): array
     {
-        $volunteerData = $this->configRepository->getDbData($service_body_id, DataType::YAP_VOLUNTEERS_V2);
+        $volunteerData = ConfigData::getVolunteers($service_body_id);
         $volunteerList = [];
         if (count($volunteerData) > 0) {
             $volunteers = json_decode($volunteerData[0]->data);

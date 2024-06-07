@@ -2,9 +2,7 @@
 
 use App\Models\Record;
 use App\Models\Session;
-use App\Repositories\ReportsRepository;
 use Carbon\Carbon;
-use Twilio\TwiML\VoiceResponse;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -19,7 +17,7 @@ beforeEach(function () {
     $this->fakeCallSid = "abcdefghij";
     $this->middleware = new \Tests\MiddlewareTests();
     $this->utility = setupTwilioService();
-    $this->reportsRepository = $this->middleware->insertSession($this->fakeCallSid);
+//    $this->reportsRepository = $this->middleware->insertSession($this->fakeCallSid);
 });
 
 test('dialback initial', function ($method) {
@@ -44,8 +42,6 @@ test('dialback dialer valid pin entry', function ($method) {
     $called = "+12125551212";
     $caller = "+17325551212";
     $dialbackNumber = "+19732129999";
-    $this->reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs();
-    app()->instance(ReportsRepository::class, $this->reportsRepository);
 
     Record::generate(
         $this->fakeCallSid,
@@ -80,9 +76,6 @@ test('dialback dialer invalid pin entry', function ($method) {
     $fakePin = "123456";
     $called = "+12125551212";
     $dialbackNumber = "+19732129999";
-    $repository = Mockery::mock(ReportsRepository::class)->makePartial();
-    $repository->shouldReceive("insertCallRecord")->withAnyArgs();
-    app()->instance(ReportsRepository::class, $repository);
 
     Record::generate(
         $this->fakeCallSid,

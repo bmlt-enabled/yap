@@ -58,7 +58,6 @@ test('join volunteer to conference', function ($method) {
         ->andReturn($conferenceContextMock);
 
     $this->reportsRepository->shouldReceive("setConferenceParticipant")->withAnyArgs()->once();
-//    $reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
     app()->instance(ReportsRepository::class, $this->reportsRepository);
 
     $response = $this->call($method, '/helpline-outdial-response.php', [
