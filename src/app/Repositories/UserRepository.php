@@ -53,10 +53,4 @@ class UserRepository
 
         DB::update($stmt, $vars);
     }
-
-    public function saveUser($data)
-    {
-        DB::insert("INSERT INTO `users` (`name`, `username`, `password`, `permissions`, `service_bodies`, `is_admin`)
-            VALUES (?, ?, SHA2(?, 256), ?, ?, 0)", [$data->name, $data->username, $data->password, array_sum($data->permissions), implode(",", $data->service_bodies)]);
-    }
 }

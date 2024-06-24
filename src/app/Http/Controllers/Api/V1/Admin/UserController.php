@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Services\AuthorizationService;
 use Illuminate\Http\Request;
@@ -27,9 +28,16 @@ class UserController extends Controller
     public function store(Request $request): Response
     {
         if ($this->authz->canManageUsers()) {
-            $data = json_decode($request->getContent());
-            $this->user->saveUser($data);
-            return response("");
+            User::saveUser(
+                $request->input('name'),
+                $request->input('username'),
+                $request->input('password'),
+                $request->input('permissions'),
+                $request->input('service_bodies'));
+            return response(
+                User::getUser($request->input('username')),
+                200,
+            );
         }
 
         return response("", 404);
