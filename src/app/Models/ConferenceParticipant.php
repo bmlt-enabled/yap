@@ -11,4 +11,18 @@ class ConferenceParticipant extends Model
     protected $table = "conference_participants";
     public $timestamps = false;
     protected $fillable = ["timestamp", "conferencesid", "callsid", "friendlyname", "role"];
+
+    public static function createConferenceParticipant(
+        string $conferenceSid,
+        string $callSid,
+        string $friendlyName,
+        int $role
+    ): void {
+        self::create([
+            "conferencesid"=>$conferenceSid,
+            "callsid"=>$callSid,
+            "friendlyname"=>$friendlyName,
+            "role"=>$role
+        ]);
+    }
 }

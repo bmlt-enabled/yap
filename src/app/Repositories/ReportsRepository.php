@@ -202,12 +202,13 @@ where alert_id = ? and b.to_number IS NULL", [$alert_id, $alert_id]);
             ->first();
     }
 
-    public function setConferenceParticipant($friendlyname, $conferencesid, $callsid, $role): void
+    public function setConferenceParticipant($friendlyName, $conferenceSid, $callSid, $role): void
     {
-        DB::insert(
-            "INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`,`role`)
-                VALUES (?,?,?,?)",
-            [$conferencesid, $callsid, $friendlyname, $role]
+        ConferenceParticipant::createConferenceParticipant(
+            $conferenceSid,
+            $callSid,
+            $friendlyName,
+            $role
         );
     }
 
