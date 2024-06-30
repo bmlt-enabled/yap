@@ -2,13 +2,9 @@
 
 namespace App\Repositories;
 
-use App\Constants\AlertId;
-use App\Models\Alert;
 use App\Models\ConferenceParticipant;
-use App\Models\RecordType;
 use App\Models\Session;
 use App\Services\SettingsService;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ReportsRepository
@@ -229,12 +225,9 @@ where alert_id = ? and b.to_number IS NULL", [$alert_id, $alert_id]);
     public function insertSession($callsid): void
     {
         $pin = $this->lookupPinForCallSid($callsid);
-
         if (count($pin) == 0) {
-            DB::insert(
-                "INSERT INTO `sessions` (`callsid`,`pin`) VALUES (?, ?)",
-                [$callsid, rand(1000000, 9999999)]
-            );
+            $pin = rand(1000000, 9999999);
+            Session::generate($callsid, $pin);
         }
     }
 }
