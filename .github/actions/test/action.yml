@@ -11,11 +11,14 @@ runs:
         cp config.test.php config.php
         cp .env.pipeline .env
         vendor/bin/pest --log-junit tests/test-results.xml
+        mysql -uroot -p"$MYSQL_ROOT_PASSWORD" --port=3106 --host=127.0.0.1 --database=yap_test < tests/yap_test.sql
         npm install
         DISABLE_NOTIFIER=true gulp
         env ENVIRONMENT=test php -S 127.0.0.1:8000 -t . server.php &
         env CYPRESS_BASE_URL=http://127.0.0.1:8000/yap npx cypress run
       shell: bash
+      env:
+        MYSQL_ROOT_PASSWORD: yap_root_password
 
     - name: Upload screenshots
       uses: actions/upload-artifact@v3

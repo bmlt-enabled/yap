@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Services\CallService;
 use App\Services\ConfigService;
 use App\Services\UpgradeService;
@@ -68,7 +69,7 @@ class AdminController extends Controller
             "serviceBodiesForUser" => $serviceBodiesForUser,
             "serviceBodiesEnabledForRouting" => $serviceBodiesEnabledForRouting,
             "settings" => $this->settings,
-            "users" => $this->config->getUsers(),
+            "users" => User::getUsers(),
             "voicemail" => $this->call->getVoicemail(),
         ];
 

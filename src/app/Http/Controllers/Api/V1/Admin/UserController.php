@@ -3,60 +3,82 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\UserRepository;
+use App\Models\User;
 use App\Services\AuthorizationService;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
-    protected UserRepository $user;
     protected AuthorizationService $authz;
 
-    public function __construct(UserRepository $user, AuthorizationService $authz)
+    public function __construct(AuthorizationService $authz)
     {
-        $this->user = $user;
         $this->authz = $authz;
     }
 
-    public function index(Request $request): Response
+    public function show($username)
     {
-        return response("not yet implemented");
+        return User::getUser($username);
     }
 
-    public function store(Request $request): Response
+    public function index(Request $request): array|Collection
+    {
+        return User::getUsers();
+    }
+
+    public function store(Request $request): JsonResponse
     {
         if ($this->authz->canManageUsers()) {
-            $data = json_decode($request->getContent());
-            $this->user->saveUser($data);
-            return response("");
+            User::saveUser(
+                $request->input('name'),
+                $request->input('username'),
+                $request->input('password'),
+                $request->input('permissions'),
+                $request->input('service_bodies')
+            );
+            return response()->json(
+                User::getUser($request->input('username'))
+            );
         }
 
-        return response("", 404);
+        return response()->json(['message' => 'Not found'], 404);
     }
 
-    public function update(Request $request): Response
+    public function update(Request $request, string $username): JsonResponse
     {
-        $data = json_decode($request->getContent());
-        if ($_SESSION['auth_id'] === $data->id) {
-            $this->user->editUser($data, 'self');
+        if ($_SESSION['username'] === $username) {
+            $user = User::editUserForSelf(
+                $request->input('name'),
+                $username,
+                $request->input('password', "") ?? ""
+            );
         } else if ($this->authz->canManageUsers()) {
-            $this->user->editUser($data, 'admin');
+            $user = User::editUserForAdmin(
+                $request->input('name'),
+                $username,
+                $request->input('password', "") ?? "",
+                $request->input('permissions'),
+                $request->input('service_bodies')
+            );
         } else {
-            return response("", 404);
+            return response()->json(['message' => 'Not found'], 404);
         }
 
-        return response("");
+        return response()->json(User::getUser($username));
     }
 
-    public function destroy(Request $request): Response
+    public function destroy(Request $request, string $username): JsonResponse
     {
         if ($this->authz->canManageUsers()) {
-            $data = json_decode($request->getContent());
-            $this->user->deleteUser($data->id);
-            return response("");
+            $response = User::deleteUser($username);
+            if ($response === 1) {
+                return response()->json(['message' => sprintf('User %s deleted successfully', $username)]);
+            }
         }
 
-        return response("", 404);
+        return response()->json(['message' => 'Not found'], 404);
     }
 }

@@ -640,11 +640,11 @@ function usersApi(data, action, callback)
     if (action === "save") {
         url = "../api/v1/users";
         method = "POST"
-    } else if (action === "edit") {
-        url = "../api/v1/users/" + data.id;
+    } else if (action === "edit" || action === "profile") {
+        url = "../api/v1/users/" + data.username;
         method = "PUT"
     } else if (action === "delete") {
-        url = "../api/v1/users/" + data.id;
+        url = "../api/v1/users/" + data;
         method = "DELETE"
     }
 
@@ -917,10 +917,9 @@ function adminOnlyFields(show, title)
     $(".users_modal_title").text(title);
 }
 
-function editUser(id, username, name, permissions, service_bodies, type)
+function editUser(username, name, permissions, service_bodies, type)
 {
     resetUsersValidation();
-    $("#id").val(id);
     $("#username").val(username);
     $("#name").val(name);
     if (type !== undefined && type === "profile") {
@@ -941,11 +940,11 @@ function editUser(id, username, name, permissions, service_bodies, type)
     $("#addUserModal").modal('show');
 }
 
-function deleteUserHandling(id)
+function deleteUserHandling($username)
 {
     if (confirm("Are you sure you want to delete this user?")) {
         spinnerDialog(true, "Deleting User...", function () {
-            usersApi({id: id}, "delete", function () {
+            usersApi($username, "delete", function () {
                 spinnerDialog(false);
                 location.reload();
             });

@@ -30,11 +30,11 @@
                 </div>
             </li>
             <li class="nav-item">
-                <?php if (isset($_SESSION['auth_id'])) { ?>
+                <?php if (isset($_SESSION['username'])) { ?>
                 <button type="button"
                         class="btn btn-warning"
                         id="profile-button"
-                        onclick="editUser('<?php echo $_SESSION['auth_id']?>','<?php echo $_SESSION['username']?>','<?php echo $_SESSION['auth_user_name_string']?>', '', '', 'profile') ">Profile</button>
+                        onclick="editUser('<?php echo $_SESSION['username']?>','<?php echo $_SESSION['auth_user_name_string']?>', '', '', 'profile') ">Profile</button>
                 <?php } ?>
                 <button type="button"
                         class="btn btn-danger"
