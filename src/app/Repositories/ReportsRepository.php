@@ -4,7 +4,9 @@ namespace App\Repositories;
 
 use App\Constants\AlertId;
 use App\Models\Alert;
+use App\Models\ConferenceParticipant;
 use App\Models\RecordType;
+use App\Models\Session;
 use App\Services\SettingsService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -188,16 +190,17 @@ where alert_id = ? and b.to_number IS NULL", [$alert_id, $alert_id]);
 
     public function lookupPinForCallSid($callsid): array
     {
-        return DB::select(
-            "SELECT pin FROM sessions where callsid = ? order by timestamp desc limit 1",
-            [$callsid]
-        );
+        return Session::select('pin')
+            ->where('callsid', $callsid)
+            ->orderBy('timestamp', 'desc')
+            ->limit(1)
+            ->get()
+            ->all();
     }
 
     public function getConferenceParticipant($callsid)
     {
-        return DB::table("conference_participants")
-            ->select(["callsid", "role"])
+        return ConferenceParticipant::select(["callsid", "role"])
             ->where('callsid', $callsid)
             ->distinct()
             ->first();
@@ -212,13 +215,15 @@ where alert_id = ? and b.to_number IS NULL", [$alert_id, $alert_id]);
         );
     }
 
-    public function getNumberForDialbackPin($pin): array
+    public static function getNumberForDialbackPin($pin)
     {
-        return DB::select(
-            "SELECT from_number FROM sessions a INNER JOIN records b ON
-        a.callsid = b.callsid where pin = ? order by start_time desc limit 1",
-            [$pin]
-        );
+        return Session::join('records', 'sessions.callsid', '=', 'records.callsid')
+            ->where('pin', $pin)
+            ->orderBy('start_time', 'desc')
+            ->limit(1)
+            ->select('records.from_number as from_number')
+            ->get()
+            ->all();
     }
 
     public function insertSession($callsid): void
