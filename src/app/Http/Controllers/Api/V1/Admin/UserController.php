@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Services\AuthorizationService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -57,14 +58,15 @@ class UserController extends Controller
         return response("");
     }
 
-    public function destroy(Request $request): Response
+    public function destroy(Request $request, string $username): JsonResponse
     {
         if ($this->authz->canManageUsers()) {
-            $data = json_decode($request->getContent());
-            $this->user->deleteUser($data->id);
-            return response("");
+            $response = User::deleteUser($username);
+            if ($response === 1) {
+                return response()->json(['message' => sprintf('User %s deleted successfully', $username)]);
+            }
         }
 
-        return response("", 404);
+        return response()->json(['message' => 'Not found'], 404);
     }
 }

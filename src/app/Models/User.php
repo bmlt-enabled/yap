@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
@@ -33,5 +32,10 @@ class User extends Model
             ->select(['id', 'name', 'username', 'is_admin', 'permissions', 'service_bodies', 'created_on'])
             ->where('username', $username)
             ->get();
+    }
+
+    public static function deleteUser($username)
+    {
+        return self::where(['username'=>$username])->delete();
     }
 }

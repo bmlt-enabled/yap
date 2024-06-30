@@ -32,7 +32,7 @@ if (!$canManageUsers) {
                     <td>
                         <button class="btn btn-sm btn-warning" onclick="editUser(<?php echo $user->id?>, '<?php echo $user->username?>', '<?php echo $user->name?>', '<?php echo $user->permissions?>', '<?php echo $user->service_bodies?>', 'edit')">Edit</button>
                             <?php if ($user->id !== $_SESSION['auth_id']) { ?>
-                        <button class="btn btn-sm btn-danger" onclick="deleteUserHandling(<?php echo $user->id ?>)">Delete</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteUserHandling('<?php echo $user->username ?>')">Delete</button>
                             <?php } ?>
                     </td>
                     <td><?php echo $user->username?></td>

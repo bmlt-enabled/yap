@@ -644,7 +644,7 @@ function usersApi(data, action, callback)
         url = "../api/v1/users/" + data.id;
         method = "PUT"
     } else if (action === "delete") {
-        url = "../api/v1/users/" + data.id;
+        url = "../api/v1/users/" + data;
         method = "DELETE"
     }
 
@@ -941,11 +941,11 @@ function editUser(id, username, name, permissions, service_bodies, type)
     $("#addUserModal").modal('show');
 }
 
-function deleteUserHandling(id)
+function deleteUserHandling($username)
 {
     if (confirm("Are you sure you want to delete this user?")) {
         spinnerDialog(true, "Deleting User...", function () {
-            usersApi({id: id}, "delete", function () {
+            usersApi($username, "delete", function () {
                 spinnerDialog(false);
                 location.reload();
             });

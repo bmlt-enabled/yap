@@ -26,11 +26,6 @@ class UserRepository
         }
     }
 
-    public function deleteUser($id)
-    {
-        DB::delete("DELETE FROM `users` WHERE `id`= ?", [$id]);
-    }
-
     public function editUser($data, $role)
     {
         $stmt = "UPDATE `users` SET `name` = ?";
