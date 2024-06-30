@@ -5,23 +5,19 @@ namespace App\Services;
 use App\Constants\DataType;
 use App\Constants\SpecialPhoneNumber;
 use App\Constants\VolunteerRoutingType;
-use App\Constants\VolunteerType;
 use App\Models\ConfigData;
 use App\Repositories\ConfigRepository;
 use App\Models\ServiceBodyCallHandling;
-use App\Repositories\UserRepository;
 
 class ConfigService
 {
     protected ConfigRepository $config;
-    protected UserRepository $users;
     protected RootServerService $rootServer;
 
-    public function __construct(ConfigRepository $config, RootServerService $rootServer, UserRepository $users)
+    public function __construct(ConfigRepository $config, RootServerService $rootServer)
     {
         $this->config = $config;
         $this->rootServer = $rootServer;
-        $this->users = $users;
     }
 
     public function getConfig($service_body_id)
@@ -115,8 +111,8 @@ class ConfigService
         return $config;
     }
 
-    public function getUsers($service_bodies = null)
+    public function getUsers()
     {
-        return $this->users->getUsers($service_bodies);
+        return $this->users->getUsers();
     }
 }

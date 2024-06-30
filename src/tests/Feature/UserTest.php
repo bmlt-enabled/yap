@@ -89,3 +89,64 @@ test('delete user that does not exist', function () {
         ->assertJson(['message'=>'Not found'])
         ->assertHeader('Content-Type', 'application/json');
 });
+
+test('get all users', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    $_SESSION['auth_is_admin'] = true;
+
+    $response = $this->call('POST', '/api/v1/users', [
+        'name'=>'test',
+        'username'=>'test',
+        'password'=>'test',
+        'permissions'=>[1],
+        'service_bodies'=>[1059, 1060]
+    ]);
+    $response->assertStatus(200);
+
+    $response = $this->call('POST', '/api/v1/users', [
+        'name'=>'test2',
+        'username'=>'test2',
+        'password'=>'test2',
+        'permissions'=>[1],
+        'service_bodies'=>[1059, 1060]
+    ]);
+    $response->assertStatus(200);
+
+    $response = $this->call('GET', '/api/v1/users');
+    $response->assertStatus(200);
+});
+
+test('edit user name by self, non admin', function() {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    $_SESSION['auth_is_admin'] = true;
+
+    $this->withoutExceptionHandling();
+
+    $username = 'test';
+
+    $response = $this->call('POST', '/api/v1/users', [
+        'name'=>'test',
+        'username'=>$username,
+        'password'=>'test',
+        'permissions'=>[0],
+        'service_bodies'=>[1059, 1060]
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json");
+
+    $_SESSION['auth_is_admin'] = false;
+    $_SESSION['username'] = $username;
+
+    $response = $this->call('PUT', sprintf('/api/v1/users/%s', $username), [
+        'name'=>'test2',
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json");
+
+    $response = $this->call('GET', sprintf('/api/v1/users/%s', $username));
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json");
+});

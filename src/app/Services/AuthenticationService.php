@@ -30,7 +30,6 @@ class AuthenticationService extends Service
             $_SESSION['auth_user_name_string'] = $auth_v2_result[0]->name;
             $_SESSION['auth_is_admin'] = $auth_v2_result[0]->is_admin;
             $_SESSION['auth_permissions'] = $auth_v2_result[0]->permissions;
-            $_SESSION['auth_id'] = $auth_v2_result[0]->id;
             $_SESSION['auth_service_bodies'] = explode(",", $auth_v2_result[0]->service_bodies);
             $_SESSION['auth_service_bodies_rights'] = $this->rootServer->getServiceBodiesRightsIds();
             $this->session->setConfigForService($_SESSION['auth_service_bodies_rights'][0]);
