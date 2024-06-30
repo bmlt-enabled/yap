@@ -15,7 +15,8 @@ class User extends Model
         string $username,
         string $password,
         array $permissions,
-        array $service_bodies) {
+        array $service_bodies
+    ) {
         self::create([
             'name'=>$name,
             'username'=>$username,
@@ -26,10 +27,11 @@ class User extends Model
         ]);
     }
 
-    public static function editUserForSelf(string $name,
-                                           string $username,
-                                           string $password)
-    {
+    public static function editUserForSelf(
+        string $name,
+        string $username,
+        string $password
+    ) {
         $user = self::where('username', $username)->first();
         $user->name = $name;
         if (strlen($password) > 0) {
@@ -40,12 +42,13 @@ class User extends Model
         return $user;
     }
 
-    public static function editUserForAdmin(string $name,
-                                    string $username,
-                                    string $password,
-                                    array $permissions,
-                                    array $service_bodies)
-    {
+    public static function editUserForAdmin(
+        string $name,
+        string $username,
+        string $password,
+        array $permissions,
+        array $service_bodies
+    ) {
         $user = self::where('username', $username)->first();
         $user->name = $name;
         $user->permissions = array_sum($permissions);

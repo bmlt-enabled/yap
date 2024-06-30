@@ -116,7 +116,7 @@ test('get all users', function () {
     $response->assertStatus(200);
 });
 
-test('edit user name by self, non admin', function() {
+test('edit user name by self, non admin', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     $_SESSION['auth_is_admin'] = true;
 
@@ -133,7 +133,14 @@ test('edit user name by self, non admin', function() {
     ]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "application/json");
+        ->assertHeader("Content-Type", "application/json")
+        ->assertJson([[
+            "name"=>"test",
+            "username"=>"test",
+            "is_admin"=>0,
+            "permissions"=>0,
+            "service_bodies"=>"1059,1060"
+        ]]);
 
     $_SESSION['auth_is_admin'] = false;
     $_SESSION['username'] = $username;
@@ -143,10 +150,22 @@ test('edit user name by self, non admin', function() {
     ]);
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "application/json");
-
+        ->assertHeader("Content-Type", "application/json")
+        ->assertJson([[
+            "name"=>"test2",
+            "username"=>"test",
+            "is_admin"=>0,
+            "permissions"=>0,
+            "service_bodies"=>"1059,1060"
+    ]]);
     $response = $this->call('GET', sprintf('/api/v1/users/%s', $username));
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "application/json");
+        ->assertHeader("Content-Type", "application/json")
+        ->assertJson([[
+            "name"=>"test2",
+            "username"=>"test",
+            "is_admin"=>0,
+            "permissions"=>0,
+            "service_bodies"=>"1059,1060"]]);
 });

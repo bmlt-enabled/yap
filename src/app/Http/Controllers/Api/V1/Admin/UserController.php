@@ -37,10 +37,10 @@ class UserController extends Controller
                 $request->input('username'),
                 $request->input('password'),
                 $request->input('permissions'),
-                $request->input('service_bodies'));
+                $request->input('service_bodies')
+            );
             return response()->json(
-                User::getUser($request->input('username')),
-                200,
+                User::getUser($request->input('username'))
             );
         }
 
@@ -50,20 +50,24 @@ class UserController extends Controller
     public function update(Request $request, string $username): JsonResponse
     {
         if ($_SESSION['username'] === $username) {
-            $user = User::editUserForSelf($request->input('name'),
+            $user = User::editUserForSelf(
+                $request->input('name'),
                 $username,
-                $request->input('password', "") ?? "");
+                $request->input('password', "") ?? ""
+            );
         } else if ($this->authz->canManageUsers()) {
-            $user = User::editUserForAdmin($request->input('name'),
+            $user = User::editUserForAdmin(
+                $request->input('name'),
                 $username,
                 $request->input('password', "") ?? "",
                 $request->input('permissions'),
-                $request->input('service_bodies'));
+                $request->input('service_bodies')
+            );
         } else {
             return response()->json(['message' => 'Not found'], 404);
         }
 
-        return response()->json($user);
+        return response()->json(User::getUser($username));
     }
 
     public function destroy(Request $request, string $username): JsonResponse
