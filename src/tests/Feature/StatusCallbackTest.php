@@ -29,7 +29,6 @@ beforeEach(function () {
 });
 
 test('status callback test', function ($method) {
-    $this->reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs()->once();
     app()->instance(ReportsRepository::class, $this->reportsRepository);
     $response = $this->call(
         $method,
@@ -63,8 +62,6 @@ test('status callback test without timestamp', function ($method) {
     $this->twilioService->client()->shouldReceive('calls')
         ->withArgs([$this->fakeCallSid])->andReturn($callContext)->once();
 
-    $this->reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs()->once();
-    app()->instance(ReportsRepository::class, $this->reportsRepository);
     $response = $this->call(
         $method,
         '/status.php',

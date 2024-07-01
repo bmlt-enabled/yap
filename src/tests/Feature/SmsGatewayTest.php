@@ -27,11 +27,6 @@ beforeEach(function () {
         'To' => $this->to,
         'From' => $this->from
     ];
-
-    $repository = Mockery::mock(ReportsRepository::class);
-    $repository->shouldReceive("insertCallRecord")->withAnyArgs();
-    $repository->shouldReceive("insertCallEventRecord")->withAnyArgs();
-    app()->instance(ReportsRepository::class, $repository);
 });
 
 test('initial sms gateway default', function ($method) {

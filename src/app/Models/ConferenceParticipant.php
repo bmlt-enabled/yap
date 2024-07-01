@@ -12,7 +12,7 @@ class ConferenceParticipant extends Model
     public $timestamps = false;
     protected $fillable = ["timestamp", "conferencesid", "callsid", "friendlyname", "role"];
 
-    public static function createConferenceParticipant(
+    public static function generate(
         string $conferenceSid,
         string $callSid,
         string $friendlyName,

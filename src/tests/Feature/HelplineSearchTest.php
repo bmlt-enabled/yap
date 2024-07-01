@@ -65,10 +65,6 @@ test('force number', function ($method) {
 })->with(['GET', 'POST']);
 
 test('force number wth captcha', function ($method) {
-    $repository = Mockery::mock(ReportsRepository::class);
-    $repository->shouldReceive("insertCallRecord")->withAnyArgs();
-    $repository->shouldReceive("insertCallEventRecord")->withAnyArgs();
-    app()->instance(ReportsRepository::class, $repository);
     $response = $this->call($method, '/helpline-search.php', [
         'SearchType' => "1",
         'Called' => "+12125551212",
@@ -93,10 +89,6 @@ test('force number wth captcha', function ($method) {
 })->with(['GET', 'POST']);
 
 test('force number wth captcha w/waiting message querystring setting', function ($method) {
-    $repository = Mockery::mock(ReportsRepository::class);
-    $repository->shouldReceive("insertCallRecord")->withAnyArgs();
-    $repository->shouldReceive("insertCallEventRecord")->withAnyArgs();
-    app()->instance(ReportsRepository::class, $repository);
     $response = $this->call($method, '/helpline-search.php', [
         'SearchType' => "1",
         'Called' => "+12125551212",

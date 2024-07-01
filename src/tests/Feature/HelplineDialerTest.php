@@ -444,6 +444,8 @@ test('mark the caller as having entered the conference for reporting purposes, w
             return $data['from'] == $this->caller && !empty($data['body'][0]);
         }));
 
+    $this->withoutExceptionHandling();
+
     $response = $this->call($method, '/helpline-dialer.php', [
         'CallSid'=>$this->callSid,
         'SearchType' => "1",
