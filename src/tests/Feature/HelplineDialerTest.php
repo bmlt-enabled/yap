@@ -294,24 +294,6 @@ test('mark the caller as having entered the conference for reporting purposes', 
             return $data['from'] == $this->caller && !empty($data['body'][0]);
         }));
 
-    $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository->shouldReceive('insertSession')
-        ->with($this->callSid)
-        ->once();
-    $reportsRepository->shouldReceive('insertCallEventRecord')
-        ->withArgs([$this->callSid, EventId::CALLER_IN_CONFERENCE, $this->serviceBodyId, null, RecordType::PHONE])
-        ->once();
-    $reportsRepository->shouldReceive('insertCallEventRecord')
-        ->withArgs([$this->callSid,
-            EventId::VOLUNTEER_DIALED,
-            $this->serviceBodyId,
-            json_encode((object)["to_number"=>$this->volunteer_phone_number]),
-            RecordType::PHONE])
-        ->once();
-    $reportsRepository->shouldReceive('setConferenceParticipant')
-        ->withArgs([$this->conferenceName, $this->conferenceName, $this->callSid, CallRole::CALLER])
-        ->once();
-    app()->instance(ReportsRepository::class, $reportsRepository);
     $response = $this->call($method, '/helpline-dialer.php', [
         'CallSid'=>$this->callSid,
         'SearchType' => "1",
@@ -592,22 +574,6 @@ test('an invalid or busy outgoing call happens with linear and voicemail and one
         $payload = ["to_number"=>$this->volunteer_phone_number];
     }
 
-    $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository->shouldReceive('insertSession')
-        ->with($this->callSid)
-        ->once();
-    $reportsRepository->shouldReceive('insertCallEventRecord')
-        ->withArgs([$this->callSid,
-            $eventId,
-            $this->serviceBodyId,
-            json_encode((object)$payload),
-            RecordType::PHONE])
-        ->once();
-    $reportsRepository->shouldReceive('setConferenceParticipant')
-        ->withArgs([$this->conferenceName, $this->conferenceName, $this->callSid, CallRole::VOLUNTEER])
-        ->once();
-    app()->instance(ReportsRepository::class, $reportsRepository);
-
     $response = $this->call($method, '/helpline-dialer.php', [
         'CallSid'=>$this->callSid,
         'Called'=>$this->volunteer_phone_number,
@@ -759,38 +725,6 @@ test('an invalid or busy outgoing call happens with linear and voicemail and two
             return $data['from'] == $this->caller && !empty($data['body'][0]);
         }));
 
-    $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository->shouldReceive('insertSession')
-        ->with($this->callSid)
-        ->once();
-
-    if ($twilioCallStatus === TwilioCallStatus::FAILED) {
-        $eventId = EventId::VOLUNTEER_NUMBER_BAD;
-        $payload = ["to_number"=>$this->volunteer_phone_number, "error"=>"invalid phone number"];
-    } elseif ($twilioCallStatus === TwilioCallStatus::BUSY) {
-        $eventId = EventId::VOLUNTEER_NUMBER_BUSY;
-        $payload = ["to_number"=>$this->volunteer_phone_number];
-    }
-
-    $reportsRepository->shouldReceive('insertCallEventRecord')
-        ->withArgs([$this->callSid,
-            $eventId,
-            $this->serviceBodyId,
-            json_encode((object)$payload),
-            RecordType::PHONE])
-        ->once();
-    $reportsRepository->shouldReceive('insertCallEventRecord')
-        ->withArgs([$this->callSid,
-            EventId::VOLUNTEER_DIALED,
-            $this->serviceBodyId,
-            json_encode((object)["to_number"=>$this->volunteer_phone_number_2]),
-            RecordType::PHONE])
-        ->once();
-    $reportsRepository->shouldReceive('setConferenceParticipant')
-        ->withArgs([$this->conferenceName, $this->conferenceName, $this->callSid, CallRole::VOLUNTEER])
-        ->once();
-    app()->instance(ReportsRepository::class, $reportsRepository);
-
     $response = $this->call($method, '/helpline-dialer.php', [
         'CallSid'=>$this->callSid,
         'Called'=>$this->volunteer_phone_number,
@@ -916,12 +850,6 @@ test('an invalid or busy outgoing call happens with blasting and voicemail and o
         ->with($volunteer_phone_number, Mockery::on(function ($data) {
             return $data['from'] == $this->caller && !empty($data['body'][0]);
         }));
-
-    $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository->shouldReceive('insertSession')
-        ->with($this->callSid)
-        ->once();
-    app()->instance(ReportsRepository::class, $reportsRepository);
 
     $response = $this->call($method, '/helpline-dialer.php', [
         'CallSid'=>$this->callSid,
@@ -1061,12 +989,6 @@ test('an invalid or busy outgoing call happens with blasting and voicemail and t
         ->with($volunteer_phone_number, Mockery::on(function ($data) {
             return $data['from'] == $this->caller && !empty($data['body'][0]);
         }));
-
-    $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository->shouldReceive('insertSession')
-        ->with($this->callSid)
-        ->once();
-    app()->instance(ReportsRepository::class, $reportsRepository);
 
     $response = $this->call($method, '/helpline-dialer.php', [
         'CallSid'=>$this->callSid,

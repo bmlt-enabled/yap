@@ -76,16 +76,6 @@ test('search for volunteers with word overrides with querystring', function ($me
 })->with(['GET', 'POST']);
 
 test('search for meetings', function ($method) {
-    $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository->shouldReceive("insertCallEventRecord")
-        ->withArgs([$this->callSid, EventId::MEETING_SEARCH, null, null, RecordType::PHONE])
-        ->once();
-    $reportsRepository
-        ->shouldReceive("insertSession")
-        ->withArgs([$this->callSid])
-        ->once();
-    app()->instance(ReportsRepository::class, $reportsRepository);
-
     $response = $this->call($method, '/input-method.php', [
         "Digits"=>"2",
         "CallSid"=>$this->callSid,

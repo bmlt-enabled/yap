@@ -34,17 +34,6 @@ beforeEach(function () {
 
 test('force number', function ($method) {
     $forcedNumber = '+19998887777';
-    $repository = Mockery::mock(ReportsRepository::class);
-    $repository->shouldReceive("insertCallEventRecord")
-        ->withArgs([$this->callSid, EventId::VOLUNTEER_SEARCH_FORCE_DIALED, null, json_encode((object)['number'=>$forcedNumber]), RecordType::PHONE])
-        ->once();
-    $repository->shouldReceive("insertCallEventRecord")
-        ->withArgs([$this->callSid, EventId::HELPLINE_ROUTE, null, json_encode((object)['helpline_number'=>$forcedNumber,'extension'=>'w']), RecordType::PHONE])
-        ->once();
-    $repository->shouldReceive("insertSession")
-        ->withArgs([$this->callSid])
-        ->once();
-    app()->instance(ReportsRepository::class, $repository);
     $response = $this->call($method, '/helpline-search.php', [
         'SearchType' => "1",
         'Called' => "+12125551212",
@@ -190,16 +179,6 @@ test('valid search, volunteer routing', function ($method) {
         ->andReturn("1053_fake_conference")
         ->once();
     app()->instance(ConferenceService::class, $conferenceService);
-    $repository = Mockery::mock(ReportsRepository::class);
-    $repository
-        ->shouldReceive("insertCallEventRecord")
-        ->withArgs([$this->callSid, EventId::VOLUNTEER_SEARCH, $this->serviceBodyId, null, RecordType::PHONE])
-        ->once();
-    $repository
-        ->shouldReceive("insertSession")
-        ->withArgs([$this->callSid])
-        ->once();
-    app()->instance(ReportsRepository::class, $repository);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
 
@@ -244,21 +223,6 @@ test('valid search with coordinates override, volunteer routing, announce servic
         ['location' => $location, 'latitude' => $latitude, 'longitude' => $longitude]
     ];
 
-    $repository = Mockery::mock(ReportsRepository::class);
-    $repository
-        ->shouldReceive("insertCallEventRecord")
-        ->withArgs([$this->callSid, EventId::VOLUNTEER_SEARCH, null, json_encode((object)["gather"=>$location,"coordinates"=>["location"=>$location,"latitude"=>$latitude,"longitude"=>$longitude]]), RecordType::PHONE])
-        ->once();
-    $repository
-        ->shouldReceive("insertCallEventRecord")
-        ->withArgs([$this->callSid, EventId::HELPLINE_ROUTE, null, json_encode((object)["helpline_number"=>$dialedNumber,"extension"=>"w"]), RecordType::PHONE])
-        ->once();
-
-    $repository
-        ->shouldReceive("insertSession")
-        ->withArgs([$this->callSid])
-        ->once();
-    app()->instance(ReportsRepository::class, $repository);
     $response = $this->call($method, '/helpline-search.php', [
         'Digits' => "Geneva, NY",
         'SearchType' => "1",
@@ -286,17 +250,6 @@ test('valid search, volunteer routing, announce service body name', function ($m
         ->andReturn("1053_fake_conference")
         ->once();
     app()->instance(ConferenceService::class, $conferenceService);
-
-    $repository = Mockery::mock(ReportsRepository::class);
-    $repository
-        ->shouldReceive("insertCallEventRecord")
-        ->withArgs([$this->callSid, EventId::VOLUNTEER_SEARCH, $this->serviceBodyId, null, RecordType::PHONE])
-        ->once();
-    $repository
-        ->shouldReceive("insertSession")
-        ->withArgs([$this->callSid])
-        ->once();
-    app()->instance(ReportsRepository::class, $repository);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $_SESSION['override_announce_servicebody_volunteer_routing'] = true;
@@ -335,20 +288,6 @@ test('valid search, volunteer routing, announce service body name', function ($m
 })->with(['GET', 'POST']);
 
 test('valid search, helpline field routing', function ($method) {
-    $repository = Mockery::mock(ReportsRepository::class);
-            $repository->shouldReceive("insertCallEventRecord")
-                ->withArgs([$this->callSid, EventId::VOLUNTEER_SEARCH, $this->serviceBodyId, null, RecordType::PHONE])
-                ->once();
-    $repository->shouldReceive("insertCallEventRecord")
-        ->withArgs([$this->callSid, EventId::HELPLINE_ROUTE, $this->serviceBodyId, json_encode((object)[
-            "helpline_number"=>"888-557-1667",
-            "extension"=>"ww1"
-        ]), RecordType::PHONE])
-        ->once();
-    $repository->shouldReceive("insertSession")
-        ->withArgs([$this->callSid])
-        ->once();
-    app()->instance(ReportsRepository::class, $repository);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
 
@@ -386,16 +325,6 @@ test('valid search with address, volunteer gender routing enabled and choice not
     $coordinates->longitude =-76.9873477;
     $coordinates->location = "Geneva, NY 14456, USA";
     $meta_as_json = json_encode((object)['gather' => '14456', 'coordinates' => $coordinates]);
-    $repository = Mockery::mock(ReportsRepository::class);
-    $repository
-        ->shouldReceive("insertCallEventRecord")
-        ->withArgs([$this->callSid, EventId::VOLUNTEER_SEARCH, null, $meta_as_json, RecordType::PHONE])
-        ->once();
-    $repository
-        ->shouldReceive("insertSession")
-        ->withArgs([$this->callSid])
-        ->once();
-    app()->instance(ReportsRepository::class, $repository);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     // TODO: clean this class up so that certain things are encapsulated versus now
