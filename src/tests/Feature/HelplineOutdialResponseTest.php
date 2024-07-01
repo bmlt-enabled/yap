@@ -1,6 +1,5 @@
 <?php
 
-use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
@@ -20,7 +19,6 @@ beforeEach(function () {
 
     $this->fakeCallSid = "abcdefghij";
     $this->middleware = new MiddlewareTests();
-    $this->reportsRepository = $this->middleware->insertSession($this->fakeCallSid);
     $this->rootServerMocks = new RootServerMocks();
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [
@@ -57,9 +55,6 @@ test('join volunteer to conference', function ($method) {
     $this->twilioClient->shouldReceive("conferences")->with($this->conferenceName)
         ->andReturn($conferenceContextMock);
 
-    $this->reportsRepository->shouldReceive("setConferenceParticipant")->withAnyArgs()->once();
-    app()->instance(ReportsRepository::class, $this->reportsRepository);
-
     $response = $this->call($method, '/helpline-outdial-response.php', [
         "Called"=>"12125551212",
         "CallSid"=>$this->fakeCallSid,
@@ -88,10 +83,6 @@ test('waiting for the volunteer to press 1 to answer the call', function ($metho
     $participantListMock->shouldReceive("read")->andReturn(["caller"]);
     $conferenceContextMock->participants = $participantListMock;
     $this->twilioClient->shouldReceive("conferences")->with($this->conferenceName)->andReturn($conferenceContextMock);
-
-    $this->reportsRepository->shouldReceive("setConferenceParticipant")->withAnyArgs()->once();
-    $this->reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
-    app()->instance(ReportsRepository::class, $this->reportsRepository);
 
     $response = $this->call($method, '/helpline-outdial-response.php', [
         "Called"=>"12125551212",
@@ -122,10 +113,6 @@ test('volunteer called and auto answer capability enabled', function ($method) {
     $conferenceContextMock->participants = $participantListMock;
     $this->twilioClient->shouldReceive("conferences")->with($this->conferenceName)->andReturn($conferenceContextMock);
 
-    $this->reportsRepository->shouldReceive("setConferenceParticipant")->withAnyArgs()->once();
-    $this->reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
-    app()->instance(ReportsRepository::class, $this->reportsRepository);
-
     $settingsService = new SettingsService();
     $settingsService->set("volunteer_auto_answer", true);
     app()->instance(SettingsService::class, $settingsService);
@@ -155,10 +142,6 @@ test('the caller hung up before the call was answered', function ($method) {
     $participantListMock->shouldReceive("read")->andReturn();
     $conferenceContextMock->participants = $participantListMock;
     $this->twilioClient->shouldReceive("conferences")->with($this->conferenceName)->andReturn($conferenceContextMock);
-
-    $this->reportsRepository->shouldReceive("setConferenceParticipant")->withAnyArgs()->once();
-    $this->reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs()->once();
-    app()->instance(ReportsRepository::class, $this->reportsRepository);
 
     $response = $this->call($method, '/helpline-outdial-response.php', [
         "Digits"=>"1",

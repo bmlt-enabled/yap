@@ -17,7 +17,6 @@ beforeEach(function () {
 
     $this->fakeCallSid = "abcdefghij";
     $this->middleware = new \Tests\MiddlewareTests();
-    $this->reportsRepository = $this->middleware->insertSession($this->fakeCallSid);
 
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [
@@ -29,7 +28,6 @@ beforeEach(function () {
 });
 
 test('status callback test', function ($method) {
-    app()->instance(ReportsRepository::class, $this->reportsRepository);
     $response = $this->call(
         $method,
         '/status.php',
