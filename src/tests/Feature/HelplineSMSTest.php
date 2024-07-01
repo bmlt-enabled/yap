@@ -8,7 +8,6 @@ use App\Constants\VolunteerType;
 use App\Models\ConfigData;
 use App\Models\ServiceBodyCallHandling;
 use App\Models\VolunteerData;
-use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
 use Tests\MiddlewareTests;
@@ -39,11 +38,6 @@ beforeEach(function () {
 });
 
 test('initial sms helpline gateway default when there is no volunteer', function ($method) {
-    $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs();
-    $reportsRepository->shouldReceive("insertCallEventRecord")->withAnyArgs();
-
-    app()->instance(ReportsRepository::class, $reportsRepository);
     $results[] = (object)["service_body_bigint"=>$this->serviceBodyId];
     $this->rootServerMocks->getService()
         ->shouldReceive("helplineSearch")
@@ -82,8 +76,12 @@ test('initial sms helpline gateway default when there is no volunteer', function
 
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
+    $this->withoutExceptionHandling();
+
     $response = $this->call($method, '/sms-gateway.php', [
+        "SmsSid" => "Dude123",
         "OriginalCallerId" => $this->to,
+        "From"=> $this->to,
         "To" => $this->from,
         "Body" => "talk blah"
     ]);
@@ -95,10 +93,6 @@ test('initial sms helpline gateway default when there is no volunteer', function
 })->with(['GET', 'POST']);
 
 test('initial sms helpline gateway with a volunteer', function ($method) {
-    $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs();
-    app()->instance(ReportsRepository::class, $reportsRepository);
-
     $volunteer_name = "Corey";
     $volunteer_gender = VolunteerGender::UNSPECIFIED;
     $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
@@ -171,8 +165,10 @@ test('initial sms helpline gateway with a volunteer', function ($method) {
     );
 
     $response = $this->call($method, '/sms-gateway.php', [
+        "SmsSid"=>"Dude123",
         "OriginalCallerId" => $this->from,
         "To" => $this->to,
+        "From" => $this->from,
         "Body"=>"talk Geneva, NY"
     ]);
     $response
@@ -183,10 +179,6 @@ test('initial sms helpline gateway with a volunteer', function ($method) {
 })->with(['GET', 'POST']);
 
 test('initial sms helpline gateway with a volunteer with a different keywordr', function ($method) {
-    $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository->shouldReceive("insertCallRecord")->withAnyArgs();
-    app()->instance(ReportsRepository::class, $reportsRepository);
-
     $volunteer_name = "Corey";
     $volunteer_gender = VolunteerGender::UNSPECIFIED;
     $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
@@ -261,8 +253,10 @@ test('initial sms helpline gateway with a volunteer with a different keywordr', 
     $_SESSION['override_sms_helpline_keyword'] = 'dude';
 
     $response = $this->call($method, '/sms-gateway.php', [
+        "SmsSid" => "Dude123",
         "OriginalCallerId" => $this->from,
         "To" => $this->to,
+        "From" => $this->from,
         "Body"=>"dude Geneva, NY"
     ]);
     $response

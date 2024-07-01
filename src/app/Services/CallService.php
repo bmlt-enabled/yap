@@ -155,7 +155,7 @@ class CallService extends Service
         return 0;
     }
 
-    public function getNumberForDialbackPin($pin): array
+    public function getNumberForDialbackPin($pin)
     {
         return $this->reports->getNumberForDialbackPin($pin);
     }

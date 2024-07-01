@@ -2,11 +2,11 @@
 
 namespace App\Repositories;
 
-use App\Constants\AlertId;
-use App\Models\Alert;
-use App\Models\RecordType;
+use App\Models\ConferenceParticipant;
+use App\Models\Record;
+use App\Models\RecordsEvents;
+use App\Models\Session;
 use App\Services\SettingsService;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ReportsRepository
@@ -147,29 +147,27 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
 
     public function insertCallEventRecord($callSid, $eventId, $serviceBodyId, $metaAsJson, $type): void
     {
-        DB::insert(
-            "INSERT INTO `records_events` (`callsid`,`event_id`,`event_time`,`service_body_id`,`meta`, `type`)
-            VALUES (?, ?, ?, ?, ?, ?)",
-            [$callSid, $eventId, $this->settings->getCurrentTime(), $serviceBodyId, $metaAsJson, $type]
+        RecordsEvents::generate(
+            $callSid,
+            $eventId,
+            $this->settings->getCurrentTime(),
+            $serviceBodyId,
+            $metaAsJson,
+            $type
         );
     }
 
     public function insertCallRecord($callRecord): void
     {
-        DB::insert(
-            "INSERT INTO `records`
-            (`callsid`,`from_number`,`to_number`,`duration`,`start_time`,`end_time`,`payload`,`type`)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            [
-                    $callRecord->callSid,
-                    $callRecord->from_number,
-                    $callRecord->to_number,
-                    $callRecord->duration,
-                    $callRecord->start_time,
-                    $callRecord->end_time,
-                    $callRecord->payload,
-                    $callRecord->type
-                ]
+        Record::generate(
+            $callRecord->callSid,
+            $callRecord->start_time,
+            $callRecord->end_time,
+            $callRecord->from_number,
+            $callRecord->to_number,
+            $callRecord->payload,
+            $callRecord->duration,
+            $callRecord->type
         );
     }
 
@@ -188,48 +186,49 @@ where alert_id = ? and b.to_number IS NULL", [$alert_id, $alert_id]);
 
     public function lookupPinForCallSid($callsid): array
     {
-        return DB::select(
-            "SELECT pin FROM sessions where callsid = ? order by timestamp desc limit 1",
-            [$callsid]
-        );
+        return Session::select('pin')
+            ->where('callsid', $callsid)
+            ->orderBy('timestamp', 'desc')
+            ->limit(1)
+            ->get()
+            ->all();
     }
 
     public function getConferenceParticipant($callsid)
     {
-        return DB::table("conference_participants")
-            ->select(["callsid", "role"])
+        return ConferenceParticipant::select(["callsid", "role"])
             ->where('callsid', $callsid)
             ->distinct()
             ->first();
     }
 
-    public function setConferenceParticipant($friendlyname, $conferencesid, $callsid, $role): void
+    public function setConferenceParticipant($friendlyName, $conferenceSid, $callSid, $role): void
     {
-        DB::insert(
-            "INSERT INTO `conference_participants` (`conferencesid`,`callsid`,`friendlyname`,`role`)
-                VALUES (?,?,?,?)",
-            [$conferencesid, $callsid, $friendlyname, $role]
+        ConferenceParticipant::generate(
+            $conferenceSid,
+            $callSid,
+            $friendlyName,
+            $role
         );
     }
 
-    public function getNumberForDialbackPin($pin): array
+    public static function getNumberForDialbackPin($pin)
     {
-        return DB::select(
-            "SELECT from_number FROM sessions a INNER JOIN records b ON
-        a.callsid = b.callsid where pin = ? order by start_time desc limit 1",
-            [$pin]
-        );
+        return Session::join('records', 'sessions.callsid', '=', 'records.callsid')
+            ->where('pin', $pin)
+            ->orderBy('start_time', 'desc')
+            ->limit(1)
+            ->select('records.from_number as from_number')
+            ->get()
+            ->all();
     }
 
     public function insertSession($callsid): void
     {
         $pin = $this->lookupPinForCallSid($callsid);
-
         if (count($pin) == 0) {
-            DB::insert(
-                "INSERT INTO `sessions` (`callsid`,`pin`) VALUES (?, ?)",
-                [$callsid, rand(1000000, 9999999)]
-            );
+            $pin = rand(1000000, 9999999);
+            Session::generate($callsid, $pin);
         }
     }
 }
