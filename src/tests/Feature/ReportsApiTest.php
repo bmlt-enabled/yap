@@ -5,6 +5,7 @@ use App\Models\RecordType;
 use App\Constants\EventId;
 use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
+use App\Services\SettingsService;
 use Tests\MiddlewareTests;
 use Tests\RootServerMocks;
 
@@ -24,6 +25,7 @@ beforeEach(function () {
     $this->id = "200";
     $this->serviceBodyId = "44";
     $this->parentServiceBodyId = "43";
+    $this->settings = new SettingsService();
 });
 
 
@@ -178,10 +180,9 @@ test('validate sample cdr sms', function () {
 test('validate sample map metrics', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $repository = Mockery::mock(ReportsRepository::class);
     $service_body_id = "44";
-    $date_range_start = "2023-01-01 000:00:00";
-    $date_range_end = "2023-01-07 23:59:59";
+    $date_range_start = $this->settings->getCurrentTime();
+    $date_range_end = date('Y-m-d H:i:s', strtotime($this->settings->getCurrentTime() . ' + 30 seconds'));
     $meta_sample = [
         "gather"=>"Raleigh, NC",
         "coordinates"=>[
@@ -190,15 +191,10 @@ test('validate sample map metrics', function () {
             "longitude"=>-78.638178,
         ]
     ];
-    $repository->shouldReceive("getMapMetrics")->with(
-        [$service_body_id],
-        $date_range_start,
-        $date_range_end
-    )->andReturn([(object)[
-        "event_id"=>EventId::VOLUNTEER_SEARCH,
-        "meta"=>json_encode($meta_sample)
-    ]]);
-    app()->instance(ReportsRepository::class, $repository);
+
+    $reportsRepository = $this->app->makeWith(ReportsRepository::class, ['settings' => $this->settings]);
+    $reportsRepository->insertCallEventRecord("dude", EventId::VOLUNTEER_SEARCH, $service_body_id, json_encode($meta_sample), RecordType::PHONE);
+
     $response = $this->call('GET', '/api/v1/reports/mapmetrics', [
         "service_body_id" => $service_body_id,
         "date_range_start" => $date_range_start,
@@ -221,11 +217,12 @@ test('validate sample map metrics', function () {
 
 test('validate sample map metrics poi csv', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $repository = Mockery::mock(ReportsRepository::class);
     $service_body_id = "44";
-    $date_range_start = "2023-01-01 000:00:00";
-    $date_range_end = "2023-01-07 23:59:59";
+    $date_range_start = $this->settings->getCurrentTime();
+    $date_range_end = date('Y-m-d H:i:s', strtotime($this->settings->getCurrentTime() . ' + 30 seconds'));
     $meta_sample = [
         "gather"=>"Raleigh, NC",
         "coordinates"=>[
@@ -234,16 +231,10 @@ test('validate sample map metrics poi csv', function () {
             "longitude"=>-78.638178,
         ]
     ];
-    $repository->shouldReceive("getMapMetricByType")->with(
-        [$service_body_id],
-        EventId::VOLUNTEER_SEARCH,
-        $date_range_start,
-        $date_range_end
-    )->andReturn([(object)[
-        "event_id"=>EventId::VOLUNTEER_SEARCH,
-        "meta"=>json_encode($meta_sample)
-    ]]);
-    app()->instance(ReportsRepository::class, $repository);
+
+    $reportsRepository = $this->app->makeWith(ReportsRepository::class, ['settings' => $this->settings]);
+    $reportsRepository->insertCallEventRecord("dude", EventId::VOLUNTEER_SEARCH, $service_body_id, json_encode($meta_sample), RecordType::PHONE);
+
     $response = $this->call('GET', '/api/v1/reports/mapmetrics', [
         "service_body_id" => $service_body_id,
         "date_range_start" => $date_range_start,

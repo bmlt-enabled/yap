@@ -87,14 +87,8 @@ class ReportsRepository
 
     public function getMapMetrics($service_body_ids, $date_range_start, $date_range_end): array
     {
-        return DB::select(
-            "select event_id, meta from records_events where event_time >= ?
-            AND event_time <= ? and event_id in (1,14) and meta is not null
-            and service_body_id in (?)",
-            [$date_range_start, $date_range_end, implode(", ", $service_body_ids)]
-        );
+        return RecordsEvents::getMapMetrics($service_body_ids, $date_range_start, $date_range_end);
     }
-
 
     public function getMapMetricByType($service_body_ids, $eventId, $date_range_start, $date_range_end): array
     {
