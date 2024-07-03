@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Constants\AdminInterfaceRights;
-use App\Models\RecordsEvents;
+use App\Models\RecordEvent;
 
 class AuthorizationService
 {
@@ -22,7 +22,7 @@ class AuthorizationService
 
     public function callsid($callsid, $event_id): bool
     {
-        $recordEvent = RecordsEvents::where('callsid', $callsid)->where('event_id', $event_id)->first();
+        $recordEvent = RecordEvent::where('callsid', $callsid)->where('event_id', $event_id)->first();
         $serviceBodyId = $recordEvent->service_body_id;
         return in_array($serviceBodyId, $this->serviceBodyRights);
     }

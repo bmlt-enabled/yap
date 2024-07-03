@@ -103,26 +103,6 @@ test('volunteer opts not to answer the call', function ($method) {
     $digits = "2";
     $called = "12125551212";
 
-    $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository
-        ->shouldReceive("insertCallEventRecord")
-        ->withArgs([$callSid, EventId::VOLUNTEER_REJECTED, null, json_encode((object)['digits'=>$digits,'to_number'=>$called]), RecordType::PHONE])
-        ->once();
-    $reportsRepository
-        ->shouldReceive("insertSession")
-        ->withArgs([$callSid])
-        ->once();
-    $reportsRepository
-        ->shouldReceive("setConferenceParticipant")
-        ->withArgs([$this->conferenceName, $this->conferenceSid, $callSid, CallRole::VOLUNTEER])
-        ->once();
-    $reportsRepository
-        ->shouldReceive("lookupPinForCallSid")
-        ->withArgs([$callSid])
-        ->andReturn([4182804]);
-
-    app()->instance(ReportsRepository::class, $reportsRepository);
-
     $_SESSION['no_answer_max'] = 5;
     $response = $this->call($method, '/helpline-answer-response.php', [
         "Digits"=>$digits,
@@ -145,26 +125,6 @@ test('no volunteers opt to answer the call, sent to voicemail', function ($metho
     $callSid = "def";
     $digits = "2";
     $called = "12125551212";
-
-    $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository
-        ->shouldReceive("insertCallEventRecord")
-        ->withArgs([$callSid, EventId::VOLUNTEER_REJECTED, null, json_encode((object)['digits'=>$digits,'to_number'=>$called]), RecordType::PHONE])
-        ->once();
-    $reportsRepository
-        ->shouldReceive("insertSession")
-        ->withArgs([$callSid])
-        ->once();
-    $reportsRepository
-        ->shouldReceive("setConferenceParticipant")
-        ->withArgs([$this->conferenceName, $this->conferenceSid, $callSid, CallRole::VOLUNTEER])
-        ->once();
-    $reportsRepository
-        ->shouldReceive("lookupPinForCallSid")
-        ->withArgs([$callSid])
-        ->andReturn([4182804]);
-
-    app()->instance(ReportsRepository::class, $reportsRepository);
 
     $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
     $callContextMock->shouldReceive('update')
@@ -201,26 +161,6 @@ test('no volunteers opt to answer the call, caller hung up before being sent to 
     $callSid = "def";
     $digits = "2";
     $called = "12125551212";
-
-    $reportsRepository = Mockery::mock(ReportsRepository::class);
-    $reportsRepository
-        ->shouldReceive("insertCallEventRecord")
-        ->withArgs([$callSid, EventId::VOLUNTEER_REJECTED, null, json_encode((object)['digits'=>$digits,'to_number'=>$called]), RecordType::PHONE])
-        ->once();
-    $reportsRepository
-        ->shouldReceive("insertSession")
-        ->withArgs([$callSid])
-        ->once();
-    $reportsRepository
-        ->shouldReceive("setConferenceParticipant")
-        ->withArgs([$this->conferenceName, $this->conferenceSid, $callSid, CallRole::VOLUNTEER])
-        ->once();
-    $reportsRepository
-        ->shouldReceive("lookupPinForCallSid")
-        ->withArgs([$callSid])
-        ->andReturn([4182804]);
-
-    app()->instance(ReportsRepository::class, $reportsRepository);
 
     $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
     $callInstance = mock('\Twilio\Rest\Api\V2010\Account\CallInstance');

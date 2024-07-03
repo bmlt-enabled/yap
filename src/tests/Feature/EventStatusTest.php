@@ -17,9 +17,6 @@ beforeEach(function () {
 
 test('returns data', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    app()->instance(EventStatus::class, Mockery::mock(EventStatus::class, function ($mock) {
-        $mock->shouldReceive('all')->once();
-    }));
 
     $response = $this->get('/api/v1/events/status');
     $response

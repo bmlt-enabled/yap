@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Constants\EventId;
 use Illuminate\Database\Eloquent\Model;
 
-class RecordsEvents extends Model
+class RecordEvent extends Model
 {
     protected $table = 'records_events';
     protected $primaryKey = "id";
@@ -22,5 +22,16 @@ class RecordsEvents extends Model
             'meta'=>$meta,
             'type'=>$type
         ]);
+    }
+
+    public static function getMapMetrics($service_body_ids, $date_range_start, $date_range_end)
+    {
+        return self::whereBetween('event_time', [$date_range_start, $date_range_end])
+            ->whereIn('event_id', [EventId::VOLUNTEER_SEARCH, EventId::MEETING_SEARCH_LOCATION_GATHERED])
+            ->whereNotNull('meta')
+            ->whereIn('service_body_id', $service_body_ids)
+            ->select(['event_id', 'meta'])
+            ->get()
+            ->all();
     }
 }

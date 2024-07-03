@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use App\Models\ConferenceParticipant;
 use App\Models\Record;
-use App\Models\RecordsEvents;
+use App\Models\RecordEvent;
 use App\Models\Session;
 use App\Services\SettingsService;
 use Illuminate\Support\Facades\DB;
@@ -87,14 +87,8 @@ class ReportsRepository
 
     public function getMapMetrics($service_body_ids, $date_range_start, $date_range_end): array
     {
-        return DB::select(
-            "select event_id, meta from records_events where event_time >= ?
-            AND event_time <= ? and event_id in (1,14) and meta is not null
-            and service_body_id in (?)",
-            [$date_range_start, $date_range_end, implode(", ", $service_body_ids)]
-        );
+        return RecordEvent::getMapMetrics($service_body_ids, $date_range_start, $date_range_end);
     }
-
 
     public function getMapMetricByType($service_body_ids, $eventId, $date_range_start, $date_range_end): array
     {
@@ -147,7 +141,7 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
 
     public function insertCallEventRecord($callSid, $eventId, $serviceBodyId, $metaAsJson, $type): void
     {
-        RecordsEvents::generate(
+        RecordEvent::generate(
             $callSid,
             $eventId,
             $this->settings->getCurrentTime(),

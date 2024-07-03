@@ -76,8 +76,6 @@ test('initial sms helpline gateway default when there is no volunteer', function
 
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
-    $this->withoutExceptionHandling();
-
     $response = $this->call($method, '/sms-gateway.php', [
         "SmsSid" => "Dude123",
         "OriginalCallerId" => $this->to,
