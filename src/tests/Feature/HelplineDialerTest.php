@@ -157,8 +157,6 @@ test('do nothing', function ($method) {
         $serviceBodyCallHandlingData
     );
 
-    $this->withoutExceptionHandling();
-
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $conferenceListMock->shouldReceive("read")
         ->with(['friendlyName' => $this->conferenceName])
@@ -425,8 +423,6 @@ test('mark the caller as having entered the conference for reporting purposes, w
         ->with($volunteer_phone_number, Mockery::on(function ($data) {
             return $data['from'] == $this->caller && !empty($data['body'][0]);
         }));
-
-    $this->withoutExceptionHandling();
 
     $response = $this->call($method, '/helpline-dialer.php', [
         'CallSid'=>$this->callSid,

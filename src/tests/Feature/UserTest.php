@@ -120,8 +120,6 @@ test('edit user name by self, non admin', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     $_SESSION['auth_is_admin'] = true;
 
-    $this->withoutExceptionHandling();
-
     $username = 'test';
 
     $response = $this->call('POST', '/api/v1/users', [

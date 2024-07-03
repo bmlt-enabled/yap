@@ -137,12 +137,15 @@ test('Unable to find service body coverage for a location.', function ($method) 
 })->with(['GET', 'POST']);
 
 test('valid search, volunteer routing, by location', function ($method) {
-    $settings = new SettingsService();
-    $settings->disableRandomConferences();
-    app()->instance(SettingsService::class, $settings);
-
     $serviceBodyId = 1060; // Buffalo Area
     $parentServiceBodyId = 1059; // Western New York Region
+
+    $conferenceService = Mockery::mock(ConferenceService::class)->makePartial();
+    $conferenceService->shouldReceive("getConferenceName")
+        ->withArgs(['1060'])
+        ->andReturn("1060_fake_conference")
+        ->once();
+    app()->instance(ConferenceService::class, $conferenceService);
 
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
@@ -165,7 +168,7 @@ test('valid search, volunteer routing, by location', function ($method) {
             '<Response>',
             '<Say voice="alice" language="en-US">please wait while we connect your call</Say>',
             '<Dial>',
-            '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical" statusCallback="helpline-dialer.php?service_body_id=1060&amp;Caller=+12125551212&amp;ysk=fake" startConferenceOnEnter="false" endConferenceOnExit="true" statusCallbackMethod="GET" statusCallbackEvent="start join end leave" waitMethod="GET" beep="false">1060_static_room</Conference>',
+            '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical" statusCallback="helpline-dialer.php?service_body_id=1060&amp;Caller=+12125551212&amp;ysk=fake" startConferenceOnEnter="false" endConferenceOnExit="true" statusCallbackMethod="GET" statusCallbackEvent="start join end leave" waitMethod="GET" beep="false">1060_fake_conference</Conference>',
             '</Dial>',
             '</Response>'
         ], false);
@@ -175,7 +178,7 @@ test('valid search, volunteer routing, by location', function ($method) {
 test('valid search, volunteer routing', function ($method) {
     $conferenceService = Mockery::mock(ConferenceService::class)->makePartial();
     $conferenceService->shouldReceive("getConferenceName")
-        ->withArgs(['1053', true])
+        ->withArgs(['1053'])
         ->andReturn("1053_fake_conference")
         ->once();
     app()->instance(ConferenceService::class, $conferenceService);
@@ -246,7 +249,7 @@ test('valid search with coordinates override, volunteer routing, announce servic
 test('valid search, volunteer routing, announce service body name', function ($method) {
     $conferenceService = Mockery::mock(ConferenceService::class)->makePartial();
     $conferenceService->shouldReceive("getConferenceName")
-        ->withArgs(['1053', true])
+        ->withArgs(['1053'])
         ->andReturn("1053_fake_conference")
         ->once();
     app()->instance(ConferenceService::class, $conferenceService);
@@ -386,7 +389,7 @@ test('valid search, volunteer direct', function ($method) {
     $_SESSION['override_service_body_id'] = $this->serviceBodyId;
     $conferenceService = Mockery::mock(ConferenceService::class)->makePartial();
     $conferenceService->shouldReceive("getConferenceName")
-        ->withArgs(['46', true])
+        ->withArgs(['46'])
         ->andReturn("46_fake_conference")
         ->once();
     app()->instance(ConferenceService::class, $conferenceService);

@@ -4,12 +4,8 @@ namespace App\Services;
 
 class ConferenceService
 {
-    public function getConferenceName($serviceBodyId, $random = true): string
+    public function getConferenceName($serviceBodyId): string
     {
-        if ($random) {
-            return $serviceBodyId . "_" . rand(1000000, 9999999) . "_" . time();
-        } else {
-            return $serviceBodyId . "_static_room";
-        }
+        return $serviceBodyId . "_" . rand(1000000, 9999999) . "_" . time();
     }
 }

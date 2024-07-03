@@ -236,16 +236,6 @@ class SettingsService
         }
     }
 
-    public function disableRandomConferences()
-    {
-        $this->randomConferences = false;
-    }
-
-    public function isRandomConferencesEnabled()
-    {
-        return $this->randomConferences;
-    }
-
     public function getDigitMapSequence($setting)
     {
         $digitMap = $this->getDigitMap($setting);
