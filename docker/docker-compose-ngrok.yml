@@ -11,7 +11,7 @@ services:
     environment:
       ENVIRONMENT: dev
   yap_db:
-    image: mysql:5.7
+    image: mysql:9.0
     restart: always
     ports:
       - 3106:3306
