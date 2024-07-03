@@ -24,10 +24,8 @@ function setupTwilioService(): TwilioTestUtility
     ])->makePartial();
     $utility->twilio = mock(TwilioService::class)->makePartial();
     $utility->settings = new SettingsService();
-    $utility->reports = new ReportsRepository($utility->settings);
     app()->instance(SettingsService::class, $utility->settings);
     app()->instance(TwilioService::class, $utility->twilio);
-    app()->instance(ReportsRepository::class, $utility->reports);
     $utility->twilio->shouldReceive("client")->withArgs([])->andReturn($utility->client);
     $utility->twilio->shouldReceive("settings")->andReturn($utility->settings);
     return $utility;

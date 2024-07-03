@@ -3,10 +3,9 @@
 namespace App\Models;
 
 use App\Constants\EventId;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RecordsEvents extends Model
+class RecordEvent extends Model
 {
     protected $table = 'records_events';
     protected $primaryKey = "id";

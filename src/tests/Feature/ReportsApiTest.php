@@ -1,6 +1,10 @@
 <?php
 
 use App\Constants\AuthMechanism;
+use App\Constants\CallRole;
+use App\Models\ConferenceParticipant;
+use App\Models\Record;
+use App\Models\RecordEvent;
 use App\Models\RecordType;
 use App\Constants\EventId;
 use App\Repositories\ReportsRepository;
@@ -44,17 +48,33 @@ test('get cdr no auth', function () {
 test('validate sample cdr phone', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $repository = Mockery::mock(ReportsRepository::class);
-    $service_body_id = "44";
-    $id = "12312";
-    $date_range_start = "2023-01-01 000:00:00";
+
+    $id = 11;
+    $callSid = "abc123";
+    $service_body_id = 44;
+    $date_range_start = "2023-01-01T00:00:00";
     $date_range_end = "2023-01-07 23:59:59";
-    $start_time = "2023-01-01 20:43:56Z";
-    $end_time = "2023-01-01 20:45:00Z";
+    $start_time = "2023-01-01 20:43:56";
+    $end_time = "2023-01-01 20:45:00";
     $duration = 22;
     $from_number = "+15555555555";
     $to_number = "+18331112222";
-    $callsid = "abc123";
+
+    ConferenceParticipant::generate("conf123", $callSid, "fake_conference", CallRole::CALLER);
+    RecordEvent::generate(
+        $callSid,
+        EventId::VOICEMAIL,
+        "2023-01-01 20:44:53",
+        $service_body_id,
+        json_encode(["url"=>"fake.mp3"]),
+        RecordType::PHONE);
+    Record::generate($callSid, $start_time, $end_time, $from_number, $to_number, "", $duration, RecordType::PHONE);
+
+    $response = $this->call('GET', '/api/v1/reports/cdr', [
+        "service_body_id" => $service_body_id,
+        "date_range_start" => $date_range_start,
+        "date_range_end" => $date_range_end,
+    ]);
     $sample_call_event = ([[
         "event_id"=>EventId::VOICEMAIL,
         "event_time"=>"2023-01-01 20:44:53Z",
@@ -63,42 +83,20 @@ test('validate sample cdr phone', function () {
             "url"=>"fake.mp3"
         ]
     ]]);
-    $repository->shouldReceive("getCallRecords")->with(
-        [$service_body_id],
-        $date_range_start,
-        $date_range_end
-    )->andReturn([(object)[
-        "id" => $id,
-        "start_time" => $start_time,
-        "end_time" => $end_time,
-        "duration" => $duration,
-        "from_number" => $from_number,
-        "to_number" => $to_number,
-        "callsid" => $callsid,
-        "service_body_id" => $service_body_id,
-        "type" => RecordType::PHONE,
-        "call_events" => json_encode($sample_call_event)
-    ]]);
-    app()->instance(ReportsRepository::class, $repository);
-    $response = $this->call('GET', '/api/v1/reports/cdr', [
-        "service_body_id" => $service_body_id,
-        "date_range_start" => $date_range_start,
-        "date_range_end" => $date_range_end,
-    ]);
-    $sample_call_event[0]['parent_callsid'] = $callsid;
+    $sample_call_event[0]['parent_callsid'] = $callSid;
     $sample_call_event[0]['event_name'] = EventId::getEventById($sample_call_event[0]['event_id']);
     $sample_call_event[0]['meta'] = json_encode($sample_call_event[0]['meta']);
     $response
         ->assertJson([
             "data" => [[
                 "call_events" => $sample_call_event,
-                "start_time" => $start_time,
-                "end_time" => $end_time,
+                "start_time" => sprintf("%sZ", $start_time),
+                "end_time" => sprintf("%sZ", $end_time),
                 "id" => $id,
                 "duration" => $duration,
                 "from_number" => $from_number,
                 "to_number" => $to_number,
-                "callsid" => $callsid,
+                "callsid" => $callSid,
                 "service_body_id" => $service_body_id,
                 "type" => RecordType::PHONE,
                 "type_name" => RecordType::getTypeById(RecordType::PHONE),
@@ -112,17 +110,16 @@ test('validate sample cdr phone', function () {
 test('validate sample cdr sms', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $repository = Mockery::mock(ReportsRepository::class);
-    $service_body_id = "44";
-    $id = "12312";
+    $service_body_id = 44;
+    $id = 12;
     $date_range_start = "2023-01-01 000:00:00";
     $date_range_end = "2023-01-07 23:59:59";
-    $start_time = "2023-01-01 20:43:56Z";
-    $end_time = "2023-01-01 20:45:00Z";
+    $start_time = "2023-01-01 20:43:56";
+    $end_time = "2023-01-01 20:45:00";
     $duration = 22;
     $from_number = "+15555555555";
     $to_number = "+18331112222";
-    $callsid = "abc123";
+    $callSid = "abc123";
     $sample_call_event = ([[
         "event_id"=>EventId::VOICEMAIL,
         "event_time"=>"2023-01-01 20:44:53Z",
@@ -131,42 +128,36 @@ test('validate sample cdr sms', function () {
             "url"=>"fake.mp3"
         ]
     ]]);
-    $repository->shouldReceive("getCallRecords")->with(
-        [$service_body_id],
-        $date_range_start,
-        $date_range_end
-    )->andReturn([(object)[
-        "id" => $id,
-        "start_time" => $start_time,
-        "end_time" => $end_time,
-        "duration" => $duration,
-        "from_number" => $from_number,
-        "to_number" => $to_number,
-        "callsid" => $callsid,
-        "service_body_id" => $service_body_id,
-        "type" => RecordType::SMS,
-        "call_events" => json_encode($sample_call_event)
-    ]]);
-    app()->instance(ReportsRepository::class, $repository);
+
+    ConferenceParticipant::generate("conf123", $callSid, "fake_conference", CallRole::CALLER);
+    RecordEvent::generate(
+        $callSid,
+        EventId::VOICEMAIL,
+        "2023-01-01 20:44:53",
+        $service_body_id,
+        json_encode(["url"=>"fake.mp3"]),
+        RecordType::SMS);
+    Record::generate($callSid, $start_time, $end_time, $from_number, $to_number, "", $duration, RecordType::SMS);
+
     $response = $this->call('GET', '/api/v1/reports/cdr', [
         "service_body_id" => $service_body_id,
         "date_range_start" => $date_range_start,
         "date_range_end" => $date_range_end,
     ]);
-    $sample_call_event[0]['parent_callsid'] = $callsid;
+    $sample_call_event[0]['parent_callsid'] = $callSid;
     $sample_call_event[0]['event_name'] = EventId::getEventById($sample_call_event[0]['event_id']);
     $sample_call_event[0]['meta'] = json_encode($sample_call_event[0]['meta']);
     $response
         ->assertJson([
             "data" => [[
                 "call_events" => $sample_call_event,
-                "start_time" => $start_time,
-                "end_time" => $end_time,
+                "start_time" => sprintf("%sZ", $start_time),
+                "end_time" => sprintf("%sZ", $end_time),
                 "id" => $id,
                 "duration" => $duration,
                 "from_number" => $from_number,
                 "to_number" => $to_number,
-                "callsid" => $callsid,
+                "callsid" => $callSid,
                 "service_body_id" => $service_body_id,
                 "type" => RecordType::SMS,
                 "type_name" => RecordType::getTypeById(RecordType::SMS),
@@ -192,8 +183,12 @@ test('validate sample map metrics', function () {
         ]
     ];
 
-    $reportsRepository = $this->app->makeWith(ReportsRepository::class, ['settings' => $this->settings]);
-    $reportsRepository->insertCallEventRecord("dude", EventId::VOLUNTEER_SEARCH, $service_body_id, json_encode($meta_sample), RecordType::PHONE);
+    RecordEvent::generate("dude",
+        EventId::VOLUNTEER_SEARCH,
+        gmdate("Y-m-d H:i:s"),
+        $service_body_id,
+        json_encode($meta_sample),
+        RecordType::PHONE);
 
     $response = $this->call('GET', '/api/v1/reports/mapmetrics', [
         "service_body_id" => $service_body_id,
@@ -218,8 +213,6 @@ test('validate sample map metrics', function () {
 test('validate sample map metrics poi csv', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
 
-    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $repository = Mockery::mock(ReportsRepository::class);
     $service_body_id = "44";
     $date_range_start = $this->settings->getCurrentTime();
     $date_range_end = date('Y-m-d H:i:s', strtotime($this->settings->getCurrentTime() . ' + 30 seconds'));
@@ -232,8 +225,12 @@ test('validate sample map metrics poi csv', function () {
         ]
     ];
 
-    $reportsRepository = $this->app->makeWith(ReportsRepository::class, ['settings' => $this->settings]);
-    $reportsRepository->insertCallEventRecord("dude", EventId::VOLUNTEER_SEARCH, $service_body_id, json_encode($meta_sample), RecordType::PHONE);
+    RecordEvent::generate("dude",
+        EventId::VOLUNTEER_SEARCH,
+        gmdate("Y-m-d H:i:s"),
+        $service_body_id,
+        json_encode($meta_sample),
+        RecordType::PHONE);
 
     $response = $this->call('GET', '/api/v1/reports/mapmetrics', [
         "service_body_id" => $service_body_id,

@@ -194,7 +194,8 @@ test('voicemail complete send sms using volunteer responder option and dialback 
     $_REQUEST['caller_number'] = $this->callerNumber;
     $_REQUEST['RecordingUrl'] = $this->recordingUrl;
 
-    $this->utility->reports->insertSession($this->callSid);
+    $pin = Session::getPin($this->callSid);
+    Session::generate($this->callSid, $pin);
     $this->utility->settings->set('sms_dialback_options', SmsDialbackOptions::VOICEMAIL_NOTIFICATION);
 
     $shiftTz = "America/New_York";
@@ -233,8 +234,6 @@ test('voicemail complete send sms using volunteer responder option and dialback 
     $volunteer_routing_parameters->volunteer_gender = VolunteerGender::UNSPECIFIED;
     $volunteer_routing_parameters->volunteer_language = "en-US";
     $_SESSION["volunteer_routing_parameters"] = $volunteer_routing_parameters;
-
-    $pin = Session::getPin($this->callSid);
 
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
