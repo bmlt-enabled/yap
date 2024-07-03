@@ -263,60 +263,65 @@ test('validate sample map metrics poi csv', function () {
 test('validate sample metrics', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $repository = Mockery::mock(ReportsRepository::class);
-    $service_body_id = "44";
+    $service_body_id = 44;
     $date_range_start = "2023-01-03 00:00:00";
     $date_range_end = "2023-01-03 23:59:59";
 
-    $getMetric = [(object)[
-        "timestamp"=>"2023-01-03",
-        "counts"=>"1",
-        "data"=>"{\"searchType\":\"1\"}",
-        "service_body_id"=>$service_body_id
-    ]];
-
-    $repository->shouldReceive("getMetric")->with(
-        [$service_body_id],
-        $date_range_start,
-        $date_range_end
-    )->andReturn($getMetric);
-
     $summarySample = [
-        ["event_id"=>EventId::VOLUNTEER_SEARCH, "counts"=>"14"],
-        ["event_id"=>EventId::VOLUNTEER_IN_CONFERENCE, "counts"=>"6"],
-        ["event_id"=>EventId::MEETING_SEARCH_SMS, "counts"=>"94"]];
-    $repository->shouldReceive("getMetricCounts")->with(
-        [$service_body_id],
-        $date_range_start,
-        $date_range_end
-    )->andReturn($summarySample);
+        ["event_id"=>EventId::VOLUNTEER_SEARCH, "counts"=>1],
+        ["event_id"=>EventId::VOLUNTEER_IN_CONFERENCE, "counts"=>1],
+        ["event_id"=>EventId::MEETING_SEARCH_SMS, "counts"=>1]];
 
+    RecordEvent::generate(
+        "abc123",
+        EventId::VOLUNTEER_SEARCH,
+        "2023-01-03",
+        $service_body_id,
+        "",
+        RecordType::PHONE
+    );
+
+    RecordEvent::generate(
+        "abc123",
+        EventId::VOLUNTEER_IN_CONFERENCE,
+        "2023-01-03",
+        $service_body_id,
+        "",
+        RecordType::PHONE
+    );
+
+    RecordEvent::generate(
+        "abc123",
+        EventId::MEETING_SEARCH_SMS,
+        "2023-01-03",
+        44,
+        "",
+        RecordType::SMS
+    );
+
+    RecordEvent::generate(
+        "def456",
+        EventId::VOLUNTEER_NOANSWER,
+        "2023-01-03",
+        44,
+        "{\"to_number\":\"+19103818003\"}",
+        RecordType::PHONE
+    );
+    ConferenceParticipant::generate("abc123", "def456", "fake_conference", CallRole::CALLER);
 
     $callsSample = [[
         "service_body_id"=>$service_body_id,
         "conferencesid"=>"abc123",
         "answered_count"=>"0",
-        "missed_count"=>"3"
+        "missed_count"=>"1"
     ]];
-    $repository->shouldReceive("getAnsweredAndMissedCallMetrics")->with(
-        [$service_body_id],
-        $date_range_start,
-        $date_range_end
-    )->andReturn($callsSample);
 
     $volunteersSample = [[
         "service_body_id"=>$service_body_id,
         "meta"=> "{\"to_number\":\"+19103818003\"}",
         "answered_count"=>"0",
-        "missed_count"=>"3"
+        "missed_count"=>"1"
     ]];
-    $repository->shouldReceive("getAnsweredAndMissedVolunteerMetrics")->with(
-        [$service_body_id],
-        $date_range_start,
-        $date_range_end
-    )->andReturn($volunteersSample);
-
-    app()->instance(ReportsRepository::class, $repository);
 
     $response = $this->call('GET', '/api/v1/reports/metrics', [
         "service_body_id" => $service_body_id,
@@ -326,11 +331,12 @@ test('validate sample metrics', function () {
 
     $metricsCollection = [
         "metrics"=>[
-            ["timestamp" => "2023-01-03", "counts" => "1", "service_body_id" => $service_body_id,
+            ["timestamp" => "2023-01-03", "counts" => 1, "service_body_id" => $service_body_id,
                 "data" => "{\"searchType\":\"1\"}"],
             ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"2\"}"],
             ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"3\"}"],
-            ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"19\"}"],
+            ["timestamp" => "2023-01-03", "counts" => 1, "service_body_id" => $service_body_id,
+                "data" => "{\"searchType\":\"19\"}"],
             ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"20\"}"],
             ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"21\"}"],
         ],

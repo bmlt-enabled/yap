@@ -4,22 +4,22 @@ namespace Tests;
 
 class Stubs
 {
-    public static function jftPt()
+    public static function jftPt(): string
     {
         return "Todos os direitos reservados à";
     }
 
-    public static function jftEs()
+    public static function jftEs(): string
     {
         return "Servicio del Foro Zonal Latinoamericano, Copyright 2017 NA World Services, Inc. Todos los Derechos Reservados.";
     }
 
-    public static function jftFr()
+    public static function jftFr(): string
     {
         return "Juste pour aujourd’hui";
     }
 
-    public static function jftEn()
+    public static function jftEn(): string
     {
         return <<<JFT
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
