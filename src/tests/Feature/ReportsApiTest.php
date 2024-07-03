@@ -67,7 +67,8 @@ test('validate sample cdr phone', function () {
         "2023-01-01 20:44:53",
         $service_body_id,
         json_encode(["url"=>"fake.mp3"]),
-        RecordType::PHONE);
+        RecordType::PHONE
+    );
     Record::generate($callSid, $start_time, $end_time, $from_number, $to_number, "", $duration, RecordType::PHONE);
 
     $response = $this->call('GET', '/api/v1/reports/cdr', [
@@ -136,7 +137,8 @@ test('validate sample cdr sms', function () {
         "2023-01-01 20:44:53",
         $service_body_id,
         json_encode(["url"=>"fake.mp3"]),
-        RecordType::SMS);
+        RecordType::SMS
+    );
     Record::generate($callSid, $start_time, $end_time, $from_number, $to_number, "", $duration, RecordType::SMS);
 
     $response = $this->call('GET', '/api/v1/reports/cdr', [
@@ -183,12 +185,14 @@ test('validate sample map metrics', function () {
         ]
     ];
 
-    RecordEvent::generate("dude",
+    RecordEvent::generate(
+        "dude",
         EventId::VOLUNTEER_SEARCH,
         gmdate("Y-m-d H:i:s"),
         $service_body_id,
         json_encode($meta_sample),
-        RecordType::PHONE);
+        RecordType::PHONE
+    );
 
     $response = $this->call('GET', '/api/v1/reports/mapmetrics', [
         "service_body_id" => $service_body_id,
@@ -225,12 +229,14 @@ test('validate sample map metrics poi csv', function () {
         ]
     ];
 
-    RecordEvent::generate("dude",
+    RecordEvent::generate(
+        "dude",
         EventId::VOLUNTEER_SEARCH,
         gmdate("Y-m-d H:i:s"),
         $service_body_id,
         json_encode($meta_sample),
-        RecordType::PHONE);
+        RecordType::PHONE
+    );
 
     $response = $this->call('GET', '/api/v1/reports/mapmetrics', [
         "service_body_id" => $service_body_id,
