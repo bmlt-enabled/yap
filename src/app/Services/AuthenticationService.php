@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Constants\AuthMechanism;
-use App\Constants\Http;
 use App\Repositories\AuthenticationRepository;
 use Illuminate\Support\Facades\App;
 
