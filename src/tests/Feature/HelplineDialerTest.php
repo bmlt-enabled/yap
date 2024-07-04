@@ -9,12 +9,10 @@ use App\Constants\VolunteerResponderOption;
 use App\Constants\VolunteerRoutingType;
 use App\Models\ConferenceParticipant;
 use App\Models\ConfigData;
-use App\Models\RecordType;
-use App\Models\ServiceBodyCallHandling;
-use App\Models\VolunteerData;
-use App\Repositories\ReportsRepository;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
+use App\Structures\ServiceBodyCallHandling;
+use App\Structures\VolunteerData;
 use Tests\FakeTwilioHttpClient;
 
 beforeAll(function () {

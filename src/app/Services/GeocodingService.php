@@ -2,10 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Coordinates;
 use App\Repositories\GeocodingRepository;
+use App\Structures\Coordinates;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Http;
 
 class GeocodingService extends Service
 {

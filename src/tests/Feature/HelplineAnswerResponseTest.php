@@ -1,10 +1,6 @@
 <?php
 
-use App\Constants\CallRole;
-use App\Constants\EventId;
 use App\Constants\TwilioCallStatus;
-use App\Models\RecordType;
-use App\Repositories\ReportsRepository;
 use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
 

@@ -1,12 +1,12 @@
 <?php
 
-use App\Models\MeetingResults;
-use App\Models\Timezone;
 use App\Services\HttpService;
 use App\Services\MeetingResultsService;
 use App\Services\SettingsService;
 use App\Services\TimeZoneService;
 use App\Services\TwilioService;
+use App\Structures\MeetingResults;
+use App\Structures\Timezone;
 use Tests\FakeTwilioHttpClient;
 
 beforeAll(function () {

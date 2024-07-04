@@ -9,16 +9,15 @@ use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
 use App\Exceptions\NoVolunteersException;
 use App\Models\ConfigData;
-use App\Models\Volunteer;
-use App\Models\VolunteerInfo;
-use App\Models\VolunteerReportInfo;
 use App\Repositories\ConfigRepository;
-use App\Utility\VolunteerRoutingHelpers;
-use App\Utility\VolunteerScheduleHelpers;
+use App\Structures\Volunteer;
+use App\Structures\VolunteerInfo;
+use App\Structures\VolunteerReportInfo;
+use App\Utilities\VolunteerRoutingHelpers;
+use App\Utilities\VolunteerScheduleHelpers;
 use DateTime;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
-use stdClass;
 
 class VolunteerService extends Service
 {

@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Constants\Http;
 use App\Constants\ReadingType;
-use App\Utility\Sms;
+use App\Utilities\Sms;
 use DOMDocument;
 use DOMXPath;
 use Illuminate\Support\Facades\App;

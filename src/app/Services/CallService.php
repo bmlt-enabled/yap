@@ -5,9 +5,9 @@ namespace App\Services;
 use App\Constants\SearchType;
 use App\Constants\SpecialPhoneNumber;
 use App\Models\Alert;
-use App\Models\RecordType;
 use App\Repositories\ReportsRepository;
 use App\Repositories\VoicemailRepository;
+use App\Structures\RecordType;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Request;
 

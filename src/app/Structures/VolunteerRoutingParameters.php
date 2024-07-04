@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Structures;
 
 use App\Constants\CycleAlgorithm;
 use App\Constants\VolunteerGender;

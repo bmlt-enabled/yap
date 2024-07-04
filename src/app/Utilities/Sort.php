@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Utility;
+namespace App\Utilities;
 
 class Sort
 {

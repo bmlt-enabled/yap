@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Constants\DataType;
 use App\Constants\Status;
+use App\Structures\ServiceBodyCallHandling;
+use App\Structures\VolunteerData;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 

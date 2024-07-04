@@ -1,9 +1,6 @@
 <?php
-use App\Constants\EventId;
+
 use App\Constants\SearchType;
-use App\Models\RecordType;
-use App\Repositories\ReportsRepository;
-use App\Services\SettingsService;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");

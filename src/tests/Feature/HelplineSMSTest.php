@@ -6,10 +6,10 @@ use App\Constants\VolunteerResponderOption;
 use App\Constants\VolunteerRoutingType;
 use App\Constants\VolunteerType;
 use App\Models\ConfigData;
-use App\Models\ServiceBodyCallHandling;
-use App\Models\VolunteerData;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
+use App\Structures\ServiceBodyCallHandling;
+use App\Structures\VolunteerData;
 use Tests\MiddlewareTests;
 use Tests\RootServerMocks;
 
