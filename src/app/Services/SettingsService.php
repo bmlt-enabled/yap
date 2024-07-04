@@ -6,7 +6,7 @@ use App\Constants\LocationSearchMethod;
 use App\Constants\MeetingResultSort;
 use App\Constants\SearchType;
 use App\Constants\SettingSource;
-use App\Models\Localizations;
+use App\Structures\Localizations;
 use DateTimeZone;
 
 class SettingsService

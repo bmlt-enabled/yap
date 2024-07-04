@@ -2,14 +2,13 @@
 
 use App\Constants\AuthMechanism;
 use App\Constants\CallRole;
+use App\Constants\EventId;
 use App\Models\ConferenceParticipant;
 use App\Models\Record;
 use App\Models\RecordEvent;
-use App\Models\RecordType;
-use App\Constants\EventId;
-use App\Repositories\ReportsRepository;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
+use App\Structures\RecordType;
 use Tests\MiddlewareTests;
 use Tests\RootServerMocks;
 

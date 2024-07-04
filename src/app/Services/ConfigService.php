@@ -7,7 +7,7 @@ use App\Constants\SpecialPhoneNumber;
 use App\Constants\VolunteerRoutingType;
 use App\Models\ConfigData;
 use App\Repositories\ConfigRepository;
-use App\Models\ServiceBodyCallHandling;
+use App\Structures\ServiceBodyCallHandling;
 
 class ConfigService
 {

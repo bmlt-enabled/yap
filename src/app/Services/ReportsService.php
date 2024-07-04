@@ -2,9 +2,9 @@
 namespace App\Services;
 
 use App\Constants\EventId;
-use App\Models\MetricsCollection;
-use App\Models\RecordType;
 use App\Repositories\ReportsRepository;
+use App\Structures\MetricsCollection;
+use App\Structures\RecordType;
 use Illuminate\Support\Facades\App;
 use function App\Http\Controllers\Api\V1\Admin\findMetric;
 

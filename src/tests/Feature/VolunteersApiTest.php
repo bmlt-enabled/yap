@@ -3,12 +3,12 @@
 use App\Constants\AuthMechanism;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
-use App\Models\ConfigData;
-use App\Models\VolunteerData;
-use App\Models\VolunteerInfo;
 use App\Constants\VolunteerType;
+use App\Models\ConfigData;
 use App\Services\RootServerService;
-use App\Utility\VolunteerScheduleHelpers;
+use App\Structures\VolunteerData;
+use App\Structures\VolunteerInfo;
+use App\Utilities\VolunteerScheduleHelpers;
 use Tests\MiddlewareTests;
 use Tests\RootServerMocks;
 

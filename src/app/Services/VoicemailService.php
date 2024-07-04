@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Constants\SmsDialbackOptions;
 use App\Constants\SmtpPorts;
 use Exception;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use PHPMailer\PHPMailer\PHPMailer;
-use App\Constants\SmsDialbackOptions;
 
 class VoicemailService extends Service
 {

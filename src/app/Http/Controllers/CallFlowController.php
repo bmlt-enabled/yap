@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Constants\AlertId;
+use App\Constants\CallRole;
 use App\Constants\EventId;
+use App\Constants\LocationSearchMethod;
+use App\Constants\ReadingType;
 use App\Constants\SearchType;
+use App\Constants\SpecialPhoneNumber;
 use App\Constants\VolunteerGender;
-use App\Models\Alert;
-use App\Models\CallRecord;
-use App\Models\Coordinates;
-use App\Models\RecordType;
-use App\Models\VolunteerRoutingParameters;
+use App\Constants\VolunteerType;
 use App\Services\CallService;
 use App\Services\ConfigService;
 use App\Services\GeocodingService;
@@ -19,16 +18,15 @@ use App\Services\ReadingService;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use App\Services\VolunteerService;
-use App\Constants\CallRole;
+use App\Structures\CallRecord;
+use App\Structures\Coordinates;
+use App\Structures\RecordType;
+use App\Structures\VolunteerRoutingParameters;
 use DateTime;
 use Exception;
-use App\Constants\LocationSearchMethod;
-use App\Constants\ReadingType;
-use App\Constants\SpecialPhoneNumber;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Twilio\TwiML\VoiceResponse;
-use Illuminate\Http\Request;
-use App\Constants\VolunteerType;
 
 class CallFlowController extends Controller
 {

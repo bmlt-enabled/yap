@@ -1,16 +1,12 @@
 <?php
 
 use App\Constants\CycleAlgorithm;
-use App\Constants\EventId;
 use App\Constants\VolunteerRoutingType;
 use App\Models\ConfigData;
-use App\Models\Coordinates;
-use App\Models\RecordType;
-use App\Models\ServiceBodyCallHandling;
-use App\Repositories\ReportsRepository;
 use App\Services\ConferenceService;
 use App\Services\RootServerService;
-use App\Services\SettingsService;
+use App\Structures\Coordinates;
+use App\Structures\ServiceBodyCallHandling;
 use Illuminate\Testing\Assert;
 use Tests\MiddlewareTests;
 use Tests\RootServerMocks;

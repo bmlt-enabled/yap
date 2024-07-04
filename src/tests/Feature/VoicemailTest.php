@@ -3,7 +3,7 @@
 use App\Constants\CycleAlgorithm;
 use App\Constants\VolunteerRoutingType;
 use App\Models\ConfigData;
-use App\Models\ServiceBodyCallHandling;
+use App\Structures\ServiceBodyCallHandling;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");

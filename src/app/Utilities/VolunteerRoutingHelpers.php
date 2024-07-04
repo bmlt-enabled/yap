@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Utility;
+namespace App\Utilities;
 
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;

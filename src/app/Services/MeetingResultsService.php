@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Constants\MeetingResultSort;
-use App\Models\MeetingResults;
+use App\Structures\MeetingResults;
 use Countable;
 use DateTime;
 use Exception;

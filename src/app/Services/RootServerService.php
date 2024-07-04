@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Constants\AuthMechanism;
-use App\Utility\Sort;
+use App\Utilities\Sort;
 use CurlException;
 use Exception;
 use Illuminate\Support\Facades\App;

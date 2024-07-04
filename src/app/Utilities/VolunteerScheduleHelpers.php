@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Utility;
+namespace App\Utilities;
 
 use App\Services\SettingsService;
 use DateTime;

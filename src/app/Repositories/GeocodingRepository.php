@@ -1,10 +1,8 @@
 <?php
 namespace App\Repositories;
 
-use App\Constants\DataType;
 use App\Services\SettingsService;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class GeocodingRepository extends Repository
