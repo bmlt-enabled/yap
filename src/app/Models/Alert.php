@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Constants\AlertId;
-use App\Constants\DataType;
 use Illuminate\Database\Eloquent\Model;
 
 class Alert extends Model

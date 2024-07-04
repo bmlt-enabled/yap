@@ -6,7 +6,6 @@ use App\Constants\DataType;
 use App\Http\Controllers\Controller;
 use App\Repositories\ConfigRepository;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use stdClass;
 
 class ConfigController extends Controller

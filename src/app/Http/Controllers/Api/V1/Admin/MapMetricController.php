@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
+use App\Constants\EventId;
 use App\Http\Controllers\Controller;
 use App\Services\ReportsService;
-use App\Constants\EventId;
 use Illuminate\Http\Request;
 
 class MapMetricController extends Controller

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Constants\Http;
 use App\Constants\ReadingType;
 use App\Utilities\Sms;
 use DOMDocument;
