@@ -26,12 +26,13 @@ class ConfigCheck
      */
     public function handle(Request $request, Closure $next)
     {
-//        if (!file_exists('./config.php') && !str_ends_with($request->url(), 'installer')) {
-//            return response()->view(
-//                'admin/installer',
-//                ['minimalRequiredSettings'=>$this->settingsService->minimalRequiredSettings()]
-//            );
-//        }
+        if (!file_exists($this->settingsService->getConfigFilenameForEnvironment())
+            && !str_ends_with($request->url(), 'installer')) {
+            return response()->view(
+                'admin/installer',
+                ['minimalRequiredSettings'=>$this->settingsService->minimalRequiredSettings()]
+            );
+        }
 
         return $next($request);
     }
