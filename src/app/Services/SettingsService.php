@@ -11,7 +11,7 @@ use DateTimeZone;
 
 class SettingsService
 {
-    private string $version = "4.4.0";
+    private string $version = "4.3.6";
     private array $allowlist = [
         'announce_servicebody_volunteer_routing' => ['description' => '/helpline/announce_servicebody_volunteer_routing' , 'default' => false, 'overridable' => true, 'hidden' => false],
         'blocklist' => ['description' => '/general/blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -131,8 +131,7 @@ class SettingsService
 
     public function __construct()
     {
-        @include(!getenv("ENVIRONMENT") ? base_path() . '/config.php' :
-            base_path() . '/config.' . getenv("ENVIRONMENT") . '.php');
+        @include($this->getConfigFilenameForEnvironment());
         $this->settings = get_defined_vars();
         $this->localizations = new Localizations();
 
@@ -152,6 +151,12 @@ class SettingsService
         foreach ($_SESSION ?? [] as $session_key => $session_value) {
             $this->setLocalizationOverride($session_key, $session_value);
         }
+    }
+
+    public function getConfigFilenameForEnvironment(): string
+    {
+        return !getenv("ENVIRONMENT") ? base_path() . '/config.php' :
+            base_path() . '/config.' . getenv("ENVIRONMENT") . '.php';
     }
 
     public function getShortLanguage(): string

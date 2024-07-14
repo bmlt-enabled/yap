@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.3.6 (July 14, 2024)
+* Fix for non-loading installer.
+
 ### 4.3.5 (May 9, 2024)
 * Fix for BMLT based logins not working in some cases.
 * Fix for call detail records table on the Reports page that wouldn't render all records.  Call events are now in a modal window with a magnifying glass that triggers the open. [#1034] 
