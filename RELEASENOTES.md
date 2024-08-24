@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.4.0 (UNRELEASED)
+* Added a feature to download recursive volunteer lists in either JSON or CSV format.
+
 ### 4.3.6 (July 14, 2024)
 * Fix for non-loading installer.
 
