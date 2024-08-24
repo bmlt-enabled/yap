@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkyapdocs=self.webpackChunkyapdocs||[]).push([[8121],{8070:a=>{a.exports=JSON.parse('{"tags":[{"label":"formats","permalink":"/blog/tags/formats","count":2},{"label":"yap","permalink":"/blog/tags/yap","count":3}]}')}}]);
