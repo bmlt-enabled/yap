@@ -22,7 +22,7 @@ static $bmlt_password = "";
 
 6. Try testing that your application actually is functioning properly by opening a browser http://example.com/index.php.  
 
-7. You will need to set up a Twilio account, and do the following.  Purchase a phone number (typically you would buy one for your locale, tollfree is pretty much unnecessary these days).  Configure that number to point to a Webook.  It would be something like https://example.com/index.php.
+7. You will need to set up a Twilio account, and do the following.  Purchase a phone number (typically you would buy one for your locale, tollfree is pretty much unnecessary these days).  Configure that number to point to a Webook.  It would be something like https://example.com/index.php.  If you want to skip helpline call routing you can do that with the instructions [here](skipping-helpline-call-routing).
     
 8. You will need to set up a new MySQL database.  Be sure to set up backups on your database as well.  Your hosting provider may cover this more.
 Once you've done that, set the following in your config.php.
