@@ -16,6 +16,19 @@ To run code coverage, you can run `make coverage`.
 
 Use `$this->withoutExceptionHandling()` in your test classes to see the underlying 500 error during your tests.
 
+### Docs
+
+1. Go to `cd src/docs`
+2. Run `npm run start`
+
+You should be able to see the documents update as you edit files at http://localhost:3000.
+
+To test building the docs run:
+
+```shell
+npm run docusaurus build
+```
+
 ### API Docs (WIP)
 
 This only works locally right now.

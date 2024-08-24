@@ -1,7 +1,7 @@
 ---
 slug: merging-yap-post
 title: Merging Yap Servers
-authors: [fortysevenbot]
+authors: [dgershman]
 tags: [yap]
 ---
 
