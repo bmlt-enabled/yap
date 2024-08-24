@@ -77,6 +77,15 @@ class ConfigData extends Model
             ->get();
     }
 
+    public static function getVolunteersRecursively(array $serviceBodyIds) : Collection
+    {
+        return ConfigData::select(['data','service_body_id','id','parent_id'])
+            ->whereIn('service_body_id', $serviceBodyIds)
+            ->where('data_type', DataType::YAP_VOLUNTEERS_V2)
+            ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
+            ->get();
+    }
+
     public static function getCallHandling(int $serviceBodyId): Collection
     {
         return ConfigData::select(['data','service_body_id','id','parent_id'])

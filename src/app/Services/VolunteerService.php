@@ -18,15 +18,18 @@ use App\Utilities\VolunteerScheduleHelpers;
 use DateTime;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use PHP_CodeSniffer\Config;
 
 class VolunteerService extends Service
 {
     protected ConfigRepository $configRepository;
+    protected RootServerService $rootServerService;
 
-    public function __construct(ConfigRepository $configRepository)
+    public function __construct(ConfigRepository $configRepository, RootServerService $rootServerService)
     {
         parent::__construct(App::make(SettingsService::class));
         $this->configRepository = $configRepository;
+        $this->rootServerService = $rootServerService;
     }
 
     public function getHelplineSchedule($service_body_int, $filtered = false): array
@@ -45,12 +48,19 @@ class VolunteerService extends Service
         }
     }
 
-    public function getVolunteers($service_body_id): array
+    public function getVolunteers($serviceBodyId, $recurse = false): array
     {
-        $volunteerData = ConfigData::getVolunteers($service_body_id);
+        if ($recurse) {
+            $serviceBodyIds = $this->rootServerService->getServiceBodiesForUserRecursively($serviceBodyId);
+            $volunteerData = ConfigData::getVolunteersRecursively($serviceBodyIds);
+        } else {
+            $volunteerData = ConfigData::getVolunteers($serviceBodyId);
+        }
+
         $volunteerList = [];
+        foreach ($volunteerData as $volunteerDatum)
         if (count($volunteerData) > 0) {
-            $volunteers = json_decode($volunteerData[0]->data);
+            $volunteers = json_decode($volunteerDatum->data);
             for ($v = 0; $v < count($volunteers); $v++) {
                 if (isset($volunteers[$v]->group_id) && isset($volunteers[$v]->group_enabled)
                     && json_decode($volunteers[$v]->group_enabled)) {
@@ -67,9 +77,9 @@ class VolunteerService extends Service
         return $volunteerList;
     }
 
-    public function getVolunteersListReport($service_body_int)
+    public function getVolunteersListReport($service_body_int, $recurse = false)
     {
-        $volunteers = $this->getVolunteers($service_body_int);
+        $volunteers = $this->getVolunteers($service_body_int, $recurse);
         if (count($volunteers) > 0) {
             $finalSchedule = $this->getAllVolunteersList($volunteers);
 
