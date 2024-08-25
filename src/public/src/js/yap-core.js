@@ -352,13 +352,17 @@ function volunteerPage()
             spinnerDialog(true, "Retrieving Volunteers...", function () {
                 loadGroups(service_body_id, function () {
                     loadVolunteers(service_body_id, function () {
-                        $("#volunteers-download-list-csv").show();
-                        $("#volunteers-download-list-csv").click(function () {
+                        $("#volunteers-download-list-csv").on("click", function () {
                             document.location.href='../api/v1/volunteers/download?service_body_id='+service_body_id+'&fmt=csv';
                         })
-                        $("#volunteers-download-list-json").show();
-                        $("#volunteers-download-list-json").click(function () {
+                        $("#volunteers-download-list-json").on("click", function () {
                             document.location.href='../api/v1/volunteers/download?service_body_id='+service_body_id+'&fmt=json';
+                        })
+                        $("#volunteers-download-recursive-list-csv").on("click", function () {
+                            document.location.href='../api/v1/volunteers/download?service_body_id='+service_body_id+'&fmt=csv&recurse=true';
+                        })
+                        $("#volunteers-download-recursive-list-json").on("click", function () {
+                            document.location.href='../api/v1/volunteers/download?service_body_id='+service_body_id+'&fmt=json&recurse=true ';
                         })
                         spinnerDialog(false);
                     })
