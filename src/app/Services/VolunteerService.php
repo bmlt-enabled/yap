@@ -22,11 +22,13 @@ use Illuminate\Support\Facades\Log;
 class VolunteerService extends Service
 {
     protected ConfigRepository $configRepository;
+    protected RootServerService $rootServerService;
 
-    public function __construct(ConfigRepository $configRepository)
+    public function __construct(ConfigRepository $configRepository, RootServerService $rootServerService)
     {
         parent::__construct(App::make(SettingsService::class));
         $this->configRepository = $configRepository;
+        $this->rootServerService = $rootServerService;
     }
 
     public function getHelplineSchedule($service_body_int, $filtered = false): array
@@ -45,21 +47,31 @@ class VolunteerService extends Service
         }
     }
 
-    public function getVolunteers($service_body_id): array
+    public function getVolunteers($serviceBodyId, $recurse = false): array
     {
-        $volunteerData = ConfigData::getVolunteers($service_body_id);
+        if ($recurse) {
+            $serviceBodyIds = $this->rootServerService->getServiceBodiesForUserRecursively($serviceBodyId);
+            $volunteerData = ConfigData::getVolunteersRecursively($serviceBodyIds);
+        } else {
+            $volunteerData = ConfigData::getVolunteers($serviceBodyId);
+        }
+
         $volunteerList = [];
-        if (count($volunteerData) > 0) {
-            $volunteers = json_decode($volunteerData[0]->data);
-            for ($v = 0; $v < count($volunteers); $v++) {
-                if (isset($volunteers[$v]->group_id) && isset($volunteers[$v]->group_enabled)
+        foreach ($volunteerData as $volunteerDatum) {
+            if (count($volunteerData) > 0) {
+                $volunteers = json_decode($volunteerDatum->data);
+                for ($v = 0; $v < count($volunteers); $v++) {
+                    if (isset($volunteers[$v]->group_id) && isset($volunteers[$v]->group_enabled)
                     && json_decode($volunteers[$v]->group_enabled)) {
-                    $groupVolunteers = $this->getGroupVolunteers($volunteers[$v]->group_id);
-                    foreach ($groupVolunteers as $groupVolunteer) {
-                        $volunteerList[] = $groupVolunteer;
+                        $groupVolunteers = $this->getGroupVolunteers($volunteers[$v]->group_id);
+                        foreach ($groupVolunteers as $groupVolunteer) {
+                            $groupVolunteer->service_body_id = $volunteerDatum->service_body_id;
+                            $volunteerList[] = $groupVolunteer;
+                        }
+                    } else {
+                        $volunteers[$v]->service_body_id = $volunteerDatum->service_body_id;
+                        $volunteerList[] = $volunteers[$v];
                     }
-                } else {
-                    $volunteerList[] = $volunteers[$v];
                 }
             }
         }
@@ -67,9 +79,9 @@ class VolunteerService extends Service
         return $volunteerList;
     }
 
-    public function getVolunteersListReport($service_body_int)
+    public function getVolunteersListReport($service_body_int, $recurse = false)
     {
-        $volunteers = $this->getVolunteers($service_body_int);
+        $volunteers = $this->getVolunteers($service_body_int, $recurse);
         if (count($volunteers) > 0) {
             $finalSchedule = $this->getAllVolunteersList($volunteers);
 
@@ -164,6 +176,8 @@ class VolunteerService extends Service
             $volunteerInfo->number = $volunteer->volunteer_phone_number;
             $volunteerInfo->gender = $volunteer->volunteer_gender ?? VolunteerGender::UNSPECIFIED;
             $volunteerInfo->responder = $volunteer->volunteer_responder ?? VolunteerResponderOption::UNSPECIFIED;
+            $volunteerInfo->service_body_id = $volunteer->service_body_id;
+            $volunteerInfo->notes = $volunteer->volunteer_notes ?? "";
             if (strlen($this->settings->get('language_selections')) > 0) {
                 $volunteerInfo->language = property_exists($volunteer, 'volunteer_language') ? $volunteer->volunteer_language : array(explode(',', $this->settings->get('language_selections'))[0]);
             } else {

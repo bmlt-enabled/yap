@@ -19,21 +19,23 @@ class VolunteerDownloadController extends Controller
     public function index(Request $request)
     {
         try {
-            $report = $this->volunteerService->getVolunteersListReport($request->get("service_body_id"));
+            $report = $this->volunteerService->getVolunteersListReport($request->get("service_body_id"), $request->get("recurse") ?? false);
             if ($request->get('fmt') == "csv") {
                 $handle = fopen('php://memory', 'rw');
                 try {
-                    fputcsv($handle, array("name", "number", "gender", "responder", "type", "language", "shift_info"));
+                    fputcsv($handle, array("name", "number", "gender", "responder", "type", "language", "notes", "service_body_id", "shift_info"));
                     foreach ($report as $item) {
-                        fputcsv($handle, array(
+                            fputcsv($handle, array(
                             $item->name,
                             $item->number,
                             $item->gender,
                             $item->responder,
                             $item->type,
                             json_encode($item->language),
+                            $item->notes,
+                            $item->service_body_id,
                             json_encode($item->shift_info)
-                        ));
+                            ));
                     }
                     fseek($handle, 0);
                     $data = stream_get_contents($handle);
@@ -41,7 +43,7 @@ class VolunteerDownloadController extends Controller
                         ->header("Content-Type", "text/plain")
                         ->header("Content-Length", strlen($data))
                         ->header("Content-Disposition", sprintf(
-                            'attachment; filename="%s-map-metrics.csv"',
+                            'attachment; filename="%s-volunteer-list.csv"',
                             $request->get("service_body_id")
                         ));
                 } finally {

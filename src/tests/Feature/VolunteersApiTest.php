@@ -143,6 +143,61 @@ test('return volunteers json', function () {
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
+    $notes = "something something something dark side";
+
+    $volunteer = new VolunteerData();
+    $volunteer->volunteer_name = $volunteer_name;
+    $volunteer->volunteer_phone_number = $volunteer_phone_number;
+    $volunteer->volunteer_notes = $notes;
+    $volunteer->volunteer_shift_schedule = base64_encode(json_encode([[
+        "day"=>$shiftDay,
+        "tz"=>$shiftTz,
+        "start_time"=>$shiftStart,
+        "end_time"=>$shiftEnd,
+    ]]));
+
+    ConfigData::createVolunteer(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $volunteer
+    );
+
+    $response = $this->call('GET', '/api/v1/volunteers/download', [
+        "service_body_id" => $this->serviceBodyId,
+        "fmt" => "json"
+    ]);
+
+    $expectedResponse = [[
+        "name"=>sprintf("%s", $volunteer_name),
+        "number"=>$volunteer_phone_number,
+        "gender"=>VolunteerGender::UNSPECIFIED,
+        "responder"=>VolunteerResponderOption::UNSPECIFIED,
+        "type"=>VolunteerType::PHONE,
+        "service_body_id"=>intval($this->serviceBodyId),
+        "notes"=>$notes,
+        "language"=>["en-US"],
+        "shift_info"=>[[
+            "day"=>$shiftDay,
+            "tz"=>$shiftTz,
+            "start_time"=>$shiftStart,
+            "end_time"=>$shiftEnd
+        ]]
+    ]];
+    $response
+        ->assertSimilarJson($expectedResponse)
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('return volunteers without notes json', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+    $volunteer_name = "Corey";
+    $volunteer_phone_number = "(555) 111-2222";
+    $shiftDay = 1;
+    $shiftTz = "America/New_York";
+    $shiftStart = "12:00 AM";
+    $shiftEnd = "11:59 PM";
 
     $volunteer = new VolunteerData();
     $volunteer->volunteer_name = $volunteer_name;
@@ -171,6 +226,8 @@ test('return volunteers json', function () {
         "gender"=>VolunteerGender::UNSPECIFIED,
         "responder"=>VolunteerResponderOption::UNSPECIFIED,
         "type"=>VolunteerType::PHONE,
+        "service_body_id"=>intval($this->serviceBodyId),
+        "notes"=>"",
         "language"=>["en-US"],
         "shift_info"=>[[
             "day"=>$shiftDay,
@@ -185,16 +242,16 @@ test('return volunteers json', function () {
         ->assertStatus(200);
 });
 
-test('return volunteers csv', function () {
+test('return volunteers recursively json', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-
-    $volunteer_name = "Corey ";
+    $_SESSION['auth_is_admin'] = true;
+    $volunteer_name = "Corey";
     $volunteer_phone_number = "(555) 111-2222";
     $shiftDay = 1;
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
+    $notes = "something something something dark side";
 
     $volunteer = new VolunteerData();
     $volunteer->volunteer_name = $volunteer_name;
@@ -205,24 +262,278 @@ test('return volunteers csv', function () {
         "start_time"=>$shiftStart,
         "end_time"=>$shiftEnd,
     ]]));
+    $volunteer->volunteer_notes = $notes;
+
+    $parentServiceBodyId = 1052;
+    $firstServiceBodyId = 1053;
+    $secondServiceBodyId = 1054;
 
     ConfigData::createVolunteer(
-        $this->serviceBodyId,
-        $this->parentServiceBodyId,
+        $firstServiceBodyId,
+        $parentServiceBodyId,
+        $volunteer
+    );
+
+    ConfigData::createVolunteer(
+        $secondServiceBodyId,
+        $parentServiceBodyId,
         $volunteer
     );
 
     $response = $this->call('GET', '/api/v1/volunteers/download', [
-        "service_body_id" => $this->serviceBodyId,
-        "fmt" => "csv"
+        "service_body_id" => $parentServiceBodyId,
+        "fmt" => "json",
+        "recurse" => true
     ]);
 
-    $expectedResponse = "name,number,gender,responder,type,language,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n";
+    $expectedResponse = [[
+        "name"=>sprintf("%s", $volunteer_name),
+        "number"=>$volunteer_phone_number,
+        "gender"=>VolunteerGender::UNSPECIFIED,
+        "responder"=>VolunteerResponderOption::UNSPECIFIED,
+        "type"=>VolunteerType::PHONE,
+        "service_body_id"=>$firstServiceBodyId,
+        "notes"=>$notes,
+        "language"=>["en-US"],
+        "shift_info"=>[[
+            "day"=>$shiftDay,
+            "tz"=>$shiftTz,
+            "start_time"=>$shiftStart,
+            "end_time"=>$shiftEnd
+        ]]
+    ],[
+        "name"=>sprintf("%s", $volunteer_name),
+        "number"=>$volunteer_phone_number,
+        "gender"=>VolunteerGender::UNSPECIFIED,
+        "responder"=>VolunteerResponderOption::UNSPECIFIED,
+        "type"=>VolunteerType::PHONE,
+        "service_body_id"=>$secondServiceBodyId,
+        "notes"=>$notes,
+        "language"=>["en-US"],
+        "shift_info"=>[[
+            "day"=>$shiftDay,
+            "tz"=>$shiftTz,
+            "start_time"=>$shiftStart,
+            "end_time"=>$shiftEnd
+        ]]
+    ]];
+    $response
+        ->assertSimilarJson($expectedResponse)
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('return volunteers with groups recursively json', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    $_SESSION['auth_is_admin'] = true;
+    $volunteer_name = "Corey";
+    $volunteer_phone_number = "(555) 111-2222";
+    $shiftDay = 1;
+    $shiftTz = "America/New_York";
+    $shiftStart = "12:00 AM";
+    $shiftEnd = "11:59 PM";
+    $notes = "something something something dark side";
+
+    $volunteer = new VolunteerData();
+    $volunteer->volunteer_name = $volunteer_name;
+    $volunteer->volunteer_phone_number = $volunteer_phone_number;
+    $volunteer->volunteer_shift_schedule = base64_encode(json_encode([[
+        "day"=>$shiftDay,
+        "tz"=>$shiftTz,
+        "start_time"=>$shiftStart,
+        "end_time"=>$shiftEnd,
+    ]]));
+    $volunteer->volunteer_notes = $notes;
+
+    $parentServiceBodyId = 1052;
+    $firstServiceBodyId = 1053;
+    $secondServiceBodyId = 1054;
+
+    ConfigData::createVolunteer(
+        $firstServiceBodyId,
+        $parentServiceBodyId,
+        $volunteer
+    );
+
+    ConfigData::createVolunteer(
+        $secondServiceBodyId,
+        $parentServiceBodyId,
+        $volunteer
+    );
+
+    $groupId = ConfigData::createGroup(
+        $firstServiceBodyId,
+        $parentServiceBodyId,
+        (object)["group_name" => "test", "group_shared_service_bodies" => $firstServiceBodyId]
+    );
+
+    ConfigData::createGroupVolunteers(
+        $firstServiceBodyId,
+        $groupId,
+        $volunteer,
+    );
+
+    ConfigData::addGroupToVolunteers(
+        $firstServiceBodyId,
+        $groupId,
+        (object)["group_id" => $groupId, "group_enabled" => true]
+    );
+
+    $response = $this->call('GET', '/api/v1/volunteers/download', [
+        "service_body_id" => $parentServiceBodyId,
+        "fmt" => "json",
+        "recurse" => true
+    ]);
+
+    $expectedResponse = [[
+        "name"=>sprintf("%s", $volunteer_name),
+        "number"=>$volunteer_phone_number,
+        "gender"=>VolunteerGender::UNSPECIFIED,
+        "responder"=>VolunteerResponderOption::UNSPECIFIED,
+        "type"=>VolunteerType::PHONE,
+        "service_body_id"=>$firstServiceBodyId,
+        "notes"=>$notes,
+        "language"=>["en-US"],
+        "shift_info"=>[[
+            "day"=>$shiftDay,
+            "tz"=>$shiftTz,
+            "start_time"=>$shiftStart,
+            "end_time"=>$shiftEnd
+        ]]
+    ],[
+        "name"=>sprintf("%s", $volunteer_name),
+        "number"=>$volunteer_phone_number,
+        "gender"=>VolunteerGender::UNSPECIFIED,
+        "responder"=>VolunteerResponderOption::UNSPECIFIED,
+        "type"=>VolunteerType::PHONE,
+        "service_body_id"=>$secondServiceBodyId,
+        "notes"=>$notes,
+        "language"=>["en-US"],
+        "shift_info"=>[[
+            "day"=>$shiftDay,
+            "tz"=>$shiftTz,
+            "start_time"=>$shiftStart,
+            "end_time"=>$shiftEnd
+        ]]
+    ],[
+        "name"=>sprintf("%s", $volunteer_name),
+        "number"=>$volunteer_phone_number,
+        "gender"=>VolunteerGender::UNSPECIFIED,
+        "responder"=>VolunteerResponderOption::UNSPECIFIED,
+        "type"=>VolunteerType::PHONE,
+        "service_body_id"=>$firstServiceBodyId,
+        "notes"=>$notes,
+        "language"=>["en-US"],
+        "shift_info"=>[[
+            "day"=>$shiftDay,
+            "tz"=>$shiftTz,
+            "start_time"=>$shiftStart,
+            "end_time"=>$shiftEnd
+        ]]
+    ]];
+    $response
+        ->assertSimilarJson($expectedResponse)
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('return volunteers recursively csv', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    $_SESSION['auth_is_admin'] = true;
+
+    $volunteer_name = "Corey ";
+    $volunteer_phone_number = "(555) 111-2222";
+    $shiftDay = 1;
+    $shiftTz = "America/New_York";
+    $shiftStart = "12:00 AM";
+    $shiftEnd = "11:59 PM";
+    $notes = "something something something dark side";
+
+    $volunteer = new VolunteerData();
+    $volunteer->volunteer_name = $volunteer_name;
+    $volunteer->volunteer_phone_number = $volunteer_phone_number;
+    $volunteer->volunteer_shift_schedule = base64_encode(json_encode([[
+        "day"=>$shiftDay,
+        "tz"=>$shiftTz,
+        "start_time"=>$shiftStart,
+        "end_time"=>$shiftEnd,
+    ]]));
+    $volunteer->volunteer_notes = $notes;
+
+    $parentServiceBodyId = 1052;
+    $firstServiceBodyId = 1053;
+    $secondServiceBodyId = 1054;
+
+    ConfigData::createVolunteer(
+        $firstServiceBodyId,
+        $parentServiceBodyId,
+        $volunteer
+    );
+
+    ConfigData::createVolunteer(
+        $secondServiceBodyId,
+        $parentServiceBodyId,
+        $volunteer
+    );
+
+    $response = $this->call('GET', '/api/v1/volunteers/download', [
+        "service_body_id" => $parentServiceBodyId,
+        "fmt" => "csv",
+        "recurse" => "true"
+    ]);
+
+    $expectedResponse = "name,number,gender,responder,type,language,notes,service_body_id,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$firstServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$secondServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n";
     $response
         ->assertContent($expectedResponse)
         ->assertHeader("Content-Type", "text/plain; charset=UTF-8")
         ->assertHeader("Content-Length", strlen($expectedResponse))
-        ->assertHeader("Content-Disposition", sprintf("attachment; filename=\"%s-map-metrics.csv\"", $this->serviceBodyId))
+        ->assertHeader("Content-Disposition", sprintf("attachment; filename=\"%s-volunteer-list.csv\"", $parentServiceBodyId))
+        ->assertStatus(200);
+});
+
+test('return volunteers csv', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    $_SESSION['auth_is_admin'] = true;
+
+    $volunteer_name = "Corey ";
+    $volunteer_phone_number = "(555) 111-2222";
+    $shiftDay = 1;
+    $shiftTz = "America/New_York";
+    $shiftStart = "12:00 AM";
+    $shiftEnd = "11:59 PM";
+    $notes = "something something something dark side";
+
+    $volunteer = new VolunteerData();
+    $volunteer->volunteer_name = $volunteer_name;
+    $volunteer->volunteer_phone_number = $volunteer_phone_number;
+    $volunteer->volunteer_shift_schedule = base64_encode(json_encode([[
+        "day"=>$shiftDay,
+        "tz"=>$shiftTz,
+        "start_time"=>$shiftStart,
+        "end_time"=>$shiftEnd,
+    ]]));
+    $volunteer->volunteer_notes = $notes;
+
+    $parentServiceBodyId = 1052;
+    $firstServiceBodyId = 1053;
+
+    ConfigData::createVolunteer(
+        $firstServiceBodyId,
+        $parentServiceBodyId,
+        $volunteer
+    );
+
+    $response = $this->call('GET', '/api/v1/volunteers/download', [
+        "service_body_id" => $firstServiceBodyId,
+        "fmt" => "csv"
+    ]);
+
+    $expectedResponse = "name,number,gender,responder,type,language,notes,service_body_id,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$firstServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n";
+    $response
+        ->assertContent($expectedResponse)
+        ->assertHeader("Content-Type", "text/plain; charset=UTF-8")
+        ->assertHeader("Content-Length", strlen($expectedResponse))
+        ->assertHeader("Content-Disposition", sprintf("attachment; filename=\"%s-volunteer-list.csv\"", $firstServiceBodyId))
         ->assertStatus(200);
 });
 
