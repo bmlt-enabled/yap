@@ -18,7 +18,6 @@ use App\Utilities\VolunteerScheduleHelpers;
 use DateTime;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
-use PHP_CodeSniffer\Config;
 
 class VolunteerService extends Service
 {
