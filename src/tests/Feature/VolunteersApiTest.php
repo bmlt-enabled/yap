@@ -143,6 +143,61 @@ test('return volunteers json', function () {
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
+    $notes = "something something something dark side";
+
+    $volunteer = new VolunteerData();
+    $volunteer->volunteer_name = $volunteer_name;
+    $volunteer->volunteer_phone_number = $volunteer_phone_number;
+    $volunteer->volunteer_notes = $notes;
+    $volunteer->volunteer_shift_schedule = base64_encode(json_encode([[
+        "day"=>$shiftDay,
+        "tz"=>$shiftTz,
+        "start_time"=>$shiftStart,
+        "end_time"=>$shiftEnd,
+    ]]));
+
+    ConfigData::createVolunteer(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $volunteer
+    );
+
+    $response = $this->call('GET', '/api/v1/volunteers/download', [
+        "service_body_id" => $this->serviceBodyId,
+        "fmt" => "json"
+    ]);
+
+    $expectedResponse = [[
+        "name"=>sprintf("%s", $volunteer_name),
+        "number"=>$volunteer_phone_number,
+        "gender"=>VolunteerGender::UNSPECIFIED,
+        "responder"=>VolunteerResponderOption::UNSPECIFIED,
+        "type"=>VolunteerType::PHONE,
+        "service_body_id"=>intval($this->serviceBodyId),
+        "notes"=>$notes,
+        "language"=>["en-US"],
+        "shift_info"=>[[
+            "day"=>$shiftDay,
+            "tz"=>$shiftTz,
+            "start_time"=>$shiftStart,
+            "end_time"=>$shiftEnd
+        ]]
+    ]];
+    $response
+        ->assertSimilarJson($expectedResponse)
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('return volunteers without notes json', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+    $volunteer_name = "Corey";
+    $volunteer_phone_number = "(555) 111-2222";
+    $shiftDay = 1;
+    $shiftTz = "America/New_York";
+    $shiftStart = "12:00 AM";
+    $shiftEnd = "11:59 PM";
 
     $volunteer = new VolunteerData();
     $volunteer->volunteer_name = $volunteer_name;
@@ -172,6 +227,7 @@ test('return volunteers json', function () {
         "responder"=>VolunteerResponderOption::UNSPECIFIED,
         "type"=>VolunteerType::PHONE,
         "service_body_id"=>intval($this->serviceBodyId),
+        "notes"=>"",
         "language"=>["en-US"],
         "shift_info"=>[[
             "day"=>$shiftDay,
@@ -195,6 +251,7 @@ test('return volunteers recursively json', function () {
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
+    $notes = "something something something dark side";
 
     $volunteer = new VolunteerData();
     $volunteer->volunteer_name = $volunteer_name;
@@ -205,6 +262,7 @@ test('return volunteers recursively json', function () {
         "start_time"=>$shiftStart,
         "end_time"=>$shiftEnd,
     ]]));
+    $volunteer->volunteer_notes = $notes;
 
     $parentServiceBodyId = 1052;
     $firstServiceBodyId = 1053;
@@ -235,6 +293,7 @@ test('return volunteers recursively json', function () {
         "responder"=>VolunteerResponderOption::UNSPECIFIED,
         "type"=>VolunteerType::PHONE,
         "service_body_id"=>$firstServiceBodyId,
+        "notes"=>$notes,
         "language"=>["en-US"],
         "shift_info"=>[[
             "day"=>$shiftDay,
@@ -249,6 +308,7 @@ test('return volunteers recursively json', function () {
         "responder"=>VolunteerResponderOption::UNSPECIFIED,
         "type"=>VolunteerType::PHONE,
         "service_body_id"=>$secondServiceBodyId,
+        "notes"=>$notes,
         "language"=>["en-US"],
         "shift_info"=>[[
             "day"=>$shiftDay,
@@ -272,6 +332,7 @@ test('return volunteers with groups recursively json', function () {
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
+    $notes = "something something something dark side";
 
     $volunteer = new VolunteerData();
     $volunteer->volunteer_name = $volunteer_name;
@@ -282,6 +343,7 @@ test('return volunteers with groups recursively json', function () {
         "start_time"=>$shiftStart,
         "end_time"=>$shiftEnd,
     ]]));
+    $volunteer->volunteer_notes = $notes;
 
     $parentServiceBodyId = 1052;
     $firstServiceBodyId = 1053;
@@ -330,6 +392,7 @@ test('return volunteers with groups recursively json', function () {
         "responder"=>VolunteerResponderOption::UNSPECIFIED,
         "type"=>VolunteerType::PHONE,
         "service_body_id"=>$firstServiceBodyId,
+        "notes"=>$notes,
         "language"=>["en-US"],
         "shift_info"=>[[
             "day"=>$shiftDay,
@@ -344,6 +407,7 @@ test('return volunteers with groups recursively json', function () {
         "responder"=>VolunteerResponderOption::UNSPECIFIED,
         "type"=>VolunteerType::PHONE,
         "service_body_id"=>$secondServiceBodyId,
+        "notes"=>$notes,
         "language"=>["en-US"],
         "shift_info"=>[[
             "day"=>$shiftDay,
@@ -358,6 +422,7 @@ test('return volunteers with groups recursively json', function () {
         "responder"=>VolunteerResponderOption::UNSPECIFIED,
         "type"=>VolunteerType::PHONE,
         "service_body_id"=>$firstServiceBodyId,
+        "notes"=>$notes,
         "language"=>["en-US"],
         "shift_info"=>[[
             "day"=>$shiftDay,
@@ -382,6 +447,7 @@ test('return volunteers recursively csv', function () {
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
+    $notes = "something something something dark side";
 
     $volunteer = new VolunteerData();
     $volunteer->volunteer_name = $volunteer_name;
@@ -392,6 +458,7 @@ test('return volunteers recursively csv', function () {
         "start_time"=>$shiftStart,
         "end_time"=>$shiftEnd,
     ]]));
+    $volunteer->volunteer_notes = $notes;
 
     $parentServiceBodyId = 1052;
     $firstServiceBodyId = 1053;
@@ -415,7 +482,7 @@ test('return volunteers recursively csv', function () {
         "recurse" => "true"
     ]);
 
-    $expectedResponse = "name,number,gender,responder,type,language,service_body_id,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",$firstServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",$secondServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n";
+    $expectedResponse = "name,number,gender,responder,type,language,notes,service_body_id,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$firstServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$secondServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n";
     $response
         ->assertContent($expectedResponse)
         ->assertHeader("Content-Type", "text/plain; charset=UTF-8")
@@ -434,6 +501,7 @@ test('return volunteers csv', function () {
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
+    $notes = "something something something dark side";
 
     $volunteer = new VolunteerData();
     $volunteer->volunteer_name = $volunteer_name;
@@ -444,6 +512,7 @@ test('return volunteers csv', function () {
         "start_time"=>$shiftStart,
         "end_time"=>$shiftEnd,
     ]]));
+    $volunteer->volunteer_notes = $notes;
 
     $parentServiceBodyId = 1052;
     $firstServiceBodyId = 1053;
@@ -459,7 +528,7 @@ test('return volunteers csv', function () {
         "fmt" => "csv"
     ]);
 
-    $expectedResponse = "name,number,gender,responder,type,language,service_body_id,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",$firstServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n";
+    $expectedResponse = "name,number,gender,responder,type,language,notes,service_body_id,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$firstServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n";
     $response
         ->assertContent($expectedResponse)
         ->assertHeader("Content-Type", "text/plain; charset=UTF-8")
