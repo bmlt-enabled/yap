@@ -66,9 +66,11 @@ class VolunteerService extends Service
                     && json_decode($volunteers[$v]->group_enabled)) {
                         $groupVolunteers = $this->getGroupVolunteers($volunteers[$v]->group_id);
                         foreach ($groupVolunteers as $groupVolunteer) {
+                            $groupVolunteer->service_body_id = $volunteerDatum->service_body_id;
                             $volunteerList[] = $groupVolunteer;
                         }
                     } else {
+                        $volunteers[$v]->service_body_id = $volunteerDatum->service_body_id;
                         $volunteerList[] = $volunteers[$v];
                     }
                 }
@@ -175,6 +177,7 @@ class VolunteerService extends Service
             $volunteerInfo->number = $volunteer->volunteer_phone_number;
             $volunteerInfo->gender = $volunteer->volunteer_gender ?? VolunteerGender::UNSPECIFIED;
             $volunteerInfo->responder = $volunteer->volunteer_responder ?? VolunteerResponderOption::UNSPECIFIED;
+            $volunteerInfo->service_body_id = $volunteer->service_body_id;
             if (strlen($this->settings->get('language_selections')) > 0) {
                 $volunteerInfo->language = property_exists($volunteer, 'volunteer_language') ? $volunteer->volunteer_language : array(explode(',', $this->settings->get('language_selections'))[0]);
             } else {

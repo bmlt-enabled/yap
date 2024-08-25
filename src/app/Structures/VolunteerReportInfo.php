@@ -15,4 +15,5 @@ class VolunteerReportInfo
     public $type = VolunteerType::PHONE;
     public $language;
     public $shift_info = [];
+    public $service_body_id;
 }

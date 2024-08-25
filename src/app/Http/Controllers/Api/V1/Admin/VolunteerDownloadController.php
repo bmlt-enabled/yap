@@ -23,15 +23,16 @@ class VolunteerDownloadController extends Controller
             if ($request->get('fmt') == "csv") {
                 $handle = fopen('php://memory', 'rw');
                 try {
-                    fputcsv($handle, array("name", "number", "gender", "responder", "type", "language", "shift_info"));
+                    fputcsv($handle, array("name", "number", "gender", "responder", "type", "language", "service_body_id", "shift_info"));
                     foreach ($report as $item) {
-                        fputcsv($handle, array(
+                            fputcsv($handle, array(
                             $item->name,
                             $item->number,
                             $item->gender,
                             $item->responder,
                             $item->type,
                             json_encode($item->language),
+                            $item->service_body_id,
                             json_encode($item->shift_info)
                         ));
                     }

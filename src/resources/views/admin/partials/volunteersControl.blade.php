@@ -12,7 +12,7 @@
                     <a class="dropdown-item" id="volunteers-download-list-csv" href="#">CSV</a>
                     <a class="dropdown-item" id="volunteers-download-list-json" href="#">JSON</a>
                     <a class="dropdown-item" id="volunteers-download-recursive-list-csv" href="#">Recursive CSV</a>
-                    <a class="dropdown-item" id="volunteers-download-recusrive-list-json" href="#">Recursive JSON</a>
+                    <a class="dropdown-item" id="volunteers-download-recursive-list-json" href="#">Recursive JSON</a>
                 </div>
             </span>
         </div>

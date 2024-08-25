@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Constants\DataType;
 use App\Constants\Status;
+use App\Structures\GroupData;
 use App\Structures\ServiceBodyCallHandling;
 use App\Structures\VolunteerData;
 use Illuminate\Database\Eloquent\Collection;
@@ -46,12 +47,38 @@ class ConfigData extends Model
         int $serviceBodyId,
         int $parentServiceBodyId,
         object $serviceBodyConfiguration
-    ) : void {
-        self::create([
+    ) : int {
+        return self::create([
             "service_body_id"=>$serviceBodyId,
             "parent_id"=>$parentServiceBodyId,
             "data"=>json_encode([$serviceBodyConfiguration]),
             "data_type"=>DataType::YAP_GROUPS_V2
+        ])->id;
+    }
+
+    public static function addGroupToVolunteers(
+        int $serviceBodyId,
+        int $parentServiceBodyId,
+        object $groupConfiguration
+    ) : void {
+        self::create([
+            "service_body_id"=>$serviceBodyId,
+            "parent_id"=>$parentServiceBodyId,
+            "data"=>json_encode([$groupConfiguration]),
+            "data_type"=>DataType::YAP_VOLUNTEERS_V2
+        ]);
+    }
+
+    public static function createGroupVolunteers(
+        int $serviceBodyId,
+        int $groupId,
+        VolunteerData $volunteerConfiguration
+    ) : void {
+        self::create([
+            "service_body_id"=>$serviceBodyId,
+            "parent_id"=>$groupId,
+            "data"=>json_encode([$volunteerConfiguration]),
+            "data_type"=>DataType::YAP_GROUP_VOLUNTEERS_V2
         ]);
     }
 
