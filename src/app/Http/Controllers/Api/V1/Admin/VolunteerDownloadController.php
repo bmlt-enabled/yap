@@ -34,7 +34,7 @@ class VolunteerDownloadController extends Controller
                             json_encode($item->language),
                             $item->service_body_id,
                             json_encode($item->shift_info)
-                        ));
+                            ));
                     }
                     fseek($handle, 0);
                     $data = stream_get_contents($handle);
