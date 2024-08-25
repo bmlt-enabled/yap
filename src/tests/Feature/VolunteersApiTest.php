@@ -260,9 +260,9 @@ test('return volunteers recursively json', function () {
         ->assertStatus(200);
 });
 
-test('return volunteers csv', function () {
+test('return volunteers recursively csv', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+    $_SESSION['auth_is_admin'] = true;
 
     $volunteer_name = "Corey ";
     $volunteer_phone_number = "(555) 111-2222";
@@ -281,14 +281,69 @@ test('return volunteers csv', function () {
         "end_time"=>$shiftEnd,
     ]]));
 
+    $parentServiceBodyId = 1052;
+    $firstServiceBodyId = 1053;
+    $secondServiceBodyId = 1054;
+
     ConfigData::createVolunteer(
-        $this->serviceBodyId,
-        $this->parentServiceBodyId,
+        $firstServiceBodyId,
+        $parentServiceBodyId,
+        $volunteer
+    );
+
+    ConfigData::createVolunteer(
+        $secondServiceBodyId,
+        $parentServiceBodyId,
         $volunteer
     );
 
     $response = $this->call('GET', '/api/v1/volunteers/download', [
-        "service_body_id" => $this->serviceBodyId,
+        "service_body_id" => $parentServiceBodyId,
+        "fmt" => "csv",
+        "recurse" => "true"
+    ]);
+
+    $expectedResponse = "name,number,gender,responder,type,language,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n";
+    $response
+        ->assertContent($expectedResponse)
+        ->assertHeader("Content-Type", "text/plain; charset=UTF-8")
+        ->assertHeader("Content-Length", strlen($expectedResponse))
+        ->assertHeader("Content-Disposition", sprintf("attachment; filename=\"%s-volunteer-list.csv\"", $parentServiceBodyId))
+        ->assertStatus(200);
+});
+
+test('return volunteers csv', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    $_SESSION['auth_is_admin'] = true;
+
+    $volunteer_name = "Corey ";
+    $volunteer_phone_number = "(555) 111-2222";
+    $shiftDay = 1;
+    $shiftTz = "America/New_York";
+    $shiftStart = "12:00 AM";
+    $shiftEnd = "11:59 PM";
+
+    $volunteer = new VolunteerData();
+    $volunteer->volunteer_name = $volunteer_name;
+    $volunteer->volunteer_phone_number = $volunteer_phone_number;
+    $volunteer->volunteer_shift_schedule = base64_encode(json_encode([[
+        "day"=>$shiftDay,
+        "tz"=>$shiftTz,
+        "start_time"=>$shiftStart,
+        "end_time"=>$shiftEnd,
+    ]]));
+
+    $parentServiceBodyId = 1052;
+    $firstServiceBodyId = 1053;
+
+    ConfigData::createVolunteer(
+        $firstServiceBodyId,
+        $parentServiceBodyId,
+        $volunteer
+    );
+
+    $response = $this->call('GET', '/api/v1/volunteers/download', [
+        "service_body_id" => $firstServiceBodyId,
         "fmt" => "csv"
     ]);
 
@@ -297,7 +352,7 @@ test('return volunteers csv', function () {
         ->assertContent($expectedResponse)
         ->assertHeader("Content-Type", "text/plain; charset=UTF-8")
         ->assertHeader("Content-Length", strlen($expectedResponse))
-        ->assertHeader("Content-Disposition", sprintf("attachment; filename=\"%s-volunteer-list.csv\"", $this->serviceBodyId))
+        ->assertHeader("Content-Disposition", sprintf("attachment; filename=\"%s-volunteer-list.csv\"", $firstServiceBodyId))
         ->assertStatus(200);
 });
 
