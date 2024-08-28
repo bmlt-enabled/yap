@@ -20,6 +20,9 @@ class ReportsRepository
 
     public function getMetric($service_body_ids, $date_range_start, $date_range_end): array
     {
+        $placeholders = implode(',', array_fill(0, count($service_body_ids), '?'));
+        $bindings = array_merge([$date_range_start, $date_range_end], $service_body_ids);
+
         return DB::select(
             "select DATE_FORMAT(a.event_time, \"%Y-%m-%d\") as timestamp,
        COUNT(DATE_FORMAT(a.event_time, \"%Y-%m-%d\")) as counts,
@@ -28,22 +31,25 @@ class ReportsRepository
         INNER JOIN (select callsid, IFNULL(service_body_id,0) as service_body_id from records_events
             where event_time >= ? AND event_time <= ?
             group by callsid, service_body_id) b on a.callsid = b.callsid
-            WHERE a.event_id in (1,2,3,19,20,21) and IFNULL(b.service_body_id,0) in (?)
+            WHERE a.event_id in (1,2,3,19,20,21) and IFNULL(b.service_body_id,0) in ($placeholders)
             GROUP BY DATE_FORMAT(a.event_time, \"%Y-%m-%d\"), a.event_id, b.service_body_id",
-            [$date_range_start, $date_range_end, implode(",", $service_body_ids)]
+            $bindings
         );
     }
 
     public function getMetricCounts($service_body_ids, $date_range_start, $date_range_end): array
     {
+        $placeholders = implode(',', array_fill(0, count($service_body_ids), '?'));
+        $bindings = array_merge([$date_range_start, $date_range_end], $service_body_ids);
+
         return DB::select(
             "select event_id, count(a.event_id) as counts from records_events a
             INNER JOIN (select callsid, IFNULL(service_body_id, 0) as service_body_id from records_events
             where event_time >= ? AND event_time <= ?
             group by callsid, service_body_id) b on a.callsid = b.callsid
-            WHERE a.event_id in (1,2,3,12,19,20,21) and IFNULL(b.service_body_id,0) in (?)
+            WHERE a.event_id in (1,2,3,12,19,20,21) and IFNULL(b.service_body_id,0) in ($placeholders)
             GROUP BY a.event_id ORDER BY a.event_id",
-            [$date_range_start, $date_range_end, implode(",", $service_body_ids),]
+            $bindings
         );
     }
 

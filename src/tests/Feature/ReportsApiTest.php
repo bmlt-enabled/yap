@@ -261,7 +261,6 @@ test('validate sample map metrics poi csv', function () {
 
 test('validate sample metrics', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = 44;
     $date_range_start = "2023-01-03 00:00:00";
     $date_range_end = "2023-01-03 23:59:59";
@@ -326,6 +325,99 @@ test('validate sample metrics', function () {
         "service_body_id" => $service_body_id,
         "date_range_start" => $date_range_start,
         "date_range_end" => $date_range_end
+    ]);
+
+    $metricsCollection = [
+        "metrics"=>[
+            ["timestamp" => "2023-01-03", "counts" => 1, "service_body_id" => $service_body_id,
+                "data" => "{\"searchType\":\"1\"}"],
+            ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"2\"}"],
+            ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"3\"}"],
+            ["timestamp" => "2023-01-03", "counts" => 1, "service_body_id" => $service_body_id,
+                "data" => "{\"searchType\":\"19\"}"],
+            ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"20\"}"],
+            ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"21\"}"],
+        ],
+        "volunteers"=>$volunteersSample,
+        "summary"=>$summarySample,
+        "calls"=>$callsSample
+    ];
+
+    $response
+        ->assertExactJson($metricsCollection)
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('validate sample metrics for with recurse', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    $_SESSION['auth_is_admin'] = true;
+    $parent_service_body_id = 1052;
+    $service_body_id = 1053;
+    $date_range_start = "2023-01-03 00:00:00";
+    $date_range_end = "2023-01-03 23:59:59";
+
+    $summarySample = [
+        ["event_id"=>EventId::VOLUNTEER_SEARCH, "counts"=>1],
+        ["event_id"=>EventId::VOLUNTEER_IN_CONFERENCE, "counts"=>1],
+        ["event_id"=>EventId::MEETING_SEARCH_SMS, "counts"=>1]];
+
+    RecordEvent::generate(
+        "abc123",
+        EventId::VOLUNTEER_SEARCH,
+        "2023-01-03",
+        $service_body_id,
+        "",
+        RecordType::PHONE
+    );
+
+    RecordEvent::generate(
+        "abc123",
+        EventId::VOLUNTEER_IN_CONFERENCE,
+        "2023-01-03",
+        $service_body_id,
+        "",
+        RecordType::PHONE
+    );
+
+    RecordEvent::generate(
+        "abc123",
+        EventId::MEETING_SEARCH_SMS,
+        "2023-01-03",
+        $service_body_id,
+        "",
+        RecordType::SMS
+    );
+
+    RecordEvent::generate(
+        "def456",
+        EventId::VOLUNTEER_NOANSWER,
+        "2023-01-03",
+        $service_body_id,
+        "{\"to_number\":\"+19103818003\"}",
+        RecordType::PHONE
+    );
+    ConferenceParticipant::generate("abc123", "def456", "fake_conference", CallRole::CALLER);
+
+    $callsSample = [[
+        "service_body_id"=>$service_body_id,
+        "conferencesid"=>"abc123",
+        "answered_count"=>"0",
+        "missed_count"=>"1"
+    ]];
+
+    $volunteersSample = [[
+        "service_body_id"=>$service_body_id,
+        "meta"=> "{\"to_number\":\"+19103818003\"}",
+        "answered_count"=>"0",
+        "missed_count"=>"1"
+    ]];
+
+    $response = $this->call('GET', '/api/v1/reports/metrics', [
+        "service_body_id" => $parent_service_body_id,
+        "date_range_start" => $date_range_start,
+        "date_range_end" => $date_range_end,
+        "recurse" => true
     ]);
 
     $metricsCollection = [
