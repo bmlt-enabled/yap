@@ -25,6 +25,7 @@
                 Select Time Zone For 24/7 Shifts
             </div>
             <div class="modal-body">
+                <div id="selectTimeZoneDialogValidation"></div>
                 <div class="form-group form-row">
                     Time Zone:
                     <select class="form-control form-control-sm time_zone_selector" id="time_zone">
