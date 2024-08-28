@@ -83,8 +83,14 @@ class ReportsService extends Service
             $start_date = $metricsCollection->metrics[0]->timestamp;
             $end_date = $metricsCollection->metrics[count($metricsCollection->metrics) - 1]->timestamp;
             $current_date = $start_date;
-            $metrics_types = array(EventId::VOLUNTEER_SEARCH, EventId::MEETING_SEARCH, EventId::JFT_LOOKUP,
-                EventId::MEETING_SEARCH_SMS, EventId::VOLUNTEER_SEARCH_SMS, EventId::JFT_LOOKUP_SMS);
+            $metrics_types = array(EventId::VOLUNTEER_SEARCH,
+                EventId::MEETING_SEARCH,
+                EventId::JFT_LOOKUP,
+                EventId::MEETING_SEARCH_SMS,
+                EventId::VOLUNTEER_SEARCH_SMS,
+                EventId::JFT_LOOKUP_SMS,
+                EventId::SPAD_LOOKUP,
+                EventId::SPAD_LOOKUP_SMS);
             while ($current_date <= $end_date) {
                 foreach ($metrics_types as $metric_type) {
                     $fm = $this->findMetric($metricsCollection->metrics, $current_date, $metric_type);
