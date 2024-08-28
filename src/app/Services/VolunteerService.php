@@ -97,7 +97,9 @@ class VolunteerService extends Service
             $volunteers = $this->getHelplineSchedule($volunteer_routing_params->service_body_id);
             $activeNow = [];
             for ($v = 0; $v < count($volunteers); $v++) {
-                date_default_timezone_set($volunteers[$v]->time_zone);
+                if (isset($volunteers[$v]->time_zone) && $volunteers[$v]->time_zone !== "") {
+                    date_default_timezone_set($volunteers[$v]->time_zone);
+                }
                 $current_time = new DateTime();
                 if (VolunteerRoutingHelpers::checkVolunteerRoutingTime($current_time, $volunteers, $v)
                     && VolunteerRoutingHelpers::checkVolunteerRoutingType($volunteer_routing_params, $volunteers, $v)

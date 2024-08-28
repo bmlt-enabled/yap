@@ -2,6 +2,8 @@
 
 ### 4.4.0 (UNRELEASED)
 * Added a feature to download recursive volunteer lists in either JSON or CSV format.  Report also includes service body and notes field now. [#1122]
+* Dealing with cases where no timezone is set for a volunteer.  Those volunteers are excluded. [#1121]
+* Validation for empty timezones for volunteer shifts. [#1121]
 
 ### 4.3.6 (July 14, 2024)
 * Fix for non-loading installer.

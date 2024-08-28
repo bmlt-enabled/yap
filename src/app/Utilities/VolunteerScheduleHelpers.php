@@ -20,7 +20,9 @@ class VolunteerScheduleHelpers
 
     public static function getNextShiftInstance($shift_day, $shift_time, $shift_tz)
     {
-        date_default_timezone_set($shift_tz);
+        if (isset($shift_tz) && $shift_tz != "") {
+            date_default_timezone_set($shift_tz);
+        }
         $mod_meeting_day = (new DateTime())
             ->modify(SettingsService::$dateCalculationsMap[$shift_day])->format("Y-m-d");
         $mod_meeting_datetime = (new DateTime($mod_meeting_day . " " . $shift_time));
