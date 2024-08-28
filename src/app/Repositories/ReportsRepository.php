@@ -20,6 +20,9 @@ class ReportsRepository
 
     public function getMetric($service_body_ids, $date_range_start, $date_range_end): array
     {
+        $placeholders = implode(',', array_fill(0, count($service_body_ids), '?'));
+        $bindings = array_merge([$date_range_start, $date_range_end], $service_body_ids);
+
         return DB::select(
             "select DATE_FORMAT(a.event_time, \"%Y-%m-%d\") as timestamp,
        COUNT(DATE_FORMAT(a.event_time, \"%Y-%m-%d\")) as counts,
@@ -28,47 +31,59 @@ class ReportsRepository
         INNER JOIN (select callsid, IFNULL(service_body_id,0) as service_body_id from records_events
             where event_time >= ? AND event_time <= ?
             group by callsid, service_body_id) b on a.callsid = b.callsid
-            WHERE a.event_id in (1,2,3,19,20,21) and IFNULL(b.service_body_id,0) in (?)
+            WHERE a.event_id in (1,2,3,19,20,21) and IFNULL(b.service_body_id,0) in ($placeholders)
             GROUP BY DATE_FORMAT(a.event_time, \"%Y-%m-%d\"), a.event_id, b.service_body_id",
-            [$date_range_start, $date_range_end, implode(",", $service_body_ids)]
+            $bindings
         );
     }
 
     public function getMetricCounts($service_body_ids, $date_range_start, $date_range_end): array
     {
+        $placeholders = implode(',', array_fill(0, count($service_body_ids), '?'));
+        $bindings = array_merge([$date_range_start, $date_range_end], $service_body_ids);
+
         return DB::select(
             "select event_id, count(a.event_id) as counts from records_events a
             INNER JOIN (select callsid, IFNULL(service_body_id, 0) as service_body_id from records_events
             where event_time >= ? AND event_time <= ?
             group by callsid, service_body_id) b on a.callsid = b.callsid
-            WHERE a.event_id in (1,2,3,12,19,20,21) and IFNULL(b.service_body_id,0) in (?)
+            WHERE a.event_id in (1,2,3,12,19,20,21) and IFNULL(b.service_body_id,0) in ($placeholders)
             GROUP BY a.event_id ORDER BY a.event_id",
-            [$date_range_start, $date_range_end, implode(",", $service_body_ids),]
+            $bindings
         );
     }
 
     public function getAnsweredAndMissedCallMetrics($service_body_ids, $date_range_start, $date_range_end): array
     {
+        $placeholders = implode(',', array_fill(0, count($service_body_ids), '?'));
+        $bindings = array_merge([$date_range_start, $date_range_end], $service_body_ids);
+
         return DB::select(
             "SELECT
-            a.service_body_id,
-            b.conferencesid,
-            sum(case when a.event_id = 12 then 1 else 0 end) as answered_count,
-            sum(case when a.event_id = 7 or a.event_id = 8 then 1 else 0 end) as missed_count
-            from records_events a
-            INNER JOIN (select re.callsid, conferencesid, IFNULL(service_body_id,0) as service_body_id
-                        from records_events re
-			inner join conference_participants cp on re.callsid = cp.callsid
-            where event_time >= ? AND event_time <= ?
-            group by re.callsid, conferencesid, service_body_id) b on a.callsid = b.callsid
-            WHERE a.event_id in (7, 8, 12) and IFNULL(b.service_body_id,0) in (?)
-            GROUP BY a.service_body_id, b.conferencesid",
-            [$date_range_start, $date_range_end, implode(",", $service_body_ids)]
+        a.service_body_id,
+        b.conferencesid,
+        sum(case when a.event_id = 12 then 1 else 0 end) as answered_count,
+        sum(case when a.event_id = 7 or a.event_id = 8 then 1 else 0 end) as missed_count
+        FROM records_events a
+        INNER JOIN (
+            SELECT re.callsid, conferencesid, IFNULL(service_body_id,0) as service_body_id
+            FROM records_events re
+            INNER JOIN conference_participants cp ON re.callsid = cp.callsid
+            WHERE event_time >= ? AND event_time <= ?
+            GROUP BY re.callsid, conferencesid, service_body_id
+        ) b ON a.callsid = b.callsid
+        WHERE a.event_id IN (7, 8, 12)
+        AND IFNULL(b.service_body_id,0) IN ($placeholders)
+        GROUP BY a.service_body_id, b.conferencesid",
+            $bindings
         );
     }
 
     public function getAnsweredAndMissedVolunteerMetrics($service_body_ids, $date_range_start, $date_range_end): array
     {
+        $placeholders = implode(',', array_fill(0, count($service_body_ids), '?'));
+        $bindings = array_merge([$date_range_start, $date_range_end], $service_body_ids);
+
         return DB::select(
             "select a.meta,
             a.service_body_id,
@@ -79,9 +94,9 @@ class ReportsRepository
                         from records_events
             where event_time >= ? AND event_time <= ?
             group by callsid, service_body_id) b on a.callsid = b.callsid
-            WHERE a.event_id in (6, 8, 9) and IFNULL(b.service_body_id,0) in (?)
+            WHERE a.event_id in (6, 8, 9) and IFNULL(b.service_body_id,0) in ($placeholders)
             GROUP BY a.meta, a.service_body_id",
-            [$date_range_start, $date_range_end, implode(",", $service_body_ids)]
+            $bindings
         );
     }
 
