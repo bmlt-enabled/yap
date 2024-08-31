@@ -261,7 +261,7 @@ test('validate sample map metrics poi csv', function () {
 
 test('validate sample metrics', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    $service_body_id = 44;
+    $service_body_id = 1053;
     $date_range_start = "2023-01-03 00:00:00";
     $date_range_end = "2023-01-03 23:59:59";
 
@@ -292,7 +292,7 @@ test('validate sample metrics', function () {
         "abc123",
         EventId::MEETING_SEARCH_SMS,
         "2023-01-03",
-        44,
+        $service_body_id,
         "",
         RecordType::SMS
     );
@@ -301,7 +301,7 @@ test('validate sample metrics', function () {
         "def456",
         EventId::VOLUNTEER_NOANSWER,
         "2023-01-03",
-        44,
+        $service_body_id,
         "{\"to_number\":\"+19103818003\"}",
         RecordType::PHONE
     );
@@ -337,6 +337,8 @@ test('validate sample metrics', function () {
                 "data" => "{\"searchType\":\"19\"}"],
             ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"20\"}"],
             ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"21\"}"],
+            ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"23\"}"],
+            ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"24\"}"],
         ],
         "volunteers"=>$volunteersSample,
         "summary"=>$summarySample,
@@ -430,6 +432,8 @@ test('validate sample metrics for with recurse', function () {
                 "data" => "{\"searchType\":\"19\"}"],
             ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"20\"}"],
             ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"21\"}"],
+            ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"23\"}"],
+            ["timestamp" => "2023-01-03", "counts" => 0, "data" => "{\"searchType\":\"24\"}"],
         ],
         "volunteers"=>$volunteersSample,
         "summary"=>$summarySample,

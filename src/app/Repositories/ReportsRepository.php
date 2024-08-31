@@ -31,7 +31,7 @@ class ReportsRepository
         INNER JOIN (select callsid, IFNULL(service_body_id,0) as service_body_id from records_events
             where event_time >= ? AND event_time <= ?
             group by callsid, service_body_id) b on a.callsid = b.callsid
-            WHERE a.event_id in (1,2,3,19,20,21) and IFNULL(b.service_body_id,0) in ($placeholders)
+            WHERE a.event_id in (1,2,3,19,20,21,23,24) and IFNULL(b.service_body_id,0) in ($placeholders)
             GROUP BY DATE_FORMAT(a.event_time, \"%Y-%m-%d\"), a.event_id, b.service_body_id",
             $bindings
         );
@@ -47,7 +47,7 @@ class ReportsRepository
             INNER JOIN (select callsid, IFNULL(service_body_id, 0) as service_body_id from records_events
             where event_time >= ? AND event_time <= ?
             group by callsid, service_body_id) b on a.callsid = b.callsid
-            WHERE a.event_id in (1,2,3,12,19,20,21) and IFNULL(b.service_body_id,0) in ($placeholders)
+            WHERE a.event_id in (1,2,3,12,19,20,21,23,24) and IFNULL(b.service_body_id,0) in ($placeholders)
             GROUP BY a.event_id ORDER BY a.event_id",
             $bindings
         );
