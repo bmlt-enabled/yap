@@ -444,7 +444,5 @@ class SettingsService
                 }
             }
         }
-
-
     }
 }
