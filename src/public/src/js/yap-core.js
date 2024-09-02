@@ -169,7 +169,7 @@ function getMetricsData()
 {
     $("#metrics").slideUp(function () {
         $.getJSON("../api/v1/reports/metrics?service_body_id=" + $("#service_body_id").val() + getDateRanges() + "&recurse=" + recurseReports(), function (data) {
-            var actions = ['Volunteer (CALL)', 'Meetings (CALL)', 'JFT (CALL)', 'Volunteer (SMS)', 'Meetings (SMS)', 'JFT (SMS)', 'SPAD', 'SPAD (SMS)'];
+            var actions = ['Volunteer (CALL)', 'Meetings (CALL)', 'JFT (CALL)', 'Meetings (SMS)', 'Volunteer (SMS)', 'JFT (SMS)', 'SPAD', 'SPAD (SMS)'];
             var actions_plots = [1, 2, 3, 19, 20, 21, 23, 24];
             var plots = {"1": [], "2": [], "3": [], "19": [], "20": [], "21": [], "23": [], "24": []};
             var colors = ['#FF6600', '#87B63A', 'indigo', '#FF6E9B', '#446E9B', 'black', 'purple', 'brown'];
