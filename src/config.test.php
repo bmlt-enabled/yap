@@ -9,4 +9,4 @@ static $mysql_port = 3106;
 #https://www.twilio.com/docs/iam/test-credentials
 static $twilio_account_sid = "AC222a79bf52fdc8c3cf463b2846582b83";
 static $twilio_auth_token = "92433fddb38394db9bb63c5cee66b5d9";
-static $override_city_or_county = "city or suburb";
+static $override_en_US_city_or_county = "city or suburb";

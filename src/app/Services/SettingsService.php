@@ -427,12 +427,22 @@ class SettingsService
      * @param mixed $session_value
      * @return void
      */
-    public function setLocalizationOverride(int|string $session_key, mixed $session_value): void
+    public function setLocalizationOverride(int|string $session_key, mixed $session_value):  void
     {
         $language = $this->getWordLanguage();
         $stripped_key_test = str_replace("override_", "", $session_key);
         if (isset($this->localizations->getLocalization($language)[$stripped_key_test])) {
             $this->localizations->getLocalization($language)[$session_key] = $session_value;
+        }
+
+        foreach ($this->availableLanguages() as $language_key => $language_value) {
+            $language_key_with_underscore = sprintf("%s_", str_replace("-", "_", $language_key));
+            if (str_contains($session_key, $language_key_with_underscore)) {
+                $stripped_key_test = str_replace($language_key_with_underscore, "", str_replace("override_", "", $session_key));
+                if (isset($this->localizations->getLocalization($language_key)[$stripped_key_test])) {
+                    $this->localizations->getLocalization($language_key)[$stripped_key_test] = $session_value;
+                }
+            }
         }
     }
 }
