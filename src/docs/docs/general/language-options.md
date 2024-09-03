@@ -12,6 +12,12 @@ For example, say you wanted to still use English, but change the "city or county
 static $override_city_or_county = "city or suburb";
 ```
 
+You can override by specific language as well.  This is required when using multiple languages.
+
+```php
+static $override_fr_CA_city_or_county = "blah blah blah";
+```
+
 You can also change the spoken language accent.  There is a wide variety.  See the Twilio documentation for more details: [https://www.twilio.com/docs/voice/twiml/say#attributes-language](https://www.twilio.com/docs/voice/twiml/say#attributes-language).  There are also some additional voices available here as well [https://www.twilio.com/docs/voice/twiml/say/text-speech#voices](https://www.twilio.com/docs/voice/twiml/say/text-speech#voices).
 
 An example would be using an Australian English Accent.  Set your config.php to:
