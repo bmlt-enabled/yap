@@ -34,6 +34,29 @@ test('search for volunteers', function ($method) {
         ], false);
 })->with(['GET', 'POST']);
 
+test('search for meetings in french', function ($method) {
+    $selected_language = "fr-CA";
+    $_SESSION["override_word_language"] = $selected_language;
+    $_SESSION["override_gather_language"] = $selected_language;
+    $_SESSION["override_language"] = $selected_language;
+    $response = $this->call($method, '/input-method.php', [
+        "Digits"=>"2"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="fr-CA">Meeting search results will also be sent to you by SMS text message.</Say>',
+            '<Gather language="fr-CA" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method-result.php?SearchType=2" method="GET">',
+            '<Say voice="alice" language="fr-CA">faites-le un pour rechercher réunions par ville ou région</Say>',
+            '<Say voice="alice" language="fr-CA">faites-le deux pour rechercher réunions par code postal</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
 test('search for volunteers with word overrides with session', function ($method) {
     $_SESSION['override_city_or_county'] = "foo or bar";
     $response = $this->call($method, '/input-method.php', [
