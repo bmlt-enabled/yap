@@ -29,7 +29,7 @@
                 <div class="form-group form-row">
                     Time Zone:
                     <select class="form-control form-control-sm time_zone_selector" id="time_zone">
-                        @foreach ($settings->getTimezoneList() as $tzItem)
+                        @foreach (\App\Utilities\VolunteerScheduleHelpers::getTimezoneList() as $tzItem)
                             <option value="{{ $tzItem }}">{{ $tzItem }}</option>
                         @endforeach
                     </select>
@@ -63,7 +63,7 @@
                 <div class="form-group form-row form-inline">
                     Time Zone:
                     <select class="form-control form-control-sm time_zone_selector" id="time_zone">
-                        @foreach ($settings->getTimezoneList() as $tzItem)
+                        @foreach (\App\Utilities\VolunteerScheduleHelpers::getTimezoneList() as $tzItem)
                         <option value="{{ $tzItem }}">{{ $tzItem }}</option>
                         @endforeach
                     </select>
@@ -129,7 +129,7 @@
                 <div class="form-group form-row form-inline">
                     Time Zone:
                     <select class="form-control form-control-sm time_zone_selector" id="time_zone">
-                        @foreach ($settings->getTimezoneList() as $tzItem)
+                        @foreach (\App\Utilities\VolunteerScheduleHelpers::getTimezoneList() as $tzItem)
                             <option value="{{ $tzItem }}">{{ $tzItem }}</option>
                         @endforeach
                     </select>
