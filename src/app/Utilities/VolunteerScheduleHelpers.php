@@ -4,6 +4,7 @@ namespace App\Utilities;
 
 use App\Services\SettingsService;
 use DateTime;
+use DateTimeZone;
 
 class VolunteerScheduleHelpers
 {
@@ -18,9 +19,14 @@ class VolunteerScheduleHelpers
         return substr($code, 0, 6);
     }
 
+    public static function getTimezoneList(): array
+    {
+        return DateTimeZone::listIdentifiers(DateTimeZone::ALL_WITH_BC);
+    }
+
     public static function getNextShiftInstance($shift_day, $shift_time, $shift_tz)
     {
-        if (isset($shift_tz) && $shift_tz != "") {
+        if (isset($shift_tz) && $shift_tz != "" && in_array($shift_tz, self::getTimezoneList())) {
             date_default_timezone_set($shift_tz);
         }
         $mod_meeting_day = (new DateTime())

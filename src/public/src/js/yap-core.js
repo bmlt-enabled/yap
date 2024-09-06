@@ -1103,7 +1103,7 @@ function selectTimeZoneFor247Shifts(e)
 {
     var volunteerId = $(e).closest("#selectTimeZoneDialog").attr("data-volunteerid");
     var tz = $(e).closest("#selectTimeZoneDialog").find("#time_zone").val();
-    if (tz === "") {
+    if (tz === "" || tz === "null") {
         $("#selectTimeZoneDialogValidation").html("A time zone must be specified.").show().fadeOut(5000);
     } else {
         var type = $(e).closest("#selectTimeZoneDialog").find("#shift_type").val();
@@ -1127,7 +1127,7 @@ function save7DayShifts(e)
 {
     var start_time = $("#start_time_hour").val() + ":" + $("#start_time_minute").val() + " " + $("#start_time_division").val();
     var end_time = $("#end_time_hour").val() + ":" + $("#end_time_minute").val() + " " + $("#end_time_division").val();
-    if ($(e).closest("#selectRepeatShiftDialog").find("#time_zone").val() === "") {
+    if ($(e).closest("#selectRepeatShiftDialog").find("#time_zone").val() === "" || $(e).closest("#selectRepeatShiftDialog").find("#time_zone").val() === "null") {
         $("#selectRepeatShiftDialogValidation").html("A time zone must be specified.").show().fadeOut(5000);
     } else if (Date.parse("01/01/2000 " + start_time) < Date.parse("01/01/2000 " + end_time)) {
         var volunteerId = $(e).closest("#selectRepeatShiftDialog").attr("volunteer_id");
@@ -1156,7 +1156,7 @@ function saveShift(e)
     var closestShiftDialog = $(e).closest("#selectShiftDialog");
     var start_time = $(closestShiftDialog).find("#start_time_hour").val() + ":" + $(closestShiftDialog).find("#start_time_minute").val() + " " + $(closestShiftDialog).find("#start_time_division").val();
     var end_time = $(closestShiftDialog).find("#end_time_hour").val() + ":" + $(closestShiftDialog).find("#end_time_minute").val() + " " + $(closestShiftDialog).find("#end_time_division").val();
-    if ($(closestShiftDialog).find("#time_zone").val() === "") {
+    if ($(closestShiftDialog).find("#time_zone").val() === "" || $(closestShiftDialog).find("#time_zone").val() === "null") {
         $("#selectShiftDialogValidation").html("A time zone must be specified.").show().fadeOut(5000);
     } else if (Date.parse("01/01/2000 " + start_time) < Date.parse("01/01/2000 " + end_time)) {
         var volunteer_id = $("#selectShiftDialog").attr("volunteer_id");

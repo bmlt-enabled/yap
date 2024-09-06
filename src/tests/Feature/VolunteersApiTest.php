@@ -81,12 +81,64 @@ test('get schedule for service body phone volunteer', function () {
         ->assertStatus(200);
 });
 
-test('get schedule for service body phone volunteer without timezone', function () {
+test('get schedule for service body phone volunteer with timezone as blank string', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     $shiftDay = 2;
     $shiftTz = "";
+    $shiftStart = "12:00 AM";
+    $shiftEnd = "11:59 PM";
+
+    $volunteerData = new VolunteerData();
+    $volunteerData->volunteer_name = "Corey";
+    $volunteerData->volunteer_phone_number = "(555) 111-2222";
+    $volunteerData->volunteer_enabled = true;
+    $volunteerData->volunteer_shift_schedule = base64_encode(json_encode([[
+        "day"=>$shiftDay,
+        "tz"=>$shiftTz,
+        "start_time"=>$shiftStart,
+        "end_time"=>$shiftEnd,
+    ]]));
+
+    ConfigData::createVolunteer(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $volunteerData,
+    );
+
+    $response = $this->call('GET', '/api/v1/volunteers/schedule', [
+        "service_body_id" => $this->serviceBodyId,
+    ]);
+    $volunteers = [];
+    $volunteerInfo = new VolunteerInfo();
+    $volunteerInfo->color = "#58f6eb";
+    $volunteerInfo->title = sprintf("%s (%s)", $volunteerData->volunteer_name, VolunteerType::PHONE);
+    $volunteerInfo->gender = VolunteerGender::UNSPECIFIED;
+    $volunteerInfo->language = ["en-US"];
+    $volunteerInfo->responder = VolunteerResponderOption::UNSPECIFIED;
+    $volunteerInfo->sequence = 0;
+    $volunteerInfo->time_zone = $shiftTz;
+    $volunteerInfo->weekday = "Monday";
+    $volunteerInfo->weekday_id = $shiftDay;
+    $volunteerInfo->start = VolunteerScheduleHelpers::getNextShiftInstance($shiftDay, $shiftStart, $shiftTz);
+    $volunteerInfo->end = VolunteerScheduleHelpers::getNextShiftInstance($shiftDay, $shiftEnd, $shiftTz);
+    $volunteerInfo->type = VolunteerType::PHONE;
+    $volunteers[] = $volunteerInfo;
+    VolunteerScheduleHelpers::filterOutPhoneNumber($volunteers);
+
+    $response
+        ->assertSimilarJson(json_decode(json_encode($volunteers), true))
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('get schedule for service body phone volunteer with timezone as null', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+
+    $shiftDay = 2;
+    $shiftTz = "null";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
 
