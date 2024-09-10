@@ -46,7 +46,7 @@ test('test event ids', function () {
     $this->assertTrue(EventId::getEventById(EventId::VOLUNTEER_HUP) == "Volunteer Hungup");
     $this->assertTrue(EventId::getEventById(EventId::VOLUNTEER_IN_CONFERENCE) == "Volunteer Connected To Caller");
     $this->assertTrue(EventId::getEventById(EventId::CALLER_HUP) == "Caller Hungup");
-    $this->assertTrue(EventId::getEventById(EventId::MEETING_SEARCH_LOCATION_GATHERED) == "Meeting Search Location Gathered");
+    $this->assertTrue(EventId::getEventById(EventId::MEETING_SEARCH_LOCATION_GATHERED) == "Caller Consented to Receive SMS; Meeting Search Location Gathered");
     $this->assertTrue(EventId::getEventById(EventId::HELPLINE_ROUTE) == "Helpline Route");
     $this->assertTrue(EventId::getEventById(EventId::VOICEMAIL_PLAYBACK) == "Voicemail Playback");
     $this->assertTrue(EventId::getEventById(EventId::DIALBACK) == "Dialback");

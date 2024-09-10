@@ -6,6 +6,7 @@
 * Validation for empty timezones for volunteer shifts. [#1121]
 * Adding SPAD playback metrics.
 * Adding a feature that lets you override words for specific languages.
+* Fix for mislabeled caller consent event for SMS. [#1144]
 * Fix for missing timezone labels for Indianapolis. [#1121]
 * Fix for bug with mis-labeled Meetings (SMS) metrics which was being reported as Volunteer (SMS) on the reports Usage Summary chart.
 * Fix for bug with missed called metrics [#1114]
