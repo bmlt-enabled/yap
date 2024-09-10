@@ -61,7 +61,7 @@ class EventId
             case self::CALLER_HUP:
                 return "Caller Hungup";
             case self::MEETING_SEARCH_LOCATION_GATHERED:
-                return "Meeting Search Location Gathered";
+                return "Caller Consented to Receive SMS; Meeting Search Location Gathered";
             case self::HELPLINE_ROUTE:
                 return "Helpline Route";
             case self::VOICEMAIL_PLAYBACK:

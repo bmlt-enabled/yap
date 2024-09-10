@@ -169,6 +169,74 @@ test('validate sample cdr sms', function () {
         ->assertStatus(200);
 });
 
+test('validate sample cdr sms with caller consent event', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+    $service_body_id = 44;
+    $id = 13;
+    $date_range_start = "2023-01-01 000:00:00";
+    $date_range_end = "2023-01-07 23:59:59";
+    $start_time = "2023-01-01 20:43:56";
+    $end_time = "2023-01-01 20:45:00";
+    $duration = 22;
+    $from_number = "+15555555555";
+    $to_number = "+18331112222";
+    $callSid = "abc123";
+    $locationMeta = json_encode([[
+        "gather"=>"23510",
+        "coordinates"=>[
+            "location"=>"Norfolk, VA 23510, USA",
+            "latitude"=>36.8488728,
+            "longitude"=>-76.291355,
+        ]
+    ]]);
+    $sample_call_event = ([[
+        "event_id"=>EventId::MEETING_SEARCH_LOCATION_GATHERED,
+        "event_time"=>"2023-01-01 20:44:53Z",
+        "service_body_id"=>$service_body_id,
+        "meta"=>$locationMeta,
+    ]]);
+
+    ConferenceParticipant::generate("conf123", $callSid, "fake_conference", CallRole::CALLER);
+    RecordEvent::generate(
+        $callSid,
+        EventId::MEETING_SEARCH_LOCATION_GATHERED,
+        "2023-01-01 20:44:53",
+        $service_body_id,
+        $locationMeta,
+        RecordType::SMS
+    );
+    Record::generate($callSid, $start_time, $end_time, $from_number, $to_number, "", $duration, RecordType::SMS);
+
+    $response = $this->call('GET', '/api/v1/reports/cdr', [
+        "service_body_id" => $service_body_id,
+        "date_range_start" => $date_range_start,
+        "date_range_end" => $date_range_end,
+    ]);
+    $sample_call_event[0]['parent_callsid'] = $callSid;
+    $sample_call_event[0]['event_name'] = "Caller Consented to Receive SMS; Meeting Search Location Gathered";
+    $sample_call_event[0]['meta'] = $sample_call_event[0]['meta'];
+    $response
+        ->assertJson([
+            "data" => [[
+                "call_events" => $sample_call_event,
+                "start_time" => sprintf("%sZ", $start_time),
+                "end_time" => sprintf("%sZ", $end_time),
+                "id" => $id,
+                "duration" => $duration,
+                "from_number" => $from_number,
+                "to_number" => $to_number,
+                "callsid" => $callSid,
+                "service_body_id" => $service_body_id,
+                "type" => RecordType::SMS,
+                "type_name" => RecordType::getTypeById(RecordType::SMS),
+            ]],
+            "last_page" => 1
+        ])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
 test('validate sample map metrics', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
