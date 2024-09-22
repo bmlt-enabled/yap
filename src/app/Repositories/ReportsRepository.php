@@ -53,6 +53,22 @@ class ReportsRepository
         );
     }
 
+    public function getMetricCountsGroupedByServiceBodies($service_body_ids, $date_range_start, $date_range_end): array
+    {
+        $placeholders = implode(',', array_fill(0, count($service_body_ids), '?'));
+        $bindings = array_merge([$date_range_start, $date_range_end], $service_body_ids);
+
+        return DB::select(
+            "select event_id, b.service_body_id, count(a.event_id) as counts from records_events a
+            INNER JOIN (select callsid, IFNULL(service_body_id, 0) as service_body_id from records_events
+            where event_time >= ? AND event_time <= ?
+            group by callsid, service_body_id) b on a.callsid = b.callsid
+            WHERE a.event_id in (1,2,3,12,19,20,21,23,24) and IFNULL(b.service_body_id,0) in ($placeholders)
+            GROUP BY a.event_id, b.service_body_id ORDER BY b.service_body_id, a.event_id",
+            $bindings
+        );
+    }
+
     public function getAnsweredAndMissedCallMetrics($service_body_ids, $date_range_start, $date_range_end): array
     {
         $placeholders = implode(',', array_fill(0, count($service_body_ids), '?'));
