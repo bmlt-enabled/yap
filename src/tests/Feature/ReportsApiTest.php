@@ -334,9 +334,9 @@ test('validate sample metrics', function () {
     $date_range_end = "2023-01-03 23:59:59";
 
     $summarySample = [
-        ["event_id"=>EventId::VOLUNTEER_SEARCH, "counts"=>1],
-        ["event_id"=>EventId::VOLUNTEER_IN_CONFERENCE, "counts"=>1],
-        ["event_id"=>EventId::MEETING_SEARCH_SMS, "counts"=>1]];
+        ["event_id"=>EventId::VOLUNTEER_SEARCH, "service_body_id"=>1053, "counts"=>1],
+        ["event_id"=>EventId::VOLUNTEER_IN_CONFERENCE, "service_body_id"=>1053, "counts"=>1],
+        ["event_id"=>EventId::MEETING_SEARCH_SMS, "service_body_id"=>1053, "counts"=>1]];
 
     RecordEvent::generate(
         "abc123",
@@ -428,9 +428,9 @@ test('validate sample metrics for with recurse', function () {
     $date_range_end = "2023-01-03 23:59:59";
 
     $summarySample = [
-        ["event_id"=>EventId::VOLUNTEER_SEARCH, "counts"=>1],
-        ["event_id"=>EventId::VOLUNTEER_IN_CONFERENCE, "counts"=>1],
-        ["event_id"=>EventId::MEETING_SEARCH_SMS, "counts"=>1]];
+        ["event_id"=>EventId::VOLUNTEER_SEARCH, "service_body_id"=>1053, "counts"=>1],
+        ["event_id"=>EventId::VOLUNTEER_IN_CONFERENCE, "service_body_id"=>1053, "counts"=>1],
+        ["event_id"=>EventId::MEETING_SEARCH_SMS, "service_body_id"=>1053, "counts"=>1]];
 
     RecordEvent::generate(
         "abc123",

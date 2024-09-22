@@ -62,7 +62,7 @@ class ReportsService extends Service
             $date_range_start,
             $date_range_end
         );
-        $metricsCollection->summary = $this->reportsRepository->getMetricCounts(
+        $metricsCollection->summary = $this->reportsRepository->getMetricCountsGroupedByServiceBodies(
             $reportsServiceBodies,
             $date_range_start,
             $date_range_end
