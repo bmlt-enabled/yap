@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ConfigData;
 use App\Services\VolunteerService;
+use App\Structures\Group;
 use Illuminate\Http\Request;
 
-class VolunteerGroupsController extends Controller
+class GroupController extends Controller
 {
     protected VolunteerService $volunteerService;
 
@@ -23,5 +25,18 @@ class VolunteerGroupsController extends Controller
                 $request->get("manage")
             ))
             ->header("Content-Type", "application/json");
+    }
+
+    public function store(Request $request)
+    {
+        $decodedData = json_decode($request->getContent());
+        $groupData = new Group($decodedData);
+
+        ConfigData::createGroup(
+            $request->get("service_body_id"),
+            $groupData
+        );
+
+        return self::index($request);
     }
 }

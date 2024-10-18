@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Constants\DataType;
 use App\Constants\Status;
+use App\Structures\Group;
 use App\Structures\GroupData;
 use App\Structures\ServiceBodyCallHandling;
 use App\Structures\VolunteerData;
@@ -45,12 +46,11 @@ class ConfigData extends Model
 
     public static function createGroup(
         int $serviceBodyId,
-        int $parentServiceBodyId,
-        object $serviceBodyConfiguration
+        Group $serviceBodyConfiguration
     ) : int {
         return self::create([
             "service_body_id"=>$serviceBodyId,
-            "parent_id"=>$parentServiceBodyId,
+            "parent_id"=>0,
             "data"=>json_encode([$serviceBodyConfiguration]),
             "data_type"=>DataType::YAP_GROUPS_V2
         ])->id;

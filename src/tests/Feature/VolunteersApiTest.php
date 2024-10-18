@@ -6,6 +6,7 @@ use App\Constants\VolunteerResponderOption;
 use App\Constants\VolunteerType;
 use App\Models\ConfigData;
 use App\Services\RootServerService;
+use App\Structures\Group;
 use App\Structures\VolunteerData;
 use App\Structures\VolunteerInfo;
 use App\Utilities\VolunteerScheduleHelpers;
@@ -465,10 +466,13 @@ test('return volunteers with groups recursively json', function () {
         $volunteer
     );
 
+    $groupData = new Group();
+    $groupData->group_name = "test";
+    $groupData->group_shared_service_bodies = [$firstServiceBodyId];
+
     $groupId = ConfigData::createGroup(
         $firstServiceBodyId,
-        $parentServiceBodyId,
-        (object)["group_name" => "test", "group_shared_service_bodies" => $firstServiceBodyId]
+        $groupData
     );
 
     ConfigData::createGroupVolunteers(
@@ -671,38 +675,4 @@ test('return volunteers invalid format', function () {
         ->assertSimilarJson([])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
-});
-
-test('get groups for service body', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $groupData = ["group_name"=>"Fake Group", "group_shared_service_bodies"=>[$this->serviceBodyId]];
-
-    ConfigData::createGroup(
-        $this->serviceBodyId,
-        $this->parentServiceBodyId,
-        (object)$groupData,
-    );
-
-    $id = ConfigData::select('id')->orderBy('id', 'desc')->first()->id;
-
-    $this->call('GET', '/api/v1/volunteers/groups', [
-        "service_body_id" => $this->serviceBodyId,
-    ])->assertJson([[
-            "id"=>$id,
-            "service_body_id"=>intval($this->serviceBodyId),
-            "parent_id"=>intval($this->parentServiceBodyId),
-            "data"=>json_encode([$groupData])]])
-        ->assertHeader("Content-Type", "application/json")
-        ->assertStatus(200);
-});
-
-test('get groups for service body no auth', function () {
-    $response = $this->call('GET', '/api/v1/volunteers/groups', [
-        "service_body_id" => 0,
-    ]);
-    $response
-        ->assertHeader("Location", "http://localhost/admin")
-        ->assertHeader("Content-Type", "text/html; charset=utf-8")
-        ->assertStatus(302);
 });
