@@ -742,6 +742,7 @@ function onGroupServiceBodyChange(callback)
         return;
     }
 
+    clearVolunteerCards();
     spinnerDialog(true, "Loading Groups...", function () {
         loadGroups(document.getElementById("service_body_id").value + "&manage=1", function (data) {
             $("#groupsForm").show()
