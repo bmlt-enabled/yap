@@ -63,27 +63,6 @@ test('get config for invalid service body', function () {
         ->assertJson([]);
 });
 
-test('get groups', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    $groupData = ["group_name"=>"test", "group_shared_service_bodies"=>["1060"]];
-    ConfigData::createGroup(
-        $this->serviceBodyId,
-        $this->parentServiceBodyId,
-        (object)$groupData
-    );
-
-    $this->call('GET', '/api/v1/config', [
-        "id" => 3,
-        "data_type" => DataType::YAP_GROUPS_V2
-    ])->assertStatus(200)
-        ->assertHeader("Content-Type", "application/json")
-        ->assertJson([
-            "id"=>3,
-            "service_body_id"=>$this->serviceBodyId,
-            "parent_id"=>$this->parentServiceBodyId,
-            "data"=>[$groupData]
-        ]);
-});
 
 test('get by parent id', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
@@ -101,28 +80,10 @@ test('get by parent id', function () {
     ])->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([
-            "id"=>4,
+            "id"=>3,
             "service_body_id"=>$this->serviceBodyId,
             "parent_id"=>$this->parentServiceBodyId,
             "data"=>[$configData]
-        ]);
-});
-
-test('save group', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    $groupData = [["group_name"=>"test", "group_shared_service_bodies"=>["1060"]]];
-    $response = $this->call('POST', '/api/v1/config', [
-        "service_body_id" => $this->serviceBodyId,
-        "parent_id" => $this->parentServiceBodyId,
-        "data_type" => DataType::YAP_GROUPS_V2,
-    ], content: json_encode($groupData));
-    $response->assertStatus(200)
-        ->assertHeader("Content-Type", "application/json")
-        ->assertJson([
-            "id"=>5,
-            "service_body_id"=>$this->serviceBodyId,
-            "parent_id"=>$this->parentServiceBodyId,
-            "data"=>$groupData
         ]);
 });
 
@@ -139,7 +100,7 @@ test('save config', function () {
     $response->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([
-            "id"=>6,
+            "id"=>4,
             "service_body_id"=>$this->serviceBodyId,
             "parent_id"=>$this->parentServiceBodyId,
             "data"=>$serviceBodyConfigData
@@ -164,7 +125,7 @@ test('save config with parent id', function () {
     $response->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([
-            "id"=>7,
+            "id"=>5,
             "service_body_id"=>$this->serviceBodyId,
             "parent_id"=>$this->parentServiceBodyId,
             "data"=>$serviceBodyConfigData
