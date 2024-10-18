@@ -10,11 +10,11 @@ Route::group([
     'middleware' => ['authForAdminPortal']
 ], function () {
     Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
-    Route::resource('config', 'ConfigController')->only(['index', 'store', 'destroy']);
+    Route::resource('config', 'ConfigController')->only(['index', 'store']);
     Route::resource('volunteers', 'ConfigureVolunteersController')->only(['index', 'store', 'destroy', 'update']);
     Route::resource('callHandling', 'CallHandlingController')->only(['index']);
     Route::resource('users', 'UserController')->only(['index', 'show', 'store', 'destroy', 'update']);
-    Route::resource('groups', 'GroupController')->only(['index', 'store']);
+    Route::resource('groups', 'GroupController')->only(['index', 'store', 'destroy']);
     Route::resource('groups/volunteers', 'GroupVolunteerController')->only(['index']);
     Route::resource('volunteers/schedule', 'VolunteerScheduleController')->only(['index']);
     Route::resource('volunteers/download', 'VolunteerDownloadController')->only(['index']);

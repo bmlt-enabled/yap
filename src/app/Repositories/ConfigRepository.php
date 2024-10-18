@@ -50,11 +50,6 @@ class ConfigRepository
         ]);
     }
 
-    public function deleteDbConfigById($id)
-    {
-        return DB::update("UPDATE `config` SET `status`=1 WHERE `id`=?", [$id]);
-    }
-
     public function adminPersistDbConfig($service_body_id, $data, $data_type, $parent_id = 0)
     {
         $current_data_check = (isset($parent_id) && $parent_id > 0

@@ -1414,7 +1414,7 @@ function deleteGroup()
         $.ajax({
             async: false,
             type: "DELETE",
-            url: "../api/v1/config/" + $("#group_id").val(),
+            url: "../api/v1/groups/" + $("#group_id").val(),
             contentType: "application/json",
             complete: function () {
                 spinnerDialog(false);
