@@ -134,4 +134,15 @@ class ConfigData extends Model
             "data_type"=>DataType::YAP_VOLUNTEERS_V2
         ]);
     }
+
+    public static function deleteGroup($id) : int
+    {
+        $group = self::select(['id'])->where('data_type', DataType::YAP_GROUPS_V2);
+
+        if ($group) {
+            return $group->delete();
+        }
+
+        return false;
+    }
 }
