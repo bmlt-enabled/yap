@@ -50,7 +50,7 @@ class ConfigData extends Model
     ) : int {
         return self::create([
             "service_body_id"=>$serviceBodyId,
-            "parent_id"=>0,
+            "parent_id"=>null,
             "data"=>json_encode([$serviceBodyConfiguration]),
             "data_type"=>DataType::YAP_GROUPS_V2
         ])->id;
