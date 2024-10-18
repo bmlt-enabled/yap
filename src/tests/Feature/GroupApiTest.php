@@ -31,7 +31,7 @@ test('save group', function () {
 
     $response->assertJson([[
         "id"=>6,
-        "parent_id"=>0,
+        "parent_id"=>NULL,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>json_encode([$groupData])]])
         ->assertHeader("Content-Type", "application/json")
@@ -39,12 +39,21 @@ test('save group', function () {
 });
 
 test('delete group', function () {
-         $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-         $response = $this->call('DELETE', sprintf('/api/v1/config/%s', $this->id));
-         $response->assertStatus(200)
-             ->assertHeader("Content-Type", "application/json")
-             ->assertJson([]);
-     });
+    $groupData = new Group();
+    $groupData->group_name = "Fake Group";
+    $groupData->group_shared_service_bodies = [$this->serviceBodyId];
+
+    ConfigData::createGroup(
+        $this->serviceBodyId,
+        $groupData,
+    );
+
+     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+     $response = $this->call('DELETE', sprintf('/api/v1/groups/%s', 7));
+     $response->assertStatus(200)
+         ->assertHeader("Content-Type", "application/json")
+         ->assertJson([]);
+ });
 
 test('get groups for service body', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;

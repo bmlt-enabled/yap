@@ -132,14 +132,6 @@ test('save config with parent id', function () {
         ]);
 });
 
-test('delete group', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    $response = $this->call('DELETE', sprintf('/api/v1/config/%s', $this->id));
-    $response->assertStatus(200)
-        ->assertHeader("Content-Type", "application/json")
-        ->assertJson([]);
-});
-
 test('get config no auth', function () {
     $response = $this->call('GET', '/api/v1/config', [
         "service_body_id" => 0,
