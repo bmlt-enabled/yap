@@ -137,7 +137,9 @@ class ConfigData extends Model
 
     public static function deleteGroup($id) : int
     {
-        $group = self::select(['id'])->where('data_type', DataType::YAP_GROUPS_V2);
+        $group = self::select(['id'])
+            ->where('id', $id)
+            ->where('data_type', DataType::YAP_GROUPS_V2);
 
         if ($group) {
             return $group->delete();
