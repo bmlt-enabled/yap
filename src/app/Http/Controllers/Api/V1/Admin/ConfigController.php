@@ -82,10 +82,4 @@ class ConfigController extends Controller
 
         return self::index($request);
     }
-
-    public function destroy($id)
-    {
-        $this->config->deleteDbConfigById($id);
-        return response()->json()->header("Content-Type", "application/json");
-    }
 }

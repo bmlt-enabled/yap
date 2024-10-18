@@ -39,4 +39,14 @@ class GroupController extends Controller
 
         return self::index($request);
     }
+
+    public function destroy($id)
+    {
+        $response = ConfigData::deleteGroup($id);
+        if ($response === 1) {
+            return response()->json(['message' => sprintf('Group %s deleted successfully', $id)]);
+        }
+
+        return response()->json(['message' => 'Not found'], 404);
+    }
 }
