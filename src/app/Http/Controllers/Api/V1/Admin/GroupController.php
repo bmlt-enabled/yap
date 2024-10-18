@@ -27,6 +27,19 @@ class GroupController extends Controller
             ->header("Content-Type", "application/json");
     }
 
+    public function update(Request $request, $id)
+    {
+        $decodedData = json_decode($request->getContent());
+        $groupData = new Group($decodedData);
+
+        ConfigData::updateGroup(
+            $id,
+            $groupData
+        );
+
+        return self::index($request);
+    }
+
     public function store(Request $request)
     {
         $decodedData = json_decode($request->getContent());
@@ -35,7 +48,7 @@ class GroupController extends Controller
         ConfigData::createGroup(
             $request->get("service_body_id"),
             $groupData
-        );
+        ); 
 
         return self::index($request);
     }
