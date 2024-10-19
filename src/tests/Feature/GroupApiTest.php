@@ -25,9 +25,9 @@ test('save group', function () {
     $groupData->group_name = "test";
     $groupData->group_shared_service_bodies = ["1060"];
 
-    $response = $this->call('POST', '/api/v1/groups', [
-        "service_body_id" => $this->serviceBodyId,
-    ], content: json_encode($groupData));
+    $response = $this->call('POST',
+        '/api/v1/groups', ['serviceBodyId' => $this->serviceBodyId],
+        content: json_encode($groupData));
 
     $response->assertJson([[
         "id"=>6,
@@ -68,9 +68,8 @@ test('get groups for service body', function () {
 
     $id = ConfigData::select('id')->orderBy('id', 'desc')->first()->id;
 
-    $this->call('GET', '/api/v1/groups', [
-        "service_body_id" => $this->serviceBodyId,
-    ])->assertJson([[
+    $this->call('GET',
+        '/api/v1/groups', ['serviceBodyId' => $this->serviceBodyId])->assertJson([[
         "id"=>$id,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>json_encode([$groupData])]])
