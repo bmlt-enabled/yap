@@ -619,14 +619,12 @@ function saveServiceBodyCallHandling(service_body_id)
     });
 }
 
-function saveGroups(service_body_id, data, id, callback)
+function saveGroups(id, data, method, callback)
 {
     $.ajax({
         async: false,
-        type: "POST",
-        url: "../api/v1/groups"
-            + "?service_body_id=" + service_body_id
-            + (id !== null && id !== 0 ? "&id=" + id : ""),
+        type: method,
+        url: method === 'PUT' ? `../api/v1/groups/${id}`: `../api/v1/groups?serviceBodyId=${id}`,
         data: JSON.stringify(data),
         dataType: "json",
         contentType: "application/json",
@@ -768,7 +766,7 @@ function onGroupServiceBodyChange(callback)
 function loadGroups(service_body_id, callback)
 {
     if (groups === undefined) {
-        $.getJSON("../api/v1/groups?service_body_id=" + service_body_id, function (data) {
+        $.getJSON(`../api/v1/groups?serviceBodyId=${service_body_id}`, function (data) {
             groups = data;
             callback(data)
         });
@@ -1462,10 +1460,12 @@ function confirmGroup()
             dataObj[formItem["name"]] = $("#groupEditor").find("#" + formItem["name"]).val();
         }
 
+        let isUpdate = $("#groupEditorHeader").text().indexOf("Add") !== 0
+
         saveGroups(
-            $("#service_body_id").val(),
+            isUpdate ? $("#group_id").val() : $("#service_body_id").val(),
             dataObj,
-            $("#groupEditorHeader").text().indexOf("Add") !== 0 ? $("#group_id").val() : 0,
+            isUpdate ? 'PUT' : 'POST',
             function (xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {

@@ -21,7 +21,7 @@ class GroupController extends Controller
     {
         return response()
             ->json($this->volunteerService->getGroupsForServiceBody(
-                $request->get("service_body_id"),
+                $request->get("serviceBodyId"),
                 $request->get("manage")
             ))
             ->header("Content-Type", "application/json");
@@ -32,12 +32,18 @@ class GroupController extends Controller
         $decodedData = json_decode($request->getContent());
         $groupData = new Group($decodedData);
 
-        ConfigData::updateGroup(
+        $group = ConfigData::updateGroup(
             $id,
             $groupData
         );
 
-        return self::index($request);
+        $groups = $this->volunteerService->getGroupsForServiceBody(
+            $group->service_body_id,
+        );
+
+        return response()
+            ->json($groups)
+            ->header("Content-Type", "application/json");
     }
 
     public function store(Request $request)
@@ -46,9 +52,9 @@ class GroupController extends Controller
         $groupData = new Group($decodedData);
 
         ConfigData::createGroup(
-            $request->get("service_body_id"),
+            $request->get('serviceBodyId'),
             $groupData
-        ); 
+        );
 
         return self::index($request);
     }

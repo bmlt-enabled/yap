@@ -148,10 +148,15 @@ class ConfigData extends Model
         return false;
     }
 
-    public static function updateGroup($id, Group $groupData): int
+    public static function updateGroup($id, Group $groupData) : ConfigData
     {
-        return self::where('id', $id)
+        self::where('id', $id)
             ->where('data_type', DataType::YAP_GROUPS_V2)
-            ->update(['data' => json_encode($groupData)]);
+            ->update(['data' => json_encode([$groupData])]);
+
+        return self::select(['service_body_id'])
+            ->where('id', $id)
+            ->where('data_type', DataType::YAP_GROUPS_V2)
+            ->first();
     }
 }
