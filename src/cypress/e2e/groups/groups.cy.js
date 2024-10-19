@@ -96,7 +96,6 @@ describe('Groups', () => {
             .select(1)
 
         cy.get("#group_id")
-            .find("option")
-            .should('not.contain', 'testgroup1-modified');
+            .should('be.empty');
     })
 })
