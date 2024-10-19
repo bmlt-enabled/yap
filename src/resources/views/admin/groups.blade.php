@@ -45,8 +45,8 @@
             </div>
             <div class="modal-footer">
                 <div id="group_dialog_message"></div>
-                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="$('#addGroupDialog').modal('toggle');">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="return confirmGroup(this)">OK</button>
+                <button id="groupDialogCancelButton" type="button" class="btn btn-danger" data-dismiss="modal" onclick="$('#addGroupDialog').modal('toggle');">Cancel</button>
+                <button id="groupDialogCloseButton" type="button" class="btn btn-primary" onclick="return confirmGroup(this)">OK</button>
             </div>
         </div>
     </div>
