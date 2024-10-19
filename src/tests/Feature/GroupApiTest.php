@@ -25,13 +25,16 @@ test('save group', function () {
     $groupData->group_name = "test";
     $groupData->group_shared_service_bodies = ["1060"];
 
-    $response = $this->call('POST',
-        '/api/v1/groups', ['serviceBodyId' => $this->serviceBodyId],
-        content: json_encode($groupData));
+    $response = $this->call(
+        'POST',
+        '/api/v1/groups',
+        ['serviceBodyId' => $this->serviceBodyId],
+        content: json_encode($groupData)
+    );
 
     $response->assertJson([[
         "id"=>6,
-        "parent_id"=>NULL,
+        "parent_id"=>null,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>json_encode([$groupData])]])
         ->assertHeader("Content-Type", "application/json")
@@ -77,8 +80,11 @@ test('get groups for service body', function () {
 
     $id = ConfigData::select('id')->orderBy('id', 'desc')->first()->id;
 
-    $this->call('GET',
-        '/api/v1/groups', ['serviceBodyId' => $this->serviceBodyId])->assertJson([[
+    $this->call(
+        'GET',
+        '/api/v1/groups',
+        ['serviceBodyId' => $this->serviceBodyId]
+    )->assertJson([[
         "id"=>$id,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>json_encode([$groupData])]])
@@ -102,13 +108,16 @@ test('update group', function () {
     $groupData->group_name = "test";
     $groupData->group_shared_service_bodies = ["1060"];
 
-    $response = $this->call('POST',
-        '/api/v1/groups', ['serviceBodyId' => $this->serviceBodyId],
-        content: json_encode($groupData));
+    $response = $this->call(
+        'POST',
+        '/api/v1/groups',
+        ['serviceBodyId' => $this->serviceBodyId],
+        content: json_encode($groupData)
+    );
 
     $response->assertJson([[
         "id"=>9,
-        "parent_id"=>NULL,
+        "parent_id"=>null,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>json_encode([$groupData])]])
         ->assertHeader("Content-Type", "application/json")
@@ -118,13 +127,15 @@ test('update group', function () {
     $updatedGroupData->group_name = "test2";
     $updatedGroupData->group_shared_service_bodies = ["1060", "1061"];
 
-    $response = $this->call('PUT',
+    $response = $this->call(
+        'PUT',
         sprintf('/api/v1/groups/%s', 9),
-        content: json_encode($updatedGroupData));
+        content: json_encode($updatedGroupData)
+    );
 
     $response->assertJson([[
         "id"=>9,
-        "parent_id"=>NULL,
+        "parent_id"=>null,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>json_encode([$updatedGroupData])]])
         ->assertHeader("Content-Type", "application/json")
