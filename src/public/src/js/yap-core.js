@@ -586,18 +586,15 @@ function saveServiceBodyCallHandling(service_body_id)
     serviceBodyCallHandling.modal('hide');
 
     spinnerDialog(true, "Saving Service Body Call Handling...", function () {
-        var data = [];
         var formData = serviceBodyCallHandling.find("#serviceBodyCallHandlingForm").serializeArray();
         var dataObj = {};
         for (var formItem of formData) {
             dataObj[formItem["name"]] = formItem["value"]
         }
 
-        data.push(dataObj);
-
         saveCallHandling(
             service_body_id,
-            data,
+            dataObj,
             function (xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
