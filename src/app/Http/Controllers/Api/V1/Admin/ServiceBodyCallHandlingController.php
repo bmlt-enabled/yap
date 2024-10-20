@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ConfigData;
+use App\Structures\ServiceBodyCallHandling;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use stdClass;
 
-class CallHandlingController extends Controller
+class ServiceBodyCallHandlingController extends Controller
 {
     protected ConfigData $configData;
 
@@ -19,7 +20,7 @@ class CallHandlingController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $data = ConfigData::getCallHandling($request->get("service_body_id"));
+        $data = ConfigData::getCallHandling($request->get("serviceBodyId"));
 
         if (count($data) > 0) {
             return response()->json([
@@ -31,5 +32,19 @@ class CallHandlingController extends Controller
         } else {
             return response()->json(new stdClass())->header("Content-Type", "application/json");
         }
+    }
+
+    public function store(Request $request)
+    {
+        $decodedData = json_decode($request->getContent());
+        $serviceBodyCallHandling = new ServiceBodyCallHandling($decodedData);
+
+        ConfigData::createCallHandling(
+            $request->get('serviceBodyId'),
+            0,
+            $serviceBodyCallHandling
+        );
+
+        return self::index($request);
     }
 }
