@@ -2,7 +2,7 @@
 
 namespace App\Structures;
 
-class Group
+class Group extends Structure
 {
     public string $group_name;
     public array $group_shared_service_bodies = [];

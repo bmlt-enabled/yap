@@ -5,7 +5,7 @@ namespace App\Structures;
 use App\Constants\CycleAlgorithm;
 use App\Constants\SpecialPhoneNumber;
 
-class ServiceBodyCallHandling
+class ServiceBodyCallHandling extends Structure
 {
     public $service_body_id;
     public $service_body_name;
@@ -24,7 +24,7 @@ class ServiceBodyCallHandling
     public $gender_routing_enabled = false;
     public $call_strategy = CycleAlgorithm::LINEAR_LOOP_FOREVER;
     public $primary_contact_number_enabled = false;
-    public $primary_contact; // TODO: need to kill this off
+    public $primary_contact;
     public $primary_contact_number = SpecialPhoneNumber::UNKNOWN;
     public $primary_contact_email_enabled = false;
     public $primary_contact_email;
@@ -34,4 +34,14 @@ class ServiceBodyCallHandling
     public $sms_strategy = CycleAlgorithm::RANDOM_LOOP_FOREVER;
     public $override_en_US_greeting;
     public $override_en_US_voicemail_greeting;
+
+    public function __construct($serviceBodyCallHandling = null)
+    {
+        if ($serviceBodyCallHandling) {
+            // Dynamically assign all properties from the passed group object
+            foreach (get_object_vars($serviceBodyCallHandling) as $property => $value) {
+                $this->$property = $value;
+            }
+        }
+    }
 }

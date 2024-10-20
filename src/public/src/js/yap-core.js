@@ -595,12 +595,9 @@ function saveServiceBodyCallHandling(service_body_id)
 
         data.push(dataObj);
 
-        saveToAdminApi(
+        saveCallHandling(
             service_body_id,
             data,
-            '_YAP_CALL_HANDLING_V2_',
-            0,
-            0,
             function (xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
@@ -625,6 +622,20 @@ function saveGroups(id, data, method, callback)
         async: false,
         type: method,
         url: method === 'PUT' ? `../api/v1/groups/${id}`: `../api/v1/groups?serviceBodyId=${id}`,
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: "application/json",
+        complete: callback,
+        timeout: 60000
+    });
+}
+
+function saveCallHandling(serviceBodyId, data, callback)
+{
+    $.ajax({
+        async: false,
+        type: 'POST',
+        url: `../api/v1/callHandling?serviceBodyId=${serviceBodyId}`,
         data: JSON.stringify(data),
         dataType: "json",
         contentType: "application/json",
@@ -1294,7 +1305,7 @@ function openServiceBodyCallHandling(service_body_id)
 {
     spinnerDialog(true, "Retrieving Service Body Call Handling...", function () {
         var serviceBodyCallHandling = $("#serviceBodyCallHandling_" + service_body_id);
-        $.getJSON("../api/v1/callHandling?service_body_id=" + service_body_id, function (data) {
+        $.getJSON(`../api/v1/callHandling?serviceBodyId=${service_body_id}`, function (data) {
             if (!$.isEmptyObject(data)) {
                 var dataSet = data['data'][0];
                 for (var key in dataSet) {
