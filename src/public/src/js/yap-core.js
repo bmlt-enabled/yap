@@ -709,7 +709,7 @@ function clearVolunteerCards()
 
 function loadVolunteers(serviceBodyId, callback)
 {
-    $.getJSON("../api/v1/volunteers?service_body_id=" + serviceBodyId, function (data) {
+    $.getJSON("../api/v1/volunteers?serviceBodyId=" + serviceBodyId, function (data) {
         if (!$.isEmptyObject(data)) {
             for (item of data['data']) {
                 if (item.hasOwnProperty('volunteer_name')) {
@@ -757,7 +757,7 @@ function onGroupServiceBodyChange(callback)
                 for (var i = 0; i < data.length; i++) {
                     $("#group_id").append($('<option>', {
                         value: data[i].id,
-                        text: JSON.parse(data[i].data)[0]['group_name']
+                        text: data[i].data[0]['group_name']
                     }));
                 }
 
@@ -973,14 +973,14 @@ function deleteUserHandling($username)
 
 function showGroupsModal()
 {
-    spinnerDialog(true, "Retrieving Groups...", function () {
+        spinnerDialog(true, "Retrieving Groups...", function () {
         loadGroups($("#service_body_id").val(), function (data) {
             if (!$.isEmptyObject(data)) {
                 $("#selected_group_id").find("option").remove();
                 $("#selected_group_id").append(new Option("-= Select a Group =-", 0, true, true));
-                for (item of data) {
-                    var group_info = JSON.parse(item['data'])
-                    $("#selected_group_id").append(new Option(group_info[0]['group_name'], item['id'], false, false));
+                for (let item of data) {
+                    var group_info = item['data'][0]
+                    $("#selected_group_id").append(new Option(group_info['group_name'], item['id'], false, false));
                 }
 
                 spinnerDialog(false);
@@ -1440,7 +1440,7 @@ function editGroup()
     $("#group_name").val($("#group_id option:selected").text());
     for (var group of groups) {
         if (group['id'] === $("#group_id").val()) {
-            var data = JSON.parse(group.data)[0];
+            var data = group[0];
             if (data.hasOwnProperty("group_shared_service_bodies")) {
                 $("#group_shared_service_bodies").val(data['group_shared_service_bodies']);
                 break;
@@ -1455,7 +1455,7 @@ function editGroup()
 
 function confirmGroup()
 {
-    if ($("#group_name").val() == "") {
+    if ($("#group_name").val() === "") {
         $("#group_dialog_message").html("A name is required.");
         return false;
     }

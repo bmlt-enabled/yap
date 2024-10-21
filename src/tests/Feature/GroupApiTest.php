@@ -36,7 +36,7 @@ test('save group', function () {
         "id"=>6,
         "parent_id"=>null,
         "service_body_id"=>intval($this->serviceBodyId),
-        "data"=>json_encode([$groupData])]])
+        "data"=>[$groupData->toArray()]]])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });
@@ -87,7 +87,7 @@ test('get groups for service body', function () {
     )->assertJson([[
         "id"=>$id,
         "service_body_id"=>intval($this->serviceBodyId),
-        "data"=>json_encode([$groupData])]])
+        "data"=>[$groupData->toArray()]]])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });
@@ -119,7 +119,7 @@ test('update group', function () {
         "id"=>9,
         "parent_id"=>null,
         "service_body_id"=>intval($this->serviceBodyId),
-        "data"=>json_encode([$groupData])]])
+        "data"=>[$groupData->toArray()]]])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 
@@ -137,7 +137,7 @@ test('update group', function () {
         "id"=>9,
         "parent_id"=>null,
         "service_body_id"=>intval($this->serviceBodyId),
-        "data"=>json_encode([$updatedGroupData])]])
+        "data"=>[$updatedGroupData->toArray()]]])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });

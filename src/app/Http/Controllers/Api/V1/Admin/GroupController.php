@@ -7,6 +7,7 @@ use App\Models\ConfigData;
 use App\Services\VolunteerService;
 use App\Structures\Group;
 use Illuminate\Http\Request;
+use stdClass;
 
 class GroupController extends Controller
 {
@@ -17,14 +18,32 @@ class GroupController extends Controller
         $this->volunteerService = $volunteerService;
     }
 
+    private function getGroupsData(int $serviceBodyId, bool $manage = false)
+    {
+        $data = $this->volunteerService->getGroupsForServiceBody(
+            $serviceBodyId,
+            $manage
+        );
+
+        $results = [];
+
+        foreach ($data as $item) {
+            $results[] = [
+                'service_body_id' => $item->service_body_id,
+                'id' => $item->id,
+                'parent_id' => NULL,
+                'data' => json_decode($item->data)
+            ];
+        }
+
+        return $results;
+    }
+
     public function index(Request $request)
     {
-        return response()
-            ->json($this->volunteerService->getGroupsForServiceBody(
-                $request->get("serviceBodyId"),
-                $request->get("manage")
-            ))
-            ->header("Content-Type", "application/json");
+        $groupsData = $this
+            ->getGroupsData(intval($request->get("serviceBodyId")), boolval($request->get("manage") ?? false));
+        return response()->json($groupsData)->header("Content-Type", "application/json");
     }
 
     public function update(Request $request, $id)
@@ -37,13 +56,8 @@ class GroupController extends Controller
             $groupData
         );
 
-        $groups = $this->volunteerService->getGroupsForServiceBody(
-            $group->service_body_id,
-        );
-
-        return response()
-            ->json($groups)
-            ->header("Content-Type", "application/json");
+        $groupsData = $this->getGroupsData(intval($group->service_body_id));
+        return response()->json($groupsData)->header("Content-Type", "application/json");
     }
 
     public function store(Request $request)
