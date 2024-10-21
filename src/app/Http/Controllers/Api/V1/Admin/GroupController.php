@@ -31,7 +31,7 @@ class GroupController extends Controller
             $results[] = [
                 'service_body_id' => $item->service_body_id,
                 'id' => $item->id,
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'data' => json_decode($item->data)
             ];
         }

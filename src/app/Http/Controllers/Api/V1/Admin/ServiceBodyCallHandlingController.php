@@ -26,7 +26,7 @@ class ServiceBodyCallHandlingController extends Controller
             return response()->json([
                 'service_body_id' => $data[0]->service_body_id,
                 'id' => $data[0]->id,
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'data' => json_decode($data[0]->data)
             ])->header("Content-Type", "application/json");
         } else {
