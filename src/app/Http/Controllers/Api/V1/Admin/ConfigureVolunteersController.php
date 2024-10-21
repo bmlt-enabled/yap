@@ -19,13 +19,13 @@ class ConfigureVolunteersController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $data = ConfigData::getVolunteers($request->get("service_body_id"));
+        $data = ConfigData::getVolunteers($request->get("serviceBodyId"));
 
         if (count($data) > 0) {
             return response()->json([
                 'service_body_id' => $data[0]->service_body_id,
                 'id' => $data[0]->id,
-                'parent_id' => $data[0]->parent_id ?? "null",
+                'parent_id' => $data[0]->parent_id ?? NULL,
                 'data' => json_decode($data[0]->data)
             ])->header("Content-Type", "application/json");
         } else {
