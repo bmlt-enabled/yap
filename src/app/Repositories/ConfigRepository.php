@@ -16,15 +16,6 @@ class ConfigRepository
         );
     }
 
-    public function getDbDataById($id, $data_type): array
-    {
-        return DB::select(
-            'SELECT `data`,`service_body_id`,`id`,`parent_id`
-                FROM `config` WHERE `id`=? AND `data_type`=? AND IFNULL(`status`,0)<>?',
-            [$id, $data_type, Status::DELETED]
-        );
-    }
-
     public function getDbData($service_body_id, $data_type): array
     {
         return DB::select(
@@ -41,18 +32,6 @@ class ConfigRepository
                 FROM `config` WHERE `data_type`=? AND IFNULL(`status`,0)<>?",
             [$data_type, Status::DELETED]
         );
-    }
-
-    public function adminPersistDbConfigById($id, $data)
-    {
-        return DB::update("UPDATE `config` SET `data`=? WHERE `id`=?", [
-            $data, $id
-        ]);
-    }
-
-    public function deleteDbConfigById($id)
-    {
-        return DB::update("UPDATE `config` SET `status`=1 WHERE `id`=?", [$id]);
     }
 
     public function adminPersistDbConfig($service_body_id, $data, $data_type, $parent_id = 0)

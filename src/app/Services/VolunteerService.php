@@ -207,7 +207,7 @@ class VolunteerService extends Service
         return $final_groups;
     }
 
-    private function getGroupVolunteers($group_id)
+    public function getGroupVolunteers($group_id)
     {
         $groupData = $this->configRepository->getDbDataByParentId($group_id, DataType::YAP_GROUP_VOLUNTEERS_V2);
         return isset($groupData[0]->data) ? json_decode($groupData[0]->data) : array();

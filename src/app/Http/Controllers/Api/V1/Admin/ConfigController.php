@@ -54,11 +54,9 @@ class ConfigController extends Controller
     public function index(Request $request)
     {
         if ($request->has('parent_id')) {
-            $data = $this->config->getDbDataByParentId($request->get('parent_id'), $request->get('data_type'));
-        } elseif ($request->get('data_type') === DataType::YAP_GROUPS_V2 && $request->has('id')) {
-            $data = $this->config->getDbDataById($request->get('id'), $request->get('data_type'));
+            $data = $this->config->getDbDataByParentId($request->get('parent_id'), DataType::YAP_CONFIG_V2);
         } else {
-            $data = $this->config->getDbData($request->get('service_body_id'), $request->get('data_type'));
+            $data = $this->config->getDbData($request->get('service_body_id'), DataType::YAP_CONFIG_V2);
         }
 
         if (count($data) > 0) {
@@ -75,27 +73,13 @@ class ConfigController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->getContent();
-
-        if ($request->get('data_type') === DataType::YAP_GROUPS_V2 &&
-            $request->has('id') && intval($request->get('id')) > 0) {
-            $this->config->adminPersistDbConfigById($request->get('id'), $data);
-            $request->get('id');
-        } else {
-            $this->config->adminPersistDbConfig(
-                $request->get('service_body_id'),
-                $data,
-                $request->get('data_type'),
-                $request->has('parent_id') ? $request->get('parent_id') : "0"
-            );
-        }
+        $this->config->adminPersistDbConfig(
+            $request->get('service_body_id'),
+            $request->getContent(),
+            $request->get('data_type'),
+            $request->has('parent_id') ? $request->get('parent_id') : "0"
+        );
 
         return self::index($request);
-    }
-
-    public function destroy($id)
-    {
-        $this->config->deleteDbConfigById($id);
-        return response()->json()->header("Content-Type", "application/json");
     }
 }
