@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Constants\DataType;
 use App\Constants\Status;
 use App\Structures\Group;
-use App\Structures\GroupData;
 use App\Structures\ServiceBodyCallHandling;
 use App\Structures\VolunteerData;
 use Illuminate\Database\Eloquent\Collection;
@@ -20,12 +19,11 @@ class ConfigData extends Model
 
     public static function createCallHandling(
         int $serviceBodyId,
-        int $parentServiceBodyId,
         ServiceBodyCallHandling $serviceBodyCallHandlingData
     ) : void {
         self::create([
             "service_body_id"=>$serviceBodyId,
-            "parent_id"=>$parentServiceBodyId,
+            "parent_id"=>0,
             "data"=>json_encode([$serviceBodyCallHandlingData]),
             "data_type"=>DataType::YAP_CALL_HANDLING_V2
         ]);
@@ -124,15 +122,23 @@ class ConfigData extends Model
 
     public static function createVolunteers(
         int $serviceBodyId,
-        int $parentServiceBodyId,
         array $volunteerDataArray
     ) : void {
         self::create([
             "service_body_id"=>$serviceBodyId,
-            "parent_id"=>$parentServiceBodyId,
+            "parent_id"=>0,
             "data"=>json_encode($volunteerDataArray),
             "data_type"=>DataType::YAP_VOLUNTEERS_V2
         ]);
+    }
+
+    public static function updateVolunteers(
+        int $serviceBodyId,
+        array $volunteerDataArray
+    ) : void {
+        self::where('service_body_id', $serviceBodyId)
+            ->where('data_type', DataType::YAP_VOLUNTEERS_V2)
+            ->update(['data' => json_encode($volunteerDataArray)]);
     }
 
     public static function deleteGroup($id) : int

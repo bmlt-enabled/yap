@@ -75,7 +75,6 @@ test('voicemail complete send sms using primary contact', function ($method) {
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 
@@ -167,7 +166,6 @@ test('voicemail complete send sms using volunteer responder option', function ($
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 
@@ -266,7 +264,6 @@ test('voicemail complete send sms using volunteer responder option and dialback 
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 
@@ -333,7 +330,6 @@ test('voicemail complete send email using primary contact', function ($method, $
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData,
     );
 

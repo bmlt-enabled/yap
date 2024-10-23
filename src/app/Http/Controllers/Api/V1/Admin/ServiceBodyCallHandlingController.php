@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
+use App\Constants\DataType;
 use App\Http\Controllers\Controller;
 use App\Models\ConfigData;
 use App\Structures\ServiceBodyCallHandling;
@@ -39,11 +40,19 @@ class ServiceBodyCallHandlingController extends Controller
         $decodedData = json_decode($request->getContent());
         $serviceBodyCallHandling = new ServiceBodyCallHandling($decodedData);
 
-        ConfigData::createCallHandling(
-            $request->get('serviceBodyId'),
-            0,
-            $serviceBodyCallHandling
-        );
+        $serviceBodyId = $request->get('serviceBodyId');
+
+        $existingRecord = ConfigData::where('service_body_id', $serviceBodyId)
+            ->where('data_type', DataType::YAP_CALL_HANDLING_V2)
+            ->first();
+
+        if ($existingRecord) {
+            // If the record exists, update it
+            ConfigData::updateCallHandling($request->get('serviceBodyId'), $serviceBodyCallHandling);
+        } else {
+            // Otherwise, create a new record
+            ConfigData::createCallHandling($request->get('serviceBodyId'), $serviceBodyCallHandling);
+        }
 
         return self::index($request);
     }

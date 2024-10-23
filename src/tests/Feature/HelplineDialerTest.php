@@ -99,7 +99,6 @@ test('debug messages', function ($method) {
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 
@@ -151,7 +150,6 @@ test('do nothing', function ($method) {
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 
@@ -200,7 +198,6 @@ test('mark the caller as having entered the conference for reporting purposes', 
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
     $shifts = [];
@@ -332,7 +329,6 @@ test('mark the caller as having entered the conference for reporting purposes, w
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
     $shifts = [];
@@ -461,7 +457,6 @@ test('an invalid or busy outgoing call happens with linear and voicemail and one
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
     $shifts = [];
@@ -612,7 +607,6 @@ test('an invalid or busy outgoing call happens with linear and voicemail and two
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
     $shifts = [];
@@ -647,7 +641,6 @@ test('an invalid or busy outgoing call happens with linear and voicemail and two
 
     ConfigData::createVolunteers(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         [$volunteer1, $volunteer2],
     );
 
@@ -761,7 +754,6 @@ test('an invalid or busy outgoing call happens with blasting and voicemail and o
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
     $shifts = [];
@@ -890,7 +882,6 @@ test('an invalid or busy outgoing call happens with blasting and voicemail and t
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
     $shifts = [];
@@ -925,7 +916,6 @@ test('an invalid or busy outgoing call happens with blasting and voicemail and t
 
     ConfigData::createVolunteers(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         [$volunteer1, $volunteer2],
     );
 

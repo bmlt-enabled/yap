@@ -2,8 +2,10 @@
 
 namespace app\Http\Controllers\Api\V1\Admin;
 
+use App\Constants\DataType;
 use App\Http\Controllers\Controller;
 use App\Models\ConfigData;
+use App\Structures\Volunteer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use stdClass;
@@ -31,5 +33,30 @@ class ConfigureVolunteersController extends Controller
         } else {
             return response()->json(new stdClass())->header("Content-Type", "application/json");
         }
+    }
+
+    public function store(Request $request)
+    {
+        $volunteers = [];
+        $decodedData = json_decode($request->getContent());
+        foreach ($decodedData as $volunteer) {
+            $volunteers[] = new Volunteer($volunteer);
+        }
+
+        $serviceBodyId = $request->get('serviceBodyId');
+
+        $existingRecord = ConfigData::where('service_body_id', $serviceBodyId)
+            ->where('data_type', DataType::YAP_VOLUNTEERS_V2)
+            ->first();
+
+        if ($existingRecord) {
+            // If the record exists, update it
+            ConfigData::updateVolunteers($serviceBodyId, $volunteers);
+        } else {
+            // Otherwise, create a new record
+            ConfigData::createVolunteers($serviceBodyId, $volunteers);
+        }
+
+        return self::index($request);
     }
 }

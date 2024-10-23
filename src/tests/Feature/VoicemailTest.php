@@ -34,7 +34,6 @@ test('voicemail standard response', function ($method) {
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 
@@ -69,7 +68,6 @@ test('voicemail custom prompt', function ($method) {
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 

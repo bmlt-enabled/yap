@@ -391,7 +391,6 @@ test('initial callin with service body override', function ($method) {
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $handling
     );
 
