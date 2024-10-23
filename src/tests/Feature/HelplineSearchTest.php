@@ -149,7 +149,7 @@ test('valid search, volunteer routing, by location', function ($method) {
     $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
 
-    ConfigData::createCallHandling($serviceBodyId, $parentServiceBodyId, $serviceBodyCallHandlingData);
+    ConfigData::createCallHandling($serviceBodyId, $serviceBodyCallHandlingData);
 
     $response = $this->call($method, '/helpline-search.php', [
         'Digits' => "Buffalo, NY",
@@ -188,7 +188,6 @@ test('valid search, volunteer routing', function ($method) {
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 
@@ -260,7 +259,6 @@ test('valid search, volunteer routing, announce service body name', function ($m
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 
@@ -296,7 +294,6 @@ test('valid search, helpline field routing', function ($method) {
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 
@@ -336,7 +333,6 @@ test('valid search with address, volunteer gender routing enabled and choice not
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 
@@ -399,7 +395,6 @@ test('valid search, volunteer direct', function ($method) {
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 
@@ -410,7 +405,6 @@ test('valid search, volunteer direct', function ($method) {
 
     ConfigData::createCallHandling(
         46,
-        $this->parentServiceBodyId,
         $redirectedServiceBody
     );
 

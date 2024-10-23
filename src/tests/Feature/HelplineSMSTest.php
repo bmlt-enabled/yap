@@ -70,7 +70,6 @@ test('initial sms helpline gateway default when there is no volunteer', function
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 
@@ -158,7 +157,6 @@ test('initial sms helpline gateway with a volunteer', function ($method) {
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 
@@ -244,7 +242,6 @@ test('initial sms helpline gateway with a volunteer with a different keywordr', 
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 

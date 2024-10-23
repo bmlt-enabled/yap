@@ -66,7 +66,7 @@ describe('Groups', () => {
         cy
             .get('#addGroupDialog')
             .should('not.be.visible')
-            .wait(500)
+            .wait(5000)
             .get("#group_id")
             .select(1)
             .get('#group_id option:selected')

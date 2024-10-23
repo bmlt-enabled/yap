@@ -503,28 +503,27 @@ function saveVolunteers(data_type, countryCode)
             data.push(dataObj);
         }
 
-        saveToAdminApi(
-            $("#service_body_id").val(),
-            data,
-            data_type,
-            data_type === "_YAP_GROUP_VOLUNTEERS_V2_" ? $("#group_id").val() : 0,
-            0,
-            function (xhr, status) {
-                var alert = $("#volunteer_saved_alert");
-                if (xhr.responseText === "{}" || xhr.status !== 200) {
-                    alert.addClass("alert-danger");
-                    alert.html("Could not save.");
-                } else {
-                    alert.addClass("alert-success");
-                    alert.html("Saved.");
-                }
-
-                alert.show();
-                alert.fadeOut(3000);
-                spinnerDialog(false);
-                $("#save-volunteers").removeClass('disabled');
+        let volunteersCallback = function (xhr, status) {
+            var alert = $("#volunteer_saved_alert");
+            if (xhr.responseText === "{}" || xhr.status !== 200) {
+                alert.addClass("alert-danger");
+                alert.html("Could not save.");
+            } else {
+                alert.addClass("alert-success");
+                alert.html("Saved.");
             }
-        );
+
+            alert.show();
+            alert.fadeOut(3000);
+            spinnerDialog(false);
+            $("#save-volunteers").removeClass('disabled');
+        }
+
+        if (data_type === "_YAP_GROUP_VOLUNTEERS_V2_") {
+            saveToVolunteersApi($("#service_body_id").val(), data, $("#group_id").val(), volunteersCallback)
+        } else {
+            saveToVolunteersApi($("#service_body_id").val(), data, 0, volunteersCallback)
+        }
     });
 }
 
@@ -651,6 +650,20 @@ function saveToAdminApi(service_body_id, data, data_type, parent_id, id, callbac
             + "&data_type=" + data_type
             + (parent_id !== null && parent_id !== 0 ? "&parent_id=" + parent_id : "")
             + (id !== null && id !== 0 ? "&id=" + id : ""),
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: "application/json",
+        complete: callback,
+        timeout: 60000
+    });
+}
+
+function saveToVolunteersApi(serviceBodyId, data, groupId, callback)
+{
+    $.ajax({
+        async: false,
+        type: 'POST',
+        url: `../api/v1/volunteers?serviceBodyId=${serviceBodyId}`,
         data: JSON.stringify(data),
         dataType: "json",
         contentType: "application/json",

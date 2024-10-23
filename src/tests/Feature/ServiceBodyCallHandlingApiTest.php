@@ -48,7 +48,6 @@ test('get call handling for a service body', function () {
 
     ConfigData::createCallHandling(
         $this->serviceBodyId,
-        0,
         $callHandling
     );
 
