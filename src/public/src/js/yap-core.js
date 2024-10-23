@@ -503,28 +503,27 @@ function saveVolunteers(data_type, countryCode)
             data.push(dataObj);
         }
 
-        saveToAdminApi(
-            $("#service_body_id").val(),
-            data,
-            data_type,
-            data_type === "_YAP_GROUP_VOLUNTEERS_V2_" ? $("#group_id").val() : 0,
-            0,
-            function (xhr, status) {
-                var alert = $("#volunteer_saved_alert");
-                if (xhr.responseText === "{}" || xhr.status !== 200) {
-                    alert.addClass("alert-danger");
-                    alert.html("Could not save.");
-                } else {
-                    alert.addClass("alert-success");
-                    alert.html("Saved.");
-                }
-
-                alert.show();
-                alert.fadeOut(3000);
-                spinnerDialog(false);
-                $("#save-volunteers").removeClass('disabled');
+        let volunteersCallback = function (xhr, status) {
+            var alert = $("#volunteer_saved_alert");
+            if (xhr.responseText === "{}" || xhr.status !== 200) {
+                alert.addClass("alert-danger");
+                alert.html("Could not save.");
+            } else {
+                alert.addClass("alert-success");
+                alert.html("Saved.");
             }
-        );
+
+            alert.show();
+            alert.fadeOut(3000);
+            spinnerDialog(false);
+            $("#save-volunteers").removeClass('disabled');
+        }
+
+        if (data_type === "_YAP_GROUP_VOLUNTEERS_V2_") {
+            saveToVolunteersApi($("#service_body_id").val(), data, $("#group_id").val(), volunteersCallback)
+        } else {
+            saveToVolunteersApi($("#service_body_id").val(), data, 0, volunteersCallback)
+        }
     });
 }
 
@@ -586,21 +585,15 @@ function saveServiceBodyCallHandling(service_body_id)
     serviceBodyCallHandling.modal('hide');
 
     spinnerDialog(true, "Saving Service Body Call Handling...", function () {
-        var data = [];
         var formData = serviceBodyCallHandling.find("#serviceBodyCallHandlingForm").serializeArray();
         var dataObj = {};
         for (var formItem of formData) {
             dataObj[formItem["name"]] = formItem["value"]
         }
 
-        data.push(dataObj);
-
-        saveToAdminApi(
+        saveCallHandling(
             service_body_id,
-            data,
-            '_YAP_CALL_HANDLING_V2_',
-            0,
-            0,
+            dataObj,
             function (xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
@@ -619,6 +612,34 @@ function saveServiceBodyCallHandling(service_body_id)
     });
 }
 
+function saveGroups(id, data, method, callback)
+{
+    $.ajax({
+        async: false,
+        type: method,
+        url: method === 'PUT' ? `../api/v1/groups/${id}`: `../api/v1/groups?serviceBodyId=${id}`,
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: "application/json",
+        complete: callback,
+        timeout: 60000
+    });
+}
+
+function saveCallHandling(serviceBodyId, data, callback)
+{
+    $.ajax({
+        async: false,
+        type: 'POST',
+        url: `../api/v1/callHandling?serviceBodyId=${serviceBodyId}`,
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: "application/json",
+        complete: callback,
+        timeout: 60000
+    });
+}
+
 function saveToAdminApi(service_body_id, data, data_type, parent_id, id, callback)
 {
     $.ajax({
@@ -629,6 +650,20 @@ function saveToAdminApi(service_body_id, data, data_type, parent_id, id, callbac
             + "&data_type=" + data_type
             + (parent_id !== null && parent_id !== 0 ? "&parent_id=" + parent_id : "")
             + (id !== null && id !== 0 ? "&id=" + id : ""),
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: "application/json",
+        complete: callback,
+        timeout: 60000
+    });
+}
+
+function saveToVolunteersApi(serviceBodyId, data, groupId, callback)
+{
+    $.ajax({
+        async: false,
+        type: 'POST',
+        url: `../api/v1/volunteers?serviceBodyId=${serviceBodyId}`,
         data: JSON.stringify(data),
         dataType: "json",
         contentType: "application/json",
@@ -664,14 +699,6 @@ function usersApi(data, action, callback)
     });
 }
 
-function loadFromAdminApi(parent_id, service_body_id, data_type, callback)
-{
-    $.getJSON("../api/v1/volunteers?service_body_id=" + service_body_id
-        + (parent_id !== null ? "&parent_id=" + parent_id : ""), function (data) {
-            callback(data)
-        });
-}
-
 function addNewVolunteerDialog(isVisible)
 {
     isVisible ? $("#newVolunteerDialog").show() : $("#newVolunteerDialog").hide();
@@ -695,7 +722,7 @@ function clearVolunteerCards()
 
 function loadVolunteers(serviceBodyId, callback)
 {
-    loadFromAdminApi(null, serviceBodyId, '_YAP_VOLUNTEERS_V2_', function (data) {
+    $.getJSON("../api/v1/volunteers?serviceBodyId=" + serviceBodyId, function (data) {
         if (!$.isEmptyObject(data)) {
             for (item of data['data']) {
                 if (item.hasOwnProperty('volunteer_name')) {
@@ -709,11 +736,11 @@ function loadVolunteers(serviceBodyId, callback)
     });
 }
 
-function loadGroupVolunteers(parent_id, service_body_id, callback)
+function loadGroupVolunteers(group_id, callback)
 {
-    loadFromAdminApi($("#group_id").val(), service_body_id,'_YAP_GROUP_VOLUNTEERS_V2_', function (data) {
+    $.getJSON("../api/v1/groups/volunteers?group_id=" + group_id, function (data) {
         if (!$.isEmptyObject(data)) {
-            for (item of data['data']) {
+            for (item of data) {
                 includeVolunteer(item);
             }
         }
@@ -734,6 +761,7 @@ function onGroupServiceBodyChange(callback)
         return;
     }
 
+    clearVolunteerCards();
     spinnerDialog(true, "Loading Groups...", function () {
         loadGroups(document.getElementById("service_body_id").value + "&manage=1", function (data) {
             $("#groupsForm").show()
@@ -742,7 +770,7 @@ function onGroupServiceBodyChange(callback)
                 for (var i = 0; i < data.length; i++) {
                     $("#group_id").append($('<option>', {
                         value: data[i].id,
-                        text: JSON.parse(data[i].data)[0]['group_name']
+                        text: data[i].data[0]['group_name']
                     }));
                 }
 
@@ -759,7 +787,7 @@ function onGroupServiceBodyChange(callback)
 function loadGroups(service_body_id, callback)
 {
     if (groups === undefined) {
-        $.getJSON("../api/v1/volunteers/groups?service_body_id=" + service_body_id, function (data) {
+        $.getJSON(`../api/v1/groups?serviceBodyId=${service_body_id}`, function (data) {
             groups = data;
             callback(data)
         });
@@ -958,14 +986,14 @@ function deleteUserHandling($username)
 
 function showGroupsModal()
 {
-    spinnerDialog(true, "Retrieving Groups...", function () {
+        spinnerDialog(true, "Retrieving Groups...", function () {
         loadGroups($("#service_body_id").val(), function (data) {
             if (!$.isEmptyObject(data)) {
                 $("#selected_group_id").find("option").remove();
                 $("#selected_group_id").append(new Option("-= Select a Group =-", 0, true, true));
-                for (item of data) {
-                    var group_info = JSON.parse(item['data'])
-                    $("#selected_group_id").append(new Option(group_info[0]['group_name'], item['id'], false, false));
+                for (let item of data) {
+                    var group_info = item['data'][0]
+                    $("#selected_group_id").append(new Option(group_info['group_name'], item['id'], false, false));
                 }
 
                 spinnerDialog(false);
@@ -1238,7 +1266,7 @@ function openServiceBodyConfigure(service_body_id)
     spinnerDialog(true, "Retrieving Service Body Configuration...", function () {
         var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
         var serviceBodyFields = $("#serviceBodyConfigurationFields");
-        loadFromAdminApi(null, service_body_id, '_YAP_CONFIG_V2_', function (data) {
+        $.getJSON("../api/v1/config?service_body_id=" + service_body_id, function (data) {
             if (!$.isEmptyObject(data)) {
                 clearServiceBodyFields(service_body_id);
                 var dataSet = data['data'][0];
@@ -1287,7 +1315,7 @@ function openServiceBodyCallHandling(service_body_id)
 {
     spinnerDialog(true, "Retrieving Service Body Call Handling...", function () {
         var serviceBodyCallHandling = $("#serviceBodyCallHandling_" + service_body_id);
-        loadFromAdminApi(null, service_body_id, '_YAP_CALL_HANDLING_V2_', function (data) {
+        $.getJSON(`../api/v1/callHandling?serviceBodyId=${service_body_id}`, function (data) {
             if (!$.isEmptyObject(data)) {
                 var dataSet = data['data'][0];
                 for (var key in dataSet) {
@@ -1361,7 +1389,7 @@ function groupsPage()
         clearVolunteerCards();
         if (parseInt($(this).val()) > 0) {
             spinnerDialog(true, "Retrieving Group Volunteers...", function () {
-                loadGroupVolunteers($("#group_id").val(), $("#service_body_id").val(), function () {
+                loadGroupVolunteers($("#group_id").val(), function () {
                     $("#editGroupButton").show();
                     $("#deleteGroupButton").show();
                     spinnerDialog(false);
@@ -1405,7 +1433,7 @@ function deleteGroup()
         $.ajax({
             async: false,
             type: "DELETE",
-            url: "../api/v1/config/" + $("#group_id").val(),
+            url: "../api/v1/groups/" + $("#group_id").val(),
             contentType: "application/json",
             complete: function () {
                 spinnerDialog(false);
@@ -1425,7 +1453,7 @@ function editGroup()
     $("#group_name").val($("#group_id option:selected").text());
     for (var group of groups) {
         if (group['id'] === $("#group_id").val()) {
-            var data = JSON.parse(group.data)[0];
+            var data = group[0];
             if (data.hasOwnProperty("group_shared_service_bodies")) {
                 $("#group_shared_service_bodies").val(data['group_shared_service_bodies']);
                 break;
@@ -1440,7 +1468,7 @@ function editGroup()
 
 function confirmGroup()
 {
-    if ($("#group_name").val() == "") {
+    if ($("#group_name").val() === "") {
         $("#group_dialog_message").html("A name is required.");
         return false;
     }
@@ -1453,12 +1481,12 @@ function confirmGroup()
             dataObj[formItem["name"]] = $("#groupEditor").find("#" + formItem["name"]).val();
         }
 
-        saveToAdminApi(
-            $("#service_body_id").val(),
-            [dataObj],
-            '_YAP_GROUPS_V2_',
-            0,
-            $("#groupEditorHeader").text().indexOf("Add") !== 0 ? $("#group_id").val() : 0,
+        let isUpdate = $("#groupEditorHeader").text().indexOf("Add") !== 0
+
+        saveGroups(
+            isUpdate ? $("#group_id").val() : $("#service_body_id").val(),
+            dataObj,
+            isUpdate ? 'PUT' : 'POST',
             function (xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {

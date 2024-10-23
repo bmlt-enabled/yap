@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\VolunteerService;
 use Illuminate\Http\Request;
 
-class VolunteerGroupsController extends Controller
+class GroupVolunteerController extends Controller
 {
     protected VolunteerService $volunteerService;
 
@@ -18,9 +18,8 @@ class VolunteerGroupsController extends Controller
     public function index(Request $request)
     {
         return response()
-            ->json($this->volunteerService->getGroupsForServiceBody(
-                $request->get("service_body_id"),
-                $request->get("manage")
+            ->json($this->volunteerService->getGroupVolunteers(
+                $request->get("group_id"),
             ))
             ->header("Content-Type", "application/json");
     }
