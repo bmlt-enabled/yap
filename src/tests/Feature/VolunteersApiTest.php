@@ -7,6 +7,7 @@ use App\Constants\VolunteerType;
 use App\Models\ConfigData;
 use App\Services\RootServerService;
 use App\Structures\Group;
+use App\Structures\Volunteer;
 use App\Structures\VolunteerData;
 use App\Structures\VolunteerInfo;
 use App\Utilities\VolunteerScheduleHelpers;
@@ -673,6 +674,118 @@ test('return volunteers invalid format', function () {
 
     $response
         ->assertSimilarJson([])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('save volunteers', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+
+    $volunteerData = new VolunteerData();
+    $volunteerData->volunteer_phone_number = "19735559911";
+
+    $response = $this->call(
+        'POST',
+        '/api/v1/volunteers',
+        ['serviceBodyId' => $this->serviceBodyId],
+        content: json_encode($volunteerData)
+    );
+
+    $volunteer = new Volunteer($volunteerData->volunteer_phone_number);
+
+    $response->assertJson([
+        "id"=>135,
+        "parent_id"=>0,
+        "service_body_id"=>intval($this->serviceBodyId),
+        "data"=>[$volunteer->toArray()]])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('get volunteers for a service body', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+
+    $volunteerData = new VolunteerData();
+    $volunteerData->volunteer_phone_number = "19735559911";
+
+    ConfigData::createVolunteers(
+        $this->serviceBodyId,
+        [$volunteerData]
+    );
+
+    $response = $this->call(
+        'POST',
+        '/api/v1/volunteers',
+        ['serviceBodyId' => $this->serviceBodyId],
+        content: json_encode($volunteerData)
+    );
+
+    $volunteer = new Volunteer($volunteerData->volunteer_phone_number);
+
+    $response->assertJson([
+        "id"=>136,
+        "parent_id"=>0,
+        "service_body_id"=>intval($this->serviceBodyId),
+        "data"=>[$volunteer->toArray()]])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('get volunteers for a service body that does not exist', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+
+    $response = $this->call(
+        'GET',
+        '/api/v1/volunteers',
+        ['serviceBodyId' => $this->serviceBodyId]
+    );
+
+    $response->assertJson([])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('update call volunteers for a service body', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+
+    $volunteerData = new VolunteerData();
+    $volunteerData->volunteer_phone_number = "19735559911";
+
+    $response = $this->call(
+        'POST',
+        '/api/v1/volunteers',
+        ['serviceBodyId' => $this->serviceBodyId],
+        content: json_encode($volunteerData)
+    );
+
+    $volunteer = new Volunteer($volunteerData->volunteer_phone_number);
+
+    $response->assertJson([
+        "id"=>137,
+        "parent_id"=>0,
+        "service_body_id"=>intval($this->serviceBodyId),
+        "data"=>[$volunteer->toArray()]])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+
+
+    $volunteerData = new VolunteerData();
+    $volunteerData->volunteer_phone_number = "19735559912";
+
+    $response = $this->call(
+        'POST',
+        '/api/v1/volunteers',
+        ['serviceBodyId' => $this->serviceBodyId],
+        content: json_encode($volunteerData)
+    );
+
+    $volunteer = new Volunteer($volunteerData->volunteer_phone_number);
+
+    $response->assertJson([
+        "id"=>137,
+        "parent_id"=>0,
+        "service_body_id"=>intval($this->serviceBodyId),
+        "data"=>[$volunteer->toArray()]])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });
