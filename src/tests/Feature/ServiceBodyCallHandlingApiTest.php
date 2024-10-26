@@ -46,7 +46,7 @@ test('get call handling for a service body', function () {
     $callHandling = new ServiceBodyCallHandling();
     $callHandling->forced_caller_id_number = "123";
 
-    ConfigData::createCallHandling(
+    ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
         $callHandling
     );

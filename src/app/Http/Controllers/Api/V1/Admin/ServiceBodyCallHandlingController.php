@@ -48,10 +48,10 @@ class ServiceBodyCallHandlingController extends Controller
 
         if ($existingRecord) {
             // If the record exists, update it
-            ConfigData::updateCallHandling($request->get('serviceBodyId'), $serviceBodyCallHandling);
+            ConfigData::updateServiceBodyCallHandling($request->get('serviceBodyId'), $serviceBodyCallHandling);
         } else {
             // Otherwise, create a new record
-            ConfigData::createCallHandling($request->get('serviceBodyId'), $serviceBodyCallHandling);
+            ConfigData::createServiceBodyCallHandling($request->get('serviceBodyId'), $serviceBodyCallHandling);
         }
 
         return self::index($request);

@@ -32,7 +32,7 @@ test('voicemail standard response', function ($method) {
     $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
 
-    ConfigData::createCallHandling(
+    ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
         $serviceBodyCallHandlingData
     );
@@ -66,7 +66,7 @@ test('voicemail custom prompt', function ($method) {
     $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
 
-    ConfigData::createCallHandling(
+    ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
         $serviceBodyCallHandlingData
     );

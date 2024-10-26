@@ -389,7 +389,7 @@ test('initial callin with service body override', function ($method) {
     $handling->volunteer_routing = VolunteerRoutingType::VOLUNTEERS_AND_SMS;
     $handling->override_en_US_greeting = "https://fake.mp3";
 
-    ConfigData::createCallHandling(
+    ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
         $handling
     );

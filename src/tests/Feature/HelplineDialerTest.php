@@ -97,7 +97,7 @@ test('debug messages', function ($method) {
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
 
 
-    ConfigData::createCallHandling(
+    ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
         $serviceBodyCallHandlingData
     );
@@ -148,7 +148,7 @@ test('do nothing', function ($method) {
     $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
 
-    ConfigData::createCallHandling(
+    ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
         $serviceBodyCallHandlingData
     );
@@ -196,7 +196,7 @@ test('mark the caller as having entered the conference for reporting purposes', 
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
 
 
-    ConfigData::createCallHandling(
+    ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
         $serviceBodyCallHandlingData
     );
@@ -327,7 +327,7 @@ test('mark the caller as having entered the conference for reporting purposes, w
     $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
 
-    ConfigData::createCallHandling(
+    ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
         $serviceBodyCallHandlingData
     );
@@ -455,7 +455,7 @@ test('an invalid or busy outgoing call happens with linear and voicemail and one
     $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
 
-    ConfigData::createCallHandling(
+    ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
         $serviceBodyCallHandlingData
     );
@@ -605,7 +605,7 @@ test('an invalid or busy outgoing call happens with linear and voicemail and two
     $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
 
-    ConfigData::createCallHandling(
+    ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
         $serviceBodyCallHandlingData
     );
@@ -752,7 +752,7 @@ test('an invalid or busy outgoing call happens with blasting and voicemail and o
     $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::BLASTING;
 
-    ConfigData::createCallHandling(
+    ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
         $serviceBodyCallHandlingData
     );
@@ -880,7 +880,7 @@ test('an invalid or busy outgoing call happens with blasting and voicemail and t
     $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::BLASTING;
 
-    ConfigData::createCallHandling(
+    ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
         $serviceBodyCallHandlingData
     );

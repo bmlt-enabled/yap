@@ -37,7 +37,7 @@ describe('Service Body Call Handling', () => {
     })
 
 
-    it('Updatte service body', () => {
+    it('Update service body', () => {
         cy
             .login()
             .get('.navbar-nav')

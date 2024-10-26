@@ -17,7 +17,7 @@ class ConfigData extends Model
     public $timestamps = false;
     protected $fillable = ["service_body_id", "data", "data_type", "parent_id", "status"];
 
-    public static function createCallHandling(
+    public static function createServiceBodyCallHandling(
         int $serviceBodyId,
         ServiceBodyCallHandling $serviceBodyCallHandlingData
     ) : void {
@@ -40,6 +40,15 @@ class ConfigData extends Model
             "data"=>json_encode([$serviceBodyConfiguration]),
             "data_type"=>DataType::YAP_CONFIG_V2
         ]);
+    }
+
+    public static function updateServiceBodyCallHandling(
+        int $serviceBodyId,
+        ServiceBodyCallHandling $volunteerDataArray
+    ) : void {
+        self::where('service_body_id', $serviceBodyId)
+            ->where('data_type', DataType::YAP_CALL_HANDLING_V2)
+            ->update(['data' => json_encode([$volunteerDataArray])]);
     }
 
     public static function createGroup(
