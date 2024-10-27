@@ -688,16 +688,14 @@ test('save volunteers', function () {
         'POST',
         '/api/v1/volunteers',
         ['serviceBodyId' => $this->serviceBodyId],
-        content: json_encode($volunteerData)
+        content: json_encode([$volunteerData])
     );
-
-    $volunteer = new Volunteer($volunteerData->volunteer_phone_number);
 
     $response->assertJson([
         "id"=>137,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
-        "data"=>[$volunteer->toArray()]])
+        "data"=>[$volunteerData->toArray()]])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });
@@ -717,16 +715,14 @@ test('get volunteers for a service body', function () {
         'POST',
         '/api/v1/volunteers',
         ['serviceBodyId' => $this->serviceBodyId],
-        content: json_encode($volunteerData)
+        content: json_encode([$volunteerData])
     );
-
-    $volunteer = new Volunteer($volunteerData->volunteer_phone_number);
 
     $response->assertJson([
         "id"=>138,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
-        "data"=>[$volunteer->toArray()]])
+        "data"=>[$volunteerData->toArray()]])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });
@@ -755,16 +751,14 @@ test('update call volunteers for a service body', function () {
         'POST',
         '/api/v1/volunteers',
         ['serviceBodyId' => $this->serviceBodyId],
-        content: json_encode($volunteerData)
+        content: json_encode([$volunteerData])
     );
-
-    $volunteer = new Volunteer($volunteerData->volunteer_phone_number);
 
     $response->assertJson([
         "id"=>139,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
-        "data"=>[$volunteer->toArray()]])
+        "data"=>[$volunteerData->toArray()]])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 
@@ -776,16 +770,14 @@ test('update call volunteers for a service body', function () {
         'POST',
         '/api/v1/volunteers',
         ['serviceBodyId' => $this->serviceBodyId],
-        content: json_encode($volunteerData)
+        content: json_encode([$volunteerData])
     );
-
-    $volunteer = new Volunteer($volunteerData->volunteer_phone_number);
 
     $response->assertJson([
         "id"=>139,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
-        "data"=>[$volunteer->toArray()]])
+        "data"=>[$volunteerData->toArray()]])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });

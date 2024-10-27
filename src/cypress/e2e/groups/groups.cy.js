@@ -123,32 +123,35 @@ describe('Groups', () => {
         cy.get('#group_id')
             .select(1)
 
-        cy.wait(5000);
+        cy.wait(1000);
+
+        cy.get('#volunteerCard_1 > #volunteersForm > .card-header > .form-group > .volunteer-name-text > #volunteer_name')
+            .should('have.value', 'danny g')
     })
 
-    // it('Delete a group', () => {
-    //     cy
-    //         .login()
-    //         .get('.navbar-nav')
-    //         .contains('Groups')
-    //         .click()
-    //         .get('#service_body_id option:selected')
-    //         .should('have.text', '-= Select A Service Body =-')
-    //
-    //     cy.get('#service_body_id')
-    //         .select(1)
-    //
-    //     cy.get('#group_id')
-    //         .select(1)
-    //
-    //     cy.get("#deleteGroupButton").click()
-    //
-    //     cy.wait(500);
-    //
-    //     cy.get('#service_body_id')
-    //         .select(1)
-    //
-    //     cy.get("#group_id")
-    //         .should('be.empty');
-    // })
+    it('Delete a group', () => {
+        cy
+            .login()
+            .get('.navbar-nav')
+            .contains('Groups')
+            .click()
+            .get('#service_body_id option:selected')
+            .should('have.text', '-= Select A Service Body =-')
+
+        cy.get('#service_body_id')
+            .select(1)
+
+        cy.get('#group_id')
+            .select(1)
+
+        cy.get("#deleteGroupButton").click()
+
+        cy.wait(500);
+
+        cy.get('#service_body_id')
+            .select(1)
+
+        cy.get("#group_id")
+            .should('be.empty');
+    })
 })

@@ -6,7 +6,6 @@ use App\Constants\DataType;
 use App\Http\Controllers\Controller;
 use App\Models\ConfigData;
 use App\Services\VolunteerService;
-use App\Structures\Volunteer;
 use Illuminate\Http\Request;
 use stdClass;
 
@@ -37,12 +36,7 @@ class GroupVolunteerController extends Controller
 
     public function store(Request $request)
     {
-        $volunteers = [];
-        $decodedData = json_decode($request->getContent());
-        foreach ($decodedData as $volunteer) {
-            $volunteers[] = new Volunteer($volunteer);
-        }
-
+        $volunteers = json_decode($request->getContent());
         $groupId = $request->get('groupId');
         $serviceBodyId = $request->get('serviceBodyId') ?? null;
 

@@ -754,7 +754,7 @@ function loadGroupVolunteers(group_id, callback)
 {
     $.getJSON("../api/v1/groups/volunteers?groupId=" + group_id, function (data) {
         if (!$.isEmptyObject(data)) {
-            for (item of data) {
+            for (item of data['data']) {
                 includeVolunteer(item);
             }
         }

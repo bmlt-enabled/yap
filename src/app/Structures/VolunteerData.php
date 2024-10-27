@@ -13,6 +13,26 @@ class VolunteerData extends Structure
     public bool $volunteer_enabled;
     public string $volunteer_shift_schedule;
 
+    public function __construct($volunteer = null)
+    {
+        if ($volunteer) {
+            // Dynamically assign all properties from the passed group object
+            foreach (get_object_vars($volunteer) as $property => $value) {
+                $this->$property = $value;
+            }
+        } else {
+            // Optionally, set default values here
+            $this->volunteer_name = "";
+            $this->volunteer_phone_number = "";
+            $this->volunteer_responder = false;
+            $this->volunteer_languages = [];
+            $this->volunteer_notes = "";
+            $this->volunteer_enabled = false;
+            $this->volunteer_shift_schedule = "";
+
+        }
+    }
+
     public function get247Schedule()
     {
         $shiftTz = "America/New_York";

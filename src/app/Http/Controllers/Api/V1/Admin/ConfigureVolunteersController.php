@@ -6,6 +6,7 @@ use App\Constants\DataType;
 use App\Http\Controllers\Controller;
 use App\Models\ConfigData;
 use App\Structures\Volunteer;
+use App\Structures\VolunteerData;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use stdClass;
@@ -37,12 +38,7 @@ class ConfigureVolunteersController extends Controller
 
     public function store(Request $request)
     {
-        $volunteers = [];
-        $decodedData = json_decode($request->getContent());
-        foreach ($decodedData as $volunteer) {
-            $volunteers[] = new Volunteer($volunteer);
-        }
-
+        $volunteers = json_decode($request->getContent());
         $serviceBodyId = $request->get('serviceBodyId');
 
         $existingRecord = ConfigData::where('service_body_id', $serviceBodyId)

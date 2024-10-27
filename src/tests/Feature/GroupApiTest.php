@@ -168,16 +168,14 @@ test('save group volunteers', function () {
         'POST',
         '/api/v1/groups/volunteers',
         ['groupId' => $groupId, 'serviceBodyId' => $this->serviceBodyId],
-        content: json_encode($volunteerData)
+        content: json_encode([$volunteerData])
     );
-
-    $volunteer = new Volunteer($volunteerData->volunteer_phone_number);
 
     $response->assertJson([
         "id"=>11,
         "parent_id"=>$groupId,
         "service_body_id"=>intval($this->serviceBodyId),
-        "data"=>[$volunteer->toArray()]])
+        "data"=>[$volunteerData->toArray()]])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });
