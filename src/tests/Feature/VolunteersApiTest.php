@@ -479,7 +479,7 @@ test('return volunteers with groups recursively json', function () {
     ConfigData::createGroupVolunteers(
         $firstServiceBodyId,
         $groupId,
-        $volunteer,
+        [$volunteer],
     );
 
     ConfigData::addGroupToVolunteers(
@@ -694,7 +694,7 @@ test('save volunteers', function () {
     $volunteer = new Volunteer($volunteerData->volunteer_phone_number);
 
     $response->assertJson([
-        "id"=>135,
+        "id"=>137,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$volunteer->toArray()]])
@@ -723,7 +723,7 @@ test('get volunteers for a service body', function () {
     $volunteer = new Volunteer($volunteerData->volunteer_phone_number);
 
     $response->assertJson([
-        "id"=>136,
+        "id"=>138,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$volunteer->toArray()]])
@@ -761,7 +761,7 @@ test('update call volunteers for a service body', function () {
     $volunteer = new Volunteer($volunteerData->volunteer_phone_number);
 
     $response->assertJson([
-        "id"=>137,
+        "id"=>139,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$volunteer->toArray()]])
@@ -782,7 +782,7 @@ test('update call volunteers for a service body', function () {
     $volunteer = new Volunteer($volunteerData->volunteer_phone_number);
 
     $response->assertJson([
-        "id"=>137,
+        "id"=>139,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$volunteer->toArray()]])

@@ -520,9 +520,9 @@ function saveVolunteers(data_type, countryCode)
         }
 
         if (data_type === "_YAP_GROUP_VOLUNTEERS_V2_") {
-            saveToVolunteersApi($("#service_body_id").val(), data, $("#group_id").val(), volunteersCallback)
+            saveToGroupVolunteersApi($("#service_body_id").val(), data, $("#group_id").val(), volunteersCallback)
         } else {
-            saveToVolunteersApi($("#service_body_id").val(), data, 0, volunteersCallback)
+            saveToVolunteersApi($("#service_body_id").val(), data, volunteersCallback)
         }
     });
 }
@@ -658,12 +658,26 @@ function saveToAdminApi(service_body_id, data, data_type, parent_id, id, callbac
     });
 }
 
-function saveToVolunteersApi(serviceBodyId, data, groupId, callback)
+function saveToVolunteersApi(serviceBodyId, data, callback)
 {
     $.ajax({
         async: false,
         type: 'POST',
         url: `../api/v1/volunteers?serviceBodyId=${serviceBodyId}`,
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: "application/json",
+        complete: callback,
+        timeout: 60000
+    });
+}
+
+function saveToGroupVolunteersApi(serviceBodyId, data, groupId, callback)
+{
+    $.ajax({
+        async: false,
+        type: 'POST',
+        url: `../api/v1/groups/volunteers?groupId=${groupId}&serviceBodyId=${serviceBodyId}`,
         data: JSON.stringify(data),
         dataType: "json",
         contentType: "application/json",
@@ -738,7 +752,7 @@ function loadVolunteers(serviceBodyId, callback)
 
 function loadGroupVolunteers(group_id, callback)
 {
-    $.getJSON("../api/v1/groups/volunteers?group_id=" + group_id, function (data) {
+    $.getJSON("../api/v1/groups/volunteers?groupId=" + group_id, function (data) {
         if (!$.isEmptyObject(data)) {
             for (item of data) {
                 includeVolunteer(item);

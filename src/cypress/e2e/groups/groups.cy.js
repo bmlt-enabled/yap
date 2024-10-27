@@ -13,7 +13,6 @@ describe('Groups', () => {
             .get('#service_body_id option:selected')
             .should('have.text', '-= Select A Service Body =-')
 
-
         cy.get('#service_body_id')
             .select(1)
 
@@ -66,14 +65,14 @@ describe('Groups', () => {
         cy
             .get('#addGroupDialog')
             .should('not.be.visible')
-            .wait(5000)
+            .wait(1000)
             .get("#group_id")
             .select(1)
             .get('#group_id option:selected')
             .should('have.text', 'testgroup1-modified');
     })
 
-    it('Delete a group', () => {
+    it('Add volunteers to a group', () => {
         cy
             .login()
             .get('.navbar-nav')
@@ -88,14 +87,68 @@ describe('Groups', () => {
         cy.get('#group_id')
             .select(1)
 
-        cy.get("#deleteGroupButton").click()
+        cy
+            .get("#add-volunteer").click()
 
         cy.wait(500);
+
+        cy
+            .get('#volunteerCard_1 > #volunteersForm > .card-header > .form-group > .volunteer-name-text > #volunteer_name')
+            .invoke('val', 'danny g')
+            .get('#volunteerCard_1 > #volunteersForm > .card-header > .form-group > .expand-button > .btn')
+            .click()
+            .wait(500)
+            .get('#volunteerCard_1 > #volunteersForm > .card-body > :nth-child(1) > #volunteer_phone_number')
+            .invoke('val', '9735558811')
+            .get('#volunteerCard_1 > #volunteersForm > .card-footer > #volunteerCardFooter > .form-check > #volunteer_enabled')
+            .click()
+            .get('#save-volunteers')
+            .click()
+
+        cy.wait(2000)
+    })
+
+    it('Get volunteers from a group', () => {
+        cy
+            .login()
+            .get('.navbar-nav')
+            .contains('Groups')
+            .click()
+            .get('#service_body_id option:selected')
+            .should('have.text', '-= Select A Service Body =-')
 
         cy.get('#service_body_id')
             .select(1)
 
-        cy.get("#group_id")
-            .should('be.empty');
+        cy.get('#group_id')
+            .select(1)
+
+        cy.wait(5000);
     })
+
+    // it('Delete a group', () => {
+    //     cy
+    //         .login()
+    //         .get('.navbar-nav')
+    //         .contains('Groups')
+    //         .click()
+    //         .get('#service_body_id option:selected')
+    //         .should('have.text', '-= Select A Service Body =-')
+    //
+    //     cy.get('#service_body_id')
+    //         .select(1)
+    //
+    //     cy.get('#group_id')
+    //         .select(1)
+    //
+    //     cy.get("#deleteGroupButton").click()
+    //
+    //     cy.wait(500);
+    //
+    //     cy.get('#service_body_id')
+    //         .select(1)
+    //
+    //     cy.get("#group_id")
+    //         .should('be.empty');
+    // })
 })

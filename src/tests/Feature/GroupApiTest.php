@@ -3,6 +3,8 @@
 use App\Constants\AuthMechanism;
 use App\Models\ConfigData;
 use App\Structures\Group;
+use App\Structures\Volunteer;
+use App\Structures\VolunteerData;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -138,6 +140,44 @@ test('update group', function () {
         "parent_id"=>null,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$updatedGroupData->toArray()]]])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+
+test('save group volunteers', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+
+    $groupData = new Group();
+    $groupData->group_name = "test";
+    $groupData->group_shared_service_bodies = ["1060"];
+
+    $response = $this->call(
+        'POST',
+        '/api/v1/groups',
+        ['serviceBodyId' => $this->serviceBodyId],
+        content: json_encode($groupData)
+    );
+
+    $groupId = json_decode($response->getContent())[0]->id;
+
+    $volunteerData = new VolunteerData();
+    $volunteerData->volunteer_phone_number = "19735559911";
+
+    $response = $this->call(
+        'POST',
+        '/api/v1/groups/volunteers',
+        ['groupId' => $groupId, 'serviceBodyId' => $this->serviceBodyId],
+        content: json_encode($volunteerData)
+    );
+
+    $volunteer = new Volunteer($volunteerData->volunteer_phone_number);
+
+    $response->assertJson([
+        "id"=>11,
+        "parent_id"=>$groupId,
+        "service_body_id"=>intval($this->serviceBodyId),
+        "data"=>[$volunteer->toArray()]])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });

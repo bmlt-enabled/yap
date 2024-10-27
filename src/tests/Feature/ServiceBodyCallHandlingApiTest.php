@@ -33,7 +33,7 @@ test('save call handling', function () {
     );
 
     $response->assertJson([
-        "id"=>86,
+        "id"=>88,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$callHandling->toArray()]])
@@ -58,7 +58,7 @@ test('get call handling for a service body', function () {
     );
 
     $response->assertJson([
-        "id"=>87,
+        "id"=>89,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$callHandling->toArray()]])
@@ -93,7 +93,7 @@ test('update call handling for a service body', function () {
     );
 
     $response->assertJson([
-        "id"=>88,
+        "id"=>90,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$callHandling->toArray()]])
@@ -112,7 +112,7 @@ test('update call handling for a service body', function () {
     );
 
     $response->assertJson([
-        "id"=>88,
+        "id"=>90,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$callHandling->toArray()]])

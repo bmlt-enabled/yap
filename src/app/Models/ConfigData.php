@@ -79,14 +79,33 @@ class ConfigData extends Model
     public static function createGroupVolunteers(
         int $serviceBodyId,
         int $groupId,
-        VolunteerData $volunteerConfiguration
+        array $volunteerDataArray
     ) : void {
         self::create([
             "service_body_id"=>$serviceBodyId,
             "parent_id"=>$groupId,
-            "data"=>json_encode([$volunteerConfiguration]),
+            "data"=>json_encode($volunteerDataArray),
             "data_type"=>DataType::YAP_GROUP_VOLUNTEERS_V2
         ]);
+    }
+
+    public static function updateGroupVolunteers(
+        int $groupId,
+        array $volunteerDataArray
+    ) : void {
+        self::where('parent_id', $groupId)
+            ->where('data_type', DataType::YAP_GROUP_VOLUNTEERS_V2)
+            ->update(['data' => json_encode($volunteerDataArray)]);
+    }
+
+    public static function getGroupVolunteers(
+        int $groupId
+    ) : Collection {
+        return ConfigData::select(['data','service_body_id','id','parent_id'])
+            ->where('parent_id', $groupId)
+            ->where('data_type', DataType::YAP_GROUP_VOLUNTEERS_V2)
+            ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
+            ->get();
     }
 
     public static function createVolunteer(
