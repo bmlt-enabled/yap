@@ -80,7 +80,7 @@ test('get by parent id', function () {
     ])->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([
-            "id"=>3,
+            "id"=>1,
             "service_body_id"=>$this->serviceBodyId,
             "parent_id"=>$this->parentServiceBodyId,
             "data"=>[$configData]
@@ -100,7 +100,7 @@ test('save config', function () {
     $response->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([
-            "id"=>4,
+            "id"=>1,
             "service_body_id"=>$this->serviceBodyId,
             "parent_id"=>$this->parentServiceBodyId,
             "data"=>$serviceBodyConfigData
@@ -125,7 +125,7 @@ test('save config with parent id', function () {
     $response->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([
-            "id"=>5,
+            "id"=>1,
             "service_body_id"=>$this->serviceBodyId,
             "parent_id"=>$this->parentServiceBodyId,
             "data"=>$serviceBodyConfigData

@@ -3,7 +3,6 @@
 use App\Constants\AuthMechanism;
 use App\Models\ConfigData;
 use App\Structures\Group;
-use App\Structures\Volunteer;
 use App\Structures\VolunteerData;
 
 beforeAll(function () {
@@ -35,7 +34,7 @@ test('save group', function () {
     );
 
     $response->assertJson([[
-        "id"=>6,
+        "id"=>1,
         "parent_id"=>null,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$groupData->toArray()]]])
@@ -48,16 +47,16 @@ test('delete group', function () {
     $groupData->group_name = "Fake Group";
     $groupData->group_shared_service_bodies = [$this->serviceBodyId];
 
-    ConfigData::createGroup(
+    $groupId = ConfigData::createGroup(
         $this->serviceBodyId,
         $groupData,
     );
 
      $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-     $response = $this->call('DELETE', sprintf('/api/v1/groups/%s', 7));
+     $response = $this->call('DELETE', sprintf('/api/v1/groups/%s', $groupId));
      $response->assertStatus(200)
          ->assertHeader("Content-Type", "application/json")
-         ->assertJson(['message' => 'Group 7 deleted successfully']);
+         ->assertJson(['message' => sprintf('Group %s deleted successfully', $groupId)]);
 });
 
 test('delete group that does not exist', function () {
@@ -118,7 +117,7 @@ test('update group', function () {
     );
 
     $response->assertJson([[
-        "id"=>9,
+        "id"=>1,
         "parent_id"=>null,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$groupData->toArray()]]])
@@ -131,12 +130,12 @@ test('update group', function () {
 
     $response = $this->call(
         'PUT',
-        sprintf('/api/v1/groups/%s', 9),
+        sprintf('/api/v1/groups/%s', 1),
         content: json_encode($updatedGroupData)
     );
 
     $response->assertJson([[
-        "id"=>9,
+        "id"=>1,
         "parent_id"=>null,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$updatedGroupData->toArray()]]])
@@ -172,7 +171,61 @@ test('save group volunteers', function () {
     );
 
     $response->assertJson([
-        "id"=>11,
+        "id"=>2,
+        "parent_id"=>$groupId,
+        "service_body_id"=>intval($this->serviceBodyId),
+        "data"=>[$volunteerData->toArray()]])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('update group volunteers', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+
+    $groupData = new Group();
+    $groupData->group_name = "test";
+    $groupData->group_shared_service_bodies = ["1060"];
+
+    $response = $this->call(
+        'POST',
+        '/api/v1/groups',
+        ['serviceBodyId' => $this->serviceBodyId],
+        content: json_encode($groupData)
+    );
+
+    $groupId = json_decode($response->getContent())[0]->id;
+
+    $volunteerData = new VolunteerData();
+    $volunteerData->volunteer_phone_number = "19735559911";
+
+    $response = $this->call(
+        'POST',
+        '/api/v1/groups/volunteers',
+        ['groupId' => $groupId, 'serviceBodyId' => $this->serviceBodyId],
+        content: json_encode([$volunteerData])
+    );
+
+    $response->assertJson([
+        "id"=>2,
+        "parent_id"=>$groupId,
+        "service_body_id"=>intval($this->serviceBodyId),
+        "data"=>[$volunteerData->toArray()]])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+
+    $volunteerData = new VolunteerData();
+    $volunteerData->volunteer_phone_number = "19735559912";
+
+
+    $response = $this->call(
+        'POST',
+        '/api/v1/groups/volunteers',
+        ['groupId' => $groupId],
+        content: json_encode([$volunteerData])
+    );
+
+    $response->assertJson([
+        "id"=>2,
         "parent_id"=>$groupId,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$volunteerData->toArray()]])

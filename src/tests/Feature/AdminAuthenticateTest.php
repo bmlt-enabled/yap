@@ -74,6 +74,4 @@ test('get service body call handling (legacy)', function () {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/html; charset=UTF-8");
-
-    ConfigData::truncate();
 });

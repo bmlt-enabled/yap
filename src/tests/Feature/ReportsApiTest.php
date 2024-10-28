@@ -48,7 +48,7 @@ test('validate sample cdr phone', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
-    $id = 11;
+    $id = 1;
     $callSid = "abc123";
     $service_body_id = 44;
     $date_range_start = "2023-01-01T00:00:00";
@@ -111,7 +111,7 @@ test('validate sample cdr sms', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = 44;
-    $id = 12;
+    $id = 1;
     $date_range_start = "2023-01-01 000:00:00";
     $date_range_end = "2023-01-07 23:59:59";
     $start_time = "2023-01-01 20:43:56";
@@ -173,7 +173,7 @@ test('validate sample cdr sms with caller consent event', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = 44;
-    $id = 13;
+    $id = 1;
     $date_range_start = "2023-01-01 000:00:00";
     $date_range_end = "2023-01-07 23:59:59";
     $start_time = "2023-01-01 20:43:56";
