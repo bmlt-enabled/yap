@@ -29,7 +29,6 @@ class VolunteerData extends Structure
             $this->volunteer_notes = "";
             $this->volunteer_enabled = false;
             $this->volunteer_shift_schedule = "";
-
         }
     }
 
