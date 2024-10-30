@@ -1,7 +1,7 @@
 describe('Service Body Call Handling', () => {
 
-    beforeEach(() => {
-
+    before(() => {
+        cy.resetDatabase();
     });
 
     it('Save service body', () => {

@@ -6,3 +6,7 @@ Cypress.Commands.add('login', (username = "gnyr_admin", password = "CoreysGorySt
     cy.get("#inputPassword").type(password);
     cy.get("#authenticateButton").contains("Authenticate").click();
 })
+
+Cypress.Commands.add('resetDatabase', () => {
+    cy.request('POST', `${Cypress.env('apiUrl')}/resetDatabase`);
+});

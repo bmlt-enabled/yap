@@ -1,7 +1,7 @@
 describe('Groups', () => {
 
-    beforeEach(() => {
-
+    before(() => {
+        cy.resetDatabase();
     });
 
     it('Add a new group', () => {
@@ -161,11 +161,10 @@ describe('Groups', () => {
             .get('#includeGroupDialog > .modal-dialog > .modal-content > .modal-footer > .btn-primary')
             .click()
             .wait(1000)
-            .get('#volunteerCard_2 > #volunteersForm > .card-footer > #groupCardFooter > .form-check > #group_enabled')
+            .get('#volunteerCard_1 > #volunteersForm > .card-footer > #groupCardFooter > .form-check > #group_enabled')
             .click()
-            .get('#volunteerCard_2 > #volunteersForm > .card-header > #group_name')
+            .get('#volunteerCard_1 > #volunteersForm > .card-header > #group_name')
             .should('has.text', 'testgroup1-modified')
-
     })
 
     it('Delete a group', () => {

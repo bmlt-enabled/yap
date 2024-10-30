@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Admin\SwaggerController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
@@ -24,3 +25,10 @@ Route::group([
     Route::resource('rootServer/servicebodies', 'RootServerServiceBodiesController')->only(['index']);
     Route::resource('events/status', 'EventStatusController')->only(['index', 'store']);
 });
+
+if (getenv('ENVIRONMENT') == "test") {
+    Route::post('/resetDatabase', function () {
+        Artisan::call('migrate:fresh --seed');
+        return response()->json(['status' => 'database reset']);
+    });
+}

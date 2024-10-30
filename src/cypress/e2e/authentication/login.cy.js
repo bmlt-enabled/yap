@@ -1,9 +1,5 @@
 describe('Login', () => {
 
-    beforeEach(() => {
-
-    });
-
     it('Login with BMLT creds', () => {
         cy
             .login()

@@ -1,7 +1,7 @@
 describe('Volunteers', () => {
 
-    beforeEach(() => {
-
+    before(() => {
+        cy.resetDatabase();
     });
 
     it('Save Volunteers', () => {
