@@ -129,6 +129,45 @@ describe('Groups', () => {
             .should('have.value', 'danny g')
     })
 
+    it('Add group to volunteers', () => {
+        cy
+            .login()
+            .get('.navbar-nav')
+            .contains('Service Bodies')
+            .click()
+            .get('#service-bodies-table tr:contains(\'Brooklyn\')')
+            .should('contain', 'Brooklyn Area Service (1006)')
+            .get("[onclick=\"openServiceBodyCallHandling(1005);\"]")
+            .click()
+            .wait(1000)
+            .get('#serviceBodyCallHandling_1005 > .modal-dialog > .modal-content > .modal-body > #serviceBodyCallHandlingForm > #volunteer_routing')
+            .select('Volunteers')
+            .wait(500)
+            .get("#serviceBodyCallHandling_1005 > .modal-dialog > .modal-content > .modal-footer > .btn-primary")
+            .click()
+            .wait(1000)
+
+        cy
+            .login()
+            .get('.navbar-nav')
+            .contains('Volunteers')
+            .click()
+            .wait(1000)
+            .get("#include-group")
+            .click()
+            .wait(1000)
+            .get("#selected_group_id")
+            .select(1)
+            .get('#includeGroupDialog > .modal-dialog > .modal-content > .modal-footer > .btn-primary')
+            .click()
+            .wait(1000)
+            .get('#volunteerCard_2 > #volunteersForm > .card-footer > #groupCardFooter > .form-check > #group_enabled')
+            .click()
+            .get('#volunteerCard_2 > #volunteersForm > .card-header > #group_name')
+            .should('has.text', 'testgroup1-modified')
+
+    })
+
     it('Delete a group', () => {
         cy
             .login()

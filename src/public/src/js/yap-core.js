@@ -752,7 +752,7 @@ function loadVolunteers(serviceBodyId, callback)
 
 function loadGroupVolunteers(group_id, callback)
 {
-    $.getJSON("../api/v1/groups/volunteers?groupId=" + group_id, function (data) {
+    $.getJSON(`../api/v1/groups/volunteers?groupId=${group_id}`, function (data) {
         if (!$.isEmptyObject(data)) {
             for (item of data['data']) {
                 includeVolunteer(item);
@@ -814,7 +814,7 @@ function getGroupForId(service_body_id, group_id, callback)
 {
     loadGroups(service_body_id, function (data) {
         for (item of data) {
-            if (item['id'] === group_id) {
+            if (item['id'] === parseInt(group_id)) {
                 callback(item);
             }
         }
@@ -1056,7 +1056,7 @@ function includeGroup(groupData)
 
     getGroupForId($("#service_body_id").val(), groupData['group_id'], function (data) {
         if (data !== null) {
-            var groupInfo = JSON.parse(data['data']);
+            var groupInfo = data['data'];
             groupCardTemplate.find("#group_name").html(groupInfo[0]['group_name'])
         }
 
