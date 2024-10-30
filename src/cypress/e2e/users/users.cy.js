@@ -1,7 +1,7 @@
 describe('Menubar', () => {
 
-    beforeEach(() => {
-
+    before(() => {
+        cy.resetDatabase();
     });
 
     it('Click Users', () => {

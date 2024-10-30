@@ -6,6 +6,8 @@ use App\Constants\VolunteerResponderOption;
 use App\Constants\VolunteerType;
 use App\Models\ConfigData;
 use App\Services\RootServerService;
+use App\Structures\Group;
+use App\Structures\Volunteer;
 use App\Structures\VolunteerData;
 use App\Structures\VolunteerInfo;
 use App\Utilities\VolunteerScheduleHelpers;
@@ -465,16 +467,19 @@ test('return volunteers with groups recursively json', function () {
         $volunteer
     );
 
+    $groupData = new Group();
+    $groupData->group_name = "test";
+    $groupData->group_shared_service_bodies = [$firstServiceBodyId];
+
     $groupId = ConfigData::createGroup(
         $firstServiceBodyId,
-        $parentServiceBodyId,
-        (object)["group_name" => "test", "group_shared_service_bodies" => $firstServiceBodyId]
+        $groupData
     );
 
     ConfigData::createGroupVolunteers(
         $firstServiceBodyId,
         $groupId,
-        $volunteer,
+        [$volunteer],
     );
 
     ConfigData::addGroupToVolunteers(
@@ -673,36 +678,106 @@ test('return volunteers invalid format', function () {
         ->assertStatus(200);
 });
 
-test('get groups for service body', function () {
+test('save volunteers', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $groupData = ["group_name"=>"Fake Group", "group_shared_service_bodies"=>[$this->serviceBodyId]];
 
-    ConfigData::createGroup(
-        $this->serviceBodyId,
-        $this->parentServiceBodyId,
-        (object)$groupData,
+    $volunteerData = new VolunteerData();
+    $volunteerData->volunteer_phone_number = "19735559911";
+
+    $response = $this->call(
+        'POST',
+        '/api/v1/volunteers',
+        ['serviceBodyId' => $this->serviceBodyId],
+        content: json_encode([$volunteerData])
     );
 
-    $id = ConfigData::select('id')->orderBy('id', 'desc')->first()->id;
-
-    $this->call('GET', '/api/v1/volunteers/groups', [
-        "service_body_id" => $this->serviceBodyId,
-    ])->assertJson([[
-            "id"=>$id,
-            "service_body_id"=>intval($this->serviceBodyId),
-            "parent_id"=>intval($this->parentServiceBodyId),
-            "data"=>json_encode([$groupData])]])
+    $response->assertJson([
+        "id"=>1,
+        "parent_id"=>0,
+        "service_body_id"=>intval($this->serviceBodyId),
+        "data"=>[$volunteerData->toArray()]])
         ->assertHeader("Content-Type", "application/json")
         ->assertStatus(200);
 });
 
-test('get groups for service body no auth', function () {
-    $response = $this->call('GET', '/api/v1/volunteers/groups', [
-        "service_body_id" => 0,
-    ]);
-    $response
-        ->assertHeader("Location", "http://localhost/admin")
-        ->assertHeader("Content-Type", "text/html; charset=utf-8")
-        ->assertStatus(302);
+test('get volunteers for a service body', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+
+    $volunteerData = new VolunteerData();
+    $volunteerData->volunteer_phone_number = "19735559911";
+
+    ConfigData::createVolunteers(
+        $this->serviceBodyId,
+        [$volunteerData]
+    );
+
+    $response = $this->call(
+        'POST',
+        '/api/v1/volunteers',
+        ['serviceBodyId' => $this->serviceBodyId],
+        content: json_encode([$volunteerData])
+    );
+
+    $response->assertJson([
+        "id"=>1,
+        "parent_id"=>0,
+        "service_body_id"=>intval($this->serviceBodyId),
+        "data"=>[$volunteerData->toArray()]])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('get volunteers for a service body that does not exist', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+
+    $response = $this->call(
+        'GET',
+        '/api/v1/volunteers',
+        ['serviceBodyId' => $this->serviceBodyId]
+    );
+
+    $response->assertJson([])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+});
+
+test('update call volunteers for a service body', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+
+    $volunteerData = new VolunteerData();
+    $volunteerData->volunteer_phone_number = "19735559911";
+
+    $response = $this->call(
+        'POST',
+        '/api/v1/volunteers',
+        ['serviceBodyId' => $this->serviceBodyId],
+        content: json_encode([$volunteerData])
+    );
+
+    $response->assertJson([
+        "id"=>1,
+        "parent_id"=>0,
+        "service_body_id"=>intval($this->serviceBodyId),
+        "data"=>[$volunteerData->toArray()]])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
+
+
+    $volunteerData = new VolunteerData();
+    $volunteerData->volunteer_phone_number = "19735559912";
+
+    $response = $this->call(
+        'POST',
+        '/api/v1/volunteers',
+        ['serviceBodyId' => $this->serviceBodyId],
+        content: json_encode([$volunteerData])
+    );
+
+    $response->assertJson([
+        "id"=>1,
+        "parent_id"=>0,
+        "service_body_id"=>intval($this->serviceBodyId),
+        "data"=>[$volunteerData->toArray()]])
+        ->assertHeader("Content-Type", "application/json")
+        ->assertStatus(200);
 });

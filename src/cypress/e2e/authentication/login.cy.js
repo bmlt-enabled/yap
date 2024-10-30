@@ -1,7 +1,7 @@
 describe('Login', () => {
 
-    beforeEach(() => {
-
+    before(() => {
+        cy.resetDatabase();
     });
 
     it('Login with BMLT creds', () => {

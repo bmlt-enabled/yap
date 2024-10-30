@@ -1,6 +1,11 @@
 <?php
 
+use App\Constants\AuthMechanism;
+use App\Constants\VolunteerRoutingType;
+use App\Models\ConfigData;
 use App\Models\User;
+use App\Structures\ServiceBodyCallHandling;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -51,4 +56,22 @@ test('login to authenticate with a yap admin user', function () {
         ->assertStatus(302)
         ->assertHeader("Location", 'http://localhost/admin/home')
         ->assertHeader("Content-Type", "text/html; charset=utf-8");
+});
+
+// TODO: this test should be removed after we load data solely with React
+test('get service body call handling (legacy)', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    $_SESSION['auth_is_admin'] = true;
+    $_SESSION['username'] = "admin";
+
+    $serviceBodyCallHandling = new ServiceBodyCallHandling();
+    $serviceBodyCallHandling->volunteer_routing_enabled = true;
+    $serviceBodyCallHandling->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+
+    ConfigData::createServiceBodyCallHandling(1, $serviceBodyCallHandling);
+
+    $response = $this->get('/admin/volunteers');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/html; charset=UTF-8");
 });

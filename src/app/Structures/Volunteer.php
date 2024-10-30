@@ -2,7 +2,7 @@
 
 namespace App\Structures;
 
-class Volunteer
+class Volunteer extends Structure
 {
     public $phoneNumber;
     public $volunteerInfo;

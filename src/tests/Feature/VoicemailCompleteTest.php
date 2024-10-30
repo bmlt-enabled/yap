@@ -73,9 +73,8 @@ test('voicemail complete send sms using primary contact', function ($method) {
         }));
     $this->utility->client->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
 
-    ConfigData::createCallHandling(
+    ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 
@@ -165,9 +164,8 @@ test('voicemail complete send sms using volunteer responder option', function ($
         $volunteer
     );
 
-    ConfigData::createCallHandling(
+    ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 
@@ -264,9 +262,8 @@ test('voicemail complete send sms using volunteer responder option and dialback 
         $volunteer
     );
 
-    ConfigData::createCallHandling(
+    ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData
     );
 
@@ -331,9 +328,8 @@ test('voicemail complete send email using primary contact', function ($method, $
         ->once();
     app()->instance(PHPMailer::class, $mailer);
 
-    ConfigData::createCallHandling(
+    ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
         $serviceBodyCallHandlingData,
     );
 

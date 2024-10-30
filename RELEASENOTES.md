@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.4.1 (UNRELEASED)
+* Fix for editing groups. [#1194]
+
 ### 4.4.0 (September 10, 2024)
 * Added a feature to download recursive volunteer lists in either JSON or CSV format.  Report also includes service body and notes field now. [#1122]
 * Dealing with cases where no timezone is set for a volunteer.  Those volunteers are excluded. [#1121]

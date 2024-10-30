@@ -1,17 +1,20 @@
 <?php
 
-use App\Repositories\ReportsRepository;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\FakeTwilioHttpClient;
 use Tests\TestCase;
 use Tests\TwilioTestUtility;
 
-uses(TestCase::class, RefreshDatabase::class)->beforeEach(function () {
-    env("ENVIRONMENT", "test");
-    $_COOKIE["PHPSESSID"] = "fake";
-})->in('Feature');
+uses(TestCase::class, RefreshDatabase::class)
+    ->beforeEach(function () {
+        env("ENVIRONMENT", "test");
+        $_COOKIE["PHPSESSID"] = "fake";
+        $this->artisan('migrate:fresh');
+    })
+    ->in('Feature');
 
 function setupTwilioService(): TwilioTestUtility
 {

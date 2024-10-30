@@ -1,28 +1,26 @@
 <?php
 
-namespace app\Http\Controllers\Api\V1\Admin;
+namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Constants\DataType;
 use App\Http\Controllers\Controller;
 use App\Models\ConfigData;
-use App\Structures\Volunteer;
-use App\Structures\VolunteerData;
-use Illuminate\Http\JsonResponse;
+use App\Services\VolunteerService;
 use Illuminate\Http\Request;
 use stdClass;
 
-class ConfigureVolunteersController extends Controller
+class GroupVolunteerController extends Controller
 {
-    protected ConfigData $configData;
+    protected VolunteerService $volunteerService;
 
-    public function __construct(ConfigData $configData)
+    public function __construct(VolunteerService $volunteerService)
     {
-        $this->configData = $configData;
+        $this->volunteerService = $volunteerService;
     }
 
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
-        $data = ConfigData::getVolunteers($request->get("serviceBodyId"));
+        $data = ConfigData::getGroupVolunteers($request->get("groupId"));
 
         if (count($data) > 0) {
             return response()->json([
@@ -39,18 +37,19 @@ class ConfigureVolunteersController extends Controller
     public function store(Request $request)
     {
         $volunteers = json_decode($request->getContent());
-        $serviceBodyId = $request->get('serviceBodyId');
+        $groupId = $request->get('groupId');
+        $serviceBodyId = $request->get('serviceBodyId') ?? null;
 
-        $existingRecord = ConfigData::where('service_body_id', $serviceBodyId)
-            ->where('data_type', DataType::YAP_VOLUNTEERS_V2)
+        $existingRecord = ConfigData::where('parent_id', $groupId)
+            ->where('data_type', DataType::YAP_GROUP_VOLUNTEERS_V2)
             ->first();
 
         if ($existingRecord) {
             // If the record exists, update it
-            ConfigData::updateVolunteers($serviceBodyId, $volunteers);
+            ConfigData::updateGroupVolunteers($groupId, $volunteers);
         } else {
             // Otherwise, create a new record
-            ConfigData::createVolunteers($serviceBodyId, $volunteers);
+            ConfigData::createGroupVolunteers($serviceBodyId, $groupId, $volunteers);
         }
 
         return self::index($request);
