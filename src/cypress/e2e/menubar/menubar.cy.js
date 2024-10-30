@@ -1,7 +1,7 @@
 describe('Menubar', () => {
 
-    beforeEach(() => {
-
+    before(() => {
+        cy.resetDatabase();
     });
 
     it('Click Reports', () => {
@@ -10,6 +10,7 @@ describe('Menubar', () => {
             .get('.navbar-nav')
             .contains('Reports')
             .click()
+            .wait(1000)
             .get('#service_body_id option:selected')
             .should('have.text', '-= Select A Service Body =-');
     })
@@ -20,6 +21,7 @@ describe('Menubar', () => {
             .get('.navbar-nav')
             .contains('Service Bodies')
             .click()
+            .wait(1000)
             .get('#service-bodies-table tr:contains(\'Brooklyn\')')
             .should('contain', 'Brooklyn Area Service (1006)');
     })
@@ -30,6 +32,7 @@ describe('Menubar', () => {
             .get('.navbar-nav')
             .contains('Schedules')
             .click()
+            .wait(1000)
             .get('#service_body_id option:selected')
             .should('have.text', '-= Select A Service Body =-');
     })
@@ -40,6 +43,7 @@ describe('Menubar', () => {
             .get('.navbar-nav')
             .contains('Settings')
             .click()
+            .wait(1000)
             .get('#settingsTable')
             .should('contain', 'https://latest.aws.bmlt.app/main_server');
     })
@@ -50,6 +54,7 @@ describe('Menubar', () => {
             .get('.navbar-nav')
             .contains('Volunteer')
             .click()
+            .wait(1000)
             .get('#service_body_id option:selected')
             .should('have.text', '-= Select A Service Body =-');
     })
@@ -60,6 +65,7 @@ describe('Menubar', () => {
             .get('.navbar-nav')
             .contains('Groups')
             .click()
+            .wait(1000)
             .get('#service_body_id option:selected')
             .should('have.text', '-= Select A Service Body =-');
     })

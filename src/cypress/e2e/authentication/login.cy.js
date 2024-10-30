@@ -1,5 +1,9 @@
 describe('Login', () => {
 
+    before(() => {
+        cy.resetDatabase();
+    });
+
     it('Login with BMLT creds', () => {
         cy
             .login()
