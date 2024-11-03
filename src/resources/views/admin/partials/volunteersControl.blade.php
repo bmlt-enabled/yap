@@ -204,7 +204,7 @@
                     <option value="0">Unassigned</option>
                     <option value="1">Enabled</option>
                 </select>
-                @if ($settings->has('language_selections'))
+                @if ($settings->has('language_selections_tagging') || $settings->has('language_selections'))
                 Languages: <select multiple class="form-control form-control-sm" name="volunteer_language" id="volunteer_language">
                     @foreach ($settings->languageSelections() as $key => $available_language) {
                     <option value="<?php echo $available_language; ?>"><?php echo $available_language; ?></option>
