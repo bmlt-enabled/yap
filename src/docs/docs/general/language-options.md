@@ -39,6 +39,12 @@ static $language_selections = "en-US,pig-latin";
 
 This example will make option 1, English and option 2, pig latin.
 
+You can also tag volunteers ahead of time before enabling the option by using this setting.  Either option will work, except this one will not enable the voice prompt menu.
+
+```php
+static $language_selections_tagging = "en-US,pig-latin";
+```
+
 ### Mixing languages and voices
 
 Voices can be configured for every language option.  For example for Spanish:

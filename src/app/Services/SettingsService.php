@@ -46,6 +46,7 @@ class SettingsService
         'jft_option' => ['description' => '/miscellaneous/playback-for-readings' , 'default' => false, 'overridable' => true, 'hidden' => false],
         'language' => ['description' => '/general/language-options' , 'default' =>  'en-US', 'overridable' => true, 'hidden' => false],
         'language_selections' => ['description' => '/general/language-options', 'default' => null, 'overridable' => true, 'hidden' => false],
+        'language_selections_tagging' => ['description' => '/general/language-options', 'default' => null, 'overridable' => true, 'hidden' => false],
         'location_lookup_bias' => ['description' => '/general/location-lookup-bias' , 'default' => 'country:us', 'overridable' => true, 'hidden' => false],
         'meeting_result_sort' => ['description' => '/meeting-search/sorting-results' , 'default' => MeetingResultSort::TODAY, 'overridable' => true, 'hidden' => false],
         'meeting_search_radius' => ['description' => '/meeting-search/meeting-search-radius' , 'default' => -50, 'overridable' => true, 'hidden' => false],
@@ -332,7 +333,11 @@ class SettingsService
 
     public function languageSelections(): array
     {
-        return explode(",", $this->get('language_selections'));
+        if ($this->has('language_selections_tagging') && $this->get('language_selections_tagging') !== "") {
+            return explode(",", $this->get('language_selections_tagging'));
+        } else {
+            return explode(",", $this->get('language_selections'));
+        }
     }
 
     public function getNumberForWord($name)
