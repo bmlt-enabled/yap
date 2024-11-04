@@ -1,7 +1,8 @@
 # Release Notes
 
-### 4.4.1 (UNRELEASED)
-* Fix for editing groups. [#1194]
+### 4.4.1 (November 4, 2024)
+* Added new feature that allows for tagging languages to volunteers prior to enabling language routing with `language_selections_tagging`. [#1178]
+* Fix for editing groups, configuration and call handling. [#1194] [#1222]
 
 ### 4.4.0 (September 10, 2024)
 * Added a feature to download recursive volunteer lists in either JSON or CSV format.  Report also includes service body and notes field now. [#1122]
