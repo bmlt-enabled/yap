@@ -10,10 +10,16 @@ assignees: '@dgershman'
 **Describe the bug**
 
 
-**What version are you running?**
+**What version of Yap are you running?**
 
 
 **What PHP version are you running?**
+
+
+**Is this happening in a live environment or a test environment?**
+
+
+**Is this causing the system to be degraded in a way that makes in unusable?**
 
 
 **Did this happen on prior versions to the one you are running (if so what version)?**
@@ -21,10 +27,9 @@ assignees: '@dgershman'
 
 **To Reproduce**
 Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+1. ...
+2. ...
+3. ...
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
