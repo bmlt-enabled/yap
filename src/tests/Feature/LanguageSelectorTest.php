@@ -50,3 +50,24 @@ test('language selector with languages set', function ($method) {
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
+
+test('language selector with languages set and custom prompts', function ($method) {
+    $settingsService = new SettingsService();
+    $settingsService->set("language_selections", "en-US,es-US");
+    $this->withoutExceptionHandling();
+    $settingsService->set("language_selections_greeting", "https://example.org/languageSelectionsGreeting.mp3");
+    app()->instance(SettingsService::class, $settingsService);
+    $response = $this->call($method, '/lng-selector.php');
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather input="dtmf" numDigits="1" timeout="60" speechTimeout="auto" action="index.php" method="GET">',
+            '<Pause length="2"/>',
+            '<Play>https://example.org/languageSelectionsGreeting.mp3</Play>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
