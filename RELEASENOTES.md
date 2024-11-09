@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.5.0 (UNRELEASED)
+* Added new feature that allow for creating a custom prompt for language selection feature. [#1228]
+
 ### 4.4.5 (May 21, 2025)
 * Fix for Groups dropdown not functioning due to type handling differences between MySQL and MariaDB database versions [#1339]
 
