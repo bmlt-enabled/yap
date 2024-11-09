@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.5.0 (UNRELEASED)
+* Added new feature that allow for creating a custom prompt for language selection feature. [#1228]
+
 ### 4.4.3 (UNRELEASED)
 * Fix for blocklist capability working inconsistenly [#1329]
 
