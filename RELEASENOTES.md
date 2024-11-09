@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.5.0 (UNRELEASED)
+* Added new feature that allow for creating a custom prompt for language selection feature. [#1228]
+
 ### 4.4.1 (November 4, 2024)
 * Added new feature that allows for tagging languages to volunteers prior to enabling language routing with `language_selections_tagging`. [#1178]
 * Fix for editing groups, configuration and call handling. [#1194] [#1222]
