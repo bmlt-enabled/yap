@@ -45,6 +45,12 @@ You can also tag volunteers ahead of time before enabling the option by using th
 static $language_selections_tagging = "en-US,pig-latin";
 ```
 
+It may also make sense if you want to indicate the name of the service body or helpline they are calling to record a new prompt.  Keep in mind to indicate all the menu options for each language as there will be no automated menu once this setting is enabled.
+
+```php
+static $language_selections_greeting = "https://example.org/test.mp3";
+```
+
 ### Mixing languages and voices
 
 Voices can be configured for every language option.  For example for Spanish:

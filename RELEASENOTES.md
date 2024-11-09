@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.5.0 (UNRELEASED)
+* Added new feature that allow for creating a custom prompt for language selection feature. [#1228]
+
 ### 4.4.4 (May 10, 2025)
 * Feature to ignore Rest Errors with Twilio for Fake Credentials.
 * Remove status from login page.
