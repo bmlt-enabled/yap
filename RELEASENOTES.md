@@ -1,6 +1,6 @@
 # Release Notes
 
-### 4.5.0 (UNRELEASED)
+### 4.5.0 (July 11, 2025)
 * Added new feature that allow for creating a custom prompt for language selection feature. [#1228]
 * Fix to add some missing translations for Spanish.
 * Fix for SMS + Email full translation for language selected by caller. [#1387]
