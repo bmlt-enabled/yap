@@ -54,7 +54,6 @@ test('language selector with languages set', function ($method) {
 test('language selector with languages set and custom prompts', function ($method) {
     $settingsService = new SettingsService();
     $settingsService->set("language_selections", "en-US,es-US");
-    $this->withoutExceptionHandling();
     $settingsService->set("language_selections_greeting", "https://example.org/languageSelectionsGreeting.mp3");
     app()->instance(SettingsService::class, $settingsService);
     $response = $this->call($method, '/lng-selector.php');
