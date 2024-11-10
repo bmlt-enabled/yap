@@ -281,4 +281,49 @@ class RootServerService extends Service
         );
         return json_decode($this->http->get($bmlt_search_endpoint, 3600));
     }
+
+    public function authenticate($username, $password) : bool
+    {
+        $endpoint = ($this->settings->has('alt_auth_method') && $this->settings->get('alt_auth_method') ? '/index.php' : '/local_server/server_admin/xml.php');
+        $baseUrl = sprintf("%s%s", $this->settings->getAdminBMLTRootServer(), $endpoint);
+        $res = $this->http->postAsForm(
+            $baseUrl,
+            [
+                "admin_action" => "login",
+                "c_comdef_admin_login" => $username,
+                "c_comdef_admin_password" => $password
+            ]
+        );
+        $is_authed = preg_match('/^OK$/', str_replace(array("\r", "\n"), '', $res->body())) == 1;
+        $_SESSION["bmlt_auth_session"] = $is_authed ? $this->getCookiesFromHeaders($res->cookies()) : null;
+        return $is_authed;
+    }
+
+    public function logout()
+    {
+        $endpoint = 'local_server/server_admin/xml.php?admin_action=logout';
+        $this->http->getWithAuth(sprintf("%s%s", $this->settings->getAdminBMLTRootServer(), $endpoint));
+    }
+
+    public function getLoggedInUsername()
+    {
+        if (!isset($_SESSION['auth_user_name_string'])) {
+            $url = sprintf('%s/local_server/server_admin/json.php?admin_action=get_user_info', $this->settings->getAdminBMLTRootServer());
+            $get_user_info_response = json_decode($this->http->get($url, 3600));
+            $user_name = isset($get_user_info_response->current_user) ? $get_user_info_response->current_user->name : $_SESSION['username'];
+            $_SESSION['auth_user_name_string'] = $user_name;
+        }
+        return $_SESSION['auth_user_name_string'];
+    }
+
+    private function getCookiesFromHeaders($cookies): array
+    {
+        $cookieStore = [];
+
+        foreach ($cookies as $cookie) {
+            $cookieStore[] = sprintf("%s=%s", $cookie->getName(), $cookie->getValue());
+        }
+
+        return $cookieStore;
+    }
 }
