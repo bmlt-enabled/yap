@@ -295,10 +295,6 @@ class HelplineController extends Controller
                     CallRole::CALLER
                 );
                 $this->call->insertCallEventRecord(EventId::CALLER_IN_CONFERENCE);
-
-                if (isset($_SESSION["ActiveVolunteer"])) {
-                    $volunteer = $_SESSION["ActiveVolunteer"];
-                }
             }
 
             // TODO: Make timeout configurable per volunteer

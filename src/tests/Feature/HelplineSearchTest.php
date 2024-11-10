@@ -16,6 +16,7 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
+    dump('Running test: ' . test()->name());
     @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
@@ -169,7 +170,6 @@ test('valid search, volunteer routing, by location', function ($method) {
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
-
 
 test('valid search, volunteer routing', function ($method) {
     $conferenceService = Mockery::mock(ConferenceService::class)->makePartial();

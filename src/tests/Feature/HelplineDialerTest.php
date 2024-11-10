@@ -195,7 +195,6 @@ test('mark the caller as having entered the conference for reporting purposes', 
     $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
 
-
     ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,
         $serviceBodyCallHandlingData
@@ -299,6 +298,8 @@ test('mark the caller as having entered the conference for reporting purposes', 
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json");
+
+    $this->assertNotNull($_SESSION['ActiveVolunteer']);
 })->with(['GET', 'POST']);
 
 test('mark the caller as having entered the conference for reporting purposes, with sms dialback', function ($method) {
@@ -430,6 +431,8 @@ test('mark the caller as having entered the conference for reporting purposes, w
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json");
+
+    $this->assertNotNull($_SESSION['ActiveVolunteer']);
 })->with(['GET', 'POST']);
 
 test('an invalid or busy outgoing call happens with linear and voicemail and one volunteer', function ($method, $twilioCallStatus) {
@@ -577,6 +580,8 @@ test('an invalid or busy outgoing call happens with linear and voicemail and one
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json");
+
+    $this->assertNotNull($_SESSION['ActiveVolunteer']);
 })->with(['GET', 'POST'], [TwilioCallStatus::FAILED, TwilioCallStatus::BUSY]);
 
 test('an invalid or busy outgoing call happens with linear and voicemail and two volunteers', function ($method, $twilioCallStatus) {
@@ -727,6 +732,8 @@ test('an invalid or busy outgoing call happens with linear and voicemail and two
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json");
+
+    $this->assertNotNull($_SESSION['ActiveVolunteer']);
 })->with(['GET', 'POST'], [TwilioCallStatus::FAILED, TwilioCallStatus::BUSY]);
 
 test('an invalid or busy outgoing call happens with blasting and voicemail and one volunteer', function ($method, $twilioCallStatus) {
@@ -1063,3 +1070,137 @@ test('volunteer leave the call', function ($method) {
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json");
 })->with(['GET', 'POST']);
+
+test('call blasting dial', function ($method) {
+    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
+    $_SESSION['no_answer_max'] = 1;
+    $_SESSION['master_callersid'] = $this->callSid;
+    $_SESSION['voicemail_url'] = $this->voicemail_url;
+
+    $this->volunteer_phone_number = "(732) 566-5232";
+
+    $volunteer_name = "Corey";
+    $volunteer_gender = VolunteerGender::UNSPECIFIED;
+    $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
+    $volunteer_languages = ["en-US"];
+    $volunteer_phone_number = $this->volunteer_phone_number;
+    $shiftTz = "America/New_York";
+    $shiftStart = "12:00 AM";
+    $shiftEnd = "11:59 PM";
+
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::BLASTING;
+
+    ConfigData::createServiceBodyCallHandling(
+        $this->serviceBodyId,
+        $serviceBodyCallHandlingData
+    );
+    $shifts = [];
+    for ($i = 1; $i <= 7; $i++) {
+        $shifts[] = [
+            "day" => $i,
+            "tz" => $shiftTz,
+            "start_time" => $shiftStart,
+            "end_time" => $shiftEnd,
+        ];
+    }
+
+    $volunteer = new VolunteerData();
+    $volunteer->volunteer_name = $volunteer_name;
+    $volunteer->volunteer_phone_number = $this->volunteer_phone_number;
+    $volunteer->volunteer_gender = $volunteer_gender;
+    $volunteer->volunteer_responder = $volunteer_responder;
+    $volunteer->volunteer_languages = $volunteer_languages;
+    $volunteer->volunteer_notes = "";
+    $volunteer->volunteer_enabled = true;
+    $volunteer->volunteer_shift_schedule = base64_encode(json_encode($shifts));
+
+    ConfigData::createVolunteer(
+        $this->serviceBodyId,
+        $this->parentServiceBodyId,
+        $volunteer,
+    );
+
+    $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
+    $conferenceListMock->shouldReceive("read")
+        ->with(['friendlyName' => $this->conferenceName])
+        ->andReturn(json_decode(
+            '[{"status":"in-progress","sid":"'.$this->conferenceName.'"}]'
+        ))
+        ->twice();
+    $this->twilioClient->conferences = $conferenceListMock;
+
+    // mocking TwilioRestClient->conferences()->participants->read()
+    $conferenceContextMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceContext");
+    $participantListMock = mock("Twilio\Rest\Api\V2010\Account\Conference\ParticipantList");
+    $participantListMock->shouldReceive("read")
+        ->andReturn(json_decode(sprintf('[{"callSid":"%s"}]', $this->callSid)))
+        ->once();
+    $conferenceContextMock->participants = $participantListMock;
+    $this->twilioClient
+        ->shouldReceive("conferences")
+        ->with($this->conferenceName)
+        ->andReturn($conferenceContextMock)
+        ->once();
+
+    $callInstance = mock('Twilio\Rest\Api\V2010\Account\CallInstance')->makePartial();
+    $callInstance->from = "+15557770000";
+    $callInstance->status = TwilioCallStatus::INPROGRESS;
+
+    $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
+    $callContextMock->shouldReceive('fetch')
+        ->with()
+        ->andReturn($callInstance);
+
+    // mocking TwilioRestClient->calls()->update();
+    $callContextMock->shouldReceive('update')
+        ->with(Mockery::on(function ($data) {
+            return $data['method'] == "GET"
+                && $data['url'] == "https://example.org/voicemail.php";
+        }));
+    $this->twilioClient->shouldReceive('calls')->with($this->callSid)->andReturn($callContextMock);
+
+    $callCreateInstance = mock('Twilio\Rest\Api\V2010\Account\CallList')->makePartial();
+    $callCreateInstance->shouldReceive('create')
+        ->withArgs([$volunteer_phone_number, $this->caller, [
+            "method" => "GET",
+            "url" => sprintf(
+                "https://localhost/helpline-outdial-response.php?conference_name=%s&service_body_id=%s&ysk=fake",
+                $this->conferenceName,
+                $this->serviceBodyId
+            ),
+            "statusCallback" => "https://localhost/helpline-dialer.php?noop=1&ysk=fake",
+            "statusCallbackEvent" => TwilioCallStatus::COMPLETED,
+            "statusCallbackMethod" => "GET",
+            "timeout" => 20,
+            "callerId" => $this->caller,
+            "originalCallerId" => $this->caller,
+        ]]);
+    $this->twilioClient->calls = $callCreateInstance;
+
+    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+    $this->twilioClient->messages = $messageListMock;
+    $messageListMock->shouldReceive('create')
+        ->with($volunteer_phone_number, Mockery::on(function ($data) {
+            return $data['from'] == $this->caller && !empty($data['body'][0]);
+        }));
+
+    $response = $this->call($method, '/helpline-dialer.php', [
+        'CallSid'=>$this->callSid,
+        'Called'=>$this->volunteer_phone_number,
+        'Caller'=>$this->caller,
+        'OriginalCallerId' => $this->caller,
+        'FriendlyName' => $this->conferenceName,
+        'CallStatus' => TwilioCallStatus::INPROGRESS,
+        'StatusCallbackEvent' => 'participant-join',
+        'SequenceNumber' => 1,
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json");
+
+    $this->assertNotNull($_SESSION['ActiveVolunteer']);
+ })->with(['GET', 'POST']);
