@@ -58,6 +58,26 @@ test('login to authenticate with a yap admin user', function () {
         ->assertHeader("Content-Type", "text/html; charset=utf-8");
 });
 
+test('login to authenticate with a yap user', function () {
+    User::create([
+        "name"=>"user",
+        "username"=>"user",
+        "password"=>hash("sha256", "user"),
+        "permissions"=>0,
+        "is_admin"=>0,
+        "service_bodies"=>"1006,1005"
+    ]);
+
+    $response = $this->post(
+        '/admin/login',
+        ["username"=>"user","password"=>"user"]
+    );
+    $response
+        ->assertStatus(302)
+        ->assertHeader("Location", 'http://localhost/admin/home')
+        ->assertHeader("Content-Type", "text/html; charset=utf-8");
+});
+
 test('logout with a yap admin user', function () {
     User::create([
         "name"=>"admin",
