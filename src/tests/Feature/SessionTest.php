@@ -22,4 +22,3 @@ test('clear the session', function () {
         ->assertSeeText("OK");
     $this->assertNull(Session::get("override_blah"));
 });
-

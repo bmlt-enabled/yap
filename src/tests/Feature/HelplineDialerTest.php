@@ -1203,4 +1203,4 @@ test('call blasting dial', function ($method) {
         ->assertHeader("Content-Type", "application/json");
 
     $this->assertNotNull($_SESSION['ActiveVolunteer']);
- })->with(['GET', 'POST']);
+})->with(['GET', 'POST']);
