@@ -13,10 +13,11 @@ class AuthenticationRepository
     protected RootServerService $rootServerService;
     protected HttpService $http;
 
-    public function __construct(SettingsService $settings,
-                                RootServerService $rootServerService,
-                                HttpService $http)
-    {
+    public function __construct(
+        SettingsService $settings,
+        RootServerService $rootServerService,
+        HttpService $http
+    ) {
         $this->settings = $settings;
         $this->rootServerService = $rootServerService;
         $this->http = $http;
