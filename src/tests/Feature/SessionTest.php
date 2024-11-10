@@ -1,4 +1,7 @@
 <?php
+
+use Illuminate\Support\Facades\Session;
+
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
@@ -11,12 +14,12 @@ beforeEach(function () {
 });
 
 test('clear the session', function () {
-    $_SESSION["override_blah"] = "test";
-    assert($_SESSION["override_blah"] == "test");
-    $response = $this->call('GET', '/v1/session/delete');
-    $response
-        ->assertStatus(200)
+    Session::put("override_blah", "test");
+    $this->assertEquals("test", Session::get("override_blah"));
+    $response = $this->get('/v1/session/delete');
+    $response->assertStatus(200)
         ->assertHeader("Content-Type", "text/plain; charset=UTF-8")
-        ->assertSeeText("OK", false);
-    assert(!isset($_SESSION["override_blah"]));
+        ->assertSeeText("OK");
+    $this->assertNull(Session::get("override_blah"));
 });
+
