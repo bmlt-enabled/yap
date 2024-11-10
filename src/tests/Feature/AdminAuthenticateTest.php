@@ -58,6 +58,37 @@ test('login to authenticate with a yap admin user', function () {
         ->assertHeader("Content-Type", "text/html; charset=utf-8");
 });
 
+test('logout with a yap admin user', function () {
+    User::create([
+        "name"=>"admin",
+        "username"=>"admin",
+        "password"=>hash("sha256", "admin"),
+        "permissions"=>0,
+        "is_admin"=>1
+    ]);
+
+    $response = $this->get(
+        '/admin/auth/logout'
+    );
+    $response
+        ->assertStatus(302)
+        ->assertHeader("Location", 'http://localhost/admin')
+        ->assertHeader("Content-Type", "text/html; charset=utf-8");
+});
+
+test('logout with a BMLT user', function () {
+    $this->withoutExceptionHandling();
+    $_SESSION['auth_mechanism'] = AuthMechanism::V1;
+    $_SESSION['bmlt_auth_session'] = ["test_cookie=blah"];
+    $response = $this->get(
+        '/admin/auth/logout'
+    );
+    $response
+        ->assertStatus(302)
+        ->assertHeader("Location", 'http://localhost/admin')
+        ->assertHeader("Content-Type", "text/html; charset=utf-8");
+});
+
 // TODO: this test should be removed after we load data solely with React
 test('get service body call handling (legacy)', function () {
     $_SESSION['auth_mechanism'] = AuthMechanism::V2;

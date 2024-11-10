@@ -16,7 +16,6 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    dump('Running test: ' . test()->name());
     @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
