@@ -11,6 +11,10 @@ serve:
 e2e-test:
 	env CYPRESS_BASE_URL=http://127.0.0.1:8000/yap npx cypress run
 
+.PHONY: e2e-test-ui
+e2e-test-ui:
+	env CYPRESS_BASE_URL=http://127.0.0.1:8000/yap npx cypress open --component
+
 .PHONY: lint
 lint:
 	find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l

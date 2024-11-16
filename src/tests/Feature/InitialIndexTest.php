@@ -8,6 +8,7 @@ use App\Services\RootServerService;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use App\Structures\ServiceBodyCallHandling;
+use App\Structures\Settings;
 use Tests\FakeTwilioHttpClient;
 use Tests\MiddlewareTests;
 use Tests\RootServerMocks;
@@ -394,10 +395,11 @@ test('initial callin with service body override', function ($method) {
         $handling
     );
 
+
+    $config = new Settings();
     ConfigData::createServiceBodyConfiguration(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
-        new stdClass()
+        $config
     );
 
     $response = $this->call($method, '/', [

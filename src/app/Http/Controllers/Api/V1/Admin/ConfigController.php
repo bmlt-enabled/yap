@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Constants\DataType;
 use App\Http\Controllers\Controller;
+use App\Models\ConfigData;
 use App\Repositories\ConfigRepository;
+use App\Structures\Group;
+use App\Structures\Settings;
 use Illuminate\Http\Request;
 use stdClass;
 
@@ -53,32 +56,37 @@ class ConfigController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->has('parent_id')) {
-            $data = $this->config->getDbDataByParentId($request->get('parent_id'), DataType::YAP_CONFIG_V2);
-        } else {
-            $data = $this->config->getDbData($request->get('service_body_id'), DataType::YAP_CONFIG_V2);
-        }
+        $data = ConfigData::getServiceBodyConfiguration($request->get("serviceBodyId"));
 
         if (count($data) > 0) {
             return response()->json([
-                'service_body_id'=>$data[0]->service_body_id,
-                'id'=>$data[0]->id,
-                'parent_id'=>$data[0]->parent_id ?? "null",
-                'data'=>json_decode($data[0]->data)
+                'service_body_id' => $data[0]->service_body_id,
+                'id' => $data[0]->id,
+                'parent_id' => $data[0]->parent_id ?? null,
+                'data' => json_decode($data[0]->data)
             ])->header("Content-Type", "application/json");
         } else {
-              return response()->json(new stdClass())->header("Content-Type", "application/json");
+            return response()->json(new stdClass())->header("Content-Type", "application/json");
         }
     }
 
     public function store(Request $request)
     {
-        $this->config->adminPersistDbConfig(
-            $request->get('service_body_id'),
-            $request->getContent(),
-            $request->get('data_type'),
-            $request->has('parent_id') ? $request->get('parent_id') : "0"
-        );
+        $decodedDate = json_decode($request->getContent());
+        $config = new Settings($decodedDate);
+        $serviceBodyId = $request->get('serviceBodyId');
+
+        $existingRecord = ConfigData::where('service_body_id', $serviceBodyId)
+            ->where('data_type', DataType::YAP_CONFIG_V2)
+            ->first();
+
+        if ($existingRecord) {
+            // If the record exists, update it
+            ConfigData::updateServiceBodyConfiguration($serviceBodyId, $config);
+        } else {
+            // Otherwise, create a new record
+            ConfigData::createServiceBodyConfiguration($serviceBodyId, $config);
+        }
 
         return self::index($request);
     }
