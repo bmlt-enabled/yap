@@ -5,19 +5,14 @@ namespace App\Http\Controllers\Api\V1\Admin;
 use App\Constants\DataType;
 use App\Http\Controllers\Controller;
 use App\Models\ConfigData;
-use App\Repositories\ConfigRepository;
-use App\Structures\Group;
 use App\Structures\Settings;
 use Illuminate\Http\Request;
 use stdClass;
 
 class ConfigController extends Controller
 {
-    protected ConfigRepository $config;
-
-    public function __construct(ConfigRepository $config)
+    public function __construct()
     {
-        $this->config = $config;
     }
 
     /**

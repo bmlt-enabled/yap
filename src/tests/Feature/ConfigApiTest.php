@@ -141,6 +141,51 @@ test('save config', function () {
         ], false);
 });
 
+test('update config', function () {
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    $serviceBodyConfigData = new Settings();
+    $serviceBodyConfigData->title = "welcome to blah";
+    $response = $this->call('POST', '/api/v1/config', [
+        "serviceBodyId" => $this->serviceBodyId,
+    ], content: json_encode($serviceBodyConfigData));
+    $response->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json")
+        ->assertJson([
+            "id"=>1,
+            "service_body_id"=>$this->serviceBodyId,
+            "parent_id"=>0,
+            "data"=>[$serviceBodyConfigData->toArray()]]);
+
+    $serviceBodyConfigData->title = "welcome to blih";
+    $response = $this->call('POST', '/api/v1/config', [
+        "serviceBodyId" => $this->serviceBodyId,
+    ], content: json_encode($serviceBodyConfigData));
+    $response->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json")
+        ->assertJson([
+            "id"=>1,
+            "service_body_id"=>$this->serviceBodyId,
+            "parent_id"=>0,
+            "data"=>[$serviceBodyConfigData->toArray()]]);
+
+    $response = $this->call('GET', '/', ['service_body_id'=>$this->serviceBodyId]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">welcome to blih</Say>',
+            '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
+            '<Say voice="alice" language="en-US">press two to search for meetings</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+});
+
+
 test('get config no auth', function () {
     $response = $this->call('GET', '/api/v1/config', [
         "serviceBodyId" => 0,

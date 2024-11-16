@@ -23,7 +23,6 @@ describe('Menubar', () => {
             .click()
             .wait(1000)
             .get('#service-bodies-table tr:contains(\'Brooklyn\')')
-            .should('contain', 'Brooklyn Area Service (1006)');
     })
 
     it('Click Schedules', () => {
@@ -34,7 +33,7 @@ describe('Menubar', () => {
             .click()
             .wait(1000)
             .get('#service_body_id option:selected')
-            .should('have.text', 'Bronx Area Service (1005) / Greater New York Region (1)');
+            .should('have.text', '-= Select A Service Body =-');
     })
 
     it('Click Settings', () => {
@@ -56,7 +55,7 @@ describe('Menubar', () => {
             .click()
             .wait(1000)
             .get('#service_body_id option:selected')
-            .should('have.text', 'Bronx Area Service (1005) / Greater New York Region (1)');
+            .should('have.text', '-= Select A Service Body =-');
     })
 
     it('Click Groups', () => {

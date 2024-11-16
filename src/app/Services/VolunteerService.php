@@ -3,13 +3,11 @@
 namespace App\Services;
 
 use App\Constants\CycleAlgorithm;
-use App\Constants\DataType;
 use App\Constants\SpecialPhoneNumber;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
 use App\Exceptions\NoVolunteersException;
 use App\Models\ConfigData;
-use App\Repositories\ConfigRepository;
 use App\Structures\Volunteer;
 use App\Structures\VolunteerInfo;
 use App\Structures\VolunteerReportInfo;
@@ -21,13 +19,11 @@ use Illuminate\Support\Facades\Log;
 
 class VolunteerService extends Service
 {
-    protected ConfigRepository $configRepository;
     protected RootServerService $rootServerService;
 
-    public function __construct(ConfigRepository $configRepository, RootServerService $rootServerService)
+    public function __construct(RootServerService $rootServerService)
     {
         parent::__construct(App::make(SettingsService::class));
-        $this->configRepository = $configRepository;
         $this->rootServerService = $rootServerService;
     }
 
@@ -194,7 +190,7 @@ class VolunteerService extends Service
 
     public function getGroupsForServiceBody($service_body_id, $manage = false)
     {
-        $all_groups = $this->configRepository->getAllDbData(DataType::YAP_GROUPS_V2);
+        $all_groups = ConfigData::getAllGroups();
         $final_groups = array();
         foreach ($all_groups as $all_group) {
             if ($all_group->service_body_id === intval($service_body_id)

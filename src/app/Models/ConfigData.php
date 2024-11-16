@@ -54,8 +54,16 @@ class ConfigData extends Model
 
     public static function getServiceBodyConfiguration(int $serviceBodyId): Collection
     {
-        return ConfigData::select(['data','service_body_id','id','parent_id'])
+        return ConfigData::select(['data', 'service_body_id', 'id', 'parent_id'])
             ->where('service_body_id', $serviceBodyId)
+            ->where('data_type', DataType::YAP_CONFIG_V2)
+            ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
+            ->get();
+    }
+
+    public static function getAllServiceBodyConfiguration(): Collection
+    {
+        return ConfigData::select(['data','service_body_id','id','parent_id'])
             ->where('data_type', DataType::YAP_CONFIG_V2)
             ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
             ->get();
@@ -167,6 +175,14 @@ class ConfigData extends Model
             ->get();
     }
 
+    public static function getAllCallHandling(): Collection
+    {
+        return ConfigData::select(['data','service_body_id','id','parent_id'])
+            ->where('data_type', DataType::YAP_CALL_HANDLING_V2)
+            ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
+            ->get();
+    }
+
     public static function createVolunteers(
         int $serviceBodyId,
         array $volunteerDataArray
@@ -186,6 +202,14 @@ class ConfigData extends Model
         self::where('service_body_id', $serviceBodyId)
             ->where('data_type', DataType::YAP_VOLUNTEERS_V2)
             ->update(['data' => json_encode($volunteerDataArray)]);
+    }
+
+    public static function getAllGroups(): Collection
+    {
+        return ConfigData::select(['data','service_body_id','id','parent_id'])
+            ->where('data_type', DataType::YAP_GROUPS_V2)
+            ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
+            ->get();
     }
 
     public static function deleteGroup($id) : int
