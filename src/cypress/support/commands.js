@@ -11,5 +11,8 @@ Cypress.Commands.add('resetDatabase', () => {
     cy.request('POST', `${Cypress.env('apiUrl')}/resetDatabase`).then((response) => {
         console.log(`Status: ${response.status}`);
         console.log(`Body: ${JSON.stringify(response.body)}`);
+    }).request('GET', `${Cypress.env('apiUrl')}/config/all`).then((response) => {
+        console.log(`Status: ${response.status}`);
+        console.log(`Body: ${JSON.stringify(response.body)}`);
     });
 });
