@@ -34,7 +34,7 @@ if (getenv('ENVIRONMENT') == "test") {
         return response()->json(['status' => 'database reset']);
     });
 
-    Route::get('/config/all', function() {
+    Route::get('/config/all', function () {
         return response()->json(ConfigData::getAllConfiguration());
     });
 }
