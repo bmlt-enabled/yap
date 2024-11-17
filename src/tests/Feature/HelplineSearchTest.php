@@ -8,7 +8,6 @@ use App\Services\RootServerService;
 use App\Structures\Coordinates;
 use App\Structures\ServiceBodyCallHandling;
 use Illuminate\Testing\Assert;
-use Tests\MiddlewareTests;
 use Tests\RootServerMocks;
 
 beforeAll(function () {
@@ -21,7 +20,6 @@ beforeEach(function () {
     $_REQUEST = null;
     $_SESSION = null;
 
-    $this->midddleware = new MiddlewareTests();
     $this->rootServerMocks = new RootServerMocks();
     $this->callSid = "abc123";
     $this->serviceBodyId = "1053";

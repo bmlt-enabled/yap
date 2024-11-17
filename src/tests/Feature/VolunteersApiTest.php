@@ -7,11 +7,9 @@ use App\Constants\VolunteerType;
 use App\Models\ConfigData;
 use App\Services\RootServerService;
 use App\Structures\Group;
-use App\Structures\Volunteer;
 use App\Structures\VolunteerData;
 use App\Structures\VolunteerInfo;
 use App\Utilities\VolunteerScheduleHelpers;
-use Tests\MiddlewareTests;
 use Tests\RootServerMocks;
 
 beforeAll(function () {
@@ -24,7 +22,6 @@ beforeEach(function () {
     $_REQUEST = null;
     $_SESSION = null;
 
-    $this->midddleware = new MiddlewareTests();
     $this->rootServerMocks = new RootServerMocks();
     $this->id = "200";
     $this->serviceBodyId = "44";

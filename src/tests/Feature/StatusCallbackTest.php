@@ -1,6 +1,5 @@
 <?php
 
-use App\Repositories\ReportsRepository;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
@@ -16,7 +15,6 @@ beforeEach(function () {
     $_SESSION = null;
 
     $this->fakeCallSid = "abcdefghij";
-    $this->middleware = new \Tests\MiddlewareTests();
 
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [

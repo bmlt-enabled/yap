@@ -10,7 +10,6 @@ use App\Services\RootServerService;
 use App\Services\SettingsService;
 use App\Structures\ServiceBodyCallHandling;
 use App\Structures\VolunteerData;
-use Tests\MiddlewareTests;
 use Tests\RootServerMocks;
 
 beforeAll(function () {
@@ -28,7 +27,6 @@ beforeEach(function () {
     $this->settings = new SettingsService();
     app()->instance(SettingsService::class, $this->settings);
 
-    $this->middleware = new MiddlewareTests();
     $this->utility = setupTwilioService();
     $this->rootServerMocks = new RootServerMocks();
     $this->serviceBodyId = "1053";
