@@ -8,7 +8,6 @@ runs:
       id: run-tests
       run: |
         cd src
-        mv config.test.php config.php
         mv .env.pipeline .env
         vendor/bin/pest --log-junit tests/test-results.xml
         npm install
