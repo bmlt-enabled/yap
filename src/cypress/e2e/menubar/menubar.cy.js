@@ -23,6 +23,7 @@ describe('Menubar', () => {
             .click()
             .wait(1000)
             .get('#service-bodies-table tr:contains(\'Brooklyn\')')
+            .should('contain', 'Brooklyn Area Service (1006)');
     })
 
     it('Click Schedules', () => {
