@@ -61,13 +61,6 @@ class ConfigData extends Model
             ->get();
     }
 
-    public static function getAllConfiguration(): Collection
-    {
-        return ConfigData::select(['data','service_body_id','id','parent_id'])
-            ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
-            ->get();
-    }
-
     public static function getAllServiceBodyConfiguration(): Collection
     {
         return ConfigData::select(['data','service_body_id','id','parent_id'])

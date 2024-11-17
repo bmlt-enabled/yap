@@ -29,29 +29,17 @@ Route::group([
     Route::resource('settings', 'SettingsController')->only(['index']);
 });
 
-if (getenv('ENVIRONMENT') == "test") {
-    Route::post('/resetDatabase', function () {
-        // Run the migration command and capture the output
-        $migrationOutput = Artisan::output(); // Capture initial Artisan output
-        Artisan::call('migrate:fresh --seed');
-        $migrationOutput .= Artisan::output(); // Append Artisan migration output
-
-        // Get current database configuration
-        $dbConfig = config('database.connections.' . config('database.default'));
-
-        // Optional: Get list of tables after migration
-        $tables = DB::select('SHOW TABLES');
-
-        // Return a detailed response
+Route::post('/resetDatabase', function () {
+    $env = config('app.env'); // Get the current environment
+    if ($env === 'production') {
         return response()->json([
-            'status' => 'database reset',
-            'migrationOutput' => $migrationOutput,
-            'databaseConfig' => $dbConfig,
-            'tables' => array_map('current', $tables)
-        ]);
-    });
-
-    Route::get('/config/all', function () {
-        return response()->json(ConfigData::getAllConfiguration());
-    });
-}
+            'status' => 'error',
+            'message' => 'Cannot reset database in production environment.'
+        ], 403);
+    }
+    Artisan::call('migrate:fresh --seed');
+    return response()->json([
+        'status' => 'database reset',
+        'migrationOutput' => Artisan::output(),
+    ]);
+});
