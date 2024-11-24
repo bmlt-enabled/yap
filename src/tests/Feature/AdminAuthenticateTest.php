@@ -5,17 +5,14 @@ use App\Constants\VolunteerRoutingType;
 use App\Models\ConfigData;
 use App\Models\User;
 use App\Structures\ServiceBodyCallHandling;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 });
 
 test('login to authenticate with a BMLT user and a user with no rights', function () {
@@ -97,9 +94,8 @@ test('logout with a yap admin user', function () {
 });
 
 test('logout with a BMLT user', function () {
-    $this->withoutExceptionHandling();
-    $_SESSION['auth_mechanism'] = AuthMechanism::V1;
-    $_SESSION['bmlt_auth_session'] = ["test_cookie=blah"];
+    session()->put('auth_mechanism', AuthMechanism::V1);
+    session()->put('bmlt_auth_session', ["test_cookie=blah"]);
     $response = $this->get(
         '/admin/auth/logout'
     );
@@ -111,9 +107,9 @@ test('logout with a BMLT user', function () {
 
 // TODO: this test should be removed after we load data solely with React
 test('get service body call handling (legacy)', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    $_SESSION['auth_is_admin'] = true;
-    $_SESSION['username'] = "admin";
+    session()->put('auth_mechanism', AuthMechanism::V2);
+    session()->put('auth_is_admin', true);
+    session()->put('username', "admin");
 
     $serviceBodyCallHandling = new ServiceBodyCallHandling();
     $serviceBodyCallHandling->volunteer_routing_enabled = true;

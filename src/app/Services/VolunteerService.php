@@ -131,12 +131,12 @@ class VolunteerService extends Service
                     $volunteer = $volunteers[rand(0, count($volunteers) - 1)];
                     return new Volunteer($volunteer->contact, $volunteer);
                 } elseif ($volunteer_routing_params->cycle_algorithm == CycleAlgorithm::RANDOM_CYCLE_AND_VOICEMAIL) {
-                    if (!isset($_SESSION['volunteers_randomized'])) {
+                    if (!session()->has('volunteers_randomized')) {
                         shuffle($volunteers);
-                        $_SESSION['volunteers_randomized'] = $volunteers;
+                        session()->put('volunteers_randomized', $volunteers);
                     }
 
-                    $volunteers = $_SESSION['volunteers_randomized'];
+                    $volunteers = session()->get('volunteers_randomized');
 
                     if ($volunteer_routing_params->tracker > count($volunteers) - 1) {
                         return new Volunteer(SpecialPhoneNumber::VOICE_MAIL);

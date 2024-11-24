@@ -17,10 +17,8 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 
     $this->utility = setupTwilioService();
 
@@ -243,7 +241,7 @@ test('initial sms helpline gateway with a volunteer with a different keywordr', 
         $serviceBodyCallHandlingData
     );
 
-    $_SESSION['override_sms_helpline_keyword'] = 'dude';
+    session()->put('override_sms_helpline_keyword', 'dude');
 
     $response = $this->call($method, '/sms-gateway.php', [
         "SmsSid" => "Dude123",

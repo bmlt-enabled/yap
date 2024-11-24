@@ -69,7 +69,7 @@ class ConfigService
                 if ($setOverrides) {
                     foreach ($data as $key => $value) {
                         if (str_starts_with($key, 'override_') && strlen($value) > 0) {
-                            $_SESSION[$key] = $value;
+                            session()->put($key, $value);
                         }
                     }
                 }

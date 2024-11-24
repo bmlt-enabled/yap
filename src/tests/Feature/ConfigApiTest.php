@@ -12,10 +12,8 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 
     $this->id = "200";
     $this->serviceBodyId = 1006;
@@ -25,7 +23,7 @@ beforeEach(function () {
 test('get config from endpoint', function () {
     $config = new Settings();
     $config->title = "welcome to blah";
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     ConfigData::createServiceBodyConfiguration(
@@ -94,7 +92,7 @@ test('get config from endpoint using BMLT no auth', function () {
 
 test('get config for invalid service body', function () {
     $config = new Settings();
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     ConfigData::createServiceBodyConfiguration(
@@ -110,7 +108,7 @@ test('get config for invalid service body', function () {
 });
 
 test('save config', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     $serviceBodyConfigData = new Settings();
     $serviceBodyConfigData->title = "welcome to blah";
     $response = $this->call('POST', '/api/v1/config', [
@@ -142,7 +140,7 @@ test('save config', function () {
 });
 
 test('update config', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     $serviceBodyConfigData = new Settings();
     $serviceBodyConfigData->title = "welcome to blah";
     $response = $this->call('POST', '/api/v1/config', [
