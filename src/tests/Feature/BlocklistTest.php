@@ -1,13 +1,4 @@
 <?php
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
-
 test('test the blocklist with an exact match', function ($method) {
     $caller = "5557778888";
     session()->put('override_blocklist', $caller);

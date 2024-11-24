@@ -1,17 +1,9 @@
 <?php
-
 use App\Models\Record;
 use App\Models\Session;
 use Carbon\Carbon;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
 beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-
     $this->fakeCallSid = "abcdefghij";
     $this->utility = setupTwilioService();
 //    $this->reportsRepository = $this->middleware->insertSession($this->fakeCallSid);

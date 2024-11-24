@@ -11,14 +11,7 @@ use App\Services\SettingsService;
 use App\Structures\RecordType;
 use Tests\RootServerMocks;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
 beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-
     $this->rootServerMocks = new RootServerMocks();
 
     $this->id = "200";

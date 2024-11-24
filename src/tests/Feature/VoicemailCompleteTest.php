@@ -18,16 +18,7 @@ use Illuminate\Testing\Assert;
 use PHPMailer\PHPMailer\PHPMailer;
 use Tests\RootServerMocks;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
 beforeEach(function () {
-
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-
-
     $this->rootServerMocks = new RootServerMocks();
     $this->serviceBodyId = "1053";
     $this->parentServiceBodyId = "1052";
