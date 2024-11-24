@@ -3,15 +3,6 @@
 use App\Services\HttpService;
 use Tests\Stubs;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
-
 test('get a SPAD', function ($method) {
     $httpService = mock('App\Services\HttpService')->makePartial();
     $httpService->shouldReceive('get')
