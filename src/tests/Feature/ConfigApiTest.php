@@ -139,6 +139,27 @@ test('save config', function () {
         ], false);
 });
 
+test('save config with twilio creds', function () {
+    session()->put('auth_mechanism', AuthMechanism::V2);
+    $serviceBodyConfigData = new Settings();
+    $serviceBodyConfigData->twilio_account_sid = "abc";
+    $serviceBodyConfigData->mobile_check = true;
+    $response = $this->call('POST', '/api/v1/config', [
+        "serviceBodyId" => $this->serviceBodyId,
+    ], content: json_encode($serviceBodyConfigData));
+    $response->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json")
+        ->assertJson([
+            "id"=>1,
+            "service_body_id"=>$this->serviceBodyId,
+            "parent_id"=>0,
+            "data"=>[$serviceBodyConfigData->toArray()]]);
+
+    $this->call('GET', '/ping', ['service_body_id'=>$this->serviceBodyId]);
+    $this->assertNull(session()->get("override_twilio_account_sid"));
+    $this->assertTrue(session()->get("override_mobile_check"));
+});
+
 test('update config', function () {
     session()->put('auth_mechanism', AuthMechanism::V2);
     $serviceBodyConfigData = new Settings();

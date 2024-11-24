@@ -181,6 +181,26 @@ test('direct to volunteer search for a specific service body with postal code ga
         ], false);
 })->with(['GET', 'POST']);
 
+test('override ysk', function ($method) {
+    session()->put('override_disable_postal_code_gather', true);
+    session()->put('override_service_body_id', 44);
+    $response = $this->call($method, '/input-method.php', [
+        "Digits"=>"1",
+        "Called"=>"123",
+        "ysk"=>"overriden_ysk"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">helpline-search.php?Called=123&amp;ysk=overriden_ysk</Redirect>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
+
 test('search for volunteers without custom query', function ($method) {
     session()->put('override_custom_query', '&services=92');
     $response = $this->call($method, '/input-method.php', [
