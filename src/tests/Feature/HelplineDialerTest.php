@@ -16,14 +16,7 @@ use App\Structures\VolunteerData;
 use Illuminate\Support\Facades\Session;
 use Tests\FakeTwilioHttpClient;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
 beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [
         "username" => "fake",

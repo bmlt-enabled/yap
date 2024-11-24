@@ -5,16 +5,7 @@ use App\Constants\VolunteerRoutingType;
 use App\Models\ConfigData;
 use App\Structures\ServiceBodyCallHandling;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
 beforeEach(function () {
-
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-
-
     new \Tests\TwilioMessagesCreateMock();
     $this->id = "200";
     $this->serviceBodyId = "44";
