@@ -78,8 +78,7 @@ test('dialback dialer invalid pin entry', function ($method) {
     );
     Session::generate($this->fakeCallSid, $fakePin);
 
-    $_REQUEST['Digits'] = 123;
-    $response = $this->call($method, '/dialback-dialer.php');
+    $response = $this->call($method, '/dialback-dialer.php', ['Digits'=>123]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=utf-8")

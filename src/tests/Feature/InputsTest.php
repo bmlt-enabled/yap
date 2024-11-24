@@ -93,8 +93,7 @@ test('zip input for address lookup with speech gathering', function ($method) {
 })->with(['GET', 'POST']);
 
 test('city or county voice input', function ($method) {
-    $_REQUEST["SearchType"] = "1";
-    $response = $this->call($method, '/city-or-county-voice-input.php?SearchType=1');
+    $response = $this->call($method, '/city-or-county-voice-input.php', ["SearchType"=>"1"]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=utf-8")
