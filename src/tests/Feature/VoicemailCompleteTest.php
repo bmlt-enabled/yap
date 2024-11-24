@@ -18,16 +18,7 @@ use Illuminate\Testing\Assert;
 use PHPMailer\PHPMailer\PHPMailer;
 use Tests\RootServerMocks;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
 beforeEach(function () {
-
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-
-
     $this->rootServerMocks = new RootServerMocks();
     $this->serviceBodyId = "1053";
     $this->parentServiceBodyId = "1052";
@@ -40,9 +31,6 @@ beforeEach(function () {
 test('voicemail complete send sms using primary contact', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     session()->put('override_service_body_id', $this->serviceBodyId);
-    $_REQUEST['CallSid'] = $this->callSid;
-    $_REQUEST['caller_number'] = $this->callerNumber;
-    $_REQUEST['RecordingUrl'] = $this->recordingUrl;
 
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
@@ -97,9 +85,6 @@ test('voicemail complete send sms using primary contact', function ($method) {
 test('voicemail complete send sms using volunteer responder option', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     session()->put('override_service_body_id', $this->serviceBodyId);
-    $_REQUEST['CallSid'] = $this->callSid;
-    $_REQUEST['caller_number'] = $this->callerNumber;
-    $_REQUEST['RecordingUrl'] = $this->recordingUrl;
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
@@ -188,9 +173,6 @@ test('voicemail complete send sms using volunteer responder option', function ($
 test('voicemail complete send sms using volunteer responder option and dialback enabled', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     session()->put('override_service_body_id', $this->serviceBodyId);
-    $_REQUEST['CallSid'] = $this->callSid;
-    $_REQUEST['caller_number'] = $this->callerNumber;
-    $_REQUEST['RecordingUrl'] = $this->recordingUrl;
 
     $pin = Session::getPin($this->callSid);
     Session::generate($this->callSid, $pin);

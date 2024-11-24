@@ -1,13 +1,4 @@
 <?php
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
-
 test('get fallback', function ($method) {
     $response = $this->call(
         $method,

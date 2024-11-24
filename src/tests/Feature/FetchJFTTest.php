@@ -4,15 +4,6 @@ use App\Services\HttpService;
 use App\Services\SettingsService;
 use Tests\Stubs;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
-
 test('get the JFT in English', function ($method, $language) {
     $settingsService = new SettingsService();
     $settingsService->set("word_language", $language);

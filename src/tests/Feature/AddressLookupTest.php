@@ -2,15 +2,6 @@
 
 use App\Services\SettingsService;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
-
 test('search by address for meeting information with speech text result with google api key', function ($method) {
     $response = $this->call(
         $method,
