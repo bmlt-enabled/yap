@@ -11,8 +11,7 @@ class AuthorizationService
 
     public function __construct()
     {
-        @session_start();
-        $this->serviceBodyRights = $_SESSION["auth_service_bodies_rights"] ?? null;
+        $this->serviceBodyRights = session()->get("auth_service_bodies_rights") ?? null;
     }
 
     public function getServiceBodyRights()
@@ -29,12 +28,12 @@ class AuthorizationService
 
     public function canManageUsers(): bool
     {
-        return (isset($_SESSION['auth_is_admin']) && $_SESSION['auth_is_admin']) ||
-            (isset($_SESSION['auth_permissions']) && (intval($_SESSION['auth_permissions']) & AdminInterfaceRights::MANAGE_USERS));
+        return (session()->has('auth_is_admin') && session()->get('auth_is_admin') ||
+            (session()->has('auth_permissions') && (intval(session()->get('auth_permissions')) & AdminInterfaceRights::MANAGE_USERS)));
     }
 
     public function isTopLevelAdmin(): bool
     {
-        return (isset($_SESSION['auth_is_admin']) && $_SESSION['auth_is_admin']);
+        return (session()->has('auth_is_admin') && session()->get('auth_is_admin'));
     }
 }

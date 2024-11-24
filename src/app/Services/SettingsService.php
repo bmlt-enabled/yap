@@ -150,8 +150,8 @@ class SettingsService
             $this->setLocalizationOverride($setting_key, $setting_value);
         }
 
-        foreach ($_SESSION ?? [] as $session_key => $session_value) {
-            $this->setLocalizationOverride($session_key, $session_value);
+        foreach (session()->all() as $sessionKey => $sessionValue) {
+            $this->setLocalizationOverride($sessionKey, $sessionValue);
         }
     }
 
@@ -202,14 +202,14 @@ class SettingsService
         if (isset($this->allowlist[$name]) && $this->allowlist[$name]['overridable']) {
             if (request()->has($name) && $this->allowlist[$name]['hidden'] !== true) {
                 return request()->get($name);
-            } elseif (isset($_SESSION["override_" . $name])) {
-                return $_SESSION["override_" . $name];
+            } elseif (session()->has("override_" . $name)) {
+                return session()->get("override_" . $name);
             }
         }
 
-        if ($name == "google_maps_api_key" && env("GOOGLE_MAPS_API_KEY")) {
+        if ($name === "google_maps_api_key" && env("GOOGLE_MAPS_API_KEY")) {
             return env("GOOGLE_MAPS_API_KEY");
-        } else if (isset($this->settings[$name])) {
+        } elseif (isset($this->settings[$name])) {
             return $this->settings[$name];
         } elseif (isset($this->allowlist[$name]['default'])) {
             return $this->allowlist[$name]['default'];
@@ -222,11 +222,11 @@ class SettingsService
     {
         if (request()->has($name)) {
             return SettingSource::QUERYSTRING;
-        } else if (isset($_SESSION["override_" . $name])) {
+        } elseif (session()->has("override_" . $name)) {
             return SettingSource::SESSION;
-        } else if (isset($GLOBALS[$name])) {
+        } elseif (isset($GLOBALS[$name])) {
             return SettingSource::CONFIG;
-        } else if (isset($this->allowlist[$name]['default'])) {
+        } elseif (isset($this->allowlist[$name]['default'])) {
             return SettingSource::DEFAULT_SETTING;
         } else {
             return "NOT SET";
@@ -395,17 +395,17 @@ class SettingsService
 
     public function getSessionLink(): string
     {
+        // Attempt to retrieve the session ID from the query string or session
         if (request()->has('ysk')) {
             $session_id = request()->get('ysk');
-        } elseif (request()->has('PHPSESSID')) {
-            $session_id = request()->get('PHPSESSID');
-        } elseif (isset($_COOKIE['PHPSESSID'])) {
-            $session_id = $_COOKIE['PHPSESSID'];
+        } elseif (session()->has('_token')) {
+            $session_id = session()->getId();
         } else {
             $session_id = null;
         }
 
-        return (isset($session_id) ? "&" . ("ysk=" . $session_id) : "");
+        // Return the query string parameter if a session ID is found
+        return isset($session_id) ? "&ysk={$session_id}" : "";
     }
 
     public function minimalRequiredSettings(): array
