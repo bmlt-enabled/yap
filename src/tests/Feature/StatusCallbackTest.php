@@ -9,10 +9,12 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
-    $_SERVER['REQUEST_URI'] = "/";
 
-    $this->fakeCallSid = 'CA' . bin2hex(random_bytes(16));
+    $_SERVER['REQUEST_URI'] = "/";
+    $_REQUEST = null;
+
+
+    $this->fakeCallSid = "abcdefghij";
 
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [

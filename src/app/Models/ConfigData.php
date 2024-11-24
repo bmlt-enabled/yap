@@ -6,9 +6,11 @@ use App\Constants\DataType;
 use App\Constants\Status;
 use App\Structures\Group;
 use App\Structures\ServiceBodyCallHandling;
+use App\Structures\Settings;
 use App\Structures\VolunteerData;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use stdClass;
 
 class ConfigData extends Model
 {
@@ -31,15 +33,40 @@ class ConfigData extends Model
 
     public static function createServiceBodyConfiguration(
         int $serviceBodyId,
-        int $parentServiceBodyId,
-        object $serviceBodyConfiguration
+        Settings $serviceBodyConfiguration
     ) : void {
         self::create([
             "service_body_id"=>$serviceBodyId,
-            "parent_id"=>$parentServiceBodyId,
+            "parent_id"=>0,
             "data"=>json_encode([$serviceBodyConfiguration]),
             "data_type"=>DataType::YAP_CONFIG_V2
         ]);
+    }
+
+    public static function updateServiceBodyConfiguration(
+        int $serviceBodyId,
+        Settings $serviceBodyConfiguration
+    ) : void {
+        self::where('service_body_id', $serviceBodyId)
+            ->where('data_type', DataType::YAP_CONFIG_V2)
+            ->update(['data' => json_encode([$serviceBodyConfiguration])]);
+    }
+
+    public static function getServiceBodyConfiguration(int $serviceBodyId): Collection
+    {
+        return ConfigData::select(['data', 'service_body_id', 'id', 'parent_id'])
+            ->where('service_body_id', $serviceBodyId)
+            ->where('data_type', DataType::YAP_CONFIG_V2)
+            ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
+            ->get();
+    }
+
+    public static function getAllServiceBodyConfiguration(): Collection
+    {
+        return ConfigData::select(['data','service_body_id','id','parent_id'])
+            ->where('data_type', DataType::YAP_CONFIG_V2)
+            ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
+            ->get();
     }
 
     public static function updateServiceBodyCallHandling(
@@ -148,6 +175,14 @@ class ConfigData extends Model
             ->get();
     }
 
+    public static function getAllCallHandling(): Collection
+    {
+        return ConfigData::select(['data','service_body_id','id','parent_id'])
+            ->where('data_type', DataType::YAP_CALL_HANDLING_V2)
+            ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
+            ->get();
+    }
+
     public static function createVolunteers(
         int $serviceBodyId,
         array $volunteerDataArray
@@ -167,6 +202,14 @@ class ConfigData extends Model
         self::where('service_body_id', $serviceBodyId)
             ->where('data_type', DataType::YAP_VOLUNTEERS_V2)
             ->update(['data' => json_encode($volunteerDataArray)]);
+    }
+
+    public static function getAllGroups(): Collection
+    {
+        return ConfigData::select(['data','service_body_id','id','parent_id'])
+            ->where('data_type', DataType::YAP_GROUPS_V2)
+            ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
+            ->get();
     }
 
     public static function deleteGroup($id) : int

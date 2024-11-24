@@ -7,7 +7,6 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
 });
 
 test('get a SPAD in English', function ($method) {

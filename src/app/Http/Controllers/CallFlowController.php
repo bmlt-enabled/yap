@@ -177,13 +177,13 @@ class CallFlowController extends Controller
         }
 
         if (($searchType == SearchType::VOLUNTEERS || $searchType == SearchType::MEETINGS)
-            && !isset($_SESSION['override_service_body_id'])
+            && !session()->has('override_service_body_id')
             && json_decode($this->settings->get('disable_postal_code_gather'))) {
             $twiml->redirect("input-method-result.php?SearchType=" . $searchType . "&Digits=1")
                 ->setMethod("GET");
             return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
         } elseif ($searchType == SearchType::VOLUNTEERS) {
-            if (isset($_SESSION['override_service_body_id'])) {
+            if (session()->has('override_service_body_id')) {
                 $twiml->redirect("helpline-search.php?Called=" . $request->get("Called") . $this->settings->getSessionLink())
                     ->setMethod("GET");
                 return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
@@ -366,7 +366,7 @@ class CallFlowController extends Controller
             $twiml->redirect("gender-routing.php")
                 ->setMethod("GET");
         } else {
-            $_SESSION['Gender'] = $gender;
+            session()->put('Gender', $gender);
             $twiml->redirect(sprintf("helpline-search.php?SearchType=%s", $request->get('SearchType')))
                 ->setMethod('GET');
         }
@@ -613,7 +613,7 @@ class CallFlowController extends Controller
         }
 
         if ($digits == 2 || $digits == 3) {
-            $twiml->redirect(str_replace("&", "&amp;", $_SESSION['initial_webhook']))
+            $twiml->redirect(str_replace("&", "&amp;", session()->get('initial_webhook')))
                 ->setMethod("GET");
         } else {
             $twiml->say($this->settings->word('thank_you_for_calling_goodbye'))

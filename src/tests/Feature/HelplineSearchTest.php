@@ -15,11 +15,10 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
+
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
-    
+
     $this->rootServerMocks = new RootServerMocks();
     $this->callSid = "abc123";
     $this->serviceBodyId = "1053";
@@ -60,7 +59,7 @@ test('force number wth captcha', function ($method) {
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Gather language="en-US" hints="" input="dtmf" timeout="15" numDigits="1" action="helpline-search.php?CaptchaVerified=1&amp;ForceNumber=%2B19998887777&amp;ysk=fake">',
+            '<Gather language="en-US" hints="" input="dtmf" timeout="15" numDigits="1" action="helpline-search.php?CaptchaVerified=1&amp;ForceNumber=%2B19998887777&amp;ysk='.getSessionCookieValue($response).'">',
             '<Say voice="alice" language="en-US">Test Helpline...press any key to continue</Say>',
             '</Gather>',
             '<Hangup/>',
@@ -85,7 +84,7 @@ test('force number wth captcha w/waiting message querystring setting', function 
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Gather language="en-US" hints="" input="dtmf" timeout="15" numDigits="1" action="helpline-search.php?CaptchaVerified=1&amp;ForceNumber=%2B19998887777&amp;ysk=fake&amp;WaitingMessage=1">',
+            '<Gather language="en-US" hints="" input="dtmf" timeout="15" numDigits="1" action="helpline-search.php?CaptchaVerified=1&amp;ForceNumber=%2B19998887777&amp;ysk='.getSessionCookieValue($response).'&amp;WaitingMessage=1">',
             '<Say voice="alice" language="en-US">Test Helpline...press any key to continue</Say>',
             '</Gather>',
             '<Hangup/>',
@@ -162,12 +161,11 @@ test('valid search, volunteer routing, by location', function ($method) {
             '<Response>',
             '<Say voice="alice" language="en-US">please wait while we connect your call</Say>',
             '<Dial>',
-            '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical" statusCallback="helpline-dialer.php?service_body_id=1060&amp;Caller=+12125551212&amp;ysk=fake" startConferenceOnEnter="false" endConferenceOnExit="true" statusCallbackMethod="GET" statusCallbackEvent="start join end leave" waitMethod="GET" beep="false">1060_fake_conference</Conference>',
+            '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical" statusCallback="helpline-dialer.php?service_body_id=1060&amp;Caller=+12125551212&amp;ysk='.getSessionCookieValue($response).'" startConferenceOnEnter="false" endConferenceOnExit="true" statusCallbackMethod="GET" statusCallbackEvent="start join end leave" waitMethod="GET" beep="false">1060_fake_conference</Conference>',
             '</Dial>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
-
 
 test('valid search, volunteer routing', function ($method) {
     $conferenceService = Mockery::mock(ConferenceService::class)->makePartial();
@@ -177,7 +175,7 @@ test('valid search, volunteer routing', function ($method) {
         ->once();
     app()->instance(ConferenceService::class, $conferenceService);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
+    session()->put('override_service_body_id', $this->serviceBodyId);
 
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
@@ -202,7 +200,7 @@ test('valid search, volunteer routing', function ($method) {
             '<Response>',
             '<Say voice="alice" language="en-US">please wait while we connect your call</Say>',
             '<Dial>',
-            '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical" statusCallback="helpline-dialer.php?service_body_id=1053&amp;Caller=+12125551212&amp;ysk=fake" startConferenceOnEnter="false" endConferenceOnExit="true" statusCallbackMethod="GET" statusCallbackEvent="start join end leave" waitMethod="GET" beep="false">',
+            '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical" statusCallback="helpline-dialer.php?service_body_id=1053&amp;Caller=+12125551212&amp;ysk='.getSessionCookieValue($response).'" startConferenceOnEnter="false" endConferenceOnExit="true" statusCallbackMethod="GET" statusCallbackEvent="start join end leave" waitMethod="GET" beep="false">',
             '1053_fake_conference',
             '</Conference>',
             '</Dial>',
@@ -215,9 +213,10 @@ test('valid search with coordinates override, volunteer routing, announce servic
     $longitude = "-72.665590";
     $location = "Geneva, NY";
     $dialedNumber = "631-689-6262";
-    $_SESSION['override_custom_geocoding'] = [
-        ['location' => $location, 'latitude' => $latitude, 'longitude' => $longitude]
-    ];
+    session()->put(
+        'override_custom_geocoding',
+        [['location' => $location, 'latitude' => $latitude, 'longitude' => $longitude]]
+    );
 
     $response = $this->call($method, '/helpline-search.php', [
         'Digits' => "Geneva, NY",
@@ -247,8 +246,8 @@ test('valid search, volunteer routing, announce service body name', function ($m
         ->once();
     app()->instance(ConferenceService::class, $conferenceService);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
-    $_SESSION['override_announce_servicebody_volunteer_routing'] = true;
+    session()->put('override_service_body_id', $this->serviceBodyId);
+    session()->put('override_announce_servicebody_volunteer_routing', true);
 
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
@@ -274,7 +273,7 @@ test('valid search, volunteer routing, announce service body name', function ($m
             '<Response>',
             '<Say voice="alice" language="en-US">please stand by... relocating your call to Finger Lakes Area Service</Say>',
             '<Dial>',
-            '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical" statusCallback="helpline-dialer.php?service_body_id=1053&amp;Caller=+12125551212&amp;ysk=fake" startConferenceOnEnter="false" endConferenceOnExit="true" statusCallbackMethod="GET" statusCallbackEvent="start join end leave" waitMethod="GET" beep="false">',
+            '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical" statusCallback="helpline-dialer.php?service_body_id=1053&amp;Caller=+12125551212&amp;ysk='.getSessionCookieValue($response).'" startConferenceOnEnter="false" endConferenceOnExit="true" statusCallbackMethod="GET" statusCallbackEvent="start join end leave" waitMethod="GET" beep="false">',
             '1053_fake_conference',
             '</Conference>',
             '</Dial>',
@@ -284,7 +283,7 @@ test('valid search, volunteer routing, announce service body name', function ($m
 
 test('valid search, helpline field routing', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
+    session()->put('override_service_body_id', $this->serviceBodyId);
 
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
@@ -351,12 +350,12 @@ test('valid search with address, volunteer gender routing enabled and choice not
             '</Response>'
         ], false);
 
-    Assert::assertTrue($_SESSION['Address'] == $address);
+    Assert::assertTrue(session()->get('Address') == $address);
 })->with(['GET', 'POST']);
 
 test('valid search, helpline field routing, no helpline set in root server, use fallback number', function ($method) {
     $fallback_number = '+15551112223';
-    $_SESSION['override_fallback_number'] = $fallback_number;
+    session()->put('override_fallback_number', $fallback_number);
     $rootServer = new RootServerMocks(true);
     app()->instance(RootServerService::class, $rootServer->getService());
     $response = $this->call($method, '/helpline-search.php', [
@@ -376,7 +375,7 @@ test('valid search, helpline field routing, no helpline set in root server, use 
 })->with(['GET', 'POST']);
 
 test('valid search, volunteer direct', function ($method) {
-    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
+    session()->put('override_service_body_id', $this->serviceBodyId);
     $conferenceService = Mockery::mock(ConferenceService::class)->makePartial();
     $conferenceService->shouldReceive("getConferenceName")
         ->withArgs(['46'])
@@ -418,7 +417,7 @@ test('valid search, volunteer direct', function ($method) {
             '<Response>',
             '<Say voice="alice" language="en-US">please wait while we connect your call</Say>',
             '<Dial>',
-            '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical" statusCallback="helpline-dialer.php?service_body_id=46&amp;Caller=+12125551212&amp;ysk=fake" startConferenceOnEnter="false" endConferenceOnExit="true" statusCallbackMethod="GET" statusCallbackEvent="start join end leave" waitMethod="GET" beep="false">',
+            '<Conference waitUrl="https://twimlets.com/holdmusic?Bucket=com.twilio.music.classical" statusCallback="helpline-dialer.php?service_body_id=46&amp;Caller=+12125551212&amp;ysk='.getSessionCookieValue($response).'" startConferenceOnEnter="false" endConferenceOnExit="true" statusCallbackMethod="GET" statusCallbackEvent="start join end leave" waitMethod="GET" beep="false">',
             '46_fake_conference',
             '</Conference>',
             '</Dial>',

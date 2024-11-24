@@ -16,9 +16,8 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
-    $_SESSION = null;
     $_SERVER['REQUEST_URI'] = "/";
+    $_REQUEST = null;
 
     $this->fakeCallSid = "abcdefghij";
     $this->utility = setupTwilioService();

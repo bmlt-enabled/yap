@@ -7,9 +7,10 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
+
     $_SERVER['REQUEST_URI'] = "/";
-    $_SESSION = null;
+    $_REQUEST = null;
+
 
     $this->utility = setupTwilioService();
 
@@ -77,7 +78,7 @@ test('initial sms gateway talk option without location', function ($method) {
 })->with(['GET', 'POST']);
 
 test('initial sms gateway with a blackholed number', function ($method) {
-    $_SESSION['override_sms_blackhole'] = "+19737771313";
+    session()->put('override_sms_blackhole', "+19737771313");
     $this->callerIdInfo['Body'] = '27592';
     $response = $this->call(
         $method,
@@ -94,4 +95,6 @@ test('initial sms gateway with a blackholed number', function ($method) {
     // Validate no call record was created for blackholed numbers
     $record = \App\Models\Record::where('callsid', $this->callerIdInfo['SmsSid'])->first();
     expect($record)->toBeNull();
+    $_SESSION['override_jft_option'] = true;
 })->with(['GET', 'POST']);
+    $_SESSION['override_spad_option'] = true;

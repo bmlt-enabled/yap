@@ -16,10 +16,8 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 
     $this->rootServerMocks = new RootServerMocks();
 
@@ -43,7 +41,7 @@ test('get cdr no auth', function () {
 });
 
 test('validate sample cdr phone', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     $id = 1;
@@ -106,7 +104,7 @@ test('validate sample cdr phone', function () {
 });
 
 test('validate sample cdr sms', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = 44;
     $id = 1;
@@ -168,7 +166,7 @@ test('validate sample cdr sms', function () {
 });
 
 test('validate sample cdr sms with caller consent event', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = 44;
     $id = 1;
@@ -236,7 +234,7 @@ test('validate sample cdr sms with caller consent event', function () {
 });
 
 test('validate sample map metrics', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = "44";
     $date_range_start = $this->settings->getCurrentTime();
@@ -280,7 +278,7 @@ test('validate sample map metrics', function () {
 });
 
 test('validate sample map metrics poi csv', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
 
     $service_body_id = "44";
     $date_range_start = $this->settings->getCurrentTime();
@@ -326,7 +324,7 @@ test('validate sample map metrics poi csv', function () {
 });
 
 test('validate sample metrics', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     $service_body_id = 1053;
     $date_range_start = "2023-01-03 00:00:00";
     $date_range_end = "2023-01-03 23:59:59";
@@ -418,8 +416,8 @@ test('validate sample metrics', function () {
 });
 
 test('validate sample metrics for with recurse', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    $_SESSION['auth_is_admin'] = true;
+    session()->put('auth_mechanism', AuthMechanism::V2);
+    session()->put('auth_is_admin', true);
     $parent_service_body_id = 1052;
     $service_body_id = 1053;
     $date_range_start = "2023-01-03 00:00:00";

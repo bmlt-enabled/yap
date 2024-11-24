@@ -1,4 +1,4 @@
-describe('Menubar', () => {
+describe('Users', () => {
 
     before(() => {
         cy.resetDatabase();

@@ -34,7 +34,7 @@ describe('Menubar', () => {
             .click()
             .wait(3000)
             .get('#service_body_id option:selected')
-            .should('have.text', 'Bronx Area Service (1005) / Greater New York Region (1)');
+            .should('have.text', '-= Select A Service Body =-');
     })
 
     it('Click Settings', () => {
@@ -56,7 +56,7 @@ describe('Menubar', () => {
             .click()
             .wait(3000)
             .get('#service_body_id option:selected')
-            .should('have.text', 'Bronx Area Service (1005) / Greater New York Region (1)');
+            .should('have.text', '-= Select A Service Body =-');
     })
 
     it('Click Groups', () => {
