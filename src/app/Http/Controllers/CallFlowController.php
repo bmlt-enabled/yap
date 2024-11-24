@@ -938,7 +938,7 @@ class CallFlowController extends Controller
         $callRecord->start_time = date("Y-m-d H:i:s");
         $callRecord->end_time = date("Y-m-d H:i:s");
         $callRecord->type = RecordType::SMS;
-        $callRecord->payload = json_encode($_REQUEST);
+        $callRecord->payload = json_encode(request()->all());
 
         $this->call->insertCallRecord($callRecord);
 

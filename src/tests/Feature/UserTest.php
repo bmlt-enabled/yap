@@ -4,16 +4,6 @@ use App\Constants\AuthMechanism;
 use App\Models\User;
 use Illuminate\Testing\Assert;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
-
 test('create user', function () {
     session()->put('auth_mechanism', AuthMechanism::V2);
     session()->put('auth_is_admin', true);

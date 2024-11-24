@@ -1,17 +1,6 @@
 <?php
-
 use App\Constants\AuthMechanism;
 use App\Constants\EventId;
-use App\Models\EventStatus;
-
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
 
 test('returns data', function () {
     session()->put('auth_mechanism', AuthMechanism::V2);

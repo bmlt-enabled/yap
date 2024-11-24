@@ -10,15 +10,7 @@ use App\Structures\ServiceBodyCallHandling;
 use Illuminate\Testing\Assert;
 use Tests\RootServerMocks;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
 beforeEach(function () {
-
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-
     $this->rootServerMocks = new RootServerMocks();
     $this->callSid = "abc123";
     $this->serviceBodyId = "1053";

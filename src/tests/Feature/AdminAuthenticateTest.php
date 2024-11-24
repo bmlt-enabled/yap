@@ -6,15 +6,6 @@ use App\Models\ConfigData;
 use App\Models\User;
 use App\Structures\ServiceBodyCallHandling;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
-
 test('login to authenticate with a BMLT user and a user with no rights', function () {
     $this->post(
         '/admin/login',

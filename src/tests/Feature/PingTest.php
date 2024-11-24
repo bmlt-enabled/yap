@@ -1,13 +1,4 @@
 <?php
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
-
 test('ping with php extension', function ($method) {
     $response = $this->call($method, '/ping.php', [
         //'ysk'=>'123'

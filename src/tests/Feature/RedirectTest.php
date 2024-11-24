@@ -1,13 +1,4 @@
 <?php
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
-
 test('service body extension response', function ($method) {
     $response = $this->call($method, '/service-body-ext-response.php', [
         "Digits" => "1"

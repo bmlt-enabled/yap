@@ -12,14 +12,7 @@ use App\Structures\ServiceBodyCallHandling;
 use App\Structures\VolunteerData;
 use Tests\RootServerMocks;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
 beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-
     $this->utility = setupTwilioService();
 
     $this->settings = new SettingsService();

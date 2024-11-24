@@ -1,17 +1,6 @@
 <?php
 
-use function PHPUnit\Framework\assertMatchesRegularExpression;
-
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
-
-test('meeting seating results', function () {
+test('meeting search results', function () {
     $response = $this->get('/msr/35.560471/-78.670792');
     $response
         ->assertStatus(200)

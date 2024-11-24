@@ -1,12 +1,4 @@
 <?php
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
 
 test('invalid entry', function ($method) {
     $response = $this->call($method, '/gender-routing-response.php', ['SearchType'=>'1', 'Digits'=>'7']);

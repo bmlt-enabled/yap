@@ -9,13 +9,7 @@ use App\Structures\MeetingResults;
 use App\Structures\Timezone;
 use Tests\FakeTwilioHttpClient;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
 beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
     $this->from = "+15005550006";
     $this->to = "+15005550007";
     $this->message = "test message";

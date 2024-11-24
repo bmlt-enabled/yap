@@ -2,19 +2,11 @@
 
 use App\Constants\AuthMechanism;
 use App\Models\ConfigData;
-use App\Constants\DataType;
 use App\Services\RootServerService;
 use App\Structures\Settings;
 use Tests\RootServerMocks;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
 beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-
     $this->id = "200";
     $this->serviceBodyId = 1006;
     $this->rootServerMocks = new RootServerMocks();

@@ -1,13 +1,4 @@
 <?php
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
-
 test('custom extensions', function ($method) {
     session()->put('override_en_US_custom_extensions_greeting', "https://fake.org/test.mp3");
     $response = $this->call($method, '/custom-ext.php');

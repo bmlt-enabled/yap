@@ -2,15 +2,6 @@
 
 use Illuminate\Support\Facades\Session;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
-
 test('clear the session', function () {
     Session::put("override_blah", "test");
     $this->assertEquals("test", Session::get("override_blah"));

@@ -5,16 +5,7 @@ use App\Models\ConfigData;
 use App\Structures\Group;
 use App\Structures\ServiceBodyCallHandling;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
 beforeEach(function () {
-
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-
-
     $this->id = "200";
     $this->serviceBodyId = "44";
     $this->parentServiceBodyId = "43";

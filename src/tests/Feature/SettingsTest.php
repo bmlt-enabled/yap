@@ -3,16 +3,6 @@
 use App\Constants\AuthMechanism;
 use App\Services\SettingsService;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
-
 test('check language selections when not set', function () {
     session()->put('auth_mechanism', AuthMechanism::V2);
     $response = $this->call('GET', '/api/v1/settings');
