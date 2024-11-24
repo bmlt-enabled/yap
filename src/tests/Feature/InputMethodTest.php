@@ -2,14 +2,7 @@
 
 use App\Constants\SearchType;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
 beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-
     $this->callSid = "abc123";
     $this->called = "+19998887777";
 });
