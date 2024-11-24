@@ -24,10 +24,11 @@ class SessionService extends Service
 
             if (isset($service_body_config)) {
                 foreach ($service_body_config as $item => $value) {
-                    if (($item == "twilio_account_sid" || $item == "twilio_auth_token") && isset($_SESSION['call_state'])) {
+                    // Skip setting "twilio_account_sid" and "twilio_auth_token" if "call_state" is in the session
+                    if (($item == "twilio_account_sid" || $item == "twilio_auth_token") && session()->has('call_state')) {
                         continue;
                     }
-                    $_SESSION["override_" . $item] = $value;
+                    session()->put("override_" . $item, $value);
                 }
             }
         }

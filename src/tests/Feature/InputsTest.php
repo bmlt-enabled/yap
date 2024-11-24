@@ -9,10 +9,8 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [
@@ -84,7 +82,7 @@ test('zip input for address lookup', function ($method) {
 })->with(['GET', 'POST']);
 
 test('zip input for address lookup with speech gathering', function ($method) {
-    $_SESSION["override_speech_gathering"] = true;
+    session()->put("override_speech_gathering", true);
     $response = $this->call($method, '/zip-input.php?SearchType=2');
     $response
         ->assertStatus(200)
@@ -120,9 +118,8 @@ test('city or county voice input', function ($method) {
 })->with(['GET', 'POST']);
 
 test('city or county voice input with hints', function ($method) {
-    $_REQUEST["SearchType"] = "1";
-    $_SESSION['override_gather_hints'] = "Raleigh,Lillington,Benson,Dunn";
-    $response = $this->call($method, '/city-or-county-voice-input.php?SearchType=1');
+    session()->put('override_gather_hints', "Raleigh,Lillington,Benson,Dunn");
+    $response = $this->call($method, '/city-or-county-voice-input.php', ['SearchType'=>"1"]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=utf-8")
