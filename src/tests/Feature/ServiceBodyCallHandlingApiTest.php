@@ -10,10 +10,10 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
+
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
+
 
     $this->id = "200";
     $this->serviceBodyId = "44";
@@ -21,7 +21,7 @@ beforeEach(function () {
 });
 
 test('save call handling', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     $callHandling = new ServiceBodyCallHandling();
     $callHandling->forced_caller_id_number = "123";
 
@@ -42,7 +42,7 @@ test('save call handling', function () {
 });
 
 test('get call handling for a service body', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     $callHandling = new ServiceBodyCallHandling();
     $callHandling->forced_caller_id_number = "123";
 
@@ -67,7 +67,7 @@ test('get call handling for a service body', function () {
 });
 
 test('get call handling for a service body that does not exist', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
 
     $response = $this->call(
         'GET',
@@ -81,7 +81,7 @@ test('get call handling for a service body that does not exist', function () {
 });
 
 test('update call handling for a service body', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     $callHandling = new ServiceBodyCallHandling();
     $callHandling->forced_caller_id_number = "123";
 

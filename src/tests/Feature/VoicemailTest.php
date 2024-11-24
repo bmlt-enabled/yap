@@ -10,10 +10,10 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
+
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
+
 
     new \Tests\TwilioMessagesCreateMock();
     $this->id = "200";
@@ -23,7 +23,7 @@ beforeEach(function () {
 });
 
 test('voicemail standard response', function ($method) {
-    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
+    session()->put('override_service_body_id', $this->serviceBodyId);
 
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
@@ -50,14 +50,14 @@ test('voicemail standard response', function ($method) {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Say voice="alice" language="en-US">please leave a message after the tone, hang up when finished</Say>',
-            '<Record playBeep="1" maxLength="120" timeout="15" recordingStatusCallback="voicemail-complete.php?service_body_id=44&amp;caller_id=%2B17325551212&amp;caller_number=%2B12125551313&amp;ysk=fake" recordingStatusCallbackMethod="GET"/>',
+            '<Record playBeep="1" maxLength="120" timeout="15" recordingStatusCallback="voicemail-complete.php?service_body_id=44&amp;caller_id=%2B17325551212&amp;caller_number=%2B12125551313&amp;ysk='.getSessionCookieValue($response).'" recordingStatusCallbackMethod="GET"/>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
 
 test('voicemail custom prompt', function ($method) {
-    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
-    $_SESSION['override_en_US_voicemail_greeting'] = "https://example.org/test.mp3";
+    session()->put('override_service_body_id', $this->serviceBodyId);
+    session()->put('override_en_US_voicemail_greeting', "https://example.org/test.mp3");
 
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
@@ -83,7 +83,7 @@ test('voicemail custom prompt', function ($method) {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
             '<Play>https://example.org/test.mp3</Play>',
-            '<Record playBeep="1" maxLength="120" timeout="15" recordingStatusCallback="voicemail-complete.php?service_body_id=44&amp;caller_id=%2B17325551212&amp;caller_number=%2B12125551313&amp;ysk=fake" recordingStatusCallbackMethod="GET"/>',
+            '<Record playBeep="1" maxLength="120" timeout="15" recordingStatusCallback="voicemail-complete.php?service_body_id=44&amp;caller_id=%2B17325551212&amp;caller_number=%2B12125551313&amp;ysk='.getSessionCookieValue($response).'" recordingStatusCallbackMethod="GET"/>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);

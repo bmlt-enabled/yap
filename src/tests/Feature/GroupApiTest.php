@@ -10,10 +10,8 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 
     $this->id = "200";
     $this->serviceBodyId = "44";
@@ -21,7 +19,7 @@ beforeEach(function () {
 });
 
 test('save group', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     $groupData = new Group();
     $groupData->group_name = "test";
     $groupData->group_shared_service_bodies = ["1060"];
@@ -52,7 +50,7 @@ test('delete group', function () {
         $groupData,
     );
 
-     $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+     session()->put('auth_mechanism', AuthMechanism::V2);
      $response = $this->call('DELETE', sprintf('/api/v1/groups/%s', $groupId));
      $response->assertStatus(200)
          ->assertHeader("Content-Type", "application/json")
@@ -60,7 +58,7 @@ test('delete group', function () {
 });
 
 test('delete group that does not exist', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     $response = $this->call('DELETE', sprintf('/api/v1/groups/%s', 1000));
     $response->assertStatus(404)
         ->assertHeader("Content-Type", "application/json")
@@ -69,7 +67,7 @@ test('delete group that does not exist', function () {
 
 
 test('get groups for service body', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     $groupData = new Group();
     $groupData->group_name = "Fake Group";
     $groupData->group_shared_service_bodies = [$this->serviceBodyId];
@@ -104,7 +102,7 @@ test('get groups for service body no auth', function () {
 });
 
 test('update group', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     $groupData = new Group();
     $groupData->group_name = "test";
     $groupData->group_shared_service_bodies = ["1060"];
@@ -145,7 +143,7 @@ test('update group', function () {
 
 
 test('save group volunteers', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
 
     $groupData = new Group();
     $groupData->group_name = "test";
@@ -180,7 +178,7 @@ test('save group volunteers', function () {
 });
 
 test('update group volunteers', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
 
     $groupData = new Group();
     $groupData->group_name = "test";

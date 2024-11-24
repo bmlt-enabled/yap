@@ -4,15 +4,12 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 });
 
 test('province input list selection', function ($method) {
-    $_SESSION['override_province_lookup_list'] = ["North Carolina","South Carolina"];
-    $_REQUEST['SearchType'] = 2;
+    session()->put('override_province_lookup_list', ["North Carolina","South Carolina"]);
     $response = $this->call($method, '/province-voice-input.php', ["SearchType"=>2]);
     $response
         ->assertStatus(200)
@@ -29,7 +26,6 @@ test('province input list selection', function ($method) {
 })->with(['GET', 'POST']);
 
 test('province input speech input', function ($method) {
-    $_REQUEST['SearchType'] = 2;
     $response = $this->call($method, '/province-voice-input.php', ["SearchType"=>2]);
     $response
         ->assertStatus(200)

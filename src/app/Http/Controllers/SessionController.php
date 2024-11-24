@@ -2,21 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 
 class SessionController extends Controller
 {
     public function delete(Request $request)
     {
-        if (!isset($_SESSION)) {
-            session_start();
-        }
-
-        foreach ($_SESSION as $key => $value) {
-            if (strpos($key, "cache_") === 0
-                || strpos($key, "override_") === 0
-                || strpos($key, 'call_state') === 0) {
-                unset($_SESSION[$key]);
+        foreach (Session::all() as $key => $value) {
+            if (str_starts_with($key, "cache_") || str_starts_with($key, "override_") || str_starts_with($key, "call_state")) {
+                Session::forget($key);
             }
         }
 

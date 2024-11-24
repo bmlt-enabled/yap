@@ -12,10 +12,10 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
+
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
+
 
     $this->utility = setupTwilioService();
 
@@ -64,7 +64,7 @@ test('initial sms gateway talk option without location', function ($method) {
 })->with(['GET', 'POST']);
 
 test('initial sms gateway with a blackholed number', function ($method) {
-    $_SESSION['override_sms_blackhole'] = "+19737771313";
+    session()->put('override_sms_blackhole', "+19737771313");
     $this->callerIdInfo['Body'] = '27592';
     $response = $this->call(
         $method,
@@ -95,7 +95,7 @@ test('sms to deliver the jft', function ($method) {
             return $data['from'] == $this->to && !empty($data['body'][0]);
         }));
 
-    $_SESSION['override_jft_option'] = true;
+    session()->put('override_jft_option', true);
     $this->callerIdInfo['Body'] = 'jFt';
     $response = $this->call(
         $method,
@@ -127,7 +127,7 @@ test('sms to deliver the spad', function ($method) {
             return $data['from'] == $this->to && !empty($data['body'][0]);
         }));
 
-    $_SESSION['override_spad_option'] = true;
+    session()->put('override_spad_option', true);
     $this->callerIdInfo['Body'] = 'spad';
     $response = $this->call(
         $method,

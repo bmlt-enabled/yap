@@ -4,10 +4,8 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 });
 
 test('service body extension response', function ($method) {
@@ -59,7 +57,7 @@ test('voice input result for someone to talk to with a New York phone number', f
 })->with(['GET', 'POST']);
 
 test('voice input result for someone to talk to with a New York phone number but North Carolina toll phone number bias', function ($method) {
-    $_SESSION['override_toll_province_bias'] = "NC";
+    session()->put('override_toll_province_bias', "NC");
     $response = $this->call($method, '/voice-input-result.php', [
         "SpeechResult" => "Raleigh",
         "SearchType" => "1",
@@ -77,7 +75,7 @@ test('voice input result for someone to talk to with a New York phone number but
 })->with(['GET', 'POST']);
 
 test('voice input result for someone to talk to with a toll free phone number bias', function ($method) {
-    $_SESSION['override_toll_free_province_bias'] = "NC";
+    session()->put('override_toll_free_province_bias', "NC");
     $response = $this->call($method, '/voice-input-result.php', [
         "SpeechResult" => "Raleigh",
         "SearchType" => "1"
@@ -94,8 +92,6 @@ test('voice input result for someone to talk to with a toll free phone number bi
 })->with(['GET', 'POST']);
 
 test('voice input result for meeting lookup', function ($method) {
-    $_REQUEST['SpeechResult'] = "Raleigh";
-    $_REQUEST['SearchType'] = "2";
     $response = $this->call($method, '/voice-input-result.php', [
         "SpeechResult" => "Raleigh",
         "SearchType" => "2"
