@@ -15,15 +15,6 @@ use App\Services\ConfigService;
 use App\Repositories\ConfigRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
-
 test('login to authenticate with a BMLT user and a user with no rights', function () {
     $this->post(
         '/admin/login',

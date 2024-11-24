@@ -2,15 +2,6 @@
 
 use App\Services\SettingsService;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
-
 test('language selector no languages set', function ($method) {
     $response = $this->call($method, '/lng-selector.php');
     $response

@@ -9,8 +9,10 @@ use Tests\TestCase;
 use Tests\TwilioTestUtility;
 
 uses(TestCase::class, RefreshDatabase::class)
+    ->beforeAll(function () {
+        putenv("ENVIRONMENT=test");
+    })
     ->beforeEach(function () {
-        env("ENVIRONMENT", "test");
         $this->artisan('migrate:fresh');
     })
     ->in('Feature');

@@ -4,18 +4,8 @@ use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
 beforeEach(function () {
-
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-
-
     $this->fakeCallSid = "abcdefghij";
-
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [
         "username" => "fake",

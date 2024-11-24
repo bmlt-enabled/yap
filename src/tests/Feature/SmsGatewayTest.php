@@ -2,24 +2,13 @@
 
 use App\Services\SettingsService;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
 beforeEach(function () {
-
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-
-
     $this->utility = setupTwilioService();
 
     $this->settings = new SettingsService();
     app()->instance(SettingsService::class, $this->settings);
-
     $this->from = '+19737771313';
     $this->to = '+12125551212';
-
     $this->callerIdInfo = [
         'SmsSid' => 'abc123',
         'To' => $this->to,

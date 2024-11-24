@@ -92,8 +92,8 @@ class AdminController extends Controller
 
     public function login(Request $request): RedirectResponse
     {
-        $username = $_POST['username'] ?? $request->post('username');
-        $password = $_POST['password'] ?? $request->post('password');
+        $username = $request->post('username');
+        $password = $request->post('password');
 
         $auth = $this->authn->authenticate($username, $password);
         if ($auth) {
