@@ -7,8 +7,7 @@ runs:
     - name: Test w/Code Coverage
       run: |
         cd src
-        cp config.test.php config.php
-        cp .env.pipeline .env
+        mv .env.pipeline .env
         make coverage-xml
       shell: bash
 

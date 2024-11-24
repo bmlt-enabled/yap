@@ -60,11 +60,6 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
                 PDO::ATTR_STRINGIFY_FETCHES => false,
             ]) : [],
-        ],
-        'sqlite_testing' => [
-            'driver' => 'sqlite',
-            'database' => 'memory',
-            'prefix' => '',
         ]
     ],
 

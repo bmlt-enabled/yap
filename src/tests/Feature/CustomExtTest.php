@@ -4,14 +4,12 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 });
 
 test('custom extensions', function ($method) {
-    $_SESSION['override_en_US_custom_extensions_greeting'] = "https://fake.org/test.mp3";
+    session()->put('override_en_US_custom_extensions_greeting', "https://fake.org/test.mp3");
     $response = $this->call($method, '/custom-ext.php');
     $response
         ->assertStatus(200)
@@ -29,7 +27,7 @@ test('custom extensions', function ($method) {
 })->with(['GET', 'POST']);
 
 test('custom extensions dialer', function ($method) {
-    $_SESSION["override_custom_extensions"] = [365 => '555-555-1212'];
+    session()->put("override_custom_extensions", [365 => '555-555-1212']);
     $response = $this->call($method, '/custom-ext-dialer.php?Called=%2B17183367631&Digits=365#');
     $response
         ->assertStatus(200)

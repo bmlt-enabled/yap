@@ -34,8 +34,6 @@ class RootServerServiceBodiesController extends Controller
      */
     public function index(Request $request)
     {
-        $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-        $_SESSION['auth_is_admin'] = true;
-        return response()->json($this->rootServerService->getServiceBodiesForUser());
+        return response()->json($this->rootServerService->getServiceBodies());
     }
 }

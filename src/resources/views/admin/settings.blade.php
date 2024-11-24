@@ -3,7 +3,7 @@
     <div class="row">
         <div class="col-md">
             <?php
-            if (isset($_SESSION['auth_is_admin']) && $_SESSION['auth_is_admin'] == 1) { ?>
+            if (session()->has('auth_is_admin') && session()->get('auth_is_admin') == 1) { ?>
             <button class="btn btn-danger" onclick="fetch('<?php echo url('/admin/cache') ?>', {method: 'DELETE'})">
                 Clear Database Cache
             </button>
