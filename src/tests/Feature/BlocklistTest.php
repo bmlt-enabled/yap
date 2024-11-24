@@ -4,15 +4,13 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 });
 
 test('test the blocklist with an exact match', function ($method) {
     $caller = "5557778888";
-    $_SESSION['override_blocklist'] = $caller;
+    session()->put('override_blocklist', $caller);
     $response = $this->call($method, '/', [
         "Caller"=>$caller
     ]);
@@ -24,7 +22,7 @@ test('test the blocklist with an exact match', function ($method) {
 
 test('test the blocklist without a match', function ($method) {
     $caller = "5557778888";
-    $_SESSION['override_blocklist'] = $caller;
+    session()->put('override_blocklist', $caller);
     $response = $this->call($method, '/', [
         "Caller"=>"5557778889"
     ]);

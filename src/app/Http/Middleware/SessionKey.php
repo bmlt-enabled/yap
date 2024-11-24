@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Session;
 
 class SessionKey
 {
@@ -18,9 +19,10 @@ class SessionKey
      */
     public function handle(Request $request, Closure $next)
     {
-        // Restore session from previous yap session key.
+        // Restore session from previous session key.
         if ($request->has("ysk")) {
-            session_id($request->get("ysk"));
+            Session::setId($request->get("ysk"));
+            Session::start();
         }
 
         return $next($request);

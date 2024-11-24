@@ -2,27 +2,23 @@
 
 namespace App\Services;
 
-use App\Constants\DataType;
 use App\Constants\SpecialPhoneNumber;
 use App\Constants\VolunteerRoutingType;
 use App\Models\ConfigData;
-use App\Repositories\ConfigRepository;
 use App\Structures\ServiceBodyCallHandling;
 
 class ConfigService
 {
-    protected ConfigRepository $config;
     protected RootServerService $rootServer;
 
-    public function __construct(ConfigRepository $config, RootServerService $rootServer)
+    public function __construct(RootServerService $rootServer)
     {
-        $this->config = $config;
         $this->rootServer = $rootServer;
     }
 
     public function getConfig($service_body_id)
     {
-        $configs = $this->config->getAllDbData(DataType::YAP_CONFIG_V2);
+        $configs = ConfigData::getAllServiceBodyConfiguration();
         foreach ($configs as $config) {
             if ($config->service_body_id == $service_body_id) {
                 return $config;
@@ -41,7 +37,7 @@ class ConfigService
 
     public function getVolunteerRoutingEnabledServiceBodies(): array
     {
-        $all_helpline_data = $this->config->getAllDbData(DataType::YAP_CALL_HANDLING_V2);
+        $all_helpline_data = ConfigData::getAllCallHandling();
         $service_bodies = $this->rootServer->getServiceBodiesForUser();
         $helpline_enabled = array();
 
@@ -73,7 +69,7 @@ class ConfigService
                 if ($setOverrides) {
                     foreach ($data as $key => $value) {
                         if (str_starts_with($key, 'override_') && strlen($value) > 0) {
-                            $_SESSION[$key] = $value;
+                            session()->put($key, $value);
                         }
                     }
                 }

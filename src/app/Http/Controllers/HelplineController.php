@@ -68,11 +68,11 @@ class HelplineController extends Controller
         $dial_string = "";
 
         if (!$request->has('ForceNumber')) {
-            if (isset($_SESSION["override_service_body_id"])) {
+            if (session()->has("override_service_body_id")) {
                 $service_body_obj = $this->rootServer->getServiceBody($this->settings->get("service_body_id"));
             } else {
                 // TODO: Address is set for the session if you are using Gender routing.  This needs to be cleaned up as some technical debt from the pre-laravel version.
-                $address = $_SESSION['Address'] ?? $this->call->getIvrResponse($request);
+                $address = session()->get('Address') ?? $this->call->getIvrResponse($request);
                 $coordinates  = $this->geocoding->getCoordinatesForAddress($address);
                 try {
                     if (!isset($coordinates->latitude) && !isset($coordinates->longitude)) {
@@ -129,7 +129,7 @@ class HelplineController extends Controller
         $GLOBALS['service_body_id'] = $service_body_id;
 
         if (!$request->has('ForceNumber')
-            && (isset($_SESSION["override_service_body_id"])
+            && (session()->has("override_service_body_id")
                 || $this->rootServer->isServiceBodyHelplingCallInternallyRoutable($coordinates->latitude, $coordinates->longitude))) {
             $serviceBodyCallHandling = $this->config->getCallHandling($service_body_id);
         }
@@ -150,9 +150,9 @@ class HelplineController extends Controller
 
         if ($service_body_id > 0 && isset($serviceBodyCallHandling)
             && $serviceBodyCallHandling->volunteer_routing_enabled) {
-            if ($serviceBodyCallHandling->gender_routing_enabled && !isset($_SESSION['Gender'])) {
+            if ($serviceBodyCallHandling->gender_routing_enabled && !session()->has('Gender')) {
                 if (isset($address)) {
-                    $_SESSION["Address"] = $address;
+                    session()->put("Address", $address);
                 }
 
                 $searchType = $request->get("SearchType") ?? "-1";
@@ -295,10 +295,6 @@ class HelplineController extends Controller
                     CallRole::CALLER
                 );
                 $this->call->insertCallEventRecord(EventId::CALLER_IN_CONFERENCE);
-
-                if (isset($_SESSION["ActiveVolunteer"])) {
-                    $volunteer = $_SESSION["ActiveVolunteer"];
-                }
             }
 
             // TODO: Make timeout configurable per volunteer
@@ -342,7 +338,7 @@ class HelplineController extends Controller
                 if (count($participants) == 1) {
                     try {
                         $callerSid = $participants[0]->callSid;
-                        $_SESSION['master_callersid'] = $callerSid;
+                        session()->put('master_callersid', $callerSid);
                         $callerNumber = $this->twilio->client()->calls($callerSid)->fetch()->from;
                         if (strpos($callerNumber, "+") !== 0) {
                             $callerNumber .= "+" . trim($callerNumber);
@@ -437,10 +433,10 @@ class HelplineController extends Controller
         $volunteer_routing_parameters->tracker = $tracker;
         $volunteer_routing_parameters->cycle_algorithm = $serviceBodyCallHandling->call_strategy;
         $volunteer_routing_parameters->volunteer_type = VolunteerType::PHONE;
-        $volunteer_routing_parameters->volunteer_gender = $_SESSION['Gender'] ?? VolunteerGender::UNSPECIFIED;
+        $volunteer_routing_parameters->volunteer_gender = session()->has('Gender') ?? VolunteerGender::UNSPECIFIED;
         $volunteer_routing_parameters->volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
         $volunteer_routing_parameters->volunteer_language = $this->settings->get('language');
-        $_SESSION["volunteer_routing_parameters"] = $volunteer_routing_parameters;
+        session()->put("volunteer_routing_parameters", $volunteer_routing_parameters);
         $config->volunteer_routing_params = $volunteer_routing_parameters;
         $volunteer = $this->volunteers->getHelplineVolunteer($config->volunteer_routing_params);
         $config->volunteer = $volunteer;
@@ -466,15 +462,15 @@ class HelplineController extends Controller
         $config->voicemail_url = $this->getWebhookUrl($request) . '/voicemail.php?service_body_id='
             . $serviceBodyCallHandling->service_body_id . '&caller_id='
             . trim($config->options['callerId']) . $this->settings->getSessionLink();
-        if (!isset($_SESSION['ActiveVolunteer'])) {
-            $_SESSION['ActiveVolunteer'] = $volunteer;
+        if (!session()->has('ActiveVolunteer')) {
+            session()->put('ActiveVolunteer', $volunteer);
         }
 
         if ($serviceBodyCallHandling->call_strategy == CycleAlgorithm::BLASTING) {
-            $_SESSION['no_answer_max'] = count(explode(",", $config->volunteer->phoneNumber));
-            $_SESSION['voicemail_url'] = $config->voicemail_url;
+            session()->put('no_answer_max', count(explode(",", $config->volunteer->phoneNumber)));
+            session()->put('voicemail_url', $config->voicemail_url);
         } else {
-            $_SESSION['no_answer_max'] = 0;
+            session()->put('no_answer_max', 0);
         }
 
         return $config;
