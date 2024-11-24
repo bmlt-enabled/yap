@@ -16,6 +16,23 @@ class SettingsController extends Controller
 
     public function index()
     {
-        return response()->json(['languageSelections'=>$this->settingsService->languageSelections()]);
+        $settings = [];
+
+        foreach ($this->settingsService->allowlist() as $key => $value) {
+            if (!$value['hidden']) {
+                $settings[] = [
+                    "default" => $value['default'],
+                    "docs" => !empty($value['description']) ? sprintf("%s%s", $this->settingsService->get("docs_base"), $value['description']) : "",
+                    "key" => $key,
+                    "source" => $this->settingsService->source($key),
+                    "value" => $this->settingsService->get($key),
+                ];
+            }
+        }
+
+        return response()->json([
+            'languageSelections'=>$this->settingsService->languageSelections(),
+            'settings'=>$settings,
+        ]);
     }
 }

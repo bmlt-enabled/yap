@@ -47,14 +47,21 @@ class TwilioService extends Service
 
     public function incrementNoAnswerCount(): void
     {
-        $_SESSION['no_answer_count'] = !isset($_SESSION['no_answer_count']) ? 1 : $_SESSION['no_answer_count'] + 1;
-        if ($_SESSION['no_answer_count'] == $_SESSION['no_answer_max']) {
-            if ($this->client()->calls($_SESSION['master_callersid'])->fetch()->status === TwilioCallStatus::INPROGRESS) {
+        // Increment or initialize 'no_answer_count' in the session
+        $noAnswerCount = session()->get('no_answer_count', 0) + 1;
+        session()->put('no_answer_count', $noAnswerCount);
+
+        // Check if 'no_answer_count' has reached 'no_answer_max'
+        if ($noAnswerCount == session()->get('no_answer_max')) {
+            $masterCallSid = session()->get('master_callersid');
+            $voicemailUrl = session()->get('voicemail_url');
+
+            if ($this->client()->calls($masterCallSid)->fetch()->status === TwilioCallStatus::INPROGRESS) {
                 Log::debug("Call blasting no answer, calling voicemail.");
-                $this->client()->calls($_SESSION['master_callersid'])->update(array(
+                $this->client()->calls($masterCallSid)->update([
                     "method" => "GET",
-                    "url" => $_SESSION['voicemail_url']
-                ));
+                    "url" => $voicemailUrl,
+                ]);
             } else {
                 Log::debug("Caller hung up before we could send to voicemail.");
             }
@@ -63,18 +70,21 @@ class TwilioService extends Service
 
     private function mobileCheck($from)
     {
-        if (!isset($_SESSION['is_mobile'])) {
-            $is_mobile = true;
+        if (!session()->has('is_mobile')) {
+            $isMobile = true;
+
             if ($this->settings()->has('mobile_check') && json_decode($this->settings()->get('mobile_check'))) {
-                $phone_number = $this->client()->lookups->v1->phoneNumbers($from)
-                    ->fetch(array("type" => "carrier"));
-                if ($phone_number->carrier['type'] !== 'mobile') {
-                    $is_mobile = false;
+                $phoneNumber = $this->client()->lookups->v1->phoneNumbers($from)
+                    ->fetch(['type' => 'carrier']);
+
+                if ($phoneNumber->carrier['type'] !== 'mobile') {
+                    $isMobile = false;
                 }
             }
-            $_SESSION['is_mobile'] = $is_mobile;
+
+            session()->put('is_mobile', $isMobile);
         }
 
-        return $_SESSION['is_mobile'];
+        return session()->get('is_mobile');
     }
 }

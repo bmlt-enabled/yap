@@ -7,10 +7,8 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [
@@ -53,7 +51,7 @@ test('search for volunteers by zip code', function ($method) {
 })->with(['GET', 'POST']);
 
 test('jft option', function ($method) {
-    $_SESSION['override_jft_option'] = true;
+    session()->put('override_jft_option', true);
     $response = $this->call($method, '/input-method-result.php', [
         "Digits"=>"3"
     ]);
@@ -69,7 +67,7 @@ test('jft option', function ($method) {
 })->with(['GET', 'POST']);
 
 test('spad option', function ($method) {
-    $_SESSION['override_spad_option'] = true;
+    session()->put('override_spad_option', true);
     $response = $this->call($method, '/input-method-result.php', [
         "Digits"=>"4"
     ]);
@@ -101,7 +99,7 @@ test('city or county lookup', function () {
 });
 
 test('province option', function () {
-    $_SESSION['override_province_lookup'] = true;
+    session()->put('override_province_lookup', true);
     $response = $this->call('GET', '/input-method-result.php', [
         "Digits"=>"1",
         "SearchType"=>"1"

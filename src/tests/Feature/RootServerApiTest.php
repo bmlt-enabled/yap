@@ -9,15 +9,15 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
+
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
+
     $this->rootServerMocks = new RootServerMocks();
 });
 
 test('get service bodies', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $response = $this->call('GET', '/api/v1/rootServer/servicebodies');
     $response

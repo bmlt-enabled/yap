@@ -86,8 +86,8 @@ class RootServerService extends Service
 
     public function getServiceBodiesRights()
     {
-        if (isset($_SESSION['auth_mechanism'])) {
-            if ($_SESSION['auth_mechanism'] == AuthMechanism::V1) {
+        if (session()->has('auth_mechanism')) {
+            if (session()->get('auth_mechanism') == AuthMechanism::V1) {
                 $url = sprintf(
                     '%s/local_server/server_admin/json.php?admin_action=get_permissions',
                     $this->settings->getAdminBMLTRootServer()
@@ -117,11 +117,11 @@ class RootServerService extends Service
                 }
 
                 return $enriched_service_bodies_for_user;
-            } elseif ($_SESSION['auth_mechanism'] == AuthMechanism::V2 && $_SESSION['auth_is_admin']) {
+            } elseif (session()->get('auth_mechanism') == AuthMechanism::V2 && session()->get('auth_is_admin')) {
                 return $this->getServiceBodies();
-            } elseif ($_SESSION['auth_mechanism'] == AuthMechanism::V2) {
+            } elseif (session()->get('auth_mechanism') == AuthMechanism::V2) {
                 $service_bodies = $this->getServiceBodies();
-                $service_body_rights = $_SESSION['auth_service_bodies'];
+                $service_body_rights = session()->get('auth_service_bodies');
                 $service_bodies_for_user = array();
                 foreach ($service_bodies as $service_body) {
                     if (in_array($service_body->id, $service_body_rights)) {
@@ -280,5 +280,50 @@ class RootServerService extends Service
             $this->settings->getAdminBMLTRootServer()
         );
         return json_decode($this->http->get($bmlt_search_endpoint, 3600));
+    }
+
+    public function authenticate($username, $password) : bool
+    {
+        $endpoint = ($this->settings->has('alt_auth_method') && $this->settings->get('alt_auth_method') ? '/index.php' : '/local_server/server_admin/xml.php');
+        $baseUrl = sprintf("%s%s", $this->settings->getAdminBMLTRootServer(), $endpoint);
+        $res = $this->http->postAsForm(
+            $baseUrl,
+            [
+                "admin_action" => "login",
+                "c_comdef_admin_login" => $username,
+                "c_comdef_admin_password" => $password
+            ]
+        );
+        $isAuthed = preg_match('/^OK$/', str_replace(array("\r", "\n"), '', $res->body())) == 1;
+        session()->put('bmlt_auth_session', $isAuthed ? $this->getCookiesFromHeaders($res->cookies()) : null);
+        return $isAuthed;
+    }
+
+    public function logout()
+    {
+        $endpoint = 'local_server/server_admin/xml.php?admin_action=logout';
+        $this->http->getWithAuth(sprintf("%s%s", $this->settings->getAdminBMLTRootServer(), $endpoint));
+    }
+
+    public function getLoggedInUsername()
+    {
+        if (!session()->has('auth_user_name_string')) {
+            $url = sprintf('%s/local_server/server_admin/json.php?admin_action=get_user_info', $this->settings->getAdminBMLTRootServer());
+            $get_user_info_response = json_decode($this->http->get($url, 3600));
+            $user_name = isset($get_user_info_response->current_user) ? $get_user_info_response->current_user->name : session()->get('username');
+            session()->put('auth_user_name_string', $user_name);
+        }
+        return session()->get('auth_user_name_string');
+    }
+
+    private function getCookiesFromHeaders($cookies): array
+    {
+        $cookieStore = [];
+
+        foreach ($cookies as $cookie) {
+            $cookieStore[] = sprintf("%s=%s", $cookie->getName(), $cookie->getValue());
+        }
+
+        return $cookieStore;
     }
 }

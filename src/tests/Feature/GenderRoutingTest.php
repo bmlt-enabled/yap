@@ -4,16 +4,12 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 });
 
 test('invalid entry', function ($method) {
-    $_REQUEST['SearchType'] = "1";
-    $_REQUEST['Digits'] = "7";
-    $response = $this->call($method, '/gender-routing-response.php?SearchType=1&Digits=7');
+    $response = $this->call($method, '/gender-routing-response.php', ['SearchType'=>'1', 'Digits'=>'7']);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=utf-8")
@@ -27,9 +23,7 @@ test('invalid entry', function ($method) {
 })->with(['GET', 'POST']);
 
 test('selected option', function () {
-    $_REQUEST['SearchType'] = "1";
-    $_REQUEST['Digits'] = "1";
-    $response = $this->call('GET', '/gender-routing-response.php?Digits=1&SearchType=1');
+    $response = $this->call('GET', '/gender-routing-response.php', ['SearchType'=>'1', 'Digits'=>'1']);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=utf-8")
@@ -42,9 +36,7 @@ test('selected option', function () {
 });
 
 test('initial gender selection', function () {
-    $_REQUEST['SearchType'] = "1";
-    $_REQUEST['Digits'] = "1";
-    $response = $this->call('GET', '/gender-routing.php?Digits=1&SearchType=1');
+    $response = $this->call('GET', '/gender-routing.php', ['SearchType'=>'1','Digits'=>'1']);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=utf-8")
@@ -60,9 +52,8 @@ test('initial gender selection', function () {
 });
 
 test('initial gender selection with no preference option enabled', function () {
-    $_REQUEST['SearchType'] = "1";
-    $_SESSION['override_gender_no_preference'] = true;
-    $response = $this->call('GET', '/gender-routing.php?SearchType=1');
+    session()->put('override_gender_no_preference', true);
+    $response = $this->call('GET', '/gender-routing.php', ["SearchType"=>1]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=utf-8")

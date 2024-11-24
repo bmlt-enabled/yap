@@ -9,10 +9,8 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [
@@ -44,9 +42,6 @@ test('join volunteer to conference', function ($method) {
     $conferenceContextMock->participants = $participantListMock;
     $this->twilioClient->shouldReceive("conferences")->with($this->conferenceSid)->andReturn($conferenceContextMock);
 
-    $_REQUEST['Digits'] = "1";
-    $_REQUEST['Called'] = "12125551212";
-    $_REQUEST['conference_name'] = $this->conferenceName;
     $response = $this->call($method, '/helpline-answer-response.php', [
         "Digits"=>"1",
         "Called"=>"12125551212",
@@ -73,9 +68,6 @@ test('enough volunteers in conference, someone is talking to the caller already'
     $conferenceContextMock->participants = $participantListMock;
     $this->twilioClient->shouldReceive("conferences")->with($this->conferenceSid)->andReturn($conferenceContextMock);
 
-    $_REQUEST['Digits'] = "1";
-    $_REQUEST['Called'] = "12125551212";
-    $_REQUEST['conference_name'] = $this->conferenceName;
     $response = $this->call($method, '/helpline-answer-response.php', [
         "Digits"=>"1",
         "Called"=>"12125551212",
@@ -99,7 +91,7 @@ test('volunteer opts not to answer the call', function ($method) {
     $digits = "2";
     $called = "12125551212";
 
-    $_SESSION['no_answer_max'] = 5;
+    session()->put('no_answer_max', 5);
     $response = $this->call($method, '/helpline-answer-response.php', [
         "Digits"=>$digits,
         "Called"=>$called,
@@ -133,9 +125,9 @@ test('no volunteers opt to answer the call, sent to voicemail', function ($metho
     $this->twilioClient->shouldReceive('calls')->with($callSid)->andReturn($callContextMock);
     $this->twilioClient->calls = $callContextMock;
 
-    $_SESSION['no_answer_max'] = 1;
-    $_SESSION['master_callersid'] = $callSid;
-    $_SESSION['voicemail_url'] = $this->voicemail_url;
+    session()->put('no_answer_max', 1);
+    session()->put('master_callersid', $callSid);
+    session()->put('voicemail_url', $this->voicemail_url);
     $response = $this->call($method, '/helpline-answer-response.php', [
         "Digits"=>$digits,
         "Called"=>$called,
@@ -165,9 +157,9 @@ test('no volunteers opt to answer the call, caller hung up before being sent to 
     $this->twilioClient->shouldReceive('calls')->with($callSid)->andReturn($callContextMock);
     $this->twilioClient->calls = $callContextMock;
 
-    $_SESSION['no_answer_max'] = 1;
-    $_SESSION['master_callersid'] = $callSid;
-    $_SESSION['voicemail_url'] = $this->voicemail_url;
+    session()->put('no_answer_max', 1);
+    session()->put('master_callersid', $callSid);
+    session()->put('voicemail_url', $this->voicemail_url);
     $response = $this->call($method, '/helpline-answer-response.php', [
         "Digits"=>$digits,
         "Called"=>$called,

@@ -9,13 +9,10 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 
     $this->fakeCallSid = "abcdefghij";
-    $this->middleware = new \Tests\MiddlewareTests();
     $this->utility = setupTwilioService();
 //    $this->reportsRepository = $this->middleware->insertSession($this->fakeCallSid);
 });

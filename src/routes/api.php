@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Admin\SwaggerController;
+use App\Models\ConfigData;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
@@ -27,9 +29,17 @@ Route::group([
     Route::resource('settings', 'SettingsController')->only(['index']);
 });
 
-if (getenv('ENVIRONMENT') == "test") {
-    Route::post('/resetDatabase', function () {
-        Artisan::call('migrate:fresh --seed');
-        return response()->json(['status' => 'database reset']);
-    });
-}
+Route::post('/resetDatabase', function () {
+    $env = config('app.env'); // Get the current environment
+    if ($env === 'production') {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Cannot reset database in production environment.'
+        ], 403);
+    }
+    Artisan::call('migrate:fresh --seed');
+    return response()->json([
+        'status' => 'database reset',
+        'migrationOutput' => Artisan::output(),
+    ]);
+});

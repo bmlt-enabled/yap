@@ -4,6 +4,7 @@ use App\Constants\AuthMechanism;
 use App\Models\ConfigData;
 use App\Constants\DataType;
 use App\Services\RootServerService;
+use App\Structures\Settings;
 use Tests\RootServerMocks;
 
 beforeAll(function () {
@@ -11,131 +12,202 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 
     $this->id = "200";
-    $this->serviceBodyId = "44";
-    $this->parentServiceBodyId = "43";
+    $this->serviceBodyId = 1006;
     $this->rootServerMocks = new RootServerMocks();
 });
 
 test('get config from endpoint', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    $config = new Settings();
+    $config->title = "welcome to blah";
+    session()->put('auth_mechanism', AuthMechanism::V2);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     ConfigData::createServiceBodyConfiguration(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
-        (object)["title"=>"Welcome to blah"]
+        $config
     );
 
     $this->call('GET', '/api/v1/config', [
-        "service_body_id" => $this->serviceBodyId,
-        "data_type" => DataType::YAP_CONFIG_V2
+        "serviceBodyId" => $this->serviceBodyId,
     ])->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([
             "id"=>1,
             "service_body_id"=>$this->serviceBodyId,
-            "parent_id"=>$this->parentServiceBodyId,
-            "data"=>[["title"=>"Welcome to blah"]]
-        ]);
+            "parent_id"=>0,
+            "data"=>[$config->toArray()]]);
+});
+
+test('get config from endpoint using BMLT auth', function () {
+    $config = new Settings();
+    $config->title = "welcome to blah";
+
+    ConfigData::createServiceBodyConfiguration(
+        $this->serviceBodyId,
+        $config
+    );
+
+    $response = $this->post(
+        '/admin/login',
+        ["username"=>"gnyr_admin","password"=>"CoreysGoryStory"]
+    );
+
+    $response
+        ->assertStatus(302)
+        ->assertHeader("Location", 'http://localhost/admin/home')
+        ->assertHeader("Content-Type", "text/html; charset=utf-8");
+
+    $response = $this->call('GET', '/api/v1/config', [
+        "serviceBodyId" => $this->serviceBodyId,
+    ]);
+    $response->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json")
+        ->assertJson([
+            "id"=>1,
+            "service_body_id"=>$this->serviceBodyId,
+            "parent_id"=>0,
+            "data"=>[$config->toArray()]]);
+});
+
+test('get config from endpoint using BMLT no auth', function () {
+    $config = new Settings();
+    $config->title = "welcome to blah";
+
+    ConfigData::createServiceBodyConfiguration(
+        $this->serviceBodyId,
+        $config
+    );
+
+    $response = $this->call('GET', '/api/v1/config', [
+        "serviceBodyId" => $this->serviceBodyId,
+    ]);
+    $response->assertStatus(302)
+        ->assertHeader("Content-Type", "text/html; charset=utf-8")
+        ->assertHeader("Location", 'http://localhost/admin');
 });
 
 test('get config for invalid service body', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    $config = new Settings();
+    session()->put('auth_mechanism', AuthMechanism::V2);
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     ConfigData::createServiceBodyConfiguration(
         99,
-        $this->parentServiceBodyId,
-        (object)[]
+        $config
     );
 
     $this->call('GET', '/api/v1/config', [
-        "service_body_id" => 99,
-        "data_type" => DataType::YAP_CONFIG_V2
+        "serviceBodyId" => 99,
     ])->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([]);
 });
 
-
-test('get by parent id', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-
-    $configData = ["data"=>[["title"=>"Welcome to blah"]]];
-    ConfigData::createServiceBodyConfiguration(
-        $this->serviceBodyId,
-        $this->parentServiceBodyId,
-        (object)$configData
-    );
-
-    $this->call('GET', '/api/v1/config', [
-        "parent_id" => $this->parentServiceBodyId,
-        "data_type" => DataType::YAP_CONFIG_V2
-    ])->assertStatus(200)
-        ->assertHeader("Content-Type", "application/json")
-        ->assertJson([
-            "id"=>1,
-            "service_body_id"=>$this->serviceBodyId,
-            "parent_id"=>$this->parentServiceBodyId,
-            "data"=>[$configData]
-        ]);
-});
-
 test('save config', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-
-    $serviceBodyConfigData = [["title"=>"welcome to blah"]];
+    session()->put('auth_mechanism', AuthMechanism::V2);
+    $serviceBodyConfigData = new Settings();
+    $serviceBodyConfigData->title = "welcome to blah";
     $response = $this->call('POST', '/api/v1/config', [
-        "service_body_id" => $this->serviceBodyId,
-        "parent_id" => $this->parentServiceBodyId,
-        "data_type" => DataType::YAP_CONFIG_V2,
+        "serviceBodyId" => $this->serviceBodyId,
     ], content: json_encode($serviceBodyConfigData));
     $response->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([
             "id"=>1,
             "service_body_id"=>$this->serviceBodyId,
-            "parent_id"=>$this->parentServiceBodyId,
-            "data"=>$serviceBodyConfigData
-        ]);
+            "parent_id"=>0,
+            "data"=>[$serviceBodyConfigData->toArray()]]);
+
+    $response = $this->call('GET', '/', ['service_body_id'=>$this->serviceBodyId]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">welcome to blah</Say>',
+            '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
+            '<Say voice="alice" language="en-US">press two to search for meetings</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
 });
 
-test('save config with parent id', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    ConfigData::createServiceBodyConfiguration(
-        $this->serviceBodyId,
-        $this->parentServiceBodyId,
-        (object)[]
-    );
-
-    $serviceBodyConfigData = [["title"=>"welcome to blah"]];
+test('save config with twilio creds', function () {
+    session()->put('auth_mechanism', AuthMechanism::V2);
+    $serviceBodyConfigData = new Settings();
+    $serviceBodyConfigData->twilio_account_sid = "abc";
+    $serviceBodyConfigData->mobile_check = true;
     $response = $this->call('POST', '/api/v1/config', [
-        "service_body_id" => $this->serviceBodyId,
-        "data_type" => DataType::YAP_CONFIG_V2,
-        "parent_id" => $this->parentServiceBodyId
+        "serviceBodyId" => $this->serviceBodyId,
     ], content: json_encode($serviceBodyConfigData));
     $response->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([
             "id"=>1,
             "service_body_id"=>$this->serviceBodyId,
-            "parent_id"=>$this->parentServiceBodyId,
-            "data"=>$serviceBodyConfigData
-        ]);
+            "parent_id"=>0,
+            "data"=>[$serviceBodyConfigData->toArray()]]);
+
+    $this->call('GET', '/ping', ['service_body_id'=>$this->serviceBodyId]);
+    $this->assertNull(session()->get("override_twilio_account_sid"));
+    $this->assertTrue(session()->get("override_mobile_check"));
 });
+
+test('update config', function () {
+    session()->put('auth_mechanism', AuthMechanism::V2);
+    $serviceBodyConfigData = new Settings();
+    $serviceBodyConfigData->title = "welcome to blah";
+    $response = $this->call('POST', '/api/v1/config', [
+        "serviceBodyId" => $this->serviceBodyId,
+    ], content: json_encode($serviceBodyConfigData));
+    $response->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json")
+        ->assertJson([
+            "id"=>1,
+            "service_body_id"=>$this->serviceBodyId,
+            "parent_id"=>0,
+            "data"=>[$serviceBodyConfigData->toArray()]]);
+
+    $serviceBodyConfigData->title = "welcome to blih";
+    $response = $this->call('POST', '/api/v1/config', [
+        "serviceBodyId" => $this->serviceBodyId,
+    ], content: json_encode($serviceBodyConfigData));
+    $response->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json")
+        ->assertJson([
+            "id"=>1,
+            "service_body_id"=>$this->serviceBodyId,
+            "parent_id"=>0,
+            "data"=>[$serviceBodyConfigData->toArray()]]);
+
+    $response = $this->call('GET', '/', ['service_body_id'=>$this->serviceBodyId]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">welcome to blih</Say>',
+            '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
+            '<Say voice="alice" language="en-US">press two to search for meetings</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+});
+
 
 test('get config no auth', function () {
     $response = $this->call('GET', '/api/v1/config', [
-        "service_body_id" => 0,
-        "data_type" => DataType::YAP_CONFIG_V2
+        "serviceBodyId" => 0,
     ]);
     $response
         ->assertHeader("Location", "http://localhost/admin")

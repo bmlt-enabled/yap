@@ -532,21 +532,15 @@ function saveServiceBodyConfig(service_body_id)
     var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
     serviceBodyConfiguration.modal('hide');
     spinnerDialog(true, "Saving Service Body Configuration...", function () {
-        var data = [];
         var formData = serviceBodyConfiguration.find("#serviceBodyConfigurationForm").serializeArray();
         var dataObj = {};
-        for (var formItem of formData) {
+        for (let formItem of formData) {
             dataObj[formItem["name"]] = formItem["value"]
         }
 
-        data.push(dataObj);
-
-        saveToAdminApi(
+        saveToServiceBodyConfigurationApi(
             service_body_id,
-            data,
-            '_YAP_CONFIG_V2_',
-            0,
-            0,
+            dataObj,
             function (xhr, status) {
                 var alert = $("#service_body_saved_alert");
                 if (xhr.responseText === "{}" || xhr.status !== 200) {
@@ -640,16 +634,12 @@ function saveCallHandling(serviceBodyId, data, callback)
     });
 }
 
-function saveToAdminApi(service_body_id, data, data_type, parent_id, id, callback)
+function saveToServiceBodyConfigurationApi(service_body_id, data, callback)
 {
     $.ajax({
         async: false,
         type: "POST",
-        url: "../api/v1/config"
-            + "?service_body_id=" + service_body_id
-            + "&data_type=" + data_type
-            + (parent_id !== null && parent_id !== 0 ? "&parent_id=" + parent_id : "")
-            + (id !== null && id !== 0 ? "&id=" + id : ""),
+        url: `../api/v1/config?serviceBodyId=${service_body_id}`,
         data: JSON.stringify(data),
         dataType: "json",
         contentType: "application/json",
@@ -1280,7 +1270,7 @@ function openServiceBodyConfigure(service_body_id)
     spinnerDialog(true, "Retrieving Service Body Configuration...", function () {
         var serviceBodyConfiguration = $("#serviceBodyConfiguration_" + service_body_id);
         var serviceBodyFields = $("#serviceBodyConfigurationFields");
-        $.getJSON("../api/v1/config?service_body_id=" + service_body_id, function (data) {
+        $.getJSON("../api/v1/config?serviceBodyId=" + service_body_id, function (data) {
             if (!$.isEmptyObject(data)) {
                 clearServiceBodyFields(service_body_id);
                 var dataSet = data['data'][0];

@@ -9,14 +9,12 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
     $this->to = "+15005550006";
     $this->from = "+12125551212";
 
-    $_SESSION["initial_webhook"] = "https://example.org/index.php";
+    session()->put("initial_webhook", "https://example.org/index.php");
 
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [
@@ -79,7 +77,7 @@ test('send meeting results SMS', function ($method) {
 })->with(['GET', 'POST']);
 
 test('send meeting results SMS with combine', function ($method) {
-    $_SESSION["override_sms_combine"] = true;
+    session()->put("override_sms_combine", true);
 
     $settingsService = new SettingsService();
     app()->instance(SettingsService::class, $settingsService);
@@ -110,7 +108,7 @@ test('send meeting results SMS with combine', function ($method) {
 })->with(['GET', 'POST']);
 
 test('send meeting results SMS with combine with infinite searching', function ($method) {
-    $_SESSION["override_sms_combine"] = true;
+    session()->put("override_sms_combine", true);
 
     $settingsService = new SettingsService();
     app()->instance(SettingsService::class, $settingsService);

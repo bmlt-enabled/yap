@@ -5,8 +5,6 @@ namespace app\Http\Controllers\Api\V1\Admin;
 use App\Constants\DataType;
 use App\Http\Controllers\Controller;
 use App\Models\ConfigData;
-use App\Structures\Volunteer;
-use App\Structures\VolunteerData;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use stdClass;

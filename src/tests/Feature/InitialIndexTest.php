@@ -8,8 +8,8 @@ use App\Services\RootServerService;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use App\Structures\ServiceBodyCallHandling;
+use App\Structures\Settings;
 use Tests\FakeTwilioHttpClient;
-use Tests\MiddlewareTests;
 use Tests\RootServerMocks;
 
 beforeAll(function () {
@@ -17,13 +17,10 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 
     $this->fakeCallSid = "abcdefghij";
-    $this->middleware = new MiddlewareTests();
     $this->rootServerMocks = new RootServerMocks();
 
     $fakeHttpClient = new FakeTwilioHttpClient();
@@ -57,7 +54,7 @@ test('initial call-in default', function ($method) {
 })->with(['GET', 'POST']);
 
 test('initial call-in default with lengthier initial pause', function ($method) {
-    $_SESSION["override_initial_pause"] = 5;
+    session()->put("override_initial_pause", 5);
     $response = $this->call($method, '/');
     $response
         ->assertStatus(200)
@@ -76,10 +73,10 @@ test('initial call-in default with lengthier initial pause', function ($method) 
 })->with(['GET', 'POST']);
 
 test('initial call-in default with altered menu options', function ($method) {
-    $_SESSION['override_digit_map_search_type'] = [
+    session()->put('override_digit_map_search_type', [
         '3' => SearchType::MEETINGS,
         '4' => SearchType::VOLUNTEERS,
-    ];
+    ]);
     $response = $this->call($method, '/');
     $response
         ->assertStatus(200)
@@ -121,7 +118,7 @@ test('initial call-in default after going to the admin page', function ($method)
 })->with(['GET', 'POST']);
 
 test('initial call-in with jft option enabled', function ($method) {
-    $_SESSION['override_jft_option'] = "true";
+    session()->put('override_jft_option', "true");
     $response = $this->call($method, '/');
     $response
         ->assertStatus(200)
@@ -142,7 +139,7 @@ test('initial call-in with jft option enabled', function ($method) {
 })->with(['GET', 'POST']);
 
 test('initial call-in with spad option enabled', function ($method) {
-    $_SESSION['override_spad_option'] = "true";
+    session()->put('override_spad_option', "true");
     $response = $this->call($method, '/');
     $response
         ->assertStatus(200)
@@ -163,8 +160,8 @@ test('initial call-in with spad option enabled', function ($method) {
 })->with(['GET', 'POST']);
 
 test('initial call-in with jft and spad option enabled', function ($method) {
-    $_SESSION['override_jft_option'] = "true";
-    $_SESSION['override_spad_option'] = "true";
+    session()->put('override_jft_option', "true");
+    session()->put('override_spad_option', "true");
     $response = $this->call($method, '/');
     $response
         ->assertStatus(200)
@@ -187,7 +184,7 @@ test('initial call-in with jft and spad option enabled', function ($method) {
 })->with(['GET', 'POST']);
 
 test('initial call-in default with language selections', function ($method) {
-    $_SESSION['override_language_selections'] = "en-US,es-US";
+    session()->put('override_language_selections', "en-US,es-US");
     $response = $this->call($method, '/');
     $response
         ->assertStatus(200)
@@ -199,7 +196,7 @@ test('initial call-in default with language selections', function ($method) {
 })->with(['GET', 'POST']);
 
 test('selected language call flow', function ($method) {
-    $_SESSION['override_language_selections'] = "en-US,es-US";
+    session()->put('override_language_selections', "en-US,es-US");
     $response = $this->call($method, '/', [
         "Digits"=>"2"
     ]);
@@ -219,7 +216,7 @@ test('selected language call flow', function ($method) {
 })->with(['GET', 'POST']);
 
 test('play custom promptset', function ($method) {
-    $_SESSION['override_en_US_greeting'] = "https://example.org/fake.mp3";
+    session()->put('override_en_US_greeting', 'https://example.org/fake.mp3');
     $response = $this->call($method, '/');
     $response
         ->assertStatus(200)
@@ -236,8 +233,8 @@ test('play custom promptset', function ($method) {
 })->with(['GET', 'POST']);
 
 test('play custom promptset in a different language with selection menu', function ($method) {
-    $_SESSION['override_language_selections'] = "en-US,es-US";
-    $_SESSION['override_es_US_greeting'] = "https://example.org/fake_es.mp3";
+    session()->put('override_language_selections', 'en-US,es-US');
+    session()->put('override_es_US_greeting', 'https://example.org/fake_es.mp3');
     $response = $this->call($method, '/', [
         'Digits' => "2"
     ]);
@@ -256,9 +253,9 @@ test('play custom promptset in a different language with selection menu', functi
 })->with(['GET', 'POST']);
 
 test('play custom promptset in a different language with single forced language', function ($method) {
-    $_SESSION['override_gather_language'] = "es-US";
-    $_SESSION['override_word_language'] = "es-US";
-    $_SESSION['override_es_US_greeting'] = "https://example.org/fake_es.mp3";
+    session()->put('override_gather_language', 'es-US');
+    session()->put('override_word_language', 'es-US');
+    session()->put('override_es_US_greeting', 'https://example.org/fake_es.mp3');
     $response = $this->call($method, '/');
     $response
         ->assertStatus(200)
@@ -394,10 +391,11 @@ test('initial callin with service body override', function ($method) {
         $handling
     );
 
+
+    $config = new Settings();
     ConfigData::createServiceBodyConfiguration(
         $this->serviceBodyId,
-        $this->parentServiceBodyId,
-        new stdClass()
+        $config
     );
 
     $response = $this->call($method, '/', [
@@ -419,7 +417,7 @@ test('initial callin with service body override', function ($method) {
 })->with(['GET', 'POST']);
 
 test('initial call-in extension dial', function ($method) {
-    $_SESSION['override_extension_dial'] = true;
+    session()->put('override_extension_dial', true);
     $response = $this->call($method, '/');
     $response
         ->assertStatus(200)

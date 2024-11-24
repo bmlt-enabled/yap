@@ -8,5 +8,7 @@ Cypress.Commands.add('login', (username = "gnyr_admin", password = "CoreysGorySt
 })
 
 Cypress.Commands.add('resetDatabase', () => {
-    cy.request('POST', `${Cypress.env('apiUrl')}/resetDatabase`);
+    cy.request('POST', `${Cypress.env('apiUrl')}/resetDatabase`).then((response) => {
+
+    });
 });

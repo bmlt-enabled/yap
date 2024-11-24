@@ -7,10 +7,8 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 });
 
 test('search by address for meeting information with speech text result with google api key', function ($method) {

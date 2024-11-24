@@ -9,15 +9,14 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
+
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 });
 
 test('create user', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    $_SESSION['auth_is_admin'] = true;
+    session()->put('auth_mechanism', AuthMechanism::V2);
+    session()->put('auth_is_admin', true);
     $username = 'test';
     $password = 'test';
     $response = $this->call('POST', '/api/v1/users', [
@@ -36,8 +35,8 @@ test('create user', function () {
 });
 
 test('create user and then delete it', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    $_SESSION['auth_is_admin'] = true;
+    session()->put('auth_mechanism', AuthMechanism::V2);
+    session()->put('auth_is_admin', true);
     $username = 'test';
     $password = 'test';
     $response = $this->call('POST', '/api/v1/users', [
@@ -66,7 +65,7 @@ test('create user and then delete it', function () {
 });
 
 test('delete user without permissions does not exist', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    session()->put('auth_mechanism', AuthMechanism::V2);
 
     $username = 'bruh';
     $response = $this->call('DELETE', sprintf('/api/v1/users/%s', $username));
@@ -78,8 +77,8 @@ test('delete user without permissions does not exist', function () {
 
 
 test('delete user that does not exist', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    $_SESSION['auth_is_admin'] = true;
+    session()->put('auth_mechanism', AuthMechanism::V2);
+    session()->put('auth_is_admin', true);
 
     $username = 'bruh';
 
@@ -91,8 +90,8 @@ test('delete user that does not exist', function () {
 });
 
 test('get all users', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    $_SESSION['auth_is_admin'] = true;
+    session()->put('auth_mechanism', AuthMechanism::V2);
+    session()->put('auth_is_admin', true);
 
     $response = $this->call('POST', '/api/v1/users', [
         'name'=>'test',
@@ -117,8 +116,8 @@ test('get all users', function () {
 });
 
 test('edit user name by self, non admin', function () {
-    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
-    $_SESSION['auth_is_admin'] = true;
+    session()->put('auth_mechanism', AuthMechanism::V2);
+    session()->put('auth_is_admin', true);
 
     $username = 'test';
 
@@ -140,8 +139,8 @@ test('edit user name by self, non admin', function () {
             "service_bodies"=>"1059,1060"
         ]]);
 
-    $_SESSION['auth_is_admin'] = false;
-    $_SESSION['username'] = $username;
+    session()->put('auth_is_admin', false);
+    session()->put('username', $username);
 
     $response = $this->call('PUT', sprintf('/api/v1/users/%s', $username), [
         'name'=>'test2',

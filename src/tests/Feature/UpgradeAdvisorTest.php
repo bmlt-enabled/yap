@@ -12,10 +12,10 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
+
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
+
 
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [
@@ -27,7 +27,6 @@ beforeEach(function () {
 });
 
 test('version test', function ($method) {
-
     $settings = new SettingsService();
     app()->instance(SettingsService::class, $settings);
     $response = $this->call($method, '/version');

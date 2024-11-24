@@ -14,10 +14,8 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
     $this->from = "+15005550006";
     $this->to = "+15005550007";
     $this->message = "test message";

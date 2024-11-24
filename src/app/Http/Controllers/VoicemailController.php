@@ -104,8 +104,8 @@ class VoicemailController extends Controller
         }
 
         try {
-            if (isset($_SESSION["volunteer_routing_parameters"])) {
-                $volunteer_routing_options = $_SESSION["volunteer_routing_parameters"];
+            if (session()->has("volunteer_routing_parameters")) {
+                $volunteer_routing_options = session()->get("volunteer_routing_parameters");
                 $volunteer_routing_options->volunteer_responder = VolunteerResponderOption::ENABLED;
                 $volunteers = $this->volunteers->getHelplineVolunteersActiveNow($volunteer_routing_options);
                 $recipients = [];

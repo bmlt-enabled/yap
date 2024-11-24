@@ -7,10 +7,8 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 
     $this->callSid = "abc123";
     $this->called = "+19998887777";
@@ -36,9 +34,9 @@ test('search for volunteers', function ($method) {
 
 test('search for meetings in french', function ($method) {
     $selected_language = "fr-CA";
-    $_SESSION["override_word_language"] = $selected_language;
-    $_SESSION["override_gather_language"] = $selected_language;
-    $_SESSION["override_language"] = $selected_language;
+    session()->put("override_word_language", $selected_language);
+    session()->put("override_gather_language", $selected_language);
+    session()->put("override_language", $selected_language);
     $response = $this->call($method, '/input-method.php', [
         "Digits"=>"2"
     ]);
@@ -58,7 +56,7 @@ test('search for meetings in french', function ($method) {
 })->with(['GET', 'POST']);
 
 test('search for volunteers with word overrides with session', function ($method) {
-    $_SESSION['override_city_or_county'] = "foo or bar";
+    session()->put('override_city_or_county', "foo or bar");
     $response = $this->call($method, '/input-method.php', [
         "Digits"=>"1"
     ]);
@@ -117,7 +115,7 @@ test('search for meetings', function ($method) {
 })->with(['GET', 'POST']);
 
 test('search for volunteers, disable postal code gathering', function ($method) {
-    $_SESSION['override_disable_postal_code_gather'] = true;
+    session()->put('override_disable_postal_code_gather', true);
     $response = $this->call($method, '/input-method.php', [
         "Digits"=>"1"
     ]);
@@ -133,7 +131,7 @@ test('search for volunteers, disable postal code gathering', function ($method) 
 })->with(['GET', 'POST']);
 
 test('search for meetings, disable postal code gathering', function ($method) {
-    $_SESSION['override_disable_postal_code_gather'] = true;
+    session()->put('override_disable_postal_code_gather', true);
     $response = $this->call($method, '/input-method.php', [
         "Digits"=>"2"
     ]);
@@ -149,7 +147,7 @@ test('search for meetings, disable postal code gathering', function ($method) {
 })->with(['GET', 'POST']);
 
 test('direct to volunteer search for a specific service body', function ($method) {
-    $_SESSION['override_service_body_id'] = 44;
+    session()->put('override_service_body_id', 44);
     $response = $this->call($method, '/input-method.php', [
         "Digits"=>"1",
         "Called"=>"123"
@@ -160,14 +158,14 @@ test('direct to volunteer search for a specific service body', function ($method
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Redirect method="GET">helpline-search.php?Called=123&amp;ysk=fake</Redirect>',
+            '<Redirect method="GET">helpline-search.php?Called=123&amp;ysk='.getSessionCookieValue($response).'</Redirect>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
 
 test('direct to volunteer search for a specific service body with postal code gather disabled', function ($method) {
-    $_SESSION['override_disable_postal_code_gather'] = true;
-    $_SESSION['override_service_body_id'] = 44;
+    session()->put('override_disable_postal_code_gather', true);
+    session()->put('override_service_body_id', 44);
     $response = $this->call($method, '/input-method.php', [
         "Digits"=>"1",
         "Called"=>"123"
@@ -178,13 +176,33 @@ test('direct to volunteer search for a specific service body with postal code ga
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Redirect method="GET">helpline-search.php?Called=123&amp;ysk=fake</Redirect>',
+            '<Redirect method="GET">helpline-search.php?Called=123&amp;ysk='.getSessionCookieValue($response).'</Redirect>',
             '</Response>'
         ], false);
 })->with(['GET', 'POST']);
 
+test('override ysk', function ($method) {
+    session()->put('override_disable_postal_code_gather', true);
+    session()->put('override_service_body_id', 44);
+    $response = $this->call($method, '/input-method.php', [
+        "Digits"=>"1",
+        "Called"=>"123",
+        "ysk"=>"overriden_ysk"
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Redirect method="GET">helpline-search.php?Called=123&amp;ysk=overriden_ysk</Redirect>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
+
 test('search for volunteers without custom query', function ($method) {
-    $_SESSION['override_custom_query'] = '&services=92';
+    session()->put('override_custom_query', '&services=92');
     $response = $this->call($method, '/input-method.php', [
         "Digits"=>"2",
         "Called"=>"123"
@@ -201,7 +219,7 @@ test('search for volunteers without custom query', function ($method) {
 })->with(['GET', 'POST']);
 
 test('jft option enabled and selected', function ($method) {
-    $_SESSION['override_jft_option'] = true;
+    session()->put('override_jft_option', true);
     $response = $this->call($method, '/input-method.php', [
         "Digits"=>"3"
     ]);
@@ -217,7 +235,7 @@ test('jft option enabled and selected', function ($method) {
 })->with(['GET', 'POST']);
 
 test('spad option enabled and selected', function ($method) {
-    $_SESSION['override_spad_option'] = true;
+    session()->put('override_spad_option', true);
     $response = $this->call($method, '/input-method.php', [
         "Digits"=>"4"
     ]);
@@ -248,8 +266,8 @@ test('dialback selected', function ($method) {
 })->with(['GET', 'POST']);
 
 test('menu with meeting search option with jft and spad enabled', function ($method) {
-    $_SESSION['override_spad_option'] = true;
-    $_SESSION['override_jft_option'] = true;
+    session()->put('override_spad_option', true);
+    session()->put('override_jft_option', true);
     $response = $this->call($method, '/input-method.php', [
         "Digits"=>"2"
     ]);
@@ -271,15 +289,15 @@ test('menu with meeting search option with jft and spad enabled', function ($met
 })->with(['GET', 'POST']);
 
 test('custom extension configured and selected', function ($method) {
-    $_SESSION['override_custom_extensions'] = [7 => '12125551212'];
-    $_SESSION['override_digit_map_search_type'] = [
+    session()->put('override_custom_extensions', [7 => '12125551212']);
+    session()->put('override_digit_map_search_type', [
         '1' => SearchType::VOLUNTEERS,
         '2' => SearchType::MEETINGS,
         '3' => SearchType::JFT,
         '4' => SearchType::SPAD,
         '7' => SearchType::CUSTOM_EXTENSIONS,
         '9' => SearchType::DIALBACK
-    ];
+    ]);
 
     $response = $this->call($method, '/input-method.php', [
         "Digits"=>"7"

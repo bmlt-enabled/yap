@@ -48,7 +48,7 @@ class UserController extends Controller
 
     public function update(Request $request, string $username): JsonResponse
     {
-        if ($_SESSION['username'] === $username) {
+        if (session()->get('username') === $username) {
             $user = User::editUserForSelf(
                 $request->input('name'),
                 $username,
