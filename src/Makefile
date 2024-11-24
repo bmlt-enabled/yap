@@ -9,7 +9,11 @@ serve:
 
 .PHONY: e2e-test
 e2e-test:
-	env CYPRESS_BASE_URL=http://127.0.0.1:8000/yap npx cypress run
+	env CYPRESS_BASE_URL=http://127.0.0.1:8000/yap ELECTRON_ENABLE_LOGGING=1 npx cypress run
+
+.PHONY: e2e-test-ui
+e2e-test-ui:
+	env CYPRESS_BASE_URL=http://127.0.0.1:8000/yap npx cypress open --component
 
 .PHONY: lint
 lint:

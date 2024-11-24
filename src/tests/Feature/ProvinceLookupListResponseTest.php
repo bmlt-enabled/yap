@@ -4,17 +4,13 @@ beforeAll(function () {
 });
 
 beforeEach(function () {
-    @session_start();
     $_SERVER['REQUEST_URI'] = "/";
     $_REQUEST = null;
-    $_SESSION = null;
 });
 
 test('invalid entry with province input response', function ($method) {
-    $_SESSION['override_province_lookup_list'] = ["North Carolina","South Carolina"];
-    $_REQUEST['Digits'] = 3;
-    $_REQUEST['SearchType'] = 2;
-    $response = $this->call($method, '/province-lookup-list-response.php?Digits=3&SearchType=2');
+    session()->put('override_province_lookup_list', ["North Carolina","South Carolina"]);
+    $response = $this->call($method, '/province-lookup-list-response.php', ['Digits'=>'3', 'SearchType'=>'2']);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=utf-8")
@@ -28,10 +24,8 @@ test('invalid entry with province input response', function ($method) {
 })->with(['GET', 'POST']);
 
 test('valid entry with province input response', function ($method) {
-    $_SESSION['override_province_lookup_list'] = ["North Carolina","South Carolina"];
-    $_REQUEST['Digits'] = 2;
-    $_REQUEST['SearchType'] = 2;
-    $response = $this->call($method, '/province-lookup-list-response.php?SearchType=2&Digits=2');
+    session()->put('override_province_lookup_list', ["North Carolina","South Carolina"]);
+    $response = $this->call($method, '/province-lookup-list-response.php', ['Digits'=>'2', 'SearchType'=>'2']);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=utf-8")
