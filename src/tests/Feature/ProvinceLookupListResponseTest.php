@@ -1,12 +1,4 @@
 <?php
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
-beforeEach(function () {
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
 
 test('invalid entry with province input response', function ($method) {
     session()->put('override_province_lookup_list', ["North Carolina","South Carolina"]);

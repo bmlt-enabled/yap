@@ -12,16 +12,7 @@ use App\Structures\VolunteerInfo;
 use App\Utilities\VolunteerScheduleHelpers;
 use Tests\RootServerMocks;
 
-beforeAll(function () {
-    putenv("ENVIRONMENT=test");
-});
-
 beforeEach(function () {
-
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-
-
     $this->rootServerMocks = new RootServerMocks();
     $this->id = "200";
     $this->serviceBodyId = "44";
