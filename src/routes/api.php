@@ -1,9 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Admin\SwaggerController;
-use App\Models\ConfigData;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
@@ -26,6 +24,7 @@ Route::group([
     Route::resource('reports/metrics', 'MetricController')->only(['index']);
     Route::resource('rootServer/servicebodies', 'RootServerServiceBodiesController')->only(['index']);
     Route::resource('events/status', 'EventStatusController')->only(['index', 'store']);
+    Route::resource('session', 'SessionController')->only(['store']);
     Route::resource('settings', 'SettingsController')->only(['index']);
 });
 
