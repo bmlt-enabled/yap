@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 
 $ext = '(\.php)?$';
 
-Route::get('/v1/session/delete', 'App\Http\Controllers\SessionController@delete');
 Route::get("/admin/auth/rights", 'App\Http\Controllers\AuthController@rights');
 Route::get("/admin/auth/logout", 'App\Http\Controllers\AuthController@logout');
 Route::get("/admin/auth/timeout", 'App\Http\Controllers\AuthController@timeout');

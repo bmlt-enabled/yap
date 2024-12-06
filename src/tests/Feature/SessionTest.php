@@ -1,20 +1,50 @@
 <?php
 
+use App\Constants\AuthMechanism;
 use Illuminate\Support\Facades\Session;
 
 
 use Illuminate\Support\Facades\Session;
 
-test('clear the session', function () {
-    Session::put("override_blah", "test");
-    $this->assertEquals("test", Session::get("override_blah"));
-    $response = $this->get('/v1/session/delete');
+test('clear the session', function ($method) {
+    $response = $this->call($method, "/", ["override_title" => "bro"]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">bro</Say>',
+            '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
+            '<Say voice="alice" language="en-US">press two to search for meetings</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+
+    session()->put('auth_mechanism', AuthMechanism::V2);
+    $response = $this->call('POST', '/api/v1/session');
     @session_start();
         ->assertHeader("Content-Type", "text/plain; charset=UTF-8")
         ->assertSeeText("OK");
-    $_SESSION = null;
-});
 
+    $this->assertNull(Session::get("override_blah"));
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">Test Helpline</Say>',
+            '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
+            '<Say voice="alice" language="en-US">press two to search for meetings</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);;
 test('session initialize', function ($method) {
     $_SESSION["override_blah"] = "test";
     assert($_SESSION["override_blah"] == "test");
