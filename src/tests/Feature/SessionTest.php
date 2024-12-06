@@ -44,11 +44,11 @@ test('clear the session', function ($method) {
             '</Gather>',
             '</Response>'
         ], false);
-})->with(['GET', 'POST']);;
+})->with(['GET', 'POST']);
 test('session initialize', function ($method) {
     $_SESSION["override_blah"] = "test";
     assert($_SESSION["override_blah"] == "test");
-
+;
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=utf-8")
