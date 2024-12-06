@@ -41,7 +41,8 @@ test('clear the session', function ($method) {
             '</Gather>',
             '</Response>'
         ], false);
-})->with(['GET', 'POST']);;
+})->with(['GET', 'POST']);
+;
 
 test('session initialize', function ($method) {
     $response = $this->call($method, "/", ["override_title" => "son"]);
