@@ -10,8 +10,10 @@ import Reports from "../pages/Reports";
 import Volunteers from "../pages/Volunteers";
 import Groups from "../pages/Groups";
 import Users from "../pages/Users";
+import Settings from "../pages/Settings";
 
 function App() {
+    const location = useLocation();
     const themeOptions = createTheme({
         palette: {
             type: 'dark',
@@ -31,7 +33,7 @@ function App() {
     return (
         <div className="App">
             <ThemeProvider theme={themeOptions}>
-                <MenuBar/>
+                <MenuBar currentRoute={location.pathname}/>
                 <header className="App-header">
                     <Routes>
                         <Route path={`${baseUrl}/`} element={<Home/>} />
@@ -39,6 +41,7 @@ function App() {
                         <Route path={`${baseUrl}/serviceBodies`} element={<ServiceBodies/>} />
                         <Route path={`${baseUrl}/schedules`} element={<Schedules/>} />
                         <Route path={`${baseUrl}/volunteers`} element={<Volunteers/>} />
+                        <Route path={`${baseUrl}/settings`} element={<Settings/>} />
                         <Route path={`${baseUrl}/groups`} element={<Groups/>} />
                         <Route path={`${baseUrl}/users`} element={<Users/>} />
                     </Routes>
