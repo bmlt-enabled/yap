@@ -25,6 +25,7 @@ Route::group([
     Route::resource('rootServer/servicebodies', 'RootServerServiceBodiesController')->only(['index']);
     Route::resource('events/status', 'EventStatusController')->only(['index', 'store']);
     Route::resource('session', 'SessionController')->only(['store']);
+    Route::resource("cache", 'CacheController')->only(['store']);
     Route::resource('settings', 'SettingsController')->only(['index']);
 });
 
