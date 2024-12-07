@@ -7,8 +7,12 @@ import Button from '@mui/material/Button';
 import {Link, useNavigate} from "react-router-dom";
 import {Divider, Drawer, IconButton, ListItemButton, Typography} from "@mui/material";
 import {Menu, Close} from "@mui/icons-material";
+import { styled } from '@mui/material/styles';
+import MenuBarItem from "./MenuBarItem";
 
-function MenuBar() {
+
+
+function MenuBar({ currentRoute }) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
 
@@ -53,27 +57,14 @@ function MenuBar() {
                         <Typography>Yap</Typography>
                     </Box>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', sm: 'flex' } }}>
-                        <Link to={`${baseUrl}/`} style={{textDecoration:'none'}}>
-                            <Button color="secondary" variant="text">Home</Button>
-                        </Link>
-                        <Link to={`${baseUrl}/reports`} style={{textDecoration:'none'}}>
-                            <Button color="secondary" variant="text">Reports</Button>
-                        </Link>
-                        <Link to={`${baseUrl}/serviceBodies`} style={{textDecoration:'none'}}>
-                            <Button color="secondary" variant="text">Service Bodies</Button>
-                        </Link>
-                        <Link to={`${baseUrl}/schedules`} style={{textDecoration:'none'}}>
-                            <Button color="secondary" variant="text">Schedules</Button>
-                        </Link>
-                        <Link to={`${baseUrl}/volunteers`} style={{textDecoration:'none'}}>
-                            <Button color="secondary" variant="text">Volunteers</Button>
-                        </Link>
-                        <Link to={`${baseUrl}/groups`} style={{textDecoration:'none'}}>
-                            <Button color="secondary" variant="text">Groups</Button>
-                        </Link>
-                        <Link to={`${baseUrl}/users`} style={{textDecoration:'none'}}>
-                            <Button color="secondary" variant="text">Users</Button>
-                        </Link>
+                        <MenuBarItem currentRoute={currentRoute} pageName={"Home"} url={"/"} />
+                        <MenuBarItem currentRoute={currentRoute} pageName={"Report"} url={"/reports"} />
+                        <MenuBarItem currentRoute={currentRoute} pageName={"Service Bodies"} url={"/serviceBodies"} />
+                        <MenuBarItem currentRoute={currentRoute} pageName={"Schedules"} url={"/schedules"} />
+                        <MenuBarItem currentRoute={currentRoute} pageName={"Settings"} url={"/settings"} />
+                        <MenuBarItem currentRoute={currentRoute} pageName={"Volunteers"} url={"/volunteers"} />
+                        <MenuBarItem currentRoute={currentRoute} pageName={"Groups"} url={"/groups"} />
+                        <MenuBarItem currentRoute={currentRoute} pageName={"Users"} url={"/users"} />
                     </Box>
                 </Toolbar>
             </Container>
