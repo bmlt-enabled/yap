@@ -11,6 +11,25 @@ window.axios = axios;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
+window.axios.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response.status === 419 || error.response.status === 401 ) { // Or check for a custom header
+            // Optional: Show a toast message before redirecting
+            if (typeof toastr !== 'undefined') { // Assuming you have toastr
+                toastr.error('Your session has expired. Please log in again.');
+            } else if (typeof alert !== 'undefined') {
+                alert('Your session has expired. Please log in again.');
+            }
+
+            window.location.href = `${baseUrl}/login`; // Redirect to login
+            // Ensure the request is rejected to prevent further processing
+            return Promise.reject(error);
+        }
+        return Promise.reject(error);
+    }
+);
+
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting
