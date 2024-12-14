@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\User;
 use App\Services\HttpService;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
@@ -44,13 +45,13 @@ class AuthenticationRepository
         $this->rootServerService->logout();
     }
 
-    public function authV2($username, $password): array
+    public function authV2($username, $password): ?User
     {
         $passwordHash = hash('sha256', $password);
-        return DB::select(
-            'SELECT id, name, username, password, is_admin, permissions, service_bodies FROM `users` WHERE `username` = ? AND `password` = ?',
-            [$username, $passwordHash]
-        );
+
+        return User::where('username', $username)
+            ->where('password', $passwordHash)
+            ->first();
     }
 
     public function getUserNameV1()

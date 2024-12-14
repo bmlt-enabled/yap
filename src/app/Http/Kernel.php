@@ -94,7 +94,7 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         'authForAdminPortal' => AdminAuthenticator::class,
         'auth' => Authenticate::class,
-        'auth.basic' => AuthenticateWithBasicAuth::class,
+//        'auth.basic' => AuthenticateWithBasicAuth::class,
         'cache.headers' => SetCacheHeaders::class,
         'can' => Authorize::class,
         'guest' => RedirectIfAuthenticated::class,

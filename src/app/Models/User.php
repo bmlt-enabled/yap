@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
-class User extends Model
+class User extends Authenticatable
 {
+    use HasApiTokens;
+
     protected $primaryKey = "id";
     public $timestamps = false;
     protected $fillable = ["name", "username", "password", "permissions", "is_admin", "created_on", "service_bodies"];
@@ -17,7 +20,7 @@ class User extends Model
         array $permissions,
         array $service_bodies
     ) {
-        self::create([
+        return self::create([
             'name'=>$name,
             'username'=>$username,
             'password'=>hash('sha256', $password),
