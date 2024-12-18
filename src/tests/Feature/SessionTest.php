@@ -1,7 +1,9 @@
 <?php
 
 use App\Constants\AuthMechanism;
+use App\Models\User;
 use Illuminate\Support\Facades\Session;
+use Laravel\Sanctum\Sanctum;
 
 test('clear the session', function ($method) {
     $response = $this->call($method, "/", ["override_title" => "bro"]);
@@ -20,7 +22,8 @@ test('clear the session', function ($method) {
             '</Response>'
         ], false);
 
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     $response = $this->call('POST', '/api/v1/session');
     $response->assertStatus(200)
         ->assertHeader("Content-Type", "text/plain; charset=UTF-8")

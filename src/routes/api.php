@@ -12,7 +12,7 @@ Route::group([
 ], function () {
     Route::post('login', [AuthController::class, 'login'])->name('login');
 
-    Route::group(['middleware' => ['auth:sanctum']], function() {
+    Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
         Route::resource('config', 'ConfigController')->only(['index', 'store']);
         Route::resource('volunteers', 'ConfigureVolunteersController')->only(['index', 'store']);
