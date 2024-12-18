@@ -1,7 +1,9 @@
 <?php
 
 use App\Constants\AuthMechanism;
+use App\Models\User;
 use App\Services\RootServerService;
+use Laravel\Sanctum\Sanctum;
 use Tests\RootServerMocks;
 
 beforeEach(function () {
@@ -9,7 +11,8 @@ beforeEach(function () {
 });
 
 test('get service bodies', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $response = $this->call('GET', '/api/v1/rootServer/servicebodies');
     $response

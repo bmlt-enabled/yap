@@ -39,37 +39,6 @@ test('get config from endpoint', function () {
             "data"=>[$config->toArray()]]);
 });
 
-test('get config from endpoint using BMLT auth', function () {
-    $config = new Settings();
-    $config->title = "welcome to blah";
-
-    ConfigData::createServiceBodyConfiguration(
-        $this->serviceBodyId,
-        $config
-    );
-
-    $response = $this->post(
-        '/admin/login',
-        ["username"=>"gnyr_admin","password"=>"CoreysGoryStory"]
-    );
-
-    $response
-        ->assertStatus(302)
-        ->assertHeader("Location", 'http://localhost/admin/home')
-        ->assertHeader("Content-Type", "text/html; charset=utf-8");
-
-    $response = $this->call('GET', '/api/v1/config', [
-        "serviceBodyId" => $this->serviceBodyId,
-    ]);
-    $response->assertStatus(200)
-        ->assertHeader("Content-Type", "application/json")
-        ->assertJson([
-            "id"=>1,
-            "service_body_id"=>$this->serviceBodyId,
-            "parent_id"=>0,
-            "data"=>[$config->toArray()]]);
-});
-
 test('get config from endpoint using BMLT no auth', function () {
     $config = new Settings();
     $config->title = "welcome to blah";
