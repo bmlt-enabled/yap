@@ -1,9 +1,11 @@
 <?php
 use App\Constants\AuthMechanism;
 use App\Constants\EventId;
+use App\Models\User;
+use Laravel\Sanctum\Sanctum;
 
 test('returns data', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
 
     $response = $this->get('/api/v1/events/status');
     $response

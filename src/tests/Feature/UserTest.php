@@ -3,9 +3,11 @@
 use App\Constants\AuthMechanism;
 use App\Models\User;
 use Illuminate\Testing\Assert;
+use Laravel\Sanctum\Sanctum;
 
 test('create user', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     session()->put('auth_is_admin', true);
     $username = 'test';
     $password = 'test';
@@ -25,7 +27,8 @@ test('create user', function () {
 });
 
 test('create user and then delete it', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     session()->put('auth_is_admin', true);
     $username = 'test';
     $password = 'test';
@@ -55,7 +58,8 @@ test('create user and then delete it', function () {
 });
 
 test('delete user without permissions does not exist', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
 
     $username = 'bruh';
     $response = $this->call('DELETE', sprintf('/api/v1/users/%s', $username));
@@ -67,7 +71,8 @@ test('delete user without permissions does not exist', function () {
 
 
 test('delete user that does not exist', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     session()->put('auth_is_admin', true);
 
     $username = 'bruh';
@@ -80,7 +85,8 @@ test('delete user that does not exist', function () {
 });
 
 test('get all users', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     session()->put('auth_is_admin', true);
 
     $response = $this->call('POST', '/api/v1/users', [
@@ -106,7 +112,8 @@ test('get all users', function () {
 });
 
 test('edit user name by self, non admin', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     session()->put('auth_is_admin', true);
 
     $username = 'test';

@@ -32,4 +32,14 @@ class UserFactory extends Factory
             'service_bodies' => null, // Or generate data as needed for this field
         ];
     }
+
+    public function admin()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'is_admin' => 1,
+            ];
+        });
+    }
+
 }

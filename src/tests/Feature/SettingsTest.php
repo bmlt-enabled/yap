@@ -1,10 +1,13 @@
 <?php
 
 use App\Constants\AuthMechanism;
+use App\Models\User;
 use App\Services\SettingsService;
+use Laravel\Sanctum\Sanctum;
 
 test('check language selections when not set', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     $response = $this->call('GET', '/api/v1/settings');
     $response
         ->assertStatus(200)
@@ -13,7 +16,8 @@ test('check language selections when not set', function () {
 });
 
 test('check language selections when set', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     $settingsService = new SettingsService();
     $settingsService->set('language_selections', "en-US,fr-CA");
     app()->instance(SettingsService::class, $settingsService);
@@ -26,7 +30,8 @@ test('check language selections when set', function () {
 });
 
 test('check language selections tagged when set', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     $settingsService = new SettingsService();
     $settingsService->set('language_selections_tagging', "en-US,fr-CA");
     app()->instance(SettingsService::class, $settingsService);
@@ -39,7 +44,8 @@ test('check language selections tagged when set', function () {
 });
 
 test('session overridden settings', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     session()->put('override_title', "blah");
 
     $response = $this->call('GET', '/api/v1/settings');
@@ -50,7 +56,8 @@ test('session overridden settings', function () {
 });
 
 test('querystring overridden settings', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
 
     $response = $this->call('GET', '/api/v1/settings', ['title'=>'son']);
     $response
@@ -62,7 +69,8 @@ test('querystring overridden settings', function () {
 test('querystring based session key', function () {
     $title = "something something something, dark side";
     session()->start();
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
 
     $sessionId = session()->getId();
     $this->assertNotEmpty($sessionId);
@@ -80,7 +88,8 @@ test('querystring based session key', function () {
 
     session()->flush();
 
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     $response = $this->call('GET', '/api/v1/settings');
     $response
         ->assertStatus(200)

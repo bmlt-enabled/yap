@@ -128,6 +128,11 @@ class AuthenticationService extends Service
 
     protected function initializeSessionForAuthV1(string $username): ?User
     {
+        session()->put([
+            'username' => $username,
+            'auth_mechanism' => AuthMechanism::V1,
+        ]);
+
         $rights = $this->rootServer->getServiceBodiesRightsIds();
         if (empty($rights)) {
             return null;
@@ -135,20 +140,30 @@ class AuthenticationService extends Service
 
         $user = User::firstOrCreate(['username' => $username], [
             'name' => $username, // Default name for external users
+            'password' => $this->generateRandomPassword(),
             'is_admin' => false,
             'permissions' => 0,
             'service_bodies' => implode(',', $rights),
         ]);
 
-        Auth::setUser($user); // Set user for the session
+        session()->put('auth_service_bodies_rights', $rights);
 
-        Session::put([
-            'username' => $username,
-            'auth_mechanism' => AuthMechanism::V1,
-            'auth_service_bodies_rights' => $rights,
-        ]);
+        Auth::setUser($user); // Set user for the session
 
         $this->session->setConfigForService($rights[0]);
         return $user;
+    }
+
+    private function generateRandomPassword()
+    {
+        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}|;:,.<>?';
+        $charactersLength = strlen($characters);
+        $randomPassword = '';
+
+        for ($i = 0; $i < 36; $i++) {
+            $randomPassword .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        return $randomPassword;
     }
 }
