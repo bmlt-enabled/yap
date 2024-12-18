@@ -6,9 +6,12 @@ use App\Constants\EventId;
 use App\Models\ConferenceParticipant;
 use App\Models\Record;
 use App\Models\RecordEvent;
+use App\Models\User;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
 use App\Structures\RecordType;
+use Illuminate\Auth\Events\Login;
+use Laravel\Sanctum\Sanctum;
 use Tests\RootServerMocks;
 
 beforeEach(function () {
@@ -34,7 +37,8 @@ test('get cdr no auth', function () {
 });
 
 test('validate sample cdr phone', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     $id = 1;
@@ -97,7 +101,8 @@ test('validate sample cdr phone', function () {
 });
 
 test('validate sample cdr sms', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = 44;
     $id = 1;
@@ -159,7 +164,8 @@ test('validate sample cdr sms', function () {
 });
 
 test('validate sample cdr sms with caller consent event', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = 44;
     $id = 1;
@@ -227,7 +233,8 @@ test('validate sample cdr sms with caller consent event', function () {
 });
 
 test('validate sample map metrics', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = "44";
     $date_range_start = $this->settings->getCurrentTime();
@@ -271,7 +278,8 @@ test('validate sample map metrics', function () {
 });
 
 test('validate sample map metrics poi csv', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
 
     $service_body_id = "44";
     $date_range_start = $this->settings->getCurrentTime();
@@ -317,7 +325,8 @@ test('validate sample map metrics poi csv', function () {
 });
 
 test('validate sample metrics', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     $service_body_id = 1053;
     $date_range_start = "2023-01-03 00:00:00";
     $date_range_end = "2023-01-03 23:59:59";
@@ -409,8 +418,9 @@ test('validate sample metrics', function () {
 });
 
 test('validate sample metrics for with recurse', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
-    session()->put('auth_is_admin', true);
+    Sanctum::actingAs(User::factory()->admin()->create());
+    session()->put("auth_mechanism", AuthMechanism::V2);
+    session()->put("auth_is_admin", true);
     $parent_service_body_id = 1052;
     $service_body_id = 1053;
     $date_range_start = "2023-01-03 00:00:00";
