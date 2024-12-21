@@ -26,9 +26,9 @@ class AdminAuthenticator
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!$this->authn->verify()) {
-            return to_route("adminLogin");
-        }
+//        if (!$this->authn->verify()) {
+//            return to_route("adminLogin");
+//        }
 
         return $next($request);
     }
