@@ -53,17 +53,6 @@ class AuthController extends Controller
         return redirect(!$auth ? "/admin?auth=false" : "/admin");
     }
 
-    public function timeout()
-    {
-        $this->clearSession();
-        return redirect("/admin?expired=true");
-    }
-
-    public function invalid()
-    {
-        return self::logout(false);
-    }
-
     private function clearSession(): void
     {
         $this->authn->logout();

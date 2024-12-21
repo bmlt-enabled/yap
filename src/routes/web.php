@@ -4,13 +4,9 @@ use Illuminate\Support\Facades\Route;
 
 $ext = '(\.php)?$';
 
-Route::get("/admin/auth/rights", 'App\Http\Controllers\AuthController@rights');
-Route::get("/admin/auth/logout", 'App\Http\Controllers\AuthController@logout');
-Route::get("/admin/auth/timeout", 'App\Http\Controllers\AuthController@timeout');
-Route::get("/admin/auth/invalid", 'App\Http\Controllers\AuthController@invalid');
-Route::get("/admin", 'App\Http\Controllers\AdminController@index')->name('adminLogin');
+//Route::get("/admin", 'App\Http\Controllers\AdminController@index')->name('adminLogin');
 Route::post("/admin/installer", 'App\Http\Controllers\AdminController@installer')->name('installer');
-Route::post("/admin/login", 'App\Http\Controllers\AdminController@login');
+//Route::post("/admin/login", 'App\Http\Controllers\AdminController@login')->name('adminLogin');
 Route::get("/admin/{page}", 'App\Http\Controllers\AdminController@index')
     ->middleware("authForAdminPortal");
 Route::get("/adminv2{page}", 'App\Http\Controllers\AdminV2Controller@index')
