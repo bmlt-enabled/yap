@@ -11,6 +11,7 @@ import Volunteers from "../pages/Volunteers";
 import Groups from "../pages/Groups";
 import Users from "../pages/Users";
 import Settings from "../pages/Settings";
+import Login from "../pages/Login";
 
 function App() {
     const location = useLocation();
@@ -37,6 +38,7 @@ function App() {
                 <header className="App-header">
                     <Routes>
                         <Route path={`${baseUrl}/`} element={<Home/>} />
+                        <Route path={`${baseUrl}/login`} element={<Login />} />
                         <Route path={`${baseUrl}/reports`} element={<Reports/>} />
                         <Route path={`${baseUrl}/serviceBodies`} element={<ServiceBodies/>} />
                         <Route path={`${baseUrl}/schedules`} element={<Schedules/>} />
