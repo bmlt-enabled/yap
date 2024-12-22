@@ -18,19 +18,10 @@ function Settings() {
     useEffect(() => {
         setLoading(true)
         const fetchSettings = async () => {
-            apiClient.get('/api/v1/settings', {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                }
-             }).then((response) => {
-                setSettings(response.data)
-             }).catch((error) => {
-                console.error('Error fetching user data:', error);
-             }).finally(() => {
-                 setLoading(false);
-            })
+            let response = await apiClient.get('/api/v1/settings')
+
+            setSettings(response.data.settings)
+            setLoading(false);
         };
 
         fetchSettings();
