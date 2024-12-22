@@ -53,11 +53,15 @@ function MenuBar({ currentRoute }) {
                             </Box>
                         </Box>
                     </Drawer>
-                    <Box>
-                        <Typography>Yap</Typography>
+             o       <Box sx={{ display: 'flex', alignItems: 'center' }}> {/* Add flexbox for alignment */}
+                        <Link to={`${baseUrl}/`} style={{ textDecoration: 'none', color: 'inherit' }}> {/* Use Link and maintain color */}
+                            <Typography variant="h6" noWrap> {/* Use Typography for text */}
+                                Yap
+                            </Typography>
+                        </Link>
                     </Box>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', sm: 'flex' } }}>
-                        <MenuBarItem currentRoute={currentRoute} pageName={"Home"} url={"/"} />
+                        <MenuBarItem currentRoute={currentRoute} pageName={"Home"} url={"/home"} />
                         <MenuBarItem currentRoute={currentRoute} pageName={"Report"} url={"/reports"} />
                         <MenuBarItem currentRoute={currentRoute} pageName={"Service Bodies"} url={"/serviceBodies"} />
                         <MenuBarItem currentRoute={currentRoute} pageName={"Schedules"} url={"/schedules"} />
