@@ -1,33 +1,35 @@
 // src/resources/js/pages/Login.js
 import React, { useState } from 'react';
 import { TextField, Button, Card, CardContent, Typography } from '@mui/material';
+import apiClient from '../services/api';
+import {useNavigate} from "react-router-dom";
 
 function Login() {
+    const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [loginError, setLoginError] = useState(null);
 
-    const handleSubmit = async (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        setError('');
 
         try {
-            const response = await axios.post(`${rootUrl}/api/v1/login`, {
-                username, // Updated to username
-                password,
-            });
+            // Get CSRF token
+            await apiClient.get('/sanctum/csrf-cookie');
 
-            // Handle successful login (e.g., store token, redirect)
-            console.log('Login successful:', response.data);
-            window.location.href = `${baseUrl}/`; // Redirect after login
+            // Perform login
+            const response = await apiClient.post('/api/v1/login', { username, password });
 
-        } catch (err) {
-            if (err.response && err.response.data && err.response.data.message) {
-                setError(err.response.data.message);
-            } else {
-                setError('An error occurred during login.');
-            }
-            console.error('Login failed:', err);
+            // Store token in localStorage
+            localStorage.setItem('authToken', response.data.token); // Adjust key if token is under a different property
+
+            console.log('Login successful!', response.data);
+
+            // Navigate to home page
+            navigate('/home');
+        } catch (error) {
+            console.error('Login error:', error);
+            setLoginError(error.response?.data?.message || 'Login failed!')
         }
     };
 
@@ -37,8 +39,8 @@ function Login() {
                 <Typography variant="h5" component="h2" gutterBottom>
                     Login
                 </Typography>
-                {error && <Typography color="error">{error}</Typography>}
-                <form onSubmit={handleSubmit}>
+                {loginError && <Typography color="error">{loginError}</Typography>}
+                <form onSubmit={handleLogin}>
                     <TextField
                         label="Username" // Updated label
                         type="text"  // Updated type

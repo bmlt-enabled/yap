@@ -4,13 +4,12 @@ use Illuminate\Support\Facades\Route;
 
 $ext = '(\.php)?$';
 
-//Route::get("/admin", 'App\Http\Controllers\AdminController@index')->name('adminLogin');
-Route::post("/admin/installer", 'App\Http\Controllers\AdminController@installer')->name('installer');
-//Route::post("/admin/login", 'App\Http\Controllers\AdminController@login')->name('adminLogin');
-Route::get("/admin/{page}", 'App\Http\Controllers\AdminController@index')
-    ->middleware("authForAdminPortal");
+//Route::post("/admin/installer", 'App\Http\Controllers\AdminController@installer')->name('installer');
+//Route::get("/admin/{page}", 'App\Http\Controllers\AdminController@index')
+//    ->middleware("authForAdminPortal");
 Route::get("/adminv2{page}", 'App\Http\Controllers\AdminV2Controller@index')
-    ->where('page', '.*');
+    ->where('page', '.*')
+    ->name("adminPortal");
 Route::get("/bots/getMeetings", 'App\Http\Controllers\BotController@getMeetings');
 Route::get("/bots/getServiceBodyCoverage", 'App\Http\Controllers\BotController@getServiceBodyCoverage');
 Route::get("/msr/{latitude}/{longitude}", ['uses' => 'App\Http\Controllers\MeetingResultsController@index'])

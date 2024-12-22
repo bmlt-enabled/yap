@@ -1,28 +1,26 @@
 <?php
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1\Admin;
 
-use App\Repositories\AuthenticationRepository;
+use App\Http\Controllers\Controller;
 use App\Services\AuthenticationService;
 use App\Services\AuthorizationService;
 use App\Services\SettingsService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
     protected AuthorizationService $authz;
     protected AuthenticationService $authn;
-    protected SettingsService $settings;
 
     public function __construct(
         AuthorizationService  $authz,
         AuthenticationService $authn,
-        SettingsService       $settings
     ) {
         $this->authz = $authz;
         $this->authn = $authn;
-        $this->settings = $settings;
     }
 
     public function login(Request $request)
@@ -32,44 +30,38 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $username = $request->get('username');
-        $password = $request->get('password');
+        $credentials = $request->only('username', 'password');
 
-        $token = $this->authn->authenticateApi($username, $password);
-
-        if (!$token) {
+        if (!Auth::attempt($credentials)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
+        $request->session()->regenerate();
+        $user = Auth::user();
+
         return response()->json([
-            'token' => $token,
-            'user' => auth()->user(),
+            'status' => 'success',
+            'token' => $user->createToken('API Token')->plainTextToken,
+            'user' => $user,
         ]);
     }
 
-    public function logout($auth = true)
+    public function index(Request $request): JsonResponse
     {
-        $this->clearSession();
-        return redirect(!$auth ? "/admin?auth=false" : "/admin");
+        return response()->json($request->user());
     }
 
-    private function clearSession(): void
+    public function logout(Request $request)
     {
         $this->authn->logout();
+        $request->user()->tokens()->delete();
+
+        return response()->json(['message' => 'Logged out successfully']);
     }
 
     public function rights()
     {
         $rights = $this->authz->getServiceBodyRights();
         return $rights ?? response()->json(['error' => 'Unauthorized'], 403);
-    }
-
-    /**
-     * @param $username
-     * @return mixed
-     */
-    public function getUsername($username)
-    {
-        return $username;
     }
 }

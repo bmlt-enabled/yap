@@ -85,21 +85,17 @@ class AuthenticationService extends Service
         return $this->authenticationRepository->GetUserNameV1();
     }
 
-    public function authenticateApi(string $username, string $password): ?string
+    public function authenticateApi(string $username, string $password): ?User
     {
         // Attempt database authentication (authV2)
         $authV2Result = $this->authenticationRepository->authV2($username, $password);
         if (!empty($authV2Result)) {
-            $user = $this->initializeSessionForAuthV2($authV2Result, $username);
-            return $user->createToken('API Token')->plainTextToken; // Generate Sanctum token
+            return $this->initializeSessionForAuthV2($authV2Result, $username);
         }
 
         // Attempt external authentication (authV1)
         if ($this->settings->get("bmlt_auth") && $this->authenticationRepository->authV1($username, $password)) {
-            $user = $this->initializeSessionForAuthV1($username);
-            if ($user) {
-                return $user->createToken('API Token')->plainTextToken; // Generate Sanctum token
-            }
+            return $this->initializeSessionForAuthV1($username);
         }
 
         return null; // Authentication failed
