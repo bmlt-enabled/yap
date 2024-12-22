@@ -21,12 +21,12 @@ function Login() {
             const response = await apiClient.post('/api/v1/login', { username, password });
 
             // Store token in localStorage
-            localStorage.setItem('authToken', response.data.token); // Adjust key if token is under a different property
+            localStorage.setItem('token', response.data.token); // Adjust key if token is under a different property
 
             console.log('Login successful!', response.data);
 
             // Navigate to home page
-            navigate('/home');
+            navigate(`${baseUrl}/home`);
         } catch (error) {
             console.error('Login error:', error);
             setLoginError(error.response?.data?.message || 'Login failed!')
