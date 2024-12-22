@@ -37,8 +37,8 @@ function App() {
                 <MenuBar currentRoute={location.pathname}/>
                 <header className="App-header">
                     <Routes>
-                        <Route path={`${baseUrl}/`} element={<Home/>} />
-                        <Route path={`${baseUrl}/login`} element={<Login />} />
+                        <Route path={`${baseUrl}/`} element={<Login />} />
+                        <Route path={`${baseUrl}/home`} element={<Home/>} />
                         <Route path={`${baseUrl}/reports`} element={<Reports/>} />
                         <Route path={`${baseUrl}/serviceBodies`} element={<ServiceBodies/>} />
                         <Route path={`${baseUrl}/schedules`} element={<Schedules/>} />

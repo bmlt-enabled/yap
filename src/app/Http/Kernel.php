@@ -2,7 +2,6 @@
 
 namespace App\Http;
 
-use App\Http\Middleware\AdminAuthenticator;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\CallBlocklist;
 use App\Http\Middleware\CallSession;
@@ -11,13 +10,11 @@ use App\Http\Middleware\DatabaseMigrations;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\JsonpMiddleware;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
-use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\SessionKey;
 use App\Http\Middleware\SmsBlackhole;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Auth\Middleware\RequirePassword;
@@ -32,6 +29,7 @@ use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Routing\Middleware\ValidateSignature;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 class Kernel extends HttpKernel
 {
@@ -69,8 +67,8 @@ class Kernel extends HttpKernel
             EncryptCookies::class,
             AddQueuedCookiesToResponse::class,
             StartSession::class,
-            // \Illuminate\Session\Middleware\AuthenticateSession::class,
-            ShareErrorsFromSession::class,
+//            \Illuminate\Session\Middleware\AuthenticateSession::class,
+//            ShareErrorsFromSession::class,
             VerifyCsrfToken::class,
             SubstituteBindings::class,
             CallBlocklist::class,
@@ -78,8 +76,8 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
+//            EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
-            StartSession::class,
             SubstituteBindings::class,
         ],
     ];
@@ -92,12 +90,12 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'authForAdminPortal' => AdminAuthenticator::class,
+        //'authForAdminPortal' => AdminAuthenticator::class,
         'auth' => Authenticate::class,
 //        'auth.basic' => AuthenticateWithBasicAuth::class,
         'cache.headers' => SetCacheHeaders::class,
         'can' => Authorize::class,
-        'guest' => RedirectIfAuthenticated::class,
+        //'guest' => RedirectIfAuthenticated::class,
         'password.confirm' => RequirePassword::class,
         'signed' => ValidateSignature::class,
         'throttle' => ThrottleRequests::class,
