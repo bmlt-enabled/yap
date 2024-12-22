@@ -9,22 +9,28 @@ import {
     TableHead,
     TableRow,
 } from "@mui/material";
+import apiClient from "../services/api";
 
 function Settings() {
     const [settings, setSettings] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        setLoading(true)
         const fetchSettings = async () => {
-            try {
-                const response = await fetch(`${rootUrl}/api/v1/settings`);
-                const data = await response.json();
-                setSettings(data.settings); // Access the "settings" property
-            } catch (error) {
-                console.error("Error fetching settings:", error);
-            } finally {
-                setLoading(false);
-            }
+            apiClient.get('/api/v1/settings', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                }
+             }).then((response) => {
+                setSettings(response.data)
+             }).catch((error) => {
+                console.error('Error fetching user data:', error);
+             }).finally(() => {
+                 setLoading(false);
+            })
         };
 
         fetchSettings();
