@@ -26,7 +26,8 @@ Route::group([
         Route::resource('reports/cdr', 'CdrController')->only(['index']);
         Route::resource('reports/mapmetrics', 'MapMetricController')->only(['index']);
         Route::resource('reports/metrics', 'MetricController')->only(['index']);
-        Route::resource('rootServer/servicebodies', 'RootServerServiceBodiesController')->only(['index']);
+        Route::resource('rootServer/serviceBodies', 'RootServerServiceBodiesController')->only(['index']);
+        Route::resource('rootServer/serviceBodies/user', 'RootServerServiceBodiesForUserController')->only(['index']);
         Route::resource('events/status', 'EventStatusController')->only(['index', 'store']);
         Route::resource('session', 'SessionController')->only(['store']);
         Route::resource("cache", 'CacheController')->only(['store']);

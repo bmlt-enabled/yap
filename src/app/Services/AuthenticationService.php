@@ -95,7 +95,7 @@ class AuthenticationService extends Service
 
         // Attempt external authentication (authV1)
         if ($this->settings->get("bmlt_auth") && $this->authenticationRepository->authV1($username, $password)) {
-            return $this->initializeSessionForAuthV1($username);
+            return $this->initializeSessionForAuthV1($username, $password);
         }
 
         return null; // Authentication failed
@@ -122,7 +122,7 @@ class AuthenticationService extends Service
         return $user;
     }
 
-    protected function initializeSessionForAuthV1(string $username): ?User
+    protected function initializeSessionForAuthV1(string $username, string $password): ?User
     {
         session()->put([
             'username' => $username,
@@ -136,7 +136,7 @@ class AuthenticationService extends Service
 
         $user = User::firstOrCreate(['username' => $username], [
             'name' => $username, // Default name for external users
-            'password' => $this->generateRandomPassword(),
+            'password' => hash('sha256', $password),
             'is_admin' => false,
             'permissions' => 0,
             'service_bodies' => implode(',', $rights),
