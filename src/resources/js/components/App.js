@@ -26,7 +26,7 @@ function App() {
             },
             background: {
                 default: '#192231',
-                paper: '#24344d',
+                paper: '#f8f9fa',
             },
         },
     });
@@ -35,19 +35,19 @@ function App() {
         <div className="App">
             <ThemeProvider theme={themeOptions}>
                 <MenuBar currentRoute={location.pathname}/>
-                <header className="App-header">
+                <div className="content">
                     <Routes>
-                        <Route path={`${baseUrl}/`} element={<Login />} />
-                        <Route path={`${baseUrl}/home`} element={<Home/>} />
-                        <Route path={`${baseUrl}/reports`} element={<Reports/>} />
-                        <Route path={`${baseUrl}/serviceBodies`} element={<ServiceBodies/>} />
-                        <Route path={`${baseUrl}/schedules`} element={<Schedules/>} />
-                        <Route path={`${baseUrl}/volunteers`} element={<Volunteers/>} />
-                        <Route path={`${baseUrl}/settings`} element={<Settings/>} />
-                        <Route path={`${baseUrl}/groups`} element={<Groups/>} />
-                        <Route path={`${baseUrl}/users`} element={<Users/>} />
+                        <Route path={`${baseUrl}/`} element={<Login/>}/>
+                        <Route path={`${baseUrl}/home`} element={<Home/>}/>
+                        <Route path={`${baseUrl}/reports`} element={<Reports/>}/>
+                        <Route path={`${baseUrl}/serviceBodies`} element={<ServiceBodies/>}/>
+                        <Route path={`${baseUrl}/schedules`} element={<Schedules/>}/>
+                        <Route path={`${baseUrl}/volunteers`} element={<Volunteers/>}/>
+                        <Route path={`${baseUrl}/settings`} element={<Settings/>}/>
+                        <Route path={`${baseUrl}/groups`} element={<Groups/>}/>
+                        <Route path={`${baseUrl}/users`} element={<Users/>}/>
                     </Routes>
-                </header>
+                </div>
             </ThemeProvider>
         </div>
     );
