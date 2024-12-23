@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
+import apiClient from "../services/api";
 
 function ServiceBodies()
 {
@@ -8,8 +9,8 @@ function ServiceBodies()
 
     const getServiceBodies = async() => {
         setLoading(true)
-        let response = await fetch(`${rootUrl}/api/v1/rootServer/servicebodies`)
-        let responseData = await response.json()
+        let response = await apiClient(`${rootUrl}/api/v1/rootServer/serviceBodies/user`)
+        let responseData = await response.data
         setList(responseData)
         setLoading(false)
     }
