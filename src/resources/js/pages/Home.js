@@ -1,5 +1,6 @@
 import apiClient from "../services/api";
 import {useEffect, useState} from "react";
+import {Card, CardContent} from "@mui/material";
 
 function Home() {
     const [username, setUsername] = useState('');
@@ -23,11 +24,13 @@ function Home() {
     }, [])
 
     return (
-        <div>
-            <h1>Home</h1>
-            <p>Username: { username }</p>
-            Api Docs: /api/v1/documentation
-        </div>
+        <Card className="card">
+            <CardContent>
+                <h1>Home</h1>
+                <p>Username: { username }</p>
+                Api Docs: /api/v1/documentation
+            </CardContent>
+        </Card>
     )
 }
 

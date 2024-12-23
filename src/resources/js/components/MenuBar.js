@@ -53,7 +53,7 @@ function MenuBar({ currentRoute }) {
                             </Box>
                         </Box>
                     </Drawer>
-             o       <Box sx={{ display: 'flex', alignItems: 'center' }}> {/* Add flexbox for alignment */}
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}> {/* Add flexbox for alignment */}
                         <Link to={`${baseUrl}/`} style={{ textDecoration: 'none', color: 'inherit' }}> {/* Use Link and maintain color */}
                             <Typography variant="h6" noWrap> {/* Use Typography for text */}
                                 Yap
