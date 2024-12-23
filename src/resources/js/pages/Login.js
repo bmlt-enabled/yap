@@ -34,7 +34,7 @@ function Login() {
     };
 
     return (
-        <Card>
+        <Card className="card">
             <CardContent>
                 <Typography variant="h5" component="h2" gutterBottom>
                     Login

@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import {
     Button,
+    Card,
+    CardContent,
     Table,
     TableBody,
     TableCell,
@@ -56,31 +58,33 @@ function Settings() {
     };
 
     return (
-        <div>
-            <Button onClick={clearCache} variant="contained" color="warning">Clear Database Cache</Button>
-            <TableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Setting</TableCell>
-                            <TableCell>Value</TableCell>
-                            <TableCell>Current Source</TableCell>
-                            <TableCell>Default</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {settings.map((setting) => (
-                            <TableRow key={setting.key}>
-                                <TableCell>{setting.key} <a href={setting.docs} target="_blank" rel="noopener noreferrer">📖</a></TableCell>
-                                <TableCell>{setting.value !== null ? setting.value.toString() : ""} </TableCell> {/* Convert value to string */}
-                                <TableCell>{setting.source}</TableCell>
-                                <TableCell>{JSON.stringify(setting.default)}</TableCell>
+        <Card className="card">
+            <CardContent>
+                <Button onClick={clearCache} variant="contained" color="warning">Clear Database Cache</Button>
+                <TableContainer>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Setting</TableCell>
+                                <TableCell>Value</TableCell>
+                                <TableCell>Current Source</TableCell>
+                                <TableCell>Default</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </div>
+                        </TableHead>
+                        <TableBody>
+                            {settings.map((setting) => (
+                                <TableRow key={setting.key}>
+                                    <TableCell>{setting.key} <a href={setting.docs} target="_blank" rel="noopener noreferrer">📖</a></TableCell>
+                                    <TableCell>{setting.value !== null ? setting.value.toString() : ""} </TableCell> {/* Convert value to string */}
+                                    <TableCell>{setting.source}</TableCell>
+                                    <TableCell>{JSON.stringify(setting.default)}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </CardContent>
+        </Card>
     );
 }
 
