@@ -149,17 +149,4 @@ class AuthenticationService extends Service
         $this->session->setConfigForService($rights[0]);
         return $user;
     }
-
-    private function generateRandomPassword()
-    {
-        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}|;:,.<>?';
-        $charactersLength = strlen($characters);
-        $randomPassword = '';
-
-        for ($i = 0; $i < 36; $i++) {
-            $randomPassword .= $characters[rand(0, $charactersLength - 1)];
-        }
-
-        return $randomPassword;
-    }
 }
