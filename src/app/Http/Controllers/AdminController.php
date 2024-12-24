@@ -89,16 +89,16 @@ class AdminController extends Controller
         return view('admin/installer');
     }
 
-    public function login(Request $request): RedirectResponse
-    {
-        $username = $request->post('username');
-        $password = $request->post('password');
-
-        $auth = $this->authn->authenticate($username, $password);
-        if ($auth) {
-            return redirect("admin/home");
-        } else {
-            return redirect("admin/auth/invalid");
-        }
-    }
+//    public function login(Request $request): RedirectResponse
+//    {
+//        $username = $request->post('username');
+//        $password = $request->post('password');
+//
+//        $auth = $this->authn->authenticate($username, $password);
+//        if ($auth) {
+//            return redirect("admin/home");
+//        } else {
+//            return redirect("admin/auth/invalid");
+//        }
+//    }
 }
