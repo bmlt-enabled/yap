@@ -18,6 +18,7 @@ Route::group([
         Route::resource('config', 'ConfigController')->only(['index', 'store']);
         Route::resource('volunteers', 'ConfigureVolunteersController')->only(['index', 'store']);
         Route::resource('callHandling', 'ServiceBodyCallHandlingController')->only(['index', 'store']);
+        Route::resource('callHandling/routingEnabled', 'VolunteerRoutingEnabledController')->only(['index']);
         Route::resource('users', 'UserController')->only(['index', 'show', 'store', 'destroy', 'update']);
         Route::resource('groups', 'GroupController')->only(['index', 'store', 'destroy', 'update']);
         Route::resource('groups/volunteers', 'GroupVolunteerController')->only(['index', 'store']);

@@ -26,7 +26,7 @@ function Login() {
             console.log('Login successful!', response.data);
 
             // Navigate to home page
-            navigate(`${baseUrl}/home`);
+            navigate(`${baseUrl}/dashboard`);
         } catch (error) {
             console.error('Login error:', error);
             setLoginError(error.response?.data?.message || 'Login failed!')
