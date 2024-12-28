@@ -75,7 +75,7 @@ function Settings() {
                             {settings.map((setting) => (
                                 <TableRow key={setting.key}>
                                     <TableCell>{setting.key} <a href={setting.docs} target="_blank" rel="noopener noreferrer">📖</a></TableCell>
-                                    <TableCell>{setting.value !== null ? setting.value.toString() : ""} </TableCell> {/* Convert value to string */}
+                                    <TableCell>{setting.value !== null ? setting.value.toString() : ""}</TableCell>
                                     <TableCell>{setting.source}</TableCell>
                                     <TableCell>{JSON.stringify(setting.default)}</TableCell>
                                 </TableRow>
