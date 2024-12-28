@@ -2,7 +2,7 @@ import apiClient from "../services/api";
 import {useEffect, useState} from "react";
 import {Card, CardContent} from "@mui/material";
 
-function Home() {
+function Dashboard() {
     const [username, setUsername] = useState('');
 
     const getUser = async () => {
@@ -34,4 +34,4 @@ function Home() {
     )
 }
 
-export default Home;
+export default Dashboard;
