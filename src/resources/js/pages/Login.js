@@ -23,8 +23,6 @@ function Login() {
             // Store token in localStorage
             localStorage.setItem('token', response.data.token); // Adjust key if token is under a different property
 
-            console.log('Login successful!', response.data);
-
             // Navigate to home page
             navigate(`${baseUrl}/dashboard`);
         } catch (error) {

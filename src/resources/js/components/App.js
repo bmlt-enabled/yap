@@ -67,37 +67,37 @@ export default function App() {
             icon: <DashboardIcon />
         },
         {
-            segment: `reports`,
+            segment: `${baseUrl}/reports`,
             title: "Reports",
             icon: <AssessmentIcon />
         },
         {
-            segment: `serviceBodies`,
+            segment: `${baseUrl}/serviceBodies`,
             title: "Service Bodies",
             icon: <AccountTreeIcon />
         },
         {
-            segment: `schedule`,
+            segment: `${baseUrl}/schedule`,
             title: "Schedule",
             icon: <CalendarMonthIcon />
         },
         {
-            segment: `settings`,
+            segment: `${baseUrl}/settings`,
             title: 'Settings',
             icon: <SettingsIcon />,
         },
         {
-            segment: `volunteers`,
+            segment: `${baseUrl}/volunteers`,
             title: 'Volunteers',
             icon: <VolunteerActivismIcon />,
         },
         {
-            segment: `groups`,
+            segment: `${baseUrl}/groups`,
             title: 'Groups',
             icon: <Diversity1Icon />,
         },
         {
-            segment: 'users',
+            segment: `${baseUrl}/users`,
             title: 'Users',
             icon: <PeopleIcon />,
         },
@@ -113,50 +113,50 @@ export default function App() {
 }
 
 if (document.getElementById('root')) {
-    const getPath = (path) => `${baseUrl}${path}`;
+    const getPath = (path) => `/${baseUrl}${path}`;
 
     const router = createBrowserRouter([
         {
             Component: App,
             children: [
                 {
-                    path: `${baseUrl}`,
+                    path: `/${baseUrl}`,
                     Component: Layout,
                     children: [
                         {
-                            path: getPath('/dashboard'),
+                            path: getPath('dashboard'),
                             Component: Dashboard,
                         },
                         {
-                            path: getPath('/login'),
+                            path: getPath('login'),
                             Component: Login,
                         },
                         {
-                            path: getPath('/reports'),
+                            path: getPath('reports'),
                             Component: Reports,
                         },
                         {
-                            path: getPath('/serviceBodies'),
+                            path: getPath('serviceBodies'),
                             Component: ServiceBodies,
                         },
                         {
-                            path: getPath('/Settings'),
+                            path: getPath('settings'),
                             Component: Settings,
                         },
                         {
-                            path: getPath('/Schedules'),
+                            path: getPath('schedule'),
                             Component: Schedules,
                         },
                         {
-                            path: getPath('/Volunteers'),
+                            path: getPath('volunteers'),
                             Component: Volunteers,
                         },
                         {
-                            path: getPath('/Groups'),
+                            path: getPath('groups'),
                             Component: Groups,
                         },
                         {
-                            path: getPath('/Users'),
+                            path: getPath('users'),
                             Component: Users,
                         }
                     ],
