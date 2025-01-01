@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import ReactDOM from 'react-dom/client';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -27,7 +27,10 @@ import LoginPage from "../pages/Login";
 import {SessionContext} from "../SessionContext"
 
 export default function App() {
-    const [session, setSession] = React.useState();
+    const [session, setSession] = React.useState(() => {
+        const storedSession = localStorage.getItem('session');
+        return storedSession ? JSON.parse(storedSession) : null;
+    });
     const navigate = useNavigate();
 
     const signIn = React.useCallback(() => {

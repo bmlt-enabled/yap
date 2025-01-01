@@ -14,8 +14,7 @@ export default function LoginPage() {
                 try {
                     await apiClient.get('/sanctum/csrf-cookie');
                     const response = await apiClient.post('/api/v1/login', {username, password});
-                    localStorage.setItem('token', response.data.token);
-
+                    localStorage.setItem('session', JSON.stringify(response.data));
                     resolve(response.data);
                 } catch (error) {
                     reject(error.response?.data || 'Login failed!')
@@ -26,10 +25,9 @@ export default function LoginPage() {
 
     const signIn = async (provider, formData, callbackUrl) => {
         try {
-            const session = await handleLogin(formData.get('email'), formData.get('password'))
-            console.log(session)
-            if (session) {
-                setSession(session);
+            const loginSession = await handleLogin(formData.get('email'), formData.get('password'))
+            if (loginSession) {
+                setSession(loginSession);
                 navigate(`/${baseUrl}/dashboard`, { replace: true });
                 return {};
             }
