@@ -1,11 +1,15 @@
 import React, {useEffect, useState} from "react";
 import {Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 import apiClient from "../services/api";
+import {CallHandlingDialog} from "../dialogs/CallHandlingDialog";
+import {useDialogs} from "@toolpad/core";
 
 function ServiceBodies()
 {
     const [loading, setLoading] = useState(false);
     const [list, setList] = useState([]);
+    const [openDialogState, setOpenDialogState] = useState(false)
+    const [serviceBodyId, setServiceBodyId] = useState();
 
     const getServiceBodies = async() => {
         setLoading(true)
@@ -15,6 +19,16 @@ function ServiceBodies()
         setLoading(false)
     }
 
+    const openCallHandlingDialog = (serviceBodyId) => {
+        setServiceBodyId(serviceBodyId)
+        setOpenDialogState(true); // Set local state to open
+    };
+
+    const closeCallHandlingDialog = () => {
+        setServiceBodyId(null)
+        setOpenDialogState(false); // Set local state to close
+    };
+
     useEffect(() => {
         getServiceBodies()
     }, [])
@@ -23,6 +37,7 @@ function ServiceBodies()
         <div>
             {list.length > 0 ?
             <TableContainer>
+                <CallHandlingDialog open={openDialogState} onClose={closeCallHandlingDialog} serviceBodyId={serviceBodyId} />
                 <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
                     <TableHead>
                         <TableRow>
@@ -41,7 +56,7 @@ function ServiceBodies()
                                 </TableCell>
                                 <TableCell>{item.helpline}</TableCell>
                                 <TableCell>
-                                    <Button variant="contained" size="small">Call Handling</Button>&nbsp;
+                                    <Button variant="contained" size="small" onClick={() => openCallHandlingDialog(item.id)}>Call Handling</Button>&nbsp;
                                     <Button variant="contained" size="small" color="success">Configure</Button>&nbsp;
                                     <Button variant="contained" size="small">Voicemail</Button>
                                 </TableCell>
