@@ -6,15 +6,13 @@ import { useSession } from '../SessionContext';
 
 export default function Layout() {
     const { session } = useSession();
-    const location = useLocation();
 
-    console.log("Layout Session: " + JSON.stringify(session))
+    console.log("Layout:" + JSON.parse(session))
 
     if (!session) {
         // const redirectTo = `/${baseUrl}/login?callbackUrl=${encodeURIComponent(location.pathname)}`;
         const redirectTo = `/${baseUrl}/login`;
-
-        return <Navigate to={redirectTo} replace />;
+        return <Navigate to={redirectTo} replace />
     }
 
     return (
