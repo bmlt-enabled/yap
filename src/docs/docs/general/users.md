@@ -10,7 +10,7 @@ Once you log in, using the admin user, you can create / manage additional users.
 SET @realname = '';
 SET @username = '';
 SET @password = '';
-INSERT INTO users (name, username, password, permissions, is_admin) VALUES (@realname, @username, SHA2(@password, 256), 0, 1);
+INSERT INTO users (id, name, username, password, permissions, is_admin) VALUES (UUID(), @realname, @username, SHA2(@password, 256), 0, 1);
 ```
 
 If you happen to forget your password, or need to reset it for some reason.  You can run this query to reset it to something new. (Note: it is not possible to recover a password, as they are stored as one-way hashes).
