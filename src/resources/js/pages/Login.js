@@ -12,12 +12,13 @@ export default function LoginPage() {
         return new Promise((resolve, reject) => {
             setTimeout(async () => {
                 try {
+                    localStorage.removeItem('session');
                     await apiClient.get('/sanctum/csrf-cookie');
                     const response = await apiClient.post('/api/v1/login', {username, password});
                     localStorage.setItem('session', JSON.stringify(response.data));
                     resolve(response.data);
                 } catch (error) {
-                    reject(error.response?.data || 'Login failed!')
+                    reject(error || 'Login failed!')
                 }
             }, 1000);
         });

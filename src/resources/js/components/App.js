@@ -39,7 +39,8 @@ export default function App() {
 
     const signOut = React.useCallback(() => {
         setSession(null);
-        navigate(`/${baseUrl}/logout`);
+        localStorage.removeItem('session')
+        navigate(`/${baseUrl}/login`);
     }, [navigate]);
 
     const sessionContextValue = React.useMemo(
@@ -54,10 +55,6 @@ export default function App() {
     };
 
     const navigation = [
-        {
-            kind: 'header',
-            title: 'Main items',
-        },
         {
             segment: `${baseUrl}/dashboard`,
             title: "Dashboard",
