@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import { useContext, createContext } from 'react';
 
 /**
  * @typedef {Object} SessionContextValue
@@ -8,7 +8,7 @@ import React, { createContext, useContext } from 'react';
 
 /** @type {React.Context<SessionContextValue>} */
 export const SessionContext = createContext({
-    session: null,
+    session: {},
     setSession: () => {},
 });
 
