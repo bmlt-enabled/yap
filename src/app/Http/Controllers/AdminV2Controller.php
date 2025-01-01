@@ -9,7 +9,7 @@ class AdminV2Controller extends Controller
     public function index(Request $request)
     {
         return view('admin')
-            ->with('baseUrl', sprintf("adminv2"))
+            ->with('baseUrl', "adminv2")
             ->with('rootUrl', $request->getBaseUrl());
     }
 }

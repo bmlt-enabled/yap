@@ -1,68 +1,51 @@
-// src/resources/js/pages/Login.js
-import React, { useState } from 'react';
-import { TextField, Button, Card, CardContent, Typography } from '@mui/material';
-import apiClient from '../services/api';
-import {useNavigate} from "react-router-dom";
+import * as React from 'react';
+import { SignInPage } from '@toolpad/core/SignInPage';
+import { useNavigate } from 'react-router-dom';
+import { useSession } from '../SessionContext';
+import apiClient from "../services/api";
 
-function Login() {
+export default function LoginPage() {
+    const { setSession } = useSession();
     const navigate = useNavigate();
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [loginError, setLoginError] = useState(null);
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
+    const handleLogin = async (username, password) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(async () => {
+                try {
+                    await apiClient.get('/sanctum/csrf-cookie');
+                    const response = await apiClient.post('/api/v1/login', {username, password});
+                    localStorage.setItem('token', response.data.token);
 
+                    resolve(response.data);
+                } catch (error) {
+                    reject(error.response?.data || 'Login failed!')
+                }
+            }, 1000);
+        });
+    };
+
+    const signIn = async (provider, formData, callbackUrl) => {
         try {
-            // Get CSRF token
-            await apiClient.get('/sanctum/csrf-cookie');
-
-            // Perform login
-            const response = await apiClient.post('/api/v1/login', { username, password });
-
-            // Store token in localStorage
-            localStorage.setItem('token', response.data.token); // Adjust key if token is under a different property
-
-            // Navigate to home page
-            navigate(`${baseUrl}/dashboard`);
+            const session = await handleLogin(formData.get('email'), formData.get('password'))
+            console.log(session)
+            if (session) {
+                setSession(session);
+                navigate(`/${baseUrl}/dashboard`, { replace: true });
+                return {};
+            }
         } catch (error) {
-            console.error('Login error:', error);
-            setLoginError(error.response?.data?.message || 'Login failed!')
+            return {
+                error: error instanceof Error ? error.message : 'An error occurred',
+            };
         }
+        return {};
     };
 
     return (
-        <Card className="card">
-            <CardContent>
-                <Typography variant="h5" component="h2" gutterBottom>
-                    Login
-                </Typography>
-                {loginError && <Typography color="error">{loginError}</Typography>}
-                <form onSubmit={handleLogin}>
-                    <TextField
-                        label="Username" // Updated label
-                        type="text"  // Updated type
-                        fullWidth
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Password"
-                        type="password"
-                        fullWidth
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        margin="normal"
-                    />
-                    <Button type="submit" variant="contained" color="primary">
-                        Login
-                    </Button>
-                </form>
-            </CardContent>
-        </Card>
+        <SignInPage
+            signIn={signIn}
+            providers={[{ id: 'credentials', name: 'Username and Password' }]}
+            slotProps={{ emailField: { autoFocus: true, label: 'Username', type: 'text', placeholder: 'Username' } }}
+        />
     );
 }
-
-export default Login;
-
