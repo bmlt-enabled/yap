@@ -28,7 +28,7 @@ function Dashboard() {
             <CardContent>
                 <h1>Home</h1>
                 <p>Username: { username }</p>
-                Api Docs: <a href={'/api/v1/documentation'}>Docs</a>
+                Api Docs: <a href={'/api/v1/documentation'} target={'_blank'}>Docs</a>
             </CardContent>
         </Card>
     )
