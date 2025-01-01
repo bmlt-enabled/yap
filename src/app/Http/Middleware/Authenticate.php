@@ -17,7 +17,7 @@ class Authenticate extends Middleware
     {
         // For API requests, return a 401 Unauthorized response
         if (!$request->expectsJson()) {
-            return route('login');
+            // return route('login');
         }
     }
 }

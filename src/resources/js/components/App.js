@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {createTheme, Button, ThemeProvider} from "@mui/material";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PeopleIcon from '@mui/icons-material/People';
@@ -10,16 +9,11 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import Diversity1Icon from '@mui/icons-material/Diversity1';
 import {
-    BrowserRouter,
     createBrowserRouter,
-    Outlet,
-    Route,
-    Router,
-    RouterProvider,
-    Routes,
-    useLocation
+    Outlet, RouterProvider,
+    useNavigate,
 } from "react-router-dom";
-import Layout from "../layouts/dashboard"
+import Layout from "../layouts/layout"
 import ServiceBodies from "../pages/ServiceBodies";
 import Schedules from "../pages/Schedules";
 import Dashboard from "../pages/Dashboard";
@@ -28,27 +22,27 @@ import Volunteers from "../pages/Volunteers";
 import Groups from "../pages/Groups";
 import Users from "../pages/Users";
 import Settings from "../pages/Settings";
-import Login from "../pages/Login";
-import {AppProvider, DashboardLayout} from "@toolpad/core";
-import * as PropTypes from "prop-types";
-import {Navigation} from "react-router-dom";
+import {AppProvider} from "@toolpad/core";
+import LoginPage from "../pages/Login";
+import {SessionContext} from "../SessionContext"
 
 export default function App() {
-    const themeOptions = createTheme({
-        palette: {
-            type: 'dark',
-            primary: {
-                main: '#5893df',
-            },
-            secondary: {
-                main: '#2ec5d3',
-            },
-            background: {
-                default: '#192231',
-                paper: '#f8f9fa',
-            },
-        },
-    });
+    const [session, setSession] = React.useState();
+    const navigate = useNavigate();
+
+    const signIn = React.useCallback(() => {
+        navigate(`/${baseUrl}/login`);
+    }, [navigate]);
+
+    const signOut = React.useCallback(() => {
+        setSession(null);
+        navigate(`/${baseUrl}/logout`);
+    }, [navigate]);
+
+    const sessionContextValue = React.useMemo(
+        () => ({ session, setSession }),
+        [session, setSession],
+    );
 
     const branding = {
         title: 'Yap',
@@ -104,11 +98,16 @@ export default function App() {
     ];
 
     return (
-        <AppProvider
-            branding={branding}
-            navigation={navigation}>
-            <Outlet/>
-        </AppProvider>
+        <SessionContext.Provider value={sessionContextValue}>
+            <AppProvider
+                branding={branding}
+                authentication={{ signIn, signOut }}
+                session={session}
+                navigation={navigation}
+            >
+                <Outlet/>
+            </AppProvider>
+        </SessionContext.Provider>
     );
 }
 
@@ -126,10 +125,6 @@ if (document.getElementById('root')) {
                         {
                             path: getPath('dashboard'),
                             Component: Dashboard,
-                        },
-                        {
-                            path: getPath('login'),
-                            Component: Login,
                         },
                         {
                             path: getPath('reports'),
@@ -158,9 +153,13 @@ if (document.getElementById('root')) {
                         {
                             path: getPath('users'),
                             Component: Users,
-                        }
+                        },
                     ],
                 },
+                {
+                    path: `/${baseUrl}/login`,
+                    Component: LoginPage,
+                }
             ],
         },
     ]);

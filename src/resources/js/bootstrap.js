@@ -22,7 +22,6 @@ window.axios.interceptors.response.use(
                 alert('Your session has expired. Please log in again.');
             }
 
-            window.location.href = `${baseUrl}/login`; // Redirect to login
             // Ensure the request is rejected to prevent further processing
             return Promise.reject(error);
         }
