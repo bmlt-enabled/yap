@@ -11,9 +11,9 @@ Route::group([
     'namespace' => 'App\Http\Controllers\Api\V1\Admin',
 ], function () {
     Route::post('login', [AuthController::class, 'login'])->name('login');
+    Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
 
     Route::group(['middleware' => ['auth:sanctum']], function () {
-        Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
         Route::resource('user', 'AuthController')->only(['index']);
         Route::resource('config', 'ConfigController')->only(['index', 'store']);
         Route::resource('volunteers', 'ConfigureVolunteersController')->only(['index', 'store']);
