@@ -37,5 +37,4 @@ class RootServerServiceBodiesController extends Controller
     {
         return response()->json($this->rootServerService->getServiceBodies());
     }
-
 }
