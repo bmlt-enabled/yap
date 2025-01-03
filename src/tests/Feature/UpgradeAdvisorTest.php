@@ -20,34 +20,34 @@ beforeEach(function () {
 test('version test', function ($method) {
     $settings = new SettingsService();
     app()->instance(SettingsService::class, $settings);
-    $response = $this->call($method, '/version');
+    $response = $this->call($method, '/api/v1/version');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([
             'version' => $settings->version(),
         ]);
-})->with(['GET', 'POST']);
+})->with(['GET']);
 
 test('version test as jsonp', function ($method) {
     $settings = new SettingsService();
     app()->instance(SettingsService::class, $settings);
-    $response = $this->call($method, '/version?callback=bro');
+    $response = $this->call($method, '/api/v1/version?callback=bro');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/javascript")
         ->assertSeeText(sprintf("bro({\"version\":\"%s\"})", $settings->version()), false);
-})->with(['GET', 'POST']);
+})->with(['GET']);
 
 test('version test check cors headers', function ($method) {
     $settings = new SettingsService();
     app()->instance(SettingsService::class, $settings);
-    $response = $this->call($method, '/version');
+    $response = $this->call($method, '/api/v1/version');
     $response
         ->assertStatus(200)
         ->assertHeader("Access-Control-Allow-Origin", "*")
         ->assertSeeText(sprintf("{\"version\":\"%s\"}", $settings->version()), false);
-})->with(['GET', 'POST']);
+})->with(['GET']);
 
 test('test with misconfigured phone number', function ($method) {
     $misconfiguredNumber = "+18889822614";

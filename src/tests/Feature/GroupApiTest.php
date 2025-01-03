@@ -2,8 +2,10 @@
 
 use App\Constants\AuthMechanism;
 use App\Models\ConfigData;
+use App\Models\User;
 use App\Structures\Group;
 use App\Structures\VolunteerData;
+use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
     $this->id = "200";
@@ -12,7 +14,7 @@ beforeEach(function () {
 });
 
 test('save group', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
     $groupData = new Group();
     $groupData->group_name = "test";
     $groupData->group_shared_service_bodies = ["1060"];
@@ -43,7 +45,7 @@ test('delete group', function () {
         $groupData,
     );
 
-     session()->put('auth_mechanism', AuthMechanism::V2);
+     Sanctum::actingAs(User::factory()->create());
      $response = $this->call('DELETE', sprintf('/api/v1/groups/%s', $groupId));
      $response->assertStatus(200)
          ->assertHeader("Content-Type", "application/json")
@@ -51,7 +53,7 @@ test('delete group', function () {
 });
 
 test('delete group that does not exist', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
     $response = $this->call('DELETE', sprintf('/api/v1/groups/%s', 1000));
     $response->assertStatus(404)
         ->assertHeader("Content-Type", "application/json")
@@ -60,7 +62,7 @@ test('delete group that does not exist', function () {
 
 
 test('get groups for service body', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
     $groupData = new Group();
     $groupData->group_name = "Fake Group";
     $groupData->group_shared_service_bodies = [$this->serviceBodyId];
@@ -89,13 +91,13 @@ test('get groups for service body no auth', function () {
         "service_body_id" => 0,
     ]);
     $response
-        ->assertHeader("Location", "http://localhost/admin")
+        ->assertHeader("Location", "http://localhost/api/v1/login")
         ->assertHeader("Content-Type", "text/html; charset=utf-8")
         ->assertStatus(302);
 });
 
 test('update group', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
     $groupData = new Group();
     $groupData->group_name = "test";
     $groupData->group_shared_service_bodies = ["1060"];
@@ -136,7 +138,7 @@ test('update group', function () {
 
 
 test('save group volunteers', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
 
     $groupData = new Group();
     $groupData->group_name = "test";
@@ -171,7 +173,7 @@ test('save group volunteers', function () {
 });
 
 test('update group volunteers', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
 
     $groupData = new Group();
     $groupData->group_name = "test";
