@@ -10,7 +10,6 @@ use App\Models\User;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
 use App\Structures\RecordType;
-use Illuminate\Auth\Events\Login;
 use Laravel\Sanctum\Sanctum;
 use Tests\RootServerMocks;
 
@@ -31,7 +30,7 @@ test('get cdr no auth', function () {
         "date_range_end" => '',
     ]);
     $response
-        ->assertHeader("Location", "http://localhost/admin")
+        ->assertHeader("Location", "http://localhost/api/v1/login")
         ->assertHeader("Content-Type", "text/html; charset=utf-8")
         ->assertStatus(302);
 });

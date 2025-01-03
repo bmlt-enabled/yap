@@ -68,7 +68,6 @@ Route::match(array('GET', 'POST'), "/post-call-action{ext}", 'App\Http\Controlle
     ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "upgrade-advisor{ext}", 'App\Http\Controllers\UpgradeAdvisorController@index')
     ->where('ext', $ext);
-Route::match(array('GET', 'POST'), "/version", 'App\Http\Controllers\UpgradeAdvisorController@version');
 Route::match(array('GET', 'POST'), "/lng-selector{ext}", 'App\Http\Controllers\CallFlowController@languageSelector')
     ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "/province-voice-input{ext}", 'App\Http\Controllers\CallFlowController@provinceVoiceInput')
@@ -85,4 +84,4 @@ Route::match(array('GET', 'POST'), "/helpline-search{ext}", 'App\Http\Controller
     ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "/helpline-dialer{ext}", 'App\Http\Controllers\HelplineController@dial')
     ->where('ext', $ext);
-Route::get("/callWidget", 'App\Http\Controllers\CallWidgetController@index');
+//Route::get("/callWidget", 'App\Http\Controllers\CallWidgetController@index');

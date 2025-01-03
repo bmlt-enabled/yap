@@ -17,7 +17,7 @@ test('returns data no auth', function () {
     $response = $this->get('/api/v1/events/status');
     $response
         ->assertStatus(302)
-        ->assertHeader("Location", "http://localhost/admin")
+        ->assertHeader("Location", "http://localhost/api/v1/login")
         ->assertHeader("Content-Type", "text/html; charset=utf-8");
 });
 
