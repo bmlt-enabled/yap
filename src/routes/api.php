@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\Admin\AuthController;
 use App\Http\Controllers\Api\V1\Admin\SwaggerController;
+use App\Http\Controllers\UpgradeAdvisorController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -11,6 +12,7 @@ Route::group([
     'namespace' => 'App\Http\Controllers\Api\V1\Admin',
 ], function () {
     Route::post('login', [AuthController::class, 'login'])->name('login');
+    Route::get('version', [UpgradeAdvisorController::class, 'version']);
     Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
 
     Route::group(['middleware' => ['auth:sanctum']], function () {

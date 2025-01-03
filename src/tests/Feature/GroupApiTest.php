@@ -91,7 +91,7 @@ test('get groups for service body no auth', function () {
         "service_body_id" => 0,
     ]);
     $response
-        ->assertHeader("Location", "http://localhost/admin")
+        ->assertHeader("Location", "http://localhost/api/v1/login")
         ->assertHeader("Content-Type", "text/html; charset=utf-8")
         ->assertStatus(302);
 });
