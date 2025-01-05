@@ -2,9 +2,91 @@
     "openapi": "3.0.0",
     "info": {
         "title": "Yap API",
-        "version": "0.1"
+        "version": "1.0"
     },
     "paths": {
+        "/api/v1/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login to get a Bearer Token",
+                "operationId": "19f9cba2ebce1483f9e61aa83e34206d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "format": "username",
+                                        "example": "username"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "Bearer your_token_here"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    }
+                }
+            }
+        },
+        "/api/v1/cache": {
+            "post": {
+                "tags": [
+                    "Cache"
+                ],
+                "summary": "Clear Cache",
+                "description": "Clear Cache",
+                "operationId": "Cache",
+                "responses": {
+                    "200": {
+                        "description": "Data Returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        },
         "/api/v1/config": {
             "get": {
                 "tags": [
@@ -69,6 +151,86 @@
                 }
             }
         },
+        "/api/v1/volunteers": {
+            "get": {
+                "tags": [
+                    "ConfigureVolunteers"
+                ],
+                "summary": "Get volunteers configuration",
+                "operationId": "db6079fd30eb7b5fed73ee557ebc8b1c",
+                "parameters": [
+                    {
+                        "name": "serviceBodyId",
+                        "in": "query",
+                        "description": "Service body ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "service_body_id": {
+                                            "type": "integer"
+                                        },
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "parent_id": {
+                                            "type": "integer",
+                                            "nullable": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "ConfigureVolunteers"
+                ],
+                "summary": "Store or update volunteers configuration",
+                "operationId": "4e5963a41edbaf4189f92506a37c52cd",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "serviceBodyId": {
+                                        "type": "integer"
+                                    },
+                                    "volunteers": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
         "/api/v1/rootServer/servicebodies": {
             "get": {
                 "tags": [
@@ -95,5 +257,41 @@
                 }
             }
         }
-    }
+    },
+    "components": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "ConfigureVolunteers",
+            "description": "For configuring volunteers"
+        },
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Cache",
+            "description": "Cache"
+        },
+        {
+            "name": "Config",
+            "description": "Config"
+        },
+        {
+            "name": "RootServer",
+            "description": "RootServer"
+        }
+    ],
+    "security": [
+        {
+            "BearerAuth": []
+        }
+    ]
 }
