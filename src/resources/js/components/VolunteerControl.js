@@ -1,5 +1,4 @@
 import {useEffect, useState} from "react";
-import Box from "@mui/material/Box";
 import {Card, TextField} from "@mui/material";
 
 function VolunteerControl({serviceBodyId})
@@ -16,7 +15,6 @@ function VolunteerControl({serviceBodyId})
     }
 
     useEffect(() => {
-        console.log(`volunteercontrol: ${serviceBodyId}`)
         getVolunteers()
     }, [])
 

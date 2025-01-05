@@ -2,15 +2,9 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
-use App\Constants\DataType;
 use App\Http\Controllers\Controller;
-use App\Models\ConfigData;
 use App\Services\ConfigService;
-use App\Structures\ServiceBodyCallHandling;
 use App\Utilities\Sort;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use stdClass;
 
 class VolunteerRoutingEnabledController extends Controller
 {
@@ -21,7 +15,7 @@ class VolunteerRoutingEnabledController extends Controller
         $this->config = $config;
     }
 
-    public function index(Request $request): array
+    public function index(): array
     {
         $serviceBodiesEnabledForRouting = $this->config->getVolunteerRoutingEnabledServiceBodies();
         Sort::sortOnField($serviceBodiesEnabledForRouting, 'name');

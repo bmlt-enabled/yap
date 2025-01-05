@@ -10,6 +10,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * @OA\SecurityScheme(
+ *     securityScheme="BearerAuth",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT"
+ * )
+ */
 class AuthController extends Controller
 {
     protected AuthorizationService $authz;
@@ -23,6 +31,32 @@ class AuthController extends Controller
         $this->authn = $authn;
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/login",
+     *     tags={"Auth"},
+     *     summary="Login to get a Bearer Token",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"username","password"},
+     *             @OA\Property(property="username", type="string", format="username", example="username"),
+     *             @OA\Property(property="password", type="string", format="password", example="password")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="token", type="string", example="Bearer your_token_here")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Invalid credentials"
+     *     )
+     * )
+     */
     public function login(Request $request)
     {
         $request->validate([
