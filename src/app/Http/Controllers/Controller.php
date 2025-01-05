@@ -8,7 +8,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 
 /**
- * @OA\Info(title="Yap API", version="0.1")
+ * @OA\Info(title="Yap API", version="1.0")
  */
 class Controller extends BaseController
 {

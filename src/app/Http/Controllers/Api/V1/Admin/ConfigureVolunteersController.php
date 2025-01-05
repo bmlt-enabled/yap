@@ -1,6 +1,6 @@
 <?php
 
-namespace app\Http\Controllers\Api\V1\Admin;
+namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Constants\DataType;
 use App\Http\Controllers\Controller;
@@ -9,6 +9,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use stdClass;
 
+/**
+ * @OA\Tag(
+ *     name="ConfigureVolunteers",
+ *     description="For configuring volunteers"
+ * )
+ */
 class ConfigureVolunteersController extends Controller
 {
     protected ConfigData $configData;
@@ -18,6 +24,31 @@ class ConfigureVolunteersController extends Controller
         $this->configData = $configData;
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/volunteers",
+     *     tags={"ConfigureVolunteers"},
+     *     summary="Get volunteers configuration",
+     *     @OA\Parameter(
+     *         name="serviceBodyId",
+     *         in="query",
+     *         required=true,
+     *         description="Service body ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful response",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="service_body_id", type="integer"),
+     *             @OA\Property(property="id", type="integer"),
+     *             @OA\Property(property="parent_id", type="integer", nullable=true),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     )
+     * )
+     */
     public function index(Request $request): JsonResponse
     {
         $data = ConfigData::getVolunteers($request->get("serviceBodyId"));
@@ -34,6 +65,25 @@ class ConfigureVolunteersController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/volunteers",
+     *     tags={"ConfigureVolunteers"},
+     *     summary="Store or update volunteers configuration",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="serviceBodyId", type="integer"),
+     *             @OA\Property(property="volunteers", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful response"
+     *     )
+     * )
+     */
     public function store(Request $request)
     {
         $volunteers = json_decode($request->getContent());
@@ -44,10 +94,8 @@ class ConfigureVolunteersController extends Controller
             ->first();
 
         if ($existingRecord) {
-            // If the record exists, update it
             ConfigData::updateVolunteers($serviceBodyId, $volunteers);
         } else {
-            // Otherwise, create a new record
             ConfigData::createVolunteers($serviceBodyId, $volunteers);
         }
 
