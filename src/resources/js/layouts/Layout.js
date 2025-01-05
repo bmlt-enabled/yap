@@ -8,7 +8,6 @@ export default function Layout() {
     const { session } = useSession();
 
     if (!session) {
-        // const redirectTo = `/${baseUrl}/login?callbackUrl=${encodeURIComponent(location.pathname)}`;
         const redirectTo = `/${baseUrl}/login`;
         return <Navigate to={redirectTo} replace />
     }

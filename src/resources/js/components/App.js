@@ -72,7 +72,7 @@ export default function App() {
         },
         {
             segment: `${baseUrl}/schedule`,
-            title: "Schedule",
+            title: "Schedules",
             icon: <CalendarMonthIcon />
         },
         {
