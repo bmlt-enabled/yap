@@ -1,6 +1,13 @@
+import ServiceBodiesDropdown from "../components/ServiceBodiesDropdown";
+import React from "react";
+
 function Schedules() {
     return (
-        <h1>Schedules</h1>
+        <div>
+            <ServiceBodiesDropdown/>
+            {/*{serviceBodyId > 0 ?*/}
+            {/*// <VolunteerControl serviceBodyId={serviceBodyId} /> : ""}*/}
+        </div>
     )
 }
 
