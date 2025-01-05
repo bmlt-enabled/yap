@@ -24,7 +24,7 @@ class VolunteerRoutingEnabledController extends Controller
     public function index(Request $request): array
     {
         $serviceBodiesEnabledForRouting = $this->config->getVolunteerRoutingEnabledServiceBodies();
-        Sort::sortOnField($serviceBodiesEnabledForRouting, 'service_body_name');
+        Sort::sortOnField($serviceBodiesEnabledForRouting, 'name');
         return $serviceBodiesEnabledForRouting;
     }
 }
