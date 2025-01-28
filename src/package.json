@@ -36,7 +36,7 @@
         "leaflet-fullscreen": "^1.0.2",
         "libphonenumber-js": "^1.10.53",
         "moment": "^2.29.4",
-        "plotly.js-dist": "^2.0.0",
+        "plotly.js-dist": "^3.0.0",
         "popper.js": "^1.16.1",
         "react-router-dom": "^7.0.0",
         "tabulator-tables": "4.9.3",
