@@ -4,10 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 $ext = '(\.php)?$';
 
-//Route::post("/admin/installer", 'App\Http\Controllers\AdminController@installer')->name('installer');
-//Route::get("/admin/{page}", 'App\Http\Controllers\AdminController@index')
-//    ->middleware("authForAdminPortal");
-Route::get("/adminv2{page}", 'App\Http\Controllers\AdminV2Controller@index')
+Route::get("/admin{page}", 'App\Http\Controllers\AdminController@index')
     ->where('page', '.*')
     ->name("adminPortal");
 Route::get("/bots/getMeetings", 'App\Http\Controllers\BotController@getMeetings');

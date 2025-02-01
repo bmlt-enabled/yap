@@ -5,11 +5,11 @@
 3. Run `composer install`
 3. Run `make bundle`. 
 4. Run `make serve`. 
-5. Browse to http://localhost:8000/yap in your web browser.
+5. Browse to http://localhost:8000/yap (not 127.0.0.1) in your web browser.
 
 #### Logging in to the admin interface
 
-1. Browse to http://localhost:8000/yap/admin
+1. Browse to http://localhost:8000/yap/admin (not 127.0.0.1)
 2. Create an admin user in the database
 
 ```sql
