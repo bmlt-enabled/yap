@@ -58,7 +58,7 @@ function ServiceBodies()
                                 <TableCell>
                                     <Button variant="contained" size="small" onClick={() => openCallHandlingDialog(item.id)}>Call Handling</Button>&nbsp;
                                     <Button variant="contained" size="small" color="success">Configure</Button>&nbsp;
-                                    <Button variant="contained" size="small">Voicemail</Button>
+                                    <Button variant="contained" size="small" color="warning">Voicemail</Button>
                                 </TableCell>
                             </TableRow>
                         ))}
