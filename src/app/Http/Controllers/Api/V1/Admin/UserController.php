@@ -25,7 +25,11 @@ class UserController extends Controller
 
     public function index(Request $request): array|Collection
     {
-        return User::getUsers();
+        if ($this->authz->canManageUsers()) {
+            return User::getUsers();
+        }
+
+        return [];
     }
 
     public function store(Request $request): JsonResponse
