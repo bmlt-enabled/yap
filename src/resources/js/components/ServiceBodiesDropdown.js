@@ -21,10 +21,10 @@ function ServiceBodiesDropdown(props) {
     return (
         !loading && list.length > 0 ?
             <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Service Body</InputLabel>
+                <InputLabel variant="standard" id="service-body-select-label" sx={{ m: 1, minWidth: 120 }}>Service Body</InputLabel>
                 <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
+                    labelId="service-body-select-label"
+                    id="service-body-select"
                     onChange={(e)=>{props.handleChange(e.target.value)}}
                     defaultValue={0}>
                     <MenuItem key={0} value={0}>-= Select a Service Body =-</MenuItem>

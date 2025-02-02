@@ -69,12 +69,18 @@ class ConfigureVolunteersController extends Controller
      * @OA\Post(
      *     path="/api/v1/volunteers",
      *     tags={"ConfigureVolunteers"},
-     *     summary="Store or update volunteers configuration",
+     *     summary="Store or update volunteers configuration",\
+     *     @OA\Parameter(
+     *          name="serviceBodyId",
+     *          in="query",
+     *          required=true,
+     *          description="Service body ID",
+     *          @OA\Schema(type="integer")
+     *      ),
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="serviceBodyId", type="integer"),
      *             @OA\Property(property="volunteers", type="array", @OA\Items(type="object"))
      *         )
      *     ),

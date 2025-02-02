@@ -40,6 +40,7 @@
         "moment": "^2.29.4",
         "plotly.js-dist": "^3.0.0",
         "popper.js": "^1.16.1",
+        "react-beautiful-dnd": "^13.1.1",
         "react-router-dom": "^6.28.1",
         "tabulator-tables": "4.9.3",
         "xlsx": "^0.18.5"

@@ -25,6 +25,7 @@ import Settings from "../pages/Settings";
 import {AppProvider} from "@toolpad/core";
 import LoginPage from "../pages/Login";
 import {SessionContext} from "../SessionContext"
+import ErrorBoundary from "./ErrorBoundary";
 
 export default function App() {
     const [session, setSession] = React.useState(() => {
