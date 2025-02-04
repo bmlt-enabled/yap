@@ -2,8 +2,12 @@
 
 use App\Constants\AuthMechanism;
 use App\Models\ConfigData;
+use App\Models\User;
 use App\Services\RootServerService;
 use App\Structures\Settings;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Laravel\Sanctum\Sanctum;
 use Tests\RootServerMocks;
 
 beforeEach(function () {
@@ -15,43 +19,13 @@ beforeEach(function () {
 test('get config from endpoint', function () {
     $config = new Settings();
     $config->title = "welcome to blah";
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     ConfigData::createServiceBodyConfiguration(
         $this->serviceBodyId,
         $config
     );
-
-    $this->call('GET', '/api/v1/config', [
-        "serviceBodyId" => $this->serviceBodyId,
-    ])->assertStatus(200)
-        ->assertHeader("Content-Type", "application/json")
-        ->assertJson([
-            "id"=>1,
-            "service_body_id"=>$this->serviceBodyId,
-            "parent_id"=>0,
-            "data"=>[$config->toArray()]]);
-});
-
-test('get config from endpoint using BMLT auth', function () {
-    $config = new Settings();
-    $config->title = "welcome to blah";
-
-    ConfigData::createServiceBodyConfiguration(
-        $this->serviceBodyId,
-        $config
-    );
-
-    $response = $this->post(
-        '/admin/login',
-        ["username"=>"gnyr_admin","password"=>"CoreysGoryStory"]
-    );
-
-    $response
-        ->assertStatus(302)
-        ->assertHeader("Location", 'http://localhost/admin/home')
-        ->assertHeader("Content-Type", "text/html; charset=utf-8");
 
     $response = $this->call('GET', '/api/v1/config', [
         "serviceBodyId" => $this->serviceBodyId,
@@ -65,26 +39,27 @@ test('get config from endpoint using BMLT auth', function () {
             "data"=>[$config->toArray()]]);
 });
 
-test('get config from endpoint using BMLT no auth', function () {
-    $config = new Settings();
-    $config->title = "welcome to blah";
-
-    ConfigData::createServiceBodyConfiguration(
-        $this->serviceBodyId,
-        $config
-    );
-
-    $response = $this->call('GET', '/api/v1/config', [
-        "serviceBodyId" => $this->serviceBodyId,
-    ]);
-    $response->assertStatus(302)
-        ->assertHeader("Content-Type", "text/html; charset=utf-8")
-        ->assertHeader("Location", 'http://localhost/admin');
-});
+//test('get config from endpoint using BMLT no auth', function () {
+//    $this->withoutExceptionHandling();
+//    $config = new Settings();
+//    $config->title = "welcome to blah";
+//
+//    ConfigData::createServiceBodyConfiguration(
+//        $this->serviceBodyId,
+//        $config
+//    );
+//
+//    $response = $this->call('GET', '/api/v1/config', [
+//        "serviceBodyId" => $this->serviceBodyId,
+//    ]);
+//    $response->assertStatus(302)
+//        ->assertHeader("Content-Type", "text/html; charset=utf-8")
+//        ->assertHeader("Location", 'http://localhost/api/v1/login');
+//});
 
 test('get config for invalid service body', function () {
     $config = new Settings();
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     ConfigData::createServiceBodyConfiguration(
@@ -100,7 +75,7 @@ test('get config for invalid service body', function () {
 });
 
 test('save config', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
     $serviceBodyConfigData = new Settings();
     $serviceBodyConfigData->title = "welcome to blah";
     $response = $this->call('POST', '/api/v1/config', [
@@ -132,7 +107,7 @@ test('save config', function () {
 });
 
 test('save config with twilio creds', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
     $serviceBodyConfigData = new Settings();
     $serviceBodyConfigData->twilio_account_sid = "abc";
     $serviceBodyConfigData->mobile_check = true;
@@ -153,7 +128,7 @@ test('save config with twilio creds', function () {
 });
 
 test('update config', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
     $serviceBodyConfigData = new Settings();
     $serviceBodyConfigData->title = "welcome to blah";
     $response = $this->call('POST', '/api/v1/config', [
@@ -202,7 +177,7 @@ test('get config no auth', function () {
         "serviceBodyId" => 0,
     ]);
     $response
-        ->assertHeader("Location", "http://localhost/admin")
+        ->assertHeader("Location", "http://localhost/api/v1/login")
         ->assertHeader("Content-Type", "text/html; charset=utf-8")
         ->assertStatus(302);
 });
