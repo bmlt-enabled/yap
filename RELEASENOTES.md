@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.4.2 (March 12, 2025)
+* Support for Gather 2.0 added. [#1323]
+
 ### 4.4.1 (November 4, 2024)
 * Added new feature that allows for tagging languages to volunteers prior to enabling language routing with `language_selections_tagging`. [#1178]
 * Fix for editing groups, configuration and call handling. [#1194] [#1222]
