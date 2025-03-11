@@ -69,6 +69,11 @@ function Volunteers() {
 
     const saveShift = () => {
         const updatedVolunteers = [...volunteers];
+
+        if (!Array.isArray(updatedVolunteers[currentVolunteer].shifts)) {
+            updatedVolunteers[currentVolunteer].shifts = [];
+        }
+
         updatedVolunteers[currentVolunteer].shifts.push(shiftData);
         setVolunteers(updatedVolunteers);
         setShowModal(false);
