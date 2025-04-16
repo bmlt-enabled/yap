@@ -31,7 +31,6 @@ class CallBlocklist
         if ($this->settings->has("blocklist") &&
             strlen($this->settings->get("blocklist")) > 0 &&
             $request->has("Caller")) {
-            
             $caller = $this->ensureLeadingPlus($request->get('Caller'));
             
             $blocklistItems = explode(",", $this->settings->get('blocklist'));
