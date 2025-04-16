@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.4.3 (UNRELEASED)
+* Fix for blocklist capability working inconsistenly [#1329]
+
 ### 4.4.2 (March 12, 2025)
 * Support for Gather 2.0 added. [#1323]
 
