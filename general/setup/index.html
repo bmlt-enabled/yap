@@ -10,7 +10,7 @@
 
 
 <link rel="search" type="application/opensearchdescription+xml" title="Yap Docs" href="/opensearch.xml"><link rel="stylesheet" href="/assets/css/styles.7fa2587a.css">
-<script src="/assets/js/runtime~main.e2f7130b.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.52b1f2e4.js" defer="defer"></script>
 <script src="/assets/js/main.52a8d2d3.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -25,7 +25,7 @@
 <p>Once the application is configured you will need to customize the config.php file.  There are several settings there that are documented in that file.  There are a number of different ways to utilize the yap platform.</p>
 </li>
 <li>
-<p>You will need to (<code>config.php</code>) enter <code>$twilio_account_sid</code> and <code>$twilio_auth_token</code>.  You can find this on your account dashboard.  You can also use a different Twilio account using the admin portal under &quot;Service Bodies&quot;.  Keep in mind that if a key or keys are set at any parent above, all child service bodies will inherit that key.  In order to use a key, just specify <code>override_service_body_id</code> in your webhook with the applicable id.  You will also need to set a webhook for Call Detail Records.</p>
+<p>You will need to (<code>config.php</code>) enter <code>$twilio_account_sid</code> and <code>$twilio_auth_token</code>.  You can find this on your account dashboard.  You can also use a different Twilio account using the admin portal under &quot;Service Bodies&quot;.  Keep in mind that if a key or keys are set at any parent above, all child service bodies will inherit that key.  In order to use a key, just specify <code>override_service_body_id</code> in your webhook with the applicable id.  You will also need to set a webhook for Call Detail Records. It is possible to use dummy credentials as a workaround if you do not intend for a service body to make use of the credentials in <code>config.php</code>, but instead use the credentials configured in service body configuration overrides.</p>
 </li>
 </ol>
 <p><img decoding="async" loading="lazy" alt="twilio-status-callback" src="/assets/images/status_callback_example-7a32351b0eba7175cdbedff3d757831e.png" width="1024" height="602" class="img_ev3q"></p>
