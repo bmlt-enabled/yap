@@ -8,7 +8,7 @@
 
 2. Once the application is configured you will need to customize the config.php file.  There are several settings there that are documented in that file.  There are a number of different ways to utilize the yap platform. 
 
-3. You will need to (`config.php`) enter `$twilio_account_sid` and `$twilio_auth_token`.  You can find this on your account dashboard.  You can also use a different Twilio account using the admin portal under "Service Bodies".  Keep in mind that if a key or keys are set at any parent above, all child service bodies will inherit that key.  In order to use a key, just specify `override_service_body_id` in your webhook with the applicable id.  You will also need to set a webhook for Call Detail Records.
+3. You will need to (`config.php`) enter `$twilio_account_sid` and `$twilio_auth_token`.  You can find this on your account dashboard.  You can also use a different Twilio account using the admin portal under "Service Bodies".  Keep in mind that if a key or keys are set at any parent above, all child service bodies will inherit that key.  In order to use a key, just specify `override_service_body_id` in your webhook with the applicable id.  You will also need to set a webhook for Call Detail Records. It is possible to use dummy credentials as a workaround if you do not intend for a service body to make use of the credentials in `config.php`, but instead use the credentials configured in service body configuration overrides.
 
 ![twilio-status-callback](/img/status_callback_example.png)
 
