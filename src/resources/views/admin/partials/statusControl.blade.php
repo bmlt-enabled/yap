@@ -4,7 +4,7 @@
    data-toggle="tooltip"
    data-placement="bottom"
    target="_blank"
-   href="{{ url(sprintf('/upgrade-advisor%s', isset($_REQUEST['run_exclude_errors_check']) ? "?run_exclude_errors_check=1" : "")) }}"
+   href="{{ url('/upgrade-advisor') }}"
    title="{{ $status['message'] }}">Status: {{ $status['status'] ? "OK" : "Problem" }}
 </a>
 <?php if (strlen($status['warnings']) > 0 && isset($_REQUEST['include_warnings'])) {?>

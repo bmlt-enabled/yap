@@ -143,7 +143,7 @@ class UpgradeService extends Service
 
     private function isAllowedError($exceptionName)
     {
-        if ($this->settings->has("exclude_errors_on_login_page") && request()->has('run_exclude_errors_check')) {
+        if ($this->settings->has("exclude_errors_on_login_page")) {
             return !in_array($exceptionName, $this->settings->get("exclude_errors_on_login_page"));
         }
 
