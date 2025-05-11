@@ -1,9 +1,11 @@
 <?php
 use App\Constants\AuthMechanism;
 use App\Constants\EventId;
+use App\Models\User;
+use Laravel\Sanctum\Sanctum;
 
 test('returns data', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
 
     $response = $this->get('/api/v1/events/status');
     $response
@@ -15,7 +17,7 @@ test('returns data no auth', function () {
     $response = $this->get('/api/v1/events/status');
     $response
         ->assertStatus(302)
-        ->assertHeader("Location", "http://localhost/admin")
+        ->assertHeader("Location", "http://localhost/api/v1/login")
         ->assertHeader("Content-Type", "text/html; charset=utf-8");
 });
 
