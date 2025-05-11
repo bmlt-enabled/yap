@@ -55,7 +55,7 @@ test('fake twilio credentials should return a rest error', function ($method) {
     $settings->set("twilio_auth_token", "fake");
     app()->instance(SettingsService::class, $settings);
     $response = $this->call($method, '/upgrade-advisor.php', ["run_exclude_errors_check" => "true"]);
-    # should return a rest error simliar to this 
+    # should return a rest error simliar to this
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
@@ -72,7 +72,7 @@ test('fake twilio credentials should return a rest error but suppress it', funct
     $settings->set("exclude_errors_on_login_page", ["twilioFakeCredentials"]);
     app()->instance(SettingsService::class, $settings);
     $response = $this->call($method, '/upgrade-advisor.php', ["run_exclude_errors_check" => "true"]);
-    # should return a rest error simliar to this 
+    # should return a rest error simliar to this
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
