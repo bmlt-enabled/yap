@@ -2,6 +2,7 @@
 
 ### 4.4.4 (May 10, 2025)
 * Feature to ignore Rest Errors with Twilio for Fake Credentials.
+* Remove status from login page.
 
 ### 4.4.3 (April 16, 2025)
 * Fix for blocklist capability working inconsistenly [#1329]

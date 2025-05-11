@@ -31,10 +31,7 @@
             @endforeach
         </select>
         <div id="version-info">
-            <?php
-            $_REQUEST['run_exclude_errors_check'] = "1";
-            ?>
-            @include('admin.partials.statusControl')
+            <p class="lead">v{{ $status['version'] }}</p>
         </div>
     </form>
 </div>
