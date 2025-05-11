@@ -8,21 +8,6 @@
             "port": 9003
         },
         {
-            "name": "Launch currently open script",
-            "type": "php",
-            "request": "launch",
-            "program": "${file}",
-            "cwd": "${fileDirname}",
-            "port": 0,
-            "runtimeArgs": [
-                "-dxdebug.start_with_request=yes"
-            ],
-            "env": {
-                "XDEBUG_MODE": "debug,develop",
-                "XDEBUG_CONFIG": "client_port=${port}"
-            }
-        },
-        {
             "name": "Launch Built-in web server",
             "type": "php",
             "request": "launch",
@@ -30,10 +15,15 @@
                 "-dxdebug.mode=debug",
                 "-dxdebug.start_with_request=yes",
                 "-S",
-                "localhost:8000"
+                "localhost:8000",
+                "-t",
+                "${workspaceRoot}/src",
+                "server.php"
             ],
             "env": {
-                "ENVIRONMENT": "dev"
+                "ENVIRONMENT": "dev",
+                "XDEBUG_MODE": "debug,develop",
+                "XDEBUG_CONFIG": "client_port=${port}"
             },
             "program": "${workspaceRoot}/src/index.php",  // Updated to src directory
             "cwd": "${workspaceRoot}/src",  // Updated working directory to src

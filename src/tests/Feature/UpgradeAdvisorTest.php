@@ -49,6 +49,38 @@ test('version test as jsonp', function ($method) {
         ->assertSeeText(sprintf("bro({\"version\":\"%s\"})", $settings->version()), false);
 })->with(['GET', 'POST']);
 
+test('fake twilio credentials should return a rest error', function ($method) {
+    $settings = new SettingsService();
+    $settings->set("twilio_account_sid", "fake");
+    $settings->set("twilio_auth_token", "fake");
+    app()->instance(SettingsService::class, $settings);
+    $response = $this->call($method, '/upgrade-advisor.php', ["run_exclude_errors_check" => "true"]);
+    # should return a rest error simliar to this
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json")
+        ->assertJson([
+            'status' => false,
+            'message' => "Twilio Rest Error: [HTTP 401] Unable to fetch page: Authentication Error - invalid username",
+        ]);
+})->with(['GET', 'POST']);
+
+test('fake twilio credentials should return a rest error but suppress it', function ($method) {
+    $settings = new SettingsService();
+    $settings->set("twilio_account_sid", "fake");
+    $settings->set("twilio_auth_token", "fake");
+    $settings->set("exclude_errors_on_login_page", ["twilioFakeCredentials"]);
+    app()->instance(SettingsService::class, $settings);
+    $response = $this->call($method, '/upgrade-advisor.php', ["run_exclude_errors_check" => "true"]);
+    # should return a rest error simliar to this
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json")
+        ->assertJson([
+            'status' => true,
+        ]);
+})->with(['GET', 'POST']);
+
 test('version test check cors headers', function ($method) {
     $settings = new SettingsService();
     app()->instance(SettingsService::class, $settings);

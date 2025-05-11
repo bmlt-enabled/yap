@@ -101,7 +101,9 @@ class UpgradeService extends Service
                 }
             }
         } catch (RestException $e) {
-            return $this->getState(false, "Twilio Rest Error: " . $e->getMessage(), $warnings);
+            if ($this->isAllowedError("twilioFakeCredentials")) {
+                return $this->getState(false, "Twilio Rest Error: " . $e->getMessage(), $warnings);
+            }
         } catch (ConfigurationException $e) {
             if ($this->isAllowedError("twilioMissingCredentials")) {
                 return $this->getState(false, "Twilio Configuration Error: " . $e->getMessage(), $warnings);

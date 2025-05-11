@@ -1,6 +1,9 @@
 # Release Notes
 
-### 4.4.3 (UNRELEASED)
+### 4.4.4 (May 10, 2025)
+* Feature to ignore Rest Errors with Twilio for Fake Credentials.
+
+### 4.4.3 (April 16, 2025)
 * Fix for blocklist capability working inconsistenly [#1329]
 
 ### 4.4.2 (March 12, 2025)
