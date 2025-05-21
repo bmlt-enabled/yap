@@ -2,14 +2,15 @@ import React, {useEffect, useState} from "react";
 import {Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 import apiClient from "../services/api";
 import {CallHandlingDialog} from "../dialogs/CallHandlingDialog";
-import {useDialogs} from "@toolpad/core";
+import {ServiceBodyConfigurationDialog} from "../dialogs/ServiceBodyConfigurationDialog";
 
 function ServiceBodies()
 {
     const [loading, setLoading] = useState(false);
     const [list, setList] = useState([]);
-    const [openDialogState, setOpenDialogState] = useState(false)
-    const [serviceBodyId, setServiceBodyId] = useState();
+    const [openCallHandlingDialog, setOpenCallHandlingDialog] = useState(false);
+    const [openConfigDialog, setOpenConfigDialog] = useState(false);
+    const [selectedServiceBody, setSelectedServiceBody] = useState(null);
 
     const getServiceBodies = async() => {
         setLoading(true)
@@ -19,14 +20,24 @@ function ServiceBodies()
         setLoading(false)
     }
 
-    const openCallHandlingDialog = (serviceBodyId) => {
-        setServiceBodyId(serviceBodyId)
-        setOpenDialogState(true); // Set local state to open
+    const handleCallHandlingClick = (serviceBody) => {
+        setSelectedServiceBody(serviceBody);
+        setOpenCallHandlingDialog(true);
+    };
+
+    const handleConfigClick = (serviceBody) => {
+        setSelectedServiceBody(serviceBody);
+        setOpenConfigDialog(true);
     };
 
     const closeCallHandlingDialog = () => {
-        setServiceBodyId(null)
-        setOpenDialogState(false); // Set local state to close
+        setSelectedServiceBody(null);
+        setOpenCallHandlingDialog(false);
+    };
+
+    const closeConfigDialog = () => {
+        setSelectedServiceBody(null);
+        setOpenConfigDialog(false);
     };
 
     useEffect(() => {
@@ -37,7 +48,17 @@ function ServiceBodies()
         <div>
             {list.length > 0 ?
             <TableContainer>
-                <CallHandlingDialog open={openDialogState} onClose={closeCallHandlingDialog} serviceBodyId={serviceBodyId} />
+                <CallHandlingDialog 
+                    open={openCallHandlingDialog} 
+                    onClose={closeCallHandlingDialog} 
+                    serviceBodyId={selectedServiceBody?.id} 
+                />
+                <ServiceBodyConfigurationDialog
+                    open={openConfigDialog}
+                    onClose={closeConfigDialog}
+                    serviceBodyId={selectedServiceBody?.id}
+                    serviceBodyName={selectedServiceBody?.name}
+                />
                 <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
                     <TableHead>
                         <TableRow>
@@ -56,8 +77,21 @@ function ServiceBodies()
                                 </TableCell>
                                 <TableCell>{item.helpline}</TableCell>
                                 <TableCell>
-                                    <Button variant="contained" size="small" onClick={() => openCallHandlingDialog(item.id)}>Call Handling</Button>&nbsp;
-                                    <Button variant="contained" size="small" color="success">Configure</Button>&nbsp;
+                                    <Button 
+                                        variant="contained" 
+                                        size="small" 
+                                        onClick={() => handleCallHandlingClick(item)}
+                                    >
+                                        Call Handling
+                                    </Button>&nbsp;
+                                    <Button 
+                                        variant="contained" 
+                                        size="small" 
+                                        color="success"
+                                        onClick={() => handleConfigClick(item)}
+                                    >
+                                        Configure
+                                    </Button>&nbsp;
                                     <Button variant="contained" size="small" color="warning">Voicemail</Button>
                                 </TableCell>
                             </TableRow>

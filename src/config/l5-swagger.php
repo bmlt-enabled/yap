@@ -6,6 +6,9 @@ return [
         'default' => [
             'api' => [
                 'title' => 'L5 Swagger UI',
+                'apisSorter' => 'alpha',
+                'operationsSorter' => 'alpha',
+                'tagsSorter' => 'alpha',
             ],
 
             'routes' => [
@@ -240,7 +243,7 @@ return [
          * 'method' (sort by HTTP method).
          * Default is the order returned by the server unchanged.
         */
-        'operations_sort' => env('L5_SWAGGER_OPERATIONS_SORT', null),
+        'operations_sort' => env('L5_SWAGGER_OPERATIONS_SORT', 'alpha'),
 
         /*
          * Pass the validatorUrl parameter to SwaggerUi init on the JS side.
@@ -291,6 +294,29 @@ return [
          */
         'constants' => [
             'L5_SWAGGER_CONST_HOST' => env('L5_SWAGGER_CONST_HOST', 'http://my-default-host.com'),
+        ],
+
+        /*
+         * Swagger UI additional configuration
+         */
+        'additional_ui_config' => [
+            'apisSorter' => 'alpha',
+            'operationsSorter' => 'alpha',
+            'tagsSorter' => 'alpha',
+            'docExpansion' => 'list',
+            'defaultModelsExpandDepth' => -1,
+            'defaultModelExpandDepth' => -1,
+            'displayRequestDuration' => true,
+            'filter' => true,
+            'showExtensions' => true,
+            'showCommonExtensions' => true,
+            'supportedSubmitMethods' => [
+                'get',
+                'post',
+                'put',
+                'delete',
+                'patch'
+            ],
         ],
     ],
 ];

@@ -12,7 +12,7 @@ use stdClass;
 /**
  * @OA\Tag(
  *     name="ConfigureVolunteers",
- *     description="For configuring volunteers"
+ *     description="Volunteer configuration management endpoints"
  * )
  */
 class ConfigureVolunteersController extends Controller
@@ -33,12 +33,12 @@ class ConfigureVolunteersController extends Controller
      *         name="serviceBodyId",
      *         in="query",
      *         required=true,
-     *         description="Service body ID",
+     *         description="ID of the service body",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successful response",
+     *         description="Volunteers configuration retrieved successfully",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="service_body_id", type="integer"),
@@ -69,24 +69,45 @@ class ConfigureVolunteersController extends Controller
      * @OA\Post(
      *     path="/api/v1/volunteers",
      *     tags={"ConfigureVolunteers"},
-     *     summary="Store or update volunteers configuration",\
+     *     summary="Store or update volunteers configuration",
      *     @OA\Parameter(
-     *          name="serviceBodyId",
-     *          in="query",
-     *          required=true,
-     *          description="Service body ID",
-     *          @OA\Schema(type="integer")
-     *      ),
+     *         name="serviceBodyId",
+     *         in="query",
+     *         required=true,
+     *         description="ID of the service body",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="volunteers", type="array", @OA\Items(type="object"))
+     *             @OA\Property(
+     *                 property="volunteers",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="name", type="string"),
+     *                     @OA\Property(property="number", type="string"),
+     *                     @OA\Property(property="gender", type="string"),
+     *                     @OA\Property(property="responder", type="boolean"),
+     *                     @OA\Property(property="type", type="string"),
+     *                     @OA\Property(property="language", type="array", @OA\Items(type="string")),
+     *                     @OA\Property(property="notes", type="string"),
+     *                     @OA\Property(property="shift_info", type="object")
+     *                 )
+     *             )
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successful response"
+     *         description="Volunteers configuration saved successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="service_body_id", type="integer"),
+     *             @OA\Property(property="id", type="integer"),
+     *             @OA\Property(property="parent_id", type="integer", nullable=true),
+     *             @OA\Property(property="data", type="object")
+     *         )
      *     )
      * )
      */

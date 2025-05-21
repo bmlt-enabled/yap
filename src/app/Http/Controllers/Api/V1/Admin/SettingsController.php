@@ -5,6 +5,12 @@ namespace App\Http\Controllers\Api\V1\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\SettingsService;
 
+/**
+ * @OA\Tag(
+ *     name="Settings",
+ *     description="System settings management endpoints"
+ * )
+ */
 class SettingsController extends Controller
 {
     protected SettingsService $settingsService;
@@ -14,6 +20,37 @@ class SettingsController extends Controller
         $this->settingsService = $settingsService;
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/settings",
+     *     tags={"Settings"},
+     *     summary="Get system settings",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Settings retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="languageSelections",
+     *                 type="array",
+     *                 @OA\Items(type="string")
+     *             ),
+     *             @OA\Property(
+     *                 property="settings",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="default", type="string"),
+     *                     @OA\Property(property="docs", type="string"),
+     *                     @OA\Property(property="key", type="string"),
+     *                     @OA\Property(property="source", type="string"),
+     *                     @OA\Property(property="value", type="string")
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function index()
     {
         $settings = [];
