@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 beforeEach(function () {
-
 });
 
 test('get service bodies', function () {
@@ -31,7 +30,7 @@ test('get service bodies', function () {
         });
 });
 
-test('get service bodies for admin user', function() {
+test('get service bodies for admin user', function () {
     $username = 'admin1';
     $password = 'admin1';
     DB::statement("
@@ -66,4 +65,3 @@ test('get service bodies no auth', function () {
         ->assertHeader("Content-Type", "text/html; charset=utf-8")
         ->assertStatus(302);
 });
-
