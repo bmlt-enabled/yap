@@ -29,8 +29,8 @@ class GroupController extends Controller
 
         foreach ($data as $item) {
             $results[] = [
-                'service_body_id' => $item->service_body_id,
-                'id' => $item->id,
+                'service_body_id' => (int)$item->service_body_id,
+                'id' => (int)$item->id,
                 'parent_id' => null,
                 'data' => json_decode($item->data)
             ];
