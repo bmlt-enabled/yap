@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.4.5 (May 21, 2025)
+* Fix for Groups dropdown not functioning due to type handling differences between MySQL and MariaDB database versions [#1339]
+
 ### 4.4.4 (May 10, 2025)
 * Feature to ignore Rest Errors with Twilio for Fake Credentials.
 * Remove status from login page.

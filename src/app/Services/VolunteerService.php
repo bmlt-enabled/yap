@@ -196,10 +196,16 @@ class VolunteerService extends Service
     {
         $all_groups = $this->configRepository->getAllDbData(DataType::YAP_GROUPS_V2);
         $final_groups = array();
+        $service_body_id = intval($service_body_id); // Ensure consistent type
+
         foreach ($all_groups as $all_group) {
-            if ($all_group->service_body_id === intval($service_body_id)
-                || (!$manage && isset(json_decode($all_group->data)[0]->group_shared_service_bodies)
-                    && in_array($service_body_id, json_decode($all_group->data)[0]->group_shared_service_bodies))) {
+            $group_service_body_id = intval($all_group->service_body_id); // Ensure consistent type
+            $group_data = json_decode($all_group->data);
+
+            if ($group_service_body_id === $service_body_id
+                || (!$manage
+                    && isset($group_data[0]->group_shared_service_bodies)
+                    && in_array((string)$service_body_id, $group_data[0]->group_shared_service_bodies))) {
                 $final_groups[] = $all_group;
             }
         }
