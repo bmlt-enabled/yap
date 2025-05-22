@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\Admin\SwaggerController;
 use App\Http\Controllers\UpgradeAdvisorController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\Admin\SettingsController;
 
 Route::group([
     'prefix' => 'v1',
@@ -17,7 +18,6 @@ Route::group([
 
     Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::resource('user', 'AuthController')->only(['index']);
-        Route::resource('config', 'ConfigController')->only(['index', 'store']);
         Route::resource('volunteers', 'ConfigureVolunteersController')->only(['index', 'store']);
         Route::resource('callHandling', 'ServiceBodyCallHandlingController')->only(['index', 'store']);
         Route::resource('callHandling/routingEnabled', 'VolunteerRoutingEnabledController')->only(['index']);
@@ -34,7 +34,12 @@ Route::group([
         Route::resource('events/status', 'EventStatusController')->only(['index', 'store']);
         Route::resource('session', 'SessionController')->only(['store']);
         Route::resource('cache', 'CacheController')->only(['store']);
-        Route::resource('settings', 'SettingsController')->only(['index']);
+        Route::controller(SettingsController::class)->group(function () {
+            Route::get('settings', 'index');
+            Route::get('settings/allowlist', 'allowlist');
+            Route::get('settings/serviceBody/{serviceBodyId}', 'getServiceBodyConfiguration');
+            Route::post('settings/serviceBody/{serviceBodyId}', 'saveServiceBodyConfiguration');
+        });
     });
 });
 

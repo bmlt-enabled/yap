@@ -24,10 +24,19 @@ export function ServiceBodyConfigurationDialog({ open, onClose, serviceBodyId, s
 
     const getAllowlist = async () => {
         try {
-            const response = await apiClient(`${rootUrl}/api/v1/settings/allowlist`);
+            const response = await apiClient.get(`${rootUrl}/api/v1/settings/allowlist`);
             setAllowlist(response.data);
         } catch (error) {
             console.error("Error fetching allowlist:", error);
+        }
+    };
+
+    const getCurrentConfiguration = async () => {
+        try {
+            const response = await apiClient.get(`${rootUrl}/api/v1/settings/serviceBody/${serviceBodyId}`);
+            setCustomFields(response.data);
+        } catch (error) {
+            console.error("Error fetching current configuration:", error);
         }
         setLoading(false);
     };
@@ -69,9 +78,10 @@ export function ServiceBodyConfigurationDialog({ open, onClose, serviceBodyId, s
 
     useEffect(() => {
         if (open) {
-            getAllowlist();
+            setLoading(true);
+            Promise.all([getAllowlist(), getCurrentConfiguration()]);
         }
-    }, [open]);
+    }, [open, serviceBodyId]);
 
     if (loading) {
         return <Dialog onClose={onClose} open={open}><DialogContent>Loading...</DialogContent></Dialog>;
@@ -81,12 +91,22 @@ export function ServiceBodyConfigurationDialog({ open, onClose, serviceBodyId, s
         <Dialog fullWidth open={open} onClose={onClose}>
             <DialogTitle>Configure {serviceBodyName} ({serviceBodyId})</DialogTitle>
             <DialogContent>
-                <Typography variant="body2">
-                    For more details, see the{' '}
-                    <a href="https://yap.bmlt.app/general/configuration-precedence/" target="_blank" rel="noopener noreferrer">
-                        Configuration Precedence documentation
-                    </a>.
-                </Typography>
+                <Paper sx={{ p: 2, mb: 2, bgcolor: 'background.paper', border: 1, borderColor: 'divider' }}>
+                    <Typography variant="h6" gutterBottom>Configuration Precedence</Typography>
+                    <Typography variant="body2" component="ol" sx={{ pl: 2 }}>
+                        <li>Querystring parameters (highest priority)</li>
+                        <li>Session overrides</li>
+                        <li>Service body overrides</li>
+                        <li>Config.php</li>
+                        <li>Factory defaults (lowest priority)</li>
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                        For more details, see the{' '}
+                        <a href="https://yap.bmlt.app/general/configuration-precedence/" target="_blank" rel="noopener noreferrer">
+                            Configuration Precedence documentation
+                        </a>.
+                    </Typography>
+                </Paper>
 
                 <FormControl fullWidth sx={{ mb: 2 }}>
                     <InputLabel>Select Setting</InputLabel>
