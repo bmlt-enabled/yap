@@ -53,7 +53,7 @@ export function ServiceBodyConfigurationDialog({ open, onClose, serviceBodyId, s
 
         setCustomFields([...customFields, {
             setting: selectedField,
-            value: field.default,
+            value: typeof field.default === 'object' ? JSON.stringify(field.default) : field.default,
             default: field.default
         }]);
         setSelectedField('');
@@ -62,6 +62,12 @@ export function ServiceBodyConfigurationDialog({ open, onClose, serviceBodyId, s
     const handleFieldChange = (index, value) => {
         const newFields = [...customFields];
         newFields[index].value = value;
+        setCustomFields(newFields);
+    };
+
+    const removeField = (index) => {
+        const newFields = [...customFields];
+        newFields.splice(index, 1);
         setCustomFields(newFields);
     };
 
@@ -128,15 +134,27 @@ export function ServiceBodyConfigurationDialog({ open, onClose, serviceBodyId, s
                 </Button>
 
                 {customFields.map((field, index) => (
-                    <TextField
-                        key={index}
-                        fullWidth
-                        label={field.setting}
-                        value={field.value}
-                        onChange={(e) => handleFieldChange(index, e.target.value)}
-                        sx={{ mb: 2 }}
-                        helperText={`Default: ${JSON.stringify(field.default)}`}
-                    />
+                    <Box key={index} sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                        <Box sx={{ flex: 1 }}>
+                            <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                                {field.setting}
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                placeholder="Enter value"
+                                value={field.value}
+                                onChange={(e) => handleFieldChange(index, e.target.value)}
+                                helperText={`Default: ${JSON.stringify(allowlist.find(f => f.setting === field.setting)?.default)}`}
+                            />
+                        </Box>
+                        <Button 
+                            color="error" 
+                            onClick={() => removeField(index)}
+                            sx={{ minWidth: '40px' }}
+                        >
+                            ×
+                        </Button>
+                    </Box>
                 ))}
             </DialogContent>
             <DialogActions>
