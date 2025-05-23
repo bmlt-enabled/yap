@@ -27,7 +27,7 @@ export function VoicemailDialog({ open, onClose, serviceBodyId, serviceBodyName 
 
     const fetchVoicemails = async () => {
         try {
-            const response = await apiClient.get(`${rootUrl}/api/v1/voicemails/${serviceBodyId}`);
+            const response = await apiClient.get(`${rootUrl}/api/v1/voicemail?serviceBodyId=${serviceBodyId}`);
             setVoicemails(response.data.data);
         } catch (error) {
             console.error('Error fetching voicemails:', error);
@@ -43,8 +43,7 @@ export function VoicemailDialog({ open, onClose, serviceBodyId, serviceBodyName 
 
     const handleDelete = async (callsid) => {
         try {
-            // TODO: Implement delete endpoint
-            await apiClient.delete(`${rootUrl}/api/v1/voicemails/${serviceBodyId}/${callsid}`);
+            await apiClient.delete(`${rootUrl}/api/v1/voicemail/${callsid}?serviceBodyId=${serviceBodyId}`);
             setAlert({
                 show: true,
                 message: 'Voicemail deleted successfully',

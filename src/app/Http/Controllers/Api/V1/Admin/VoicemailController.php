@@ -25,7 +25,7 @@ class VoicemailController extends Controller
      * Get voicemails for a service body
      *
      * @OA\Get(
-     *     path="/api/v1/voicemails/{serviceBodyId}",
+     *     path="/api/v1/voicemail",
      *     summary="Get voicemails for a service body",
      *     description="Retrieves all voicemails associated with a specific service body",
      *     operationId="getVoicemails",
@@ -35,7 +35,7 @@ class VoicemailController extends Controller
      *         name="serviceBodyId",
      *         description="ID of the service body",
      *         required=true,
-     *         in="path",
+     *         in="query",
      *         @OA\Schema(
      *             type="integer",
      *             format="int64"
@@ -76,15 +76,100 @@ class VoicemailController extends Controller
      *     )
      * )
      *
-     * @param int $serviceBodyId
      * @return JsonResponse
      */
-    public function index(int $serviceBodyId): JsonResponse
+    public function index(): JsonResponse
     {
+        $serviceBodyId = request()->query('serviceBodyId');
+        
+        if (!$serviceBodyId) {
+            return response()->json([
+                'message' => 'Service body ID is required'
+            ], 400);
+        }
+
         $voicemails = $this->voicemailRepository->get($serviceBodyId);
         
         return response()->json([
             'data' => $voicemails
+        ]);
+    }
+
+    /**
+     * Delete a voicemail
+     *
+     * @OA\Delete(
+     *     path="/api/v1/voicemail/{callSid}",
+     *     summary="Delete a voicemail",
+     *     description="Deletes a specific voicemail by its call SID",
+     *     operationId="deleteVoicemail",
+     *     tags={"Voicemails"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="serviceBodyId",
+     *         description="ID of the service body",
+     *         required=true,
+     *         in="query",
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="callSid",
+     *         description="Call SID of the voicemail to delete",
+     *         required=true,
+     *         in="path",
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Voicemail deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Voicemail deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Voicemail not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Voicemail not found.")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $callSid
+     * @return JsonResponse
+     */
+    public function destroy(string $callSid): JsonResponse
+    {
+        $serviceBodyId = request()->query('serviceBodyId');
+        
+        if (!$serviceBodyId) {
+            return response()->json([
+                'message' => 'Service body ID is required'
+            ], 400);
+        }
+
+        $deleted = $this->voicemailRepository->delete($serviceBodyId, $callSid);
+        
+        if (!$deleted) {
+            return response()->json([
+                'message' => 'Voicemail not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Voicemail deleted successfully'
         ]);
     }
 }

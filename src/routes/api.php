@@ -35,7 +35,7 @@ Route::group([
         Route::resource('events/status', 'EventStatusController')->only(['index', 'store']);
         Route::resource('session', 'SessionController')->only(['store']);
         Route::resource('cache', 'CacheController')->only(['store']);
-        Route::get('voicemails/{serviceBodyId}', [VoicemailController::class, 'index'])->name('voicemails.index');
+        Route::resource('voicemail', 'VoicemailController')->only(['index', 'destroy']);
         Route::controller(SettingsController::class)->group(function () {
             Route::get('settings', 'index');
             Route::get('settings/allowlist', 'allowlist');
