@@ -15,13 +15,13 @@ class VoicemailRepository
             ->with(['record', 'session', 'eventStatus'])
             ->where('event_id', EventId::VOICEMAIL)
             ->where('service_body_id', $service_body_id)
-            ->where(function($query) {
-                $query->whereHas('eventStatus', function($q) {
+            ->where(function ($query) {
+                $query->whereHas('eventStatus', function ($q) {
                     $q->where('status', '<>', EventStatusId::VOICEMAIL_DELETED);
                 })->orWhereDoesntHave('eventStatus');
             })
             ->get()
-            ->map(function($event) {
+            ->map(function ($event) {
                 return [
                     'callsid' => $event->record?->callsid,
                     'pin' => $event->session?->pin,
