@@ -7,6 +7,21 @@ import apiClient from "../services/api";
 export default function LoginPage() {
     const { setSession } = useSession();
     const navigate = useNavigate();
+    const [version, setVersion] = React.useState('');
+
+    React.useEffect(() => {
+        const fetchVersion = async () => {
+            try {
+                console.log('Fetching version...');
+                const response = await apiClient.get('/api/v1/version');
+                console.log('Version response:', response.data);
+                setVersion(response.data.version);
+            } catch (error) {
+                console.error('Failed to fetch version:', error);
+            }
+        };
+        fetchVersion();
+    }, []);
 
     const handleLogin = async (username, password) => {
         return new Promise((resolve, reject) => {
@@ -40,11 +55,26 @@ export default function LoginPage() {
         return {};
     };
 
+    console.log('Current version state:', version);
+
     return (
-        <SignInPage
-            signIn={signIn}
-            providers={[{ id: 'credentials', name: 'Username and Password' }]}
-            slotProps={{ emailField: { autoFocus: true, label: 'Username', type: 'text', placeholder: 'Username' } }}
-        />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh' }}>
+            <SignInPage
+                signIn={signIn}
+                providers={[{ id: 'credentials', name: 'Username and Password' }]}
+                slotProps={{ emailField: { autoFocus: true, label: 'Username', type: 'text', placeholder: 'Username' } }}
+            />
+            <div style={{ 
+                marginTop: '1rem', 
+                color: '#666', 
+                fontSize: '0.875rem',
+                position: 'fixed',
+                bottom: '1rem',
+                left: '50%',
+                transform: 'translateX(-50%)'
+            }}>
+                {version ? `Version ${version}` : 'Loading version...'}
+            </div>
+        </div>
     );
 }

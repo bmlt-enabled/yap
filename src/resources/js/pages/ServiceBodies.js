@@ -3,6 +3,7 @@ import {Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 import apiClient from "../services/api";
 import {CallHandlingDialog} from "../dialogs/CallHandlingDialog";
 import {ServiceBodyConfigurationDialog} from "../dialogs/ServiceBodyConfigurationDialog";
+import {VoicemailDialog} from "../dialogs/VoicemailDialog";
 
 function ServiceBodies()
 {
@@ -10,6 +11,7 @@ function ServiceBodies()
     const [list, setList] = useState([]);
     const [openCallHandlingDialog, setOpenCallHandlingDialog] = useState(false);
     const [openConfigDialog, setOpenConfigDialog] = useState(false);
+    const [openVoicemailDialog, setOpenVoicemailDialog] = useState(false);
     const [selectedServiceBody, setSelectedServiceBody] = useState(null);
 
     const getServiceBodies = async() => {
@@ -30,6 +32,11 @@ function ServiceBodies()
         setOpenConfigDialog(true);
     };
 
+    const handleVoicemailClick = (serviceBody) => {
+        setSelectedServiceBody(serviceBody);
+        setOpenVoicemailDialog(true);
+    };
+
     const closeCallHandlingDialog = () => {
         setSelectedServiceBody(null);
         setOpenCallHandlingDialog(false);
@@ -38,6 +45,11 @@ function ServiceBodies()
     const closeConfigDialog = () => {
         setSelectedServiceBody(null);
         setOpenConfigDialog(false);
+    };
+
+    const closeVoicemailDialog = () => {
+        setSelectedServiceBody(null);
+        setOpenVoicemailDialog(false);
     };
 
     useEffect(() => {
@@ -56,6 +68,12 @@ function ServiceBodies()
                 <ServiceBodyConfigurationDialog
                     open={openConfigDialog}
                     onClose={closeConfigDialog}
+                    serviceBodyId={selectedServiceBody?.id}
+                    serviceBodyName={selectedServiceBody?.name}
+                />
+                <VoicemailDialog
+                    open={openVoicemailDialog}
+                    onClose={closeVoicemailDialog}
                     serviceBodyId={selectedServiceBody?.id}
                     serviceBodyName={selectedServiceBody?.name}
                 />
@@ -92,7 +110,14 @@ function ServiceBodies()
                                     >
                                         Configure
                                     </Button>&nbsp;
-                                    <Button variant="contained" size="small" color="warning">Voicemail</Button>
+                                    <Button 
+                                        variant="contained" 
+                                        size="small" 
+                                        color="warning"
+                                        onClick={() => handleVoicemailClick(item)}
+                                    >
+                                        Voicemail
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}
