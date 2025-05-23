@@ -1,10 +1,22 @@
 ### Getting it up and running.
 
 1. Clone this repository.
-2. Run `make deploy`. 
-3. Run `make watch`. 
-4. Run `make run`. 
-5. Browse to http://localhost:3100/yap in your web browser.
+2. Run `npm install`. 
+3. Run `composer install`
+3. Run `make bundle`. 
+4. Run `make serve`. 
+5. Browse to http://localhost:8000/yap (not 127.0.0.1) in your web browser.
+
+#### Logging in to the admin interface
+
+1. Browse to http://localhost:8000/yap/admin (not 127.0.0.1)
+2. Create an admin user in the database
+
+```sql
+INSERT INTO users (id, name, username, password, permissions, is_admin) VALUES (UUID(), 'admin', 'admin', SHA2('admin', 256), 0, 1);
+```
+
+3. Log with username: `admin`, password: `admin`.
 
 ### Testing
 

@@ -2,55 +2,73 @@
     "openapi": "3.0.0",
     "info": {
         "title": "Yap API",
-        "version": "0.1"
+        "version": "1.0"
     },
     "paths": {
-        "/api/v1/config": {
-            "get": {
+        "/api/v1/login": {
+            "post": {
                 "tags": [
-                    "Config"
+                    "Auth"
                 ],
-                "summary": "Get Configuration",
-                "description": "Get Configuration",
-                "operationId": "Config",
-                "parameters": [
-                    {
-                        "name": "service_body_id",
-                        "in": "query",
-                        "description": "The service body ID",
-                        "required": true,
-                        "schema": {
-                            "type": "number"
-                        }
-                    },
-                    {
-                        "name": "data_type",
-                        "in": "query",
-                        "description": "The data type",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "examples": {
-                            "config": {
-                                "summary": "Configuration",
-                                "value": "_YAP_CONFIG_V2_"
-                            },
-                            "volunteers": {
-                                "summary": "Volunteers",
-                                "value": "_YAP_VOLUNTEERS_V2_"
-                            },
-                            "groups": {
-                                "summary": "Groups",
-                                "value": "_YAP_GROUPS_V2_"
-                            },
-                            "callhandling": {
-                                "summary": "Call Handling",
-                                "value": "_YAP_CALL_HANDLING_V2_"
+                "summary": "Login to get a Bearer Token",
+                "operationId": "19f9cba2ebce1483f9e61aa83e34206d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "format": "username",
+                                        "example": "username"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "Bearer your_token_here"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    }
+                }
+            }
+        },
+        "/api/v1/cache": {
+            "post": {
+                "tags": [
+                    "Cache"
                 ],
+                "summary": "Clear Cache",
+                "description": "Clear Cache",
+                "operationId": "Cache",
                 "responses": {
                     "200": {
                         "description": "Data Returned",
@@ -65,6 +83,790 @@
                     },
                     "404": {
                         "description": "Resource Not Found"
+                    }
+                }
+            }
+        },
+        "/api/v1/reports/cdr": {
+            "get": {
+                "tags": [
+                    "CDR"
+                ],
+                "summary": "Get Call Detail Records report",
+                "operationId": "212743d161bbe68ebb7c267be8cab799",
+                "parameters": [
+                    {
+                        "name": "service_body_id",
+                        "in": "query",
+                        "description": "ID of the service body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "date_range_start",
+                        "in": "query",
+                        "description": "Start date for the report range",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "date_range_end",
+                        "in": "query",
+                        "description": "End date for the report range",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "recurse",
+                        "in": "query",
+                        "description": "Whether to include records from child service bodies",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Call Detail Records retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "call_sid": {
+                                                "type": "string"
+                                            },
+                                            "from": {
+                                                "type": "string"
+                                            },
+                                            "to": {
+                                                "type": "string"
+                                            },
+                                            "start_time": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "end_time": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "duration": {
+                                                "type": "integer"
+                                            },
+                                            "status": {
+                                                "type": "string"
+                                            },
+                                            "service_body_id": {
+                                                "type": "integer"
+                                            },
+                                            "volunteer_id": {
+                                                "type": "integer",
+                                                "nullable": true
+                                            },
+                                            "volunteer_name": {
+                                                "type": "string",
+                                                "nullable": true
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/volunteers": {
+            "get": {
+                "tags": [
+                    "ConfigureVolunteers"
+                ],
+                "summary": "Get volunteers configuration",
+                "operationId": "db6079fd30eb7b5fed73ee557ebc8b1c",
+                "parameters": [
+                    {
+                        "name": "serviceBodyId",
+                        "in": "query",
+                        "description": "ID of the service body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Volunteers configuration retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "service_body_id": {
+                                            "type": "integer"
+                                        },
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "parent_id": {
+                                            "type": "integer",
+                                            "nullable": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "ConfigureVolunteers"
+                ],
+                "summary": "Store or update volunteers configuration",
+                "operationId": "4e5963a41edbaf4189f92506a37c52cd",
+                "parameters": [
+                    {
+                        "name": "serviceBodyId",
+                        "in": "query",
+                        "description": "ID of the service body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "volunteers": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "number": {
+                                                    "type": "string"
+                                                },
+                                                "gender": {
+                                                    "type": "string"
+                                                },
+                                                "responder": {
+                                                    "type": "boolean"
+                                                },
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "language": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "notes": {
+                                                    "type": "string"
+                                                },
+                                                "shift_info": {
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Volunteers configuration saved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "service_body_id": {
+                                            "type": "integer"
+                                        },
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "parent_id": {
+                                            "type": "integer",
+                                            "nullable": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/events/status": {
+            "get": {
+                "tags": [
+                    "EventStatus"
+                ],
+                "summary": "Get all event statuses",
+                "operationId": "6c5f582c0ee947c4877a303fece7250f",
+                "responses": {
+                    "200": {
+                        "description": "List of event statuses retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "callsid": {
+                                                "type": "string"
+                                            },
+                                            "event_id": {
+                                                "type": "integer"
+                                            },
+                                            "status": {
+                                                "type": "string"
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "EventStatus"
+                ],
+                "summary": "Create a new event status",
+                "operationId": "410743153504c29a76ad087c9d6e5ea8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "callsid",
+                                    "event_id",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "callsid": {
+                                        "description": "Call SID",
+                                        "type": "string"
+                                    },
+                                    "event_id": {
+                                        "description": "Event ID",
+                                        "type": "integer"
+                                    },
+                                    "status": {
+                                        "description": "Status of the event",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Event status created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "callsid": {
+                                            "type": "string"
+                                        },
+                                        "event_id": {
+                                            "type": "integer"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized to create event status"
+                    }
+                }
+            }
+        },
+        "/api/v1/groups": {
+            "get": {
+                "tags": [
+                    "Groups"
+                ],
+                "summary": "Get groups for a service body",
+                "operationId": "3e63a010ca5ead4c216a420ebcff9fe5",
+                "parameters": [
+                    {
+                        "name": "serviceBodyId",
+                        "in": "query",
+                        "description": "ID of the service body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "manage",
+                        "in": "query",
+                        "description": "Whether to include management data",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Groups retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "service_body_id": {
+                                                "type": "integer"
+                                            },
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "parent_id": {
+                                                "type": "integer",
+                                                "nullable": true
+                                            },
+                                            "data": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Groups"
+                ],
+                "summary": "Create a new group",
+                "operationId": "315d542826296a29326e3688714a0f9e",
+                "parameters": [
+                    {
+                        "name": "serviceBodyId",
+                        "in": "query",
+                        "description": "ID of the service body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "enabled": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Group created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "service_body_id": {
+                                                "type": "integer"
+                                            },
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "parent_id": {
+                                                "type": "integer",
+                                                "nullable": true
+                                            },
+                                            "data": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/groups/{id}": {
+            "put": {
+                "tags": [
+                    "Groups"
+                ],
+                "summary": "Update a group",
+                "operationId": "a259eaba26cab0da28f5b0a3095bf01c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the group to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "enabled": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Group updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "service_body_id": {
+                                                "type": "integer"
+                                            },
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "parent_id": {
+                                                "type": "integer",
+                                                "nullable": true
+                                            },
+                                            "data": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Groups"
+                ],
+                "summary": "Delete a group",
+                "operationId": "13312c959b505531f2863efd956f944d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the group to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Group deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Group not found"
+                    }
+                }
+            }
+        },
+        "/api/v1/reports/mapmetrics": {
+            "get": {
+                "tags": [
+                    "MapMetrics"
+                ],
+                "summary": "Get map metrics report",
+                "operationId": "1774cde841ae1eea08f3416f6b4e4dca",
+                "parameters": [
+                    {
+                        "name": "service_body_id",
+                        "in": "query",
+                        "description": "ID of the service body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "date_range_start",
+                        "in": "query",
+                        "description": "Start date for the report range",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "date_range_end",
+                        "in": "query",
+                        "description": "End date for the report range",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "recurse",
+                        "in": "query",
+                        "description": "Whether to include metrics from child service bodies",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "format",
+                        "in": "query",
+                        "description": "Output format (csv or json)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "csv",
+                                "json"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "event_id",
+                        "in": "query",
+                        "description": "Event ID for filtering metrics",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Map metrics report retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total_calls": {
+                                            "type": "integer"
+                                        },
+                                        "total_duration": {
+                                            "type": "integer"
+                                        },
+                                        "average_duration": {
+                                            "type": "number",
+                                            "format": "float"
+                                        },
+                                        "calls_by_location": {
+                                            "type": "object"
+                                        },
+                                        "calls_by_region": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/reports/metrics": {
+            "get": {
+                "tags": [
+                    "Metrics"
+                ],
+                "summary": "Get metrics report",
+                "operationId": "a0a88f4b7a52799260ce58e16900635a",
+                "parameters": [
+                    {
+                        "name": "service_body_id",
+                        "in": "query",
+                        "description": "ID of the service body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "date_range_start",
+                        "in": "query",
+                        "description": "Start date for the report range",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "date_range_end",
+                        "in": "query",
+                        "description": "End date for the report range",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "recurse",
+                        "in": "query",
+                        "description": "Whether to include metrics from child service bodies",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Metrics report retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total_calls": {
+                                            "type": "integer"
+                                        },
+                                        "total_duration": {
+                                            "type": "integer"
+                                        },
+                                        "average_duration": {
+                                            "type": "number",
+                                            "format": "float"
+                                        },
+                                        "calls_by_hour": {
+                                            "type": "object"
+                                        },
+                                        "calls_by_day": {
+                                            "type": "object"
+                                        },
+                                        "calls_by_volunteer": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -94,6 +896,891 @@
                     }
                 }
             }
+        },
+        "/api/v1/servicebody/callhandling": {
+            "get": {
+                "tags": [
+                    "ServiceBodyCallHandling"
+                ],
+                "summary": "Get service body call handling configuration",
+                "operationId": "1b8f4fc6f69eb6ac23704586e5db0332",
+                "parameters": [
+                    {
+                        "name": "serviceBodyId",
+                        "in": "query",
+                        "description": "ID of the service body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Call handling configuration retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "service_body_id": {
+                                            "type": "integer"
+                                        },
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "parent_id": {
+                                            "type": "integer",
+                                            "nullable": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "ServiceBodyCallHandling"
+                ],
+                "summary": "Store or update service body call handling configuration",
+                "operationId": "e2582bb9897b0f3e3646584edd631396",
+                "parameters": [
+                    {
+                        "name": "serviceBodyId",
+                        "in": "query",
+                        "description": "ID of the service body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "enabled": {
+                                        "type": "boolean"
+                                    },
+                                    "volunteer_search_enabled": {
+                                        "type": "boolean"
+                                    },
+                                    "volunteer_search_radius": {
+                                        "type": "integer"
+                                    },
+                                    "volunteer_search_max_results": {
+                                        "type": "integer"
+                                    },
+                                    "volunteer_search_timeout": {
+                                        "type": "integer"
+                                    },
+                                    "volunteer_search_retry_count": {
+                                        "type": "integer"
+                                    },
+                                    "volunteer_search_retry_delay": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Call handling configuration saved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "service_body_id": {
+                                            "type": "integer"
+                                        },
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "parent_id": {
+                                            "type": "integer",
+                                            "nullable": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/session": {
+            "post": {
+                "tags": [
+                    "Session"
+                ],
+                "summary": "Clear session data",
+                "description": "Clears all cache, override, and call state data from the session",
+                "operationId": "a266dcb6d15848947f09f068e7b2b3fa",
+                "responses": {
+                    "200": {
+                        "description": "Session cleared successfully",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "OK"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/settings/allowlist": {
+            "get": {
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Get allowlist settings",
+                "operationId": "a3039010f260fe1ecbd31a0501391eb5",
+                "responses": {
+                    "200": {
+                        "description": "Allowlist settings retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "setting": {
+                                                "type": "string"
+                                            },
+                                            "default": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/settings/serviceBody/{serviceBodyId}": {
+            "get": {
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Get service body configuration",
+                "operationId": "c29651768c0d90be56d4b10541a46901",
+                "parameters": [
+                    {
+                        "name": "serviceBodyId",
+                        "in": "path",
+                        "description": "ID of the service body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Service body configuration retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "setting": {
+                                                "type": "string"
+                                            },
+                                            "value": {
+                                                "type": "string"
+                                            },
+                                            "default": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Store or update service body configuration",
+                "operationId": "58f5e0f344ea1d74748ad2bd0b067faa",
+                "parameters": [
+                    {
+                        "name": "serviceBodyId",
+                        "in": "path",
+                        "description": "ID of the service body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "fields": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "setting": {
+                                                    "type": "string"
+                                                },
+                                                "value": {
+                                                    "type": "string"
+                                                },
+                                                "default": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Service body configuration saved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "languageSelections": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "settings": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "default": {
+                                                        "type": "string"
+                                                    },
+                                                    "docs": {
+                                                        "type": "string"
+                                                    },
+                                                    "key": {
+                                                        "type": "string"
+                                                    },
+                                                    "source": {
+                                                        "type": "string"
+                                                    },
+                                                    "value": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/settings": {
+            "get": {
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Get system settings",
+                "operationId": "8aaa48661ae8c0d536b1f6351008000d",
+                "responses": {
+                    "200": {
+                        "description": "Settings retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "languageSelections": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "settings": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "default": {
+                                                        "type": "string"
+                                                    },
+                                                    "docs": {
+                                                        "type": "string"
+                                                    },
+                                                    "key": {
+                                                        "type": "string"
+                                                    },
+                                                    "source": {
+                                                        "type": "string"
+                                                    },
+                                                    "value": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{username}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get user details",
+                "operationId": "49745574fb0f6d59e872ccc78f948738",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "path",
+                        "description": "Username of the user",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User details retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update a user",
+                "operationId": "d77339faa2561aa6149f7a9d74c6c194",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "path",
+                        "description": "Username of the user to update",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "permissions": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "service_bodies": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not authorized to update user"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Delete a user",
+                "operationId": "d9dceed067ef246ea84e409d5faffea2",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "path",
+                        "description": "Username of the user to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not authorized to delete user"
+                    }
+                }
+            }
+        },
+        "/api/v1/users": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get all users",
+                "operationId": "364f80bef646c395973e070b7cf186c4",
+                "responses": {
+                    "200": {
+                        "description": "List of users retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Create a new user",
+                "operationId": "0ac6bf48c4781a22bcf4e570ce38f6d7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "username",
+                                    "password",
+                                    "permissions",
+                                    "service_bodies"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "permissions": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "service_bodies": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not authorized to manage users"
+                    }
+                }
+            }
+        },
+        "/api/v1/volunteers/download": {
+            "get": {
+                "tags": [
+                    "VolunteerDownload"
+                ],
+                "summary": "Download volunteer list",
+                "operationId": "94aa5663c2d261032e0b4663f7dddb2b",
+                "parameters": [
+                    {
+                        "name": "service_body_id",
+                        "in": "query",
+                        "description": "ID of the service body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "recurse",
+                        "in": "query",
+                        "description": "Whether to include volunteers from child service bodies",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "fmt",
+                        "in": "query",
+                        "description": "Output format (csv or json)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "csv",
+                                "json"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Volunteer list retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "number": {
+                                                        "type": "string"
+                                                    },
+                                                    "gender": {
+                                                        "type": "string"
+                                                    },
+                                                    "responder": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    },
+                                                    "language": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "notes": {
+                                                        "type": "string"
+                                                    },
+                                                    "service_body_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "shift_info": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        {
+                                            "description": "CSV file download",
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/volunteers/routing/enabled": {
+            "get": {
+                "tags": [
+                    "VolunteerRouting"
+                ],
+                "summary": "Get service bodies enabled for volunteer routing",
+                "operationId": "368cb9182ecccbb44cdcd5993a926c39",
+                "responses": {
+                    "200": {
+                        "description": "List of service bodies enabled for volunteer routing",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            },
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "url": {
+                                                "type": "string"
+                                            },
+                                            "helpline": {
+                                                "type": "string"
+                                            },
+                                            "world_id": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/volunteers/schedule": {
+            "get": {
+                "tags": [
+                    "VolunteerSchedule"
+                ],
+                "summary": "Get volunteer helpline schedule",
+                "operationId": "23b05f33df56a822428f50d42f88028a",
+                "parameters": [
+                    {
+                        "name": "service_body_id",
+                        "in": "query",
+                        "description": "ID of the service body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Volunteer schedule retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "number": {
+                                                "type": "string"
+                                            },
+                                            "gender": {
+                                                "type": "string"
+                                            },
+                                            "responder": {
+                                                "type": "boolean"
+                                            },
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "language": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "notes": {
+                                                "type": "string"
+                                            },
+                                            "shift_info": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-    }
+    },
+    "components": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "CDR",
+            "description": "Call Detail Records endpoints"
+        },
+        {
+            "name": "ConfigureVolunteers",
+            "description": "Volunteer configuration management endpoints"
+        },
+        {
+            "name": "EventStatus",
+            "description": "Event status management endpoints"
+        },
+        {
+            "name": "Groups",
+            "description": "Group management endpoints"
+        },
+        {
+            "name": "MapMetrics",
+            "description": "Map metrics and reporting endpoints"
+        },
+        {
+            "name": "Metrics",
+            "description": "Metrics and reporting endpoints"
+        },
+        {
+            "name": "ServiceBodyCallHandling",
+            "description": "Service body call handling configuration endpoints"
+        },
+        {
+            "name": "Session",
+            "description": "Session management endpoints"
+        },
+        {
+            "name": "Settings",
+            "description": "System settings management endpoints"
+        },
+        {
+            "name": "Users",
+            "description": "User management endpoints"
+        },
+        {
+            "name": "VolunteerDownload",
+            "description": "Volunteer list download endpoints"
+        },
+        {
+            "name": "VolunteerRouting",
+            "description": "Volunteer routing configuration endpoints"
+        },
+        {
+            "name": "VolunteerSchedule",
+            "description": "Volunteer schedule management endpoints"
+        },
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Cache",
+            "description": "Cache"
+        },
+        {
+            "name": "RootServer",
+            "description": "RootServer"
+        }
+    ],
+    "security": [
+        {
+            "BearerAuth": []
+        }
+    ]
 }

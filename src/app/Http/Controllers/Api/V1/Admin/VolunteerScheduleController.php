@@ -8,6 +8,12 @@ use App\Services\VolunteerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+/**
+ * @OA\Tag(
+ *     name="VolunteerSchedule",
+ *     description="Volunteer schedule management endpoints"
+ * )
+ */
 class VolunteerScheduleController extends Controller
 {
     protected VolunteerService $volunteerService;
@@ -17,6 +23,39 @@ class VolunteerScheduleController extends Controller
         $this->volunteerService = $volunteerService;
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/volunteers/schedule",
+     *     tags={"VolunteerSchedule"},
+     *     summary="Get volunteer helpline schedule",
+     *     @OA\Parameter(
+     *         name="service_body_id",
+     *         in="query",
+     *         required=true,
+     *         description="ID of the service body",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Volunteer schedule retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="name", type="string"),
+     *                 @OA\Property(property="number", type="string"),
+     *                 @OA\Property(property="gender", type="string"),
+     *                 @OA\Property(property="responder", type="boolean"),
+     *                 @OA\Property(property="type", type="string"),
+     *                 @OA\Property(property="language", type="array", @OA\Items(type="string")),
+     *                 @OA\Property(property="notes", type="string"),
+     *                 @OA\Property(property="shift_info", type="object")
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function index(Request $request) : JsonResponse
     {
         try {

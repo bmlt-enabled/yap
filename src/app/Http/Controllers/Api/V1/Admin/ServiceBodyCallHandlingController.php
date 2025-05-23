@@ -10,6 +10,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use stdClass;
 
+/**
+ * @OA\Tag(
+ *     name="ServiceBodyCallHandling",
+ *     description="Service body call handling configuration endpoints"
+ * )
+ */
 class ServiceBodyCallHandlingController extends Controller
 {
     protected ConfigData $configData;
@@ -19,6 +25,31 @@ class ServiceBodyCallHandlingController extends Controller
         $this->configData = $configData;
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/servicebody/callhandling",
+     *     tags={"ServiceBodyCallHandling"},
+     *     summary="Get service body call handling configuration",
+     *     @OA\Parameter(
+     *         name="serviceBodyId",
+     *         in="query",
+     *         required=true,
+     *         description="ID of the service body",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Call handling configuration retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="service_body_id", type="integer"),
+     *             @OA\Property(property="id", type="integer"),
+     *             @OA\Property(property="parent_id", type="integer", nullable=true),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     )
+     * )
+     */
     public function index(Request $request): JsonResponse
     {
         $data = ConfigData::getCallHandling($request->get("serviceBodyId"));
@@ -35,6 +66,44 @@ class ServiceBodyCallHandlingController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/servicebody/callhandling",
+     *     tags={"ServiceBodyCallHandling"},
+     *     summary="Store or update service body call handling configuration",
+     *     @OA\Parameter(
+     *         name="serviceBodyId",
+     *         in="query",
+     *         required=true,
+     *         description="ID of the service body",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="enabled", type="boolean"),
+     *             @OA\Property(property="volunteer_search_enabled", type="boolean"),
+     *             @OA\Property(property="volunteer_search_radius", type="integer"),
+     *             @OA\Property(property="volunteer_search_max_results", type="integer"),
+     *             @OA\Property(property="volunteer_search_timeout", type="integer"),
+     *             @OA\Property(property="volunteer_search_retry_count", type="integer"),
+     *             @OA\Property(property="volunteer_search_retry_delay", type="integer")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Call handling configuration saved successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="service_body_id", type="integer"),
+     *             @OA\Property(property="id", type="integer"),
+     *             @OA\Property(property="parent_id", type="integer", nullable=true),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     )
+     * )
+     */
     public function store(Request $request)
     {
         $decodedData = json_decode($request->getContent());
