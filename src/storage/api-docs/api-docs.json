@@ -1490,6 +1490,201 @@
                 }
             }
         },
+        "/api/v1/voicemail": {
+            "get": {
+                "tags": [
+                    "Voicemails"
+                ],
+                "summary": "Get voicemails for a service body",
+                "description": "Retrieves all voicemails associated with a specific service body",
+                "operationId": "getVoicemails",
+                "parameters": [
+                    {
+                        "name": "serviceBodyId",
+                        "in": "query",
+                        "description": "ID of the service body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "callsid": {
+                                                        "type": "string",
+                                                        "example": "CA1234567890"
+                                                    },
+                                                    "pin": {
+                                                        "type": "string",
+                                                        "example": "1234"
+                                                    },
+                                                    "from_number": {
+                                                        "type": "string",
+                                                        "example": "+1234567890"
+                                                    },
+                                                    "to_number": {
+                                                        "type": "string",
+                                                        "example": "+1987654321"
+                                                    },
+                                                    "event_time": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-03-24T12:00:00Z"
+                                                    },
+                                                    "meta": {
+                                                        "type": "object",
+                                                        "example": {
+                                                            "duration": "30",
+                                                            "url": "https://example.com/voicemail.mp3"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Service body not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Service body not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/voicemail/{callSid}": {
+            "delete": {
+                "tags": [
+                    "Voicemails"
+                ],
+                "summary": "Delete a voicemail",
+                "description": "Deletes a specific voicemail by its call SID",
+                "operationId": "deleteVoicemail",
+                "parameters": [
+                    {
+                        "name": "serviceBodyId",
+                        "in": "query",
+                        "description": "ID of the service body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "callSid",
+                        "in": "path",
+                        "description": "Call SID of the voicemail to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Voicemail deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Voicemail deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Voicemail not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Voicemail not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/v1/volunteers/download": {
             "get": {
                 "tags": [
@@ -1752,6 +1947,10 @@
         {
             "name": "Users",
             "description": "User management endpoints"
+        },
+        {
+            "name": "Voicemails",
+            "description": "API Endpoints for managing voicemails"
         },
         {
             "name": "VolunteerDownload",

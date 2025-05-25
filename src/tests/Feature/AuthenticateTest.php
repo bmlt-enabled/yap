@@ -4,6 +4,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
+beforeAll(function () {
+    putenv("ENVIRONMENT=test");
+});
+
 test('test login for invalid credentials', function () {
     $username = 'testuser';
     $password = 'testpass';
