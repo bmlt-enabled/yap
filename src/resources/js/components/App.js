@@ -13,7 +13,7 @@ import {
     Outlet, RouterProvider,
     useNavigate,
 } from "react-router-dom";
-import Layout from "../layouts/layout"
+import Layout from "../layouts/Layout"
 import ServiceBodies from "../pages/ServiceBodies";
 import Schedules from "../pages/Schedules";
 import Dashboard from "../pages/Dashboard";
