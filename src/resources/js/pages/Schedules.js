@@ -31,7 +31,6 @@ function Schedules() {
         setLoading(true);
         try {
             const response = await apiClient.get(`${rootUrl}/api/v1/volunteers/schedule?service_body_id=${id}`);
-            console.log('Schedule response:', response.data);
             const scheduleData = response.data.map(event => ({
                 ...event,
                 start: new Date(event.start),
