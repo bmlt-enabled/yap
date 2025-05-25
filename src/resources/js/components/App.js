@@ -1,63 +1,173 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {createTheme, Button, ThemeProvider} from "@mui/material";
-import MenuBar from './MenuBar';
-import {BrowserRouter, Route, Routes, useLocation} from "react-router-dom";
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import SettingsIcon from '@mui/icons-material/Settings';
+import PeopleIcon from '@mui/icons-material/People';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
+import Diversity1Icon from '@mui/icons-material/Diversity1';
+import {
+    createBrowserRouter,
+    Outlet, RouterProvider,
+    useNavigate,
+} from "react-router-dom";
+import Layout from "../layouts/layout"
 import ServiceBodies from "../pages/ServiceBodies";
 import Schedules from "../pages/Schedules";
-import Home from "../pages/Home";
+import Dashboard from "../pages/Dashboard";
 import Reports from "../pages/Reports";
 import Volunteers from "../pages/Volunteers";
 import Groups from "../pages/Groups";
 import Users from "../pages/Users";
+import Settings from "../pages/Settings";
+import {AppProvider} from "@toolpad/core";
+import LoginPage from "../pages/Login";
+import {SessionContext} from "../SessionContext"
+import ErrorBoundary from "./ErrorBoundary";
 
-function App() {
-    const themeOptions = createTheme({
-        palette: {
-            type: 'dark',
-            primary: {
-                main: '#5893df',
-            },
-            secondary: {
-                main: '#2ec5d3',
-            },
-            background: {
-                default: '#192231',
-                paper: '#24344d',
-            },
-        },
+export default function App() {
+    const [session, setSession] = React.useState(() => {
+        const storedSession = localStorage.getItem('session');
+        return storedSession ? JSON.parse(storedSession) : null;
     });
+    const navigate = useNavigate();
+
+    const signIn = React.useCallback(() => {
+        navigate(`/${baseUrl}/login`);
+    }, [navigate]);
+
+    const signOut = React.useCallback(() => {
+        setSession(null);
+        localStorage.removeItem('session')
+        navigate(`/${baseUrl}/login`);
+    }, [navigate]);
+
+    const sessionContextValue = React.useMemo(
+        () => ({ session, setSession }),
+        [session, setSession],
+    );
+
+    const branding = {
+        title: 'Yap',
+        homeUrl: 'dashboard',
+        logo: '',
+    };
+
+    const navigation = [
+        {
+            segment: `${baseUrl}/dashboard`,
+            title: "Dashboard",
+            icon: <DashboardIcon />
+        },
+        {
+            segment: `${baseUrl}/reports`,
+            title: "Reports",
+            icon: <AssessmentIcon />
+        },
+        {
+            segment: `${baseUrl}/serviceBodies`,
+            title: "Service Bodies",
+            icon: <AccountTreeIcon />
+        },
+        {
+            segment: `${baseUrl}/schedule`,
+            title: "Schedules",
+            icon: <CalendarMonthIcon />
+        },
+        {
+            segment: `${baseUrl}/settings`,
+            title: 'Settings',
+            icon: <SettingsIcon />,
+        },
+        {
+            segment: `${baseUrl}/volunteers`,
+            title: 'Volunteers',
+            icon: <VolunteerActivismIcon />,
+        },
+        {
+            segment: `${baseUrl}/groups`,
+            title: 'Groups',
+            icon: <Diversity1Icon />,
+        },
+        {
+            segment: `${baseUrl}/users`,
+            title: 'Users',
+            icon: <PeopleIcon />,
+        },
+    ];
 
     return (
-        <div className="App">
-            <ThemeProvider theme={themeOptions}>
-                <MenuBar/>
-                <header className="App-header">
-                    <Routes>
-                        <Route path={`${baseUrl}/`} element={<Home/>} />
-                        <Route path={`${baseUrl}/reports`} element={<Reports/>} />
-                        <Route path={`${baseUrl}/serviceBodies`} element={<ServiceBodies/>} />
-                        <Route path={`${baseUrl}/schedules`} element={<Schedules/>} />
-                        <Route path={`${baseUrl}/volunteers`} element={<Volunteers/>} />
-                        <Route path={`${baseUrl}/groups`} element={<Groups/>} />
-                        <Route path={`${baseUrl}/users`} element={<Users/>} />
-                    </Routes>
-                </header>
-            </ThemeProvider>
-        </div>
+        <SessionContext.Provider value={sessionContextValue}>
+            <AppProvider
+                branding={branding}
+                authentication={{ signIn, signOut }}
+                session={session}
+                navigation={navigation}
+            >
+                <Outlet/>
+            </AppProvider>
+        </SessionContext.Provider>
     );
 }
 
-export default App;
-
 if (document.getElementById('root')) {
-    const root = ReactDOM.createRoot(document.getElementById("root"));
+    const getPath = (path) => `/${baseUrl}${path}`;
 
-    root.render(
+    const router = createBrowserRouter([
+        {
+            Component: App,
+            children: [
+                {
+                    path: `/${baseUrl}`,
+                    Component: Layout,
+                    children: [
+                        {
+                            path: getPath('dashboard'),
+                            Component: Dashboard,
+                        },
+                        {
+                            path: getPath('reports'),
+                            Component: Reports,
+                        },
+                        {
+                            path: getPath('serviceBodies'),
+                            Component: ServiceBodies,
+                        },
+                        {
+                            path: getPath('settings'),
+                            Component: Settings,
+                        },
+                        {
+                            path: getPath('schedule'),
+                            Component: Schedules,
+                        },
+                        {
+                            path: getPath('volunteers'),
+                            Component: Volunteers,
+                        },
+                        {
+                            path: getPath('groups'),
+                            Component: Groups,
+                        },
+                        {
+                            path: getPath('users'),
+                            Component: Users,
+                        },
+                    ],
+                },
+                {
+                    path: `/${baseUrl}/login`,
+                    Component: LoginPage,
+                }
+            ],
+        },
+    ]);
+
+    ReactDOM.createRoot(document.getElementById("root")).render(
         <React.StrictMode>
-            <BrowserRouter>
-                <App/>
-            </BrowserRouter>
+            <RouterProvider router={router}/>
         </React.StrictMode>
     )
 }

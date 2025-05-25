@@ -6,6 +6,9 @@ return [
         'default' => [
             'api' => [
                 'title' => 'L5 Swagger UI',
+                'apisSorter' => 'alpha',
+                'operationsSorter' => 'alpha',
+                'tagsSorter' => 'alpha',
             ],
 
             'routes' => [
@@ -152,6 +155,12 @@ return [
          * API security definitions. Will be generated into documentation file.
         */
         'securityDefinitions' => [
+            'BearerAuth' => [
+                'type' => 'apiKey',
+                'description' => 'Enter token in format (Bearer {token})',
+                'name' => 'Authorization',
+                'in' => 'header',
+            ],
             'securitySchemes' => [
                 /*
                  * Examples of Security schemes
@@ -200,18 +209,8 @@ return [
                 */
             ],
             'security' => [
-                /*
-                 * Examples of Securities
-                */
                 [
-                    /*
-                    'oauth2_security_example' => [
-                        'read',
-                        'write'
-                    ],
-
-                    'passport' => []
-                    */
+                    'BearerAuth' => [],
                 ],
             ],
         ],
@@ -244,7 +243,7 @@ return [
          * 'method' (sort by HTTP method).
          * Default is the order returned by the server unchanged.
         */
-        'operations_sort' => env('L5_SWAGGER_OPERATIONS_SORT', null),
+        'operations_sort' => env('L5_SWAGGER_OPERATIONS_SORT', 'alpha'),
 
         /*
          * Pass the validatorUrl parameter to SwaggerUi init on the JS side.
@@ -263,7 +262,7 @@ return [
                  * 'full' (expands the tags and operations),
                  * 'none' (expands nothing).
                  */
-                'doc_expansion' => env('L5_SWAGGER_UI_DOC_EXPANSION', 'none'),
+                'doc_expansion' => env('L5_SWAGGER_UI_DOC_EXPANSION', 'list'),
 
                 /**
                  * If set, enables filtering. The top bar will show an edit box that
@@ -295,6 +294,29 @@ return [
          */
         'constants' => [
             'L5_SWAGGER_CONST_HOST' => env('L5_SWAGGER_CONST_HOST', 'http://my-default-host.com'),
+        ],
+
+        /*
+         * Swagger UI additional configuration
+         */
+        'additional_ui_config' => [
+            'apisSorter' => 'alpha',
+            'operationsSorter' => 'alpha',
+            'tagsSorter' => 'alpha',
+            'docExpansion' => 'list',
+            'defaultModelsExpandDepth' => -1,
+            'defaultModelExpandDepth' => -1,
+            'displayRequestDuration' => true,
+            'filter' => true,
+            'showExtensions' => true,
+            'showCommonExtensions' => true,
+            'supportedSubmitMethods' => [
+                'get',
+                'post',
+                'put',
+                'delete',
+                'patch'
+            ],
         ],
     ],
 ];

@@ -37,14 +37,6 @@ test:
 bundle-deps:
 	npm install
 
-.PHONY: bundle
-bundle:
-	node_modules/.bin/gulp
-
-.PHONY: watch
-watch:
-	node_modules/.bin/gulp watch
-
 .PHONY: coverage-xml
 coverage-xml:
 	XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-clover coverage.xml
@@ -66,3 +58,10 @@ deploy: bundle-deps bundle
 .PHONY: swagger
 swagger:
 	php artisan l5-swagger:generate
+
+.PHONY: seed
+seed:
+	ENVIRONMENT=test php artisan db:seed
+
+mix:
+	npm run watch

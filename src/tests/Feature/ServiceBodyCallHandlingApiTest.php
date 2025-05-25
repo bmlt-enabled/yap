@@ -2,8 +2,10 @@
 
 use App\Constants\AuthMechanism;
 use App\Models\ConfigData;
+use App\Models\User;
 use App\Structures\Group;
 use App\Structures\ServiceBodyCallHandling;
+use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
     $this->id = "200";
@@ -12,7 +14,8 @@ beforeEach(function () {
 });
 
 test('save call handling', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     $callHandling = new ServiceBodyCallHandling();
     $callHandling->forced_caller_id_number = "123";
 
@@ -33,7 +36,8 @@ test('save call handling', function () {
 });
 
 test('get call handling for a service body', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     $callHandling = new ServiceBodyCallHandling();
     $callHandling->forced_caller_id_number = "123";
 
@@ -58,7 +62,8 @@ test('get call handling for a service body', function () {
 });
 
 test('get call handling for a service body that does not exist', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
 
     $response = $this->call(
         'GET',
@@ -72,7 +77,8 @@ test('get call handling for a service body that does not exist', function () {
 });
 
 test('update call handling for a service body', function () {
-    session()->put('auth_mechanism', AuthMechanism::V2);
+    Sanctum::actingAs(User::factory()->create());
+    ;
     $callHandling = new ServiceBodyCallHandling();
     $callHandling->forced_caller_id_number = "123";
 
