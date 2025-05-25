@@ -163,7 +163,7 @@ test('initial sms helpline gateway with a volunteer', function ($method) {
         ], false);
 })->with(['GET', 'POST']);
 
-test('initial sms helpline gateway with a volunteer with a different keywordr', function ($method) {
+test('initial sms helpline gateway with a volunteer with a different keywords', function ($method) {
     $volunteer_name = "Corey";
     $volunteer_gender = VolunteerGender::UNSPECIFIED;
     $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
