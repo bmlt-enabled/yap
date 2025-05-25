@@ -7,6 +7,12 @@ use App\Http\Controllers\Controller;
 use App\Services\VolunteerService;
 use Illuminate\Http\Request;
 
+/**
+ * @OA\Tag(
+ *     name="VolunteerDownload",
+ *     description="Volunteer list download endpoints"
+ * )
+ */
 class VolunteerDownloadController extends Controller
 {
     protected VolunteerService $volunteerService;
@@ -16,6 +22,62 @@ class VolunteerDownloadController extends Controller
         $this->volunteerService = $volunteerService;
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/volunteers/download",
+     *     tags={"VolunteerDownload"},
+     *     summary="Download volunteer list",
+     *     @OA\Parameter(
+     *         name="service_body_id",
+     *         in="query",
+     *         required=true,
+     *         description="ID of the service body",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="recurse",
+     *         in="query",
+     *         required=false,
+     *         description="Whether to include volunteers from child service bodies",
+     *         @OA\Schema(type="boolean")
+     *     ),
+     *     @OA\Parameter(
+     *         name="fmt",
+     *         in="query",
+     *         required=false,
+     *         description="Output format (csv or json)",
+     *         @OA\Schema(type="string", enum={"csv", "json"})
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Volunteer list retrieved successfully",
+     *         @OA\JsonContent(
+     *             oneOf={
+     *                 @OA\Schema(
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="object",
+     *                         @OA\Property(property="name", type="string"),
+     *                         @OA\Property(property="number", type="string"),
+     *                         @OA\Property(property="gender", type="string"),
+     *                         @OA\Property(property="responder", type="boolean"),
+     *                         @OA\Property(property="type", type="string"),
+     *                         @OA\Property(property="language", type="array", @OA\Items(type="string")),
+     *                         @OA\Property(property="notes", type="string"),
+     *                         @OA\Property(property="service_body_id", type="integer"),
+     *                         @OA\Property(property="shift_info", type="object")
+     *                     )
+     *                 ),
+     *                 @OA\Schema(
+     *                     type="string",
+     *                     format="binary",
+     *                     description="CSV file download"
+     *                 )
+     *             }
+     *         )
+     *     )
+     * )
+     */
     public function index(Request $request)
     {
         try {

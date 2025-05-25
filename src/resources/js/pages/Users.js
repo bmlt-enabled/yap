@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Button, Card, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
+import apiClient from "../services/api";
 
 function Users() {
     const [loading, setLoading] = useState(false);
@@ -7,8 +8,8 @@ function Users() {
 
     const getUsers = async() => {
         setLoading(true)
-        let response = await fetch(`${rootUrl}/api/v1/users`)
-        let responseData = await response.json()
+        let response = await apiClient(`/api/v1/users`)
+        let responseData = await response.data
         setList(responseData)
         setLoading(false)
     }

@@ -177,7 +177,11 @@ class VolunteerService extends Service
             $volunteerInfo->service_body_id = $volunteer->service_body_id;
             $volunteerInfo->notes = $volunteer->volunteer_notes ?? "";
             if (strlen($this->settings->get('language_selections')) > 0) {
-                $volunteerInfo->language = property_exists($volunteer, 'volunteer_language') ? $volunteer->volunteer_language : array(explode(',', $this->settings->get('language_selections'))[0]);
+                if (property_exists($volunteer, 'volunteer_language')) {
+                    $volunteerInfo->language = $volunteer->volunteer_language;
+                } else {
+                    $volunteerInfo->language = array(explode(',', $this->settings->get('language_selections'))[0]);
+                }
             } else {
                 $volunteerInfo->language = array($this->settings->get("language"));
             }

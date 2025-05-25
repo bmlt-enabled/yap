@@ -1,0 +1,133 @@
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.calendar-container {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-header {
+  margin-bottom: 1.5rem;
+}
+
+.calendar-grid {
+  @apply bg-white rounded-lg shadow-lg overflow-hidden;
+}
+
+.calendar-days {
+  @apply grid grid-cols-7 divide-x divide-gray-200;
+}
+
+.calendar-day {
+  @apply h-32 p-3;
+}
+
+.calendar-day-header {
+  @apply font-semibold text-center text-gray-800;
+}
+
+.calendar-day-date {
+  @apply text-center text-sm text-gray-600 mb-3;
+}
+
+.calendar-events {
+  @apply space-y-2;
+}
+
+.calendar-event {
+  @apply p-3 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors duration-150;
+}
+
+.calendar-event-title {
+  @apply font-medium text-blue-900;
+}
+
+.calendar-event-time {
+  @apply text-sm text-blue-700;
+}
+
+.loading-spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+.loading-text {
+  margin-top: 10px;
+  color: #666;
+  text-align: center;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-wrapper {
+  margin-top: 20px;
+}
+
+.fc {
+  font-family: inherit;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+.fc .fc-button {
+  background-color: #4a5568;
+  border-color: #4a5568;
+  padding: 0.5em 1em;
+  font-weight: 500;
+}
+
+.fc .fc-button:hover {
+  background-color: #2d3748;
+  border-color: #2d3748;
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
+  background-color: #2d3748;
+  border-color: #2d3748;
+}
+
+.fc-event {
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+.fc-event:hover {
+  opacity: 0.9;
+}
+
+.fc-timegrid-slot {
+  height: 3em;
+}
+
+.fc-timegrid-slot-label {
+  font-size: 0.85em;
+}
+
+.fc-event-title {
+  font-weight: 500;
+}
+
+.fc-event-time {
+  font-size: 0.85em;
+}

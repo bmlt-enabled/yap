@@ -2,13 +2,33 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
+use Laravel\Sanctum\HasApiTokens;
 
-class User extends Model
+class User extends Authenticatable
 {
+    use HasApiTokens, HasFactory, Notifiable;
+
     protected $primaryKey = "id";
+    public $incrementing = false; // Disable auto-increment
+    protected $keyType = 'string';
     public $timestamps = false;
     protected $fillable = ["name", "username", "password", "permissions", "is_admin", "created_on", "service_bodies"];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Automatically generate UUID for the `id` field on creating a new user
+        static::creating(function ($user) {
+            if (empty($user->id)) {
+                $user->id = Str::uuid()->toString();
+            }
+        });
+    }
 
     public static function saveUser(
         string $name,
@@ -17,7 +37,7 @@ class User extends Model
         array $permissions,
         array $service_bodies
     ) {
-        self::create([
+        return self::create([
             'name'=>$name,
             'username'=>$username,
             'password'=>hash('sha256', $password),

@@ -46,10 +46,7 @@ class ConfigService
             if ($config->volunteer_routing_enabled || $config->sms_routing_enabled) {
                 for ($y = 0; $y < count($service_bodies); $y++) {
                     if ($config->service_body_id == intval($service_bodies[$y]->id)) {
-                        $config->service_body_name = $service_bodies[$y]->name;
-                        $config->service_body_parent_id = $service_bodies[$y]->parent_id;
-                        $config->service_body_parent_name = $service_bodies[$y]->parent_name;
-                        $helpline_enabled[] = $config;
+                        $helpline_enabled[] = $service_bodies[$y];
                     }
                 }
             }

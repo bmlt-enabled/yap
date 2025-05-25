@@ -13,9 +13,10 @@ class FakeTwilioHttpClient implements Client
         array $params = [],
         array $data = [],
         array $headers = [],
-        string $user = null,
-        string $password = null,
-        int $timeout = null
+        ?string $user = null,
+        ?string $password = null,
+        ?int $timeout = null,
+        ?\Twilio\AuthStrategy\AuthStrategy $authStrategy = null
     ): Response {
         return new Response(200, "dude");
     }
