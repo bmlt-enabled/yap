@@ -1,7 +1,10 @@
 # Release Notes
 
+### 4.4.6 (May 25, 2025)
+* Fix for some metric summaries on some services due to improper type casting. [#1341]
+
 ### 4.4.5 (May 21, 2025)
-* Fix for Groups dropdown not functioning due to type handling differences between MySQL and MariaDB database versions [#1339]
+* Fix for Groups dropdown not functioning due to type handling differences between mysql driver usages [#1339]
 
 ### 4.4.4 (May 10, 2025)
 * Feature to ignore Rest Errors with Twilio for Fake Credentials.
