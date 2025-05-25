@@ -59,7 +59,7 @@ cache-clear:
 
 .PHONY: deploy
 deploy: bundle-deps
-	npm run prod
+	npm run build
 
 .PHONY: swagger
 swagger:

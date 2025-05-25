@@ -9,7 +9,11 @@ public/dist/croutonjs
 public/dist/js/*.js
 public/dist/css/*.css
 public/css/*.css
+public/css/*.css.map
+public/dist/js/*.map
 public/js/*.js
+public/js/*.map
+public/js/*.js.LICENSE.txt
 !daterangepicker.js
 !daterangepicker.css
 yap.iml
