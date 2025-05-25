@@ -2,7 +2,7 @@
     "require": {
         "php": "^8.2.0",
         "bmlt-enabled/bmlt-root-server-php-client": "^1.0.4",
-        "darkaonline/l5-swagger": "^8.5.2",
+        "darkaonline/l5-swagger": "^9.0.0",
         "guzzlehttp/guzzle": "^7.8.1",
         "laravel/framework": "^10.39.0",
         "laravel/sanctum": "^3.3",
