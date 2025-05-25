@@ -73,4 +73,8 @@ class CustomUserProvider implements UserProvider
         // Compare with the stored password
         return hash_equals($user->getAuthPassword(), $hashedPassword);
     }
+
+    public function rehashPasswordIfRequired(Authenticatable $user, array $credentials, bool $force = false)
+    {
+    }
 }

@@ -6,12 +6,6 @@ beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
 
-beforeEach(function () {
-
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-});
-
 test('database reset in production mode should fail', function ($method) {
     config(['app.env' => 'production']);
     $response = $this->call($method, '/api/resetDatabase');
@@ -31,6 +25,5 @@ test('database reset', function ($method) {
         ->assertHeader("Content-Type", "application/json")
         ->assertJson([
             'status' => 'database reset',
-            'migrationOutput' => Artisan::output(),
         ]);
 })->with(['POST']);

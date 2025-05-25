@@ -6,13 +6,6 @@ beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
 
-beforeEach(function () {
-    @session_start();
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-    $_SESSION = null;
-});
-
 test('test the blocklist with an exact match', function ($method) {
     $caller = "+15557778888";
     $settingsService = new SettingsService();

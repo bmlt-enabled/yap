@@ -3,10 +3,8 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Testing\TestResponse;
 use Mockery\MockInterface;
 use Twilio\Rest\Client;
-use PHPUnit\Framework\Assert;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -15,7 +13,7 @@ abstract class TestCase extends BaseTestCase
     public string $conferenceName;
     public MockInterface|Client $twilioClient;
 
-    protected function createTestResponse($response)
+    protected function createTestResponse($response, $request = null)
     {
         return ExtendedTestResponse::fromBaseResponse($response);
     }
