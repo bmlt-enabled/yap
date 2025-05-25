@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4961d4d60405901b883dad11d0a56ea4",
+    "content-hash": "a73f594134aec7cf1e3584a3a6c8e4a5",
     "packages": [
         {
             "name": "bmlt-enabled/bmlt-root-server-php-client",
@@ -3555,16 +3555,16 @@
         },
         {
             "name": "swagger-api/swagger-ui",
-            "version": "v5.18.2",
+            "version": "v5.21.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swagger-api/swagger-ui.git",
-                "reference": "3c7e281d97fd3e70b25f7ff4a001eabd56e375d7"
+                "reference": "fceaec605072fbc717a04895bd19814d9a1c8e6d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/3c7e281d97fd3e70b25f7ff4a001eabd56e375d7",
-                "reference": "3c7e281d97fd3e70b25f7ff4a001eabd56e375d7",
+                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/fceaec605072fbc717a04895bd19814d9a1c8e6d",
+                "reference": "fceaec605072fbc717a04895bd19814d9a1c8e6d",
                 "shasum": ""
             },
             "type": "library",
@@ -3610,9 +3610,9 @@
             ],
             "support": {
                 "issues": "https://github.com/swagger-api/swagger-ui/issues",
-                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.18.2"
+                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.21.0"
             },
-            "time": "2024-11-07T14:02:16+00:00"
+            "time": "2025-04-13T19:37:38+00:00"
         },
         {
             "name": "symfony/console",
