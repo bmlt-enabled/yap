@@ -78,7 +78,7 @@ jobs:
           cp -R vendor ${ARTIFACT_FILE}/
           cp ../LICENSE .
           cp ../RELEASENOTES.md .
-          mkdir -p ${ARTIFACT_FILE}/public/dist && cp -R public/dist/. ${ARTIFACT_FILE}/public/dist
+          mkdir -p ${ARTIFACT_FILE}/public && cp -R public/. ${ARTIFACT_FILE}/public
           find ./${ARTIFACT_FILE} -type d | xargs chmod 755
           find ./${ARTIFACT_FILE} -name '*.php' | xargs chmod 644
           zip -r -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}
