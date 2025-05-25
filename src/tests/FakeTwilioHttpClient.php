@@ -17,7 +17,7 @@ class FakeTwilioHttpClient implements Client
         ?string $user = null,
         ?string $password = null,
         ?int $timeout = null,
-        ?AuthStrategy $authStrategy = null
+        ?\Twilio\AuthStrategy\AuthStrategy $authStrategy = null
     ): Response {
         return new Response(200, "dude");
     }

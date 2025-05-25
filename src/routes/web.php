@@ -4,23 +4,13 @@ use Illuminate\Support\Facades\Route;
 
 $ext = '(\.php)?$';
 
-Route::get('/v1/session/delete', 'App\Http\Controllers\SessionController@delete');
-Route::get("/admin/auth/rights", 'App\Http\Controllers\AuthController@rights');
-Route::get("/admin/auth/logout", 'App\Http\Controllers\AuthController@logout');
-Route::get("/admin/auth/timeout", 'App\Http\Controllers\AuthController@timeout');
-Route::get("/admin/auth/invalid", 'App\Http\Controllers\AuthController@invalid');
-Route::get("/admin", 'App\Http\Controllers\AdminController@index')->name('adminLogin');
-Route::post("/admin/installer", 'App\Http\Controllers\AdminController@installer')->name('installer');
-Route::post("/admin/login", 'App\Http\Controllers\AdminController@login');
-Route::get("/admin/{page}", 'App\Http\Controllers\AdminController@index')
-    ->middleware("authForAdminPortal");
-Route::get("/adminv2{page}", 'App\Http\Controllers\AdminV2Controller@index')
-    ->where('page', '.*');
+Route::get("/admin{page}", 'App\Http\Controllers\AdminController@index')
+    ->where('page', '.*')
+    ->name("adminPortal");
 Route::get("/bots/getMeetings", 'App\Http\Controllers\BotController@getMeetings');
 Route::get("/bots/getServiceBodyCoverage", 'App\Http\Controllers\BotController@getServiceBodyCoverage');
 Route::get("/msr/{latitude}/{longitude}", ['uses' => 'App\Http\Controllers\MeetingResultsController@index'])
     ->where(['latitude' => '.*', 'longitude' => '.*']);
-Route::delete("/admin/cache", 'App\Http\Controllers\AdminController@cacheClear');
 Route::match(array('GET', 'POST'), "/fetch-jft{ext}", 'App\Http\Controllers\ReadingController@jft')
     ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "/fetch-spad{ext}", 'App\Http\Controllers\ReadingController@spad')
@@ -75,7 +65,6 @@ Route::match(array('GET', 'POST'), "/post-call-action{ext}", 'App\Http\Controlle
     ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "upgrade-advisor{ext}", 'App\Http\Controllers\UpgradeAdvisorController@index')
     ->where('ext', $ext);
-Route::match(array('GET', 'POST'), "/version", 'App\Http\Controllers\UpgradeAdvisorController@version');
 Route::match(array('GET', 'POST'), "/lng-selector{ext}", 'App\Http\Controllers\CallFlowController@languageSelector')
     ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "/province-voice-input{ext}", 'App\Http\Controllers\CallFlowController@provinceVoiceInput')
@@ -92,4 +81,4 @@ Route::match(array('GET', 'POST'), "/helpline-search{ext}", 'App\Http\Controller
     ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "/helpline-dialer{ext}", 'App\Http\Controllers\HelplineController@dial')
     ->where('ext', $ext);
-Route::get("/callWidget", 'App\Http\Controllers\CallWidgetController@index');
+//Route::get("/callWidget", 'App\Http\Controllers\CallWidgetController@index');

@@ -6,6 +6,7 @@
         "darkaonline/l5-swagger": "^8.5.2",
         "guzzlehttp/guzzle": "^7.8.1",
         "laravel/framework": "^10.39.0",
+        "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8.2",
         "phpmailer/phpmailer": "^6.9.1",
         "twilio/sdk": "^8.0.0"
