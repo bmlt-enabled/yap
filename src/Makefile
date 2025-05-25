@@ -38,10 +38,6 @@ simulate:
 test:
 	php -dxdebug.mode=debug -dxdebug.start_with_request=yes -dxdebug.client_port=9003 vendor/bin/pest
 
-.PHONY: bundle-deps
-bundle-deps:
-	npm install
-
 .PHONY: coverage-xml
 coverage-xml:
 	XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-clover coverage.xml
@@ -58,7 +54,8 @@ cache-clear:
 	php artisan view:clear
 
 .PHONY: deploy
-deploy: bundle-deps
+deploy:
+	npm install
 	npm run build
 
 .PHONY: swagger
