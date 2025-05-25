@@ -53,7 +53,8 @@ cache-clear:
 	php artisan view:clear
 
 .PHONY: deploy
-deploy: bundle-deps bundle
+deploy: bundle-deps
+	npm run prod
 
 .PHONY: swagger
 swagger:
