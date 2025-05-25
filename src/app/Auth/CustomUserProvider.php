@@ -74,7 +74,7 @@ class CustomUserProvider implements UserProvider
         return hash_equals($user->getAuthPassword(), $hashedPassword);
     }
 
-    public function rehashPasswordIfRequired(Authenticatable $user, array $credentials, bool $force = false) {
-
+    public function rehashPasswordIfRequired(Authenticatable $user, array $credentials, bool $force = false)
+    {
     }
 }
