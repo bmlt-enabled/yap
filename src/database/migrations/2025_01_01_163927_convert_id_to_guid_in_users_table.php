@@ -15,7 +15,7 @@ class ConvertIdToGuidInUsersTable extends Migration
         });
 
         Schema::table('users', function (Blueprint $table) {
-            $table->uuid('id')->primary()->first();
+            $table->uuid('id')->nullable()->first();
         });
 
         // Populate the new UUID column with unique GUIDs
@@ -23,6 +23,11 @@ class ConvertIdToGuidInUsersTable extends Migration
             DB::table('users')->where('username', $user->username)->update([
                 'id' => Str::uuid()->toString(),
             ]);
+        });
+
+        // Now that we have populated the column, make it primary and not nullable
+        Schema::table('users', function (Blueprint $table) {
+            $table->uuid('id')->primary()->change();
         });
     }
 
