@@ -79,6 +79,12 @@ class ReportsService extends Service
         );
 
         $all_metrics = array();
+        # the summary metrics values, are strings, so we need to convert them to integers
+        foreach ($metricsCollection->summary as $summary) {
+            $summary->event_id = intval($summary->event_id);
+            $summary->counts = intval($summary->counts);
+        }
+
         if (count($metricsCollection->metrics) > 0) {
             $start_date = $metricsCollection->metrics[0]->timestamp;
             $end_date = $metricsCollection->metrics[count($metricsCollection->metrics) - 1]->timestamp;
