@@ -24,7 +24,7 @@ You will also need to ensure that the following settings are in your `config.php
 static $smtp_host = '';             // the smtp server
 static $smtp_username = '';         // the smtp username
 static $smtp_password = '';         // the smtp password
-static $smtp_secure = '';           // either ssl (port 486) or more securely tls (port 587)
+static $smtp_secure = '';           // either "ssl" (port 465) or more securely "tls" (port 587)
 static $smtp_from_address = '';     // the address where the email will be sent from
 static $smtp_from_name = '';        // the label name on the from address
 ```
@@ -37,3 +37,6 @@ static $smtp_alt_port = '';         // enter the integer for the respective to u
 
 If you do not receive an email, check your server logs.  There should be some good information there.  Also the upgrade advisor should give you some information about what might be missing as long as $smtp_host is set.
 
+### Notes about hosting providers
+
+Some hosting providers may not allow you to use external SMTP servers besides theirs.  For example a2hosting, does not allow you to use an external SMTP server like mailgun SMTP, as they block outbound SMTP.  In this case you'd use a2hosting's SMTP services which come with most packages.
