@@ -4,7 +4,7 @@
 
 It's possible to make custom extensions with the use of a few settings.
 
-1. Add an option to your `$digit_map_search_type` that points to `SearchType::CUSTOM_EXTENSIONS`.
+1. Add an option to your `$digit_map_search_type` that points to `SearchType::CUSTOM_EXTENSIONS`.  When you use constants in `$digit_map_search_type` you need to add `use App\Constants\SearchType;` to the top of the config file to use them.
 2. Add mappings in `$custom_extensions` for each extension you want to add. For example if you wanted to redirect extension "365" to a specific phone number you would do the below:
 
 ```php
@@ -15,3 +15,5 @@ static $custom_extensions = [365 => '555-555-1212'];
 To test, call in dial the digit map choice, and you should hear the audio file prompt playback. Enter the extension number followed by the pound sign (it might be good to inform the end-user in your prompt to press pound after they dial the appropriate extension).
 
 Also to note is that the main menu greeting will not inform the user about the custom extensions option, so you may also want to set `$en_US_greeting` to include that information.
+
+For a practical example of how to implement custom extensions, check out our [blog post on extension hacks](/blog/pr-extension-hack).

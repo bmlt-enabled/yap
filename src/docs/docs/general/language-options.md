@@ -2,7 +2,7 @@
 
 ---
 
-There is a concept of language resource files.  You will notice them in the `app/Models/Localizations.php` file.  Please open a ticket if you would like to contribute to translating to another language.
+There is a concept of language resource files.  You will notice them in the `app/Structures/Localizations.php` file.  Please open a ticket if you would like to contribute to translating to another language.
 
 You can also override any of the language prompts in the `config.php` file. 
 
