@@ -15,7 +15,7 @@ You can add a Public Relations or other miscellaneous extensions by doing the fo
 static $digit_map_search_type = ['1' => SearchType::MEETINGS, '2' => SearchType::VOLUNTEERS, '3' => SearchType::CUSTOM_EXTENSIONS];
 ```
 
-2. You will have to add a voice green recording that states what all the options are because by default the custom extension is a hidden menu option in that the spoken voice feature will not indicate it is there.  You set this by placing an MP3 or WAV file on a webserver and referencing it with [this setting](/general/voice-greeting/).
+2. You will have to add a voice recording that states what all the options are because by default the custom extension is a hidden menu option in that the spoken voice feature will not indicate it is there.  You set this by placing an MP3 or WAV file on a webserver and referencing it with [this setting](/general/voice-greeting/).
 
 3. You will create a new setting that indicates what each custom extension is and what phone number it goes to.  For example if you wanted extension 1 to go to 555-555-1212 you would set this as below.
 
