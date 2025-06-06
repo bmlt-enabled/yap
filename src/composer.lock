@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "bmlt-enabled/bmlt-root-server-php-client",
-            "version": "1.0.4",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/bmlt-enabled/bmlt-root-server-php-client.git",
-                "reference": "13aa90746312fa63791551dc2c8eb86515b05d35"
+                "url": "https://github.com/bmlt-enabled/bmlt-server-php-client.git",
+                "reference": "6a96c8dc1cb14067057a97b745b7b9887e4f466a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bmlt-enabled/bmlt-root-server-php-client/zipball/13aa90746312fa63791551dc2c8eb86515b05d35",
-                "reference": "13aa90746312fa63791551dc2c8eb86515b05d35",
+                "url": "https://api.github.com/repos/bmlt-enabled/bmlt-server-php-client/zipball/6a96c8dc1cb14067057a97b745b7b9887e4f466a",
+                "reference": "6a96c8dc1cb14067057a97b745b7b9887e4f466a",
                 "shasum": ""
             },
             "require": {
@@ -26,7 +26,7 @@
                 "ext-mbstring": "*",
                 "guzzlehttp/guzzle": "^7.3",
                 "guzzlehttp/psr7": "^1.7 || ^2.0",
-                "php": "^7.4 || ^8.0"
+                "php": "^8.1"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.5",
@@ -60,10 +60,10 @@
                 "sdk"
             ],
             "support": {
-                "issues": "https://github.com/bmlt-enabled/bmlt-root-server-php-client/issues",
-                "source": "https://github.com/bmlt-enabled/bmlt-root-server-php-client/tree/1.0.4"
+                "issues": "https://github.com/bmlt-enabled/bmlt-server-php-client/issues",
+                "source": "https://github.com/bmlt-enabled/bmlt-server-php-client/tree/1.1.0"
             },
-            "time": "2023-09-24T00:32:11+00:00"
+            "time": "2025-06-01T14:56:27+00:00"
         },
         {
             "name": "brick/math",
