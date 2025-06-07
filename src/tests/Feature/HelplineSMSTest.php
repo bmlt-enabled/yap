@@ -20,16 +20,13 @@ beforeAll(function () {
 beforeEach(function () {
     @session_start();
     $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
     $_SESSION = null;
 
     $this->utility = setupTwilioService();
-
     $this->settings = new SettingsService();
     app()->instance(SettingsService::class, $this->settings);
 
     $this->middleware = new MiddlewareTests();
-    $this->utility = setupTwilioService();
     $this->rootServerMocks = new RootServerMocks();
     $this->serviceBodyId = "1053";
     $this->parentServiceBodyId = "1052";
@@ -174,7 +171,7 @@ test('initial sms helpline gateway with a volunteer', function ($method) {
         ], false);
 })->with(['GET', 'POST']);
 
-test('initial sms helpline gateway with a volunteer with a different keywordr', function ($method) {
+test('initial sms helpline gateway with a volunteer with a different keyword', function ($method) {
     $volunteer_name = "Corey";
     $volunteer_gender = VolunteerGender::UNSPECIFIED;
     $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
@@ -245,7 +242,7 @@ test('initial sms helpline gateway with a volunteer with a different keywordr', 
         $serviceBodyCallHandlingData
     );
 
-    $_SESSION['override_sms_helpline_keyword'] = 'dude';
+    $this->settings->set('sms_helpline_keyword', 'dude');
 
     $response = $this->call($method, '/sms-gateway.php', [
         "SmsSid" => "Dude123",

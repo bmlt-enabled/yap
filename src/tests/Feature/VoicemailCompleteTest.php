@@ -25,8 +25,6 @@ beforeAll(function () {
 beforeEach(function () {
     @session_start();
     $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-    $_SESSION = null;
 
     $this->rootServerMocks = new RootServerMocks();
     $this->serviceBodyId = "1053";

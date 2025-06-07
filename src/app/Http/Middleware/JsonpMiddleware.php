@@ -20,14 +20,14 @@ class JsonpMiddleware
         // Check if the request has a 'callback' parameter and the response is in JSON format
         if ($request->has('callback') && $response->headers->get('content-type') === 'application/json') {
             $callback = $request->input('callback');
-            $content = $response->content();
+            $content = $response->getContent();
 
             // Wrap the JSON response in the callback function
             $jsonpResponse = sprintf('%s(%s);', $callback, $content);
 
             // Set the new content and content type
             $response->setContent($jsonpResponse);
-            $response->header('Content-Type', 'application/javascript');
+            $response->headers->set('Content-Type', 'application/javascript');
         }
 
         return $response;

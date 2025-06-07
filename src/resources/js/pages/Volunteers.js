@@ -12,8 +12,8 @@ function Volunteers() {
 
     return (
         <div>
-            <ServiceBodiesDropdown handleChange={serviceBodiesHandleChange}/>
-            {serviceBodyId > 0 ?
+                <ServiceBodiesDropdown handleChange={serviceBodiesHandleChange}/>
+                {serviceBodyId > 0 ?
             <VolunteerControl serviceBodyId={serviceBodyId} /> : ""}
         </div>
     )

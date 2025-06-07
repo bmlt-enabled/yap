@@ -5,7 +5,12 @@ run: serve
 
 .PHONY: serve
 serve:
-	env ENVIRONMENT=test php -S 127.0.0.1:8000 -t . server.php
+	env ENVIRONMENT=dev php -dxdebug.mode=debug -dxdebug.start_with_request=yes -S localhost:8000 -t . server.php
+
+// To run a specific test, use the following command: make test-debug test=SmsGatewayTest
+.PHONY: test-debug
+test-debug:
+	php -dxdebug.mode=debug -dxdebug.start_with_request=yes -dxdebug.client_port=9003 vendor/bin/pest tests/Feature/$(test).php
 
 .PHONY: e2e-test
 e2e-test:
@@ -27,7 +32,7 @@ simulate:
 
 .PHONY: test
 test:
-	php artisan test
+	php -dxdebug.mode=debug -dxdebug.start_with_request=yes -dxdebug.client_port=9003 vendor/bin/pest
 
 .PHONY: bundle-deps
 bundle-deps:

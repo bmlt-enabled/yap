@@ -1,7 +1,6 @@
 <?php
 
-use App\Services\HttpService;
-use Tests\Stubs;
+use App\Services\SettingsService;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -9,18 +8,12 @@ beforeAll(function () {
 
 beforeEach(function () {
     @session_start();
-    $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-    $_SESSION = null;
 });
 
-test('get a SPAD', function ($method) {
-    $httpService = mock('App\Services\HttpService')->makePartial();
-    $httpService->shouldReceive('get')
-        ->withArgs(["https://www.spadna.org", 3600])
-        ->once()
-        ->andReturn(Stubs::spadEn());
-    app()->instance(HttpService::class, $httpService);
+test('get a SPAD in English', function ($method) {
+    $settingsService = new SettingsService();
+    $settingsService->set("word_language", "en-US");
+    app()->instance(SettingsService::class, $settingsService);
 
     $response = $this->call($method, '/fetch-spad.php');
     $response
