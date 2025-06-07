@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\App;
 use FetchMeditation\JFTSettings;
 use FetchMeditation\JFTLanguage;
 use FetchMeditation\JFT;
+use FetchMeditation\SPADLanguage;
+use FetchMeditation\SPADSettings;
+use FetchMeditation\SPAD;
 
 class ReadingService extends Service
 {
@@ -21,17 +24,23 @@ class ReadingService extends Service
 
     public function get($reading = ReadingType::JFT, $sms = false): array
     {
-        $wordLanguage = $this->settings->get('word_language');
+        return match($reading) {
+            ReadingType::JFT => $this->getJFT($sms),
+            ReadingType::SPAD => $this->getSPAD($sms),
+            default => throw new \InvalidArgumentException("Invalid reading type: $reading")
+        };
+    }
 
-        if ($wordLanguage == 'en-US' || $wordLanguage == 'en-AU') {
-            $settings = new JFTSettings(JFTLanguage::English);
-        } elseif ($wordLanguage == 'pt-BR' || $wordLanguage == 'pt-PT') {
-            $settings = new JFTSettings(JFTLanguage::Portuguese);
-        } elseif ($wordLanguage == 'es-ES' || $wordLanguage == 'es-US') {
-            $settings = new JFTSettings(JFTLanguage::Spanish);
-        } elseif ($wordLanguage == 'fr-FR' || $wordLanguage == 'fr-CA') {
-            $settings = new JFTSettings(JFTLanguage::French);
-        }
+    protected function getJFT($sms = false): array
+    {
+        $wordLanguage = $this->settings->get('word_language');
+        $settings = match($wordLanguage) {
+            'en-US', 'en-AU' => new JFTSettings(JFTLanguage::English),
+            'pt-BR', 'pt-PT' => new JFTSettings(JFTLanguage::Portuguese),
+            'es-ES', 'es-US' => new JFTSettings(JFTLanguage::Spanish),
+            'fr-FR', 'fr-CA' => new JFTSettings(JFTLanguage::French),
+            default => throw new \InvalidArgumentException("Unsupported language: $wordLanguage")
+        };
 
         $jft = JFT::getInstance($settings);
         $data = $jft->fetch();
@@ -47,20 +56,36 @@ class ReadingService extends Service
         ])
             ->filter(fn($part) => !empty(trim($part)))
             ->values();
-        $parts->join('br /br /');
 
-        $message = $parts->toArray();
-        if ($sms) {
-            if (count($message) > 1) {
-                for ($i = 0; $i < count($message); $i++) {
-                    $jft_message = "(" .($i + 1). " of " .count($message). ")\n" .$message[$i];
-                    $finalMessage[] = $jft_message;
-                }
-            } else {
-                $finalMessage[] = $message;
-            }
-        }
+        return $parts->toArray();
+    }
 
-        return $message;
+    protected function getSPAD($sms = false): array
+    {
+        $wordLanguage = $this->settings->get('word_language');
+        $settings = match($wordLanguage) {
+            'en-US', 'en-AU' => new SPADSettings(SPADLanguage::English),
+            'pt-BR', 'pt-PT' => new SPADSettings(SPADLanguage::English),
+            'es-ES', 'es-US' => new SPADSettings(SPADLanguage::English),
+            'fr-FR', 'fr-CA' => new SPADSettings(SPADLanguage::English),
+            default => throw new \InvalidArgumentException("Unsupported language: $wordLanguage")
+        };
+
+        $spad = SPAD::getInstance($settings);
+        $data = $spad->fetch();
+        $parts = collect([
+            $data->date,
+            $data->title,
+            $data->page,
+            $data->quote,
+            $data->source,
+            ...collect($data->content)->map(fn($p) => strip_tags(html_entity_decode($p))),
+            $data->thought,
+            $data->copyright
+        ])
+            ->filter(fn($part) => !empty(trim($part)))
+            ->values();
+
+        return $parts->toArray();
     }
 }

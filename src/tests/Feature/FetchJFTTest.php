@@ -34,7 +34,7 @@ test('get the JFT in Portuguese', function ($method, $language) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=utf-8")
-        ->assertSeeText("Todos os direitos reservados à", false);
+        ->assertSeeText("Só por hoje", false);
 })->with(['GET', 'POST'], ['pt-BR', 'pt-PT']);
 
 test('get the JFT in Spanish', function ($method, $language) {

@@ -67,16 +67,16 @@
         },
         {
             "name": "bmlt/fetch-meditation",
-            "version": "1.2.2",
+            "version": "1.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bmlt-enabled/fetch-meditation.git",
-                "reference": "82699cee9bdd9e35939c0f7e0290b7e046e26cf5"
+                "reference": "7597b5d96b07047856c16762cdcbd51a9a1988d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bmlt-enabled/fetch-meditation/zipball/82699cee9bdd9e35939c0f7e0290b7e046e26cf5",
-                "reference": "82699cee9bdd9e35939c0f7e0290b7e046e26cf5",
+                "url": "https://api.github.com/repos/bmlt-enabled/fetch-meditation/zipball/7597b5d96b07047856c16762cdcbd51a9a1988d0",
+                "reference": "7597b5d96b07047856c16762cdcbd51a9a1988d0",
                 "shasum": ""
             },
             "require": {
@@ -114,9 +114,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bmlt-enabled/fetch-meditation/issues",
-                "source": "https://github.com/bmlt-enabled/fetch-meditation/tree/1.2.2"
+                "source": "https://github.com/bmlt-enabled/fetch-meditation/tree/1.2.4"
             },
-            "time": "2025-06-06T15:08:31+00:00"
+            "time": "2025-06-07T02:59:33+00:00"
         },
         {
             "name": "brick/math",
