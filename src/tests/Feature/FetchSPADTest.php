@@ -21,4 +21,3 @@ test('get a SPAD in English', function ($method) {
         ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeText("All Rights Reserved", false);
 })->with(['GET', 'POST']);
-

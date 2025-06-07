@@ -24,7 +24,7 @@ class ReadingService extends Service
 
     public function get($reading = ReadingType::JFT, $sms = false): array
     {
-        return match($reading) {
+        return match ($reading) {
             ReadingType::JFT => $this->getJFT($sms),
             ReadingType::SPAD => $this->getSPAD($sms),
             default => throw new \InvalidArgumentException("Invalid reading type: $reading")
@@ -34,7 +34,7 @@ class ReadingService extends Service
     protected function getJFT($sms = false): array
     {
         $wordLanguage = $this->settings->get('word_language');
-        $settings = match($wordLanguage) {
+        $settings = match ($wordLanguage) {
             'en-US', 'en-AU' => new JFTSettings(JFTLanguage::English),
             'pt-BR', 'pt-PT' => new JFTSettings(JFTLanguage::Portuguese),
             'es-ES', 'es-US' => new JFTSettings(JFTLanguage::Spanish),
@@ -63,7 +63,7 @@ class ReadingService extends Service
     protected function getSPAD($sms = false): array
     {
         $wordLanguage = $this->settings->get('word_language');
-        $settings = match($wordLanguage) {
+        $settings = match ($wordLanguage) {
             'en-US', 'en-AU' => new SPADSettings(SPADLanguage::English),
             'pt-BR', 'pt-PT' => new SPADSettings(SPADLanguage::English),
             'es-ES', 'es-US' => new SPADSettings(SPADLanguage::English),
