@@ -46,6 +46,7 @@ class SettingsService
         'jft_option' => ['description' => '/miscellaneous/playback-for-readings' , 'default' => false, 'overridable' => true, 'hidden' => false],
         'language' => ['description' => '/general/language-options' , 'default' =>  'en-US', 'overridable' => true, 'hidden' => false],
         'language_selections' => ['description' => '/general/language-options', 'default' => null, 'overridable' => true, 'hidden' => false],
+        'language_selections_greeting' => ['description' => '/general/language-options', 'default' => null, 'overridable' => true, 'hidden' => false],
         'language_selections_tagging' => ['description' => '/general/language-options', 'default' => null, 'overridable' => true, 'hidden' => false],
         'location_lookup_bias' => ['description' => '/general/location-lookup-bias' , 'default' => 'country:us', 'overridable' => true, 'hidden' => false],
         'meeting_result_sort' => ['description' => '/meeting-search/sorting-results' , 'default' => MeetingResultSort::TODAY, 'overridable' => true, 'hidden' => false],

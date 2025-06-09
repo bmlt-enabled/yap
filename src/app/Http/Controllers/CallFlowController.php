@@ -633,6 +633,16 @@ class CallFlowController extends Controller
         if (!$this->settings->has('language_selections')) {
             $twiml->say("language gateway options are not set, please refer to the documentation to utilize this feature.");
             $twiml->hangup();
+        } else if ($this->settings->has('language_selections_greeting')) {
+            $gather = $twiml->gather()
+                ->setInput("dtmf")
+                ->setNumDigits(1)
+                ->setTimeout(60)
+                ->setSpeechTimeout("auto")
+                ->setAction("index.php")
+                ->setMethod("GET");
+            $gather->pause()->setLength("2");
+            $gather->play($this->settings->get('language_selections_greeting'));
         } else {
             $language_selection_options = explode(",", $this->settings->get('language_selections'));
             $twiml->pause()->setLength($this->settings->get('initial_pause'));
