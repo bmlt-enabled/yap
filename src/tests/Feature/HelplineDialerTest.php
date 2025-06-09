@@ -1004,7 +1004,7 @@ test('caller leaves the call', function ($method) {
     $conferenceListMock->shouldReceive("read")
         ->with(['friendlyName' => $this->conferenceName])
         ->andReturn([])
-        ->times(10);
+        ->times(20);
     $this->twilioClient->conferences = $conferenceListMock;
 
     ConferenceParticipant::create([
@@ -1040,7 +1040,7 @@ test('volunteer leave the call', function ($method) {
     $conferenceListMock->shouldReceive("read")
         ->with(['friendlyName' => $this->conferenceName])
         ->andReturn([])
-        ->times(10);
+        ->times(20);
     $this->twilioClient->conferences = $conferenceListMock;
 
     ConferenceParticipant::create([
