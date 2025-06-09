@@ -1,6 +1,7 @@
 <?php
 
 use App\Constants\CallRole;
+use App\Constants\ConferenceSpecial;
 use App\Constants\CycleAlgorithm;
 use App\Constants\EventId;
 use App\Constants\TwilioCallStatus;
@@ -1004,7 +1005,7 @@ test('caller leaves the call', function ($method) {
     $conferenceListMock->shouldReceive("read")
         ->with(['friendlyName' => $this->conferenceName])
         ->andReturn([])
-        ->times(20);
+        ->times(ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRIES);
     $this->twilioClient->conferences = $conferenceListMock;
 
     ConferenceParticipant::create([
@@ -1040,7 +1041,7 @@ test('volunteer leave the call', function ($method) {
     $conferenceListMock->shouldReceive("read")
         ->with(['friendlyName' => $this->conferenceName])
         ->andReturn([])
-        ->times(20);
+        ->times(ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRIES);
     $this->twilioClient->conferences = $conferenceListMock;
 
     ConferenceParticipant::create([
