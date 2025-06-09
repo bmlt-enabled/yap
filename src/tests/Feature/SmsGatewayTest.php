@@ -40,6 +40,14 @@ test('initial sms gateway default', function ($method) {
             '<Redirect method="GET">meeting-search.php?SearchType=1&amp;Latitude=35.5648713&amp;Longitude=-78.6682395</Redirect>',
             '</Response>',
     ], false);
+
+    // Validate call record was created
+    $record = \App\Models\Record::where('callsid', $this->callerIdInfo['SmsSid'])->first();
+    expect($record)->not->toBeNull()
+        ->and($record->from_number)->toBe($this->from)
+        ->and($record->to_number)->toBe($this->to)
+        ->and($record->type)->toBe(\App\Structures\RecordType::SMS)
+        ->and($record->duration)->toBe(0);
 })->with(['GET', 'POST']);
 
 test('initial sms gateway talk option without location', function ($method) {
@@ -60,6 +68,14 @@ test('initial sms gateway talk option without location', function ($method) {
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response/>'
         ], false);
+
+    // Validate call record was created
+    $record = \App\Models\Record::where('callsid', $this->callerIdInfo['SmsSid'])->first();
+    expect($record)->not->toBeNull()
+        ->and($record->from_number)->toBe($this->from)
+        ->and($record->to_number)->toBe($this->to)
+        ->and($record->type)->toBe(\App\Structures\RecordType::SMS)
+        ->and($record->duration)->toBe(0);
 })->with(['GET', 'POST']);
 
 test('initial sms gateway with a blackholed number', function ($method) {
@@ -68,7 +84,7 @@ test('initial sms gateway with a blackholed number', function ($method) {
     $response = $this->call(
         $method,
         '/sms-gateway.php',
-        $this->callerIdInfo
+        array_merge($this->callerIdInfo, ['SmsSid' => 'SM' . bin2hex(random_bytes(16))])
     );
     $response
         ->assertStatus(200)
@@ -76,4 +92,8 @@ test('initial sms gateway with a blackholed number', function ($method) {
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
         ], false);
+
+    // Validate no call record was created for blackholed numbers
+    $record = \App\Models\Record::where('callsid', $this->callerIdInfo['SmsSid'])->first();
+    expect($record)->toBeNull();
 })->with(['GET', 'POST']);
