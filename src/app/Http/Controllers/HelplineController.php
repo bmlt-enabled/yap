@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Constants\CallRole;
+use App\Constants\ConferenceSpecial;
 use App\Constants\CycleAlgorithm;
 use App\Constants\EventId;
 use App\Constants\SmsDialbackOptions;
@@ -268,7 +269,7 @@ class HelplineController extends Controller
         // try, and other times it takes a few tries. Retrying every half second seems to get the
         // job done after no more than about 4 retries in the worst case. We try up to 10 times just
         // to be safe.
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRIES; $i++) {
             $conferences = $this->twilio->client()
                 ->conferences
                 ->read(array("friendlyName" => $request->get('FriendlyName')));
@@ -277,7 +278,7 @@ class HelplineController extends Controller
                 Log::debug("conferences eventual consistency issue, retry $i");
             }
 
-            if (count($conferences)) {
+            if (count($conferences) > 0) {
                 break;
             }
 

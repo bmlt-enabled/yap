@@ -3,6 +3,7 @@
 ### 4.5.0 (UNRELEASED)
 * Added new feature that allow for creating a custom prompt for language selection feature. [#1228]
 * Fix for some meditations that weren't working, using the fetch-meditation library now [#1365]
+* Doubled the amount of eventual consistency retries for conferences [#1363]
 * Retired SMS capability to return meditations.
 * Retired support for PHP 8.1
 
