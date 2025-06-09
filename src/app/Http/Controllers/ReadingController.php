@@ -18,7 +18,7 @@ class ReadingController extends Controller
         $this->settings = $settings;
     }
 
-    public function jft(ReadingService $reading, SettingsService $settings)
+    public function jft()
     {
         $jft_array = $this->reading->get(ReadingType::JFT);
         $twiml = new VoiceResponse();
@@ -27,7 +27,7 @@ class ReadingController extends Controller
                 ->setVoice($this->settings->voice())
                 ->setLanguage($this->settings->get('language'));
         }
-        return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
+        return $jft_array ? response($twiml)->header("Content-Type", "text/xml; charset=utf-8") : response()->noContent();
     }
 
     public function spad()

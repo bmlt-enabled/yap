@@ -566,8 +566,8 @@ class CallFlowController extends Controller
     {
         $callRecord = new CallRecord();
         $callRecord->callSid = $request->get('CallSid');
-        $callRecord->to_number = $request->get('Called');
-        $callRecord->from_number = $request->get('Caller');
+        $callRecord->to = $request->get('Called');
+        $callRecord->from = $request->get('Caller');
         $callRecord->duration = intval($request->get('CallDuration'));
 
         if ($request->get("TimestampNow")) {
@@ -922,8 +922,8 @@ class CallFlowController extends Controller
     {
         $callRecord = new CallRecord();
         $callRecord->callSid = $request->get('SmsSid');
-        $callRecord->to_number = $request->get('To');
-        $callRecord->from_number = $request->get('From');
+        $callRecord->to = $request->get('To');
+        $callRecord->from = $request->get('From');
         $callRecord->duration = 0;
         $callRecord->start_time = date("Y-m-d H:i:s");
         $callRecord->end_time = date("Y-m-d H:i:s");
@@ -934,20 +934,6 @@ class CallFlowController extends Controller
 
         $address = $request->get('Body');
         $twiml = new VoiceResponse();
-
-        if (json_decode($this->settings->get('jft_option')) && str_contains(strtoupper($address), strtoupper('jft'))) {
-            $reading_chunks = $this->reading->get(ReadingType::JFT, true);
-            for ($i = 0; $i < count($reading_chunks); $i++) {
-                $this->twilio->client()->messages->create($request->get("From"), array("from" => $request->get("To"), "body" => $reading_chunks[$i]));
-            }
-            return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
-        } elseif (json_decode($this->settings->get('spad_option')) && str_contains(strtoupper($address), strtoupper('spad'))) {
-            $reading_chunks = $this->reading->get(ReadingType::SPAD, true);
-            for ($i = 0; $i < count($reading_chunks); $i++) {
-                $this->twilio->client()->messages->create($request->get("From"), array("from" => $request->get("To"), "body" => $reading_chunks[$i]));
-            }
-            return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
-        }
 
         $sms_helpline_keyword = $this->settings->get("sms_helpline_keyword");
         if (str_contains(strtoupper($address), strtoupper($sms_helpline_keyword))) {

@@ -20,21 +20,19 @@ beforeAll(function () {
 beforeEach(function () {
     @session_start();
     $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
     $_SESSION = null;
 
     $this->utility = setupTwilioService();
-
     $this->settings = new SettingsService();
     app()->instance(SettingsService::class, $this->settings);
 
     $this->middleware = new MiddlewareTests();
-    $this->utility = setupTwilioService();
     $this->rootServerMocks = new RootServerMocks();
     $this->serviceBodyId = "1053";
     $this->parentServiceBodyId = "1052";
     $this->from = '+12125551212';
     $this->to = '+19735551212';
+    $this->smsSid = 'SM' . bin2hex(random_bytes(16));
 });
 
 test('initial sms helpline gateway default when there is no volunteer', function ($method) {
@@ -76,7 +74,7 @@ test('initial sms helpline gateway default when there is no volunteer', function
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     $response = $this->call($method, '/sms-gateway.php', [
-        "SmsSid" => "Dude123",
+        "SmsSid" => $this->smsSid,
         "OriginalCallerId" => $this->to,
         "From"=> $this->to,
         "To" => $this->from,
@@ -87,6 +85,14 @@ test('initial sms helpline gateway default when there is no volunteer', function
         ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
     ], false);
+
+    // Validate call record was created
+    $record = \App\Models\Record::where('callsid', $this->smsSid)->first();
+    expect($record)->not->toBeNull()
+        ->and($record->from_number)->toBe($this->to)
+        ->and($record->to_number)->toBe($this->from)
+        ->and($record->type)->toBe(\App\Structures\RecordType::SMS)
+        ->and($record->duration)->toBe(0);
 })->with(['GET', 'POST']);
 
 test('initial sms helpline gateway with a volunteer', function ($method) {
@@ -161,7 +167,7 @@ test('initial sms helpline gateway with a volunteer', function ($method) {
     );
 
     $response = $this->call($method, '/sms-gateway.php', [
-        "SmsSid"=>"Dude123",
+        "SmsSid"=> $this->smsSid,
         "OriginalCallerId" => $this->from,
         "To" => $this->to,
         "From" => $this->from,
@@ -172,9 +178,17 @@ test('initial sms helpline gateway with a volunteer', function ($method) {
         ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
         ], false);
+
+    // Validate call record was created
+    $record = \App\Models\Record::where('callsid', $this->smsSid)->first();
+    expect($record)->not->toBeNull()
+        ->and($record->from_number)->toBe($this->from)
+        ->and($record->to_number)->toBe($this->to)
+        ->and($record->type)->toBe(\App\Structures\RecordType::SMS)
+        ->and($record->duration)->toBe(0);
 })->with(['GET', 'POST']);
 
-test('initial sms helpline gateway with a volunteer with a different keywordr', function ($method) {
+test('initial sms helpline gateway with a volunteer with a different keyword', function ($method) {
     $volunteer_name = "Corey";
     $volunteer_gender = VolunteerGender::UNSPECIFIED;
     $volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
@@ -245,10 +259,10 @@ test('initial sms helpline gateway with a volunteer with a different keywordr', 
         $serviceBodyCallHandlingData
     );
 
-    $_SESSION['override_sms_helpline_keyword'] = 'dude';
+    $this->settings->set('sms_helpline_keyword', 'dude');
 
     $response = $this->call($method, '/sms-gateway.php', [
-        "SmsSid" => "Dude123",
+        "SmsSid" => $this->smsSid,
         "OriginalCallerId" => $this->from,
         "To" => $this->to,
         "From" => $this->from,
@@ -259,4 +273,12 @@ test('initial sms helpline gateway with a volunteer with a different keywordr', 
         ->assertHeader("Content-Type", "text/xml; charset=utf-8")
         ->assertSeeInOrderExact([
         ], false);
+
+    // Validate call record was created
+    $record = \App\Models\Record::where('callsid', $this->smsSid)->first();
+    expect($record)->not->toBeNull()
+        ->and($record->from_number)->toBe($this->from)
+        ->and($record->to_number)->toBe($this->to)
+        ->and($record->type)->toBe(\App\Structures\RecordType::SMS)
+        ->and($record->duration)->toBe(0);
 })->with(['GET', 'POST']);

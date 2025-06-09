@@ -1,6 +1,5 @@
 <?php
 
-use App\Repositories\ReportsRepository;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Tests\FakeTwilioHttpClient;
@@ -12,10 +11,8 @@ beforeAll(function () {
 beforeEach(function () {
     @session_start();
     $_SERVER['REQUEST_URI'] = "/";
-    $_REQUEST = null;
-    $_SESSION = null;
 
-    $this->fakeCallSid = "abcdefghij";
+    $this->fakeCallSid = 'CA' . bin2hex(random_bytes(16));
     $this->middleware = new \Tests\MiddlewareTests();
 
     $fakeHttpClient = new FakeTwilioHttpClient();
@@ -40,6 +37,14 @@ test('status callback test', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=utf-8");
+
+    // Validate call record was created
+    $record = \App\Models\Record::where('callsid', $this->fakeCallSid)->first();
+    expect($record)->not->toBeNull()
+        ->and($record->from_number)->toBe("+17325551212")
+        ->and($record->to_number)->toBe("+15005550006")
+        ->and($record->type)->toBe(\App\Structures\RecordType::PHONE)
+        ->and($record->duration)->toBe(120);
 })->with(['GET', 'POST']);
 
 test('status callback test without timestamp', function ($method) {
@@ -71,4 +76,14 @@ test('status callback test without timestamp', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=utf-8");
+
+    // Validate call record was created with Twilio timestamps
+    $record = \App\Models\Record::where('callsid', $this->fakeCallSid)->first();
+    expect($record)->not->toBeNull()
+        ->and($record->from_number)->toBe("+17325551212")
+        ->and($record->to_number)->toBe("+15005550006")
+        ->and($record->type)->toBe(\App\Structures\RecordType::PHONE)
+        ->and($record->duration)->toBe(120)
+        ->and($record->start_time)->toBe("2023-01-26 18:00:00")
+        ->and($record->end_time)->toBe("2023-01-26 18:15:00");
 })->with(['GET', 'POST']);

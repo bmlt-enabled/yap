@@ -172,8 +172,8 @@ ORDER BY r.`id` DESC,CONCAT(r.`start_time`, 'Z') DESC", implode(",", $service_bo
             $callRecord->callSid,
             $callRecord->start_time,
             $callRecord->end_time,
-            $callRecord->from_number,
-            $callRecord->to_number,
+            $callRecord->from,
+            $callRecord->to,
             $callRecord->payload,
             $callRecord->duration,
             $callRecord->type

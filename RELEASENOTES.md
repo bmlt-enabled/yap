@@ -1,5 +1,10 @@
 # Release Notes
 
+### 4.5.0 (UNRELEASED)
+* Fix for some meditations that weren't working, using the fetch-meditation library now [#1365]
+* Retired SMS capability to return meditations.
+* Retired support for PHP 8.1
+
 ### 4.4.6 (May 25, 2025)
 * Fix for some metric summaries on some services due to improper type casting. [#1341]
 
