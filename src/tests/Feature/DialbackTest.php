@@ -3,6 +3,8 @@
 use App\Models\Record;
 use App\Models\Session;
 use Carbon\Carbon;
+use Tests\TwilioCallTestBuilder;
+use App\Services\SettingsService;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -100,4 +102,31 @@ test('dialback dialer invalid pin entry', function ($method) {
             '<Redirect>index.php</Redirect>',
             '</Response>'
         ], false);
+})->with(['GET', 'POST']);
+
+test('dialback dialer invalid pin entry and language selection', function ($method) {
+    $fakePin = "123456";
+    $called = "+12125551212";
+    $dialbackNumber = "+19732129999";
+
+    Record::generate(
+        $this->fakeCallSid,
+        Carbon::now(),
+        Carbon::now(),
+        $dialbackNumber,
+        $called,
+        "",
+        60,
+        1
+    );
+    Session::generate($this->fakeCallSid, $fakePin);
+
+    (new TwilioCallTestBuilder([
+        "language_selections" => "en-US,es-US",
+    ]))
+        ->startCall($called)
+        ->expectCallRedirect('lng-selector.php');
+        // ->pressDigits($fakePin)
+        // ->expectDialToNumber($dialbackNumber)
+        // ->endCall();
 })->with(['GET', 'POST']);
