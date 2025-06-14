@@ -3,7 +3,6 @@
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Tests\FakeTwilioHttpClient;
 use Tests\TestCase;
 use Tests\TwilioTestUtility;
