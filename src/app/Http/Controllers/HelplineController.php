@@ -256,6 +256,8 @@ class HelplineController extends Controller
             return response([])->header("Content-Type", "application/json");
         }
 
+        Log::debug("Triggering volunteer call: CallSid={$request->get('CallSid')} SequenceNumber={$request->get('SequenceNumber')} CallStatus={$request->get('CallStatus')}");
+
         $serviceBodyCallHandling = $this->config->getCallHandling($this->settings->get('service_body_id'));
 
         if ($request->has('Debug') && intval($request->get('Debug')) == 1) {
