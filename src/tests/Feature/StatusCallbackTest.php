@@ -13,7 +13,6 @@ beforeEach(function () {
     $_SERVER['REQUEST_URI'] = "/";
 
     $this->fakeCallSid = 'CA' . bin2hex(random_bytes(16));
-    $this->middleware = new \Tests\MiddlewareTests();
 
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [

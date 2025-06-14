@@ -1,7 +1,6 @@
 <?php
 
 use App\Services\SettingsService;
-use Tests\MiddlewareTests;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -13,7 +12,6 @@ beforeEach(function () {
     $_SESSION = null;
 
     $this->utility = setupTwilioService();
-    $this->middleware = new MiddlewareTests();
 
     $this->settings = new SettingsService();
     app()->instance(SettingsService::class, $this->settings);

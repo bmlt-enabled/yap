@@ -9,7 +9,6 @@ use App\Services\SettingsService;
 use App\Services\TwilioService;
 use App\Structures\ServiceBodyCallHandling;
 use Tests\FakeTwilioHttpClient;
-use Tests\MiddlewareTests;
 use Tests\RootServerMocks;
 
 beforeAll(function () {
@@ -23,7 +22,6 @@ beforeEach(function () {
     $_SESSION = null;
 
     $this->fakeCallSid = "abcdefghij";
-    $this->middleware = new MiddlewareTests();
     $this->rootServerMocks = new RootServerMocks();
 
     $fakeHttpClient = new FakeTwilioHttpClient();

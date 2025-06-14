@@ -9,7 +9,6 @@ use App\Models\RecordEvent;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
 use App\Structures\RecordType;
-use Tests\MiddlewareTests;
 use Tests\RootServerMocks;
 
 beforeAll(function () {
@@ -23,7 +22,6 @@ beforeEach(function () {
     $_SESSION = null;
 
     $this->rootServerMocks = new RootServerMocks();
-    $this->middleware = new MiddlewareTests();
 
     $this->id = "200";
     $this->serviceBodyId = "44";
