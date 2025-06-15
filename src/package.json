@@ -25,7 +25,7 @@
         "@fullcalendar/timegrid": "^6.1.10",
         "@mui/material": "^7.0.0",
         "@mui/icons-material": "^7.0.0",
-        "@toolpad/core": "^0.15.0",
+        "@toolpad/core": "^0.16.0",
         "bootstrap": "^4.6.2",
         "dark-mode-switch": "^1.0.0",
         "daterangepicker": "^3.1.0",
