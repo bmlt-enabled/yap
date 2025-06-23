@@ -16,19 +16,16 @@ class CallService extends Service
     protected ReportsRepository $reports;
     protected VoicemailRepository $voicemail;
     protected TwilioService $twilio;
-    protected Request $request;
 
     public function __construct(
         ReportsRepository $reports,
         TwilioService $twilio,
         VoicemailRepository $voicemail,
-        Request $request
     ) {
         parent::__construct(App::make(SettingsService::class));
         $this->reports = $reports;
         $this->twilio = $twilio;
         $this->voicemail = $voicemail;
-        $this->request = $request;
     }
 
     public function getVoicemail()
@@ -132,13 +129,30 @@ class CallService extends Service
             $pin_lookup = $this->reports->lookupPinForCallSid($callsid);
             if (count($pin_lookup) > 0) {
                 $dialback_digit_map_digit = $this->getOptionForSearchType(SearchType::DIALBACK);
-                $dialback_string = sprintf(
-                    "Tap to dialback: %s,,,%s,,,%s#.  PIN: %s",
-                    $dialbackNumber,
-                    $dialback_digit_map_digit,
-                    $pin_lookup[0]->pin,
-                    $pin_lookup[0]->pin
-                );
+                if ($this->settings->has('language_selections')) {
+                    $language_selections = $this->settings->get('language_selections');
+                    $language = $this->settings->get('language');
+                    $language_selections_array = explode(",", $language_selections);
+                    $language_index = array_search($language, $language_selections_array);
+                    $language_digit = $language_index + 1;
+
+                    $dialback_string = sprintf(
+                        "Tap to dialback: %s,,,%s,,,%s,,,%s#.  PIN: %s",
+                        $dialbackNumber,
+                        $language_digit,
+                        $dialback_digit_map_digit,
+                        $pin_lookup[0]->pin,
+                        $pin_lookup[0]->pin
+                    );
+                } else {
+                    $dialback_string = sprintf(
+                        "Tap to dialback: %s,,,%s,,,%s#.  PIN: %s",
+                        $dialbackNumber,
+                        $dialback_digit_map_digit,
+                        $pin_lookup[0]->pin,
+                        $pin_lookup[0]->pin
+                    );
+                }
             }
         }
 

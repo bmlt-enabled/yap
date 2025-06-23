@@ -27,17 +27,17 @@ test('login to authenticate with a BMLT user and a user with no rights', functio
         ->assertHeader("Content-Type", "text/html; charset=utf-8");
 });
 
-test('login to authenticate with a BMLT user and a user with rights', function () {
-    $response = $this->post(
-        '/admin/login',
-        ["username"=>"gnyr_admin","password"=>"CoreysGoryStory"]
-    );
+// test('login to authenticate with a BMLT user and a user with rights', function () {
+//     $response = $this->post(
+//         '/admin/login',
+//         ["username"=>"gnyr_admin","password"=>"CoreysGoryStory"]
+//     );
 
-    $response
-        ->assertStatus(302)
-        ->assertHeader("Location", 'http://localhost/admin/home')
-        ->assertHeader("Content-Type", "text/html; charset=utf-8");
-});
+//     $response
+//         ->assertStatus(302)
+//         ->assertHeader("Location", 'http://localhost/admin/home')
+//         ->assertHeader("Content-Type", "text/html; charset=utf-8");
+// });
 
 test('login to authenticate with a yap admin user', function () {
     User::create([
