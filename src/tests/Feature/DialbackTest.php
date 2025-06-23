@@ -224,8 +224,8 @@ test('check dialback string with language selection generated is correct for cal
     $dialbackNumber = "+19732129999";
 
     $this->utility->settings->set('sms_dialback_options', SmsDialbackOptions::VOLUNTEER_NOTIFICATION);
-    $this->utility->settings->set('language_selections', "en-US,es-US");
-    $this->utility->settings->set('language', "es-US");
+    $this->utility->settings->set('language_selections', 'en-US,es-US');
+    $this->utility->settings->set('language', 'es-US');
 
     Record::generate(
         $this->fakeCallSid,
