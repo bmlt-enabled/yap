@@ -61,21 +61,6 @@ class CallFlowController extends Controller
 
     public function index(Request $request)
     {
-        $digit = $this->call->getDigitResponse($request, 'language_selections', 'Digits');
-
-        $twiml = new VoiceResponse();
-        if (strlen($this->settings->get('language_selections')) > 0) {
-            if ($digit == null) {
-                $twiml->redirect("lng-selector.php");
-                return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
-            } else {
-                $selected_language = explode(",", $this->settings->get('language_selections'))[intval($digit) - 1];
-                $_SESSION["override_word_language"] = $selected_language;
-                $_SESSION["override_gather_language"] = $selected_language;
-                $_SESSION["override_language"] = $selected_language;
-            }
-        }
-
         if ($request->has('CallSid')) {
             $phoneNumberSid = $this->twilio->client()->calls($request->get('CallSid'))->fetch()->phoneNumberSid;
             $incomingPhoneNumber = $this->twilio->client()->incomingPhoneNumbers($phoneNumberSid)->fetch();
@@ -90,6 +75,21 @@ class CallFlowController extends Controller
             if ($incomingPhoneNumber->statusCallback == null
                 || !str_contains($incomingPhoneNumber->statusCallback, "status.php")) {
                 $this->call->createMisconfiguredPhoneNumberAlert($incomingPhoneNumber->phoneNumber);
+            }
+        }
+
+        $digit = $this->call->getDigitResponse($request, 'language_selections', 'Digits');
+
+        $twiml = new VoiceResponse();
+        if (strlen($this->settings->get('language_selections')) > 0) {
+            if ($digit == null) {
+                $twiml->redirect("lng-selector.php");
+                return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
+            } else {
+                $selected_language = explode(",", $this->settings->get('language_selections'))[intval($digit) - 1];
+                $_SESSION["override_word_language"] = $selected_language;
+                $_SESSION["override_gather_language"] = $selected_language;
+                $_SESSION["override_language"] = $selected_language;
             }
         }
 
