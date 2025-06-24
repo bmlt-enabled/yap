@@ -65,7 +65,9 @@ class AuthenticationRepository
         if (!isset($_SESSION['auth_user_name_string'])) {
             $url = sprintf('%s/local_server/server_admin/json.php?admin_action=get_user_info', $this->settings->getAdminBMLTRootServer());
             $get_user_info_response = json_decode($this->http->get($url, 3600));
-            $user_name = isset($get_user_info_response->current_user) ? $get_user_info_response->current_user->name : $_SESSION['username'];
+            $user_name = (isset($get_user_info_response) && isset($get_user_info_response->current_user)) 
+                ? $get_user_info_response->current_user->name 
+                : (isset($_SESSION['username']) ? $_SESSION['username'] : null);
             $_SESSION['auth_user_name_string'] = $user_name;
         }
         return $_SESSION['auth_user_name_string'];
