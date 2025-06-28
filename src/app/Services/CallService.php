@@ -123,15 +123,17 @@ class CallService extends Service
     public function getVoicemailMessage($callerSid, $callerId, $smsDialbackOptions, $serviceBodyName, $callerNumber, $recordingUrl) : string
     {
         $dialbackString = $this->getDialbackString($callerSid, $callerId, $smsDialbackOptions);
-        return sprintf("%s %s %s %s %s. %s: %s.mp3. %s", 
+        return sprintf(
+            "%s %s %s %s %s. %s: %s.mp3. %s",
             $this->settings->word('you_have_a_message_from_the'),
-            $serviceBodyName, 
+            $serviceBodyName,
             strtolower($this->settings->word('helpline')),
             $this->settings->word('from_the_caller'),
-            $callerNumber, 
-            $this->settings->word('voicemail'), 
-            $recordingUrl, 
-            $dialbackString);
+            $callerNumber,
+            $this->settings->word('voicemail'),
+            $recordingUrl,
+            $dialbackString
+        );
     }
 
     public function getDialbackString($callsid, $dialbackNumber, $option)

@@ -586,6 +586,111 @@ test('voicemail complete send email using primary contact with dialback enabled'
     }
 })->with(['GET', 'POST'], [null, 2525], [null, 'tls', 'ssl', 'bad']);
 
-// TODO: need a test that actually translates the text from the text message.
+test('voicemail complete send email using primary contact with dialback enabled and language selection', function ($method, $smtp_alt_port, $smtp_secure) {
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
+    $smtp_host = "fake.host";
+    $smtp_username = "fake@user";
+    $smtp_password = "fake@password";
+
+    $this->utility->settings->set("smtp_host", $smtp_host);
+    $this->utility->settings->set("smtp_username", $smtp_username);
+    $this->utility->settings->set("smtp_password", $smtp_password);
+    $this->utility->settings->set("smtp_alt_port", $smtp_alt_port);
+    $this->utility->settings->set("smtp_secure", $smtp_secure);
+
+    $smtp_from_name = "bro bro";
+    $smtp_from_address = "son@my.com";
+
+    $this->utility->settings->set("smtp_from_name", $smtp_from_name);
+    $this->utility->settings->set("smtp_from_address", $smtp_from_address);
+
+    $this->utility->settings->set('sms_dialback_options', SmsDialbackOptions::VOICEMAIL_NOTIFICATION);
+
+    $this->utility->settings->set('language', 'pig-latin');
+    $this->utility->settings->set('language_selections', 'en-US,pig-latin');
+
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->volunteer_sms_notification_enabled = true;
+    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
+    $serviceBodyCallHandlingData->primary_contact_email = "dude@bro.net,chief@home.org";
+
+    $callSid = "asdfasdjk2l3r";
+
+    // mocking TwilioRestClient->calls()->update();
+    $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
+    $callContextMock->shouldReceive('update')
+        ->with(Mockery::on(function ($data) {
+            return $data['status'] == TwilioCallStatus::COMPLETED;
+        }))->once();
+    $this->utility->client->shouldReceive('calls')
+        ->with($callSid)
+        ->andReturn($callContextMock)->once();
+
+    $mailer = Mockery::mock(PHPMailer::class)->makePartial();
+    $mailer
+        ->shouldReceive("send")
+        ->withNoArgs()
+        ->once();
+    app()->instance(PHPMailer::class, $mailer);
+
+    ConfigData::createServiceBodyCallHandling(
+        $this->serviceBodyId,
+        $serviceBodyCallHandlingData,
+    );
+
+    $response = $this->call($method, '/voicemail-complete.php', [
+        "caller_id" => "+17325551212",
+        "CallSid" => $callSid,
+        "RecordingUrl" => $this->recordingUrl,
+        "caller_number" => $this->callerNumber,
+    ]);
+
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response/>'
+        ], false);
+
+    $pin = Session::getPin($callSid);
+
+    Assert::assertTrue($mailer->Host == $smtp_host);
+    Assert::assertTrue($mailer->Username == $smtp_username);
+    Assert::assertTrue($mailer->Password == $smtp_password);
+    Assert::assertTrue($mailer->SMTPAuth);
+    Assert::assertTrue($mailer->From == $smtp_from_address);
+    Assert::assertTrue($mailer->FromName == $smtp_from_name);
+    Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
+    Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
+    $body = sprintf("You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: https://example.org/tests/fake.mp3. ", $this->callerNumber);
+    $body .= sprintf("Tap to dialback: %s,,,2,,,9,,,%s#.  PIN: %s", $this->callerNumber, $pin, $pin);
+    Assert::assertTrue($mailer->Body == $body);
+    // TODO: Need to translate the subject.
+    Assert::assertTrue($mailer->Subject == "Helpline Voicemail from Finger Lakes Area Service");
+    Assert::assertTrue($mailer->getAttachments()[0][1] == "https://example.org/tests/fake.mp3");
+    Assert::assertTrue($mailer->getAttachments()[0][2] == "fake.mp3");
+    Assert::assertTrue($mailer->getAttachments()[0][3] == "base64");
+    Assert::assertTrue($mailer->getAttachments()[0][4] == "audio/mpeg");
+    Assert::assertTrue($mailer->getAttachments()[0][5]);
+    Assert::assertTrue($mailer->getAttachments()[0][6] == "attachment");
+
+    if ($smtp_secure) {
+        if ($smtp_secure == SmtpPorts::TLS) {
+            Assert::assertTrue($mailer->Port == SmtpPorts::TLS);
+        } else if ($smtp_secure == SmtpPorts::SSL) {
+            Assert::assertTrue($mailer->Port == SmtpPorts::SSL);
+        }
+    } else if (isset($smtp_alt_port)) {
+        Assert::assertTrue($mailer->Port == $smtp_alt_port);
+    } else {
+        Assert::assertTrue($mailer->Port == SmtpPorts::PLAIN);
+    }
+})->with(['GET', 'POST'], [null, 2525], [null, 'tls', 'ssl', 'bad']);
+
 // TODO: need the same test for the email with translations.
 // TODO: there are no email responders for email.
