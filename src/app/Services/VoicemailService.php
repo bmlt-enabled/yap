@@ -31,13 +31,13 @@ class VoicemailService extends Service
 
     public function sendSmsForVoicemail($callsid, $recordingUrl, $recipients, $serviceBodyCallHandling, $serviceBodyName, $callerNumber): void
     {
-        $caller_id = $this->call->getOutboundDialingCallerId($serviceBodyCallHandling);        
+        $caller_id = $this->call->getOutboundDialingCallerId($serviceBodyCallHandling);
         $body = $this->call->getVoicemailMessage(
-            $callsid, 
-            $caller_id, 
-            SmsDialbackOptions::VOICEMAIL_NOTIFICATION, 
-            $serviceBodyName, 
-            $callerNumber, 
+            $callsid,
+            $caller_id,
+            SmsDialbackOptions::VOICEMAIL_NOTIFICATION,
+            $serviceBodyName,
+            $callerNumber,
             $recordingUrl
         );
         Log::debug("SMS Body: " . $body);
@@ -79,11 +79,11 @@ class VoicemailService extends Service
             $this->mailer->addStringAttachment($recordingDataString, $recordingUrlWithExtension);
             $caller_id = $this->call->getOutboundDialingCallerId($serviceBodyCallHandling);
             $body = $this->call->getVoicemailMessage(
-                $callsid, 
-                $caller_id, 
-                SmsDialbackOptions::VOICEMAIL_NOTIFICATION, 
-                $serviceBodyName, 
-                $callerNumber, 
+                $callsid,
+                $caller_id,
+                SmsDialbackOptions::VOICEMAIL_NOTIFICATION,
+                $serviceBodyName,
+                $callerNumber,
                 $recordingUrl
             );
             $this->mailer->Body = $body;

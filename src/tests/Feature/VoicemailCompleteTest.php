@@ -463,7 +463,7 @@ test('voicemail complete send email using primary contact with dialback disabled
     Assert::assertTrue($mailer->From == $smtp_from_address);
     Assert::assertTrue($mailer->FromName == $smtp_from_name);
     Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
-    Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);    
+    Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
     $body = sprintf("You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link: https://example.org/tests/fake.mp3. ", $this->callerNumber);
     Assert::assertTrue($mailer->Body == $body);
     Assert::assertTrue($mailer->Subject == "Helpline Voicemail from Finger Lakes Area Service");
