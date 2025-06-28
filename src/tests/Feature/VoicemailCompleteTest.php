@@ -17,6 +17,8 @@ use App\Structures\VolunteerRoutingParameters;
 use Illuminate\Testing\Assert;
 use PHPMailer\PHPMailer\PHPMailer;
 use Tests\RootServerMocks;
+use App\Models\Record;
+use Carbon\Carbon;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -300,6 +302,7 @@ test('voicemail complete send email using primary contact', function ($method, $
     $this->utility->settings->set("smtp_from_name", $smtp_from_name);
     $this->utility->settings->set("smtp_from_address", $smtp_from_address);
 
+    $this->utility->settings->set('sms_dialback_options', SmsDialbackOptions::VOICEMAIL_NOTIFICATION);
 
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
@@ -309,6 +312,8 @@ test('voicemail complete send email using primary contact', function ($method, $
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
     $serviceBodyCallHandlingData->primary_contact_email = "dude@bro.net,chief@home.org";
 
+    $callSid = "asdfasdjk2l3r";
+
     // mocking TwilioRestClient->calls()->update();
     $callContextMock = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
     $callContextMock->shouldReceive('update')
@@ -316,7 +321,7 @@ test('voicemail complete send email using primary contact', function ($method, $
             return $data['status'] == TwilioCallStatus::COMPLETED;
         }))->once();
     $this->utility->client->shouldReceive('calls')
-        ->with($this->callSid)
+        ->with($callSid)
         ->andReturn($callContextMock)->once();
 
     $mailer = Mockery::mock(PHPMailer::class)->makePartial();
@@ -333,7 +338,7 @@ test('voicemail complete send email using primary contact', function ($method, $
 
     $response = $this->call($method, '/voicemail-complete.php', [
         "caller_id" => "+17325551212",
-        "CallSid" => $this->callSid,
+        "CallSid" => $callSid,
         "RecordingUrl" => $this->recordingUrl,
         "caller_number" => $this->callerNumber,
     ]);
@@ -346,6 +351,8 @@ test('voicemail complete send email using primary contact', function ($method, $
             '<Response/>'
         ], false);
 
+    $pin = Session::getPin($callSid);
+
     Assert::assertTrue($mailer->Host == $smtp_host);
     Assert::assertTrue($mailer->Username == $smtp_username);
     Assert::assertTrue($mailer->Password == $smtp_password);
@@ -354,7 +361,9 @@ test('voicemail complete send email using primary contact', function ($method, $
     Assert::assertTrue($mailer->FromName == $smtp_from_name);
     Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
     Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
-    Assert::assertTrue($mailer->Body == sprintf("You have a message from the Finger Lakes Area Service helpline from caller %s, https://example.org/tests/fake.mp3", $this->callerNumber));
+    $body = sprintf("You have a message from the Finger Lakes Area Service helpline from caller %s, https://example.org/tests/fake.mp3  ", $this->callerNumber);
+    $body .= sprintf("Tap to dialback: %s,,,9,,,%s#.  PIN: %s", $this->callerNumber, $pin, $pin);
+    Assert::assertTrue($mailer->Body == $body);
     Assert::assertTrue($mailer->Subject == "Helpline Voicemail from Finger Lakes Area Service");
     Assert::assertTrue($mailer->getAttachments()[0][1] == "https://example.org/tests/fake.mp3");
     Assert::assertTrue($mailer->getAttachments()[0][2] == "fake.mp3");
