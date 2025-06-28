@@ -27,6 +27,7 @@ beforeAll(function () {
 beforeEach(function () {
     @session_start();
     $_SERVER['REQUEST_URI'] = "/";
+    $_SESSION = null;
 
     $this->rootServerMocks = new RootServerMocks();
     $this->serviceBodyId = "1053";
@@ -58,7 +59,7 @@ test('voicemail complete send sms using primary contact', function ($method) {
         ->withArgs([$serviceBodyCallHandlingData->primary_contact, [
             "from" => $this->callerNumber,
             "body" => sprintf(
-                'You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link %s.mp3. ',
+                'You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link: %s.mp3. ',
                 $this->callerNumber,
                 $this->recordingUrl
             ),
@@ -143,7 +144,7 @@ test('voicemail complete send sms using volunteer responder option', function ($
         ->withArgs([$volunteer->volunteer_phone_number, [
             "from" => $this->callerNumber,
             "body" => sprintf(
-                'You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link %s.mp3. ',
+                'You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link: %s.mp3. ',
                 $this->callerNumber,
                 $this->recordingUrl
             ),
@@ -239,7 +240,7 @@ test('voicemail complete send sms using volunteer responder option and dialback 
         ->withArgs([$volunteer->volunteer_phone_number, [
             "from" => $this->callerNumber,
             "body" => sprintf(
-                'You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link %s.mp3. Tap to dialback: +17325551212,,,9,,,%s#.  PIN: %s',
+                'You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link: %s.mp3. Tap to dialback: +17325551212,,,9,,,%s#.  PIN: %s',
                 $this->callerNumber,
                 $this->recordingUrl,
                 $pin,
@@ -290,21 +291,18 @@ test('voicemail complete send sms using volunteer responder option and dialback 
     $_REQUEST['caller_number'] = $this->callerNumber;
     $_REQUEST['RecordingUrl'] = $this->recordingUrl;
 
+    $this->withoutExceptionHandling();
+
     $pin = Session::getPin($this->callSid);
     Session::generate($this->callSid, $pin);
     $this->utility->settings->set('sms_dialback_options', SmsDialbackOptions::VOICEMAIL_NOTIFICATION);
+    // enable piglatin language selection
+    $this->utility->settings->set('language_selections', 'en-US,pig-latin');
+    $this->utility->settings->setSessionLanguage('pig-latin');
 
     $shiftTz = "America/New_York";
     $shiftStart = "12:00 AM";
     $shiftEnd = "11:59 PM";
-
-    $this->withoutExceptionHandling();
-
-    // enable spanish language selection
-    $this->utility->settings->set('language_selections', 'en-US,es-US');
-    $this->utility->settings->set('language_selections_greeting', 'https://archsearch.org/wp-content/uploads/2025/06/language-greeting.mp3');
-    $this->utility->settings->set('language', 'es-US');
-    $this->utility->settings->set('es_US_voice', 'Polly.Penelope');
 
     $shifts = [];
     for ($i = 1; $i <= 7; $i++) {
@@ -345,9 +343,10 @@ test('voicemail complete send sms using volunteer responder option and dialback 
         ->withArgs([$volunteer->volunteer_phone_number, [
             "from" => $this->callerNumber,
             "body" => sprintf(
-                'You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link %s.mp3. Tap to dialback: +17325551212,,,2,,,9,,,%s#.  PIN: %s',
+                'You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link: %s.mp3. %s: +17325551212,,,2,,,9,,,%s#.  PIN: %s',
                 $this->callerNumber,
                 $this->recordingUrl,
+                $this->utility->settings->word('tap_to_dialback'),
                 $pin,
                 $pin
             ),
@@ -464,8 +463,8 @@ test('voicemail complete send email using primary contact with dialback disabled
     Assert::assertTrue($mailer->From == $smtp_from_address);
     Assert::assertTrue($mailer->FromName == $smtp_from_name);
     Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
-    Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
-    $body = sprintf("You have a message from the Finger Lakes Area Service helpline from caller %s, https://example.org/tests/fake.mp3  ", $this->callerNumber);
+    Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);    
+    $body = sprintf("You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link: https://example.org/tests/fake.mp3. ", $this->callerNumber);
     Assert::assertTrue($mailer->Body == $body);
     Assert::assertTrue($mailer->Subject == "Helpline Voicemail from Finger Lakes Area Service");
     Assert::assertTrue($mailer->getAttachments()[0][1] == "https://example.org/tests/fake.mp3");
@@ -566,7 +565,7 @@ test('voicemail complete send email using primary contact with dialback enabled'
     Assert::assertTrue($mailer->FromName == $smtp_from_name);
     Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
     Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
-    $body = sprintf("You have a message from the Finger Lakes Area Service helpline from caller %s, https://example.org/tests/fake.mp3  ", $this->callerNumber);
+    $body = sprintf("You have a message from the Finger Lakes Area Service helpline from caller %s. Voicemail Link: https://example.org/tests/fake.mp3. ", $this->callerNumber);
     $body .= sprintf("Tap to dialback: %s,,,9,,,%s#.  PIN: %s", $this->callerNumber, $pin, $pin);
     Assert::assertTrue($mailer->Body == $body);
     Assert::assertTrue($mailer->Subject == "Helpline Voicemail from Finger Lakes Area Service");
@@ -589,3 +588,7 @@ test('voicemail complete send email using primary contact with dialback enabled'
         Assert::assertTrue($mailer->Port == SmtpPorts::PLAIN);
     }
 })->with(['GET', 'POST'], [null, 2525], [null, 'tls', 'ssl', 'bad']);
+
+// TODO: need a test that actually translates the text from the text message.
+// TODO: need the same test for the email with translations.
+// TODO: there are no email responders for email.

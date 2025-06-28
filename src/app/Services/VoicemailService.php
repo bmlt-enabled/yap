@@ -31,9 +31,15 @@ class VoicemailService extends Service
 
     public function sendSmsForVoicemail($callsid, $recordingUrl, $recipients, $serviceBodyCallHandling, $serviceBodyName, $callerNumber): void
     {
-        $caller_id = $this->call->getOutboundDialingCallerId($serviceBodyCallHandling);
-        $dialbackString = $this->call->getDialbackString($callsid, $caller_id, SmsDialbackOptions::VOICEMAIL_NOTIFICATION);
-        $body = sprintf("You have a message from the %s helpline from caller %s. Voicemail Link %s.mp3. %s", $serviceBodyName, $callerNumber, $recordingUrl, $dialbackString);
+        $caller_id = $this->call->getOutboundDialingCallerId($serviceBodyCallHandling);        
+        $body = $this->call->getVoicemailMessage(
+            $callsid, 
+            $caller_id, 
+            SmsDialbackOptions::VOICEMAIL_NOTIFICATION, 
+            $serviceBodyName, 
+            $callerNumber, 
+            $recordingUrl
+        );
         Log::debug("SMS Body: " . $body);
 
         foreach ($recipients as $recipient) {
@@ -71,10 +77,15 @@ class VoicemailService extends Service
             $recordingUrlWithExtension = sprintf("%s.mp3", $recordingUrl);
             $recordingDataString = Http::get($recordingUrlWithExtension);
             $this->mailer->addStringAttachment($recordingDataString, $recordingUrlWithExtension);
-            $body = "You have a message from the " . $serviceBodyName . " helpline from caller " . $callerNumber . ", " . $recordingUrl. ".mp3  ";
             $caller_id = $this->call->getOutboundDialingCallerId($serviceBodyCallHandling);
-            $dialbackString = $this->call->getDialbackString($callsid, $caller_id, SmsDialbackOptions::VOICEMAIL_NOTIFICATION);
-            $body .= $dialbackString;
+            $body = $this->call->getVoicemailMessage(
+                $callsid, 
+                $caller_id, 
+                SmsDialbackOptions::VOICEMAIL_NOTIFICATION, 
+                $serviceBodyName, 
+                $callerNumber, 
+                $recordingUrl
+            );
             $this->mailer->Body = $body;
             $this->mailer->Subject = 'Helpline Voicemail from ' . $serviceBodyName;
             $this->mailer->send();

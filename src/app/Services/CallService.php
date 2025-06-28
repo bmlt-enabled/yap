@@ -121,6 +121,12 @@ class CallService extends Service
         }
     }
 
+    public function getVoicemailMessage($callerSid, $callerId, $smsDialbackOptions, $serviceBodyName, $callerNumber, $recordingUrl) : string
+    {
+        $dialbackString = $this->getDialbackString($callerSid, $callerId, $smsDialbackOptions);
+        return sprintf("You have a message from the %s helpline from caller %s. Voicemail Link: %s.mp3. %s", $serviceBodyName, $callerNumber, $recordingUrl, $dialbackString);
+    }
+
     public function getDialbackString($callsid, $dialbackNumber, $option)
     {
         $dialback_string = "";
@@ -137,7 +143,8 @@ class CallService extends Service
                     $language_digit = $language_index + 1;
 
                     $dialback_string = sprintf(
-                        "Tap to dialback: %s,,,%s,,,%s,,,%s#.  PIN: %s",
+                        "%s: %s,,,%s,,,%s,,,%s#.  PIN: %s",
+                        $this->settings->word('tap_to_dialback'),
                         $dialbackNumber,
                         $language_digit,
                         $dialback_digit_map_digit,
@@ -146,7 +153,8 @@ class CallService extends Service
                     );
                 } else {
                     $dialback_string = sprintf(
-                        "Tap to dialback: %s,,,%s,,,%s#.  PIN: %s",
+                        "%s: %s,,,%s,,,%s#.  PIN: %s",
+                        $this->settings->word('tap_to_dialback'),
                         $dialbackNumber,
                         $dialback_digit_map_digit,
                         $pin_lookup[0]->pin,
