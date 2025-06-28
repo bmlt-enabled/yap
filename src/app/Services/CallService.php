@@ -9,7 +9,6 @@ use App\Repositories\ReportsRepository;
 use App\Repositories\VoicemailRepository;
 use App\Structures\RecordType;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Request;
 
 class CallService extends Service
 {
@@ -124,7 +123,15 @@ class CallService extends Service
     public function getVoicemailMessage($callerSid, $callerId, $smsDialbackOptions, $serviceBodyName, $callerNumber, $recordingUrl) : string
     {
         $dialbackString = $this->getDialbackString($callerSid, $callerId, $smsDialbackOptions);
-        return sprintf("You have a message from the %s helpline from caller %s. Voicemail Link: %s.mp3. %s", $serviceBodyName, $callerNumber, $recordingUrl, $dialbackString);
+        return sprintf("%s %s %s %s %s. %s: %s.mp3. %s", 
+            $this->settings->word('you_have_a_message_from_the'),
+            $serviceBodyName, 
+            strtolower($this->settings->word('helpline')),
+            $this->settings->word('from_the_caller'),
+            $callerNumber, 
+            $this->settings->word('voicemail'), 
+            $recordingUrl, 
+            $dialbackString);
     }
 
     public function getDialbackString($callsid, $dialbackNumber, $option)
