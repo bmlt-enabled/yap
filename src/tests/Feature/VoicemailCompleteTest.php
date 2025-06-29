@@ -607,8 +607,8 @@ test('voicemail complete send email using primary contact with dialback enabled 
 
     $this->utility->settings->set('sms_dialback_options', SmsDialbackOptions::VOICEMAIL_NOTIFICATION);
 
-    $this->utility->settings->set('language', 'pig-latin');
     $this->utility->settings->set('language_selections', 'en-US,pig-latin');
+    $this->utility->settings->setSessionLanguage('pig-latin');
 
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
     $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
@@ -667,8 +667,8 @@ test('voicemail complete send email using primary contact with dialback enabled 
     Assert::assertTrue($mailer->FromName == $smtp_from_name);
     Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
     Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
-    $body = sprintf("You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: https://example.org/tests/fake.mp3. ", $this->callerNumber);
-    $body .= sprintf("Tap to dialback: %s,,,2,,,9,,,%s#.  PIN: %s", $this->callerNumber, $pin, $pin);
+    $body = sprintf("ouyay avehay ayay essagemay omfray ethay Finger Lakes Area Service elplinehay omfray ethay allercay %s. oicemailvay: https://example.org/tests/fake.mp3. ", $this->callerNumber);
+    $body .= sprintf("aptay ootay ialbackdray: %s,,,2,,,9,,,%s#.  PIN: %s", $this->callerNumber, $pin, $pin);    
     Assert::assertTrue($mailer->Body == $body);
     // TODO: Need to translate the subject.
     Assert::assertTrue($mailer->Subject == "Helpline Voicemail from Finger Lakes Area Service");
