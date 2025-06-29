@@ -2,6 +2,7 @@
 
 ### 4.5.0 (UNRELEASED)
 * Added new feature that allow for creating a custom prompt for language selection feature. [#1228]
+* Fix for SMS + Email full translation for language selected by caller. [#1387]
 * Fix for dialback when language selection is enabled, extra digit selection would not be included in the dialback string [#1372]
 * Fix for some meditations that weren't working, using the fetch-meditation library now [#1365]
 * Doubled the amount of eventual consistency retries for conferences [#1363]
