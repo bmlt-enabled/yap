@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Constants\CallRole;
 use App\Constants\EventId;
 use App\Constants\LocationSearchMethod;
-use App\Constants\ReadingType;
 use App\Constants\SearchType;
 use App\Constants\SpecialPhoneNumber;
 use App\Constants\VolunteerGender;
@@ -87,9 +86,7 @@ class CallFlowController extends Controller
                 return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
             } else {
                 $selected_language = explode(",", $this->settings->get('language_selections'))[intval($digit) - 1];
-                $_SESSION["override_word_language"] = $selected_language;
-                $_SESSION["override_gather_language"] = $selected_language;
-                $_SESSION["override_language"] = $selected_language;
+                $this->settings->setSessionLanguage($selected_language);
             }
         }
 

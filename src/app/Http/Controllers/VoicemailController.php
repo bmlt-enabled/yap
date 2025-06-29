@@ -129,7 +129,7 @@ class VoicemailController extends Controller
 
         if ($serviceBodyCallHandling->primary_contact_email_enabled && $this->settings->has('smtp_host')) {
             $recipients = explode(",", $serviceBodyCallHandling->primary_contact_email);
-            $this->voicemail->sendEmailForVoicemail($recordingUrl, $recipients, $serviceBodyName, $callerNumber);
+            $this->voicemail->sendEmailForVoicemail($callSid, $recordingUrl, $recipients, $serviceBodyCallHandling, $serviceBodyName, $callerNumber);
         }
 
         $twiml = new VoiceResponse();
