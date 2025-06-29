@@ -668,7 +668,7 @@ test('voicemail complete send email using primary contact with dialback enabled 
     Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
     Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
     $body = sprintf("ouyay avehay ayay essagemay omfray ethay Finger Lakes Area Service elplinehay omfray ethay allercay %s. oicemailvay: https://example.org/tests/fake.mp3. ", $this->callerNumber);
-    $body .= sprintf("aptay ootay ialbackdray: %s,,,2,,,9,,,%s#.  PIN: %s", $this->callerNumber, $pin, $pin);    
+    $body .= sprintf("aptay ootay ialbackdray: %s,,,2,,,9,,,%s#.  PIN: %s", $this->callerNumber, $pin, $pin);
     Assert::assertTrue($mailer->Body == $body);
     // TODO: Need to translate the subject.
     Assert::assertTrue($mailer->Subject == "Helpline Voicemail from Finger Lakes Area Service");
