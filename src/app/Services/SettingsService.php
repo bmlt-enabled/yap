@@ -313,6 +313,13 @@ class SettingsService
         return "";
     }
 
+    public function setSessionLanguage($language)
+    {
+        $_SESSION["override_word_language"] = $language;
+        $_SESSION["override_gather_language"] = $language;
+        $_SESSION["override_language"] = $language;
+    }
+
     public function getPressWord($language = null)
     {
         return $this->has('speech_gathering')

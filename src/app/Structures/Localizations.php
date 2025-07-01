@@ -114,6 +114,9 @@ class Localizations
         'speak_no_preference' => "to speak to either",
         'you_have_an_incoming_phoneline_call_from' => "You have an incoming phoneline call from",
         'search_results_by_sms' => "Meeting search results will also be sent to you by SMS text message.",
+        'tap_to_dialback' => "Tap to dialback",
+        'you_have_a_message_from_the' => "You have a message from the",
+        'from_the_caller' => "from the caller",
     ];
     public $enAU = [
         'language_title' => "english",
@@ -225,6 +228,9 @@ class Localizations
         'speak_no_preference' => "to speak to either",
         'you_have_an_incoming_phoneline_call_from' => "You have an incoming phoneline call from",
         'search_results_by_sms' => "Meeting search results will also be sent to you by SMS text message.",
+        'tap_to_dialback' => "Tap to dialback",
+        'you_have_a_message_from_the' => "You have a message from the",
+        'from_the_caller' => "from the caller",
     ];
     public $esUS = [
         'language_title' => "español",
@@ -324,18 +330,21 @@ class Localizations
         'groups' => "grupos",
         'include_group' => "incluir grupos",
         'manage_groups' => "administrar grupos",
-        'create' => "Create",
-        'edit' => "Edit",
-        'delete' => "Delete",
-        'voicemail' => "Voicemail",
-        'volunteer_has_already_joined_the_call_goodbye' => "A volunteer has already joined the call... goodbye",
-        'meetings_have_been_texted' => "meetings have been texted to you",
-        'users' => "Users",
-        'to_speak_to_a_man' => "to talk to a man",
-        'to_speak_to_a_woman' => "to talk to a woman",
-        'speak_no_preference' => "to speak to either",
-        'you_have_an_incoming_phoneline_call_from' => "You have an incoming phoneline call from",
-        'search_results_by_sms' => "Meeting search results will also be sent to you by SMS text message.",
+        'create' => "crear",
+        'edit' => "editar",
+        'delete' => "borrar",
+        'voicemail' => "correo de voz",
+        'volunteer_has_already_joined_the_call_goodbye' => "un voluntario ya se sumó al llamado... adiós",
+        'meetings_have_been_texted' => "las reuniones te han sido enviadas por mensaje de texto",
+        'users' => "usuarios",
+        'to_speak_to_a_man' => "hablar con un hombre",
+        'to_speak_to_a_woman' => "hablar con una mujer",
+        'speak_no_preference' => "hablar con cualquiera",
+        'you_have_an_incoming_phoneline_call_from' => "Tiene una llamada telefónica entrante de",
+        'search_results_by_sms' => "Los resultados de la búsqueda de reuniones también se le enviarán por mensaje de texto SMS.",
+        'tap_to_dialback' => "Tap to dialback",
+        'you_have_a_message_from_the' => "You have a message from the",
+        'from_the_caller' => "from the caller",
     ];
     public $piglatin = [
         'language_title' => "igpay atinlay",
@@ -439,6 +448,9 @@ class Localizations
         'speak_no_preference' => "otay eakspay otay eitheryay",
         'you_have_an_incoming_phoneline_call_from' => "ouyay avehay anyay incomingyay onelinephay allcay omfray",
         'search_results_by_sms' => "eetingmay earchsay esultsray illway lsoay ebay entsay otay ouyay ybay SMS extay essagemay.",
+        'tap_to_dialback' => "aptay ootay ialbackdray",
+        'you_have_a_message_from_the' => "ouyay avehay ayay essagemay omfray ethay",
+        'from_the_caller' => "omfray ethay allercay",
     ];
     public $ptBR = [
         'language_title' => "português",
@@ -550,6 +562,9 @@ class Localizations
         'speak_no_preference' => "to speak to either",
         'you_have_an_incoming_phoneline_call_from' => "You have an incoming phoneline call from",
         'search_results_by_sms' => "Meeting search results will also be sent to you by SMS text message.",
+        'tap_to_dialback' => "Tap to dialback",
+        'you_have_a_message_from_the' => "You have a message from the",
+        'from_the_caller' => "from the caller",
     ];
     public $frCA = [
         'language_title' => "français",
@@ -661,6 +676,9 @@ class Localizations
         'speak_no_preference' => "to speak to either",
         'you_have_an_incoming_phoneline_call_from' => "You have an incoming phoneline call from",
         'search_results_by_sms' => "Meeting search results will also be sent to you by SMS text message.",
+        'tap_to_dialback' => "Tap to dialback",
+        'you_have_a_message_from_the' => "You have a message from the",
+        'from_the_caller' => "from the caller",
     ];
     public $itIT = [
         'language_title' => "italiano",
@@ -772,6 +790,9 @@ class Localizations
         'speak_no_preference' => "to speak to either",
         'you_have_an_incoming_phoneline_call_from' => "You have an incoming phoneline call from",
         'search_results_by_sms' => "Meeting search results will also be sent to you by SMS text message.",
+        'tap_to_dialback' => "Tap to dialback",
+        'you_have_a_message_from_the' => "You have a message from the",
+        'from_the_caller' => "from the caller",
     ];
 
     public function setLocalization($language, $localization): void

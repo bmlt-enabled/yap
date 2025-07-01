@@ -9,7 +9,6 @@ use App\Repositories\ReportsRepository;
 use App\Repositories\VoicemailRepository;
 use App\Structures\RecordType;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Request;
 
 class CallService extends Service
 {
@@ -121,6 +120,22 @@ class CallService extends Service
         }
     }
 
+    public function getVoicemailMessage($callerSid, $callerId, $smsDialbackOptions, $serviceBodyName, $callerNumber, $recordingUrl) : string
+    {
+        $dialbackString = $this->getDialbackString($callerSid, $callerId, $smsDialbackOptions);
+        return sprintf(
+            "%s %s %s %s %s. %s: %s.mp3. %s",
+            $this->settings->word('you_have_a_message_from_the'),
+            $serviceBodyName,
+            strtolower($this->settings->word('helpline')),
+            $this->settings->word('from_the_caller'),
+            $callerNumber,
+            $this->settings->word('voicemail'),
+            $recordingUrl,
+            $dialbackString
+        );
+    }
+
     public function getDialbackString($callsid, $dialbackNumber, $option)
     {
         $dialback_string = "";
@@ -137,7 +152,8 @@ class CallService extends Service
                     $language_digit = $language_index + 1;
 
                     $dialback_string = sprintf(
-                        "Tap to dialback: %s,,,%s,,,%s,,,%s#.  PIN: %s",
+                        "%s: %s,,,%s,,,%s,,,%s#.  PIN: %s",
+                        $this->settings->word('tap_to_dialback'),
                         $dialbackNumber,
                         $language_digit,
                         $dialback_digit_map_digit,
@@ -146,7 +162,8 @@ class CallService extends Service
                     );
                 } else {
                     $dialback_string = sprintf(
-                        "Tap to dialback: %s,,,%s,,,%s#.  PIN: %s",
+                        "%s: %s,,,%s,,,%s#.  PIN: %s",
+                        $this->settings->word('tap_to_dialback'),
                         $dialbackNumber,
                         $dialback_digit_map_digit,
                         $pin_lookup[0]->pin,
