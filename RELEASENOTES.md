@@ -6,6 +6,7 @@
 * Fix for SMS + Email full translation for language selected by caller. [#1387]
 * Fix for dialback when language selection is enabled, extra digit selection would not be included in the dialback string [#1372]
 * Fix for some meditations that weren't working, using the fetch-meditation library now [#1365]
+* Fix for regression with caching Geocoding requests [#1390]
 * Doubled the amount of eventual consistency retries for conferences [#1363]
 * Retired SMS capability to return meditations.
 * Retired support for PHP 8.1

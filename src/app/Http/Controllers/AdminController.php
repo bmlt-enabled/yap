@@ -71,13 +71,14 @@ class AdminController extends Controller
             "settings" => $this->settings,
             "users" => User::getUsers(),
             "voicemail" => $this->call->getVoicemail(),
+            "version" => $this->settings->version()
         ];
 
         if ($page != "index") {
             $data = array_merge($data, ["username" => $this->authn->username()]);
         }
 
-        if ($page == "home" || $page == "index") {
+        if ($page == "home") {
             $data = array_merge($data, ["status" => $this->upgradeAdvisor->getStatus()]);
         }
 
