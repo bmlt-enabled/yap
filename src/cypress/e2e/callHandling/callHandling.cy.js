@@ -52,7 +52,7 @@ describe('Service Body Call Handling', () => {
             .focus()
             .clear()
             .invoke("val", "123abc")
-            .wait(500)
+            .wait(1000)
             .get("#serviceBodyCallHandling_1005 > .modal-dialog > .modal-content > .modal-footer > .btn-primary")
             .click()
 
