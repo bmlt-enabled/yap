@@ -21,7 +21,7 @@ runs:
         MYSQL_ROOT_PASSWORD: yap_root_password
 
     - name: Upload screenshots
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: ${{ matrix.php }}-cypress-screenshots
