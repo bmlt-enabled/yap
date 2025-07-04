@@ -14,7 +14,7 @@ test-debug:
 
 .PHONY: e2e-test
 e2e-test:
-	env CYPRESS_BASE_URL=http://127.0.0.1:8000/yap npx cypress run
+	env CYPRESS_BASE_URL=http://localhost:8000 npx cypress run
 
 .PHONY: lint
 lint:

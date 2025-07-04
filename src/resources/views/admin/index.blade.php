@@ -31,7 +31,7 @@
             @endforeach
         </select>
         <div id="version-info">
-            <p class="lead">v{{ $status['version'] }}</p>
+            <p class="lead">v{{ $version }}</p>
         </div>
     </form>
 </div>
