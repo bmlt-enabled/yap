@@ -20,19 +20,19 @@ runs:
       env:
         MYSQL_ROOT_PASSWORD: yap_root_password
 
-    # - name: Upload screenshots
-    #   uses: actions/upload-artifact@v3
-    #   if: failure()
-    #   with:
-    #     name: ${{ matrix.php }}-cypress-screenshots
-    #     path: src/cypress/screenshots
+    - name: Upload screenshots
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: ${{ matrix.php }}-cypress-screenshots
+        path: src/cypress/screenshots
 
-    # - name: Upload laravel.log
-    #   uses: actions/upload-artifact@v3
-    #   if: failure()
-    #   with:
-    #     name: ${{ matrix.php }}-laravel-log
-    #     path: src/storage/logs/laravel.log
+    - name: Upload laravel.log
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: ${{ matrix.php }}-laravel-log
+        path: src/storage/logs/laravel.log
 
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2
