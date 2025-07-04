@@ -28,7 +28,7 @@ runs:
         path: src/cypress/screenshots
 
     - name: Upload laravel.log
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: ${{ matrix.php }}-laravel-log
