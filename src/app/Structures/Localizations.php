@@ -342,9 +342,9 @@ class Localizations
         'speak_no_preference' => "hablar con cualquiera",
         'you_have_an_incoming_phoneline_call_from' => "Tiene una llamada telefónica entrante de",
         'search_results_by_sms' => "Los resultados de la búsqueda de reuniones también se le enviarán por mensaje de texto SMS.",
-        'tap_to_dialback' => "Tap to dialback",
-        'you_have_a_message_from_the' => "You have a message from the",
-        'from_the_caller' => "from the caller",
+        'tap_to_dialback' => "toque para volver a marcar",
+        'you_have_a_message_from_the' => "tienes un mensaje del",
+        'from_the_caller' => "de la persona que llama",
     ];
     public $piglatin = [
         'language_title' => "igpay atinlay",
