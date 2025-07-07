@@ -1,7 +1,7 @@
 describe('Groups', () => {
 
     before(() => {
-        cy.resetDatabase();
+        //cy.resetDatabase();
     });
 
     it('Add a new group', () => {

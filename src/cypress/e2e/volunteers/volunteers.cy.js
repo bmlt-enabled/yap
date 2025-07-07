@@ -17,7 +17,7 @@ describe('Volunteers', () => {
             .wait(1000)
             .get('#serviceBodyCallHandling_1005 > .modal-dialog > .modal-content > .modal-body > #serviceBodyCallHandlingForm > #volunteer_routing')
             .select('Volunteers')
-            .wait(500)
+            .wait(1000)
             .get("#serviceBodyCallHandling_1005 > .modal-dialog > .modal-content > .modal-footer > .btn-primary")
             .click()
             .wait(1000)
