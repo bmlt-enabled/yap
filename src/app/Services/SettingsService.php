@@ -315,9 +315,9 @@ class SettingsService
 
     public function setSessionLanguage($language)
     {
-        $_SESSION["override_word_language"] = $language;
-        $_SESSION["override_gather_language"] = $language;
-        $_SESSION["override_language"] = $language;
+        session()->put("override_word_language", $language);
+        session()->put("override_gather_language", $language);
+        session()->put("override_language", $language);
     }
 
     public function getPressWord($language = null)

@@ -84,6 +84,5 @@ test('initial sms gateway with a blackholed number', function ($method) {
     // Validate no call record was created for blackholed numbers
     $record = \App\Models\Record::where('callsid', $this->callerIdInfo['SmsSid'])->first();
     expect($record)->toBeNull();
-    $_SESSION['override_jft_option'] = true;
+    session()->put('override_jft_option', true);
 })->with(['GET', 'POST']);
-    $_SESSION['override_spad_option'] = true;

@@ -267,10 +267,8 @@ test('voicemail complete send sms using volunteer responder option and dialback 
 
 test('voicemail complete send sms using volunteer responder option and dialback enabled and language selection', function ($method) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
-    $_REQUEST['CallSid'] = $this->callSid;
-    $_REQUEST['caller_number'] = $this->callerNumber;
-    $_REQUEST['RecordingUrl'] = $this->recordingUrl;
+    session()->put('override_service_body_id', $this->serviceBodyId);
+    request()->merge(['CallSid' => $this->callSid, 'caller_number' => $this->callerNumber, 'RecordingUrl' => $this->recordingUrl]);
 
     $this->withoutExceptionHandling();
 
@@ -316,7 +314,7 @@ test('voicemail complete send sms using volunteer responder option and dialback 
     $volunteer_routing_parameters->volunteer_type = VolunteerType::PHONE;
     $volunteer_routing_parameters->volunteer_gender = VolunteerGender::UNSPECIFIED;
     $volunteer_routing_parameters->volunteer_language = "en-US";
-    $_SESSION["volunteer_routing_parameters"] = $volunteer_routing_parameters;
+    session()->put("volunteer_routing_parameters", $volunteer_routing_parameters);
 
     // mocking TwilioRestClient->messages->create()
     $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
@@ -469,7 +467,7 @@ test('voicemail complete send email using primary contact with dialback disabled
 
 test('voicemail complete send email using primary contact with dialback enabled', function ($method, $smtp_alt_port, $smtp_secure) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
+    session()->put('override_service_body_id', $this->serviceBodyId);
     $smtp_host = "fake.host";
     $smtp_username = "fake@user";
     $smtp_password = "fake@password";
@@ -571,7 +569,7 @@ test('voicemail complete send email using primary contact with dialback enabled'
 
 test('voicemail complete send email using primary contact with dialback enabled and language selection', function ($method, $smtp_alt_port, $smtp_secure) {
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
-    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
+    session()->put('override_service_body_id', $this->serviceBodyId);
     $smtp_host = "fake.host";
     $smtp_username = "fake@user";
     $smtp_password = "fake@password";

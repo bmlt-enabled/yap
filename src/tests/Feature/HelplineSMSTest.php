@@ -249,7 +249,7 @@ test('initial sms helpline gateway with a volunteer with a different keyword', f
         $serviceBodyCallHandlingData
     );
 
-    $_SESSION['override_sms_helpline_keyword'] = 'dude';
+    session()->put('override_sms_helpline_keyword', 'dude');
 
     $response = $this->call($method, '/sms-gateway.php', [
         "SmsSid" => $this->smsSid,
