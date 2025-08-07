@@ -1,6 +1,23 @@
 import React, {useState} from "react";
 import ServiceBodiesDropdown from "../components/ServiceBodiesDropdown";
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+    useSortable,
+} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
 import {
     Modal,
     Box,
@@ -22,6 +39,203 @@ import {defaultShift} from "../models/ShiftModel";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
+// Sortable Volunteer Component
+function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expanded, toggleExpand, handleAddShift, handleRemoveShift, handleRemoveAllShifts, daysOfWeek }) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: index.toString() });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+    };
+
+    return (
+        <Box
+            ref={setNodeRef}
+            style={style}
+            sx={{
+                border: '1px solid #ccc',
+                margin: 2,
+                padding: 2,
+                borderRadius: 2,
+                position: 'relative',
+            }}
+        >
+            <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                sx={{
+                    padding: 2
+                }}
+            >
+                <Box display="flex" alignItems="center" sx={{ position: 'relative', zIndex: 2 }}>
+                    <IconButton 
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            toggleExpand(index);
+                        }}
+                    >
+                        {expanded[index] ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
+                    </IconButton>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={!!volunteer.volunteer_enabled}
+                                onChange={e => {
+                                    const newValue = e.target.checked;
+                                    setVolunteers(prevVolunteers => 
+                                        prevVolunteers.map((v, i) => 
+                                            i === index 
+                                                ? { ...v, volunteer_enabled: newValue }
+                                                : v
+                                        )
+                                    );
+                                }}
+                            />
+                        }
+                        label="Enabled"
+                    />
+                </Box>
+                <TextField
+                    label="Volunteer Name"
+                    value={volunteer.volunteer_name}
+                    onChange={e => {
+                        const updatedVolunteers = [...volunteers];
+                        updatedVolunteers[index].volunteer_name = e.target.value;
+                        setVolunteers(updatedVolunteers);
+                    }}
+                    size="small"
+                    margin="normal"
+                    sx={{ position: 'relative', zIndex: 2 }}
+                />
+                <Button 
+                    variant="contained" 
+                    color="error"
+                    onClick={() => setVolunteers(volunteers.filter((_, i) => i !== index))}
+                    sx={{ position: 'relative', zIndex: 2 }}
+                >
+                    Remove
+                </Button>
+            </Box>
+
+            <Collapse in={expanded[index]}>
+                <Box sx={{
+                    borderTop: '1px solid #aaa',
+                    position: 'relative',
+                    zIndex: 2,
+                }}>
+                    <TextField
+                        label="Phone Number"
+                        value={volunteer.volunteer_phone_number}
+                        onChange={e => {
+                            const updatedVolunteers = [...volunteers];
+                            updatedVolunteers[index].volunteer_phone_number = e.target.value;
+                            setVolunteers(updatedVolunteers);
+                        }}
+                        margin="normal"
+                    />
+                    <FormControl sx={{padding: 2}}>
+                        <FormLabel id="gender-group-label">Gender</FormLabel>
+                        <RadioGroup
+                            row
+                            aria-labelledby="demo-radio-buttons-group-label"
+                            value={parseInt(volunteer.volunteer_gender, 10)}
+                            name="radio-buttons-group"
+                            onChange={e => {
+                                const updatedVolunteers = [...volunteers];
+                                updatedVolunteers[index].volunteer_gender = parseInt(e.target.value, 10);
+                                setVolunteers(updatedVolunteers);
+                            }}
+                        >
+                            <FormControlLabel value={0} control={<Radio />} label="Unassigned" labelPlacement="bottom"/>
+                            <FormControlLabel value={1} control={<Radio />} label="Male" labelPlacement="bottom" />
+                            <FormControlLabel value={2} control={<Radio />} label="Female" labelPlacement="bottom" />
+                            <FormControlLabel value={3} control={<Radio />} label="Unspecified" labelPlacement="bottom" />
+                        </RadioGroup>
+                    </FormControl>
+                    <FormControl sx={{padding: 2}}>
+                        <FormLabel id="options-group-label">Options</FormLabel>
+                        <FormControlLabel control={
+                            <Checkbox
+                                checked={volunteer.volunteer_responder === 1}
+                                onChange={e => {
+                                    const updatedVolunteers = [...volunteers];
+                                    updatedVolunteers[index].volunteer_responder = e.target.checked ? 1 : 0;
+                                    setVolunteers(updatedVolunteers);
+                                }}
+                            />
+                        }
+                        label="Responder"
+                        />
+                    </FormControl>
+                </Box>
+                <Box>
+                    <Button variant="outlined" onClick={() => handleAddShift(index)}>Add
+                        Shift</Button>
+                    <Button variant="outlined" color="error"
+                            onClick={() => handleRemoveAllShifts(index)}
+                            style={{marginLeft: '10px'}}>Remove All Shifts</Button>
+                </Box>
+
+                {Array.isArray(volunteer.volunteer_shift_schedule) && volunteer.volunteer_shift_schedule.length > 0 && volunteer.volunteer_shift_schedule.map((shift, shiftIndex) => (
+                    <Box key={shiftIndex} sx={{
+                        backgroundColor: '#f0f0f0',
+                        padding: 1,
+                        marginTop: 1,
+                        borderRadius: 1
+                    }}>
+                        <p>Day: {daysOfWeek[shift.day]}, Start: {shift.start_time},
+                            End: {shift.end_time}, Type: {shift.type}</p>
+                        <Button variant="contained" color="error"
+                                onClick={() => handleRemoveShift(index, shiftIndex)}>Remove
+                            Shift</Button>
+                    </Box>
+                ))}
+
+                <TextField
+                    label="Notes"
+                    multiline
+                    rows={3}
+                    fullWidth
+                    value={volunteer.volunteer_notes}
+                    onChange={e => {
+                        const updatedVolunteers = [...volunteers];
+                        updatedVolunteers[index].volunteer_notes = e.target.value;
+                        setVolunteers(updatedVolunteers);
+                    }}
+                    margin="normal"
+                />
+            </Collapse>
+
+            {/* Drag handle - covers the entire area except for interactive elements */}
+            <Box
+                {...attributes}
+                {...listeners}
+                sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    cursor: 'grab',
+                    '&:active': {
+                        cursor: 'grabbing',
+                    },
+                    zIndex: 1,
+                }}
+            />
+        </Box>
+    );
+}
+
 function Volunteers() {
     const [volunteers, setVolunteers] = useState([]);
     const [serviceBodyId, setServiceBodyId] = useState();
@@ -39,6 +253,13 @@ function Volunteers() {
         "Friday",
         "Saturday"
     ];
+
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
 
     const decodeShiftSchedule = (base64Schedule) => {
         try {
@@ -131,12 +352,16 @@ function Volunteers() {
         setVolunteers(updatedVolunteers);
     };
 
-    const handleDragEnd = (result) => {
-        if (!result.destination) return;
-        const reorderedVolunteers = Array.from(volunteers);
-        const [movedVolunteer] = reorderedVolunteers.splice(result.source.index, 1);
-        reorderedVolunteers.splice(result.destination.index, 0, movedVolunteer);
-        setVolunteers(reorderedVolunteers);
+    const handleDragEnd = (event) => {
+        const { active, over } = event;
+
+        if (active.id !== over.id) {
+            setVolunteers((items) => {
+                const oldIndex = parseInt(active.id);
+                const newIndex = parseInt(over.id);
+                return arrayMove(items, oldIndex, newIndex);
+            });
+        }
     };
 
     const toggleExpand = (id) => {
@@ -162,163 +387,32 @@ function Volunteers() {
                     <CircularProgress />
                 </Box>
             ) : (
-                <DragDropContext onDragEnd={handleDragEnd}>
-                    <Droppable droppableId="volunteers">
-                        {(provided) => (
-                            <div {...provided.droppableProps} ref={provided.innerRef} className="volunteer-list">
-                                {volunteers && volunteers.length > 0 && volunteers.map((volunteer, index) => (
-                                    <Draggable key={index} draggableId={index.toString()} index={index}>
-                                        {(provided) => (
-                                            <Box
-                                                ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}
-                                                sx={{
-                                                    border: '1px solid #ccc',
-                                                    margin: 2,
-                                                    padding: 2,
-                                                    borderRadius: 2,
-                                                    // backgroundColor: '#ccc'
-                                                }}>
-                                                <Box
-                                                    display="flex"
-                                                    alignItems="center"
-                                                    justifyContent="space-between"
-                                                    sx={{
-                                                        padding: 2
-                                                    }}
-                                                >
-                                                    <Box display="flex" alignItems="center">
-                                                        <IconButton onClick={() => toggleExpand(index)}>
-                                                            {expanded[index] ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
-                                                        </IconButton>
-                                                        <FormControlLabel
-                                                            control={
-                                                                <Checkbox
-                                                                    checked={!!volunteer.volunteer_enabled}
-                                                                    onChange={e => {
-                                                                        const newValue = e.target.checked;
-                                                                        setVolunteers(prevVolunteers => 
-                                                                            prevVolunteers.map((v, i) => 
-                                                                                i === index 
-                                                                                    ? { ...v, volunteer_enabled: newValue }
-                                                                                    : v
-                                                                            )
-                                                                        );
-                                                                    }}
-                                                                />
-                                                            }
-                                                            label="Enabled"
-                                                        />
-                                                    </Box>
-                                                    <TextField
-                                                        label="Volunteer Name"
-                                                        value={volunteer.volunteer_name}
-                                                        onChange={e => {
-                                                            const updatedVolunteers = [...volunteers];
-                                                            updatedVolunteers[index].volunteer_name = e.target.value;
-                                                            setVolunteers(updatedVolunteers);
-                                                        }}
-                                                        size="small"
-                                                        margin="normal"
-                                                    />
-                                                    <Button variant="contained" color="error"
-                                                            onClick={() => setVolunteers(volunteers.filter((_, i) => i !== index))}>Remove</Button>
-                                                </Box>
-
-                                                <Collapse in={expanded[index]}>
-                                                    <Box sx={{
-                                                        borderTop: '1px solid #aaa',
-                                                    }}>
-                                                        <TextField
-                                                            label="Phone Number"
-                                                            value={volunteer.volunteer_phone_number}
-                                                            onChange={e => {
-                                                                const updatedVolunteers = [...volunteers];
-                                                                updatedVolunteers[index].volunteer_phone_number = e.target.value;
-                                                                setVolunteers(updatedVolunteers);
-                                                            }}
-                                                            margin="normal"
-                                                        />
-                                                        <FormControl sx={{padding: 2}}>
-                                                            <FormLabel id="gender-group-label">Gender</FormLabel>
-                                                            <RadioGroup
-                                                                row
-                                                                aria-labelledby="demo-radio-buttons-group-label"
-                                                                value={parseInt(volunteer.volunteer_gender, 10)}
-                                                                name="radio-buttons-group"
-                                                                onChange={e => {
-                                                                    const updatedVolunteers = [...volunteers];
-                                                                    updatedVolunteers[index].volunteer_gender = parseInt(e.target.value, 10);
-                                                                    setVolunteers(updatedVolunteers);
-                                                                }}
-                                                            >
-                                                                <FormControlLabel value={0} control={<Radio />} label="Unassigned" labelPlacement="bottom"/>
-                                                                <FormControlLabel value={1} control={<Radio />} label="Male" labelPlacement="bottom" />
-                                                                <FormControlLabel value={2} control={<Radio />} label="Female" labelPlacement="bottom" />
-                                                                <FormControlLabel value={3} control={<Radio />} label="Unspecified" labelPlacement="bottom" />
-                                                            </RadioGroup>
-                                                        </FormControl>
-                                                        <FormControl sx={{padding: 2}}>
-                                                            <FormLabel id="options-group-label">Options</FormLabel>
-                                                            <FormControlLabel control={
-                                                                <Checkbox
-                                                                    checked={volunteer.volunteer_responder === 1}
-                                                                    onChange={e => {
-                                                                        const updatedVolunteers = [...volunteers];
-                                                                        updatedVolunteers[index].volunteer_responder = e.target.checked ? 1 : 0;
-                                                                        setVolunteers(updatedVolunteers);
-                                                                    }}
-                                                                />
-                                                            }
-                                                            label="Responder"
-                                                            />
-                                                        </FormControl>
-                                                    </Box>
-                                                    <Box>
-                                                        <Button variant="outlined" onClick={() => handleAddShift(index)}>Add
-                                                            Shift</Button>
-                                                        <Button variant="outlined" color="error"
-                                                                onClick={() => handleRemoveAllShifts(index)}
-                                                                style={{marginLeft: '10px'}}>Remove All Shifts</Button>
-                                                    </Box>
-
-                                                    {Array.isArray(volunteer.volunteer_shift_schedule) && volunteer.volunteer_shift_schedule.length > 0 && volunteer.volunteer_shift_schedule.map((shift, shiftIndex) => (
-                                                        <Box key={shiftIndex} sx={{
-                                                            backgroundColor: '#f0f0f0',
-                                                            padding: 1,
-                                                            marginTop: 1,
-                                                            borderRadius: 1
-                                                        }}>
-                                                            <p>Day: {daysOfWeek[shift.day]}, Start: {shift.start_time},
-                                                                End: {shift.end_time}, Type: {shift.type}</p>
-                                                            <Button variant="contained" color="error"
-                                                                    onClick={() => handleRemoveShift(index, shiftIndex)}>Remove
-                                                                Shift</Button>
-                                                        </Box>
-                                                    ))}
-
-                                                    <TextField
-                                                        label="Notes"
-                                                        multiline
-                                                        rows={3}
-                                                        fullWidth
-                                                        value={volunteer.volunteer_notes}
-                                                        onChange={e => {
-                                                            const updatedVolunteers = [...volunteers];
-                                                            updatedVolunteers[index].volunteer_notes = e.target.value;
-                                                            setVolunteers(updatedVolunteers);
-                                                        }}
-                                                        margin="normal"
-                                                    />
-                                                </Collapse>
-                                            </Box>
-                                        )}
-                                    </Draggable>
-                                ))}
-                                {provided.placeholder}
-                            </div>
-                        )}
-                    </Droppable>
-                </DragDropContext>
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                >
+                    <SortableContext
+                        items={volunteers.map((_, index) => index.toString())}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        {volunteers && volunteers.length > 0 && volunteers.map((volunteer, index) => (
+                            <SortableVolunteer
+                                key={index}
+                                volunteer={volunteer}
+                                index={index}
+                                volunteers={volunteers}
+                                setVolunteers={setVolunteers}
+                                expanded={expanded}
+                                toggleExpand={toggleExpand}
+                                handleAddShift={handleAddShift}
+                                handleRemoveShift={handleRemoveShift}
+                                handleRemoveAllShifts={handleRemoveAllShifts}
+                                daysOfWeek={daysOfWeek}
+                            />
+                        ))}
+                    </SortableContext>
+                </DndContext>
             )}
 
             <Modal open={showModal} onClose={() => setShowModal(false)}>
