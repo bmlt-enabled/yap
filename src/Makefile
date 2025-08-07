@@ -7,11 +7,6 @@ run: serve
 serve:
 	env ENVIRONMENT=dev php -dxdebug.mode=debug -dxdebug.start_with_request=yes -S localhost:8000 -t . server.php
 
-// To run a specific test, use the following command: make test-debug test=SmsGatewayTest
-.PHONY: test-debug
-test-debug:
-	php -dxdebug.mode=debug -dxdebug.start_with_request=yes -dxdebug.client_port=9003 vendor/bin/pest tests/Feature/$(test).php
-
 .PHONY: e2e-test
 e2e-test:
 	env CYPRESS_BASE_URL=http://localhost:8000 npx cypress run
@@ -37,6 +32,11 @@ simulate:
 .PHONY: test
 test:
 	php -dxdebug.mode=debug -dxdebug.start_with_request=yes -dxdebug.client_port=9003 vendor/bin/pest
+
+// To run a specific test, use the following command: make test-debug test=SmsGatewayTest
+.PHONY: test-debug
+test-debug:
+	ENVIRONMENT=test php -dxdebug.mode=debug -dxdebug.start_with_request=yes -dxdebug.client_port=9003 vendor/bin/pest tests/Feature/$(test).php
 
 .PHONY: coverage-xml
 coverage-xml:
