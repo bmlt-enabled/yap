@@ -177,7 +177,7 @@ function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expand
                         />
                     </FormControl>
                 </Box>
-                <Box>
+                <Box sx={{ position: 'relative', zIndex: 2 }}>
                     <Button variant="outlined" onClick={() => handleAddShift(index)}>Add
                         Shift</Button>
                     <Button variant="outlined" color="error"
@@ -187,16 +187,88 @@ function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expand
 
                 {Array.isArray(volunteer.volunteer_shift_schedule) && volunteer.volunteer_shift_schedule.length > 0 && volunteer.volunteer_shift_schedule.map((shift, shiftIndex) => (
                     <Box key={shiftIndex} sx={{
-                        backgroundColor: '#f0f0f0',
-                        padding: 1,
-                        marginTop: 1,
-                        borderRadius: 1
+                        backgroundColor: '#f8f9fa',
+                        border: '1px solid #e9ecef',
+                        padding: 2,
+                        marginTop: 2,
+                        borderRadius: 2,
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                        position: 'relative',
+                        zIndex: 2,
                     }}>
-                        <p>Day: {daysOfWeek[shift.day]}, Start: {shift.start_time},
-                            End: {shift.end_time}, Type: {shift.type}</p>
-                        <Button variant="contained" color="error"
-                                onClick={() => handleRemoveShift(index, shiftIndex)}>Remove
-                            Shift</Button>
+                        <Box sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: 1
+                        }}>
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1
+                            }}>
+                                <Box sx={{
+                                    backgroundColor: '#007bff',
+                                    color: 'white',
+                                    padding: '4px 8px',
+                                    borderRadius: 1,
+                                    fontSize: '0.875rem',
+                                    fontWeight: 'bold',
+                                    minWidth: '80px',
+                                    textAlign: 'center'
+                                }}>
+                                    {daysOfWeek[shift.day]}
+                                </Box>
+                                <Box sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1,
+                                    color: '#495057'
+                                }}>
+                                    <span style={{ fontWeight: 'bold' }}>{shift.start_time}</span>
+                                    <span>→</span>
+                                    <span style={{ fontWeight: 'bold' }}>{shift.end_time}</span>
+                                </Box>
+                            </Box>
+                            <Box sx={{
+                                display: 'flex',
+                                gap: 0.5
+                            }}>
+                                {shift.type.includes('PHONE') && (
+                                    <Box sx={{
+                                        backgroundColor: '#28a745',
+                                        color: 'white',
+                                        padding: '2px 6px',
+                                        borderRadius: 1,
+                                        fontSize: '0.75rem',
+                                        fontWeight: 'bold'
+                                    }}>
+                                        📞 Phone
+                                    </Box>
+                                )}
+                                {shift.type.includes('SMS') && (
+                                    <Box sx={{
+                                        backgroundColor: '#17a2b8',
+                                        color: 'white',
+                                        padding: '2px 6px',
+                                        borderRadius: 1,
+                                        fontSize: '0.75rem',
+                                        fontWeight: 'bold'
+                                    }}>
+                                        💬 SMS
+                                    </Box>
+                                )}
+                            </Box>
+                        </Box>
+                        <Button 
+                            variant="outlined" 
+                            color="error" 
+                            size="small"
+                            onClick={() => handleRemoveShift(index, shiftIndex)}
+                            sx={{ marginTop: 1 }}
+                        >
+                            Remove Shift
+                        </Button>
                     </Box>
                 ))}
 
@@ -212,6 +284,7 @@ function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expand
                         setVolunteers(updatedVolunteers);
                     }}
                     margin="normal"
+                    sx={{ position: 'relative', zIndex: 2 }}
                 />
             </Collapse>
 
@@ -330,11 +403,11 @@ function Volunteers() {
     const saveShift = () => {
         const updatedVolunteers = [...volunteers];
 
-        if (!Array.isArray(updatedVolunteers[currentVolunteer].shifts)) {
-            updatedVolunteers[currentVolunteer].shifts = [];
+        if (!Array.isArray(updatedVolunteers[currentVolunteer].volunteer_shift_schedule)) {
+            updatedVolunteers[currentVolunteer].volunteer_shift_schedule = [];
         }
 
-        updatedVolunteers[currentVolunteer].shifts.push(shiftData);
+        updatedVolunteers[currentVolunteer].volunteer_shift_schedule.push(shiftData);
         setVolunteers(updatedVolunteers);
         setShowModal(false);
         setShiftData(defaultShift);
@@ -342,13 +415,13 @@ function Volunteers() {
 
     const handleRemoveShift = (volunteerIndex, shiftIndex) => {
         const updatedVolunteers = [...volunteers];
-        updatedVolunteers[volunteerIndex].shifts.splice(shiftIndex, 1);
+        updatedVolunteers[volunteerIndex].volunteer_shift_schedule.splice(shiftIndex, 1);
         setVolunteers(updatedVolunteers);
-    };
+    };  
 
     const handleRemoveAllShifts = (volunteerIndex) => {
         const updatedVolunteers = [...volunteers];
-        updatedVolunteers[volunteerIndex].shifts = [];
+        updatedVolunteers[volunteerIndex].volunteer_shift_schedule = [];
         setVolunteers(updatedVolunteers);
     };
 
