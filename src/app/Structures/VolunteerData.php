@@ -18,7 +18,11 @@ class VolunteerData extends Structure
         if ($volunteer) {
             // Dynamically assign all properties from the passed group object
             foreach (get_object_vars($volunteer) as $property => $value) {
+                if ($property == "volunteer_shift_schedule") {
+                    $this->$property = base64_decode($value);
+                } else {
                 $this->$property = $value;
+                }
             }
         } else {
             // Optionally, set default values here

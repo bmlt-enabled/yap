@@ -187,7 +187,7 @@ function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expand
 
                 {Array.isArray(volunteer.volunteer_shift_schedule) && volunteer.volunteer_shift_schedule.length > 0 && volunteer.volunteer_shift_schedule.map((shift, shiftIndex) => (
                     <Box key={shiftIndex} sx={{
-                        backgroundColor: '#f8f9fa',
+                        backgroundColor: 'transparent',
                         border: '1px solid #e9ecef',
                         padding: 2,
                         marginTop: 2,
@@ -358,13 +358,8 @@ function Volunteers() {
         setLoading(true);
         try {
             let response = await apiClient(`${rootUrl}/api/v1/volunteers?serviceBodyId=${serviceBodyId}`);
-            let responseData = await response.data;
-            // Decode shift schedules for each volunteer
-            const decodedVolunteers = responseData.data.map(volunteer => ({
-                ...volunteer,
-                volunteer_shift_schedule: decodeShiftSchedule(volunteer.volunteer_shift_schedule)
-            }));
-            setVolunteers(decodedVolunteers);
+            let responseData = await response.data;            
+            setVolunteers(responseData.data);
         } catch (error) {
             console.error('Error fetching volunteers:', error);
         } finally {
@@ -382,12 +377,7 @@ function Volunteers() {
             }));
             let response = await apiClient.post(`${rootUrl}/api/v1/volunteers?serviceBodyId=${serviceBodyId}`, encodedVolunteers);
             let responseData = await response.data;
-            // Decode the response data
-            const decodedVolunteers = responseData.data.map(volunteer => ({
-                ...volunteer,
-                volunteer_shift_schedule: decodeShiftSchedule(volunteer.volunteer_shift_schedule)
-            }));
-            setVolunteers(decodedVolunteers);
+            setVolunteers(responseData.data);
         } catch (error) {
             console.error('Error saving volunteers:', error);
         } finally {

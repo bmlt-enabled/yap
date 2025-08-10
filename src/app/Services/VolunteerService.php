@@ -54,8 +54,8 @@ class VolunteerService extends Service
 
         $volunteerList = [];
         foreach ($volunteerData as $volunteerDatum) {
-            if (count($volunteerData) > 0) {
-                $volunteers = json_decode($volunteerDatum->data);
+            if (count($volunteerDatum->data) > 0) {
+                $volunteers = $volunteerDatum->data;
                 for ($v = 0; $v < count($volunteers); $v++) {
                     if (isset($volunteers[$v]->group_id) && isset($volunteers[$v]->group_enabled)
                     && json_decode($volunteers[$v]->group_enabled)) {
