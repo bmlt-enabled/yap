@@ -19,9 +19,9 @@ class VolunteerData extends Structure
             // Dynamically assign all properties from the passed group object
             foreach (get_object_vars($volunteer) as $property => $value) {
                 if ($property == "volunteer_shift_schedule") {
-                    $this->$property = base64_decode($value);
+                    $this->$property = \App\Utilities\VolunteerScheduleHelpers::dataDecoder($value);
                 } else {
-                $this->$property = $value;
+                    $this->$property = $value;
                 }
             }
         } else {
@@ -34,24 +34,5 @@ class VolunteerData extends Structure
             $this->volunteer_enabled = false;
             $this->volunteer_shift_schedule = "";
         }
-    }
-
-    public function get247Schedule()
-    {
-        $shiftTz = "America/New_York";
-        $shiftStart = "12:00 AM";
-        $shiftEnd = "11:59 PM";
-
-        $shifts = [];
-        for ($i = 1; $i <= 7; $i++) {
-            $shifts[] = [
-                "day" => $i,
-                "tz" => $shiftTz,
-                "start_time" => $shiftStart,
-                "end_time" => $shiftEnd,
-            ];
-        }
-
-        return base64_encode(json_encode($shifts));
     }
 }

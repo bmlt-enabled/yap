@@ -334,17 +334,6 @@ function Volunteers() {
         })
     );
 
-    const decodeShiftSchedule = (base64Schedule) => {
-        try {
-            if (!base64Schedule) return [];
-            const decodedString = atob(base64Schedule);
-            return JSON.parse(decodedString);
-        } catch (error) {
-            console.error('Error decoding shift schedule:', error);
-            return [];
-        }
-    };
-
     const serviceBodiesHandleChange = (event, index) => {
         setServiceBodyId(event)
         getVolunteers(event)

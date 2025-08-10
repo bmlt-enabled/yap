@@ -170,7 +170,7 @@ class VolunteerService extends Service
             $volunteerInfo->name = $volunteer->volunteer_name
                 . (isset($volunteer->volunteer_gender) ? " " . VolunteerGender::getGenderById($volunteer->volunteer_gender) : "")
                 . (isset($volunteer->volunteer_language) ? " " . json_encode($volunteer->volunteer_language) : "");
-            $volunteerInfo->shift_info = VolunteerScheduleHelpers::dataDecoder($volunteer->volunteer_shift_schedule);
+            $volunteerInfo->shift_info = $volunteer->volunteer_shift_schedule;
             $volunteerInfo->number = $volunteer->volunteer_phone_number;
             $volunteerInfo->gender = $volunteer->volunteer_gender ?? VolunteerGender::UNSPECIFIED;
             $volunteerInfo->responder = $volunteer->volunteer_responder ?? VolunteerResponderOption::UNSPECIFIED;
@@ -216,7 +216,7 @@ class VolunteerService extends Service
     public function getGroupVolunteers($group_id)
     {
         $groupData = ConfigData::getGroupVolunteers($group_id);
-        return isset($groupData[0]->data) ? json_decode($groupData[0]->data) : array();
+        return isset($groupData[0]->data) ? $groupData[0]->data : array();
     }
 
     private function getVolunteerInfo($volunteers): array
@@ -227,7 +227,7 @@ class VolunteerService extends Service
             $volunteer = $volunteers[$v];
             if (isset($volunteer->volunteer_enabled) && $volunteer->volunteer_enabled &&
                 isset($volunteer->volunteer_phone_number) && strlen($volunteer->volunteer_phone_number) > 0) {
-                $volunteerShiftSchedule = VolunteerScheduleHelpers::dataDecoder($volunteer->volunteer_shift_schedule);
+                $volunteerShiftSchedule = $volunteer->volunteer_shift_schedule;
                 foreach ($volunteerShiftSchedule as $vsi) {
                     $volunteerInfo = new VolunteerInfo();
                     $volunteerInfo->type = isset($vsi->type) ? $vsi->type : $volunteerInfo->type;

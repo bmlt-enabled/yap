@@ -13,6 +13,29 @@ class VolunteerScheduleHelpers
         return json_decode(base64_decode($dataString));
     }
 
+    public static function decodeVolunteerData($volunteerData)
+    {
+        if (isset($volunteerData->volunteer_shift_schedule)) {
+            $volunteerData->volunteer_shift_schedule = self::dataDecoder($volunteerData->volunteer_shift_schedule);
+        }
+        return $volunteerData;
+    }
+
+    public static function decodeVolunteersCollection($volunteersCollection)
+    {
+        foreach ($volunteersCollection as $volunteer) {
+            $decodedData = json_decode($volunteer->data);
+            if (is_array($decodedData) && count($decodedData) > 0) {
+                // Decode the shift schedule for each volunteer in the array
+                foreach ($decodedData as $volunteerData) {
+                    self::decodeVolunteerData($volunteerData);
+                }
+            }
+            $volunteer->data = $decodedData;
+        }
+        return $volunteersCollection;
+    }
+
     public static function getNameHashColorCode($str): string
     {
         $code = dechex(crc32($str));

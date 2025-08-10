@@ -8,6 +8,7 @@ use App\Structures\Group;
 use App\Structures\ServiceBodyCallHandling;
 use App\Structures\Settings;
 use App\Structures\VolunteerData;
+use App\Utilities\VolunteerScheduleHelpers;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use stdClass;
@@ -128,11 +129,13 @@ class ConfigData extends Model
     public static function getGroupVolunteers(
         int $groupId
     ) : Collection {
-        return ConfigData::select(['data','service_body_id','id','parent_id'])
+        $volunteers = ConfigData::select(['data','service_body_id','id','parent_id'])
             ->where('parent_id', $groupId)
             ->where('data_type', DataType::YAP_GROUP_VOLUNTEERS_V2)
             ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
             ->get();
+
+        return VolunteerScheduleHelpers::decodeVolunteersCollection($volunteers);
     }
 
     public static function createVolunteer(
@@ -156,20 +159,7 @@ class ConfigData extends Model
             ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
             ->get();
 
-        foreach ($volunteers as $volunteer) {
-            $decodedData = json_decode($volunteer->data);
-            if (is_array($decodedData) && count($decodedData) > 0) {
-                // Decode the shift schedule for each volunteer in the array
-                foreach ($decodedData as $volunteerData) {
-                    if (isset($volunteerData->volunteer_shift_schedule)) {
-                        $volunteerData->volunteer_shift_schedule = json_decode(base64_decode($volunteerData->volunteer_shift_schedule));
-                    }
-                }
-            }
-            $volunteer->data = $decodedData;
-        }
-
-        return $volunteers;
+        return VolunteerScheduleHelpers::decodeVolunteersCollection($volunteers);
     }
 
     public static function getVolunteersRecursively(array $serviceBodyIds) : Collection
@@ -180,20 +170,7 @@ class ConfigData extends Model
             ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
             ->get();
 
-        foreach ($volunteers as $volunteer) {
-            $decodedData = json_decode($volunteer->data);
-            if (is_array($decodedData) && count($decodedData) > 0) {
-                // Decode the shift schedule for each volunteer in the array
-                foreach ($decodedData as $volunteerData) {
-                    if (isset($volunteerData->volunteer_shift_schedule)) {
-                        $volunteerData->volunteer_shift_schedule = json_decode(base64_decode($volunteerData->volunteer_shift_schedule));
-                    }
-                }
-            }
-            $volunteer->data = $decodedData;
-        }
-
-        return $volunteers;
+        return VolunteerScheduleHelpers::decodeVolunteersCollection($volunteers);
     }
 
     public static function getCallHandling(int $serviceBodyId): Collection
