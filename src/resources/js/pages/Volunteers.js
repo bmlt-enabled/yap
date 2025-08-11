@@ -228,6 +228,19 @@ function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expand
                                     <span style={{ fontWeight: 'bold' }}>{shift.start_time}</span>
                                     <span>→</span>
                                     <span style={{ fontWeight: 'bold' }}>{shift.end_time}</span>
+                                    {shift.tz && (
+                                        <Box sx={{
+                                            backgroundColor: '#6c757d',
+                                            color: 'white',
+                                            padding: '2px 6px',
+                                            borderRadius: 1,
+                                            fontSize: '0.7rem',
+                                            fontWeight: 'bold',
+                                            marginLeft: 1
+                                        }}>
+                                            {shift.tz}
+                                        </Box>
+                                    )}
                                 </Box>
                             </Box>
                             <Box sx={{
@@ -318,6 +331,9 @@ function Volunteers() {
     const [shiftData, setShiftData] = useState("");
     const [expanded, setExpanded] = useState({});
     const [loading, setLoading] = useState(false);
+    const [timezones, setTimezones] = useState([]);
+    const [currentTimezone, setCurrentTimezone] = useState('');
+    const [timezoneOpen, setTimezoneOpen] = useState(false);
     const daysOfWeekData = getWord('days_of_the_week');
     let daysOfWeek = [];
     
@@ -333,6 +349,29 @@ function Volunteers() {
         }
     }
     
+    // Get current browser timezone
+    React.useEffect(() => {
+        const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        setCurrentTimezone(browserTimezone);
+        
+        // Set default timezone in shiftData
+        setShiftData(prev => ({ ...prev, tz: browserTimezone }));
+    }, []);
+
+    // Fetch timezones from API
+    React.useEffect(() => {
+        const fetchTimezones = async () => {
+            try {
+                const response = await apiClient.get('/api/v1/settings/timezones');
+                setTimezones(response.data);
+            } catch (error) {
+                console.error('Error fetching timezones:', error);
+            }
+        };
+        
+        fetchTimezones();
+    }, []);
+
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, {
@@ -382,6 +421,7 @@ function Volunteers() {
 
     const handleAddShift = (volunteerIndex) => {
         setCurrentVolunteer(volunteerIndex);
+        setShiftData({ ...defaultShift, tz: currentTimezone });
         setShowModal(true);
     };
 
@@ -395,7 +435,8 @@ function Volunteers() {
         updatedVolunteers[currentVolunteer].volunteer_shift_schedule.push(shiftData);
         setVolunteers(updatedVolunteers);
         setShowModal(false);
-        setShiftData(defaultShift);
+        setShiftData({ ...defaultShift, tz: currentTimezone });
+        setTimezoneOpen(false);
     };
 
     const handleRemoveShift = (volunteerIndex, shiftIndex) => {
@@ -474,7 +515,10 @@ function Volunteers() {
                 </DndContext>
             )}
 
-            <Modal open={showModal} onClose={() => setShowModal(false)}>
+            <Modal open={showModal} onClose={() => {
+                setShowModal(false);
+                setTimezoneOpen(false);
+            }}>
                 <Box sx={{
                     position: 'absolute',
                     top: '50%',
@@ -516,6 +560,31 @@ function Volunteers() {
                         margin="normal"
                     />
                     <FormControl fullWidth margin="normal">
+                        <InputLabel>{getWord('timezone')}</InputLabel>
+                        <Select
+                            value={shiftData.tz || currentTimezone}
+                            onChange={e => setShiftData({ ...shiftData, tz: e.target.value })}
+                            label={getWord('timezone')}
+                            open={timezoneOpen}
+                            onOpen={() => setTimezoneOpen(true)}
+                            onClose={() => setTimezoneOpen(false)}
+                            MenuProps={{
+                                PaperProps: {
+                                    style: {
+                                        maxHeight: 300
+                                    }
+                                },
+                                disableScrollLock: true
+                            }}
+                        >
+                            {timezones.map((timezone) => (
+                                <MenuItem key={timezone} value={timezone}>
+                                    {timezone}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <FormControl fullWidth margin="normal">
                         <InputLabel>{getWord('type')}</InputLabel>
                         <Select
                             value={shiftData.type}
@@ -528,7 +597,10 @@ function Volunteers() {
                         </Select>
                     </FormControl>
                     <Button variant="contained" color="primary" onClick={saveShift}>{getWord('save_shift')}</Button>
-                    <Button variant="outlined" onClick={() => setShowModal(false)} style={{ marginLeft: '10px' }}>{getWord('close')}</Button>
+                    <Button variant="outlined" onClick={() => {
+                        setShowModal(false);
+                        setTimezoneOpen(false);
+                    }} style={{ marginLeft: '10px' }}>{getWord('close')}</Button>
                 </Box>
             </Modal>
         </div>

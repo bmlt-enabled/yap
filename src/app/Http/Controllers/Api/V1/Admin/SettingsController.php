@@ -7,6 +7,7 @@ use App\Services\SettingsService;
 use App\Models\ConfigData;
 use App\Constants\DataType;
 use App\Structures\Settings;
+use App\Utilities\VolunteerScheduleHelpers;
 use Illuminate\Http\Request;
 
 /**
@@ -272,5 +273,26 @@ class SettingsController extends Controller
         }
         
         return response()->json($localizationData);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/settings/timezones",
+     *     tags={"Settings"},
+     *     summary="Get list of all available timezones",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Timezone list retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(type="string")
+     *         )
+     *     )
+     * )
+     */
+    public function getTimezones()
+    {
+        $timezones = VolunteerScheduleHelpers::getTimezoneList();
+        return response()->json($timezones);
     }
 }
