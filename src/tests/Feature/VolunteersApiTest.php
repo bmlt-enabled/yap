@@ -22,7 +22,7 @@ beforeEach(function () {
 });
 
 test('get schedule for service body phone volunteer', function () {
-    Sanctum::actingAs(User::factory()->create());    
+    Sanctum::actingAs(User::factory()->create());
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     $shiftDay = 2;

@@ -74,14 +74,14 @@ test('get localizations with french session language', function () {
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
         ->assertJsonStructure([
-            'language_title',    
+            'language_title',
             'volunteers',
         ]);
     
     // Verify it returns French localizations
     $response->assertJson([
         'language_title' => 'français',
-        'volunteers' => 'volontaires',        
+        'volunteers' => 'volontaires',
     ]);
 });
 
@@ -127,7 +127,7 @@ test('get localizations returns days of the week array', function () {
     $response->assertJson([
         'days_of_the_week' => [
             1 => 'Sunday',
-            2 => 'Monday', 
+            2 => 'Monday',
             3 => 'Tuesday',
             4 => 'Wednesday',
             5 => 'Thursday',
@@ -153,7 +153,7 @@ test('get localizations with spanish days of the week', function () {
             'days_of_the_week' => [
                 1 => 'Domingo',
                 2 => 'Lunes',
-                3 => 'Martes', 
+                3 => 'Martes',
                 4 => 'Miércoles',
                 5 => 'Jueves',
                 6 => 'Viernes',

@@ -29,6 +29,10 @@ class VolunteerScheduleHelpers
                         $schedule->day_name = $daysOfWeek[$schedule->day];
                     }
                 }
+
+                usort($volunteerData->volunteer_shift_schedule, function ($a, $b) {
+                    return $a->day <=> $b->day;
+                });
             }
         }
         return $volunteerData;
