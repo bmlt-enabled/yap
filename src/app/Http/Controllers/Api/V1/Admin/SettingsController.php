@@ -240,4 +240,37 @@ class SettingsController extends Controller
 
         return response()->json($fields);
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/settings/localizations",
+     *     tags={"Settings"},
+     *     summary="Get localization words for the current session language",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Localization words retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             description="Localization words for the current session language"
+     *         )
+     *     )
+     * )
+     */
+    public function getLocalizations()
+    {
+        $localizations = new \App\Structures\Localizations();
+        
+        // Get the current language from the session via SettingsService
+        $currentLanguage = $this->settingsService->getWordLanguage();
+        
+        // Get the localization data for the current language
+        $localizationData = $localizations->getLocalization($currentLanguage);
+        
+        // Convert to array if it's an object
+        if (is_object($localizationData)) {
+            $localizationData = (array) $localizationData;
+        }
+        
+        return response()->json($localizationData);
+    }
 }

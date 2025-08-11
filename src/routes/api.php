@@ -39,6 +39,7 @@ Route::group([
         Route::controller(SettingsController::class)->group(function () {
             Route::get('settings', 'index');
             Route::get('settings/allowlist', 'allowlist');
+            Route::get('settings/localizations', 'getLocalizations');
             Route::get('settings/serviceBody/{serviceBodyId}', 'getServiceBodyConfiguration');
             Route::post('settings/serviceBody/{serviceBodyId}', 'saveServiceBodyConfiguration');
         });

@@ -129,7 +129,6 @@ class SettingsService
 
     private object $localizations;
     private string $shortLanguage;
-    private bool $randomConferences = true;
 
     public function __construct()
     {

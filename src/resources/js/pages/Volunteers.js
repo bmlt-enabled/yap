@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import ServiceBodiesDropdown from "../components/ServiceBodiesDropdown";
+import { useLocalization } from "../contexts/LocalizationContext";
 import {
     DndContext,
     closestCenter,
@@ -40,7 +41,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 // Sortable Volunteer Component
-function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expanded, toggleExpand, handleAddShift, handleRemoveShift, handleRemoveAllShifts, daysOfWeek }) {
+function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expanded, toggleExpand, handleAddShift, handleRemoveShift, handleRemoveAllShifts, daysOfWeek, getWord }) {
     const {
         attributes,
         listeners,
@@ -101,11 +102,11 @@ function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expand
                                 }}
                             />
                         }
-                        label="Enabled"
+                        label={getWord('enabled')}
                     />
                 </Box>
                 <TextField
-                    label="Volunteer Name"
+                    label={getWord('volunteer_name')}
                     value={volunteer.volunteer_name}
                     onChange={e => {
                         const updatedVolunteers = [...volunteers];
@@ -122,7 +123,7 @@ function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expand
                     onClick={() => setVolunteers(volunteers.filter((_, i) => i !== index))}
                     sx={{ position: 'relative', zIndex: 2 }}
                 >
-                    Remove
+                    {getWord('remove')}
                 </Button>
             </Box>
 
@@ -133,7 +134,7 @@ function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expand
                     zIndex: 2,
                 }}>
                     <TextField
-                        label="Phone Number"
+                        label={getWord('phone_number')}
                         value={volunteer.volunteer_phone_number}
                         onChange={e => {
                             const updatedVolunteers = [...volunteers];
@@ -143,7 +144,7 @@ function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expand
                         margin="normal"
                     />
                     <FormControl sx={{padding: 2}}>
-                        <FormLabel id="gender-group-label">Gender</FormLabel>
+                        <FormLabel id="gender-group-label">{getWord('gender')}</FormLabel>
                         <RadioGroup
                             row
                             aria-labelledby="demo-radio-buttons-group-label"
@@ -155,14 +156,14 @@ function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expand
                                 setVolunteers(updatedVolunteers);
                             }}
                         >
-                            <FormControlLabel value={0} control={<Radio />} label="Unassigned" labelPlacement="bottom"/>
-                            <FormControlLabel value={1} control={<Radio />} label="Male" labelPlacement="bottom" />
-                            <FormControlLabel value={2} control={<Radio />} label="Female" labelPlacement="bottom" />
-                            <FormControlLabel value={3} control={<Radio />} label="Unspecified" labelPlacement="bottom" />
+                            <FormControlLabel value={0} control={<Radio />} label={getWord('unassigned')} labelPlacement="bottom"/>
+                            <FormControlLabel value={1} control={<Radio />} label={getWord('male')} labelPlacement="bottom" />
+                            <FormControlLabel value={2} control={<Radio />} label={getWord('female')} labelPlacement="bottom" />
+                            <FormControlLabel value={3} control={<Radio />} label={getWord('unspecified')} labelPlacement="bottom" />
                         </RadioGroup>
                     </FormControl>
                     <FormControl sx={{padding: 2}}>
-                        <FormLabel id="options-group-label">Options</FormLabel>
+                        <FormLabel id="options-group-label">{getWord('options')}</FormLabel>
                         <FormControlLabel control={
                             <Checkbox
                                 checked={volunteer.volunteer_responder === 1}
@@ -173,16 +174,15 @@ function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expand
                                 }}
                             />
                         }
-                        label="Responder"
+                        label={getWord('responder')}
                         />
                     </FormControl>
                 </Box>
                 <Box sx={{ position: 'relative', zIndex: 2 }}>
-                    <Button variant="outlined" onClick={() => handleAddShift(index)}>Add
-                        Shift</Button>
+                    <Button variant="outlined" onClick={() => handleAddShift(index)}>{getWord('add_shift')}</Button>
                     <Button variant="outlined" color="error"
                             onClick={() => handleRemoveAllShifts(index)}
-                            style={{marginLeft: '10px'}}>Remove All Shifts</Button>
+                            style={{marginLeft: '10px'}}>{getWord('remove_all_shifts')}</Button>
                 </Box>
 
                 {Array.isArray(volunteer.volunteer_shift_schedule) && volunteer.volunteer_shift_schedule.length > 0 && volunteer.volunteer_shift_schedule.map((shift, shiftIndex) => (
@@ -217,7 +217,7 @@ function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expand
                                     minWidth: '80px',
                                     textAlign: 'center'
                                 }}>
-                                    {daysOfWeek[shift.day]}
+                                    {shift.day_name || daysOfWeek[shift.day]}
                                 </Box>
                                 <Box sx={{
                                     display: 'flex',
@@ -267,13 +267,13 @@ function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expand
                             onClick={() => handleRemoveShift(index, shiftIndex)}
                             sx={{ marginTop: 1 }}
                         >
-                            Remove Shift
+                            {getWord('remove_shift')}
                         </Button>
                     </Box>
                 ))}
 
                 <TextField
-                    label="Notes"
+                    label={getWord('notes')}
                     multiline
                     rows={3}
                     fullWidth
@@ -310,6 +310,7 @@ function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expand
 }
 
 function Volunteers() {
+    const { getWord, loading: localizationsLoading } = useLocalization();
     const [volunteers, setVolunteers] = useState([]);
     const [serviceBodyId, setServiceBodyId] = useState();
     const [showModal, setShowModal] = useState(false);
@@ -317,16 +318,21 @@ function Volunteers() {
     const [shiftData, setShiftData] = useState("");
     const [expanded, setExpanded] = useState({});
     const [loading, setLoading] = useState(false);
-    const daysOfWeek = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday"
-    ];
-
+    const daysOfWeekData = getWord('days_of_the_week');
+    let daysOfWeek = [];
+    
+    // Convert days_of_the_week to array for dropdown (keeping this for the add shift modal)
+    if (Array.isArray(daysOfWeekData)) {
+        daysOfWeek = daysOfWeekData;
+    } else if (daysOfWeekData && typeof daysOfWeekData === 'object') {
+        // Convert object with 1-based numeric keys to array
+        for (let i = 1; i <= 7; i++) {
+            if (daysOfWeekData[i]) {
+                daysOfWeek.push(daysOfWeekData[i]);
+            }
+        }
+    }
+    
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, {
@@ -428,9 +434,9 @@ function Volunteers() {
                     <ButtonGroup sx={{
                         padding: 2
                     }}>
-                        <Button variant="contained" color="primary" onClick={handleAddVolunteer}>Add Volunteer</Button>
-                        <Button variant="contained" color="success" onClick={saveVolunteers}>Save Volunteers</Button>
-                        <Button variant="contained" color="warning">Include Group</Button>
+                        <Button variant="contained" color="primary" onClick={handleAddVolunteer}>{getWord('add_volunteer')}</Button>
+                        <Button variant="contained" color="success" onClick={saveVolunteers}>{getWord('save_volunteers')}</Button>
+                        <Button variant="contained" color="warning">{getWord('include_group')}</Button>
                     </ButtonGroup> : ""}
             </div>
 
@@ -461,6 +467,7 @@ function Volunteers() {
                                 handleRemoveShift={handleRemoveShift}
                                 handleRemoveAllShifts={handleRemoveAllShifts}
                                 daysOfWeek={daysOfWeek}
+                                getWord={getWord}
                             />
                         ))}
                     </SortableContext>
@@ -479,21 +486,21 @@ function Volunteers() {
                     boxShadow: 24,
                     p: 4
                 }}>
-                    <h2>Add Shift</h2>
+                    <h2>{getWord('add_shift')}</h2>
                     <FormControl fullWidth margin="normal">
-                        <InputLabel>Day of the Week</InputLabel>
+                        <InputLabel>{getWord('day_of_the_week')}</InputLabel>
                         <Select
                             value={shiftData.day}
                             onChange={e => setShiftData({ ...shiftData, day: e.target.value })}
-                            label="Day of the Week"
+                            label={getWord('day_of_the_week')}
                         >
-                            {daysOfWeek.map((day, index) => (
-                                <MenuItem key={index} value={index}>{day}</MenuItem>
+                            {daysOfWeek && daysOfWeek.length > 0 && daysOfWeek.map((day, index) => (
+                                <MenuItem key={index} value={index + 1}>{day}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>
                     <TextField
-                        label="Start Time"
+                        label={getWord('start_time')}
                         type="time"
                         value={shiftData.start_time}
                         onChange={e => setShiftData({ ...shiftData, start_time: e.target.value })}
@@ -501,7 +508,7 @@ function Volunteers() {
                         margin="normal"
                     />
                     <TextField
-                        label="End Time"
+                        label={getWord('end_time')}
                         type="time"
                         value={shiftData.end_time}
                         onChange={e => setShiftData({ ...shiftData, end_time: e.target.value })}
@@ -509,19 +516,19 @@ function Volunteers() {
                         margin="normal"
                     />
                     <FormControl fullWidth margin="normal">
-                        <InputLabel>Type</InputLabel>
+                        <InputLabel>{getWord('type')}</InputLabel>
                         <Select
                             value={shiftData.type}
                             onChange={e => setShiftData({ ...shiftData, type: e.target.value })}
-                            label="Type"
+                            label={getWord('type')}
                         >
-                            <MenuItem value="PHONE">Phone</MenuItem>
-                            <MenuItem value="SMS">SMS</MenuItem>
-                            <MenuItem value="PHONE,SMS">Phone + SMS</MenuItem>
+                            <MenuItem value="PHONE">{getWord('phone')}</MenuItem>
+                            <MenuItem value="SMS">{getWord('sms')}</MenuItem>
+                            <MenuItem value="PHONE,SMS">{getWord('phone_sms')}</MenuItem>
                         </Select>
                     </FormControl>
-                    <Button variant="contained" color="primary" onClick={saveShift}>Save Shift</Button>
-                    <Button variant="outlined" onClick={() => setShowModal(false)} style={{ marginLeft: '10px' }}>Close</Button>
+                    <Button variant="contained" color="primary" onClick={saveShift}>{getWord('save_shift')}</Button>
+                    <Button variant="outlined" onClick={() => setShowModal(false)} style={{ marginLeft: '10px' }}>{getWord('close')}</Button>
                 </Box>
             </Modal>
         </div>

@@ -5,6 +5,7 @@ namespace App\Utilities;
 use App\Services\SettingsService;
 use DateTime;
 use DateTimeZone;
+use Illuminate\Support\Facades\App;
 
 class VolunteerScheduleHelpers
 {
@@ -17,6 +18,18 @@ class VolunteerScheduleHelpers
     {
         if (isset($volunteerData->volunteer_shift_schedule)) {
             $volunteerData->volunteer_shift_schedule = self::dataDecoder($volunteerData->volunteer_shift_schedule);
+            
+            // Add localized day names to each schedule item
+            if (is_array($volunteerData->volunteer_shift_schedule)) {
+                $settings = App::make(SettingsService::class);
+                $daysOfWeek = $settings->word('days_of_the_week');
+                
+                foreach ($volunteerData->volunteer_shift_schedule as $schedule) {
+                    if (isset($schedule->day) && isset($daysOfWeek[$schedule->day])) {
+                        $schedule->day_name = $daysOfWeek[$schedule->day];
+                    }
+                }
+            }
         }
         return $volunteerData;
     }
