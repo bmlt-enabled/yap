@@ -9,6 +9,7 @@ use App\Constants\DataType;
 use App\Structures\Settings;
 use App\Utilities\VolunteerScheduleHelpers;
 use Illuminate\Http\Request;
+use App\Structures\Localizations;
 
 /**
  * @OA\Tag(
@@ -259,7 +260,7 @@ class SettingsController extends Controller
      */
     public function getLocalizations()
     {
-        $localizations = new \App\Structures\Localizations();
+        $localizations = new Localizations();
         
         // Get the current language from the session via SettingsService
         $currentLanguage = $this->settingsService->getWordLanguage();
@@ -271,6 +272,9 @@ class SettingsController extends Controller
         if (is_object($localizationData)) {
             $localizationData = (array) $localizationData;
         }
+        
+        // Sort the localization data alphabetically by keys
+        ksort($localizationData);
         
         return response()->json($localizationData);
     }
