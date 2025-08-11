@@ -280,7 +280,8 @@ test('return volunteers json', function () {
             "day"=>$shiftDay,
             "tz"=>$shiftTz,
             "start_time"=>$shiftStart,
-            "end_time"=>$shiftEnd
+            "end_time"=>$shiftEnd,
+            "day_name"=>"Sunday"
         ]]
     ]];
     $response
@@ -291,7 +292,7 @@ test('return volunteers json', function () {
 
 test('return volunteers without notes json', function () {
     Sanctum::actingAs(User::factory()->create());
-    ;
+
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $volunteer_name = "Corey";
     $volunteer_phone_number = "(555) 111-2222";
@@ -334,7 +335,8 @@ test('return volunteers without notes json', function () {
             "day"=>$shiftDay,
             "tz"=>$shiftTz,
             "start_time"=>$shiftStart,
-            "end_time"=>$shiftEnd
+            "end_time"=>$shiftEnd,
+            "day_name"=>"Sunday"
         ]]
     ]];
     $response
@@ -345,7 +347,7 @@ test('return volunteers without notes json', function () {
 
 test('return volunteers recursively json', function () {
     Sanctum::actingAs(User::factory()->admin()->create());
-    ;
+    
     session()->put('auth_mechanism', AuthMechanism::V2);
     session()->put('auth_is_admin', true);
     $volunteer_name = "Corey";
@@ -402,7 +404,8 @@ test('return volunteers recursively json', function () {
             "day"=>$shiftDay,
             "tz"=>$shiftTz,
             "start_time"=>$shiftStart,
-            "end_time"=>$shiftEnd
+            "end_time"=>$shiftEnd,
+            "day_name"=>"Sunday"
         ]]
     ],[
         "name"=>sprintf("%s", $volunteer_name),
@@ -417,7 +420,8 @@ test('return volunteers recursively json', function () {
             "day"=>$shiftDay,
             "tz"=>$shiftTz,
             "start_time"=>$shiftStart,
-            "end_time"=>$shiftEnd
+            "end_time"=>$shiftEnd,
+            "day_name"=>"Sunday"
         ]]
     ]];
     $response
@@ -505,7 +509,8 @@ test('return volunteers with groups recursively json', function () {
             "day"=>$shiftDay,
             "tz"=>$shiftTz,
             "start_time"=>$shiftStart,
-            "end_time"=>$shiftEnd
+            "end_time"=>$shiftEnd,
+            "day_name"=>"Sunday"
         ]]
     ],[
         "name"=>sprintf("%s", $volunteer_name),
@@ -520,7 +525,8 @@ test('return volunteers with groups recursively json', function () {
             "day"=>$shiftDay,
             "tz"=>$shiftTz,
             "start_time"=>$shiftStart,
-            "end_time"=>$shiftEnd
+            "end_time"=>$shiftEnd,
+            "day_name"=>"Sunday"
         ]]
     ],[
         "name"=>sprintf("%s", $volunteer_name),
@@ -535,7 +541,8 @@ test('return volunteers with groups recursively json', function () {
             "day"=>$shiftDay,
             "tz"=>$shiftTz,
             "start_time"=>$shiftStart,
-            "end_time"=>$shiftEnd
+            "end_time"=>$shiftEnd,
+            "day_name"=>"Sunday"
         ]]
     ]];
     $response
@@ -590,7 +597,7 @@ test('return volunteers recursively csv', function () {
         "recurse" => "true"
     ]);
 
-    $expectedResponse = "name,number,gender,responder,type,language,notes,service_body_id,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$firstServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$secondServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n";
+    $expectedResponse = "name,number,gender,responder,type,language,notes,service_body_id,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$firstServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\",\"\"day_name\"\":\"\"Sunday\"\"}]\"\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$secondServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\",\"\"day_name\"\":\"\"Sunday\"\"}]\"\n";
     $response
         ->assertContent($expectedResponse)
         ->assertHeader("Content-Type", "text/plain; charset=UTF-8")
@@ -637,7 +644,7 @@ test('return volunteers csv', function () {
         "fmt" => "csv"
     ]);
 
-    $expectedResponse = "name,number,gender,responder,type,language,notes,service_body_id,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$firstServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\"}]\"\n";
+    $expectedResponse = "name,number,gender,responder,type,language,notes,service_body_id,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$firstServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\",\"\"day_name\"\":\"\"Sunday\"\"}]\"\n";
     $response
         ->assertContent($expectedResponse)
         ->assertHeader("Content-Type", "text/plain; charset=UTF-8")
