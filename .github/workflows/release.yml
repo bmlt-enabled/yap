@@ -13,7 +13,7 @@ jobs:
           - "8.2"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         id: code-checkout
 
       - name: Install Dependencies
@@ -35,7 +35,7 @@ jobs:
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         id: code-checkout
 
       - name: Setup PHP
@@ -71,7 +71,7 @@ jobs:
           - "8.2"
     needs: [ lint, create_release ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         id: code-checkout
 
       - name: Setup PHP
