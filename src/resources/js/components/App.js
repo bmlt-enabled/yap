@@ -26,6 +26,7 @@ import {AppProvider} from "@toolpad/core";
 import LoginPage from "../pages/Login";
 import {SessionContext} from "../SessionContext"
 import ErrorBoundary from "./ErrorBoundary";
+import { LocalizationProvider } from "../contexts/LocalizationContext";
 
 export default function App() {
     const [session, setSession] = React.useState(() => {
@@ -100,14 +101,16 @@ export default function App() {
 
     return (
         <SessionContext.Provider value={sessionContextValue}>
-            <AppProvider
-                branding={branding}
-                authentication={{ signIn, signOut }}
-                session={session}
-                navigation={navigation}
-            >
-                <Outlet/>
-            </AppProvider>
+            <LocalizationProvider>
+                <AppProvider
+                    branding={branding}
+                    authentication={{ signIn, signOut }}
+                    session={session}
+                    navigation={navigation}
+                >
+                    <Outlet/>
+                </AppProvider>
+            </LocalizationProvider>
         </SessionContext.Provider>
     );
 }

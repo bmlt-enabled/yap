@@ -14,7 +14,6 @@ use App\Services\SettingsService;
 use App\Services\TwilioService;
 use App\Structures\ServiceBodyCallHandling;
 use App\Structures\VolunteerData;
-use Illuminate\Support\Facades\Session;
 use Tests\FakeTwilioHttpClient;
 
 beforeEach(function () {
@@ -88,7 +87,6 @@ test('debug messages', function ($method) {
     $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
     $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
     $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
-
 
     ConfigData::createServiceBodyCallHandling(
         $this->serviceBodyId,

@@ -1268,6 +1268,28 @@
                 }
             }
         },
+        "/api/v1/settings/localizations": {
+            "get": {
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Get localization words for the current session language",
+                "operationId": "bc8a7d9c6de78f59279a52432df54cc3",
+                "responses": {
+                    "200": {
+                        "description": "Localization words retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "Localization words for the current session language",
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/{username}": {
             "get": {
                 "tags": [

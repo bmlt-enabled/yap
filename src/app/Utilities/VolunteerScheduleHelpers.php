@@ -5,12 +5,52 @@ namespace App\Utilities;
 use App\Services\SettingsService;
 use DateTime;
 use DateTimeZone;
+use Illuminate\Support\Facades\App;
 
 class VolunteerScheduleHelpers
 {
     public static function dataDecoder($dataString)
     {
         return json_decode(base64_decode($dataString));
+    }
+
+    public static function decodeVolunteerData($volunteerData)
+    {
+        if (isset($volunteerData->volunteer_shift_schedule)) {
+            $volunteerData->volunteer_shift_schedule = self::dataDecoder($volunteerData->volunteer_shift_schedule);
+            
+            // Add localized day names to each schedule item
+            if (is_array($volunteerData->volunteer_shift_schedule)) {
+                $settings = App::make(SettingsService::class);
+                $daysOfWeek = $settings->word('days_of_the_week');
+                
+                foreach ($volunteerData->volunteer_shift_schedule as $schedule) {
+                    if (isset($schedule->day) && isset($daysOfWeek[$schedule->day])) {
+                        $schedule->day_name = $daysOfWeek[$schedule->day];
+                    }
+                }
+
+                usort($volunteerData->volunteer_shift_schedule, function ($a, $b) {
+                    return $a->day <=> $b->day;
+                });
+            }
+        }
+        return $volunteerData;
+    }
+
+    public static function decodeVolunteersCollection($volunteersCollection)
+    {
+        foreach ($volunteersCollection as $volunteer) {
+            $decodedData = json_decode($volunteer->data);
+            if (is_array($decodedData) && count($decodedData) > 0) {
+                // Decode the shift schedule for each volunteer in the array
+                foreach ($decodedData as $volunteerData) {
+                    self::decodeVolunteerData($volunteerData);
+                }
+            }
+            $volunteer->data = $decodedData;
+        }
+        return $volunteersCollection;
     }
 
     public static function getNameHashColorCode($str): string
