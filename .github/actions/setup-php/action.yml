@@ -6,7 +6,7 @@ runs:
   steps:
     - name: php ${{ matrix.php }} 🐘
       id: setup-php
-      uses: shivammathur/setup-php@2.35.2
+      uses: shivammathur/setup-php@2.35.3
       with:
         php-version: ${{ matrix.php }}
         tools: composer:v2.4.1
