@@ -7,7 +7,9 @@ use App\Services\SettingsService;
 use App\Models\ConfigData;
 use App\Constants\DataType;
 use App\Structures\Settings;
+use App\Utilities\VolunteerScheduleHelpers;
 use Illuminate\Http\Request;
+use App\Structures\Localizations;
 
 /**
  * @OA\Tag(
@@ -239,5 +241,62 @@ class SettingsController extends Controller
         }
 
         return response()->json($fields);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/settings/localizations",
+     *     tags={"Settings"},
+     *     summary="Get localization words for the current session language",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Localization words retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             description="Localization words for the current session language"
+     *         )
+     *     )
+     * )
+     */
+    public function getLocalizations()
+    {
+        $localizations = new Localizations();
+        
+        // Get the current language from the session via SettingsService
+        $currentLanguage = $this->settingsService->getWordLanguage();
+        
+        // Get the localization data for the current language
+        $localizationData = $localizations->getLocalization($currentLanguage);
+        
+        // Convert to array if it's an object
+        if (is_object($localizationData)) {
+            $localizationData = (array) $localizationData;
+        }
+        
+        // Sort the localization data alphabetically by keys
+        ksort($localizationData);
+        
+        return response()->json($localizationData);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/settings/timezones",
+     *     tags={"Settings"},
+     *     summary="Get list of all available timezones",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Timezone list retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(type="string")
+     *         )
+     *     )
+     * )
+     */
+    public function getTimezones()
+    {
+        $timezones = VolunteerScheduleHelpers::getTimezoneList();
+        return response()->json($timezones);
     }
 }

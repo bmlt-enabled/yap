@@ -11,7 +11,7 @@ use DateTimeZone;
 
 class SettingsService
 {
-    private string $version = "4.5.0";
+    private string $version = "5.0.0";
     private array $allowlist = [
         'announce_servicebody_volunteer_routing' => ['description' => '/helpline/announce_servicebody_volunteer_routing' , 'default' => false, 'overridable' => true, 'hidden' => false],
         'blocklist' => ['description' => '/general/blocklist' , 'default' => '', 'overridable' => true, 'hidden' => false],
@@ -129,7 +129,6 @@ class SettingsService
 
     private object $localizations;
     private string $shortLanguage;
-    private bool $randomConferences = true;
 
     public function __construct()
     {

@@ -27,7 +27,7 @@ class GroupVolunteerController extends Controller
                 'service_body_id' => $data[0]->service_body_id,
                 'id' => $data[0]->id,
                 'parent_id' => $data[0]->parent_id ?? null,
-                'data' => json_decode($data[0]->data)
+                'data' => $data[0]->data
             ])->header("Content-Type", "application/json");
         } else {
             return response()->json(new stdClass())->header("Content-Type", "application/json");

@@ -8,6 +8,7 @@ use App\Structures\Group;
 use App\Structures\ServiceBodyCallHandling;
 use App\Structures\Settings;
 use App\Structures\VolunteerData;
+use App\Utilities\VolunteerScheduleHelpers;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use stdClass;
@@ -128,11 +129,13 @@ class ConfigData extends Model
     public static function getGroupVolunteers(
         int $groupId
     ) : Collection {
-        return ConfigData::select(['data','service_body_id','id','parent_id'])
+        $volunteers = ConfigData::select(['data','service_body_id','id','parent_id'])
             ->where('parent_id', $groupId)
             ->where('data_type', DataType::YAP_GROUP_VOLUNTEERS_V2)
             ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
             ->get();
+
+        return VolunteerScheduleHelpers::decodeVolunteersCollection($volunteers);
     }
 
     public static function createVolunteer(
@@ -150,20 +153,24 @@ class ConfigData extends Model
 
     public static function getVolunteers(int $serviceBodyId) : Collection
     {
-        return ConfigData::select(['data','service_body_id','id','parent_id'])
+        $volunteers = ConfigData::select(['data','service_body_id','id','parent_id'])
             ->where('service_body_id', $serviceBodyId)
             ->where('data_type', DataType::YAP_VOLUNTEERS_V2)
             ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
             ->get();
+
+        return VolunteerScheduleHelpers::decodeVolunteersCollection($volunteers);
     }
 
     public static function getVolunteersRecursively(array $serviceBodyIds) : Collection
     {
-        return ConfigData::select(['data','service_body_id','id','parent_id'])
+        $volunteers = ConfigData::select(['data','service_body_id','id','parent_id'])
             ->whereIn('service_body_id', $serviceBodyIds)
             ->where('data_type', DataType::YAP_VOLUNTEERS_V2)
             ->whereRaw('IFNULL(`status`, 0) <> ?', [Status::DELETED])
             ->get();
+
+        return VolunteerScheduleHelpers::decodeVolunteersCollection($volunteers);
     }
 
     public static function getCallHandling(int $serviceBodyId): Collection
