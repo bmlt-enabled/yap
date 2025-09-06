@@ -39,6 +39,11 @@ class GeocodingService extends Service
 
             $map_details = json_decode($this->geocodingRepository->getInfo($address));
 
+            if ($map_details->status == "REQUEST_DENIED") {
+                error_log($map_details->error_message);
+            }
+            // TODO: throw exception for API KEY issue?
+
             if (count($map_details->results) > 0) {
                 $coordinates->location = $map_details->results[0]->formatted_address;
                 $geometry = $map_details->results[0]->geometry->location;
