@@ -3,12 +3,12 @@
     "extends": [
         "config:recommended"
     ],
-    "automerge": true,
+    "automerge": false,
     "automergeType": "pr",
     "minor": {
-        "automerge": true
+        "automerge": false
     },
     "patch": {
-        "automerge": true
+        "automerge": false
     }
 }
