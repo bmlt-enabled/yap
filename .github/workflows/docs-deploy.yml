@@ -13,21 +13,23 @@ jobs:
       run:
         working-directory: 'src/docs'
     steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v5.0.0
+      - name: Checkout
+        uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: 22.x
           cache: npm
           cache-dependency-path: src/docs/package-lock.json
-
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
       - name: Install and Build 🔧
         run: |
           npm ci
           npm run build
-
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4.7.3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
         with:
-          branch: gh-pages
-          folder: src/docs/build
+          path: 'src/docs/build'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
