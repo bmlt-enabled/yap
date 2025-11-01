@@ -150,7 +150,7 @@ class RootServerService extends Service
     public function searchForMeetings($latitude, $longitude, $day)
     {
         $bmlt_base_url = sprintf(
-            '%s/client_interface/json/?switcher=GetSearchResults&get_used_formats&data_field_key=id_bigint,meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_street,longitude,latitude,distance_in_miles,distance_in_km,formats,virtual_meeting_link,phone_meeting_number,virtual_meeting_additional_info',
+            '%s/client_interface/json/?switcher=GetSearchResults&get_used_formats&data_field_key=id_bigint,meeting_name,weekday_tinyint,start_time,location_text,location_info,location_municipality,location_province,location_city_subsection,location_street,longitude,latitude,distance_in_miles,distance_in_km,formats,virtual_meeting_link,phone_meeting_number,virtual_meeting_additional_info',
             $this->settings->getBMLTRootServer()
         );
         $bmlt_search_endpoint = $this->settings->get('custom_query');

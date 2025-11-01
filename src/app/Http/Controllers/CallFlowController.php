@@ -1213,7 +1213,7 @@ class CallFlowController extends Controller
             }
 
             array_push($results_string["location"], str_replace("&", "&amp;", $filtered_list->location_street
-                . ($filtered_list->location_municipality !== "" ? ", " . $filtered_list->location_municipality : "")
+                . ($filtered_list->location_city_subsection !== "" ? ", " . $filtered_list->location_city_subsection : "")
                 . ($filtered_list->location_province !== "" ? ", " . $filtered_list->location_province : "")));
 
             if ($this->settings->has('include_distance_details')) {

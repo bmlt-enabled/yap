@@ -872,3 +872,56 @@ test('meeting search with say links', function ($method) {
             '</Response>',
         ], false);
 })->with(['GET', 'POST']);
+
+test('meeting search with custom query', function ($method) {
+    $this->withoutExceptionHandling();
+    $latitude = '40.612513030825816';
+    $longitude = '-73.97607467690143';
+    $settingsService = new SettingsService();
+    $settingsService->set('result_count_max', 1);
+    app()->instance(SettingsService::class, $settingsService);
+    app()->instance(TwilioService::class, $this->twilioService);
+    $this->twilioService->shouldReceive("client")->withArgs([])->andReturn($this->twilioClient);
+    $this->twilioService->shouldReceive("settings")->andReturn($settingsService);
+
+    $timezone = new Timezone('OK', 0, -18000, 'America/New_York', 'Eastern Standard Time');
+    $timezoneService = mock(TimeZoneService::class)->makePartial();
+    $timezoneService->shouldReceive('getTimeZoneForCoordinates')
+        ->withArgs([$latitude, $longitude])
+        ->once()
+        ->andReturn($timezone);
+    app()->instance(TimeZoneService::class, $timezoneService);
+
+    // mocking TwilioRestClient->messages->create()
+    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+    $messageListMock->shouldReceive('create')                    
+        ->withArgs([$this->from, ["from" => $this->to, "body" => "Women at War Monday 7:30 PM, 2326 84th St, Brooklyn, NY"]])
+        ->once();
+
+    $this->twilioClient->messages = $messageListMock;
+    $response = $this->call($method, '/meeting-search.php', [
+        'Latitude' => $latitude, 
+        'Longitude' => $longitude,
+        'To' => $this->to,
+        'From' => $this->from,
+        'Timestamp' => '2024-02-19 00:00:00'
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">meeting information found, listing the top 1 results</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">number 1</Say>',
+            '<Say voice="alice" language="en-US">Women at War</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">starts at Monday 7:30 PM</Say>',
+            '<Pause length="1"/>',
+            '<Say voice="alice" language="en-US">2326 84th St, Brooklyn, NY</Say>',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">thank you for calling, goodbye</Say>',
+            '</Response>',
+        ], false);
+})->with(['GET', 'POST']);
