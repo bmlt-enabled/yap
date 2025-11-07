@@ -117,9 +117,18 @@ class SettingsController extends Controller
      */
     public function saveServiceBodyConfiguration(Request $request)
     {
-        $decodedDate = json_decode($request->getContent());
-        $config = new Settings($decodedDate);
+        $decodedData = json_decode($request->getContent());
         $serviceBodyId = $request->route('serviceBodyId');
+
+        // Convert array of fields to flat object structure
+        $configObject = new \stdClass();
+        if (isset($decodedData->fields) && is_array($decodedData->fields)) {
+            foreach ($decodedData->fields as $field) {
+                $configObject->{$field->setting} = $field->value;
+            }
+        }
+
+        $config = new Settings($configObject);
 
         $existingRecord = ConfigData::where('service_body_id', $serviceBodyId)
             ->where('data_type', DataType::YAP_CONFIG_V2)
@@ -228,17 +237,19 @@ class SettingsController extends Controller
         }
 
         $decodedData = json_decode($config->data);
-        if (!isset($decodedData[0]->fields)) {
+        if (!isset($decodedData)) {
             return response()->json([]);
         }
 
-        $fields = [];
-        foreach ($decodedData[0]->fields as $field) {
-            $fields[] = [
-                'setting' => $field->setting,
-                'value' => $field->value,
-            ];
-        }
+        // Handle both array and direct object structures
+        $configData = is_array($decodedData) ? $decodedData[0] : $decodedData;
+
+        // Convert object properties to array of setting/value pairs
+        $fields = array_map(
+            fn($key, $value) => ['setting' => $key, 'value' => $value],
+            array_keys((array)$configData),
+            array_values((array)$configData)
+        );
 
         return response()->json($fields);
     }
