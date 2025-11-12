@@ -174,6 +174,15 @@ function Reports() {
             ajaxURLGenerator: () => {
                 return `../api/v1/reports/cdr?service_body_id=${serviceBodyId}&page=1&size=100${getDateRanges()}&recurse=${recurse}`;
             },
+            ajaxRequestFunc: async (url, _config, _params) => {
+                try {
+                    const response = await apiClient.get(url);
+                    return response.data;
+                } catch (error) {
+                    console.error('Error fetching CDR data:', error);
+                    throw error;
+                }
+            },
             ajaxResponse: (_url, _params, response) => {
                 const events = [];
                 for (const record of response.data) {
