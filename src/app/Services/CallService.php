@@ -120,6 +120,23 @@ class CallService extends Service
         }
     }
 
+    public function getVoicemailMessageHtml($callerSid, $callerId, $smsDialbackOptions, $serviceBodyName, $callerNumber, $recordingUrl) : string
+    {
+        $dialbackString = $this->getDialbackString($callerSid, $callerId, $smsDialbackOptions);
+        return sprintf(
+            "<!DOCTYPE html><html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"></head><body text=\"#000000\" bgcolor=\"#FFFFFF\"><p></p><h2> %s %s %s %s %s.<br> %s: <a href=\"%s.mp3\">%s</a></h2></body></html> %s",
+            $this->settings->word('you_have_a_message_from_the'),
+            $serviceBodyName,
+            strtolower($this->settings->word('helpline')),
+            $this->settings->word('from_the_caller'),
+            $callerNumber,
+            $this->settings->word('voicemail'),
+            $recordingUrl,
+            $this->settings->word('listen_to_message'),
+            $dialbackString
+        );
+    }
+
     public function getVoicemailMessage($callerSid, $callerId, $smsDialbackOptions, $serviceBodyName, $callerNumber, $recordingUrl) : string
     {
         $dialbackString = $this->getDialbackString($callerSid, $callerId, $smsDialbackOptions);
