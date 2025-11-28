@@ -5,7 +5,7 @@ MANIFEST:
 app/Structures/Localizations.php 
 app/Services/CallService.php 
 app/Services/VoicemailService.php
-README.yaphtml (this file)
+README.emailhtml (this file)
 
 Sample Email Payload (extracted, actual URL masked):
   --b2=_Bg8NplB8HBFqrkfHCUhg7QU5aHl7RyJwB7vJoAVuD74
