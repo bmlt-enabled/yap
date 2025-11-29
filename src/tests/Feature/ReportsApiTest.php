@@ -317,7 +317,7 @@ test('validate sample map metrics poi csv', function () {
     );
     $response
         ->assertContent($expectedContent)
-        ->assertHeader("Content-Type", "text/plain; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/plain; charset=utf-8")
         ->assertHeader("Content-Disposition", "attachment; filename=\"volunteers-map-metrics.csv\"")
         ->assertHeader("Content-Length", strlen($expectedContent))
         ->assertStatus(200);
