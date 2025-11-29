@@ -9,7 +9,11 @@ const darkCodeTheme = require('prism-react-renderer').themes.nightOwl;
   url: 'https://yapdocs.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  markdown: {
+    hooks: {
+        onBrokenMarkdownLinks: 'warn',
+    }
+  },
   favicon: 'img/favicon.ico',
   organizationName: 'bmlt-enabled', // Usually your GitHub org/username.
   projectName: 'yap', // Usually your repo name.

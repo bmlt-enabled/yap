@@ -9,6 +9,8 @@ tags: [formats, yap]
 
 You can add a Public Relations or other miscellaneous extensions by doing the following, and leveraging the [Menu Options](/general/menu-options/) and the [Custom Extensions](/helpline/custom-extensions/) option.
 
+<!-- truncate -->
+
 1. Update or set a digit map as follows adding a new option.  As see below we added a new option for pressing 3.
 
 ```php
