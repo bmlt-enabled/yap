@@ -234,6 +234,15 @@ import SortableVolunteer from "../components/SortableVolunteer";
                             value={shiftData.day}
                             onChange={e => setShiftData({ ...shiftData, day: e.target.value, day_name: daysOfWeek[e.target.value] })}
                             label={getWord('day_of_the_week')}
+                            MenuProps={{
+                                disablePortal: false,
+                                keepMounted: true,
+                                PaperProps: {
+                                    style: {
+                                        maxHeight: 400,
+                                    },
+                                },
+                            }}
                         >
                             {daysOfWeek && Object.keys(daysOfWeek).map((key) => (
                                 <MenuItem key={key} value={key}>{daysOfWeek[key]}</MenuItem>
@@ -287,6 +296,15 @@ import SortableVolunteer from "../components/SortableVolunteer";
                             value={shiftData.type}
                             onChange={e => setShiftData({ ...shiftData, type: e.target.value })}
                             label={getWord('type')}
+                            MenuProps={{
+                                disablePortal: false,
+                                keepMounted: true,
+                                PaperProps: {
+                                    style: {
+                                        maxHeight: 400,
+                                    },
+                                },
+                            }}
                         >
                             <MenuItem value="PHONE">{getWord('phone')}</MenuItem>
                             <MenuItem value="SMS">{getWord('sms')}</MenuItem>

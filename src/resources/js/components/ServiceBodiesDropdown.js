@@ -26,7 +26,16 @@ function ServiceBodiesDropdown(props) {
                     labelId="service-body-select-label"
                     id="service-body-select"
                     onChange={(e)=>{props.handleChange(e.target.value)}}
-                    defaultValue={0}>
+                    defaultValue={0}
+                    MenuProps={{
+                        disablePortal: false,
+                        keepMounted: true,
+                        PaperProps: {
+                            style: {
+                                maxHeight: 400,
+                            },
+                        },
+                    }}>
                     <MenuItem key={0} value={0}>-= Select a Service Body =-</MenuItem>
                     {list.map(item => (
                         <MenuItem key={item.id} value={item.id}>{item.name} ({item.id}) / {item.parent_name} ({item.parent_id})</MenuItem>
