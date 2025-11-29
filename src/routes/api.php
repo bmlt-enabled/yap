@@ -15,6 +15,7 @@ Route::group([
 ], function () {
     Route::post('login', [AuthController::class, 'login'])->name('login');
     Route::get('version', [UpgradeAdvisorController::class, 'version']);
+    Route::get('upgrade', [UpgradeAdvisorController::class, 'index']);
     Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
 
     Route::group(['middleware' => ['auth:sanctum']], function () {

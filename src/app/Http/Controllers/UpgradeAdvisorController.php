@@ -32,7 +32,63 @@ class UpgradeAdvisorController extends Controller
 
     public function version()
     {
-        return response(json_encode(["version"=>$this->upgradeAdvisorService->settings()->version()]))
+        $currentVersion = $this->upgradeAdvisorService->settings()->version();
+        $versionInfo = $this->getVersionInfo($currentVersion);
+
+        return response(json_encode($versionInfo))
             ->header("Content-Type", "application/json");
+    }
+
+    private function getVersionInfo($currentVersion)
+    {
+        try {
+            // Fetch latest release from GitHub (excluding pre-releases)
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://api.github.com/repos/bmlt-enabled/yap/releases/latest');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Yap-Version-Check');
+            curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($httpCode === 200 && $response) {
+                $release = json_decode($response, true);
+                $latestVersion = ltrim($release['tag_name'] ?? '', 'v');
+
+                // Compare versions
+                $comparison = version_compare($currentVersion, $latestVersion);
+
+                $versionInfo = [
+                    'version' => $currentVersion,
+                    'latest_version' => $latestVersion,
+                ];
+
+                if ($comparison > 0) {
+                    // Current version is ahead - pre-release
+                    $versionInfo['status'] = 'pre-release';
+                    $versionInfo['message'] = "You are running a pre-release version ({$currentVersion}). Latest stable release is {$latestVersion}.";
+                } elseif ($comparison < 0) {
+                    // Current version is behind - update available
+                    $versionInfo['status'] = 'update-available';
+                    $versionInfo['message'] = "A new version ({$latestVersion}) is available. You are running {$currentVersion}.";
+                } else {
+                    // Current version matches latest
+                    $versionInfo['status'] = 'current';
+                    $versionInfo['message'] = "You are running the latest version.";
+                }
+
+                return $versionInfo;
+            }
+        } catch (Exception $e) {
+            // If GitHub API fails, just return current version
+        }
+
+        // Fallback if GitHub API fails
+        return [
+            'version' => $currentVersion,
+            'status' => 'unknown',
+            'message' => 'Unable to check for updates.'
+        ];
     }
 }

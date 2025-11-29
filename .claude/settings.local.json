@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm install @mui/x-date-pickers dayjs)"
+      "Bash(npm install @mui/x-date-pickers dayjs)",
+      "Bash(npm run build)"
     ],
     "deny": [],
     "ask": []

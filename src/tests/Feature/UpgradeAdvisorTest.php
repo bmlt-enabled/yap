@@ -44,7 +44,7 @@ test('fake twilio credentials should return a rest error', function ($method) {
     $settings->set("twilio_account_sid", "fake");
     $settings->set("twilio_auth_token", "fake");
     app()->instance(SettingsService::class, $settings);
-    $response = $this->call($method, '/upgrade-advisor.php');
+    $response = $this->call($method, '/api/v1/upgrade');
     # should return a rest error simliar to this
     $response
         ->assertStatus(200)
@@ -53,7 +53,7 @@ test('fake twilio credentials should return a rest error', function ($method) {
             'status' => false,
             'message' => "Twilio Rest Error: [HTTP 401] Unable to fetch page: Authentication Error - invalid username",
         ]);
-})->with(['GET', 'POST']);
+})->with(['GET']);
 
 test('fake twilio credentials should return a rest error but suppress it', function ($method) {
     $settings = new SettingsService();
@@ -61,7 +61,7 @@ test('fake twilio credentials should return a rest error but suppress it', funct
     $settings->set("twilio_auth_token", "fake");
     $settings->set("exclude_errors_on_login_page", ["twilioFakeCredentials"]);
     app()->instance(SettingsService::class, $settings);
-    $response = $this->call($method, '/upgrade-advisor.php');
+    $response = $this->call($method, '/api/v1/upgrade');
     # should return a rest error simliar to this
     $response
         ->assertStatus(200)
@@ -69,7 +69,7 @@ test('fake twilio credentials should return a rest error but suppress it', funct
         ->assertJson([
             'status' => true,
         ]);
-})->with(['GET', 'POST']);
+})->with(['GET']);
 
 test('version test check cors headers', function ($method) {
     $settings = new SettingsService();
@@ -118,7 +118,7 @@ test('test with misconfigured phone number', function ($method) {
 
     app()->instance(TwilioService::class, $this->twilioService);
 
-    $response = $this->call($method, '/upgrade-advisor.php');
+    $response = $this->call($method, '/api/v1/upgrade');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
@@ -131,7 +131,7 @@ test('test with misconfigured phone number', function ($method) {
                 "build"=>"local"
             ]
         );
-})->with(['GET', 'POST']);
+})->with(['GET']);
 
 test('test with smtp settings missing', function ($method) {
     $settingsService = new SettingsService();
@@ -173,7 +173,7 @@ test('test with smtp settings missing', function ($method) {
 
     app()->instance(TwilioService::class, $this->twilioService);
 
-    $response = $this->call($method, '/upgrade-advisor.php');
+    $response = $this->call($method, 'api/v1/upgrade');
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
@@ -186,13 +186,13 @@ test('test with smtp settings missing', function ($method) {
                 "build"=>"local"
             ]
         );
-})->with(['GET', 'POST']);
+})->with(['GET']);
 
 //test('bad google maps api key', function () {
 //    $settings = new SettingsService();
 //    $GLOBALS['google_maps_endpoint'] = 'https://maps.googleapis.com/maps/api/geocode/json?key=bad_key';
 //    app()->instance(SettingsService::class, $settings);
-//    $response = $this->get('/upgrade-advisor.php');
+//    $response = $this->get('/api/v1/upgrade');
 //    $response
 //        ->assertStatus(200)
 //        ->assertHeader("Content-Type", "application/json")
@@ -207,7 +207,7 @@ test('test with smtp settings missing', function ($method) {
 
 //test('bad timezone api key', function () {
 //    $GLOBALS['google_maps_endpoint'] = 'http://localhost:3100/yap/stub/geocode?key=stub';
-//    $response = $this->get('/upgrade-advisor.php');
+//    $response = $this->get('/api/v1/upgrade');
 //    $response
 //        ->assertStatus(200)
 //        ->assertHeader("Content-Type", "application/json")
