@@ -131,3 +131,238 @@
 .fc-event-time {
   font-size: 0.85em;
 }
+
+/* Dark mode styles for daterangepicker */
+@media (prefers-color-scheme: dark) {
+  .daterangepicker {
+    background-color: #1e1e1e !important;
+    border-color: #424242 !important;
+  }
+
+  .daterangepicker .calendar-table {
+    background-color: #1e1e1e !important;
+    border-color: #424242 !important;
+  }
+
+  .daterangepicker td.available:hover,
+  .daterangepicker th.available:hover {
+    background-color: #424242 !important;
+    color: #fff !important;
+  }
+
+  .daterangepicker td.off,
+  .daterangepicker td.off.in-range,
+  .daterangepicker td.off.start-date,
+  .daterangepicker td.off.end-date {
+    background-color: #2a2a2a !important;
+    color: #999 !important;
+  }
+
+  .daterangepicker td.in-range {
+    background-color: #2d5a8c !important;
+    color: #fff !important;
+  }
+
+  .daterangepicker td.active,
+  .daterangepicker td.active:hover {
+    background-color: #357abd !important;
+    color: #fff !important;
+  }
+
+  .daterangepicker select.monthselect,
+  .daterangepicker select.yearselect,
+  .daterangepicker select.hourselect,
+  .daterangepicker select.minuteselect,
+  .daterangepicker select.secondselect,
+  .daterangepicker select.ampmselect {
+    background-color: #2a2a2a !important;
+    border-color: #424242 !important;
+    color: #fff !important;
+  }
+
+  .daterangepicker .ranges li {
+    background-color: #2a2a2a !important;
+    border-color: #424242 !important;
+    color: #fff !important;
+  }
+
+  .daterangepicker .ranges li:hover {
+    background-color: #424242 !important;
+  }
+
+  .daterangepicker .ranges li.active {
+    background-color: #357abd !important;
+    color: #fff !important;
+  }
+
+  .daterangepicker td,
+  .daterangepicker th {
+    color: #fff !important;
+  }
+
+  .daterangepicker .calendar-table thead tr:first-child th {
+    color: #fff !important;
+  }
+
+  .daterangepicker .drp-buttons {
+    border-top-color: #424242 !important;
+  }
+
+  .daterangepicker .drp-selected {
+    color: #fff !important;
+  }
+}
+
+/* Support for explicit dark mode class/attribute (for theme toggles) */
+.daterangepicker[data-theme="dark"],
+[data-mui-color-scheme="dark"] .daterangepicker,
+.dark .daterangepicker,
+.theme-dark .daterangepicker {
+  background-color: #1e1e1e !important;
+  border-color: #424242 !important;
+}
+
+.daterangepicker[data-theme="dark"] .calendar-table,
+[data-mui-color-scheme="dark"] .daterangepicker .calendar-table,
+.dark .daterangepicker .calendar-table,
+.theme-dark .daterangepicker .calendar-table {
+  background-color: #1e1e1e !important;
+  border-color: #424242 !important;
+}
+
+.daterangepicker[data-theme="dark"] td.available:hover,
+.daterangepicker[data-theme="dark"] th.available:hover,
+[data-mui-color-scheme="dark"] .daterangepicker td.available:hover,
+[data-mui-color-scheme="dark"] .daterangepicker th.available:hover,
+.dark .daterangepicker td.available:hover,
+.dark .daterangepicker th.available:hover,
+.theme-dark .daterangepicker td.available:hover,
+.theme-dark .daterangepicker th.available:hover {
+  background-color: #424242 !important;
+  color: #fff !important;
+}
+
+.daterangepicker[data-theme="dark"] td.off,
+.daterangepicker[data-theme="dark"] td.off.in-range,
+.daterangepicker[data-theme="dark"] td.off.start-date,
+.daterangepicker[data-theme="dark"] td.off.end-date,
+[data-mui-color-scheme="dark"] .daterangepicker td.off,
+[data-mui-color-scheme="dark"] .daterangepicker td.off.in-range,
+[data-mui-color-scheme="dark"] .daterangepicker td.off.start-date,
+[data-mui-color-scheme="dark"] .daterangepicker td.off.end-date,
+.dark .daterangepicker td.off,
+.dark .daterangepicker td.off.in-range,
+.dark .daterangepicker td.off.start-date,
+.dark .daterangepicker td.off.end-date,
+.theme-dark .daterangepicker td.off,
+.theme-dark .daterangepicker td.off.in-range,
+.theme-dark .daterangepicker td.off.start-date,
+.theme-dark .daterangepicker td.off.end-date {
+  background-color: #2a2a2a !important;
+  color: #999 !important;
+}
+
+.daterangepicker[data-theme="dark"] td.in-range,
+[data-mui-color-scheme="dark"] .daterangepicker td.in-range,
+.dark .daterangepicker td.in-range,
+.theme-dark .daterangepicker td.in-range {
+  background-color: #2d5a8c !important;
+  color: #fff !important;
+}
+
+.daterangepicker[data-theme="dark"] td.active,
+.daterangepicker[data-theme="dark"] td.active:hover,
+[data-mui-color-scheme="dark"] .daterangepicker td.active,
+[data-mui-color-scheme="dark"] .daterangepicker td.active:hover,
+.dark .daterangepicker td.active,
+.dark .daterangepicker td.active:hover,
+.theme-dark .daterangepicker td.active,
+.theme-dark .daterangepicker td.active:hover {
+  background-color: #357abd !important;
+  color: #fff !important;
+}
+
+.daterangepicker[data-theme="dark"] select.monthselect,
+.daterangepicker[data-theme="dark"] select.yearselect,
+.daterangepicker[data-theme="dark"] select.hourselect,
+.daterangepicker[data-theme="dark"] select.minuteselect,
+.daterangepicker[data-theme="dark"] select.secondselect,
+.daterangepicker[data-theme="dark"] select.ampmselect,
+[data-mui-color-scheme="dark"] .daterangepicker select.monthselect,
+[data-mui-color-scheme="dark"] .daterangepicker select.yearselect,
+[data-mui-color-scheme="dark"] .daterangepicker select.hourselect,
+[data-mui-color-scheme="dark"] .daterangepicker select.minuteselect,
+[data-mui-color-scheme="dark"] .daterangepicker select.secondselect,
+[data-mui-color-scheme="dark"] .daterangepicker select.ampmselect,
+.dark .daterangepicker select.monthselect,
+.dark .daterangepicker select.yearselect,
+.dark .daterangepicker select.hourselect,
+.dark .daterangepicker select.minuteselect,
+.dark .daterangepicker select.secondselect,
+.dark .daterangepicker select.ampmselect,
+.theme-dark .daterangepicker select.monthselect,
+.theme-dark .daterangepicker select.yearselect,
+.theme-dark .daterangepicker select.hourselect,
+.theme-dark .daterangepicker select.minuteselect,
+.theme-dark .daterangepicker select.secondselect,
+.theme-dark .daterangepicker select.ampmselect {
+  background-color: #2a2a2a !important;
+  border-color: #424242 !important;
+  color: #fff !important;
+}
+
+.daterangepicker[data-theme="dark"] .ranges li,
+[data-mui-color-scheme="dark"] .daterangepicker .ranges li,
+.dark .daterangepicker .ranges li,
+.theme-dark .daterangepicker .ranges li {
+  background-color: #2a2a2a !important;
+  border-color: #424242 !important;
+  color: #fff !important;
+}
+
+.daterangepicker[data-theme="dark"] .ranges li:hover,
+[data-mui-color-scheme="dark"] .daterangepicker .ranges li:hover,
+.dark .daterangepicker .ranges li:hover,
+.theme-dark .daterangepicker .ranges li:hover {
+  background-color: #424242 !important;
+}
+
+.daterangepicker[data-theme="dark"] .ranges li.active,
+[data-mui-color-scheme="dark"] .daterangepicker .ranges li.active,
+.dark .daterangepicker .ranges li.active,
+.theme-dark .daterangepicker .ranges li.active {
+  background-color: #357abd !important;
+  color: #fff !important;
+}
+
+.daterangepicker[data-theme="dark"] td,
+.daterangepicker[data-theme="dark"] th,
+[data-mui-color-scheme="dark"] .daterangepicker td,
+[data-mui-color-scheme="dark"] .daterangepicker th,
+.dark .daterangepicker td,
+.dark .daterangepicker th,
+.theme-dark .daterangepicker td,
+.theme-dark .daterangepicker th {
+  color: #fff !important;
+}
+
+.daterangepicker[data-theme="dark"] .calendar-table thead tr:first-child th,
+[data-mui-color-scheme="dark"] .daterangepicker .calendar-table thead tr:first-child th,
+.dark .daterangepicker .calendar-table thead tr:first-child th,
+.theme-dark .daterangepicker .calendar-table thead tr:first-child th {
+  color: #fff !important;
+}
+
+.daterangepicker[data-theme="dark"] .drp-buttons,
+[data-mui-color-scheme="dark"] .daterangepicker .drp-buttons,
+.dark .daterangepicker .drp-buttons,
+.theme-dark .daterangepicker .drp-buttons {
+  border-top-color: #424242 !important;
+}
+
+.daterangepicker[data-theme="dark"] .drp-selected,
+[data-mui-color-scheme="dark"] .daterangepicker .drp-selected,
+.dark .daterangepicker .drp-selected,
+.theme-dark .daterangepicker .drp-selected {
+  color: #fff !important;
+}

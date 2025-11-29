@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install @mui/x-date-pickers dayjs)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
