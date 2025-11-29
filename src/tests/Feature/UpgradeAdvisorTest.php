@@ -24,6 +24,11 @@ test('version test', function ($method) {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
+        ->assertJsonStructure([
+            'version',
+            'status',
+            'message',
+        ])
         ->assertJson([
             'version' => $settings->version(),
         ]);
@@ -33,10 +38,25 @@ test('version test as jsonp', function ($method) {
     $settings = new SettingsService();
     app()->instance(SettingsService::class, $settings);
     $response = $this->call($method, '/api/v1/version?callback=bro');
+
+    $responseData = $response->getContent();
+
     $response
         ->assertStatus(200)
-        ->assertHeader("Content-Type", "application/javascript")
-        ->assertSeeText(sprintf("bro({\"version\":\"%s\"})", $settings->version()), false);
+        ->assertHeader("Content-Type", "application/javascript");
+
+    // Extract the JSON data from JSONP callback
+    expect($responseData)->toStartWith('bro(');
+    expect($responseData)->toEndWith(');');
+
+    // Parse the JSON inside the callback
+    $jsonString = substr($responseData, 4, -2); // Remove "bro(" and ");"
+    $data = json_decode($jsonString, true);
+
+    // Assert the structure and version
+    expect($data)->toHaveKeys(['version', 'status', 'message']);
+    expect($data['version'])->toBe($settings->version());
+    expect($data['status'])->toBeIn(['current', 'pre-release', 'update-available', 'unknown']);
 })->with(['GET']);
 
 test('fake twilio credentials should return a rest error', function ($method) {
@@ -75,10 +95,20 @@ test('version test check cors headers', function ($method) {
     $settings = new SettingsService();
     app()->instance(SettingsService::class, $settings);
     $response = $this->call($method, '/api/v1/version');
+
+    $data = json_decode($response->getContent(), true);
+
     $response
         ->assertStatus(200)
         ->assertHeader("Access-Control-Allow-Origin", "*")
-        ->assertSeeText(sprintf("{\"version\":\"%s\"}", $settings->version()), false);
+        ->assertJsonStructure([
+            'version',
+            'status',
+            'message',
+        ]);
+
+    // Verify the version is in the response
+    expect($data['version'])->toBe($settings->version());
 })->with(['GET']);
 
 test('test with misconfigured phone number', function ($method) {
