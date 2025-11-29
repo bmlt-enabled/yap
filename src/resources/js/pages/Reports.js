@@ -17,8 +17,11 @@ import apiClient from '../services/api';
 import moment from 'moment';
 import Plotly from 'plotly.js-dist';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import 'leaflet-fullscreen';
-import Tabulator from 'tabulator-tables';
+import { ReactTabulator } from 'react-tabulator';
+import 'react-tabulator/lib/styles.css';
+import 'react-tabulator/lib/css/tabulator.min.css';
 import 'daterangepicker';
 import $ from 'jquery';
 import 'daterangepicker/daterangepicker.css';
@@ -38,18 +41,18 @@ function Reports() {
     const [modalOpen, setModalOpen] = useState(false);
     const [modalData, setModalData] = useState(null);
 
+    // Table data state
+    const [cdrData, setCdrData] = useState([]);
+    const [eventsData, setEventsData] = useState([]);
+
     // Refs for DOM elements
     const dateRangeRef = useRef(null);
     const metricsRef = useRef(null);
     const metricsMapRef = useRef(null);
+
+    // Refs for table instances (to call methods)
     const cdrTableRef = useRef(null);
     const eventsTableRef = useRef(null);
-    const callDetailModalTableRef = useRef(null);
-    const eventsModalTableRef = useRef(null);
-
-    // Refs for instances
-    const tableRef = useRef(null);
-    const eventsTableInstanceRef = useRef(null);
     const metricsMapInstanceRef = useRef(null);
 
     useEffect(() => {
@@ -57,23 +60,7 @@ function Reports() {
         initializeDateRangePicker();
 
         return () => {
-            // Cleanup
-            try {
-                if (tableRef.current && typeof tableRef.current.destroy === 'function') {
-                    tableRef.current.destroy();
-                }
-            } catch (error) {
-                console.warn('Error destroying main table:', error);
-            }
-
-            try {
-                if (eventsTableInstanceRef.current && typeof eventsTableInstanceRef.current.destroy === 'function') {
-                    eventsTableInstanceRef.current.destroy();
-                }
-            } catch (error) {
-                console.warn('Error destroying events table:', error);
-            }
-
+            // Cleanup map instance
             try {
                 if (metricsMapInstanceRef.current) {
                     metricsMapInstanceRef.current.off();
@@ -142,101 +129,90 @@ function Reports() {
         return `&date_range_start=${drPicker.startDate.format("YYYY-MM-DD 00:00:00")}&date_range_end=${drPicker.endDate.format("YYYY-MM-DD 23:59:59")}`;
     };
 
-    const initializeReportsTables = () => {
-        // Don't initialize if refs aren't ready
-        if (!cdrTableRef.current || !eventsTableRef.current) {
-            console.warn('Table refs not ready for initialization');
-            return;
+    // Fetch CDR data
+    const fetchCDRData = async () => {
+        if (serviceBodyId <= -1) return;
+
+        try {
+            const url = `../api/v1/reports/cdr?service_body_id=${serviceBodyId}&page=1&size=100${getDateRanges()}&recurse=${recurse}`;
+            const response = await apiClient.get(url);
+            const cdrRecords = response.data.data || [];
+
+            // Extract events from CDR records
+            const events = [];
+            for (const record of cdrRecords) {
+                for (const callEvent of record.call_events) {
+                    events.push(callEvent);
+                }
+            }
+
+            setCdrData(cdrRecords);
+            setEventsData(events);
+            drawMetricsMap(cdrRecords);
+        } catch (error) {
+            console.error('Error fetching CDR data:', error);
         }
+    };
 
-        const eventsTableColumns = [
-            { title: "Event Time", field: "event_time", mutator: toCurrentTimezone },
-            { title: "Event", field: "event_name", formatter: "textarea" },
-            {
-                title: "Service Body Id", field: "service_body_id", mutator: (id) => {
-                    if (isNaN(id)) return id;
-                    const serviceBody = getServiceBodyById(id);
-                    return `${serviceBody.name} (${serviceBody.id})`;
-                }
-            },
-            { title: "Metadata", field: "meta", formatter: "textarea" },
-            { title: "Parent CallSid", field: "parent_callsid", visible: false, download: true }
-        ];
+    // CDR Table columns configuration
+    const cdrColumns = [
+        { title: "Start Time", field: "start_time", mutator: toCurrentTimezone },
+        { title: "End Time", field: "end_time", mutator: toCurrentTimezone },
+        { title: "Duration (s)", field: "duration" },
+        { title: "From", field: "from_number" },
+        { title: "To", field: "to_number" },
+        { title: "Type", field: "type_name" },
+        {
+            title: "Events",
+            field: "call_events",
+            width: 100,
+            hozAlign: "center",
+            formatter: () => "🔎",
+            cellClick: (_e, cell) => {
+                setModalData({
+                    callData: cell.getRow().getData(),
+                    events: cell.getValue()
+                });
+                setModalOpen(true);
+            }
+        }
+    ];
 
-        const table = new Tabulator(cdrTableRef.current, {
-            layout: "fitColumns",
-            responsiveLayout: "hide",
-            tooltips: true,
-            addRowPos: "top",
-            history: true,
-            pagination: "remote",
-            ajaxURL: "../api/v1/reports/cdr",
-            ajaxURLGenerator: () => {
-                return `../api/v1/reports/cdr?service_body_id=${serviceBodyId}&page=1&size=100${getDateRanges()}&recurse=${recurse}`;
-            },
-            ajaxRequestFunc: async (url, _config, _params) => {
-                try {
-                    const response = await apiClient.get(url);
-                    return response.data;
-                } catch (error) {
-                    console.error('Error fetching CDR data:', error);
-                    throw error;
-                }
-            },
-            ajaxResponse: (_url, _params, response) => {
-                const events = [];
-                for (const record of response.data) {
-                    for (const callEvent of record.call_events) {
-                        events.push(callEvent);
-                    }
-                }
-                eventsTableInstanceRef.current.setData(events);
-                return response;
-            },
-            dataLoaded: (data) => {
-                drawMetricsMap(data);
-            },
-            movableColumns: true,
-            resizableRows: false,
-            printAsHtml: true,
-            printHeader: "<h3>Call Detail Records<h3>",
-            printFooter: "",
-            initialSort: [
-                { column: "start_time", dir: "desc" },
-            ],
-            columns: [
-                { title: "Start Time", field: "start_time", mutator: toCurrentTimezone },
-                { title: "End Time", field: "end_time", mutator: toCurrentTimezone },
-                { title: "Duration (s)", field: "duration" },
-                { title: "From", field: "from_number" },
-                { title: "To", field: "to_number" },
-                { title: "Type", field: "type_name" },
-                {
-                    title: "Events",
-                    field: "call_events",
-                    width: 100,
-                    hozAlign: "center",
-                    formatter: () => "🔎",
-                    cellClick: (_e, cell) => {
-                        setModalData({
-                            callData: cell.getRow().getData(),
-                            events: cell.getValue()
-                        });
-                        setModalOpen(true);
-                    }
-                }
-            ],
-        });
+    // Events Table columns configuration
+    const eventsColumns = [
+        { title: "Event Time", field: "event_time", mutator: toCurrentTimezone },
+        { title: "Event", field: "event_name", formatter: "textarea" },
+        {
+            title: "Service Body Id", field: "service_body_id", mutator: (id) => {
+                if (isNaN(id)) return id;
+                const serviceBody = getServiceBodyById(id);
+                return `${serviceBody.name} (${serviceBody.id})`;
+            }
+        },
+        { title: "Metadata", field: "meta", formatter: "textarea" },
+        { title: "Parent CallSid", field: "parent_callsid", visible: false, download: true }
+    ];
 
-        const eventsTable = new Tabulator(eventsTableRef.current, {
-            columns: eventsTableColumns,
-            initialSort: [
-                { column: "event_time", dir: "desc" },
-            ],
-        });
+    // Table options for CDR table
+    const cdrTableOptions = {
+        layout: "fitColumns",
+        responsiveLayout: "hide",
+        tooltips: true,
+        movableColumns: true,
+        resizableRows: false,
+        printAsHtml: true,
+        printHeader: "<h3>Call Detail Records<h3>",
+        printFooter: "",
+        initialSort: [
+            { column: "start_time", dir: "desc" },
+        ],
+    };
 
-        tableRef.current = table;
-        eventsTableInstanceRef.current = eventsTable;
+    // Table options for events table
+    const eventsTableOptions = {
+        initialSort: [
+            { column: "event_time", dir: "desc" },
+        ],
     };
 
     const getMetricsData = async () => {
@@ -330,8 +306,8 @@ function Reports() {
         }).addTo(map);
 
         const bounds = [];
-        const meetingsMarker = '/public/dist/img/green_marker.png';
-        const volunteersMarker = '/public/dist/img/orange_marker.png';
+        const meetingsMarker = '/public/img/green_marker.png';
+        const volunteersMarker = '/public/img/orange_marker.png';
 
         if (data) {
             for (const record of data) {
@@ -369,38 +345,26 @@ function Reports() {
             map.fitBounds(bounds);
         }
 
+        // Invalidate size to ensure tiles render correctly
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 100);
+
         metricsMapInstanceRef.current = map;
     };
 
-    const updateAllReports = () => {
+    const updateAllReports = async () => {
         if (serviceBodyId <= -1) return;
 
         setReportsVisible(true);
 
-        // Initialize tables if needed
-        const needsInitialization = !tableRef.current;
-        if (needsInitialization) {
-            // Use setTimeout to ensure DOM is ready and visible
-            setTimeout(() => {
-                try {
-                    initializeReportsTables();
-                    // Fetch metrics after tables are initialized
-                    getMetricsData();
-                } catch (error) {
-                    console.error('Error initializing reports:', error);
-                }
-            }, 100);
-        } else {
-            // Tables already exist, just update data
-            try {
-                getMetricsData();
-                // Trigger AJAX reload for the table
-                if (tableRef.current && typeof tableRef.current.replaceData === 'function') {
-                    tableRef.current.replaceData();
-                }
-            } catch (error) {
-                console.error('Error updating reports:', error);
-            }
+        try {
+            await Promise.all([
+                fetchCDRData(),
+                getMetricsData()
+            ]);
+        } catch (error) {
+            console.error('Error updating reports:', error);
         }
     };
 
@@ -411,15 +375,15 @@ function Reports() {
     }, [serviceBodyId, recurse, dateRange]);
 
     const handlePrint = () => {
-        tableRef.current?.print(false, true);
+        cdrTableRef.current?.print(false, true);
     };
 
     const handleDownloadRecordsCSV = () => {
-        tableRef.current?.download("csv", "yap-records.csv");
+        cdrTableRef.current?.download("csv", "yap-records.csv");
     };
 
     const handleDownloadEventsCSV = () => {
-        eventsTableInstanceRef.current?.download("csv", "yap-events.csv");
+        eventsTableRef.current?.download("csv", "yap-events.csv");
     };
 
     const handleDownloadXLSX = () => {
@@ -427,11 +391,11 @@ function Reports() {
             "Calls": true,
             "Events": eventsTableRef.current
         };
-        tableRef.current?.download("xlsx", "data.xlsx", { sheets });
+        cdrTableRef.current?.download("xlsx", "data.xlsx", { sheets });
     };
 
     const handleDownloadJSON = () => {
-        tableRef.current?.download("json", "yap.json");
+        cdrTableRef.current?.download("json", "yap.json");
     };
 
     const handleCloseModal = () => {
@@ -439,49 +403,28 @@ function Reports() {
         setModalData(null);
     };
 
-    useEffect(() => {
-        if (modalOpen && modalData) {
-            // Initialize modal tables
-            setTimeout(() => {
-                const eventsTableColumns = [
-                    { title: "Event Time", field: "event_time", mutator: toCurrentTimezone },
-                    { title: "Event", field: "event_name", formatter: "textarea" },
-                    {
-                        title: "Service Body Id", field: "service_body_id", mutator: (id) => {
-                            if (isNaN(id)) return id;
-                            const serviceBody = getServiceBodyById(id);
-                            return `${serviceBody.name} (${serviceBody.id})`;
-                        }
-                    },
-                    { title: "Metadata", field: "meta", formatter: "textarea" }
-                ];
+    // Modal table columns
+    const callDetailModalColumns = [
+        { title: "Start Time", field: "start_time", mutator: toCurrentTimezone },
+        { title: "End Time", field: "end_time", mutator: toCurrentTimezone },
+        { title: "Duration (s)", field: "duration" },
+        { title: "From", field: "from_number" },
+        { title: "To", field: "to_number" },
+        { title: "Type", field: "type_name" },
+    ];
 
-                new Tabulator(callDetailModalTableRef.current, {
-                    layout: "fitColumns",
-                    tooltips: true,
-                    data: [modalData.callData],
-                    columns: [
-                        { title: "Start Time", field: "start_time", mutator: toCurrentTimezone },
-                        { title: "End Time", field: "end_time", mutator: toCurrentTimezone },
-                        { title: "Duration (s)", field: "duration" },
-                        { title: "From", field: "from_number" },
-                        { title: "To", field: "to_number" },
-                        { title: "Type", field: "type_name" },
-                    ],
-                });
-
-                new Tabulator(eventsModalTableRef.current, {
-                    layout: "fitColumns",
-                    tooltips: true,
-                    data: modalData.events,
-                    columns: eventsTableColumns,
-                    initialSort: [
-                        { column: "event_time", dir: "desc" },
-                    ],
-                });
-            }, 100);
-        }
-    }, [modalOpen, modalData]);
+    const eventsModalColumns = [
+        { title: "Event Time", field: "event_time", mutator: toCurrentTimezone },
+        { title: "Event", field: "event_name", formatter: "textarea" },
+        {
+            title: "Service Body Id", field: "service_body_id", mutator: (id) => {
+                if (isNaN(id)) return id;
+                const serviceBody = getServiceBodyById(id);
+                return `${serviceBody.name} (${serviceBody.id})`;
+            }
+        },
+        { title: "Metadata", field: "meta", formatter: "textarea" }
+    ];
 
     return (
         <Card className="card">
@@ -564,7 +507,7 @@ function Reports() {
 
                         <div
                             ref={metricsMapRef}
-                            style={{ height: '400px', marginBottom: '20px' }}
+                            style={{ height: '400px', width: '100%', marginBottom: '20px' }}
                         ></div>
 
                         <ButtonGroup variant="contained" size="small" style={{ marginBottom: '10px' }}>
@@ -600,8 +543,21 @@ function Reports() {
                             <Button onClick={updateAllReports} color="inherit">Refresh</Button>
                         </ButtonGroup>
 
-                        <div ref={cdrTableRef}></div>
-                        <div ref={eventsTableRef} style={{ display: 'none' }}></div>
+                        <ReactTabulator
+                            onRef={(ref) => (cdrTableRef.current = ref)}
+                            columns={cdrColumns}
+                            data={cdrData}
+                            options={cdrTableOptions}
+                        />
+
+                        <div style={{ display: 'none' }}>
+                            <ReactTabulator
+                                onRef={(ref) => (eventsTableRef.current = ref)}
+                                columns={eventsColumns}
+                                data={eventsData}
+                                options={eventsTableOptions}
+                            />
+                        </div>
                     </>
                 )}
 
@@ -626,8 +582,26 @@ function Reports() {
                         <Typography variant="h6" component="h2" gutterBottom>
                             Call Events
                         </Typography>
-                        <div ref={callDetailModalTableRef} style={{ marginBottom: '20px' }}></div>
-                        <div ref={eventsModalTableRef}></div>
+                        {modalData && (
+                            <>
+                                <div style={{ marginBottom: '20px' }}>
+                                    <ReactTabulator
+                                        columns={callDetailModalColumns}
+                                        data={[modalData.callData]}
+                                        options={{ layout: "fitColumns", tooltips: true }}
+                                    />
+                                </div>
+                                <ReactTabulator
+                                    columns={eventsModalColumns}
+                                    data={modalData.events}
+                                    options={{
+                                        layout: "fitColumns",
+                                        tooltips: true,
+                                        initialSort: [{ column: "event_time", dir: "desc" }]
+                                    }}
+                                />
+                            </>
+                        )}
                         <Button onClick={handleCloseModal} variant="contained" style={{ marginTop: '20px' }}>
                             Close
                         </Button>

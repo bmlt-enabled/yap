@@ -1,4 +1,7 @@
 {
     "/js/index.js": "/js/index.js",
+    "/images/vendor/leaflet/dist/layers.png?416d91365b44e4b4f4777663e6f009f3": "/images/vendor/leaflet/dist/layers.png?416d91365b44e4b4f4777663e6f009f3",
+    "/images/vendor/leaflet/dist/layers-2x.png?8f2c4d11474275fbc1614b9098334eae": "/images/vendor/leaflet/dist/layers-2x.png?8f2c4d11474275fbc1614b9098334eae",
+    "/images/vendor/leaflet/dist/marker-icon.png?2b3e1faf89f94a4835397e7a43b4f77d": "/images/vendor/leaflet/dist/marker-icon.png?2b3e1faf89f94a4835397e7a43b4f77d",
     "/css/app.css": "/css/app.css"
 }
