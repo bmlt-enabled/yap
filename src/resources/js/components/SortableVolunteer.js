@@ -32,6 +32,79 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
         opacity: isDragging ? 0.5 : 1,
     };
 
+    // Check if this is a group reference
+    const isGroup = volunteer.group_id !== undefined;
+
+    // If it's a group, render a simplified version
+    if (isGroup) {
+        return (
+            <Box
+                ref={setNodeRef}
+                style={style}
+                sx={{
+                    border: '2px solid',
+                    borderColor: 'primary.main',
+                    margin: 2,
+                    padding: 2,
+                    borderRadius: 2,
+                    position: 'relative',
+                    backgroundColor: 'action.hover',
+                }}
+            >
+                <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    sx={{ padding: 2 }}
+                >
+                    <Box display="flex" alignItems="center" gap={2}>
+                        <Box
+                            sx={{
+                                backgroundColor: 'primary.main',
+                                color: 'primary.contrastText',
+                                padding: '4px 12px',
+                                borderRadius: 1,
+                                fontSize: '0.875rem',
+                                fontWeight: 'bold',
+                            }}
+                        >
+                            GROUP
+                        </Box>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={!!volunteer.group_enabled}
+                                    onChange={e => {
+                                        const newValue = e.target.checked;
+                                        setVolunteers(prevVolunteers =>
+                                            prevVolunteers.map((v, i) =>
+                                                i === index
+                                                    ? { ...v, group_enabled: newValue }
+                                                    : v
+                                            )
+                                        );
+                                    }}
+                                />
+                            }
+                            label={getWord('enabled')}
+                        />
+                        <Box sx={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
+                            {volunteer.group_name}
+                        </Box>
+                    </Box>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => setVolunteers(volunteers.filter((_, i) => i !== index))}
+                    >
+                        {getWord('remove')}
+                    </Button>
+                </Box>
+            </Box>
+        );
+    }
+
+    // Regular volunteer rendering
     return (
         <Box
             ref={setNodeRef}
@@ -153,11 +226,13 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
                         />
                     </FormControl>
                 </Box>
-                <Box sx={{ position: 'relative', zIndex: 2 }}>
-                    <Button variant="outlined" onClick={() => handleAddShift(index)}>{getWord('add_shift')}</Button>
-                    <Button variant="outlined" color="error"
-                            onClick={() => handleRemoveAllShifts(index)}
-                            style={{marginLeft: '10px'}}>{getWord('remove_all_shifts')}</Button>
+                <Box sx={{ position: 'relative', zIndex: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                    <Button variant="outlined" onClick={() => handleAddShift(index)}>
+                        {getWord('add_shift') || 'Add Shift'}
+                    </Button>
+                    <Button variant="outlined" color="error" onClick={() => handleRemoveAllShifts(index)}>
+                        {getWord('remove_all_shifts') || 'Remove All Shifts'}
+                    </Button>
                 </Box>
 
                 {Array.isArray(volunteer.volunteer_shift_schedule) && volunteer.volunteer_shift_schedule.length > 0 && volunteer.volunteer_shift_schedule.map((shift, shiftIndex) => (
@@ -222,7 +297,7 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
                                 display: 'flex',
                                 gap: 0.5
                             }}>
-                                {shift.type.includes('PHONE') && (
+                                {shift.type?.includes('PHONE') && (
                                     <Box sx={{
                                         backgroundColor: '#28a745',
                                         color: 'white',
@@ -234,7 +309,7 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
                                         📞 Phone
                                     </Box>
                                 )}
-                                {shift.type.includes('SMS') && (
+                                {shift.type?.includes('SMS') && (
                                     <Box sx={{
                                         backgroundColor: '#17a2b8',
                                         color: 'white',

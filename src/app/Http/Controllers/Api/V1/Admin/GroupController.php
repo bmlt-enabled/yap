@@ -7,7 +7,6 @@ use App\Models\ConfigData;
 use App\Services\VolunteerService;
 use App\Structures\Group;
 use Illuminate\Http\Request;
-use stdClass;
 
 /**
  * @OA\Tag(
@@ -216,12 +215,19 @@ class GroupController extends Controller
         $decodedData = json_decode($request->getContent());
         $groupData = new Group($decodedData);
 
-        ConfigData::createGroup(
+        $groupId = ConfigData::createGroup(
             $request->get('serviceBodyId'),
             $groupData
         );
 
-        return self::index($request);
+        $response = self::index($request);
+        $responseData = json_decode($response->getContent(), true);
+
+        // Add the created group ID to the response
+        return response()->json([
+            'id' => $groupId,
+            'groups' => $responseData
+        ])->header("Content-Type", "application/json");
     }
 
     /**
