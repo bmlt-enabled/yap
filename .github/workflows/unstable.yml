@@ -23,7 +23,7 @@ jobs:
           - 3106:3306
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         id: code-checkout
 
       - name: Setup PHP
@@ -54,7 +54,7 @@ jobs:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     needs: [ lint ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         id: code-checkout
 
       - name: Setup PHP
