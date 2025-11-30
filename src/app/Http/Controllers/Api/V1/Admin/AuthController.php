@@ -34,7 +34,7 @@ class AuthController extends Controller
     /**
      * @OA\Post(
      *     path="/api/v1/login",
-     *     tags={"Auth"},
+     *     tags={"Authentication"},
      *     summary="Login to get a Bearer Token",
      *     @OA\RequestBody(
      *         required=true,
@@ -80,6 +80,32 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/user",
+     *     tags={"Authentication"},
+     *     summary="Get current authenticated user",
+     *     description="Returns the currently authenticated user's information",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Current user information",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="id", type="integer"),
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="username", type="string"),
+     *             @OA\Property(property="email", type="string"),
+     *             @OA\Property(property="type", type="string"),
+     *             @OA\Property(property="is_admin", type="boolean")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
     public function index(Request $request): JsonResponse
     {
         return response()->json($request->user());

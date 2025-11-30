@@ -7,12 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Services\VolunteerService;
 use Illuminate\Http\Request;
 
-/**
- * @OA\Tag(
- *     name="VolunteerDownload",
- *     description="Volunteer list download endpoints"
- * )
- */
 class VolunteerDownloadController extends Controller
 {
     protected VolunteerService $volunteerService;
@@ -25,7 +19,7 @@ class VolunteerDownloadController extends Controller
     /**
      * @OA\Get(
      *     path="/api/v1/volunteers/download",
-     *     tags={"VolunteerDownload"},
+     *     tags={"Volunteers"},
      *     summary="Download volunteer list",
      *     @OA\Parameter(
      *         name="service_body_id",

@@ -99,7 +99,7 @@ class VoicemailController extends Controller
      * Delete a voicemail
      *
      * @OA\Delete(
-     *     path="/api/v1/voicemail/{callSid}",
+     *     path="/api/v1/voicemail/{voicemail}",
      *     summary="Delete a voicemail",
      *     description="Deletes a specific voicemail by its call SID",
      *     operationId="deleteVoicemail",
@@ -116,7 +116,7 @@ class VoicemailController extends Controller
      *         )
      *     ),
      *     @OA\Parameter(
-     *         name="callSid",
+     *         name="voicemail",
      *         description="Call SID of the voicemail to delete",
      *         required=true,
      *         in="path",

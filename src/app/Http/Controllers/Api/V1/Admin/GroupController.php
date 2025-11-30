@@ -89,11 +89,47 @@ class GroupController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/api/v1/groups/{id}",
+     *     path="/api/v1/groups/{group}",
      *     tags={"Groups"},
      *     summary="Update a group",
      *     @OA\Parameter(
-     *         name="id",
+     *         name="group",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group to update",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="description", type="string"),
+     *             @OA\Property(property="enabled", type="boolean")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Group updated successfully",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="service_body_id", type="integer"),
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="parent_id", type="integer", nullable=true),
+     *                 @OA\Property(property="data", type="object")
+     *             )
+     *         )
+     *     )
+     * )
+     *
+     * @OA\Patch(
+     *     path="/api/v1/groups/{group}",
+     *     tags={"Groups"},
+     *     summary="Partially update a group",
+     *     @OA\Parameter(
+     *         name="group",
      *         in="path",
      *         required=true,
      *         description="ID of the group to update",
@@ -190,11 +226,11 @@ class GroupController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/groups/{id}",
+     *     path="/api/v1/groups/{group}",
      *     tags={"Groups"},
      *     summary="Delete a group",
      *     @OA\Parameter(
-     *         name="id",
+     *         name="group",
      *         in="path",
      *         required=true,
      *         description="ID of the group to delete",

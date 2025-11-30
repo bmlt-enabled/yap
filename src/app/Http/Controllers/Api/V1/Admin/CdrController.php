@@ -7,12 +7,6 @@ use App\Services\ReportsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-/**
- * @OA\Tag(
- *     name="CDR",
- *     description="Call Detail Records endpoints"
- * )
- */
 class CdrController extends Controller
 {
     private $reportsService;
@@ -25,7 +19,7 @@ class CdrController extends Controller
     /**
      * @OA\Get(
      *     path="/api/v1/reports/cdr",
-     *     tags={"CDR"},
+     *     tags={"Reports"},
      *     summary="Get Call Detail Records report",
      *     @OA\Parameter(
      *         name="service_body_id",

@@ -18,6 +18,33 @@ class GroupVolunteerController extends Controller
         $this->volunteerService = $volunteerService;
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/groups/volunteers",
+     *     tags={"Groups"},
+     *     summary="Get volunteers for a group",
+     *     description="Retrieves volunteers assigned to a specific group",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="groupId",
+     *         in="query",
+     *         required=true,
+     *         description="ID of the group",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Group volunteers retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="service_body_id", type="integer"),
+     *             @OA\Property(property="id", type="integer"),
+     *             @OA\Property(property="parent_id", type="integer", nullable=true),
+     *             @OA\Property(property="data", type="string")
+     *         )
+     *     )
+     * )
+     */
     public function index(Request $request)
     {
         $data = ConfigData::getGroupVolunteers($request->get("groupId"));
@@ -34,6 +61,48 @@ class GroupVolunteerController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/groups/volunteers",
+     *     tags={"Groups"},
+     *     summary="Create or update volunteers for a group",
+     *     description="Assigns or updates volunteers for a specific group",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="groupId",
+     *         in="query",
+     *         required=true,
+     *         description="ID of the group",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="serviceBodyId",
+     *         in="query",
+     *         required=false,
+     *         description="ID of the service body",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Array of volunteer IDs to assign to the group",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(type="integer")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Group volunteers updated successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="service_body_id", type="integer"),
+     *             @OA\Property(property="id", type="integer"),
+     *             @OA\Property(property="parent_id", type="integer", nullable=true),
+     *             @OA\Property(property="data", type="string")
+     *         )
+     *     )
+     * )
+     */
     public function store(Request $request)
     {
         $volunteers = json_decode($request->getContent());

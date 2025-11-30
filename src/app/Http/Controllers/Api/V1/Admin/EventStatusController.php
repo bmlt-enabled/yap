@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 /**
  * @OA\Tag(
- *     name="EventStatus",
+ *     name="Events",
  *     description="Event status management endpoints"
  * )
  */
@@ -28,7 +28,7 @@ class EventStatusController extends Controller
     /**
      * @OA\Get(
      *     path="/api/v1/events/status",
-     *     tags={"EventStatus"},
+     *     tags={"Events"},
      *     summary="Get all event statuses",
      *     @OA\Response(
      *         response=200,
@@ -56,7 +56,7 @@ class EventStatusController extends Controller
     /**
      * @OA\Post(
      *     path="/api/v1/events/status",
-     *     tags={"EventStatus"},
+     *     tags={"Events"},
      *     summary="Create a new event status",
      *     @OA\RequestBody(
      *         required=true,
