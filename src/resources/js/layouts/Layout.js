@@ -5,6 +5,7 @@ import { PageContainer } from '@toolpad/core/PageContainer';
 import { useSession } from '../SessionContext';
 import { useEffect, useState } from "react";
 import apiClient from "../services/api";
+import CustomToolbarActions from "../components/CustomToolbarActions";
 
 export default function Layout() {
     const { session, setSession } = useSession();
@@ -47,7 +48,11 @@ export default function Layout() {
     }
 
     return (
-        <DashboardLayout>
+        <DashboardLayout
+            slots={{
+                toolbarActions: CustomToolbarActions,
+            }}
+        >
             <PageContainer>
                 <Outlet />
             </PageContainer>
