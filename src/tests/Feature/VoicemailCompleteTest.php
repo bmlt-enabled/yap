@@ -444,8 +444,10 @@ test('voicemail complete send email using primary contact with dialback disabled
     Assert::assertTrue($mailer->FromName == $smtp_from_name);
     Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
     Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
-    $body = sprintf("You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3. ", $this->callerNumber);
-    Assert::assertTrue($mailer->Body == $body);
+    $htmlBody = sprintf("<!DOCTYPE html><html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"></head><body text=\"#000000\" bgcolor=\"#FFFFFF\"><p></p><h2> You have a message from the Finger Lakes Area Service helpline from the caller %s.<br> Voicemail: <a href=\"http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3\">Listen to message</a></h2></body></html> ", $this->callerNumber);
+    $altBody = sprintf("You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3. ", $this->callerNumber);
+    Assert::assertTrue($mailer->Body == $htmlBody);
+    Assert::assertTrue($mailer->AltBody == $altBody);
     Assert::assertTrue($mailer->Subject == "Helpline Voicemail from Finger Lakes Area Service");
     Assert::assertTrue($mailer->getAttachments()[0][1] == "http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3");
     Assert::assertTrue($mailer->getAttachments()[0][2] == "file_example_MP3_700KB_trimmedv2.mp3");
@@ -545,9 +547,11 @@ test('voicemail complete send email using primary contact with dialback enabled'
     Assert::assertTrue($mailer->FromName == $smtp_from_name);
     Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
     Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
-    $body = sprintf("You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3. ", $this->callerNumber);
-    $body .= sprintf("Tap to dialback: %s,,,9,,,%s#.  PIN: %s", $this->callerNumber, $pin, $pin);
-    Assert::assertTrue($mailer->Body == $body);
+    $dialbackString = sprintf("Tap to dialback: %s,,,9,,,%s#.  PIN: %s", $this->callerNumber, $pin, $pin);
+    $htmlBody = sprintf("<!DOCTYPE html><html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"></head><body text=\"#000000\" bgcolor=\"#FFFFFF\"><p></p><h2> You have a message from the Finger Lakes Area Service helpline from the caller %s.<br> Voicemail: <a href=\"http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3\">Listen to message</a></h2></body></html> %s", $this->callerNumber, $dialbackString);
+    $altBody = sprintf("You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3. %s", $this->callerNumber, $dialbackString);
+    Assert::assertTrue($mailer->Body == $htmlBody);
+    Assert::assertTrue($mailer->AltBody == $altBody);
     Assert::assertTrue($mailer->Subject == "Helpline Voicemail from Finger Lakes Area Service");
     Assert::assertTrue($mailer->getAttachments()[0][1] == "http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3");
     Assert::assertTrue($mailer->getAttachments()[0][2] == "file_example_MP3_700KB_trimmedv2.mp3");
@@ -650,9 +654,11 @@ test('voicemail complete send email using primary contact with dialback enabled 
     Assert::assertTrue($mailer->FromName == $smtp_from_name);
     Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
     Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
-    $body = sprintf("ouyay avehay ayay essagemay omfray ethay Finger Lakes Area Service elplinehay omfray ethay allercay %s. oicemailvay: http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3. ", $this->callerNumber);
-    $body .= sprintf("aptay ootay ialbackdray: %s,,,2,,,9,,,%s#.  PIN: %s", $this->callerNumber, $pin, $pin);
-    Assert::assertTrue($mailer->Body == $body);
+    $dialbackString = sprintf("aptay ootay ialbackdray: %s,,,2,,,9,,,%s#.  PIN: %s", $this->callerNumber, $pin, $pin);
+    $htmlBody = sprintf("<!DOCTYPE html><html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"></head><body text=\"#000000\" bgcolor=\"#FFFFFF\"><p></p><h2> ouyay avehay ayay essagemay omfray ethay Finger Lakes Area Service elplinehay omfray ethay allercay %s.<br> oicemailvay: <a href=\"http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3\">Iistenlay otay essagemay</a></h2></body></html> %s", $this->callerNumber, $dialbackString);
+    $altBody = sprintf("ouyay avehay ayay essagemay omfray ethay Finger Lakes Area Service elplinehay omfray ethay allercay %s. oicemailvay: http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3. %s", $this->callerNumber, $dialbackString);
+    Assert::assertTrue($mailer->Body == $htmlBody);
+    Assert::assertTrue($mailer->AltBody == $altBody);
     // TODO: Need to translate the subject.
     Assert::assertTrue($mailer->Subject == "Helpline Voicemail from Finger Lakes Area Service");
     Assert::assertTrue($mailer->getAttachments()[0][1] == "http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3");

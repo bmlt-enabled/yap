@@ -78,7 +78,15 @@ class VoicemailService extends Service
             $recordingDataString = Http::get($recordingUrlWithExtension);
             $this->mailer->addStringAttachment($recordingDataString, $recordingUrlWithExtension);
             $caller_id = $this->call->getOutboundDialingCallerId($serviceBodyCallHandling);
-            $body = $this->call->getVoicemailMessage(
+            $body = $this->call->getVoicemailMessageHtml(
+                $callsid,
+                $caller_id,
+                SmsDialbackOptions::VOICEMAIL_NOTIFICATION,
+                $serviceBodyName,
+                $callerNumber,
+                $recordingUrl
+            );
+            $altbody = $this->call->getVoicemailMessage(
                 $callsid,
                 $caller_id,
                 SmsDialbackOptions::VOICEMAIL_NOTIFICATION,
@@ -87,6 +95,7 @@ class VoicemailService extends Service
                 $recordingUrl
             );
             $this->mailer->Body = $body;
+            $this->mailer->AltBody = $altbody;
             $this->mailer->Subject = 'Helpline Voicemail from ' . $serviceBodyName;
             $this->mailer->send();
         } catch (Exception $e) {

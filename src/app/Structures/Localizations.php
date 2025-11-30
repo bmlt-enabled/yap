@@ -117,6 +117,7 @@ class Localizations
         'tap_to_dialback' => "Tap to dialback",
         'you_have_a_message_from_the' => "You have a message from the",
         'from_the_caller' => "from the caller",
+        'listen_to_message' => "Listen to message",
     ];
     public $enAU = [
         'language_title' => "english",
@@ -231,6 +232,7 @@ class Localizations
         'tap_to_dialback' => "Tap to dialback",
         'you_have_a_message_from_the' => "You have a message from the",
         'from_the_caller' => "from the caller",
+        'listen_to_message' => "Listen to message",
     ];
     public $esUS = [
         'language_title' => "español",
@@ -345,6 +347,7 @@ class Localizations
         'tap_to_dialback' => "toque para volver a marcar",
         'you_have_a_message_from_the' => "tienes un mensaje del",
         'from_the_caller' => "de la persona que llama",
+        'listen_to_message' => "Escuchar mensaje",
     ];
     public $piglatin = [
         'language_title' => "igpay atinlay",
@@ -451,6 +454,7 @@ class Localizations
         'tap_to_dialback' => "aptay ootay ialbackdray",
         'you_have_a_message_from_the' => "ouyay avehay ayay essagemay omfray ethay",
         'from_the_caller' => "omfray ethay allercay",
+        'listen_to_message' => "Iistenlay otay essagemay",
     ];
     public $ptBR = [
         'language_title' => "português",
@@ -565,6 +569,7 @@ class Localizations
         'tap_to_dialback' => "Tap to dialback",
         'you_have_a_message_from_the' => "You have a message from the",
         'from_the_caller' => "from the caller",
+        'listen_to_message' => "Listen to message",
     ];
     public $frCA = [
         'language_title' => "français",
@@ -679,6 +684,7 @@ class Localizations
         'tap_to_dialback' => "Tap to dialback",
         'you_have_a_message_from_the' => "You have a message from the",
         'from_the_caller' => "from the caller",
+        'listen_to_message' => "écouter le message",
     ];
     public $itIT = [
         'language_title' => "italiano",
@@ -793,6 +799,7 @@ class Localizations
         'tap_to_dialback' => "Tap to dialback",
         'you_have_a_message_from_the' => "You have a message from the",
         'from_the_caller' => "from the caller",
+        'listen_to_message' => "Listen to message",
     ];
 
     public function setLocalization($language, $localization): void
