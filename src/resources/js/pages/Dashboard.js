@@ -25,7 +25,7 @@ import {
 } from "@mui/icons-material";
 
 function Dashboard() {
-    const [username, setUsername] = useState('');
+    const [name, setName] = useState('');
     const [version, setVersion] = useState('');
     const [versionStatus, setVersionStatus] = useState('unknown');
     const [versionMessage, setVersionMessage] = useState('');
@@ -40,7 +40,7 @@ function Dashboard() {
                 'Content-Type': 'application/json',
             }
         }).then((response) => {
-            setUsername(response.data.username)
+            setName(response.data.name)
         }).catch((error) => {
             console.error('Error fetching user data:', error);
         })
@@ -126,10 +126,7 @@ function Dashboard() {
                     </Avatar>
                     <Box>
                         <Typography variant="h4" fontWeight="bold" gutterBottom>
-                            Welcome back, {username || 'User'}!
-                        </Typography>
-                        <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                            Manage your Yap Phone System configuration and view reports
+                            Welcome back, {name || 'User'}!
                         </Typography>
                     </Box>
                 </Stack>

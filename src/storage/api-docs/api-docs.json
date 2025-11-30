@@ -871,7 +871,7 @@
                 }
             }
         },
-        "/api/v1/rootServer/servicebodies": {
+        "/api/v1/rootServer/serviceBodies": {
             "get": {
                 "tags": [
                     "RootServer"
@@ -1283,6 +1283,30 @@
                                 "schema": {
                                     "description": "Localization words for the current session language",
                                     "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/settings/timezones": {
+            "get": {
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Get list of all available timezones",
+                "operationId": "ec86b8bb6f9a8e98798a1c4a70cf015f",
+                "responses": {
+                    "200": {
+                        "description": "Timezone list retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
                                 }
                             }
                         }
