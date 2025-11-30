@@ -19,7 +19,7 @@ class RootServerServiceBodiesController extends Controller
 
     /**
      * @OA\Get(
-     * path="/api/v1/rootServer/servicebodies",
+     * path="/api/v1/rootServer/serviceBodies",
      * operationId="RootServer",
      * tags={"RootServer"},
      * summary="Get ServiceBodies",

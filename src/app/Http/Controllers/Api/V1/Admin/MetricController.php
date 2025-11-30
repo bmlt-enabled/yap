@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 /**
  * @OA\Tag(
- *     name="Metrics",
+ *     name="Reports",
  *     description="Metrics and reporting endpoints"
  * )
  */
@@ -25,7 +25,7 @@ class MetricController extends Controller
     /**
      * @OA\Get(
      *     path="/api/v1/reports/metrics",
-     *     tags={"Metrics"},
+     *     tags={"Reports"},
      *     summary="Get metrics report",
      *     @OA\Parameter(
      *         name="service_body_id",

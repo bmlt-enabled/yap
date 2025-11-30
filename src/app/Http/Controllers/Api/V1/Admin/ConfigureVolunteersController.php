@@ -11,7 +11,7 @@ use stdClass;
 
 /**
  * @OA\Tag(
- *     name="ConfigureVolunteers",
+ *     name="Volunteers",
  *     description="Volunteer configuration management endpoints"
  * )
  */
@@ -27,7 +27,7 @@ class ConfigureVolunteersController extends Controller
     /**
      * @OA\Get(
      *     path="/api/v1/volunteers",
-     *     tags={"ConfigureVolunteers"},
+     *     tags={"Volunteers"},
      *     summary="Get volunteers configuration",
      *     @OA\Parameter(
      *         name="serviceBodyId",
@@ -68,7 +68,7 @@ class ConfigureVolunteersController extends Controller
     /**
      * @OA\Post(
      *     path="/api/v1/volunteers",
-     *     tags={"ConfigureVolunteers"},
+     *     tags={"Volunteers"},
      *     summary="Store or update volunteers configuration",
      *     @OA\Parameter(
      *         name="serviceBodyId",

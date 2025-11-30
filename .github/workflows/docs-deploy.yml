@@ -14,10 +14,10 @@ jobs:
         working-directory: 'src/docs'
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+        uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22.x
+          node-version: 24.x
           cache: npm
           cache-dependency-path: src/docs/package-lock.json
       - name: Setup Pages

@@ -6,12 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Services\ConfigService;
 use App\Utilities\Sort;
 
-/**
- * @OA\Tag(
- *     name="VolunteerRouting",
- *     description="Volunteer routing configuration endpoints"
- * )
- */
 class VolunteerRoutingEnabledController extends Controller
 {
     protected ConfigService $config;
@@ -23,8 +17,8 @@ class VolunteerRoutingEnabledController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/v1/volunteers/routing/enabled",
-     *     tags={"VolunteerRouting"},
+     *     path="/api/v1/callHandling/routingEnabled",
+     *     tags={"CallHandling"},
      *     summary="Get service bodies enabled for volunteer routing",
      *     @OA\Response(
      *         response=200,

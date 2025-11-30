@@ -10,12 +10,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use stdClass;
 
-/**
- * @OA\Tag(
- *     name="ServiceBodyCallHandling",
- *     description="Service body call handling configuration endpoints"
- * )
- */
 class ServiceBodyCallHandlingController extends Controller
 {
     protected ConfigData $configData;
@@ -27,8 +21,8 @@ class ServiceBodyCallHandlingController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/v1/servicebody/callhandling",
-     *     tags={"ServiceBodyCallHandling"},
+     *     path="/api/v1/callHandling",
+     *     tags={"CallHandling"},
      *     summary="Get service body call handling configuration",
      *     @OA\Parameter(
      *         name="serviceBodyId",
@@ -68,8 +62,8 @@ class ServiceBodyCallHandlingController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/v1/servicebody/callhandling",
-     *     tags={"ServiceBodyCallHandling"},
+     *     path="/api/v1/callHandling",
+     *     tags={"CallHandling"},
      *     summary="Store or update service body call handling configuration",
      *     @OA\Parameter(
      *         name="serviceBodyId",

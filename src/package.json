@@ -1,7 +1,7 @@
 {
     "private": true,
     "engines": {
-        "node": ">=22.10.0",
+        "node": ">=24.11.0",
         "npm": ">=10.9.0"
     },
     "scripts": {
@@ -28,10 +28,9 @@
         "@fullcalendar/timegrid": "^6.1.10",
         "@mui/icons-material": "^7.0.0",
         "@mui/material": "^7.0.0",
+        "@mui/x-date-pickers": "^8.19.0",
         "@toolpad/core": "^0.16.0",
-        "bootstrap": "^4.6.2",
-        "dark-mode-switch": "^1.0.0",
-        "daterangepicker": "^3.1.0",
+        "dayjs": "^1.11.19",
         "jquery": "~3.7.1",
         "jquery-ui-dist": "^1.13.2",
         "jquery-ui-touch-punch": "^0.2.3",
