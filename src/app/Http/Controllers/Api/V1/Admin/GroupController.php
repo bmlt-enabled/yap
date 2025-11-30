@@ -7,7 +7,6 @@ use App\Models\ConfigData;
 use App\Services\VolunteerService;
 use App\Structures\Group;
 use Illuminate\Http\Request;
-use stdClass;
 
 /**
  * @OA\Tag(

@@ -1,5 +1,4 @@
-import React, {useState} from "react";
-import ServiceBodiesDropdown from "../components/ServiceBodiesDropdown";
+import { useState, useEffect } from "react";
 import { useLocalization } from "../contexts/LocalizationContext";
 import {
     DndContext,
@@ -7,7 +6,7 @@ import {
     KeyboardSensor,
     PointerSensor,
     useSensor,
-    useSensors,     
+    useSensors,
 } from '@dnd-kit/core';
 import {
     arrayMove,
@@ -29,14 +28,22 @@ import {
     Checkbox,
 } from '@mui/material';
 import apiClient from "../services/api";
-import {defaultVolunteer} from "../models/VolunteerModel";
-import {defaultShift} from "../models/ShiftModel";
+import { defaultVolunteer } from "../models/VolunteerModel";
+import { defaultShift } from "../models/ShiftModel";
 import SortableVolunteer from "../components/SortableVolunteer";
 
-    function Volunteers() {
-    const { getWord, loading: localizationsLoading } = useLocalization();
+/**
+ * VolunteersManager - Reusable component for managing volunteers
+ * Can be used for both service body volunteers and group volunteers
+ *
+ * @param {Object} props
+ * @param {number} props.serviceBodyId - The service body ID
+ * @param {number} props.groupId - Optional group ID (if managing group volunteers)
+ * @param {string} props.dataType - Optional data type identifier
+ */
+function VolunteersManager({ serviceBodyId, groupId = null }) {
+    const { getWord } = useLocalization();
     const [volunteers, setVolunteers] = useState([]);
-    const [serviceBodyId, setServiceBodyId] = useState();
     const [showModal, setShowModal] = useState(false);
     const [currentVolunteer, setCurrentVolunteer] = useState();
     const [shiftData, setShiftData] = useState("");
@@ -45,23 +52,18 @@ import SortableVolunteer from "../components/SortableVolunteer";
     const [timezones, setTimezones] = useState([]);
     const [currentTimezone, setCurrentTimezone] = useState('');
     const [timezoneOpen, setTimezoneOpen] = useState(false);
-    const [showGroupModal, setShowGroupModal] = useState(false);
-    const [groups, setGroups] = useState([]);
-    const [selectedGroupId, setSelectedGroupId] = useState(0);
     const [selectedDays, setSelectedDays] = useState([]);
     const daysOfWeek = getWord('days_of_the_week');
-       
+
     // Get current browser timezone
-    React.useEffect(() => {
+    useEffect(() => {
         const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         setCurrentTimezone(browserTimezone);
-        
-        // Set default timezone in shiftData
         setShiftData(prev => ({ ...prev, tz: browserTimezone }));
     }, []);
 
     // Fetch timezones from API
-    React.useEffect(() => {
+    useEffect(() => {
         const fetchTimezones = async () => {
             try {
                 const response = await apiClient.get('/api/v1/settings/timezones');
@@ -70,9 +72,15 @@ import SortableVolunteer from "../components/SortableVolunteer";
                 console.error('Error fetching timezones:', error);
             }
         };
-        
         fetchTimezones();
     }, []);
+
+    // Load volunteers when serviceBodyId or groupId changes
+    useEffect(() => {
+        if (serviceBodyId || groupId) {
+            getVolunteers();
+        }
+    }, [serviceBodyId, groupId]);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -81,29 +89,46 @@ import SortableVolunteer from "../components/SortableVolunteer";
         })
     );
 
-    const serviceBodiesHandleChange = (event, index) => {
-        setServiceBodyId(event)
-        getVolunteers(event)
-    }
-
     const handleAddVolunteer = () => {
-        setVolunteers([...volunteers, {...defaultVolunteer}]);
+        setVolunteers([...volunteers, { ...defaultVolunteer }]);
     };
 
-    const getVolunteers = async (serviceBodyId) => {
+    const getVolunteers = async () => {
         setLoading(true);
         try {
-            let response = await apiClient(`${rootUrl}/api/v1/volunteers?serviceBodyId=${serviceBodyId}`);
-            let responseData = await response.data;            
-            setVolunteers(responseData.data);
+            let response;
+            if (groupId) {
+                // Fetch group volunteers
+                response = await apiClient.get(`${rootUrl}/api/v1/groups/volunteers?groupId=${groupId}`);
+                const responseData = response.data;
+
+                // Parse the data field if it exists and is a string
+                if (responseData && responseData.data) {
+                    let parsedData;
+                    if (typeof responseData.data === 'string') {
+                        parsedData = JSON.parse(responseData.data);
+                    } else {
+                        parsedData = responseData.data;
+                    }
+                    setVolunteers(parsedData || []);
+                } else {
+                    setVolunteers([]);
+                }
+            } else if (serviceBodyId) {
+                // Fetch service body volunteers
+                response = await apiClient.get(`${rootUrl}/api/v1/volunteers?serviceBodyId=${serviceBodyId}`);
+                const responseData = response.data;
+                setVolunteers(responseData.data || []);
+            }
         } catch (error) {
             console.error('Error fetching volunteers:', error);
+            setVolunteers([]);
         } finally {
             setLoading(false);
         }
     };
 
-    const saveVolunteers = async (event) => {
+    const saveVolunteers = async () => {
         setLoading(true);
         try {
             // Encode shift schedules before saving
@@ -111,9 +136,36 @@ import SortableVolunteer from "../components/SortableVolunteer";
                 ...volunteer,
                 volunteer_shift_schedule: btoa(JSON.stringify(volunteer.volunteer_shift_schedule))
             }));
-            let response = await apiClient.post(`${rootUrl}/api/v1/volunteers?serviceBodyId=${serviceBodyId}`, encodedVolunteers);
-            let responseData = await response.data;
-            setVolunteers(responseData.data);
+
+            let response;
+            if (groupId) {
+                // Save group volunteers
+                response = await apiClient.post(
+                    `${rootUrl}/api/v1/groups/volunteers?groupId=${groupId}&serviceBodyId=${serviceBodyId}`,
+                    encodedVolunteers
+                );
+            } else {
+                // Save service body volunteers
+                response = await apiClient.post(
+                    `${rootUrl}/api/v1/volunteers?serviceBodyId=${serviceBodyId}`,
+                    encodedVolunteers
+                );
+            }
+
+            const responseData = response.data;
+
+            // Handle different response formats
+            if (groupId && responseData && responseData.data) {
+                let parsedData;
+                if (typeof responseData.data === 'string') {
+                    parsedData = JSON.parse(responseData.data);
+                } else {
+                    parsedData = responseData.data;
+                }
+                setVolunteers(parsedData || []);
+            } else if (responseData.data) {
+                setVolunteers(responseData.data || []);
+            }
         } catch (error) {
             console.error('Error saving volunteers:', error);
         } finally {
@@ -159,7 +211,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
         const updatedVolunteers = [...volunteers];
         updatedVolunteers[volunteerIndex].volunteer_shift_schedule.splice(shiftIndex, 1);
         setVolunteers(updatedVolunteers);
-    };  
+    };
 
     const handleRemoveAllShifts = (volunteerIndex) => {
         const updatedVolunteers = [...volunteers];
@@ -183,77 +235,16 @@ import SortableVolunteer from "../components/SortableVolunteer";
         setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
     };
 
-    const loadGroups = async () => {
-        if (!serviceBodyId) return;
-
-        try {
-            const response = await apiClient.get(`${rootUrl}/api/v1/groups?serviceBodyId=${serviceBodyId}`);
-            setGroups(response.data || []);
-        } catch (error) {
-            console.error('Error fetching groups:', error);
-        }
-    };
-
-    const handleShowGroupModal = () => {
-        loadGroups();
-        setShowGroupModal(true);
-    };
-
-    const handleIncludeGroup = async () => {
-        if (selectedGroupId === 0) {
-            return;
-        }
-
-        try {
-            // Fetch group volunteers
-            const response = await apiClient.get(`${rootUrl}/api/v1/groups/volunteers?groupId=${selectedGroupId}`);
-            const responseData = response.data;
-
-            // Parse the volunteers data
-            let groupVolunteers = [];
-            if (responseData && responseData.data) {
-                if (typeof responseData.data === 'string') {
-                    groupVolunteers = JSON.parse(responseData.data);
-                } else {
-                    groupVolunteers = responseData.data;
-                }
-            }
-
-            // Find the group info
-            const group = groups.find(g => g.id === parseInt(selectedGroupId));
-
-            // Create a group reference object to add to volunteers list
-            const groupReference = {
-                group_id: selectedGroupId,
-                group_name: group?.data[0]?.group_name || 'Group',
-                group_enabled: true,
-                isGroup: true // Flag to identify this as a group reference
-            };
-
-            // Add the group reference to the volunteers list
-            setVolunteers([...volunteers, groupReference]);
-
-            // Close modal and reset selection
-            setShowGroupModal(false);
-            setSelectedGroupId(0);
-        } catch (error) {
-            console.error('Error including group:', error);
-        }
-    };
-
     return (
-        <div className="container">
-            <div className="form-group">
-                <ServiceBodiesDropdown handleChange={serviceBodiesHandleChange}/>
-                {serviceBodyId > 0 ?
-                    <ButtonGroup sx={{
-                        padding: 2
-                    }}>
-                        <Button variant="contained" color="primary" onClick={handleAddVolunteer}>{getWord('add_volunteer')}</Button>
-                        <Button variant="contained" color="success" onClick={saveVolunteers}>{getWord('save_volunteers')}</Button>
-                        <Button variant="contained" color="warning" onClick={handleShowGroupModal}>{getWord('include_group')}</Button>
-                    </ButtonGroup> : ""}
-            </div>
+        <Box>
+            <ButtonGroup sx={{ mb: 2 }}>
+                <Button variant="contained" color="primary" onClick={handleAddVolunteer}>
+                    {getWord('add_volunteer') || 'Add Volunteer'}
+                </Button>
+                <Button variant="contained" color="success" onClick={saveVolunteers} disabled={loading}>
+                    {getWord('save_volunteers') || 'Save Volunteers'}
+                </Button>
+            </ButtonGroup>
 
             {loading ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
@@ -304,7 +295,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
                     boxShadow: 24,
                     p: 4
                 }}>
-                    <h2>{getWord('add_shift')}</h2>
+                    <h2>{getWord('add_shift') || 'Add Shift'}</h2>
 
                     <FormControl fullWidth margin="normal">
                         <InputLabel>{getWord('select_days') || 'Select Days'}</InputLabel>
@@ -333,7 +324,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
                         </Select>
                     </FormControl>
                     <Box>
-                        <InputLabel sx={{ mb: 1 }}>{getWord('start_time')}</InputLabel>
+                        <InputLabel sx={{ mb: 1 }}>{getWord('start_time') || 'Start Time'}</InputLabel>
                         <Box sx={{ display: 'flex', gap: 1 }}>
                             <FormControl sx={{ minWidth: 80 }}>
                                 <Select
@@ -387,7 +378,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
                         </Box>
                     </Box>
                     <Box sx={{ mt: 2 }}>
-                        <InputLabel sx={{ mb: 1 }}>{getWord('end_time')}</InputLabel>
+                        <InputLabel sx={{ mb: 1 }}>{getWord('end_time') || 'End Time'}</InputLabel>
                         <Box sx={{ display: 'flex', gap: 1 }}>
                             <FormControl sx={{ minWidth: 80 }}>
                                 <Select
@@ -441,11 +432,11 @@ import SortableVolunteer from "../components/SortableVolunteer";
                         </Box>
                     </Box>
                     <FormControl fullWidth margin="normal">
-                        <InputLabel>{getWord('timezone')}</InputLabel>
+                        <InputLabel>{getWord('timezone') || 'Timezone'}</InputLabel>
                         <Select
                             value={shiftData.tz || currentTimezone}
                             onChange={e => setShiftData({ ...shiftData, tz: e.target.value })}
-                            label={getWord('timezone')}
+                            label={getWord('timezone') || 'Timezone'}
                             open={timezoneOpen}
                             onOpen={() => setTimezoneOpen(true)}
                             onClose={() => setTimezoneOpen(false)}
@@ -466,11 +457,11 @@ import SortableVolunteer from "../components/SortableVolunteer";
                         </Select>
                     </FormControl>
                     <FormControl fullWidth margin="normal">
-                        <InputLabel>{getWord('type')}</InputLabel>
+                        <InputLabel>{getWord('type') || 'Type'}</InputLabel>
                         <Select
                             value={shiftData.type}
                             onChange={e => setShiftData({ ...shiftData, type: e.target.value })}
-                            label={getWord('type')}
+                            label={getWord('type') || 'Type'}
                             MenuProps={{
                                 disablePortal: false,
                                 keepMounted: true,
@@ -481,82 +472,24 @@ import SortableVolunteer from "../components/SortableVolunteer";
                                 },
                             }}
                         >
-                            <MenuItem value="PHONE">{getWord('phone')}</MenuItem>
-                            <MenuItem value="SMS">{getWord('sms')}</MenuItem>
-                            <MenuItem value="PHONE,SMS">{getWord('phone_sms')}</MenuItem>
+                            <MenuItem value="PHONE">{getWord('phone') || 'Phone'}</MenuItem>
+                            <MenuItem value="SMS">{getWord('sms') || 'SMS'}</MenuItem>
+                            <MenuItem value="PHONE,SMS">{getWord('phone_sms') || 'Phone & SMS'}</MenuItem>
                         </Select>
                     </FormControl>
-                    <Button variant="contained" color="primary" onClick={saveShift}>{getWord('save_shift')}</Button>
+                    <Button variant="contained" color="primary" onClick={saveShift}>
+                        {getWord('save_shift') || 'Save Shift'}
+                    </Button>
                     <Button variant="outlined" onClick={() => {
                         setShowModal(false);
                         setTimezoneOpen(false);
-                    }} style={{ marginLeft: '10px' }}>{getWord('close')}</Button>
+                    }} style={{ marginLeft: '10px' }}>
+                        {getWord('close') || 'Close'}
+                    </Button>
                 </Box>
             </Modal>
-
-            <Modal open={showGroupModal} onClose={() => {
-                setShowGroupModal(false);
-                setSelectedGroupId(0);
-            }}>
-                <Box sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: 500,
-                    bgcolor: 'background.paper',
-                    border: '2px solid #000',
-                    boxShadow: 24,
-                    p: 4
-                }}>
-                    <h2>{getWord('include_group') || 'Include Group'}</h2>
-                    <FormControl fullWidth margin="normal">
-                        <InputLabel>{getWord('select_a_group') || 'Select a Group'}</InputLabel>
-                        <Select
-                            value={selectedGroupId}
-                            onChange={e => setSelectedGroupId(e.target.value)}
-                            label={getWord('select_a_group') || 'Select a Group'}
-                            MenuProps={{
-                                disablePortal: false,
-                                keepMounted: true,
-                                PaperProps: {
-                                    style: {
-                                        maxHeight: 400,
-                                    },
-                                },
-                            }}
-                        >
-                            <MenuItem value={0}>-= {getWord('select_a_group') || 'Select a Group'} =-</MenuItem>
-                            {groups.map((group) => (
-                                <MenuItem key={group.id} value={group.id}>
-                                    {group.data[0]?.group_name || 'Unnamed Group'} ({group.id})
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleIncludeGroup}
-                            disabled={selectedGroupId === 0}
-                        >
-                            {getWord('ok') || 'OK'}
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            onClick={() => {
-                                setShowGroupModal(false);
-                                setSelectedGroupId(0);
-                            }}
-                        >
-                            {getWord('cancel') || 'Cancel'}
-                        </Button>
-                    </Box>
-                </Box>
-            </Modal>
-        </div>
+        </Box>
     );
 }
 
-export default Volunteers;
+export default VolunteersManager;
