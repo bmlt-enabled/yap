@@ -63,8 +63,6 @@ Route::match(array('GET', 'POST'), "/voicemail{ext}", 'App\Http\Controllers\Voic
     ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "/post-call-action{ext}", 'App\Http\Controllers\CallFlowController@postCallAction')
     ->where('ext', $ext);
-Route::match(array('GET', 'POST'), "upgrade-advisor{ext}", 'App\Http\Controllers\UpgradeAdvisorController@index')
-    ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "/lng-selector{ext}", 'App\Http\Controllers\CallFlowController@languageSelector')
     ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "/province-voice-input{ext}", 'App\Http\Controllers\CallFlowController@provinceVoiceInput')

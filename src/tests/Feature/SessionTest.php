@@ -26,7 +26,7 @@ test('clear the session', function ($method) {
     ;
     $response = $this->call('POST', '/api/v1/session');
     $response->assertStatus(200)
-        ->assertHeader("Content-Type", "text/plain; charset=UTF-8")
+        ->assertHeader("Content-Type", "text/plain; charset=utf-8")
         ->assertSeeText("OK");
 
     $response = $this->call($method, "/");

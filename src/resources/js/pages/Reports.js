@@ -11,10 +11,18 @@ import {
     ButtonGroup,
     Modal,
     Box,
-    Typography
+    Typography,
+    Popover,
+    Stack,
+    TextField
 } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import apiClient from '../services/api';
 import moment from 'moment';
+import dayjs from 'dayjs';
 import Plotly from 'plotly.js-dist';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -22,9 +30,7 @@ import 'leaflet-fullscreen';
 import { ReactTabulator } from 'react-tabulator';
 import 'react-tabulator/lib/styles.css';
 import 'react-tabulator/lib/css/tabulator.min.css';
-import 'daterangepicker';
-import $ from 'jquery';
-import 'daterangepicker/daterangepicker.css';
+import '../../css/app.css';
 
 function Reports() {
     const [serviceBodyId, setServiceBodyId] = useState(-1);
@@ -32,10 +38,11 @@ function Reports() {
     const [recurse, setRecurse] = useState(false);
     const [reportsVisible, setReportsVisible] = useState(false);
     const [isTopLevelAdmin, setIsTopLevelAdmin] = useState(false);
-    const [dateRange, setDateRange] = useState({
-        start: moment().subtract(29, 'days'),
-        end: moment()
-    });
+    const [dateRange, setDateRange] = useState([
+        dayjs().subtract(29, 'days'),
+        dayjs()
+    ]);
+    const [anchorEl, setAnchorEl] = useState(null);
 
     // Modal state
     const [modalOpen, setModalOpen] = useState(false);
@@ -46,7 +53,6 @@ function Reports() {
     const [eventsData, setEventsData] = useState([]);
 
     // Refs for DOM elements
-    const dateRangeRef = useRef(null);
     const metricsRef = useRef(null);
     const metricsMapRef = useRef(null);
 
@@ -57,7 +63,6 @@ function Reports() {
 
     useEffect(() => {
         fetchServiceBodies();
-        initializeDateRangePicker();
 
         return () => {
             // Cleanup map instance
@@ -86,34 +91,6 @@ function Reports() {
         }
     };
 
-    const initializeDateRangePicker = () => {
-        const start = moment().subtract(29, 'days');
-        const end = moment();
-
-        $(dateRangeRef.current).daterangepicker({
-            startDate: start,
-            endDate: end,
-            ranges: {
-                'Today': [moment(), moment()],
-                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-                'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-                'This Month': [moment().startOf('month'), moment().endOf('month')],
-                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-            }
-        }, (start, end) => {
-            setDateRange({ start, end });
-            $(dateRangeRef.current).find('span').html(
-                start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY')
-            );
-        });
-
-        $(dateRangeRef.current).find('span').html(
-            start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY')
-        );
-    };
 
     const getServiceBodyById = (id) => {
         if (id === 0) return { id: "0", name: "General" };
@@ -125,9 +102,43 @@ function Reports() {
     };
 
     const getDateRanges = () => {
-        const drPicker = $(dateRangeRef.current).data('daterangepicker');
-        return `&date_range_start=${drPicker.startDate.format("YYYY-MM-DD 00:00:00")}&date_range_end=${drPicker.endDate.format("YYYY-MM-DD 23:59:59")}`;
+        const [start, end] = dateRange;
+        const startDate = start ? start.format("YYYY-MM-DD 00:00:00") : dayjs().subtract(29, 'days').format("YYYY-MM-DD 00:00:00");
+        const endDate = end ? end.format("YYYY-MM-DD 23:59:59") : dayjs().format("YYYY-MM-DD 23:59:59");
+        return `&date_range_start=${startDate}&date_range_end=${endDate}`;
     };
+
+    const handleDateRangeClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+    };
+
+    const applyDateRange = (start, end) => {
+        setDateRange([start, end]);
+        handlePopoverClose();
+    };
+
+    const dateRangeShortcuts = [
+        { label: 'Today', start: dayjs(), end: dayjs() },
+        { label: 'Yesterday', start: dayjs().subtract(1, 'days'), end: dayjs().subtract(1, 'days') },
+        { label: 'Last 7 Days', start: dayjs().subtract(6, 'days'), end: dayjs() },
+        { label: 'Last 30 Days', start: dayjs().subtract(29, 'days'), end: dayjs() },
+        { label: 'Last 60 Days', start: dayjs().subtract(59, 'days'), end: dayjs() },
+        { label: 'Last 90 Days', start: dayjs().subtract(89, 'days'), end: dayjs() },
+        { label: 'This Month', start: dayjs().startOf('month'), end: dayjs().endOf('month') },
+        { label: 'Last Month', start: dayjs().subtract(1, 'month').startOf('month'), end: dayjs().subtract(1, 'month').endOf('month') }
+    ];
+
+    const formatDateRangeDisplay = () => {
+        const [start, end] = dateRange;
+        if (!start || !end) return 'Select Date Range';
+        return `${start.format('MMM D, YYYY')} - ${end.format('MMM D, YYYY')}`;
+    };
+
+    const open = Boolean(anchorEl);
 
     // Fetch CDR data
     const fetchCDRData = async () => {
@@ -466,18 +477,80 @@ function Reports() {
                             label="Recurse"
                         />
 
-                        <div
-                            ref={dateRangeRef}
-                            style={{
-                                background: '#fff',
+                        <TextField
+                            size="small"
+                            value={formatDateRangeDisplay()}
+                            onClick={handleDateRangeClick}
+                            slotProps={{
+                                input: {
+                                    readOnly: true,
+                                    startAdornment: <CalendarTodayIcon sx={{ mr: 1, color: 'action.active' }} />,
+                                }
+                            }}
+                            sx={{
+                                minWidth: '300px',
                                 cursor: 'pointer',
-                                padding: '5px 10px',
-                                border: '1px solid #ccc',
-                                minWidth: '250px'
+                                '& .MuiInputBase-input': { cursor: 'pointer' }
+                            }}
+                        />
+
+                        <Popover
+                            open={open}
+                            anchorEl={anchorEl}
+                            onClose={handlePopoverClose}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
                             }}
                         >
-                            🗓&nbsp;<span></span> ↓
-                        </div>
+                            <Box sx={{ p: 2, display: 'flex', gap: 2 }}>
+                                <Stack spacing={1} sx={{ minWidth: '150px' }}>
+                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                                        Quick Select
+                                    </Typography>
+                                    {dateRangeShortcuts.map((shortcut) => (
+                                        <Button
+                                            key={shortcut.label}
+                                            size="small"
+                                            onClick={() => applyDateRange(shortcut.start, shortcut.end)}
+                                            sx={{ justifyContent: 'flex-start' }}
+                                        >
+                                            {shortcut.label}
+                                        </Button>
+                                    ))}
+                                </Stack>
+                                <Stack spacing={2}>
+                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                                        Custom Range
+                                    </Typography>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            label="Start Date"
+                                            value={dateRange[0]}
+                                            onChange={(newValue) => setDateRange([newValue, dateRange[1]])}
+                                            slotProps={{
+                                                textField: { size: 'small' }
+                                            }}
+                                        />
+                                        <DatePicker
+                                            label="End Date"
+                                            value={dateRange[1]}
+                                            onChange={(newValue) => setDateRange([dateRange[0], newValue])}
+                                            slotProps={{
+                                                textField: { size: 'small' }
+                                            }}
+                                        />
+                                    </LocalizationProvider>
+                                    <Button
+                                        variant="contained"
+                                        onClick={handlePopoverClose}
+                                        size="small"
+                                    >
+                                        Apply
+                                    </Button>
+                                </Stack>
+                            </Box>
+                        </Popover>
                     </div>
                 </div>
 

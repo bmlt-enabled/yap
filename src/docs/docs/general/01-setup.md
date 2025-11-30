@@ -33,6 +33,6 @@ static $mysql_password = "";
 static $mysql_database = "";
 ```
 
-9. You can test whether or not you are properly configured by going to https://example.com/upgrade-advisor.php.  This will also run MySQL scripts to initialize/update your database.
+9. You can test whether or not you are properly configured by going to https://example.com/api/v1/upgrade.  This will also run MySQL scripts to initialize/update your database.
 
 10. Make a call to your number and try it out.  If there is a problem the debugger in the Twilio console will let you know why.  Most likely you did not setup your config.php file correctly.
