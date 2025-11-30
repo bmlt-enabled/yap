@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(npm install @mui/x-date-pickers dayjs)",
-      "Bash(npm run build)"
+      "Bash(npm run build)",
+      "Bash(cat src/node_modules/@toolpad/core/Account/Account.d.ts)",
+      "Bash(cat src/node_modules/@toolpad/core/esm/DashboardLayout/DashboardLayout.js)",
+      "Bash(cat src/node_modules/@toolpad/core/esm/DashboardLayout/DashboardHeader.js)",
+      "Bash(cat src/node_modules/@toolpad/core/esm/AppProvider/AppProvider.js)"
     ],
     "deny": [],
     "ask": []

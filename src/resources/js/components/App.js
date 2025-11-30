@@ -27,12 +27,14 @@ import LoginPage from "../pages/Login";
 import {SessionContext} from "../SessionContext"
 import ErrorBoundary from "./ErrorBoundary";
 import { LocalizationProvider } from "../contexts/LocalizationContext";
+import ChangePasswordDialog from "../dialogs/ChangePasswordDialog";
 
 export default function App() {
     const [session, setSession] = React.useState(() => {
         const storedSession = localStorage.getItem('session');
         return storedSession ? JSON.parse(storedSession) : null;
     });
+    const [showPasswordDialog, setShowPasswordDialog] = React.useState(false);
     const navigate = useNavigate();
 
     const signIn = React.useCallback(() => {
@@ -46,7 +48,11 @@ export default function App() {
     }, [navigate]);
 
     const sessionContextValue = React.useMemo(
-        () => ({ session, setSession }),
+        () => ({
+            session,
+            setSession,
+            openChangePassword: () => setShowPasswordDialog(true)
+        }),
         [session, setSession],
     );
 
@@ -99,16 +105,26 @@ export default function App() {
         },
     ];
 
+    const authentication = React.useMemo(() => ({
+        signIn,
+        signOut,
+    }), [signIn, signOut]);
+
     return (
         <SessionContext.Provider value={sessionContextValue}>
             <LocalizationProvider>
                 <AppProvider
                     branding={branding}
-                    authentication={{ signIn, signOut }}
+                    authentication={authentication}
                     session={session}
                     navigation={navigation}
                 >
                     <Outlet/>
+                    <ChangePasswordDialog
+                        open={showPasswordDialog}
+                        onClose={() => setShowPasswordDialog(false)}
+                        username={session?.user?.username}
+                    />
                 </AppProvider>
             </LocalizationProvider>
         </SessionContext.Provider>
