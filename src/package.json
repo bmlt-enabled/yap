@@ -30,8 +30,6 @@
         "@mui/material": "^7.0.0",
         "@mui/x-date-pickers": "^8.19.0",
         "@toolpad/core": "^0.16.0",
-        "bootstrap": "^4.6.2",
-        "dark-mode-switch": "^1.0.0",
         "dayjs": "^1.11.19",
         "jquery": "~3.7.1",
         "jquery-ui-dist": "^1.13.2",
