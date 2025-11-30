@@ -8,7 +8,7 @@
         "/api/v1/login": {
             "post": {
                 "tags": [
-                    "Auth"
+                    "Authentication"
                 ],
                 "summary": "Login to get a Bearer Token",
                 "operationId": "19f9cba2ebce1483f9e61aa83e34206d",
@@ -61,6 +61,56 @@
                 }
             }
         },
+        "/api/v1/user": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get current authenticated user",
+                "description": "Returns the currently authenticated user's information",
+                "operationId": "1459f0365c6b55c8b555a775d3bd2e00",
+                "responses": {
+                    "200": {
+                        "description": "Current user information",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "username": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string"
+                                        },
+                                        "is_admin": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/v1/cache": {
             "post": {
                 "tags": [
@@ -90,7 +140,7 @@
         "/api/v1/reports/cdr": {
             "get": {
                 "tags": [
-                    "CDR"
+                    "Reports"
                 ],
                 "summary": "Get Call Detail Records report",
                 "operationId": "212743d161bbe68ebb7c267be8cab799",
@@ -190,7 +240,7 @@
         "/api/v1/volunteers": {
             "get": {
                 "tags": [
-                    "ConfigureVolunteers"
+                    "Volunteers"
                 ],
                 "summary": "Get volunteers configuration",
                 "operationId": "db6079fd30eb7b5fed73ee557ebc8b1c",
@@ -235,7 +285,7 @@
             },
             "post": {
                 "tags": [
-                    "ConfigureVolunteers"
+                    "Volunteers"
                 ],
                 "summary": "Store or update volunteers configuration",
                 "operationId": "4e5963a41edbaf4189f92506a37c52cd",
@@ -329,7 +379,7 @@
         "/api/v1/events/status": {
             "get": {
                 "tags": [
-                    "EventStatus"
+                    "Events"
                 ],
                 "summary": "Get all event statuses",
                 "operationId": "6c5f582c0ee947c4877a303fece7250f",
@@ -373,7 +423,7 @@
             },
             "post": {
                 "tags": [
-                    "EventStatus"
+                    "Events"
                 ],
                 "summary": "Create a new event status",
                 "operationId": "410743153504c29a76ad087c9d6e5ea8",
@@ -573,16 +623,16 @@
                 }
             }
         },
-        "/api/v1/groups/{id}": {
+        "/api/v1/groups/{group}": {
             "put": {
                 "tags": [
                     "Groups"
                 ],
                 "summary": "Update a group",
-                "operationId": "a259eaba26cab0da28f5b0a3095bf01c",
+                "operationId": "00f72590feb05e70f9bf1a3681d5db31",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "group",
                         "in": "path",
                         "description": "ID of the group to update",
                         "required": true,
@@ -648,10 +698,10 @@
                     "Groups"
                 ],
                 "summary": "Delete a group",
-                "operationId": "13312c959b505531f2863efd956f944d",
+                "operationId": "192b9a9076003b5febca75640aa23254",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "group",
                         "in": "path",
                         "description": "ID of the group to delete",
                         "required": true,
@@ -680,12 +730,208 @@
                         "description": "Group not found"
                     }
                 }
+            },
+            "patch": {
+                "tags": [
+                    "Groups"
+                ],
+                "summary": "Partially update a group",
+                "operationId": "2cbb0317dd613697fece9c709601f1a1",
+                "parameters": [
+                    {
+                        "name": "group",
+                        "in": "path",
+                        "description": "ID of the group to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "enabled": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Group updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "service_body_id": {
+                                                "type": "integer"
+                                            },
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "parent_id": {
+                                                "type": "integer",
+                                                "nullable": true
+                                            },
+                                            "data": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/groups/volunteers": {
+            "get": {
+                "tags": [
+                    "Groups"
+                ],
+                "summary": "Get volunteers for a group",
+                "description": "Retrieves volunteers assigned to a specific group",
+                "operationId": "5719afa9a6c8933f9825b773357b298d",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "query",
+                        "description": "ID of the group",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Group volunteers retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "service_body_id": {
+                                            "type": "integer"
+                                        },
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "parent_id": {
+                                            "type": "integer",
+                                            "nullable": true
+                                        },
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Groups"
+                ],
+                "summary": "Create or update volunteers for a group",
+                "description": "Assigns or updates volunteers for a specific group",
+                "operationId": "dc7921cf1f2ee1a7059ab3876072f0e4",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "query",
+                        "description": "ID of the group",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "serviceBodyId",
+                        "in": "query",
+                        "description": "ID of the service body",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Array of volunteer IDs to assign to the group",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Group volunteers updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "service_body_id": {
+                                            "type": "integer"
+                                        },
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "parent_id": {
+                                            "type": "integer",
+                                            "nullable": true
+                                        },
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/api/v1/reports/mapmetrics": {
             "get": {
                 "tags": [
-                    "MapMetrics"
+                    "Reports"
                 ],
                 "summary": "Get map metrics report",
                 "operationId": "1774cde841ae1eea08f3416f6b4e4dca",
@@ -792,7 +1038,7 @@
         "/api/v1/reports/metrics": {
             "get": {
                 "tags": [
-                    "Metrics"
+                    "Reports"
                 ],
                 "summary": "Get metrics report",
                 "operationId": "a0a88f4b7a52799260ce58e16900635a",
@@ -897,13 +1143,62 @@
                 }
             }
         },
-        "/api/v1/servicebody/callhandling": {
+        "/api/v1/rootServer/serviceBodies/user": {
             "get": {
                 "tags": [
-                    "ServiceBodyCallHandling"
+                    "RootServer"
+                ],
+                "summary": "Get service bodies for authenticated user",
+                "description": "Retrieves all service bodies that the authenticated user has access to from the root server",
+                "operationId": "c70207430bb76d17d72e685bd9bba5ae",
+                "responses": {
+                    "200": {
+                        "description": "Service bodies retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "parent_id": {
+                                                "type": "integer",
+                                                "nullable": true
+                                            },
+                                            "url": {
+                                                "type": "string",
+                                                "nullable": true
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/callHandling": {
+            "get": {
+                "tags": [
+                    "CallHandling"
                 ],
                 "summary": "Get service body call handling configuration",
-                "operationId": "1b8f4fc6f69eb6ac23704586e5db0332",
+                "operationId": "1be35f4d527b55628cf7448c1c61bd02",
                 "parameters": [
                     {
                         "name": "serviceBodyId",
@@ -945,10 +1240,10 @@
             },
             "post": {
                 "tags": [
-                    "ServiceBodyCallHandling"
+                    "CallHandling"
                 ],
                 "summary": "Store or update service body call handling configuration",
-                "operationId": "e2582bb9897b0f3e3646584edd631396",
+                "operationId": "8aeb46b7c9dde787e9838fe5bc685c6e",
                 "parameters": [
                     {
                         "name": "serviceBodyId",
@@ -1314,16 +1609,16 @@
                 }
             }
         },
-        "/api/v1/users/{username}": {
+        "/api/v1/users/{user}": {
             "get": {
                 "tags": [
                     "Users"
                 ],
                 "summary": "Get user details",
-                "operationId": "49745574fb0f6d59e872ccc78f948738",
+                "operationId": "441410b1cc74a171b525e9256eb950b0",
                 "parameters": [
                     {
-                        "name": "username",
+                        "name": "user",
                         "in": "path",
                         "description": "Username of the user",
                         "required": true,
@@ -1353,10 +1648,10 @@
                     "Users"
                 ],
                 "summary": "Update a user",
-                "operationId": "d77339faa2561aa6149f7a9d74c6c194",
+                "operationId": "3d4cf829a79d26d3261bcdf0ce926142",
                 "parameters": [
                     {
-                        "name": "username",
+                        "name": "user",
                         "in": "path",
                         "description": "Username of the user to update",
                         "required": true,
@@ -1416,10 +1711,10 @@
                     "Users"
                 ],
                 "summary": "Delete a user",
-                "operationId": "d9dceed067ef246ea84e409d5faffea2",
+                "operationId": "ebcac6929802a7622fb15b62167d7364",
                 "parameters": [
                     {
-                        "name": "username",
+                        "name": "user",
                         "in": "path",
                         "description": "Username of the user to delete",
                         "required": true,
@@ -1446,6 +1741,69 @@
                     },
                     "404": {
                         "description": "Not authorized to delete user"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Partially update a user",
+                "operationId": "c3a4e1c0da03163bae22b1e252833fb7",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "Username of the user to update",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "permissions": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "service_bodies": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not authorized to update user"
                     }
                 }
             }
@@ -1645,7 +2003,7 @@
                 ]
             }
         },
-        "/api/v1/voicemail/{callSid}": {
+        "/api/v1/voicemail/{voicemail}": {
             "delete": {
                 "tags": [
                     "Voicemails"
@@ -1665,7 +2023,7 @@
                         }
                     },
                     {
-                        "name": "callSid",
+                        "name": "voicemail",
                         "in": "path",
                         "description": "Call SID of the voicemail to delete",
                         "required": true,
@@ -1734,7 +2092,7 @@
         "/api/v1/volunteers/download": {
             "get": {
                 "tags": [
-                    "VolunteerDownload"
+                    "Volunteers"
                 ],
                 "summary": "Download volunteer list",
                 "operationId": "94aa5663c2d261032e0b4663f7dddb2b",
@@ -1829,13 +2187,13 @@
                 }
             }
         },
-        "/api/v1/volunteers/routing/enabled": {
+        "/api/v1/callHandling/routingEnabled": {
             "get": {
                 "tags": [
-                    "VolunteerRouting"
+                    "CallHandling"
                 ],
                 "summary": "Get service bodies enabled for volunteer routing",
-                "operationId": "368cb9182ecccbb44cdcd5993a926c39",
+                "operationId": "b9d55d60078d04233ada03d71ecad00e",
                 "responses": {
                     "200": {
                         "description": "List of service bodies enabled for volunteer routing",
@@ -1879,7 +2237,7 @@
         "/api/v1/volunteers/schedule": {
             "get": {
                 "tags": [
-                    "VolunteerSchedule"
+                    "Volunteers"
                 ],
                 "summary": "Get volunteer helpline schedule",
                 "operationId": "23b05f33df56a822428f50d42f88028a",
@@ -1955,15 +2313,11 @@
     },
     "tags": [
         {
-            "name": "CDR",
-            "description": "Call Detail Records endpoints"
-        },
-        {
-            "name": "ConfigureVolunteers",
+            "name": "Volunteers",
             "description": "Volunteer configuration management endpoints"
         },
         {
-            "name": "EventStatus",
+            "name": "Events",
             "description": "Event status management endpoints"
         },
         {
@@ -1971,16 +2325,12 @@
             "description": "Group management endpoints"
         },
         {
-            "name": "MapMetrics",
-            "description": "Map metrics and reporting endpoints"
-        },
-        {
-            "name": "Metrics",
+            "name": "Reports",
             "description": "Metrics and reporting endpoints"
         },
         {
-            "name": "ServiceBodyCallHandling",
-            "description": "Service body call handling configuration endpoints"
+            "name": "RootServer",
+            "description": "Root server integration endpoints"
         },
         {
             "name": "Session",
@@ -1999,28 +2349,16 @@
             "description": "API Endpoints for managing voicemails"
         },
         {
-            "name": "VolunteerDownload",
-            "description": "Volunteer list download endpoints"
-        },
-        {
-            "name": "VolunteerRouting",
-            "description": "Volunteer routing configuration endpoints"
-        },
-        {
-            "name": "VolunteerSchedule",
-            "description": "Volunteer schedule management endpoints"
-        },
-        {
-            "name": "Auth",
-            "description": "Auth"
+            "name": "Authentication",
+            "description": "Authentication"
         },
         {
             "name": "Cache",
             "description": "Cache"
         },
         {
-            "name": "RootServer",
-            "description": "RootServer"
+            "name": "CallHandling",
+            "description": "CallHandling"
         }
     ],
     "security": [

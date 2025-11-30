@@ -8,12 +8,6 @@ use App\Services\VolunteerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-/**
- * @OA\Tag(
- *     name="VolunteerSchedule",
- *     description="Volunteer schedule management endpoints"
- * )
- */
 class VolunteerScheduleController extends Controller
 {
     protected VolunteerService $volunteerService;
@@ -26,7 +20,7 @@ class VolunteerScheduleController extends Controller
     /**
      * @OA\Get(
      *     path="/api/v1/volunteers/schedule",
-     *     tags={"VolunteerSchedule"},
+     *     tags={"Volunteers"},
      *     summary="Get volunteer helpline schedule",
      *     @OA\Parameter(
      *         name="service_body_id",

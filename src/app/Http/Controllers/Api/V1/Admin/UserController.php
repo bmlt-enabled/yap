@@ -26,11 +26,11 @@ class UserController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/v1/users/{username}",
+     *     path="/api/v1/users/{user}",
      *     tags={"Users"},
      *     summary="Get user details",
      *     @OA\Parameter(
-     *         name="username",
+     *         name="user",
      *         in="path",
      *         required=true,
      *         description="Username of the user",
@@ -120,11 +120,42 @@ class UserController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/api/v1/users/{username}",
+     *     path="/api/v1/users/{user}",
      *     tags={"Users"},
      *     summary="Update a user",
      *     @OA\Parameter(
-     *         name="username",
+     *         name="user",
+     *         in="path",
+     *         required=true,
+     *         description="Username of the user to update",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="password", type="string"),
+     *             @OA\Property(property="permissions", type="array", @OA\Items(type="string")),
+     *             @OA\Property(property="service_bodies", type="array", @OA\Items(type="integer"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User updated successfully",
+     *         @OA\JsonContent(type="object")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not authorized to update user"
+     *     )
+     * )
+     *
+     * @OA\Patch(
+     *     path="/api/v1/users/{user}",
+     *     tags={"Users"},
+     *     summary="Partially update a user",
+     *     @OA\Parameter(
+     *         name="user",
      *         in="path",
      *         required=true,
      *         description="Username of the user to update",
@@ -175,11 +206,11 @@ class UserController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/users/{username}",
+     *     path="/api/v1/users/{user}",
      *     tags={"Users"},
      *     summary="Delete a user",
      *     @OA\Parameter(
-     *         name="username",
+     *         name="user",
      *         in="path",
      *         required=true,
      *         description="Username of the user to delete",

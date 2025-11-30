@@ -7,12 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Services\ReportsService;
 use Illuminate\Http\Request;
 
-/**
- * @OA\Tag(
- *     name="MapMetrics",
- *     description="Map metrics and reporting endpoints"
- * )
- */
 class MapMetricController extends Controller
 {
     private $reportsService;
@@ -25,7 +19,7 @@ class MapMetricController extends Controller
     /**
      * @OA\Get(
      *     path="/api/v1/reports/mapmetrics",
-     *     tags={"MapMetrics"},
+     *     tags={"Reports"},
      *     summary="Get map metrics report",
      *     @OA\Parameter(
      *         name="service_body_id",

@@ -11,8 +11,7 @@ import {
     Avatar,
     Paper,
     Stack,
-    Divider,
-    Alert
+    Divider
 } from "@mui/material";
 import {
     Description as DocumentationIcon,
@@ -30,7 +29,8 @@ function Dashboard() {
     const [versionStatus, setVersionStatus] = useState('unknown');
     const [versionMessage, setVersionMessage] = useState('');
     const [latestVersion, setLatestVersion] = useState('');
-    const [upgradeAdvisorMessages, setUpgradeAdvisorMessages] = useState([]);
+    const [systemStatus, setSystemStatus] = useState('checking');
+    const [systemMessage, setSystemMessage] = useState('Checking system status...');
 
     const getUser = async () => {
         apiClient.get('/api/v1/user', {
@@ -74,30 +74,26 @@ function Dashboard() {
         try {
             const response = await apiClient.get('/api/v1/upgrade');
             if (response.data) {
-                const messages = [];
-
                 // Check for error messages (status: false)
                 if (response.data.status === false && response.data.message) {
-                    messages.push({
-                        type: 'error',
-                        text: response.data.message
-                    });
+                    setSystemStatus('error');
+                    setSystemMessage(response.data.message);
                 }
-
                 // Check for warnings
-                if (response.data.warnings) {
-                    messages.push({
-                        type: 'warning',
-                        text: response.data.warnings
-                    });
+                else if (response.data.warnings) {
+                    setSystemStatus('warning');
+                    setSystemMessage(response.data.warnings);
                 }
-
-                if (messages.length > 0) {
-                    setUpgradeAdvisorMessages(messages);
+                // All good
+                else if (response.data.status === true) {
+                    setSystemStatus('healthy');
+                    setSystemMessage('All systems operational');
                 }
             }
         } catch (error) {
             console.error('Error fetching upgrade advisor status:', error);
+            setSystemStatus('error');
+            setSystemMessage('Unable to check system status');
         }
     };
 
@@ -128,29 +124,17 @@ function Dashboard() {
                         <Typography variant="h4" fontWeight="bold" gutterBottom>
                             Welcome back, {name || 'User'}!
                         </Typography>
+                        <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                            Manage your Yap Phone System configuration and view reports
+                        </Typography>
                     </Box>
                 </Stack>
             </Paper>
 
-            {/* Upgrade Advisor Messages */}
-            {upgradeAdvisorMessages.length > 0 && (
-                <Stack spacing={2} sx={{ mb: 4 }}>
-                    {upgradeAdvisorMessages.map((message, index) => (
-                        <Alert
-                            key={index}
-                            severity={message.type || 'info'}
-                            icon={message.type === 'error' ? <ErrorIcon /> : <WarningIcon />}
-                        >
-                            {message.text || message.message || message}
-                        </Alert>
-                    ))}
-                </Stack>
-            )}
-
-            {/* Info Cards */}
+            {/* Info Cards - 2x2 Grid */}
             <Grid container spacing={3}>
                 {/* Version Card */}
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={6}>
                     <Card
                         sx={{
                             height: '100%',
@@ -215,8 +199,76 @@ function Dashboard() {
                     </Card>
                 </Grid>
 
+                {/* System Status Card */}
+                <Grid item xs={12} md={6}>
+                    <Card
+                        sx={{
+                            height: '100%',
+                            transition: 'transform 0.2s, box-shadow 0.2s',
+                            '&:hover': {
+                                transform: 'translateY(-4px)',
+                                boxShadow: 4
+                            }
+                        }}
+                    >
+                        <CardContent>
+                            <Stack spacing={2}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    {systemStatus === 'healthy' && <CheckIcon color="success" sx={{ fontSize: 40 }} />}
+                                    {systemStatus === 'warning' && <WarningIcon color="warning" sx={{ fontSize: 40 }} />}
+                                    {systemStatus === 'error' && <ErrorIcon color="error" sx={{ fontSize: 40 }} />}
+                                    {systemStatus === 'checking' && <InfoIcon color="action" sx={{ fontSize: 40 }} />}
+
+                                    {systemStatus === 'healthy' && (
+                                        <Chip
+                                            label="Healthy"
+                                            color="success"
+                                            size="small"
+                                            icon={<CheckIcon />}
+                                        />
+                                    )}
+                                    {systemStatus === 'warning' && (
+                                        <Chip
+                                            label="Warning"
+                                            color="warning"
+                                            size="small"
+                                            icon={<WarningIcon />}
+                                        />
+                                    )}
+                                    {systemStatus === 'error' && (
+                                        <Chip
+                                            label="Error"
+                                            color="error"
+                                            size="small"
+                                            icon={<ErrorIcon />}
+                                        />
+                                    )}
+                                </Box>
+                                <Typography variant="h6" fontWeight="600">
+                                    System Status
+                                </Typography>
+                                <Typography
+                                    variant="h6"
+                                    fontWeight="bold"
+                                    color={
+                                        systemStatus === 'healthy' ? 'success.main' :
+                                        systemStatus === 'warning' ? 'warning.main' :
+                                        systemStatus === 'error' ? 'error.main' : 'text.secondary'
+                                    }
+                                >
+                                    {systemStatus === 'healthy' ? 'All Systems Operational' :
+                                     systemStatus === 'checking' ? 'Checking...' : 'Issues Detected'}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    {systemMessage}
+                                </Typography>
+                            </Stack>
+                        </CardContent>
+                    </Card>
+                </Grid>
+
                 {/* Documentation Card */}
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={6}>
                     <Card
                         sx={{
                             height: '100%',
@@ -252,7 +304,7 @@ function Dashboard() {
                 </Grid>
 
                 {/* API Documentation Card */}
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={6}>
                     <Card
                         sx={{
                             height: '100%',
