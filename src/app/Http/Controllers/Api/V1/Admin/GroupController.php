@@ -215,19 +215,12 @@ class GroupController extends Controller
         $decodedData = json_decode($request->getContent());
         $groupData = new Group($decodedData);
 
-        $groupId = ConfigData::createGroup(
+        ConfigData::createGroup(
             $request->get('serviceBodyId'),
             $groupData
         );
 
-        $response = self::index($request);
-        $responseData = json_decode($response->getContent(), true);
-
-        // Add the created group ID to the response
-        return response()->json([
-            'id' => $groupId,
-            'groups' => $responseData
-        ])->header("Content-Type", "application/json");
+        return self::index($request);
     }
 
     /**
