@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
+import {Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Box, Typography} from "@mui/material";
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import apiClient from "../services/api";
 import {CallHandlingDialog} from "../dialogs/CallHandlingDialog";
 import {ServiceBodyConfigurationDialog} from "../dialogs/ServiceBodyConfigurationDialog";
@@ -57,7 +58,13 @@ function ServiceBodies()
     }, [])
 
     return (
-        <div>
+        <Box sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <AccountTreeIcon sx={{ fontSize: 40, mr: 2 }} />
+                <Typography variant="h4">
+                    Service Bodies
+                </Typography>
+            </Box>
             {list.length > 0 ?
             <TableContainer>
                 <CallHandlingDialog 
@@ -124,7 +131,7 @@ function ServiceBodies()
                     </TableBody>
                 </Table>
             </TableContainer> : "Loading..."}
-        </div>
+        </Box>
     )
 }
 

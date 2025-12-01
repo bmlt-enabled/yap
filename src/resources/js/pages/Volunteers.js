@@ -7,7 +7,7 @@ import {
     KeyboardSensor,
     PointerSensor,
     useSensor,
-    useSensors,     
+    useSensors,
 } from '@dnd-kit/core';
 import {
     arrayMove,
@@ -27,7 +27,9 @@ import {
     ButtonGroup,
     CircularProgress,
     Checkbox,
+    Typography,
 } from '@mui/material';
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import apiClient from "../services/api";
 import {defaultVolunteer} from "../models/VolunteerModel";
 import {defaultShift} from "../models/ShiftModel";
@@ -242,9 +244,16 @@ import SortableVolunteer from "../components/SortableVolunteer";
     };
 
     return (
-        <div className="container">
-            <div className="form-group">
-                <ServiceBodiesDropdown handleChange={serviceBodiesHandleChange}/>
+        <Box sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <VolunteerActivismIcon sx={{ fontSize: 40, mr: 2 }} />
+                <Typography variant="h4">
+                    Volunteers
+                </Typography>
+            </Box>
+            <div className="container">
+                <div className="form-group">
+                    <ServiceBodiesDropdown handleChange={serviceBodiesHandleChange}/>
                 {serviceBodyId > 0 ?
                     <ButtonGroup sx={{
                         padding: 2
@@ -555,7 +564,8 @@ import SortableVolunteer from "../components/SortableVolunteer";
                     </Box>
                 </Box>
             </Modal>
-        </div>
+            </div>
+        </Box>
     );
 }
 

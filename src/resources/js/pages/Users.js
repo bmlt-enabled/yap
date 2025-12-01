@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PeopleIcon from '@mui/icons-material/People';
 import apiClient from "../services/api";
 import UserEditDialog from "../dialogs/UserEditDialog";
 
@@ -116,9 +117,12 @@ function Users() {
     return (
         <Box sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h4">
-                    Users
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <PeopleIcon sx={{ fontSize: 40, mr: 2 }} />
+                    <Typography variant="h4">
+                        Users
+                    </Typography>
+                </Box>
                 <Button
                     variant="contained"
                     color="primary"

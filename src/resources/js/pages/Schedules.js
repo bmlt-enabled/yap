@@ -1,5 +1,7 @@
 import ServiceBodiesDropdown from "../components/ServiceBodiesDropdown";
 import React, { useState, useEffect, useRef } from "react";
+import { Box, Typography } from "@mui/material";
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import apiClient from '../services/api';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -66,10 +68,17 @@ function Schedules() {
     }, []);
 
     return (
-        <div className="calendar-container">
-            <div className="calendar-header mb-4">
-                <ServiceBodiesDropdown handleChange={handleServiceBodyChange} />
-            </div>
+        <Box sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <CalendarMonthIcon sx={{ fontSize: 40, mr: 2 }} />
+                <Typography variant="h4">
+                    Schedules
+                </Typography>
+            </Box>
+            <div className="calendar-container">
+                <div className="calendar-header mb-4">
+                    <ServiceBodiesDropdown handleChange={handleServiceBodyChange} />
+                </div>
             
             {loading ? (
                 <div className="text-center py-8">
@@ -141,7 +150,8 @@ function Schedules() {
                     Please select a service body to view the schedule
                 </div>
             )}
-        </div>
+            </div>
+        </Box>
     );
 }
 

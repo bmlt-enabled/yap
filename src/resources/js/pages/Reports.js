@@ -20,6 +20,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import apiClient from '../services/api';
 import moment from 'moment';
 import dayjs from 'dayjs';
@@ -438,9 +439,16 @@ function Reports() {
     ];
 
     return (
-        <Card className="card">
-            <CardContent>
-                <div style={{ marginBottom: '20px' }}>
+        <Box sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <AssessmentIcon sx={{ fontSize: 40, mr: 2 }} />
+                <Typography variant="h4">
+                    Reports
+                </Typography>
+            </Box>
+            <Card className="card">
+                <CardContent>
+                    <div style={{ marginBottom: '20px' }}>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
                         <FormControl size="small" style={{ minWidth: 300 }}>
                             <Select
@@ -682,6 +690,7 @@ function Reports() {
                 </Modal>
             </CardContent>
         </Card>
+        </Box>
     );
 }
 
