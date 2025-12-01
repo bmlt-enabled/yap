@@ -43,8 +43,7 @@ export default function Layout() {
     }
 
     if (!session) {
-        const redirectTo = `/${baseUrl}/login`;
-        return <Navigate to={redirectTo} replace />
+        return <Navigate to="/login" replace />
     }
 
     return (

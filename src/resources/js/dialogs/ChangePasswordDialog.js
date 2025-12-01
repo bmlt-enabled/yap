@@ -55,7 +55,7 @@ export default function ChangePasswordDialog({ open, onClose, username }) {
         setSaving(true);
 
         try {
-            await apiClient.put(`${rootUrl}/api/v1/users/${username}`, {
+            await apiClient.put(`/api/v1/users/${username}`, {
                 current_password: currentPassword,
                 password: newPassword
             });

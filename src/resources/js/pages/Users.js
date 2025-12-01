@@ -40,7 +40,7 @@ function Users() {
 
     const loadCurrentUser = async () => {
         try {
-            const response = await apiClient.get(`${rootUrl}/api/v1/auth/check`);
+            const response = await apiClient.get(`/api/v1/auth/check`);
             setCurrentUsername(response.data.username);
             setIsAdmin(response.data.is_admin);
         } catch (error) {
@@ -51,7 +51,7 @@ function Users() {
     const loadServiceBodies = async () => {
         try {
             // Use the main service bodies endpoint to get ALL service bodies, not just user's
-            const response = await apiClient.get(`${rootUrl}/api/v1/rootServer/serviceBodies`);
+            const response = await apiClient.get(`/api/v1/rootServer/serviceBodies`);
             setServiceBodies(response.data || []);
         } catch (error) {
             console.error('Error loading service bodies:', error);
@@ -61,7 +61,7 @@ function Users() {
     const loadUsers = async () => {
         setLoading(true);
         try {
-            const response = await apiClient.get(`${rootUrl}/api/v1/users`);
+            const response = await apiClient.get(`/api/v1/users`);
             setUsers(response.data || []);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -89,7 +89,7 @@ function Users() {
         }
 
         try {
-            await apiClient.delete(`${rootUrl}/api/v1/users/${username}`);
+            await apiClient.delete(`/api/v1/users/${username}`);
             showSnackbar('User deleted successfully', 'success');
             await loadUsers();
         } catch (error) {

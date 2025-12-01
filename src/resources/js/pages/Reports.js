@@ -145,7 +145,7 @@ function Reports() {
         if (serviceBodyId <= -1) return;
 
         try {
-            const url = `../api/v1/reports/cdr?service_body_id=${serviceBodyId}&page=1&size=100${getDateRanges()}&recurse=${recurse}`;
+            const url = `/api/v1/reports/cdr?service_body_id=${serviceBodyId}&page=1&size=100${getDateRanges()}&recurse=${recurse}`;
             const response = await apiClient.get(url);
             const cdrRecords = response.data.data || [];
 
@@ -228,7 +228,7 @@ function Reports() {
 
     const getMetricsData = async () => {
         try {
-            const url = `../api/v1/reports/metrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}`;
+            const url = `/api/v1/reports/metrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}`;
             const response = await apiClient.get(url);
             const data = response.data;
 
@@ -317,8 +317,8 @@ function Reports() {
         }).addTo(map);
 
         const bounds = [];
-        const meetingsMarker = '/public/img/green_marker.png';
-        const volunteersMarker = '/public/img/orange_marker.png';
+        const meetingsMarker = `${typeof rootUrl !== 'undefined' ? rootUrl : ''}/public/img/green_marker.png`;
+        const volunteersMarker = `${typeof rootUrl !== 'undefined' ? rootUrl : ''}/public/img/orange_marker.png`;
 
         if (data) {
             for (const record of data) {
@@ -591,7 +591,7 @@ function Reports() {
                             <Button onClick={handleDownloadJSON} color="warning">JSON</Button>
                             <Button
                                 component="a"
-                                href={`../api/v1/reports/metrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}`}
+                                href={`${typeof rootUrl !== 'undefined' ? rootUrl : ''}/api/v1/reports/metrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}`}
                                 target="_blank"
                                 color="warning"
                             >
@@ -599,7 +599,7 @@ function Reports() {
                             </Button>
                             <Button
                                 component="a"
-                                href={`../api/v1/reports/mapmetrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}&format=csv&event_id=14`}
+                                href={`${typeof rootUrl !== 'undefined' ? rootUrl : ''}/api/v1/reports/mapmetrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}&format=csv&event_id=14`}
                                 target="_blank"
                                 color="warning"
                             >
@@ -607,7 +607,7 @@ function Reports() {
                             </Button>
                             <Button
                                 component="a"
-                                href={`../api/v1/reports/mapmetrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}&format=csv&event_id=1`}
+                                href={`${typeof rootUrl !== 'undefined' ? rootUrl : ''}/api/v1/reports/mapmetrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}&format=csv&event_id=1`}
                                 target="_blank"
                                 color="warning"
                             >

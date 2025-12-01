@@ -18,7 +18,7 @@ export function CallHandlingDialog({ open, onClose, serviceBodyId }) {
         setLoading(true)
         if (serviceBodyId) {
             try {
-                const response = await apiClient(`${rootUrl}/api/v1/callHandling?serviceBodyId=${serviceBodyId}`);
+                const response = await apiClient(`/api/v1/callHandling?serviceBodyId=${serviceBodyId}`);
                 const responseData = await response.data;
                 if (responseData && responseData.data && Array.isArray(responseData.data) && responseData.data.length > 0) {
                     setCallHandlingData({ ...defaultCallHandlingData, ...responseData.data[0] });
@@ -34,7 +34,7 @@ export function CallHandlingDialog({ open, onClose, serviceBodyId }) {
 
     const saveCallHandlingData = async () => {
         try {
-            const response = await apiClient.post(`${rootUrl}/api/v1/callHandling?serviceBodyId=${serviceBodyId}`, callHandlingData);
+            const response = await apiClient.post(`/api/v1/callHandling?serviceBodyId=${serviceBodyId}`, callHandlingData);
             console.log("Save successful:", response.data);
             onClose(); // Close the dialog after successful save
         } catch (error) {

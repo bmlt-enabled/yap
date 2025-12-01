@@ -12,6 +12,7 @@ import {
     createBrowserRouter,
     Outlet, RouterProvider,
     useNavigate,
+    useLocation,
 } from "react-router-dom";
 import Layout from "../layouts/Layout"
 import ServiceBodies from "../pages/ServiceBodies";
@@ -36,16 +37,24 @@ export default function App() {
     });
     const [showPasswordDialog, setShowPasswordDialog] = React.useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
 
     const signIn = React.useCallback(() => {
-        navigate(`/${baseUrl}/login`);
+        navigate('/login');
     }, [navigate]);
 
     const signOut = React.useCallback(() => {
         setSession(null);
         localStorage.removeItem('session')
-        navigate(`/${baseUrl}/login`);
+        navigate('/login');
     }, [navigate]);
+
+    // Create a custom router object for Toolpad that uses React Router
+    const router = React.useMemo(() => ({
+        pathname: location.pathname,
+        searchParams: new URLSearchParams(location.search),
+        navigate: (url) => navigate(url),
+    }), [location, navigate]);
 
     const sessionContextValue = React.useMemo(
         () => ({
@@ -58,48 +67,48 @@ export default function App() {
 
     const branding = {
         title: 'Yap',
-        homeUrl: 'dashboard',
+        homeUrl: '/dashboard',
         logo: '',
     };
 
     const navigation = [
         {
-            segment: `${baseUrl}/dashboard`,
+            segment: 'dashboard',
             title: "Dashboard",
             icon: <DashboardIcon />
         },
         {
-            segment: `${baseUrl}/reports`,
+            segment: 'reports',
             title: "Reports",
             icon: <AssessmentIcon />
         },
         {
-            segment: `${baseUrl}/serviceBodies`,
+            segment: 'serviceBodies',
             title: "Service Bodies",
             icon: <AccountTreeIcon />
         },
         {
-            segment: `${baseUrl}/schedule`,
+            segment: 'schedule',
             title: "Schedules",
             icon: <CalendarMonthIcon />
         },
         {
-            segment: `${baseUrl}/settings`,
+            segment: 'settings',
             title: 'Settings',
             icon: <SettingsIcon />,
         },
         {
-            segment: `${baseUrl}/volunteers`,
+            segment: 'volunteers',
             title: 'Volunteers',
             icon: <VolunteerActivismIcon />,
         },
         {
-            segment: `${baseUrl}/groups`,
+            segment: 'groups',
             title: 'Groups',
             icon: <Diversity1Icon />,
         },
         {
-            segment: `${baseUrl}/users`,
+            segment: 'users',
             title: 'Users',
             icon: <PeopleIcon />,
         },
@@ -118,6 +127,7 @@ export default function App() {
                     authentication={authentication}
                     session={session}
                     navigation={navigation}
+                    router={router}
                 >
                     <Outlet/>
                     <ChangePasswordDialog
@@ -132,57 +142,60 @@ export default function App() {
 }
 
 if (document.getElementById('root')) {
-    const getPath = (path) => `/${baseUrl}${path}`;
+    // Combine rootUrl (e.g., /yap-sezf) with baseUrl (e.g., admin) for the full base path
+    const fullBasePath = rootUrl ? `${rootUrl}/${baseUrl}` : `/${baseUrl}`;
 
     const router = createBrowserRouter([
         {
             Component: App,
             children: [
                 {
-                    path: `/${baseUrl}`,
+                    path: '/',
                     Component: Layout,
                     children: [
                         {
-                            path: getPath('dashboard'),
+                            path: 'dashboard',
                             Component: Dashboard,
                         },
                         {
-                            path: getPath('reports'),
+                            path: 'reports',
                             Component: Reports,
                         },
                         {
-                            path: getPath('serviceBodies'),
+                            path: 'serviceBodies',
                             Component: ServiceBodies,
                         },
                         {
-                            path: getPath('settings'),
+                            path: 'settings',
                             Component: Settings,
                         },
                         {
-                            path: getPath('schedule'),
+                            path: 'schedule',
                             Component: Schedules,
                         },
                         {
-                            path: getPath('volunteers'),
+                            path: 'volunteers',
                             Component: Volunteers,
                         },
                         {
-                            path: getPath('groups'),
+                            path: 'groups',
                             Component: Groups,
                         },
                         {
-                            path: getPath('users'),
+                            path: 'users',
                             Component: Users,
                         },
                     ],
                 },
                 {
-                    path: `/${baseUrl}/login`,
+                    path: '/login',
                     Component: LoginPage,
                 }
             ],
         },
-    ]);
+    ], {
+        basename: fullBasePath,
+    });
 
     ReactDOM.createRoot(document.getElementById("root")).render(
         <React.StrictMode>

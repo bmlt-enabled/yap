@@ -99,7 +99,7 @@ function VolunteersManager({ serviceBodyId, groupId = null }) {
             let response;
             if (groupId) {
                 // Fetch group volunteers
-                response = await apiClient.get(`${rootUrl}/api/v1/groups/volunteers?groupId=${groupId}`);
+                response = await apiClient.get(`/api/v1/groups/volunteers?groupId=${groupId}`);
                 const responseData = response.data;
 
                 // Parse the data field if it exists and is a string
@@ -116,7 +116,7 @@ function VolunteersManager({ serviceBodyId, groupId = null }) {
                 }
             } else if (serviceBodyId) {
                 // Fetch service body volunteers
-                response = await apiClient.get(`${rootUrl}/api/v1/volunteers?serviceBodyId=${serviceBodyId}`);
+                response = await apiClient.get(`/api/v1/volunteers?serviceBodyId=${serviceBodyId}`);
                 const responseData = response.data;
                 setVolunteers(responseData.data || []);
             }
@@ -141,13 +141,13 @@ function VolunteersManager({ serviceBodyId, groupId = null }) {
             if (groupId) {
                 // Save group volunteers
                 response = await apiClient.post(
-                    `${rootUrl}/api/v1/groups/volunteers?groupId=${groupId}&serviceBodyId=${serviceBodyId}`,
+                    `/api/v1/groups/volunteers?groupId=${groupId}&serviceBodyId=${serviceBodyId}`,
                     encodedVolunteers
                 );
             } else {
                 // Save service body volunteers
                 response = await apiClient.post(
-                    `${rootUrl}/api/v1/volunteers?serviceBodyId=${serviceBodyId}`,
+                    `/api/v1/volunteers?serviceBodyId=${serviceBodyId}`,
                     encodedVolunteers
                 );
             }

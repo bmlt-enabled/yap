@@ -2,8 +2,10 @@
 
 import axios from 'axios';
 
+// Use rootUrl as baseURL so API calls work in subdirectories
+// rootUrl will be empty string for root deployments, or "/yap-sezf" for subdirectory deployments
 const apiClient = axios.create({
-    baseURL: rootUrl,
+    baseURL: typeof rootUrl !== 'undefined' ? rootUrl : '/',
     withCredentials: true,
     withXSRFToken: true
 });

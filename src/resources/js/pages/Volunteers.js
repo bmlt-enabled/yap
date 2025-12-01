@@ -93,7 +93,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
     const getVolunteers = async (serviceBodyId) => {
         setLoading(true);
         try {
-            let response = await apiClient(`${rootUrl}/api/v1/volunteers?serviceBodyId=${serviceBodyId}`);
+            let response = await apiClient(`/api/v1/volunteers?serviceBodyId=${serviceBodyId}`);
             let responseData = await response.data;            
             setVolunteers(responseData.data);
         } catch (error) {
@@ -111,7 +111,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
                 ...volunteer,
                 volunteer_shift_schedule: btoa(JSON.stringify(volunteer.volunteer_shift_schedule))
             }));
-            let response = await apiClient.post(`${rootUrl}/api/v1/volunteers?serviceBodyId=${serviceBodyId}`, encodedVolunteers);
+            let response = await apiClient.post(`/api/v1/volunteers?serviceBodyId=${serviceBodyId}`, encodedVolunteers);
             let responseData = await response.data;
             setVolunteers(responseData.data);
         } catch (error) {
@@ -187,7 +187,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
         if (!serviceBodyId) return;
 
         try {
-            const response = await apiClient.get(`${rootUrl}/api/v1/groups?serviceBodyId=${serviceBodyId}`);
+            const response = await apiClient.get(`/api/v1/groups?serviceBodyId=${serviceBodyId}`);
             setGroups(response.data || []);
         } catch (error) {
             console.error('Error fetching groups:', error);
@@ -206,7 +206,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
 
         try {
             // Fetch group volunteers
-            const response = await apiClient.get(`${rootUrl}/api/v1/groups/volunteers?groupId=${selectedGroupId}`);
+            const response = await apiClient.get(`/api/v1/groups/volunteers?groupId=${selectedGroupId}`);
             const responseData = response.data;
 
             // Parse the volunteers data

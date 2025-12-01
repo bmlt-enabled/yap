@@ -35,7 +35,7 @@ function Settings() {
 
     const clearCache = async () => {
         try {
-            const response = await fetch(`${rootUrl}/api/v1/cache`, {
+            const response = await fetch(`/api/v1/cache`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

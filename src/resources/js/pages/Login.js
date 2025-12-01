@@ -44,7 +44,7 @@ export default function LoginPage() {
             const loginSession = await handleLogin(formData.get('email'), formData.get('password'))
             if (loginSession) {
                 setSession(loginSession);
-                navigate(`/${baseUrl}/dashboard`, { replace: true });
+                navigate('/dashboard', { replace: true });
                 return {};
             }
         } catch (error) {

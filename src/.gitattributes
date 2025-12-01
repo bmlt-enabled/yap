@@ -23,6 +23,9 @@ webpack.mix.js export-ignore
 /public/src export-ignore
 /docs export-ignore
 /node_modules export-ignore
+/resources/js export-ignore
+/resources/css export-ignore
+/resources/sass export-ignore
 /tests export-ignore
 * text=auto
 *.css linguist-vendored

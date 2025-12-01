@@ -24,7 +24,7 @@ export function ServiceBodyConfigurationDialog({ open, onClose, serviceBodyId, s
 
     const getAllowlist = async () => {
         try {
-            const response = await apiClient.get(`${rootUrl}/api/v1/settings/allowlist`);
+            const response = await apiClient.get(`/api/v1/settings/allowlist`);
             setAllowlist(response.data);
         } catch (error) {
             console.error("Error fetching allowlist:", error);
@@ -33,7 +33,7 @@ export function ServiceBodyConfigurationDialog({ open, onClose, serviceBodyId, s
 
     const getCurrentConfiguration = async () => {
         try {
-            const response = await apiClient.get(`${rootUrl}/api/v1/settings/serviceBody/${serviceBodyId}`);
+            const response = await apiClient.get(`/api/v1/settings/serviceBody/${serviceBodyId}`);
             setCustomFields(response.data);
         } catch (error) {
             console.error("Error fetching current configuration:", error);
@@ -73,7 +73,7 @@ export function ServiceBodyConfigurationDialog({ open, onClose, serviceBodyId, s
 
     const saveConfiguration = async () => {
         try {
-            await apiClient.post(`${rootUrl}/api/v1/settings/serviceBody/${serviceBodyId}`, {
+            await apiClient.post(`/api/v1/settings/serviceBody/${serviceBodyId}`, {
                 fields: customFields
             });
             onClose();

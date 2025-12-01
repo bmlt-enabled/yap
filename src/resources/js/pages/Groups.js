@@ -34,7 +34,7 @@ function Groups() {
         const loadServiceBodies = async () => {
             setLoadingServiceBodies(true);
             try {
-                const response = await apiClient.get(`${rootUrl}/api/v1/rootServer/serviceBodies/user`);
+                const response = await apiClient.get(`/api/v1/rootServer/serviceBodies/user`);
                 setServiceBodies(response.data || []);
             } catch (error) {
                 console.error('Error fetching service bodies:', error);
@@ -54,7 +54,7 @@ function Groups() {
 
         setLoading(true);
         try {
-            const response = await apiClient.get(`${rootUrl}/api/v1/groups?serviceBodyId=${serviceBodyId}&manage=1`);
+            const response = await apiClient.get(`/api/v1/groups?serviceBodyId=${serviceBodyId}&manage=1`);
             setGroups(response.data || []);
         } catch (error) {
             console.error('Error fetching groups:', error);
@@ -91,7 +91,7 @@ function Groups() {
 
         setLoading(true);
         try {
-            await apiClient.delete(`${rootUrl}/api/v1/groups/${selectedGroupId}`);
+            await apiClient.delete(`/api/v1/groups/${selectedGroupId}`);
             showSnackbar('Group deleted successfully', 'success');
             setSelectedGroupId(0);
             await loadGroups(serviceBodyId);

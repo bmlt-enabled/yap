@@ -16,7 +16,7 @@ function ServiceBodies()
 
     const getServiceBodies = async() => {
         setLoading(true)
-        let response = await apiClient(`${rootUrl}/api/v1/rootServer/serviceBodies/user`)
+        let response = await apiClient(`/api/v1/rootServer/serviceBodies/user`)
         let responseData = await response.data
         setList(responseData)
         setLoading(false)
