@@ -8,7 +8,8 @@
       "Bash(cat src/node_modules/@toolpad/core/esm/DashboardLayout/DashboardHeader.js)",
       "Bash(cat src/node_modules/@toolpad/core/esm/AppProvider/AppProvider.js)",
       "Bash(ENVIRONMENT=test php vendor/bin/pest tests/Feature/VoicemailCompleteTest.php --filter \"voicemail complete send email using primary contact with dialback enabled and language selection\")",
-      "Bash(ENVIRONMENT=test php vendor/bin/pest tests/Feature/VoicemailCompleteTest.php)"
+      "Bash(ENVIRONMENT=test php vendor/bin/pest tests/Feature/VoicemailCompleteTest.php)",
+      "Bash(find . -name \"*.js\" -type f -exec sed -i '' 's/`${rootUrl}\\/api/`\\/api/g' {} ;)"
     ],
     "deny": [],
     "ask": []

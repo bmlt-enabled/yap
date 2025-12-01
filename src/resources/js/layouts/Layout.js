@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
-import { PageContainer } from '@toolpad/core/PageContainer';
 import { useSession } from '../SessionContext';
 import { useEffect, useState } from "react";
 import apiClient from "../services/api";
@@ -43,8 +42,7 @@ export default function Layout() {
     }
 
     if (!session) {
-        const redirectTo = `/${baseUrl}/login`;
-        return <Navigate to={redirectTo} replace />
+        return <Navigate to="/login" replace />
     }
 
     return (
@@ -53,9 +51,7 @@ export default function Layout() {
                 toolbarActions: CustomToolbarActions,
             }}
         >
-            <PageContainer>
-                <Outlet />
-            </PageContainer>
+            <Outlet />
         </DashboardLayout>
     );
 }

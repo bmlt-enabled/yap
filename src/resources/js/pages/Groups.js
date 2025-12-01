@@ -12,6 +12,7 @@ import {
     Snackbar,
     Divider
 } from "@mui/material";
+import Diversity1Icon from '@mui/icons-material/Diversity1';
 import { useLocalization } from "../contexts/LocalizationContext";
 import apiClient from "../services/api";
 import GroupEditDialog from "../dialogs/GroupEditDialog";
@@ -34,7 +35,7 @@ function Groups() {
         const loadServiceBodies = async () => {
             setLoadingServiceBodies(true);
             try {
-                const response = await apiClient.get(`${rootUrl}/api/v1/rootServer/serviceBodies/user`);
+                const response = await apiClient.get(`/api/v1/rootServer/serviceBodies/user`);
                 setServiceBodies(response.data || []);
             } catch (error) {
                 console.error('Error fetching service bodies:', error);
@@ -54,7 +55,7 @@ function Groups() {
 
         setLoading(true);
         try {
-            const response = await apiClient.get(`${rootUrl}/api/v1/groups?serviceBodyId=${serviceBodyId}&manage=1`);
+            const response = await apiClient.get(`/api/v1/groups?serviceBodyId=${serviceBodyId}&manage=1`);
             setGroups(response.data || []);
         } catch (error) {
             console.error('Error fetching groups:', error);
@@ -91,7 +92,7 @@ function Groups() {
 
         setLoading(true);
         try {
-            await apiClient.delete(`${rootUrl}/api/v1/groups/${selectedGroupId}`);
+            await apiClient.delete(`/api/v1/groups/${selectedGroupId}`);
             showSnackbar('Group deleted successfully', 'success');
             setSelectedGroupId(0);
             await loadGroups(serviceBodyId);
@@ -122,9 +123,12 @@ function Groups() {
 
     return (
         <Box sx={{ p: 3 }}>
-            <Typography variant="h4" gutterBottom>
-                {getWord('groups') || 'Groups'}
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <Diversity1Icon sx={{ fontSize: 40, mr: 2 }} />
+                <Typography variant="h4">
+                    {getWord('groups') || 'Groups'}
+                </Typography>
+            </Box>
 
             <Box sx={{ mb: 3 }}>
                 {loadingServiceBodies ? (

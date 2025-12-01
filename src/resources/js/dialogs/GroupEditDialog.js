@@ -61,7 +61,7 @@ export default function GroupEditDialog({
     const loadServiceBodies = async () => {
         setLoading(true);
         try {
-            const response = await apiClient.get(`${rootUrl}/api/v1/rootServer/serviceBodies`);
+            const response = await apiClient.get(`/api/v1/rootServer/serviceBodies`);
             setAllServiceBodies(response.data || []);
         } catch (error) {
             console.error('Error fetching service bodies:', error);
@@ -96,10 +96,10 @@ export default function GroupEditDialog({
 
         try {
             if (editMode) {
-                await apiClient.put(`${rootUrl}/api/v1/groups/${groupId}`, payload);
+                await apiClient.put(`/api/v1/groups/${groupId}`, payload);
                 showSnackbar('Group updated successfully', 'success');
             } else {
-                await apiClient.post(`${rootUrl}/api/v1/groups?serviceBodyId=${serviceBodyId}`, payload);
+                await apiClient.post(`/api/v1/groups?serviceBodyId=${serviceBodyId}`, payload);
                 showSnackbar('Group created successfully', 'success');
             }
             onClose(true); // true indicates refresh is needed

@@ -75,7 +75,7 @@ export default function UserEditDialog({ open, onClose, editMode, userData, show
         setLoading(true);
         try {
             // Use the main service bodies endpoint to get ALL service bodies
-            const response = await apiClient.get(`${rootUrl}/api/v1/rootServer/serviceBodies`);
+            const response = await apiClient.get(`/api/v1/rootServer/serviceBodies`);
             setAvailableServiceBodies(response.data || []);
         } catch (error) {
             console.error('Error loading service bodies:', error);
@@ -117,10 +117,10 @@ export default function UserEditDialog({ open, onClose, editMode, userData, show
 
         try {
             if (editMode) {
-                await apiClient.put(`${rootUrl}/api/v1/users/${username}`, payload);
+                await apiClient.put(`/api/v1/users/${username}`, payload);
                 showSnackbar('User updated successfully', 'success');
             } else {
-                await apiClient.post(`${rootUrl}/api/v1/users`, payload);
+                await apiClient.post(`/api/v1/users`, payload);
                 showSnackbar('User created successfully', 'success');
             }
             onClose(true);

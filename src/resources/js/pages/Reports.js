@@ -20,6 +20,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import apiClient from '../services/api';
 import moment from 'moment';
 import dayjs from 'dayjs';
@@ -145,7 +146,7 @@ function Reports() {
         if (serviceBodyId <= -1) return;
 
         try {
-            const url = `../api/v1/reports/cdr?service_body_id=${serviceBodyId}&page=1&size=100${getDateRanges()}&recurse=${recurse}`;
+            const url = `/api/v1/reports/cdr?service_body_id=${serviceBodyId}&page=1&size=100${getDateRanges()}&recurse=${recurse}`;
             const response = await apiClient.get(url);
             const cdrRecords = response.data.data || [];
 
@@ -228,7 +229,7 @@ function Reports() {
 
     const getMetricsData = async () => {
         try {
-            const url = `../api/v1/reports/metrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}`;
+            const url = `/api/v1/reports/metrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}`;
             const response = await apiClient.get(url);
             const data = response.data;
 
@@ -317,8 +318,8 @@ function Reports() {
         }).addTo(map);
 
         const bounds = [];
-        const meetingsMarker = '/public/img/green_marker.png';
-        const volunteersMarker = '/public/img/orange_marker.png';
+        const meetingsMarker = `${typeof rootUrl !== 'undefined' ? rootUrl : ''}/public/img/green_marker.png`;
+        const volunteersMarker = `${typeof rootUrl !== 'undefined' ? rootUrl : ''}/public/img/orange_marker.png`;
 
         if (data) {
             for (const record of data) {
@@ -438,9 +439,16 @@ function Reports() {
     ];
 
     return (
-        <Card className="card">
-            <CardContent>
-                <div style={{ marginBottom: '20px' }}>
+        <Box sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <AssessmentIcon sx={{ fontSize: 40, mr: 2 }} />
+                <Typography variant="h4">
+                    Reports
+                </Typography>
+            </Box>
+            <Card className="card">
+                <CardContent>
+                    <div style={{ marginBottom: '20px' }}>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
                         <FormControl size="small" style={{ minWidth: 300 }}>
                             <Select
@@ -591,7 +599,7 @@ function Reports() {
                             <Button onClick={handleDownloadJSON} color="warning">JSON</Button>
                             <Button
                                 component="a"
-                                href={`../api/v1/reports/metrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}`}
+                                href={`${typeof rootUrl !== 'undefined' ? rootUrl : ''}/api/v1/reports/metrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}`}
                                 target="_blank"
                                 color="warning"
                             >
@@ -599,7 +607,7 @@ function Reports() {
                             </Button>
                             <Button
                                 component="a"
-                                href={`../api/v1/reports/mapmetrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}&format=csv&event_id=14`}
+                                href={`${typeof rootUrl !== 'undefined' ? rootUrl : ''}/api/v1/reports/mapmetrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}&format=csv&event_id=14`}
                                 target="_blank"
                                 color="warning"
                             >
@@ -607,7 +615,7 @@ function Reports() {
                             </Button>
                             <Button
                                 component="a"
-                                href={`../api/v1/reports/mapmetrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}&format=csv&event_id=1`}
+                                href={`${typeof rootUrl !== 'undefined' ? rootUrl : ''}/api/v1/reports/mapmetrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}&format=csv&event_id=1`}
                                 target="_blank"
                                 color="warning"
                             >
@@ -682,6 +690,7 @@ function Reports() {
                 </Modal>
             </CardContent>
         </Card>
+        </Box>
     );
 }
 

@@ -10,7 +10,10 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    Box,
+    Typography,
 } from "@mui/material";
+import SettingsIcon from '@mui/icons-material/Settings';
 import apiClient from "../services/api";
 
 function Settings() {
@@ -35,7 +38,7 @@ function Settings() {
 
     const clearCache = async () => {
         try {
-            const response = await fetch(`${rootUrl}/api/v1/cache`, {
+            const response = await fetch(`/api/v1/cache`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -58,9 +61,16 @@ function Settings() {
     };
 
     return (
-        <Card className="card">
-            <CardContent>
-                <Button onClick={clearCache} variant="contained" color="warning">Clear Database Cache</Button>
+        <Box sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <SettingsIcon sx={{ fontSize: 40, mr: 2 }} />
+                <Typography variant="h4">
+                    Settings
+                </Typography>
+            </Box>
+            <Card className="card">
+                <CardContent>
+                    <Button onClick={clearCache} variant="contained" color="warning">Clear Database Cache</Button>
                 <TableContainer>
                     <Table>
                         <TableHead>
@@ -84,7 +94,8 @@ function Settings() {
                     </Table>
                 </TableContainer>
             </CardContent>
-        </Card>
+            </Card>
+        </Box>
     );
 }
 

@@ -7,7 +7,7 @@ import {
     KeyboardSensor,
     PointerSensor,
     useSensor,
-    useSensors,     
+    useSensors,
 } from '@dnd-kit/core';
 import {
     arrayMove,
@@ -27,7 +27,9 @@ import {
     ButtonGroup,
     CircularProgress,
     Checkbox,
+    Typography,
 } from '@mui/material';
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import apiClient from "../services/api";
 import {defaultVolunteer} from "../models/VolunteerModel";
 import {defaultShift} from "../models/ShiftModel";
@@ -93,7 +95,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
     const getVolunteers = async (serviceBodyId) => {
         setLoading(true);
         try {
-            let response = await apiClient(`${rootUrl}/api/v1/volunteers?serviceBodyId=${serviceBodyId}`);
+            let response = await apiClient(`/api/v1/volunteers?serviceBodyId=${serviceBodyId}`);
             let responseData = await response.data;            
             setVolunteers(responseData.data);
         } catch (error) {
@@ -111,7 +113,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
                 ...volunteer,
                 volunteer_shift_schedule: btoa(JSON.stringify(volunteer.volunteer_shift_schedule))
             }));
-            let response = await apiClient.post(`${rootUrl}/api/v1/volunteers?serviceBodyId=${serviceBodyId}`, encodedVolunteers);
+            let response = await apiClient.post(`/api/v1/volunteers?serviceBodyId=${serviceBodyId}`, encodedVolunteers);
             let responseData = await response.data;
             setVolunteers(responseData.data);
         } catch (error) {
@@ -187,7 +189,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
         if (!serviceBodyId) return;
 
         try {
-            const response = await apiClient.get(`${rootUrl}/api/v1/groups?serviceBodyId=${serviceBodyId}`);
+            const response = await apiClient.get(`/api/v1/groups?serviceBodyId=${serviceBodyId}`);
             setGroups(response.data || []);
         } catch (error) {
             console.error('Error fetching groups:', error);
@@ -206,7 +208,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
 
         try {
             // Fetch group volunteers
-            const response = await apiClient.get(`${rootUrl}/api/v1/groups/volunteers?groupId=${selectedGroupId}`);
+            const response = await apiClient.get(`/api/v1/groups/volunteers?groupId=${selectedGroupId}`);
             const responseData = response.data;
 
             // Parse the volunteers data
@@ -242,9 +244,16 @@ import SortableVolunteer from "../components/SortableVolunteer";
     };
 
     return (
-        <div className="container">
-            <div className="form-group">
-                <ServiceBodiesDropdown handleChange={serviceBodiesHandleChange}/>
+        <Box sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <VolunteerActivismIcon sx={{ fontSize: 40, mr: 2 }} />
+                <Typography variant="h4">
+                    Volunteers
+                </Typography>
+            </Box>
+            <div className="container">
+                <div className="form-group">
+                    <ServiceBodiesDropdown handleChange={serviceBodiesHandleChange}/>
                 {serviceBodyId > 0 ?
                     <ButtonGroup sx={{
                         padding: 2
@@ -555,7 +564,8 @@ import SortableVolunteer from "../components/SortableVolunteer";
                     </Box>
                 </Box>
             </Modal>
-        </div>
+            </div>
+        </Box>
     );
 }
 

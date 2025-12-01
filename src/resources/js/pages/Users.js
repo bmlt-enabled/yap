@@ -18,8 +18,20 @@ import {
 } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PeopleIcon from '@mui/icons-material/People';
 import apiClient from "../services/api";
 import UserEditDialog from "../dialogs/UserEditDialog";
+
+// Permission mapping - matches AdminInterfaceRights constants
+const getPermissionLabel = (permValue) => {
+    const permStr = String(permValue).trim();
+    switch (permStr) {
+        case '1':
+            return 'Manage Users';
+        default:
+            return permStr;
+    }
+};
 
 function Users() {
     const [loading, setLoading] = useState(false);
@@ -40,7 +52,7 @@ function Users() {
 
     const loadCurrentUser = async () => {
         try {
-            const response = await apiClient.get(`${rootUrl}/api/v1/auth/check`);
+            const response = await apiClient.get(`/api/v1/auth/check`);
             setCurrentUsername(response.data.username);
             setIsAdmin(response.data.is_admin);
         } catch (error) {
@@ -51,7 +63,7 @@ function Users() {
     const loadServiceBodies = async () => {
         try {
             // Use the main service bodies endpoint to get ALL service bodies, not just user's
-            const response = await apiClient.get(`${rootUrl}/api/v1/rootServer/serviceBodies`);
+            const response = await apiClient.get(`/api/v1/rootServer/serviceBodies`);
             setServiceBodies(response.data || []);
         } catch (error) {
             console.error('Error loading service bodies:', error);
@@ -61,7 +73,7 @@ function Users() {
     const loadUsers = async () => {
         setLoading(true);
         try {
-            const response = await apiClient.get(`${rootUrl}/api/v1/users`);
+            const response = await apiClient.get(`/api/v1/users`);
             setUsers(response.data || []);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -89,7 +101,7 @@ function Users() {
         }
 
         try {
-            await apiClient.delete(`${rootUrl}/api/v1/users/${username}`);
+            await apiClient.delete(`/api/v1/users/${username}`);
             showSnackbar('User deleted successfully', 'success');
             await loadUsers();
         } catch (error) {
@@ -116,9 +128,12 @@ function Users() {
     return (
         <Box sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h4">
-                    Users
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <PeopleIcon sx={{ fontSize: 40, mr: 2 }} />
+                    <Typography variant="h4">
+                        Users
+                    </Typography>
+                </Box>
                 <Button
                     variant="contained"
                     color="primary"
@@ -148,24 +163,26 @@ function Users() {
                             {users.map((user) => (
                                 <TableRow key={user.username}>
                                     <TableCell>
-                                        <IconButton
-                                            size="small"
-                                            color="warning"
-                                            onClick={() => handleEditUser(user)}
-                                            title="Edit"
-                                        >
-                                            <EditIcon fontSize="small" />
-                                        </IconButton>
-                                        {user.username !== currentUsername && (
+                                        <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
                                             <IconButton
                                                 size="small"
-                                                color="error"
-                                                onClick={() => handleDeleteUser(user.username)}
-                                                title="Delete"
+                                                color="warning"
+                                                onClick={() => handleEditUser(user)}
+                                                title="Edit"
                                             >
-                                                <DeleteIcon fontSize="small" />
+                                                <EditIcon fontSize="small" />
                                             </IconButton>
-                                        )}
+                                            {user.username !== currentUsername && (
+                                                <IconButton
+                                                    size="small"
+                                                    color="error"
+                                                    onClick={() => handleDeleteUser(user.username)}
+                                                    title="Delete"
+                                                >
+                                                    <DeleteIcon fontSize="small" />
+                                                </IconButton>
+                                            )}
+                                        </Box>
                                     </TableCell>
                                     <TableCell>{user.username}</TableCell>
                                     <TableCell>{user.name}</TableCell>
@@ -195,14 +212,51 @@ function Users() {
                                         </Box>
                                     </TableCell>
                                     <TableCell>
-                                        {(() => {
-                                            if (Array.isArray(user.permissions)) {
-                                                return user.permissions.join(', ');
-                                            } else if (typeof user.permissions === 'string') {
-                                                return user.permissions;
-                                            }
-                                            return '';
-                                        })()}
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                            {(() => {
+                                                // Parse permissions - handle array, string, and number formats
+                                                let perms = [];
+                                                if (Array.isArray(user.permissions)) {
+                                                    perms = user.permissions.filter(p => p !== 0 && p !== '0');
+                                                } else if (typeof user.permissions === 'string' && user.permissions.trim()) {
+                                                    perms = user.permissions.split(',').map(p => p.trim()).filter(p => p && p !== '0');
+                                                } else if (typeof user.permissions === 'number' || (user.permissions !== null && user.permissions !== undefined && !isNaN(user.permissions))) {
+                                                    // Handle numeric permissions (like 1, 2, etc.) but exclude 0
+                                                    if (user.permissions !== 0 && user.permissions !== '0') {
+                                                        perms = [String(user.permissions)];
+                                                    }
+                                                }
+
+                                                const chips = [];
+
+                                                // Add admin chip if user is admin
+                                                if (user.is_admin === 1 || user.is_admin === true) {
+                                                    chips.push(
+                                                        <Chip
+                                                            key="admin"
+                                                            label="Admin"
+                                                            size="small"
+                                                            color="error"
+                                                        />
+                                                    );
+                                                }
+
+                                                // Add permission chips
+                                                perms.forEach((perm, idx) => {
+                                                    chips.push(
+                                                        <Chip
+                                                            key={idx}
+                                                            label={getPermissionLabel(perm)}
+                                                            size="small"
+                                                            color="primary"
+                                                            variant="outlined"
+                                                        />
+                                                    );
+                                                });
+
+                                                return chips.length > 0 ? chips : <span>-</span>;
+                                            })()}
+                                        </Box>
                                     </TableCell>
                                     {isAdmin && (
                                         <TableCell>
