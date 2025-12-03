@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use Tests\TwilioCallTestBuilder;
 use App\Services\CallService;
 use App\Constants\SmsDialbackOptions;
+use App\Constants\EventId;
 use App\Repositories\ReportsRepository;
 use App\Services\TwilioService;
 use App\Repositories\VoicemailRepository;
@@ -137,7 +138,8 @@ test('dialback dialer valid pin entry and language selection', function ($method
         ->pressDigits(sprintf("%s#", $fakePin))
         ->expectTwimlContains('Say', ['voice' => 'alice', 'language' => 'en-US'], 'please wait while we connect your call')
         ->expectTwimlContains('Dial', ['callerId' => $called])
-        ->expectTwimlContains('Number', [], $dialbackNumber);
+        ->expectTwimlContains('Number', [], $dialbackNumber)
+        ->assertHasEvent(EventId::DIALBACK);
 })->with(['GET', 'POST']);
 
 test('dialback dialer invalid pin entry and language selection', function ($method) {

@@ -481,6 +481,10 @@ class CallFlowController extends Controller
         $dialbackNumber = $this->call->getNumberForDialbackPin($request->get("Digits"));
         $twiml = new VoiceResponse();
         if ($dialbackNumber) {
+            $this->call->insertCallEventRecord(
+                EventId::DIALBACK,
+                (object)['to_number' => $dialbackNumber[0]->from_number]
+            );
             $twiml->say($this->settings->word('please_wait_while_we_connect_your_call'))
                 ->setVoice($this->settings->voice())
                 ->setLanguage($this->settings->get("language"));

@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Models\RecordEvent;
 use Illuminate\Testing\TestResponse;
 use Illuminate\Support\Str;
 use Twilio\Rest\Client;
@@ -157,5 +158,14 @@ class TwilioCallTestBuilder
     protected function call($method, string $uri, array $data): TestResponse
     {
         return test()->call($method, $uri, $data);
+    }
+
+    public function assertHasEvent(int $eventId): self
+    {
+        $event = RecordEvent::where('callsid', $this->callSid)
+            ->where('event_id', $eventId)
+            ->first();
+        assert($event !== null, "Expected to find event with ID {$eventId} for call {$this->callSid}");
+        return $this;
     }
 }
