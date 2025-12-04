@@ -455,7 +455,12 @@ class CallFlowController extends Controller
     {
         $twiml = new VoiceResponse();
         $dial = $twiml->dial()->setCallerId($request->get("Called"));
-        $dial->number($this->settings->get('custom_extensions')[str_replace("#", "", $request->get('Digits'))]);
+        $extensionNumber = $this->settings->get('custom_extensions')[str_replace("#", "", $request->get('Digits'))];
+        $this->call->insertCallEventRecord(
+            EventId::CUSTOM_EXTENSION,
+            (object)['to_number' => $extensionNumber]
+        );
+        $dial->number($extensionNumber);
         return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 

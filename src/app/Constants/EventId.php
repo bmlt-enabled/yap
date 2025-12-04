@@ -30,6 +30,7 @@ class EventId
     const VOLUNTEER_SEARCH_FORCE_DIALED = 25;
     const VOLUNTEER_NUMBER_BAD = 26;
     const VOLUNTEER_NUMBER_BUSY = 27;
+    const CUSTOM_EXTENSION = 28;
 
     public static function getEventById($id)
     {
@@ -88,6 +89,8 @@ class EventId
                 return "Volunteer Number is Bad";
             case self::VOLUNTEER_NUMBER_BUSY:
                 return "Volunteer Number is Busy";
+            case self::CUSTOM_EXTENSION:
+                return "Custom Extension";
         }
     }
 }

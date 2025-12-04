@@ -46,4 +46,5 @@ test('test event ids', function () {
     $this->assertTrue(EventId::getEventById(EventId::SMS_BLACKHOLED) == "SMS Blackholed");
     $this->assertTrue(EventId::getEventById(EventId::SPAD_LOOKUP) == "SPAD Lookup");
     $this->assertTrue(EventId::getEventById(EventId::SPAD_LOOKUP_SMS) == "SPAD Lookup via SMS");
+    $this->assertTrue(EventId::getEventById(EventId::CUSTOM_EXTENSION) == "Custom Extension");
 });
