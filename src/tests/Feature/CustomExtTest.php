@@ -1,4 +1,7 @@
 <?php
+use App\Constants\EventId;
+use App\Models\RecordEvent;
+
 test('custom extensions', function ($method) {
     session()->put('override_en_US_custom_extensions_greeting', "https://fake.org/test.mp3");
     $response = $this->call($method, '/custom-ext.php');
@@ -18,8 +21,13 @@ test('custom extensions', function ($method) {
 })->with(['GET', 'POST']);
 
 test('custom extensions dialer', function ($method) {
+    $callSid = 'CA' . uniqid();
     session()->put("override_custom_extensions", [365 => '555-555-1212']);
-    $response = $this->call($method, '/custom-ext-dialer.php?Called=%2B17183367631&Digits=365#');
+    $response = $this->call($method, '/custom-ext-dialer.php', [
+        'Called' => '+17183367631',
+        'Digits' => '365#',
+        'CallSid' => $callSid,
+    ]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "text/xml; charset=utf-8")
@@ -31,4 +39,9 @@ test('custom extensions dialer', function ($method) {
             '</Dial>',
             '</Response>'
         ], false);
+
+    $event = RecordEvent::where('callsid', $callSid)
+        ->where('event_id', EventId::CUSTOM_EXTENSION)
+        ->first();
+    $this->assertNotNull($event, "Expected to find CUSTOM_EXTENSION event for call {$callSid}");
 })->with(['GET', 'POST']);

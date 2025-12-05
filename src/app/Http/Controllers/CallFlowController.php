@@ -455,7 +455,12 @@ class CallFlowController extends Controller
     {
         $twiml = new VoiceResponse();
         $dial = $twiml->dial()->setCallerId($request->get("Called"));
-        $dial->number($this->settings->get('custom_extensions')[str_replace("#", "", $request->get('Digits'))]);
+        $extensionNumber = $this->settings->get('custom_extensions')[str_replace("#", "", $request->get('Digits'))];
+        $this->call->insertCallEventRecord(
+            EventId::CUSTOM_EXTENSION,
+            (object)['to_number' => $extensionNumber]
+        );
+        $dial->number($extensionNumber);
         return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
     }
 
@@ -481,6 +486,10 @@ class CallFlowController extends Controller
         $dialbackNumber = $this->call->getNumberForDialbackPin($request->get("Digits"));
         $twiml = new VoiceResponse();
         if ($dialbackNumber) {
+            $this->call->insertCallEventRecord(
+                EventId::DIALBACK,
+                (object)['to_number' => $dialbackNumber[0]->from_number, 'pin' => $request->get("Digits")]
+            );
             $twiml->say($this->settings->word('please_wait_while_we_connect_your_call'))
                 ->setVoice($this->settings->voice())
                 ->setLanguage($this->settings->get("language"));
