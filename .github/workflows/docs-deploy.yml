@@ -14,6 +14,9 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     defaults:
       run:
         working-directory: 'src/docs'
