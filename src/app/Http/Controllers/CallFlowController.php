@@ -488,7 +488,7 @@ class CallFlowController extends Controller
         if ($dialbackNumber) {
             $this->call->insertCallEventRecord(
                 EventId::DIALBACK,
-                (object)['to_number' => $dialbackNumber[0]->from_number]
+                (object)['to_number' => $dialbackNumber[0]->from_number, 'pin' => $request->get("Digits")]
             );
             $twiml->say($this->settings->word('please_wait_while_we_connect_your_call'))
                 ->setVoice($this->settings->voice())

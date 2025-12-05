@@ -2,6 +2,8 @@
 
 ### 5.0.0 (UNRELEASED)
 * Volunteer shifts display are now sorted by day [#1338]
+* Custom Extensions are now included in call detail reports [#1433]
+* Dialbacks are now included in the call detail reports [#1409]
 * HTML formatted notifications for voicemail.
 
 ### 4.5.0 (July 11, 2025)
