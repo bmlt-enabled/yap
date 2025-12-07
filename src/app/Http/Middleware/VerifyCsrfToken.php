@@ -12,7 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        '/sanctum/csrf-cookie',
-        'api/*'
+        '*'  // Twilio webhooks don't support CSRF tokens
     ];
 }
