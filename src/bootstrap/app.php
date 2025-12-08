@@ -15,6 +15,11 @@ $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
 
+// Set namespace explicitly to avoid reading composer.json at runtime
+(function () {
+    $this->namespace = 'App\\';
+})->bindTo($app, $app)();
+
 /*
 |--------------------------------------------------------------------------
 | Bind Important Interfaces
