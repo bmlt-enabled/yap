@@ -44,7 +44,7 @@
     <p>Welcome to Yap. To complete the installation, you need to create a <code>config.php</code> file in the root of your yap folder.</p>
     <p>The following settings are required:</p>
     <ul class="settings-list">
-        <?php foreach ($minimalRequiredSettings as $setting): ?>
+        <?php foreach ($minimalRequiredSettings as $setting) : ?>
             <li><?php echo htmlspecialchars($setting); ?></li>
         <?php endforeach; ?>
     </ul>
