@@ -49,3 +49,34 @@ jobs:
         uses: hmarr/auto-approve-action@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  e2e:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php:
+          - "8.4"
+    services:
+      db-tests:
+        image: 'mysql/mysql-server:8.0'
+        env:
+          MYSQL_ROOT_PASSWORD: yap_root_password
+          MYSQL_DATABASE: yap_test
+          MYSQL_ROOT_HOST: '%'
+        ports:
+          - 3106:3306
+
+    steps:
+      - uses: actions/checkout@v6
+        id: code-checkout
+
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-deps
+
+      - name: E2E Tests
+        uses: ./.github/actions/e2e-test
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}

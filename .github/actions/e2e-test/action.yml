@@ -1,0 +1,55 @@
+name: e2e-test
+description: "Run Playwright E2E tests"
+
+runs:
+  using: composite
+  steps:
+    - name: Install Playwright Browsers
+      run: |
+        cd src
+        npx playwright install chromium --with-deps
+      shell: bash
+
+    - name: Build frontend
+      run: |
+        cd src
+        npm run build
+        DISABLE_NOTIFIER=true gulp
+      shell: bash
+
+    - name: Start server
+      run: |
+        cd src
+        mv .env.pipeline .env
+        ENVIRONMENT=test php -S 127.0.0.1:8000 -t . server.php > /dev/null 2>&1 &
+        sleep 5
+      shell: bash
+
+    - name: Run Playwright tests
+      run: |
+        cd src
+        BASE_URL=http://127.0.0.1:8000/yap npx playwright test
+      shell: bash
+
+    - name: Upload Playwright Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ${{ matrix.php }}-playwright-report
+        path: src/playwright-report/
+        retention-days: 30
+
+    - name: Upload test screenshots
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: ${{ matrix.php }}-playwright-screenshots
+        path: src/test-results/
+        retention-days: 30
+
+    - name: Publish E2E Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        junit_files: "src/tests/e2e-results.xml"
+        check_name: "E2E Test Results"
