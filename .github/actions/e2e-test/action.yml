@@ -20,7 +20,6 @@ runs:
       run: |
         cd src
         npm run build
-        DISABLE_NOTIFIER=true gulp
       shell: bash
 
     - name: Start server
