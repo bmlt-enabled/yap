@@ -4,6 +4,12 @@ description: "Run Playwright E2E tests"
 runs:
   using: composite
   steps:
+    - name: Install npm dependencies
+      run: |
+        cd src
+        npm ci
+      shell: bash
+
     - name: Install Playwright Browsers
       run: |
         cd src
