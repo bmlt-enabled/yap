@@ -18,8 +18,10 @@ async function login(page, baseURL, username, password) {
 }
 
 export const test = base.extend({
+  // Use local admin user for all authenticated tests
+  // BMLT users (like gnyr_admin) won't work in CI without a BMLT server
   authenticatedPage: async ({ page, baseURL }, use) => {
-    await login(page, baseURL, 'gnyr_admin', 'CoreysGoryStory');
+    await login(page, baseURL, 'admin', 'admin');
     await use(page);
   },
   adminPage: async ({ page, baseURL }, use) => {

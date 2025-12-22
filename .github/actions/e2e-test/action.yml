@@ -27,6 +27,7 @@ runs:
         cd src
         mv .env.pipeline .env
         php artisan migrate --force
+        ENVIRONMENT=test php artisan db:seed --class=TestEnvironmentSeeder --force
       shell: bash
 
     - name: Start server
