@@ -22,12 +22,26 @@ runs:
         npm run build
       shell: bash
 
-    - name: Start server
+    - name: Setup database
       run: |
         cd src
         mv .env.pipeline .env
-        ENVIRONMENT=test php -S 127.0.0.1:8000 -t . server.php > /dev/null 2>&1 &
-        sleep 5
+        php artisan migrate --force
+      shell: bash
+
+    - name: Start server
+      run: |
+        cd src
+        ENVIRONMENT=test php -S 127.0.0.1:8000 -t . server.php > server.log 2>&1 &
+        # Wait for server to be ready
+        for i in {1..30}; do
+          if curl -s http://127.0.0.1:8000/yap/admin/login > /dev/null 2>&1; then
+            echo "Server is ready"
+            break
+          fi
+          echo "Waiting for server... ($i)"
+          sleep 2
+        done
       shell: bash
 
     - name: Run Playwright tests
@@ -50,6 +64,14 @@ runs:
       with:
         name: ${{ matrix.php }}-playwright-screenshots
         path: src/test-results/
+        retention-days: 30
+
+    - name: Upload server log
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: ${{ matrix.php }}-server-log
+        path: src/server.log
         retention-days: 30
 
     - name: Publish E2E Test Results
