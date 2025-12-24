@@ -12,8 +12,8 @@ test.describe('Settings', () => {
     await page.getByRole('link', { name: 'Settings' }).click();
     await page.waitForURL('**/settings');
 
-    // Settings should show BMLT configuration - use specific cell
-    await expect(page.getByRole('cell', { name: 'bmlt_root_server', exact: false })).toBeVisible({ timeout: 10000 });
+    // Settings should show BMLT configuration - use first() since exact match includes emoji
+    await expect(page.getByRole('cell', { name: /^bmlt_root_server/ }).first()).toBeVisible({ timeout: 10000 });
   });
 
   test('can view configuration options', async ({ authenticatedPage: page }) => {
