@@ -15,3 +15,12 @@ mix.js('resources/js/index.js', 'public/js')
     .react()
     .sourceMaps()
     .css('resources/css/app.css', 'public/css');
+
+// Webpack 5 no longer includes Node.js polyfills by default
+mix.webpackConfig({
+    resolve: {
+        fallback: {
+            buffer: false,
+        },
+    },
+});
