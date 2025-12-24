@@ -36,7 +36,7 @@ runs:
         ENVIRONMENT=test php -S 127.0.0.1:8000 -t . server.php > server.log 2>&1 &
         # Wait for server to be ready
         for i in {1..30}; do
-          if curl -s http://127.0.0.1:8000/yap/admin/login > /dev/null 2>&1; then
+          if curl -s http://127.0.0.1:8000/admin/login > /dev/null 2>&1; then
             echo "Server is ready"
             break
           fi
@@ -48,7 +48,7 @@ runs:
     - name: Run Playwright tests
       run: |
         cd src
-        BASE_URL=http://127.0.0.1:8000/yap npx playwright test
+        BASE_URL=http://127.0.0.1:8000 npx playwright test
       shell: bash
 
     - name: Upload Playwright Report
