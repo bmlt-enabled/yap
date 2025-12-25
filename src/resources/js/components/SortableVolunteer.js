@@ -15,8 +15,11 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import { isValidPhoneNumber } from 'libphonenumber-js';
 
-export default function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expanded, toggleExpand, handleAddShift, handleRemoveShift, handleRemoveAllShifts, daysOfWeek, getWord }) {
+export default function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expanded, toggleExpand, handleAddShift, handleRemoveShift, handleRemoveAllShifts, daysOfWeek, getWord, phoneValidationCountry }) {
+    const [phoneError, setPhoneError] = useState(false);
+
     const {
         attributes,
         listeners,
@@ -30,6 +33,25 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
+    };
+
+    const validatePhone = (phoneNumber) => {
+        if (!phoneNumber || phoneNumber.trim() === '') {
+            setPhoneError(false);
+            return true;
+        }
+        if (!phoneValidationCountry) {
+            setPhoneError(false);
+            return true;
+        }
+        try {
+            const isValid = isValidPhoneNumber(phoneNumber, phoneValidationCountry);
+            setPhoneError(!isValid);
+            return isValid;
+        } catch (e) {
+            setPhoneError(true);
+            return false;
+        }
     };
 
     // Check if this is a group reference
@@ -184,9 +206,13 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
                     <TextField
                         label={getWord('phone_number')}
                         value={volunteer.volunteer_phone_number}
+                        error={phoneError}
+                        helperText={phoneError ? (getWord('invalid_phone_number') || 'Invalid phone number') : ''}
                         onChange={e => {
+                            const value = e.target.value;
+                            validatePhone(value);
                             const updatedVolunteers = [...volunteers];
-                            updatedVolunteers[index].volunteer_phone_number = e.target.value;
+                            updatedVolunteers[index].volunteer_phone_number = value;
                             setVolunteers(updatedVolunteers);
                         }}
                         margin="normal"

@@ -51,6 +51,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
     const [groups, setGroups] = useState([]);
     const [selectedGroupId, setSelectedGroupId] = useState(0);
     const [selectedDays, setSelectedDays] = useState([]);
+    const [phoneValidationCountry, setPhoneValidationCountry] = useState('US');
     const daysOfWeek = getWord('days_of_the_week');
        
     // Get current browser timezone
@@ -72,8 +73,24 @@ import SortableVolunteer from "../components/SortableVolunteer";
                 console.error('Error fetching timezones:', error);
             }
         };
-        
+
         fetchTimezones();
+    }, []);
+
+    // Fetch phone validation country setting
+    React.useEffect(() => {
+        const fetchPhoneValidation = async () => {
+            try {
+                const response = await apiClient.get('/api/v1/settings');
+                const phoneValidation = response.data.settings?.find(s => s.name === 'phone_number_validation');
+                if (phoneValidation?.value) {
+                    setPhoneValidationCountry(phoneValidation.value);
+                }
+            } catch (error) {
+                console.error('Error fetching phone validation setting:', error);
+            }
+        };
+        fetchPhoneValidation();
     }, []);
 
     const sensors = useSensors(
@@ -292,6 +309,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
                                 handleRemoveAllShifts={handleRemoveAllShifts}
                                 daysOfWeek={daysOfWeek}
                                 getWord={getWord}
+                                phoneValidationCountry={phoneValidationCountry}
                             />
                         ))}
                     </SortableContext>

@@ -57,4 +57,58 @@ test.describe('Volunteers', () => {
       expect(await enableToggle.isChecked()).toBe(!initialState);
     }
   });
+
+  test('validates phone numbers', async ({ authenticatedPage: page }) => {
+    await page.getByRole('link', { name: 'Volunteers' }).click();
+    await page.waitForURL('**/volunteers');
+
+    // Wait for service body dropdown to load (it shows "Loading..." initially)
+    // If no service bodies are configured, the dropdown won't appear
+    try {
+      await page.waitForSelector('#service-body-select', { timeout: 10000 });
+    } catch {
+      // No service bodies available - skip test
+      console.log('No service bodies available - skipping phone validation test');
+      return;
+    }
+
+    // Select service body (skip the placeholder option)
+    await page.locator('#service-body-select').click();
+    const options = page.locator('[role="option"]');
+    const optionCount = await options.count();
+    if (optionCount <= 1) {
+      console.log('No service bodies to select - skipping test');
+      return;
+    }
+    await options.nth(1).click();
+
+    // Wait for buttons to appear after service body selection
+    await page.waitForSelector('button:has-text("Add Volunteer")', { timeout: 5000 });
+
+    // Add a volunteer
+    await page.getByRole('button', { name: /add volunteer/i }).click();
+
+    // Expand the volunteer card to show phone field
+    await page.locator('[data-testid="ExpandMoreIcon"]').first().click();
+
+    // Find the phone number field by label
+    const phoneField = page.getByLabel(/phone number/i);
+    await expect(phoneField).toBeVisible({ timeout: 5000 });
+
+    // Enter an invalid phone number
+    await phoneField.fill('123');
+
+    // Should show error state (helper text with "Invalid phone number")
+    await expect(page.getByText(/invalid phone number/i)).toBeVisible({ timeout: 5000 });
+
+    // Enter a valid US phone number
+    await phoneField.fill('+1 555 123 4567');
+
+    // Error should disappear
+    await expect(page.getByText(/invalid phone number/i)).not.toBeVisible();
+
+    // Clear the field - should not show error for empty
+    await phoneField.clear();
+    await expect(page.getByText(/invalid phone number/i)).not.toBeVisible();
+  });
 });
