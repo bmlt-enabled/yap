@@ -41,6 +41,3 @@ tests/reports
 coverage.xml
 .phpunit.cache
 memory
-src/playwright-report
-src/test-results
-src/e2e-results.xml
