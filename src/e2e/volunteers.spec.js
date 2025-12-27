@@ -1,41 +1,39 @@
 import { test, expect } from './fixtures/auth.js';
 
 test.describe('Volunteers', () => {
-  let authToken = null;
-  let configuredServiceBodyId = null;
-
   test.beforeAll(async ({ request, baseURL }) => {
     // Reset database first
     await request.post(`${baseURL}/api/resetDatabase`);
+  });
 
-    // Login to get auth token
-    const loginResponse = await request.post(`${baseURL}/api/v1/login`, {
-      data: { username: 'admin', password: 'admin' }
-    });
-    const loginData = await loginResponse.json();
-    authToken = loginData.token;
+  // This test must run first to configure call handling via UI
+  test('setup: configure call handling for volunteers', async ({ authenticatedPage: page }) => {
+    // Navigate to Service Bodies page
+    await page.getByRole('link', { name: 'Service Bodies' }).click();
+    await page.waitForURL('**/serviceBodies');
 
-    // Get service bodies to find one to configure
-    const serviceBodiesResponse = await request.get(`${baseURL}/api/v1/rootServer/serviceBodies/user`, {
-      headers: { Authorization: `Bearer ${authToken}` }
-    });
-    const serviceBodies = await serviceBodiesResponse.json();
+    // Wait for table to load
+    await page.locator('table').waitFor();
 
-    if (serviceBodies && serviceBodies.length > 0) {
-      configuredServiceBodyId = serviceBodies[0].id;
+    // Click call handling button for the first service body
+    const callHandlingButton = page.getByRole('button', { name: /call handling|configure/i }).first();
+    await callHandlingButton.click();
 
-      // Configure call handling for the first service body with volunteer routing enabled
-      await request.post(`${baseURL}/api/v1/callHandling?serviceBodyId=${configuredServiceBodyId}`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/json'
-        },
-        data: {
-          volunteer_routing: 'volunteers',
-          volunteer_routing_enabled: true
-        }
-      });
-    }
+    // Wait for dialog to open
+    await expect(page.getByRole('dialog')).toBeVisible();
+
+    // Select "Volunteers" from the Helpline Routing dropdown
+    const helplineRoutingSelect = page.locator('#volunteer_routing');
+    await helplineRoutingSelect.click();
+
+    // Select "Volunteers" option (exact match to avoid matching "Volunteers Redirect" etc.)
+    await page.getByRole('option', { name: 'Volunteers', exact: true }).click();
+
+    // Save changes
+    await page.getByRole('button', { name: /save changes/i }).click();
+
+    // Dialog should close after save
+    await expect(page.getByRole('dialog')).not.toBeVisible();
   });
 
   test('can view volunteers page', async ({ authenticatedPage: page }) => {
