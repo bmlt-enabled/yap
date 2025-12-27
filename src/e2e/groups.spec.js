@@ -2,7 +2,38 @@ import { test, expect } from './fixtures/auth.js';
 
 test.describe('Groups', () => {
   test.beforeAll(async ({ request, baseURL }) => {
+    // Reset database first
     await request.post(`${baseURL}/api/resetDatabase`);
+  });
+
+  // This test must run first to configure call handling via UI
+  test('setup: configure call handling for groups', async ({ authenticatedPage: page }) => {
+    // Navigate to Service Bodies page
+    await page.getByRole('link', { name: 'Service Bodies' }).click();
+    await page.waitForURL('**/serviceBodies');
+
+    // Wait for table to load
+    await page.locator('table').waitFor();
+
+    // Click call handling button for the first service body
+    const callHandlingButton = page.getByRole('button', { name: /call handling|configure/i }).first();
+    await callHandlingButton.click();
+
+    // Wait for dialog to open
+    await expect(page.getByRole('dialog')).toBeVisible();
+
+    // Select "Volunteers" from the Helpline Routing dropdown
+    const helplineRoutingSelect = page.locator('#volunteer_routing');
+    await helplineRoutingSelect.click();
+
+    // Select "Volunteers" option (exact match to avoid matching "Volunteers Redirect" etc.)
+    await page.getByRole('option', { name: 'Volunteers', exact: true }).click();
+
+    // Save changes
+    await page.getByRole('button', { name: /save changes/i }).click();
+
+    // Dialog should close after save
+    await expect(page.getByRole('dialog')).not.toBeVisible();
   });
 
   test('can view groups page', async ({ authenticatedPage: page }) => {

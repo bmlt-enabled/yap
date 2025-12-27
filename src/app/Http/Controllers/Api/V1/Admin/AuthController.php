@@ -64,14 +64,16 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $credentials = $request->only('username', 'password');
+        $user = $this->authn->authenticateApi(
+            $request->input('username'),
+            $request->input('password')
+        );
 
-        if (!Auth::attempt($credentials)) {
+        if (!$user) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
         $request->session()->regenerate();
-        $user = Auth::user();
 
         return response()->json([
             'status' => 'success',

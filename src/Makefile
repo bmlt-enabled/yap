@@ -9,11 +9,11 @@ serve:
 
 .PHONY: e2e-test
 e2e-test:
-	env CYPRESS_BASE_URL=http://localhost:8000 npx cypress run
+	BASE_URL=http://localhost:8000 npx playwright test
 
 .PHONY: e2e-test-ui
 e2e-test-ui:
-	env CYPRESS_BASE_URL=http://127.0.0.1:8000/yap npx cypress open --component
+	BASE_URL=http://localhost:8000 npx playwright test --ui
 
 .PHONY: lint
 lint:
