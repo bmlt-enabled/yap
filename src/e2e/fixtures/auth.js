@@ -15,6 +15,9 @@ async function login(page, baseURL, username, password) {
 
   await page.getByRole('button', { name: /sign in/i }).click();
   await page.waitForURL('**/dashboard', { timeout: 15000 });
+
+  // Add delay after login for stability
+  await page.waitForTimeout(1000);
 }
 
 export const test = base.extend({

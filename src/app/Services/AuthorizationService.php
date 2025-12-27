@@ -28,12 +28,37 @@ class AuthorizationService
 
     public function canManageUsers(): bool
     {
-        return (session()->has('auth_is_admin') && session()->get('auth_is_admin') ||
-            (session()->has('auth_permissions') && (intval(session()->get('auth_permissions')) & AdminInterfaceRights::MANAGE_USERS)));
+        // Check session first (for session-based auth)
+        if (session()->has('auth_is_admin') && session()->get('auth_is_admin')) {
+            return true;
+        }
+        if (session()->has('auth_permissions') && (intval(session()->get('auth_permissions')) & AdminInterfaceRights::MANAGE_USERS)) {
+            return true;
+        }
+
+        // Fall back to checking authenticated user directly (for token-based auth)
+        $user = auth()->user();
+        if ($user) {
+            if ($user->is_admin) {
+                return true;
+            }
+            if ($user->permissions && (intval($user->permissions) & AdminInterfaceRights::MANAGE_USERS)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function isTopLevelAdmin(): bool
     {
-        return (session()->has('auth_is_admin') && session()->get('auth_is_admin'));
+        // Check session first (for session-based auth)
+        if (session()->has('auth_is_admin') && session()->get('auth_is_admin')) {
+            return true;
+        }
+
+        // Fall back to checking authenticated user directly (for token-based auth)
+        $user = auth()->user();
+        return $user && $user->is_admin;
     }
 }

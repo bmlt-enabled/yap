@@ -1,3 +1,6 @@
 .idea
 .DS_Store
 .aider*
+src/playwright-report
+src/test-results
+src/tests/e2e-results.xml
