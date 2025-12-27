@@ -28,8 +28,8 @@ test('security: SQL injection in login username does not bypass auth', function 
             'password' => 'anything'
         ]);
 
-        // Should always return 401 - injection should not bypass auth
-        $response->assertStatus(401);
+        // Should return 401 (unauthorized) or 429 (rate limited) - injection should not bypass auth
+        expect($response->status())->toBeIn([401, 429]);
     }
 });
 
@@ -49,8 +49,8 @@ test('security: SQL injection in login password does not bypass auth', function 
             'password' => $payload
         ]);
 
-        // Should return 401 - injection should not bypass auth
-        $response->assertStatus(401);
+        // Should return 401 (unauthorized) or 429 (rate limited) - injection should not bypass auth
+        expect($response->status())->toBeIn([401, 429]);
     }
 });
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\VoicemailRepository;
+use App\Services\AuthorizationService;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -15,10 +16,21 @@ use Illuminate\Http\JsonResponse;
 class VoicemailController extends Controller
 {
     private VoicemailRepository $voicemailRepository;
+    private AuthorizationService $authz;
 
-    public function __construct(VoicemailRepository $voicemailRepository)
+    public function __construct(VoicemailRepository $voicemailRepository, AuthorizationService $authz)
     {
         $this->voicemailRepository = $voicemailRepository;
+        $this->authz = $authz;
+    }
+
+    private function authorizeServiceBody($serviceBodyId): bool
+    {
+        if ($this->authz->isTopLevelAdmin()) {
+            return true;
+        }
+        $rights = session()->get('auth_service_bodies_rights') ?? [];
+        return in_array($serviceBodyId, $rights);
     }
 
     /**
@@ -81,15 +93,26 @@ class VoicemailController extends Controller
     public function index(): JsonResponse
     {
         $serviceBodyId = request()->query('serviceBodyId');
-        
+
         if (!$serviceBodyId) {
             return response()->json([
                 'message' => 'Service body ID is required'
             ], 400);
         }
 
+        // Validate serviceBodyId is numeric
+        if (!is_numeric($serviceBodyId) || intval($serviceBodyId) <= 0) {
+            return response()->json(['message' => 'Invalid service body ID'], 400);
+        }
+        $serviceBodyId = intval($serviceBodyId);
+
+        // Check authorization
+        if (!$this->authorizeServiceBody($serviceBodyId)) {
+            return response()->json(['message' => 'Not authorized'], 403);
+        }
+
         $voicemails = $this->voicemailRepository->get($serviceBodyId);
-        
+
         return response()->json([
             'data' => $voicemails
         ]);
@@ -153,15 +176,26 @@ class VoicemailController extends Controller
     public function destroy(string $callSid): JsonResponse
     {
         $serviceBodyId = request()->query('serviceBodyId');
-        
+
         if (!$serviceBodyId) {
             return response()->json([
                 'message' => 'Service body ID is required'
             ], 400);
         }
 
+        // Validate serviceBodyId is numeric
+        if (!is_numeric($serviceBodyId) || intval($serviceBodyId) <= 0) {
+            return response()->json(['message' => 'Invalid service body ID'], 400);
+        }
+        $serviceBodyId = intval($serviceBodyId);
+
+        // Check authorization
+        if (!$this->authorizeServiceBody($serviceBodyId)) {
+            return response()->json(['message' => 'Not authorized'], 403);
+        }
+
         $deleted = $this->voicemailRepository->delete($serviceBodyId, $callSid);
-        
+
         if (!$deleted) {
             return response()->json([
                 'message' => 'Voicemail not found'

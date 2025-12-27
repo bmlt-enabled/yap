@@ -49,6 +49,10 @@ class UserController extends Controller
      */
     public function show($username)
     {
+        // Allow viewing own profile or if user can manage users
+        if (session()->get('username') !== $username && !$this->authz->canManageUsers()) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
         return User::getUser($username);
     }
 

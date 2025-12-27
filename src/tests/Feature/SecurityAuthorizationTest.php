@@ -189,6 +189,6 @@ test('security: user cannot delete voicemail from unauthorized service body', fu
     ]);
 
     // Should be forbidden - not authorized for this service body
-    // Accept 403, 404, or 500 (not found is acceptable for fake SID)
-    expect($response->status())->toBeIn([403, 404, 500]);
+    // Accept 400 (invalid ID), 403, 404, or 500 (not found is acceptable for fake SID)
+    expect($response->status())->toBeIn([400, 403, 404, 500]);
 });

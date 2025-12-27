@@ -56,6 +56,9 @@ test('security: token invalidated after manual deletion', function () {
     $user = User::where('username', 'testuser')->first();
     $user->tokens()->delete();
 
+    // Clear auth cache to ensure fresh token validation
+    auth()->forgetGuards();
+
     // Token should no longer work
     $afterDeletionResponse = $this->withHeaders([
         'Authorization' => 'Bearer ' . $token,
