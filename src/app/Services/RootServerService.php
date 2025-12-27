@@ -133,6 +133,26 @@ class RootServerService extends Service
             }
         }
 
+        // Fall back to checking authenticated user directly (for token-based auth)
+        $user = auth()->user();
+        if ($user) {
+            if ($user->is_admin) {
+                return $this->getServiceBodies();
+            }
+            // Non-admin user with specific service bodies
+            if ($user->service_bodies) {
+                $service_bodies = $this->getServiceBodies();
+                $service_body_rights = explode(",", $user->service_bodies);
+                $service_bodies_for_user = array();
+                foreach ($service_bodies as $service_body) {
+                    if (in_array($service_body->id, $service_body_rights)) {
+                        $service_bodies_for_user[] = $service_body;
+                    }
+                }
+                return $service_bodies_for_user;
+            }
+        }
+
         return null;
     }
 

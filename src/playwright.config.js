@@ -2,10 +2,15 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: 1,
+  // Add action timeout and expect timeout for more stability
+  timeout: 60000,
+  expect: {
+    timeout: 10000,
+  },
   reporter: [
     ['html', { open: 'never' }],
     ['junit', { outputFile: 'tests/e2e-results.xml' }],

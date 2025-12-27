@@ -113,8 +113,8 @@ import SortableVolunteer from "../components/SortableVolunteer";
         setLoading(true);
         try {
             let response = await apiClient(`/api/v1/volunteers?serviceBodyId=${serviceBodyId}`);
-            let responseData = await response.data;            
-            setVolunteers(responseData.data);
+            let responseData = await response.data;
+            setVolunteers(responseData.data || []);
         } catch (error) {
             console.error('Error fetching volunteers:', error);
         } finally {
@@ -132,7 +132,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
             }));
             let response = await apiClient.post(`/api/v1/volunteers?serviceBodyId=${serviceBodyId}`, encodedVolunteers);
             let responseData = await response.data;
-            setVolunteers(responseData.data);
+            setVolunteers(responseData.data || []);
         } catch (error) {
             console.error('Error saving volunteers:', error);
         } finally {

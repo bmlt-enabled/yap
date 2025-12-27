@@ -1,8 +1,41 @@
 import { test, expect } from './fixtures/auth.js';
 
 test.describe('Groups', () => {
+  let authToken = null;
+  let configuredServiceBodyId = null;
+
   test.beforeAll(async ({ request, baseURL }) => {
+    // Reset database first
     await request.post(`${baseURL}/api/resetDatabase`);
+
+    // Login to get auth token
+    const loginResponse = await request.post(`${baseURL}/api/v1/login`, {
+      data: { username: 'admin', password: 'admin' }
+    });
+    const loginData = await loginResponse.json();
+    authToken = loginData.token;
+
+    // Get service bodies to find one to configure
+    const serviceBodiesResponse = await request.get(`${baseURL}/api/v1/rootServer/serviceBodies/user`, {
+      headers: { Authorization: `Bearer ${authToken}` }
+    });
+    const serviceBodies = await serviceBodiesResponse.json();
+
+    if (serviceBodies && serviceBodies.length > 0) {
+      configuredServiceBodyId = serviceBodies[0].id;
+
+      // Configure call handling for the first service body with volunteer routing enabled
+      await request.post(`${baseURL}/api/v1/callHandling?serviceBodyId=${configuredServiceBodyId}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        },
+        data: {
+          volunteer_routing: 'volunteers',
+          volunteer_routing_enabled: true
+        }
+      });
+    }
   });
 
   test('can view groups page', async ({ authenticatedPage: page }) => {
