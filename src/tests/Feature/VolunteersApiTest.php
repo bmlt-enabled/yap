@@ -19,6 +19,8 @@ beforeEach(function () {
     $this->id = "200";
     $this->serviceBodyId = "44";
     $this->parentServiceBodyId = "43";
+    // Set up admin session for authorization
+    session()->put('auth_is_admin', true);
 });
 
 test('get schedule for service body phone volunteer', function () {

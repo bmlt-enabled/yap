@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1\Admin;
 use App\Constants\DataType;
 use App\Http\Controllers\Controller;
 use App\Models\ConfigData;
+use App\Services\AuthorizationService;
 use App\Structures\ServiceBodyCallHandling;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,10 +14,21 @@ use stdClass;
 class ServiceBodyCallHandlingController extends Controller
 {
     protected ConfigData $configData;
+    protected AuthorizationService $authz;
 
-    public function __construct(ConfigData $configData)
+    public function __construct(ConfigData $configData, AuthorizationService $authz)
     {
         $this->configData = $configData;
+        $this->authz = $authz;
+    }
+
+    private function authorizeServiceBody($serviceBodyId): bool
+    {
+        if ($this->authz->isTopLevelAdmin()) {
+            return true;
+        }
+        $rights = session()->get('auth_service_bodies_rights') ?? [];
+        return in_array($serviceBodyId, $rights);
     }
 
     /**
@@ -46,7 +58,20 @@ class ServiceBodyCallHandlingController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $data = ConfigData::getCallHandling($request->get("serviceBodyId"));
+        $serviceBodyId = $request->get("serviceBodyId");
+
+        // Validate serviceBodyId is numeric
+        if (!is_numeric($serviceBodyId) || intval($serviceBodyId) <= 0) {
+            return response()->json(['message' => 'Invalid service body ID'], 400);
+        }
+        $serviceBodyId = intval($serviceBodyId);
+
+        // Check authorization
+        if (!$this->authorizeServiceBody($serviceBodyId)) {
+            return response()->json(['message' => 'Not authorized'], 403);
+        }
+
+        $data = ConfigData::getCallHandling($serviceBodyId);
 
         if (count($data) > 0) {
             return response()->json([
@@ -100,10 +125,21 @@ class ServiceBodyCallHandlingController extends Controller
      */
     public function store(Request $request)
     {
+        $serviceBodyId = $request->get('serviceBodyId');
+
+        // Validate serviceBodyId is numeric
+        if (!is_numeric($serviceBodyId) || intval($serviceBodyId) <= 0) {
+            return response()->json(['message' => 'Invalid service body ID'], 400);
+        }
+        $serviceBodyId = intval($serviceBodyId);
+
+        // Check authorization
+        if (!$this->authorizeServiceBody($serviceBodyId)) {
+            return response()->json(['message' => 'Not authorized'], 403);
+        }
+
         $decodedData = json_decode($request->getContent());
         $serviceBodyCallHandling = new ServiceBodyCallHandling($decodedData);
-
-        $serviceBodyId = $request->get('serviceBodyId');
 
         $existingRecord = ConfigData::where('service_body_id', $serviceBodyId)
             ->where('data_type', DataType::YAP_CALL_HANDLING_V2)

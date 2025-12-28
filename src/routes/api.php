@@ -13,7 +13,9 @@ Route::group([
     'as' => 'api.',
     'namespace' => 'App\Http\Controllers\Api\V1\Admin',
 ], function () {
-    Route::post('login', [AuthController::class, 'login'])->name('login');
+    Route::post('login', [AuthController::class, 'login'])
+        ->middleware('throttle:60,1')  // 60 attempts per minute
+        ->name('login');
     Route::get('version', [UpgradeAdvisorController::class, 'version']);
     Route::get('upgrade', [UpgradeAdvisorController::class, 'index']);
     Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
