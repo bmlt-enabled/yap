@@ -1,6 +1,11 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/auth.js';
 
 test.describe('Authentication', () => {
+  test.beforeAll(async ({ request, baseURL }) => {
+    // Reset database first
+    await request.post(`${baseURL}/api/resetDatabase`);
+  });
+
   test('login with Yap admin credentials', async ({ page, baseURL }) => {
     await page.goto(`${baseURL}/admin/login`);
     await page.waitForLoadState('networkidle');

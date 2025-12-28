@@ -14,7 +14,7 @@ Route::group([
     'namespace' => 'App\Http\Controllers\Api\V1\Admin',
 ], function () {
     Route::post('login', [AuthController::class, 'login'])
-        ->middleware('throttle:5,1')  // 5 attempts per minute
+        ->middleware('throttle:60,1')  // 60 attempts per minute
         ->name('login');
     Route::get('version', [UpgradeAdvisorController::class, 'version']);
     Route::get('upgrade', [UpgradeAdvisorController::class, 'index']);

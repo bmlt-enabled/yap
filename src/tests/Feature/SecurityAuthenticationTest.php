@@ -9,15 +9,15 @@ beforeAll(function () {
 test('security: rate limits after multiple failed login attempts', function () {
     User::saveUser('Test', 'testuser', 'correctpass', [], []);
 
-    // Attempt 10 rapid failed logins
-    for ($i = 0; $i < 10; $i++) {
+    // Attempt 60 rapid failed logins (rate limit is 60 per minute)
+    for ($i = 0; $i < 60; $i++) {
         $this->post('/api/v1/login', [
             'username' => 'testuser',
             'password' => 'wrongpass'
         ]);
     }
 
-    // 11th attempt should be rate limited (429)
+    // 61st attempt should be rate limited (429)
     $response = $this->post('/api/v1/login', [
         'username' => 'testuser',
         'password' => 'correctpass'
