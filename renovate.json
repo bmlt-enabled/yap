@@ -6,9 +6,9 @@
     "automerge": false,
     "automergeType": "pr",
     "minor": {
-        "automerge": false
+        "automerge": true
     },
     "patch": {
-        "automerge": false
+        "automerge": true
     }
 }
