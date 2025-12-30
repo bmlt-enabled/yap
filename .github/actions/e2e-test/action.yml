@@ -52,7 +52,7 @@ runs:
       shell: bash
 
     - name: Upload Playwright Report
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       if: always()
       with:
         name: ${{ matrix.php }}-playwright-report
@@ -60,7 +60,7 @@ runs:
         retention-days: 30
 
     - name: Upload test screenshots
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       if: failure()
       with:
         name: ${{ matrix.php }}-playwright-screenshots
@@ -68,7 +68,7 @@ runs:
         retention-days: 30
 
     - name: Upload server log
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       if: failure()
       with:
         name: ${{ matrix.php }}-server-log
