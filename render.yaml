@@ -1,0 +1,58 @@
+# Render Blueprint for YAP (Yet Another Phone system)
+# Deploy directly from git: https://render.com/docs/blueprint-spec
+#
+# NOTE: YAP requires MySQL. Render only offers PostgreSQL natively.
+# You'll need an external MySQL provider:
+#   - PlanetScale (free tier available): https://planetscale.com
+#   - Railway MySQL: https://railway.app
+#   - Aiven MySQL: https://aiven.io
+#
+# After creating your MySQL database, set the MYSQL_* environment
+# variables in the Render dashboard.
+
+services:
+  - type: web
+    name: yap
+    runtime: docker
+    dockerfilePath: ./docker/Dockerfile.render
+    dockerContext: .
+    envVars:
+      # Laravel app key (generate with: php artisan key:generate --show)
+      - key: APP_KEY
+        generateValue: true
+      # Required settings - set these in the Render dashboard
+      - key: TITLE
+        sync: false
+      - key: BMLT_ROOT_SERVER
+        sync: false
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      # Database - use external MySQL provider (PlanetScale, Railway, etc.)
+      - key: MYSQL_HOSTNAME
+        sync: false
+      - key: MYSQL_USERNAME
+        sync: false
+      - key: MYSQL_PASSWORD
+        sync: false
+      - key: MYSQL_DATABASE
+        sync: false
+      - key: MYSQL_PORT
+        value: "3306"
+      # Optional SMTP settings
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_SECURE
+        sync: false
+      - key: SMTP_FROM_ADDRESS
+        sync: false
+      - key: SMTP_FROM_NAME
+        sync: false
+    healthCheckPath: /api/v1/upgrade

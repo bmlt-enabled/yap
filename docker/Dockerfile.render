@@ -1,0 +1,52 @@
+FROM php:8.3-apache
+
+ENV PHP_INI_PATH "/usr/local/etc/php/php.ini"
+ENV APACHE_DOCUMENT_ROOT /var/www/html
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_mysql
+
+# Configure PHP for production
+RUN echo "log_errors = On" >> ${PHP_INI_PATH} \
+  && echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT" >> ${PHP_INI_PATH} \
+  && echo "display_errors = Off" >> ${PHP_INI_PATH} \
+  && echo "error_log = /dev/stderr" >> ${PHP_INI_PATH}
+
+# Enable Apache modules
+RUN a2enmod rewrite expires headers
+
+# Configure Apache document root
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# Allow .htaccess overrides
+RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
+
+# Install composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Install Node.js for asset building
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Copy application files
+COPY src/ .
+
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Install Node dependencies and build assets
+RUN npm ci && npm run build
+
+# Create storage directories and set permissions
+RUN mkdir -p storage/framework/{sessions,views,cache} storage/logs \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
+# Expose port 80
+EXPOSE 80
+
+CMD ["apache2-foreground"]

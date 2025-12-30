@@ -206,9 +206,13 @@ class SettingsService
             }
         }
 
-        if ($name === "google_maps_api_key" && env("GOOGLE_MAPS_API_KEY")) {
-            return env("GOOGLE_MAPS_API_KEY");
-        } elseif (isset($this->settings[$name])) {
+        // Check for environment variable (uppercase version of setting name)
+        $envValue = $this->getFromEnvironment($name);
+        if ($envValue !== null) {
+            return $envValue;
+        }
+
+        if (isset($this->settings[$name])) {
             return $this->settings[$name];
         } elseif (isset($this->allowlist[$name]['default'])) {
             return $this->allowlist[$name]['default'];
@@ -217,13 +221,65 @@ class SettingsService
         return null;
     }
 
+    /**
+     * Get a setting value from environment variables.
+     * Converts setting_name to SETTING_NAME format.
+     */
+    private function getFromEnvironment(string $name): mixed
+    {
+        $envName = strtoupper($name);
+        $value = env($envName);
+
+        if ($value !== null) {
+            return $this->castEnvironmentValue($name, $value);
+        }
+
+        return null;
+    }
+
+    /**
+     * Cast environment variable string values to appropriate types
+     * based on the setting's default value type.
+     */
+    private function castEnvironmentValue(string $name, mixed $value): mixed
+    {
+        // If there's a default value, use its type to cast
+        if (isset($this->allowlist[$name]['default'])) {
+            $default = $this->allowlist[$name]['default'];
+
+            if (is_bool($default)) {
+                return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+            }
+
+            if (is_int($default)) {
+                return (int) $value;
+            }
+
+            if (is_array($default)) {
+                // For arrays, expect JSON or comma-separated values
+                if (is_string($value)) {
+                    $decoded = json_decode($value, true);
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        return $decoded;
+                    }
+                    // Fall back to comma-separated
+                    return array_map('trim', explode(',', $value));
+                }
+            }
+        }
+
+        return $value;
+    }
+
     public function source($name): string
     {
         if (request()->has($name)) {
             return SettingSource::QUERYSTRING;
         } elseif (session()->has("override_" . $name)) {
             return SettingSource::SESSION;
-        } elseif (isset($GLOBALS[$name])) {
+        } elseif (env(strtoupper($name)) !== null) {
+            return SettingSource::ENVIRONMENT;
+        } elseif (isset($this->settings[$name])) {
             return SettingSource::CONFIG;
         } elseif (isset($this->allowlist[$name]['default'])) {
             return SettingSource::DEFAULT_SETTING;
