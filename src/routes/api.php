@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\Admin\AuthController;
 use App\Http\Controllers\Api\V1\Admin\SwaggerController;
 use App\Http\Controllers\Api\V1\Admin\VoicemailController;
+use App\Http\Controllers\Api\V1\WebRtcController;
 use App\Http\Controllers\UpgradeAdvisorController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,12 @@ Route::group([
     Route::get('version', [UpgradeAdvisorController::class, 'version']);
     Route::get('upgrade', [UpgradeAdvisorController::class, 'index']);
     Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
+
+    // WebRTC Widget endpoints (public, rate-limited)
+    Route::group(['prefix' => 'webrtc', 'middleware' => ['throttle:30,1']], function () {
+        Route::get('token', [WebRtcController::class, 'token'])->name('webrtc.token');
+        Route::get('config', [WebRtcController::class, 'config'])->name('webrtc.config');
+    });
 
     Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::resource('user', 'AuthController')->only(['index']);
