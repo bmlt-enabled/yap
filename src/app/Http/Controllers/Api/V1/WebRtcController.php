@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Log;
 use Twilio\Jwt\AccessToken;
 use Twilio\Jwt\Grants\VoiceGrant;
 
+/**
+ * @OA\Tag(
+ *     name="WebRTC",
+ *     description="WebRTC calling endpoints for browser-based voice calls"
+ * )
+ */
 class WebRtcController extends Controller
 {
     protected SettingsService $settings;
@@ -21,6 +27,39 @@ class WebRtcController extends Controller
 
     /**
      * Generate a Twilio Access Token for WebRTC calling
+     *
+     * @OA\Get(
+     *     path="/api/v1/webrtc/token",
+     *     tags={"WebRTC"},
+     *     summary="Generate a Twilio access token for WebRTC calling",
+     *     description="Returns a JWT token that can be used to initialize a Twilio Voice SDK client for browser-based calling",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Token generated successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="token", type="string", description="JWT access token for Twilio Voice SDK"),
+     *             @OA\Property(property="identity", type="string", description="Unique identity for this caller"),
+     *             @OA\Property(property="expires_in", type="integer", description="Token validity in seconds", example=3600)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="WebRTC calling is not enabled",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string", example="WebRTC calling is not enabled")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="WebRTC is not properly configured or token generation failed",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string", example="WebRTC is not properly configured")
+     *         )
+     *     )
+     * )
      *
      * @param Request $request
      * @return JsonResponse
@@ -82,6 +121,31 @@ class WebRtcController extends Controller
 
     /**
      * Get WebRTC widget configuration
+     *
+     * @OA\Get(
+     *     path="/api/v1/webrtc/config",
+     *     tags={"WebRTC"},
+     *     summary="Get WebRTC widget configuration",
+     *     description="Returns configuration settings for the WebRTC dial widget",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Configuration retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="enabled", type="boolean", description="Whether WebRTC is enabled", example=true),
+     *             @OA\Property(property="title", type="string", description="Helpline title", example="Helpline"),
+     *             @OA\Property(property="language", type="string", description="Default language", example="en-US")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="WebRTC calling is not enabled",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string", example="WebRTC calling is not enabled")
+     *         )
+     *     )
+     * )
      *
      * @param Request $request
      * @return JsonResponse
