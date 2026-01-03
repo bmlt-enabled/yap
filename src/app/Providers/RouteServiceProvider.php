@@ -72,5 +72,11 @@ class RouteServiceProvider extends ServiceProvider
             $limit = app(SettingsService::class)->get('webrtc_call_rate_limit') ?: 3;
             return Limit::perMinute($limit)->by($request->ip());
         });
+
+        // WebChat endpoint - configurable limit (default: 10/min)
+        RateLimiter::for('webchat', function (Request $request) {
+            $limit = app(SettingsService::class)->get('webchat_rate_limit') ?: 10;
+            return Limit::perMinute($limit)->by($request->ip());
+        });
     }
 }

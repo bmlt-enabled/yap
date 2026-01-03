@@ -92,7 +92,14 @@ class SettingsService
         'twilio_twiml_app_sid' => ['description' => '/webrtc/twiml-app-sid', 'default' => '', 'overridable' => false, 'hidden' => true],
         'webrtc_allowed_origins' => ['description' => '/webrtc/cors-origins', 'default' => '*', 'overridable' => false, 'hidden' => false],
         'webrtc_token_rate_limit' => ['description' => '/webrtc/rate-limiting', 'default' => 5, 'overridable' => false, 'hidden' => false],
-        'webrtc_call_rate_limit' => ['description' => '/webrtc/rate-limiting', 'default' => 3, 'overridable' => false, 'hidden' => false]
+        'webrtc_call_rate_limit' => ['description' => '/webrtc/rate-limiting', 'default' => 3, 'overridable' => false, 'hidden' => false],
+        'webchat_enabled' => ['description' => '/webchat/enabling-webchat', 'default' => false, 'overridable' => false, 'hidden' => false],
+        'webchat_timeout_minutes' => ['description' => '/webchat/session-timeout', 'default' => 30, 'overridable' => false, 'hidden' => false],
+        'webchat_meeting_search_enabled' => ['description' => '/webchat/meeting-search', 'default' => true, 'overridable' => false, 'hidden' => false],
+        'webchat_no_coverage_message' => ['description' => '/webchat/custom-messages', 'default' => 'Sorry, there is no coverage for your location.', 'overridable' => true, 'hidden' => false],
+        'webchat_no_volunteers_message' => ['description' => '/webchat/custom-messages', 'default' => 'Sorry, no volunteers are available at this time. Please try again later.', 'overridable' => true, 'hidden' => false],
+        'webchat_volunteer_sms_prefix' => ['description' => '/webchat/custom-messages', 'default' => 'New web chat request', 'overridable' => true, 'hidden' => false],
+        'webchat_rate_limit' => ['description' => '/webchat/rate-limiting', 'default' => 10, 'overridable' => false, 'hidden' => false]
     ];
 
     public static array $dateCalculationsMap =
