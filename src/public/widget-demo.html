@@ -133,6 +133,32 @@
             color: #92400e;
         }
 
+        .success-box {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .success-box h3 {
+            margin: 0 0 10px 0;
+            color: #166534;
+            font-size: 1rem;
+        }
+
+        .success-box p {
+            margin: 0;
+            color: #15803d;
+        }
+
+        .status-checking {
+            text-align: center;
+            color: #666;
+            padding: 10px;
+        }
+
         .footer {
             text-align: center;
             color: rgba(255, 255, 255, 0.8);
@@ -170,7 +196,16 @@
                     ></div>
                 </div>
 
-                <div class="warning-box">
+                <div id="status-checking" class="status-checking">
+                    Checking WebRTC configuration...
+                </div>
+
+                <div id="success-box" class="success-box">
+                    <h3>WebRTC Configured</h3>
+                    <p>WebRTC is enabled and ready. Use the widget above to test browser-based calling.</p>
+                </div>
+
+                <div id="warning-box" class="warning-box" style="display: none;">
                     <h3>Configuration Required</h3>
                     <p>
                         This demo requires WebRTC to be enabled in your Yap configuration.
@@ -320,13 +355,46 @@ $twilio_twiml_app_sid = 'APxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 
     <!-- Load the widget -->
     <script>
-        // Set the API URL dynamically based on current location
-        document.addEventListener('DOMContentLoaded', function() {
+        // Check WebRTC configuration status
+        async function checkWebRTCConfig() {
+            var statusChecking = document.getElementById('status-checking');
+            var successBox = document.getElementById('success-box');
+            var warningBox = document.getElementById('warning-box');
+
+            try {
+                var response = await fetch(window.location.origin + '/api/v1/webrtc/config');
+                var data = await response.json();
+
+                statusChecking.style.display = 'none';
+
+                if (response.ok && data.enabled) {
+                    successBox.style.display = 'block';
+                    warningBox.style.display = 'none';
+                } else {
+                    successBox.style.display = 'none';
+                    warningBox.style.display = 'block';
+                }
+            } catch (error) {
+                statusChecking.style.display = 'none';
+                successBox.style.display = 'none';
+                warningBox.style.display = 'block';
+            }
+        }
+
+        // Set the API URL dynamically before widget-loader.js runs
+        (function() {
             var widget = document.getElementById('demo-widget');
             if (widget) {
                 widget.setAttribute('data-yap-api-url', window.location.origin);
             }
-        });
+        })();
+
+        // Check config status on DOM ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', checkWebRTCConfig);
+        } else {
+            checkWebRTCConfig();
+        }
     </script>
     <script src="widget-loader.js"></script>
 </body>

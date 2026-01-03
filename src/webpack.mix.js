@@ -18,6 +18,7 @@ mix.js('resources/js/index.js', 'public/js')
     .css('resources/css/app.css', 'public/css');
 
 // WebRTC Dial Widget - standalone bundle for embedding
+// The widget self-registers to window.YapDialWidget in its source
 mix.js('resources/js/widget/index.js', 'public/js/dial-widget.js')
     .react()
     .sourceMaps();
@@ -27,14 +28,6 @@ mix.webpackConfig({
     resolve: {
         fallback: {
             buffer: false,
-        },
-    },
-    output: {
-        // Ensure the widget exports are available globally
-        library: {
-            name: 'YapDialWidget',
-            type: 'umd',
-            export: 'default',
         },
     },
 });

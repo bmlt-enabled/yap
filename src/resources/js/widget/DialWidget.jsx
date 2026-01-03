@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Device } from '@twilio/voice-sdk';
 
 // Widget states
 const STATES = {
@@ -150,6 +151,41 @@ const defaultStyles = {
         fontSize: '14px',
         color: '#991b1b',
     },
+    keypad: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '8px',
+        marginTop: '12px',
+        padding: '12px',
+        backgroundColor: '#f9fafb',
+        borderRadius: '8px',
+    },
+    keypadButton: {
+        padding: '12px',
+        fontSize: '18px',
+        fontWeight: '600',
+        border: '1px solid #e5e7eb',
+        borderRadius: '8px',
+        backgroundColor: '#fff',
+        cursor: 'pointer',
+        transition: 'all 0.15s',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '50px',
+    },
+    keypadButtonPressed: {
+        backgroundColor: '#e5e7eb',
+        transform: 'scale(0.95)',
+    },
+    keypadSubtext: {
+        fontSize: '9px',
+        fontWeight: '400',
+        color: '#6b7280',
+        marginTop: '2px',
+        letterSpacing: '1px',
+    },
 };
 
 // Phone icon SVG
@@ -200,6 +236,46 @@ const MuteIcon = ({ muted }) => (
     </svg>
 );
 
+// Keypad icon SVG
+const KeypadIcon = () => (
+    <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <circle cx="4" cy="4" r="1.5" fill="currentColor" />
+        <circle cx="12" cy="4" r="1.5" fill="currentColor" />
+        <circle cx="20" cy="4" r="1.5" fill="currentColor" />
+        <circle cx="4" cy="12" r="1.5" fill="currentColor" />
+        <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+        <circle cx="20" cy="12" r="1.5" fill="currentColor" />
+        <circle cx="4" cy="20" r="1.5" fill="currentColor" />
+        <circle cx="12" cy="20" r="1.5" fill="currentColor" />
+        <circle cx="20" cy="20" r="1.5" fill="currentColor" />
+    </svg>
+);
+
+// DTMF keypad data
+const KEYPAD_KEYS = [
+    { digit: '1', letters: '' },
+    { digit: '2', letters: 'ABC' },
+    { digit: '3', letters: 'DEF' },
+    { digit: '4', letters: 'GHI' },
+    { digit: '5', letters: 'JKL' },
+    { digit: '6', letters: 'MNO' },
+    { digit: '7', letters: 'PQRS' },
+    { digit: '8', letters: 'TUV' },
+    { digit: '9', letters: 'WXYZ' },
+    { digit: '*', letters: '' },
+    { digit: '0', letters: '+' },
+    { digit: '#', letters: '' },
+];
+
 // Format call duration
 const formatDuration = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -229,6 +305,8 @@ export default function DialWidget({
     const [errorMessage, setErrorMessage] = useState('');
     const [isHovering, setIsHovering] = useState(false);
     const [config, setConfig] = useState(null);
+    const [showKeypad, setShowKeypad] = useState(false);
+    const [pressedKey, setPressedKey] = useState(null);
 
     const timerRef = useRef(null);
     const deviceRef = useRef(null);
@@ -250,9 +328,6 @@ export default function DialWidget({
             }
             const configData = await configResponse.json();
             setConfig(configData);
-
-            // Import Twilio Voice SDK dynamically
-            const { Device } = await import('@twilio/voice-sdk');
 
             // Get access token
             const tokenResponse = await fetch(`${apiUrl}/api/v1/webrtc/token`);
@@ -354,6 +429,7 @@ export default function DialWidget({
                 }
                 setCall(null);
                 setIsMuted(false);
+                setShowKeypad(false);
                 onCallEnd({ duration });
             });
 
@@ -394,6 +470,21 @@ export default function DialWidget({
                 call.mute(true);
             }
             setIsMuted(!isMuted);
+        }
+    };
+
+    // Handle keypad toggle
+    const handleKeypadToggle = () => {
+        setShowKeypad(!showKeypad);
+    };
+
+    // Handle DTMF digit press
+    const handleDtmfPress = (digit) => {
+        if (call) {
+            call.sendDigits(digit);
+            setPressedKey(digit);
+            // Visual feedback - clear after 150ms
+            setTimeout(() => setPressedKey(null), 150);
         }
     };
 
@@ -527,7 +618,34 @@ export default function DialWidget({
                                 <MuteIcon muted={isMuted} />
                                 {isMuted ? ' Unmute' : ' Mute'}
                             </button>
+                            <button
+                                style={{
+                                    ...styles.controlButton,
+                                    ...(showKeypad ? styles.controlButtonActive : {}),
+                                }}
+                                onClick={handleKeypadToggle}
+                            >
+                                <KeypadIcon />
+                                {' Keypad'}
+                            </button>
                         </div>
+                        {showKeypad && (
+                            <div style={styles.keypad}>
+                                {KEYPAD_KEYS.map(({ digit, letters }) => (
+                                    <button
+                                        key={digit}
+                                        style={{
+                                            ...styles.keypadButton,
+                                            ...(pressedKey === digit ? styles.keypadButtonPressed : {}),
+                                        }}
+                                        onClick={() => handleDtmfPress(digit)}
+                                    >
+                                        <span>{digit}</span>
+                                        {letters && <span style={styles.keypadSubtext}>{letters}</span>}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                         <button
                             style={{
                                 ...styles.button,

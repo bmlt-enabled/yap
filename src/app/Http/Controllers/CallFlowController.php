@@ -60,20 +60,25 @@ class CallFlowController extends Controller
 
     public function index(Request $request)
     {
-        if ($request->has('CallSid')) {
+        // Check for misconfigured phone numbers, but skip for WebRTC calls
+        // WebRTC calls have no phoneNumberSid since they originate from a browser client
+        $isWebRtcCall = str_starts_with($request->get('From', ''), 'client:');
+        if ($request->has('CallSid') && !$isWebRtcCall) {
             $phoneNumberSid = $this->twilio->client()->calls($request->get('CallSid'))->fetch()->phoneNumberSid;
-            $incomingPhoneNumber = $this->twilio->client()->incomingPhoneNumbers($phoneNumberSid)->fetch();
+            if ($phoneNumberSid) {
+                $incomingPhoneNumber = $this->twilio->client()->incomingPhoneNumbers($phoneNumberSid)->fetch();
 
-            Log::debug(sprintf(
-                "Alert debugging:: phoneNumberSid:%s, incomingPhoneNumber:%s, statusCallback:%s",
-                $phoneNumberSid,
-                $incomingPhoneNumber,
-                $incomingPhoneNumber->statusCallback
-            ));
+                Log::debug(sprintf(
+                    "Alert debugging:: phoneNumberSid:%s, incomingPhoneNumber:%s, statusCallback:%s",
+                    $phoneNumberSid,
+                    $incomingPhoneNumber,
+                    $incomingPhoneNumber->statusCallback
+                ));
 
-            if ($incomingPhoneNumber->statusCallback == null
-                || !str_contains($incomingPhoneNumber->statusCallback, "status.php")) {
-                $this->call->createMisconfiguredPhoneNumberAlert($incomingPhoneNumber->phoneNumber);
+                if ($incomingPhoneNumber->statusCallback == null
+                    || !str_contains($incomingPhoneNumber->statusCallback, "status.php")) {
+                    $this->call->createMisconfiguredPhoneNumberAlert($incomingPhoneNumber->phoneNumber);
+                }
             }
         }
 
