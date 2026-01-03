@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\Admin\AuthController;
 use App\Http\Controllers\Api\V1\Admin\SwaggerController;
 use App\Http\Controllers\Api\V1\Admin\VoicemailController;
 use App\Http\Controllers\Api\V1\WebRtcController;
+use App\Http\Controllers\Api\V1\WebChatController;
 use App\Http\Controllers\UpgradeAdvisorController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,31 @@ Route::group([
         Route::get('config', [WebRtcController::class, 'config'])
             ->middleware('throttle:60,1')
             ->name('webrtc.config');
+    });
+
+    // WebChat Widget endpoints (public, rate-limited)
+    Route::group(['prefix' => 'webchat'], function () {
+        Route::get('config', [WebChatController::class, 'config'])
+            ->middleware('throttle:60,1')
+            ->name('webchat.config');
+        Route::get('meetings', [WebChatController::class, 'searchMeetings'])
+            ->middleware('throttle:30,1')
+            ->name('webchat.meetings');
+        Route::get('session', [WebChatController::class, 'getSession'])
+            ->middleware('throttle:60,1')
+            ->name('webchat.session.get');
+        Route::post('session', [WebChatController::class, 'createSession'])
+            ->middleware('throttle:webchat')
+            ->name('webchat.session.create');
+        Route::post('session/{sessionId}/message', [WebChatController::class, 'sendMessage'])
+            ->middleware('throttle:webchat')
+            ->name('webchat.message.send');
+        Route::get('session/{sessionId}/messages', [WebChatController::class, 'getMessages'])
+            ->middleware('throttle:120,1')
+            ->name('webchat.messages.get');
+        Route::post('session/{sessionId}/close', [WebChatController::class, 'closeSession'])
+            ->middleware('throttle:60,1')
+            ->name('webchat.session.close');
     });
 
     Route::group(['middleware' => ['auth:sanctum']], function () {

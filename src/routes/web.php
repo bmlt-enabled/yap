@@ -85,3 +85,7 @@ Route::match(array('GET', 'POST'), "/webrtc-call", 'App\Http\Controllers\WebRtcC
     ->middleware(['twilio.signature', 'throttle:webrtc-call']);
 Route::match(array('GET', 'POST'), "/webrtc-status", 'App\Http\Controllers\WebRtcCallController@statusCallback')
     ->middleware(['twilio.signature']);
+
+// WebChat SMS webhook - receives volunteer SMS replies
+Route::match(array('GET', 'POST'), "/webchat-sms", 'App\Http\Controllers\WebChatSmsController@handleSms')
+    ->middleware(['twilio.signature']);
