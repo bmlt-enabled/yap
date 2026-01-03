@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('volunteer_phone')->nullable(); // Phone number of responding volunteer
             $table->unsignedInteger('service_body_id')->nullable();
             $table->enum('status', ['pending', 'active', 'closed'])->default('pending');
-            $table->json('messages')->default('[]'); // Array of message objects
+            $table->json('messages')->nullable(); // Array of message objects
             $table->string('location')->nullable(); // User's location for routing
             $table->decimal('latitude', 10, 7)->nullable();
             $table->decimal('longitude', 10, 7)->nullable();
