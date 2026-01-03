@@ -7,6 +7,7 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use App\Services\SettingsService;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -58,6 +59,18 @@ class RouteServiceProvider extends ServiceProvider
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60);
+        });
+
+        // WebRTC token endpoint - configurable limit (default: 5/min)
+        RateLimiter::for('webrtc-token', function (Request $request) {
+            $limit = app(SettingsService::class)->get('webrtc_token_rate_limit') ?: 5;
+            return Limit::perMinute($limit)->by($request->ip());
+        });
+
+        // WebRTC call endpoint - configurable limit (default: 3/min)
+        RateLimiter::for('webrtc-call', function (Request $request) {
+            $limit = app(SettingsService::class)->get('webrtc_call_rate_limit') ?: 3;
+            return Limit::perMinute($limit)->by($request->ip());
         });
     }
 }

@@ -22,9 +22,14 @@ Route::group([
     Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
 
     // WebRTC Widget endpoints (public, rate-limited)
-    Route::group(['prefix' => 'webrtc', 'middleware' => ['throttle:30,1']], function () {
-        Route::get('token', [WebRtcController::class, 'token'])->name('webrtc.token');
-        Route::get('config', [WebRtcController::class, 'config'])->name('webrtc.config');
+    // Token endpoint uses configurable rate limit (default: 5/min)
+    Route::group(['prefix' => 'webrtc'], function () {
+        Route::get('token', [WebRtcController::class, 'token'])
+            ->middleware('throttle:webrtc-token')
+            ->name('webrtc.token');
+        Route::get('config', [WebRtcController::class, 'config'])
+            ->middleware('throttle:60,1')
+            ->name('webrtc.config');
     });
 
     Route::group(['middleware' => ['auth:sanctum']], function () {
