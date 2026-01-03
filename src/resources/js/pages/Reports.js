@@ -14,7 +14,8 @@ import {
     Typography,
     Popover,
     Stack,
-    TextField
+    TextField,
+    CircularProgress
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -56,6 +57,11 @@ function Reports() {
     // Table data state
     const [cdrData, setCdrData] = useState([]);
     const [eventsData, setEventsData] = useState([]);
+
+    // Loading states
+    const [loadingMetrics, setLoadingMetrics] = useState(false);
+    const [loadingCdr, setLoadingCdr] = useState(false);
+    const [loadingMap, setLoadingMap] = useState(false);
 
     // Refs for DOM elements
     const metricsRef = useRef(null);
@@ -152,6 +158,8 @@ function Reports() {
     const fetchCDRData = async () => {
         if (serviceBodyId <= -1) return;
 
+        setLoadingCdr(true);
+        setLoadingMap(true);
         try {
             const url = `/api/v1/reports/cdr?service_body_id=${serviceBodyId}&page=1&size=100${getDateRanges()}&recurse=${recurse}`;
             const response = await apiClient.get(url);
@@ -170,6 +178,9 @@ function Reports() {
             drawMetricsMap(cdrRecords);
         } catch (error) {
             console.error('Error fetching CDR data:', error);
+        } finally {
+            setLoadingCdr(false);
+            setLoadingMap(false);
         }
     };
 
@@ -235,6 +246,7 @@ function Reports() {
     };
 
     const getMetricsData = async () => {
+        setLoadingMetrics(true);
         try {
             const url = `/api/v1/reports/metrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}`;
             const response = await apiClient.get(url);
@@ -305,6 +317,8 @@ function Reports() {
             });
         } catch (error) {
             console.error('Error fetching metrics:', error);
+        } finally {
+            setLoadingMetrics(false);
         }
     };
 
@@ -607,7 +621,26 @@ function Reports() {
 
                 {reportsVisible && (
                     <>
-                        <div id="metrics" ref={metricsRef} style={{ marginBottom: '20px' }}></div>
+                        <Box sx={{ position: 'relative', marginBottom: '20px', minHeight: '300px' }}>
+                            {loadingMetrics && (
+                                <Box sx={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    zIndex: 1
+                                }}>
+                                    <CircularProgress />
+                                    <Typography sx={{ ml: 2 }}>Loading metrics...</Typography>
+                                </Box>
+                            )}
+                            <div id="metrics" ref={metricsRef}></div>
+                        </Box>
 
                         <div id="metrics-summary" style={{ marginBottom: '20px' }}>
                             <ButtonGroup variant="contained" size="small">
@@ -629,10 +662,29 @@ function Reports() {
                             </ButtonGroup>
                         </div>
 
-                        <div
-                            ref={metricsMapRef}
-                            style={{ height: '400px', width: '100%', marginBottom: '20px' }}
-                        ></div>
+                        <Box sx={{ position: 'relative', marginBottom: '20px' }}>
+                            {loadingMap && (
+                                <Box sx={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    zIndex: 1000
+                                }}>
+                                    <CircularProgress />
+                                    <Typography sx={{ ml: 2 }}>Loading map...</Typography>
+                                </Box>
+                            )}
+                            <div
+                                ref={metricsMapRef}
+                                style={{ height: '400px', width: '100%' }}
+                            ></div>
+                        </Box>
 
                         <ButtonGroup variant="contained" size="small" style={{ marginBottom: '10px' }}>
                             <Button onClick={handlePrint} color="warning">Print</Button>
@@ -652,12 +704,32 @@ function Reports() {
                             <Button onClick={updateAllReports} color="inherit">Refresh</Button>
                         </ButtonGroup>
 
-                        <ReactTabulator
-                            onRef={(ref) => (cdrTableRef.current = ref)}
-                            columns={cdrColumns}
-                            data={cdrData}
-                            options={cdrTableOptions}
-                        />
+                        <Box sx={{ position: 'relative' }}>
+                            {loadingCdr && (
+                                <Box sx={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    zIndex: 1,
+                                    minHeight: '200px'
+                                }}>
+                                    <CircularProgress />
+                                    <Typography sx={{ ml: 2 }}>Loading call records...</Typography>
+                                </Box>
+                            )}
+                            <ReactTabulator
+                                onRef={(ref) => (cdrTableRef.current = ref)}
+                                columns={cdrColumns}
+                                data={cdrData}
+                                options={cdrTableOptions}
+                            />
+                        </Box>
 
                         <div id="events-table" style={{ display: 'none' }}>
                             <ReactTabulator
