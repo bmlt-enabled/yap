@@ -31,7 +31,11 @@ import 'leaflet-fullscreen';
 import { ReactTabulator } from 'react-tabulator';
 import 'react-tabulator/lib/styles.css';
 import 'react-tabulator/lib/css/tabulator.min.css';
+import * as XLSX from 'xlsx';
 import '../../css/app.css';
+
+// Make XLSX available globally for Tabulator
+window.XLSX = XLSX;
 
 function Reports() {
     const [serviceBodyId, setServiceBodyId] = useState(-1);
@@ -387,27 +391,27 @@ function Reports() {
     }, [serviceBodyId, recurse, dateRange]);
 
     const handlePrint = () => {
-        cdrTableRef.current?.print(false, true);
+        cdrTableRef.current?.current?.print(false, true);
     };
 
     const handleDownloadRecordsCSV = () => {
-        cdrTableRef.current?.download("csv", "yap-records.csv");
+        cdrTableRef.current?.current?.download("csv", "yap-records.csv");
     };
 
     const handleDownloadEventsCSV = () => {
-        eventsTableRef.current?.download("csv", "yap-events.csv");
+        eventsTableRef.current?.current?.download("csv", "yap-events.csv");
     };
 
     const handleDownloadXLSX = () => {
         const sheets = {
             "Calls": true,
-            "Events": eventsTableRef.current
+            "Events": eventsTableRef.current?.current
         };
-        cdrTableRef.current?.download("xlsx", "data.xlsx", { sheets });
+        cdrTableRef.current?.current?.download("xlsx", "data.xlsx", { sheets });
     };
 
     const handleDownloadJSON = () => {
-        cdrTableRef.current?.download("json", "yap.json");
+        cdrTableRef.current?.current?.download("json", "yap.json");
     };
 
     const handleCloseModal = () => {
@@ -631,7 +635,7 @@ function Reports() {
                             options={cdrTableOptions}
                         />
 
-                        <div style={{ display: 'none' }}>
+                        <div id="events-table" style={{ display: 'none' }}>
                             <ReactTabulator
                                 onRef={(ref) => (eventsTableRef.current = ref)}
                                 columns={eventsColumns}
