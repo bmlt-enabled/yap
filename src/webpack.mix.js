@@ -11,10 +11,17 @@ const mix = require('laravel-mix');
  |
  */
 
+// Main admin application
 mix.js('resources/js/index.js', 'public/js')
     .react()
     .sourceMaps()
     .css('resources/css/app.css', 'public/css');
+
+// WebRTC Dial Widget - standalone bundle for embedding
+// The widget self-registers to window.YapDialWidget in its source
+mix.js('resources/js/widget/index.js', 'public/js/dial-widget.js')
+    .react()
+    .sourceMaps();
 
 // Webpack 5 no longer includes Node.js polyfills by default
 mix.webpackConfig({

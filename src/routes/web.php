@@ -79,4 +79,9 @@ Route::match(array('GET', 'POST'), "/helpline-search{ext}", 'App\Http\Controller
     ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "/helpline-dialer{ext}", 'App\Http\Controllers\HelplineController@dial')
     ->where('ext', $ext);
-//Route::get("/callWidget", 'App\Http\Controllers\CallWidgetController@index');
+// WebRTC Call Handler - TwiML Application webhook endpoint
+// Protected by Twilio signature validation and rate limiting
+Route::match(array('GET', 'POST'), "/webrtc-call", 'App\Http\Controllers\WebRtcCallController@handleCall')
+    ->middleware(['twilio.signature', 'throttle:webrtc-call']);
+Route::match(array('GET', 'POST'), "/webrtc-status", 'App\Http\Controllers\WebRtcCallController@statusCallback')
+    ->middleware(['twilio.signature']);

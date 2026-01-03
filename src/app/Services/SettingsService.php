@@ -85,7 +85,14 @@ class SettingsService
         'voice' => ['description' => '/general/language-options', 'default' => 'Polly.Kendra', 'overridable' => true, 'hidden' => false],
         'voicemail_playback_grace_hours' => ['description' => '', 'default' => 48, 'overridable' => true, 'hidden' => false],
         'volunteer_auto_answer' => ['description' => '/helpline/volunteer-auto-answer', 'default'=>false, 'overridable' => true, 'hidden' => false],
-        'word_language' => ['description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false]
+        'word_language' => ['description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false],
+        'webrtc_enabled' => ['description' => '/webrtc/enabling-webrtc', 'default' => false, 'overridable' => false, 'hidden' => false],
+        'twilio_api_key' => ['description' => '/webrtc/twilio-api-key', 'default' => '', 'overridable' => false, 'hidden' => true],
+        'twilio_api_secret' => ['description' => '/webrtc/twilio-api-secret', 'default' => '', 'overridable' => false, 'hidden' => true],
+        'twilio_twiml_app_sid' => ['description' => '/webrtc/twiml-app-sid', 'default' => '', 'overridable' => false, 'hidden' => true],
+        'webrtc_allowed_origins' => ['description' => '/webrtc/cors-origins', 'default' => '*', 'overridable' => false, 'hidden' => false],
+        'webrtc_token_rate_limit' => ['description' => '/webrtc/rate-limiting', 'default' => 5, 'overridable' => false, 'hidden' => false],
+        'webrtc_call_rate_limit' => ['description' => '/webrtc/rate-limiting', 'default' => 3, 'overridable' => false, 'hidden' => false]
     ];
 
     public static array $dateCalculationsMap =

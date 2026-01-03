@@ -2300,6 +2300,130 @@
                     }
                 }
             }
+        },
+        "/api/v1/webrtc/token": {
+            "get": {
+                "tags": [
+                    "WebRTC"
+                ],
+                "summary": "Generate a Twilio access token for WebRTC calling",
+                "description": "Returns a JWT token that can be used to initialize a Twilio Voice SDK client for browser-based calling",
+                "operationId": "084176bd51bccd434ac83fda2c67fd20",
+                "responses": {
+                    "200": {
+                        "description": "Token generated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "description": "JWT access token for Twilio Voice SDK",
+                                            "type": "string"
+                                        },
+                                        "identity": {
+                                            "description": "Unique identity for this caller",
+                                            "type": "string"
+                                        },
+                                        "expires_in": {
+                                            "description": "Token validity in seconds",
+                                            "type": "integer",
+                                            "example": 3600
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "WebRTC calling is not enabled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "WebRTC calling is not enabled"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "WebRTC is not properly configured or token generation failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "WebRTC is not properly configured"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/webrtc/config": {
+            "get": {
+                "tags": [
+                    "WebRTC"
+                ],
+                "summary": "Get WebRTC widget configuration",
+                "description": "Returns configuration settings for the WebRTC dial widget",
+                "operationId": "ad01183f92677a7d17226bcb72456576",
+                "responses": {
+                    "200": {
+                        "description": "Configuration retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "enabled": {
+                                            "description": "Whether WebRTC is enabled",
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "title": {
+                                            "description": "Helpline title",
+                                            "type": "string",
+                                            "example": "Helpline"
+                                        },
+                                        "language": {
+                                            "description": "Default language",
+                                            "type": "string",
+                                            "example": "en-US"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "WebRTC calling is not enabled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "WebRTC calling is not enabled"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -2347,6 +2471,10 @@
         {
             "name": "Voicemails",
             "description": "API Endpoints for managing voicemails"
+        },
+        {
+            "name": "WebRTC",
+            "description": "WebRTC calling endpoints for browser-based voice calls"
         },
         {
             "name": "Authentication",

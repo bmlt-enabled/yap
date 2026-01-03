@@ -10,9 +10,12 @@ class TrustProxies extends Middleware
     /**
      * The trusted proxies for this application.
      *
+     * Set to '*' to trust all proxies (needed for ngrok, load balancers, etc.)
+     * This is safe because we validate Twilio signatures on webhook endpoints.
+     *
      * @var array|string|null
      */
-    protected $proxies;
+    protected $proxies = '*';
 
     /**
      * The headers that should be used to detect proxies.
