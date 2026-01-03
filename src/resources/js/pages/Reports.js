@@ -106,10 +106,13 @@ function Reports() {
         return moment(value).format('YYYY-MM-DD HH:mm:ss');
     };
 
-    const getDateRanges = () => {
+    const getDateRanges = (encode = false) => {
         const [start, end] = dateRange;
         const startDate = start ? start.format("YYYY-MM-DD 00:00:00") : dayjs().subtract(29, 'days').format("YYYY-MM-DD 00:00:00");
         const endDate = end ? end.format("YYYY-MM-DD 23:59:59") : dayjs().format("YYYY-MM-DD 23:59:59");
+        if (encode) {
+            return `&date_range_start=${encodeURIComponent(startDate)}&date_range_end=${encodeURIComponent(endDate)}`;
+        }
         return `&date_range_start=${startDate}&date_range_end=${endDate}`;
     };
 
@@ -414,6 +417,42 @@ function Reports() {
         cdrTableRef.current?.current?.download("json", "yap.json");
     };
 
+    const handleDownloadMetricsJSON = async () => {
+        try {
+            const url = `/api/v1/reports/metrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}`;
+            const response = await apiClient.get(url);
+            const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' });
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = 'metrics.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(downloadUrl);
+        } catch (error) {
+            console.error('Error downloading metrics JSON:', error);
+        }
+    };
+
+    const handleDownloadMapMetrics = async (eventId, filename) => {
+        try {
+            const url = `/api/v1/reports/mapmetrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}&format=csv&event_id=${eventId}`;
+            const response = await apiClient.get(url);
+            const blob = new Blob([response.data], { type: 'text/csv' });
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(downloadUrl);
+        } catch (error) {
+            console.error('Error downloading map metrics:', error);
+        }
+    };
+
     const handleCloseModal = () => {
         setModalOpen(false);
         setModalData(null);
@@ -601,28 +640,13 @@ function Reports() {
                             <Button onClick={handleDownloadEventsCSV} color="success">CSV (Events)</Button>
                             <Button onClick={handleDownloadXLSX} color="primary">XLSX</Button>
                             <Button onClick={handleDownloadJSON} color="warning">JSON</Button>
-                            <Button
-                                component="a"
-                                href={`${typeof rootUrl !== 'undefined' ? rootUrl : ''}/api/v1/reports/metrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}`}
-                                target="_blank"
-                                color="warning"
-                            >
+                            <Button onClick={handleDownloadMetricsJSON} color="warning">
                                 MetricsJSON
                             </Button>
-                            <Button
-                                component="a"
-                                href={`${typeof rootUrl !== 'undefined' ? rootUrl : ''}/api/v1/reports/mapmetrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}&format=csv&event_id=14`}
-                                target="_blank"
-                                color="warning"
-                            >
+                            <Button onClick={() => handleDownloadMapMetrics(14, 'poi-meetings.csv')} color="warning">
                                 POI CSV (Meetings)
                             </Button>
-                            <Button
-                                component="a"
-                                href={`${typeof rootUrl !== 'undefined' ? rootUrl : ''}/api/v1/reports/mapmetrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}&format=csv&event_id=1`}
-                                target="_blank"
-                                color="warning"
-                            >
+                            <Button onClick={() => handleDownloadMapMetrics(1, 'poi-volunteers.csv')} color="warning">
                                 POI CSV (Volunteers)
                             </Button>
                             <Button onClick={updateAllReports} color="inherit">Refresh</Button>
