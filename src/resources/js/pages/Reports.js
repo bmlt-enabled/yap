@@ -14,7 +14,8 @@ import {
     Typography,
     Popover,
     Stack,
-    TextField
+    TextField,
+    CircularProgress
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -31,7 +32,11 @@ import 'leaflet-fullscreen';
 import { ReactTabulator } from 'react-tabulator';
 import 'react-tabulator/lib/styles.css';
 import 'react-tabulator/lib/css/tabulator.min.css';
+import * as XLSX from 'xlsx';
 import '../../css/app.css';
+
+// Make XLSX available globally for Tabulator
+window.XLSX = XLSX;
 
 function Reports() {
     const [serviceBodyId, setServiceBodyId] = useState(-1);
@@ -52,6 +57,11 @@ function Reports() {
     // Table data state
     const [cdrData, setCdrData] = useState([]);
     const [eventsData, setEventsData] = useState([]);
+
+    // Loading states
+    const [loadingMetrics, setLoadingMetrics] = useState(false);
+    const [loadingCdr, setLoadingCdr] = useState(false);
+    const [loadingMap, setLoadingMap] = useState(false);
 
     // Refs for DOM elements
     const metricsRef = useRef(null);
@@ -102,10 +112,13 @@ function Reports() {
         return moment(value).format('YYYY-MM-DD HH:mm:ss');
     };
 
-    const getDateRanges = () => {
+    const getDateRanges = (encode = false) => {
         const [start, end] = dateRange;
         const startDate = start ? start.format("YYYY-MM-DD 00:00:00") : dayjs().subtract(29, 'days').format("YYYY-MM-DD 00:00:00");
         const endDate = end ? end.format("YYYY-MM-DD 23:59:59") : dayjs().format("YYYY-MM-DD 23:59:59");
+        if (encode) {
+            return `&date_range_start=${encodeURIComponent(startDate)}&date_range_end=${encodeURIComponent(endDate)}`;
+        }
         return `&date_range_start=${startDate}&date_range_end=${endDate}`;
     };
 
@@ -145,6 +158,8 @@ function Reports() {
     const fetchCDRData = async () => {
         if (serviceBodyId <= -1) return;
 
+        setLoadingCdr(true);
+        setLoadingMap(true);
         try {
             const url = `/api/v1/reports/cdr?service_body_id=${serviceBodyId}&page=1&size=100${getDateRanges()}&recurse=${recurse}`;
             const response = await apiClient.get(url);
@@ -163,6 +178,9 @@ function Reports() {
             drawMetricsMap(cdrRecords);
         } catch (error) {
             console.error('Error fetching CDR data:', error);
+        } finally {
+            setLoadingCdr(false);
+            setLoadingMap(false);
         }
     };
 
@@ -228,6 +246,7 @@ function Reports() {
     };
 
     const getMetricsData = async () => {
+        setLoadingMetrics(true);
         try {
             const url = `/api/v1/reports/metrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}`;
             const response = await apiClient.get(url);
@@ -298,6 +317,8 @@ function Reports() {
             });
         } catch (error) {
             console.error('Error fetching metrics:', error);
+        } finally {
+            setLoadingMetrics(false);
         }
     };
 
@@ -387,27 +408,63 @@ function Reports() {
     }, [serviceBodyId, recurse, dateRange]);
 
     const handlePrint = () => {
-        cdrTableRef.current?.print(false, true);
+        cdrTableRef.current?.current?.print(false, true);
     };
 
     const handleDownloadRecordsCSV = () => {
-        cdrTableRef.current?.download("csv", "yap-records.csv");
+        cdrTableRef.current?.current?.download("csv", "yap-records.csv");
     };
 
     const handleDownloadEventsCSV = () => {
-        eventsTableRef.current?.download("csv", "yap-events.csv");
+        eventsTableRef.current?.current?.download("csv", "yap-events.csv");
     };
 
     const handleDownloadXLSX = () => {
         const sheets = {
             "Calls": true,
-            "Events": eventsTableRef.current
+            "Events": eventsTableRef.current?.current
         };
-        cdrTableRef.current?.download("xlsx", "data.xlsx", { sheets });
+        cdrTableRef.current?.current?.download("xlsx", "data.xlsx", { sheets });
     };
 
     const handleDownloadJSON = () => {
-        cdrTableRef.current?.download("json", "yap.json");
+        cdrTableRef.current?.current?.download("json", "yap.json");
+    };
+
+    const handleDownloadMetricsJSON = async () => {
+        try {
+            const url = `/api/v1/reports/metrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}`;
+            const response = await apiClient.get(url);
+            const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' });
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = 'metrics.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(downloadUrl);
+        } catch (error) {
+            console.error('Error downloading metrics JSON:', error);
+        }
+    };
+
+    const handleDownloadMapMetrics = async (eventId, filename) => {
+        try {
+            const url = `/api/v1/reports/mapmetrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}&format=csv&event_id=${eventId}`;
+            const response = await apiClient.get(url);
+            const blob = new Blob([response.data], { type: 'text/csv' });
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(downloadUrl);
+        } catch (error) {
+            console.error('Error downloading map metrics:', error);
+        }
     };
 
     const handleCloseModal = () => {
@@ -564,7 +621,26 @@ function Reports() {
 
                 {reportsVisible && (
                     <>
-                        <div id="metrics" ref={metricsRef} style={{ marginBottom: '20px' }}></div>
+                        <Box sx={{ position: 'relative', marginBottom: '20px', minHeight: '300px' }}>
+                            {loadingMetrics && (
+                                <Box sx={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    zIndex: 1
+                                }}>
+                                    <CircularProgress />
+                                    <Typography sx={{ ml: 2 }}>Loading metrics...</Typography>
+                                </Box>
+                            )}
+                            <div id="metrics" ref={metricsRef}></div>
+                        </Box>
 
                         <div id="metrics-summary" style={{ marginBottom: '20px' }}>
                             <ButtonGroup variant="contained" size="small">
@@ -586,10 +662,29 @@ function Reports() {
                             </ButtonGroup>
                         </div>
 
-                        <div
-                            ref={metricsMapRef}
-                            style={{ height: '400px', width: '100%', marginBottom: '20px' }}
-                        ></div>
+                        <Box sx={{ position: 'relative', marginBottom: '20px' }}>
+                            {loadingMap && (
+                                <Box sx={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    zIndex: 1000
+                                }}>
+                                    <CircularProgress />
+                                    <Typography sx={{ ml: 2 }}>Loading map...</Typography>
+                                </Box>
+                            )}
+                            <div
+                                ref={metricsMapRef}
+                                style={{ height: '400px', width: '100%' }}
+                            ></div>
+                        </Box>
 
                         <ButtonGroup variant="contained" size="small" style={{ marginBottom: '10px' }}>
                             <Button onClick={handlePrint} color="warning">Print</Button>
@@ -597,41 +692,46 @@ function Reports() {
                             <Button onClick={handleDownloadEventsCSV} color="success">CSV (Events)</Button>
                             <Button onClick={handleDownloadXLSX} color="primary">XLSX</Button>
                             <Button onClick={handleDownloadJSON} color="warning">JSON</Button>
-                            <Button
-                                component="a"
-                                href={`${typeof rootUrl !== 'undefined' ? rootUrl : ''}/api/v1/reports/metrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}`}
-                                target="_blank"
-                                color="warning"
-                            >
+                            <Button onClick={handleDownloadMetricsJSON} color="warning">
                                 MetricsJSON
                             </Button>
-                            <Button
-                                component="a"
-                                href={`${typeof rootUrl !== 'undefined' ? rootUrl : ''}/api/v1/reports/mapmetrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}&format=csv&event_id=14`}
-                                target="_blank"
-                                color="warning"
-                            >
+                            <Button onClick={() => handleDownloadMapMetrics(14, 'poi-meetings.csv')} color="warning">
                                 POI CSV (Meetings)
                             </Button>
-                            <Button
-                                component="a"
-                                href={`${typeof rootUrl !== 'undefined' ? rootUrl : ''}/api/v1/reports/mapmetrics?service_body_id=${serviceBodyId}${getDateRanges()}&recurse=${recurse}&format=csv&event_id=1`}
-                                target="_blank"
-                                color="warning"
-                            >
+                            <Button onClick={() => handleDownloadMapMetrics(1, 'poi-volunteers.csv')} color="warning">
                                 POI CSV (Volunteers)
                             </Button>
                             <Button onClick={updateAllReports} color="inherit">Refresh</Button>
                         </ButtonGroup>
 
-                        <ReactTabulator
-                            onRef={(ref) => (cdrTableRef.current = ref)}
-                            columns={cdrColumns}
-                            data={cdrData}
-                            options={cdrTableOptions}
-                        />
+                        <Box sx={{ position: 'relative' }}>
+                            {loadingCdr && (
+                                <Box sx={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    zIndex: 1,
+                                    minHeight: '200px'
+                                }}>
+                                    <CircularProgress />
+                                    <Typography sx={{ ml: 2 }}>Loading call records...</Typography>
+                                </Box>
+                            )}
+                            <ReactTabulator
+                                onRef={(ref) => (cdrTableRef.current = ref)}
+                                columns={cdrColumns}
+                                data={cdrData}
+                                options={cdrTableOptions}
+                            />
+                        </Box>
 
-                        <div style={{ display: 'none' }}>
+                        <div id="events-table" style={{ display: 'none' }}>
                             <ReactTabulator
                                 onRef={(ref) => (eventsTableRef.current = ref)}
                                 columns={eventsColumns}
