@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yap WebRTC Dial Widget Demo</title>
+    <title>Yap Communication Widget Demo</title>
     <style>
         * {
             box-sizing: border-box;
@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -37,7 +37,7 @@
 
         .demo-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
             gap: 30px;
             margin-bottom: 40px;
         }
@@ -169,6 +169,74 @@
             color: white;
         }
 
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-button:hover:not(.active) {
+            background: #f0f0ff;
+        }
+
+        .feature-status {
+            display: flex;
+            gap: 16px;
+            margin-top: 10px;
+        }
+
+        .feature-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .feature-badge.enabled {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .feature-badge.disabled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .feature-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .feature-dot.enabled {
+            background: #22c55e;
+        }
+
+        .feature-dot.disabled {
+            background: #ef4444;
+        }
+
         @media (max-width: 768px) {
             .demo-grid {
                 grid-template-columns: 1fr;
@@ -178,17 +246,17 @@
 </head>
 <body>
     <div class="container">
-        <h1>Yap WebRTC Dial Widget</h1>
-        <p class="subtitle">Enable browser-based calling on your website</p>
+        <h1>Yap Communication Widget</h1>
+        <p class="subtitle">Enable browser-based calling and chat on your website</p>
 
         <div class="demo-grid">
-            <!-- Live Demo -->
+            <!-- Live Demo - Combined Widget -->
             <div class="demo-section">
-                <h2>Live Demo</h2>
+                <h2>Live Demo - Combined Widget</h2>
+                <p>Includes both Call and Chat tabs (when enabled)</p>
                 <div class="widget-container">
-                    <!-- Widget with data attributes (auto-initialized) -->
                     <div
-                        id="demo-widget"
+                        id="demo-widget-combined"
                         data-yap-widget
                         data-yap-api-url=""
                         data-yap-title="NA Helpline"
@@ -197,26 +265,75 @@
                 </div>
 
                 <div id="status-checking" class="status-checking">
-                    Checking WebRTC configuration...
+                    Checking configuration...
+                </div>
+
+                <div id="feature-status" class="feature-status" style="display: none;">
+                    <span id="call-badge" class="feature-badge disabled">
+                        <span class="feature-dot disabled"></span>
+                        Call
+                    </span>
+                    <span id="chat-badge" class="feature-badge disabled">
+                        <span class="feature-dot disabled"></span>
+                        Chat
+                    </span>
                 </div>
 
                 <div id="success-box" class="success-box">
-                    <h3>WebRTC Configured</h3>
-                    <p>WebRTC is enabled and ready. Use the widget above to test browser-based calling.</p>
+                    <h3>Ready to Use</h3>
+                    <p>The widget is configured and ready. Try it out above!</p>
                 </div>
 
                 <div id="warning-box" class="warning-box" style="display: none;">
                     <h3>Configuration Required</h3>
-                    <p>
-                        This demo requires WebRTC to be enabled in your Yap configuration.
-                        Add the following settings to your config.php:
-                    </p>
-                    <div class="code-block" style="margin-top: 10px;">
-<span class="attr">$webrtc_enabled</span> = <span class="string">true</span>;
-<span class="attr">$twilio_api_key</span> = <span class="string">'SKxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'</span>;
-<span class="attr">$twilio_api_secret</span> = <span class="string">'your_api_secret'</span>;
-<span class="attr">$twilio_twiml_app_sid</span> = <span class="string">'APxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'</span>;
-                    </div>
+                    <p>See the setup instructions below to enable calling and/or chat.</p>
+                </div>
+            </div>
+
+            <!-- Call-Only Widget -->
+            <div class="demo-section">
+                <h2>Call-Only Widget</h2>
+                <p>WebRTC browser-based calling only:</p>
+
+                <div class="widget-container">
+                    <div
+                        id="demo-widget-call"
+                        data-yap-widget="call"
+                        data-yap-api-url=""
+                        data-yap-title="Call Helpline"
+                        data-yap-show-location="true"
+                    ></div>
+                </div>
+
+                <div class="code-block">
+<span class="comment">&lt;!-- Call-only widget --&gt;</span>
+<span class="tag">&lt;div</span>
+    <span class="attr">data-yap-widget</span>=<span class="string">"call"</span>
+    <span class="attr">data-yap-api-url</span>=<span class="string">"https://your-yap-server.com"</span>
+<span class="tag">&gt;&lt;/div&gt;</span>
+                </div>
+            </div>
+
+            <!-- Chat-Only Widget -->
+            <div class="demo-section">
+                <h2>Chat-Only Widget</h2>
+                <p>Text chat with volunteers via SMS bridge:</p>
+
+                <div class="widget-container">
+                    <div
+                        id="demo-widget-chat"
+                        data-yap-widget="chat"
+                        data-yap-api-url=""
+                        data-yap-title="Chat with a Volunteer"
+                    ></div>
+                </div>
+
+                <div class="code-block">
+<span class="comment">&lt;!-- Chat-only widget --&gt;</span>
+<span class="tag">&lt;div</span>
+    <span class="attr">data-yap-widget</span>=<span class="string">"chat"</span>
+    <span class="attr">data-yap-api-url</span>=<span class="string">"https://your-yap-server.com"</span>
+<span class="tag">&gt;&lt;/div&gt;</span>
                 </div>
             </div>
 
@@ -240,12 +357,15 @@
                 <div class="info-box">
                     <h3>Available Data Attributes</h3>
                     <ul>
+                        <li><code>data-yap-widget</code> - Widget type: (empty), "call", "chat", or "combined"</li>
                         <li><code>data-yap-api-url</code> - Your Yap server URL (required)</li>
                         <li><code>data-yap-service-body</code> - Service body ID to route calls</li>
                         <li><code>data-yap-title</code> - Custom widget title</li>
+                        <li><code>data-yap-default-tab</code> - Default tab: "call" or "chat"</li>
+                        <li><code>data-yap-show-call</code> - Show call tab (true/false)</li>
+                        <li><code>data-yap-show-chat</code> - Show chat tab (true/false)</li>
                         <li><code>data-yap-show-location</code> - Show location input (true/false)</li>
                         <li><code>data-yap-show-search-type</code> - Show search type selector (true/false)</li>
-                        <li><code>data-yap-search-type</code> - Default: helpline, meeting, jft, spad</li>
                     </ul>
                 </div>
             </div>
@@ -260,23 +380,34 @@
 
 <span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="string">"https://your-yap-server.com/widget-loader.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
 <span class="tag">&lt;script&gt;</span>
+<span class="comment">// Combined widget with tabs</span>
 YapWidget.load({
     container: <span class="string">'#my-widget'</span>,
     apiUrl: <span class="string">'https://your-yap-server.com'</span>,
+    type: <span class="string">'combined'</span>, <span class="comment">// 'call', 'chat', or 'combined'</span>
     serviceBodyId: <span class="string">'123'</span>,
     title: <span class="string">'NA Helpline'</span>,
-    showLocationInput: <span class="string">true</span>,
-    showSearchType: <span class="string">false</span>,
+    defaultTab: <span class="string">'call'</span>,
     onCallStart: <span class="string">function</span>() {
         console.log(<span class="string">'Call started'</span>);
     },
     onCallEnd: <span class="string">function</span>(data) {
         console.log(<span class="string">'Call ended'</span>, data);
     },
+    onChatStart: <span class="string">function</span>(sessionId) {
+        console.log(<span class="string">'Chat started'</span>, sessionId);
+    },
+    onChatEnd: <span class="string">function</span>() {
+        console.log(<span class="string">'Chat ended'</span>);
+    },
     onError: <span class="string">function</span>(error) {
-        console.error(<span class="string">'Call error'</span>, error);
+        console.error(<span class="string">'Error'</span>, error);
     }
 });
+
+<span class="comment">// Or use specific widget loaders:</span>
+<span class="comment">// YapWidget.loadCall({ ... })</span>
+<span class="comment">// YapWidget.loadChat({ ... })</span>
 <span class="tag">&lt;/script&gt;</span>
                 </div>
             </div>
@@ -310,43 +441,97 @@ YapWidget.load({
 
         <!-- Setup Instructions -->
         <div class="demo-section">
-            <h2>Twilio Setup Instructions</h2>
-            <p>To enable WebRTC calling, you need to configure a few things in Twilio:</p>
+            <h2>Setup Instructions</h2>
 
-            <ol style="color: #333; line-height: 2;">
-                <li>
-                    <strong>Create an API Key:</strong>
-                    Go to Twilio Console &rarr; Account &rarr; API keys &rarr; Create API Key.
-                    Save the SID and Secret.
-                </li>
-                <li>
-                    <strong>Create a TwiML Application:</strong>
-                    Go to Twilio Console &rarr; Voice &rarr; TwiML Apps &rarr; Create new TwiML App.
-                    <ul>
-                        <li>Set the Voice Request URL to: <code>https://your-yap-server.com/webrtc-call</code></li>
-                        <li>Set the Status Callback URL to: <code>https://your-yap-server.com/webrtc-status</code></li>
-                        <li>Save the Application SID</li>
-                    </ul>
-                </li>
-                <li>
-                    <strong>Add settings to your Yap config.php:</strong>
-                    <div class="code-block" style="margin: 10px 0;">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="showSetupTab('webrtc')">WebRTC Calling Setup</button>
+                <button class="tab-button" onclick="showSetupTab('webchat')">Web Chat Setup</button>
+            </div>
+
+            <div id="setup-webrtc">
+                <p>To enable WebRTC browser-based calling:</p>
+
+                <ol style="color: #333; line-height: 2;">
+                    <li>
+                        <strong>Create an API Key:</strong>
+                        Go to Twilio Console &rarr; Account &rarr; API keys &rarr; Create API Key.
+                        Save the SID and Secret.
+                    </li>
+                    <li>
+                        <strong>Create a TwiML Application:</strong>
+                        Go to Twilio Console &rarr; Voice &rarr; TwiML Apps &rarr; Create new TwiML App.
+                        <ul>
+                            <li>Set the Voice Request URL to: <code>https://your-yap-server.com/webrtc-call</code></li>
+                            <li>Set the Status Callback URL to: <code>https://your-yap-server.com/webrtc-status</code></li>
+                            <li>Save the Application SID</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Add settings to your Yap config.php:</strong>
+                        <div class="code-block" style="margin: 10px 0;">
 $webrtc_enabled = true;
 $twilio_api_key = 'SKxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 $twilio_api_secret = 'your_api_secret_here';
 $twilio_twiml_app_sid = 'APxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
-                    </div>
-                </li>
-                <li>
-                    <strong>Test the widget:</strong>
-                    Visit this demo page and try making a call!
-                </li>
-            </ol>
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Test the widget:</strong>
+                        Reload this page and try the Call widget!
+                    </li>
+                </ol>
+            </div>
+
+            <div id="setup-webchat" style="display: none;">
+                <p>To enable web chat (text chat bridged via SMS to volunteers):</p>
+
+                <ol style="color: #333; line-height: 2;">
+                    <li>
+                        <strong>Run the database migration:</strong>
+                        <div class="code-block" style="margin: 10px 0;">
+php artisan migrate
+                        </div>
+                        This creates the <code>chat_sessions</code> table.
+                    </li>
+                    <li>
+                        <strong>Configure your SMS webhook (optional):</strong>
+                        If volunteers will reply via SMS, configure your Twilio number's SMS webhook to:
+                        <code>https://your-yap-server.com/webchat-sms</code>
+                    </li>
+                    <li>
+                        <strong>Add settings to your Yap config.php:</strong>
+                        <div class="code-block" style="margin: 10px 0;">
+$webchat_enabled = true;
+
+<span class="comment">// Optional customization:</span>
+$webchat_timeout_minutes = 30;        <span class="comment">// Session timeout</span>
+$webchat_no_volunteers_message = 'Sorry, no volunteers are available.';
+$webchat_no_coverage_message = 'Sorry, there is no coverage for your location.';
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Test the widget:</strong>
+                        Reload this page and try the Chat widget!
+                    </li>
+                </ol>
+
+                <div class="info-box">
+                    <h3>How Web Chat Works</h3>
+                    <ul>
+                        <li>User enters location and message in the web widget</li>
+                        <li>System finds active volunteers for that area and sends SMS to all (blasting)</li>
+                        <li>First volunteer to reply claims the session</li>
+                        <li>Messages are bridged: web user &harr; server &harr; volunteer's SMS</li>
+                        <li>Session ends after 30 min inactivity or when either party ends it</li>
+                        <li>Sessions persist on page refresh but not across browser sessions</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <div class="footer">
             <p>
-                Yap WebRTC Dial Widget |
+                Yap Communication Widget |
                 <a href="https://github.com/bmlt-enabled/yap" target="_blank">GitHub</a> |
                 <a href="https://yap.bmlt.app" target="_blank">Documentation</a>
             </p>
@@ -355,45 +540,81 @@ $twilio_twiml_app_sid = 'APxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 
     <!-- Load the widget -->
     <script>
-        // Check WebRTC configuration status
-        async function checkWebRTCConfig() {
+        // Check configuration status
+        async function checkConfig() {
             var statusChecking = document.getElementById('status-checking');
             var successBox = document.getElementById('success-box');
             var warningBox = document.getElementById('warning-box');
+            var featureStatus = document.getElementById('feature-status');
+            var callBadge = document.getElementById('call-badge');
+            var chatBadge = document.getElementById('chat-badge');
 
+            var callEnabled = false;
+            var chatEnabled = false;
+
+            // Check WebRTC
             try {
-                var response = await fetch(window.location.origin + '/api/v1/webrtc/config');
-                var data = await response.json();
-
-                statusChecking.style.display = 'none';
-
-                if (response.ok && data.enabled) {
-                    successBox.style.display = 'block';
-                    warningBox.style.display = 'none';
-                } else {
-                    successBox.style.display = 'none';
-                    warningBox.style.display = 'block';
-                }
+                var webrtcResponse = await fetch(window.location.origin + '/api/v1/webrtc/config');
+                var webrtcData = await webrtcResponse.json();
+                callEnabled = webrtcResponse.ok && webrtcData.enabled;
             } catch (error) {
-                statusChecking.style.display = 'none';
+                callEnabled = false;
+            }
+
+            // Check WebChat
+            try {
+                var webchatResponse = await fetch(window.location.origin + '/api/v1/webchat/config');
+                var webchatData = await webchatResponse.json();
+                chatEnabled = webchatResponse.ok && webchatData.enabled;
+            } catch (error) {
+                chatEnabled = false;
+            }
+
+            statusChecking.style.display = 'none';
+            featureStatus.style.display = 'flex';
+
+            // Update badges
+            if (callEnabled) {
+                callBadge.className = 'feature-badge enabled';
+                callBadge.querySelector('.feature-dot').className = 'feature-dot enabled';
+            }
+            if (chatEnabled) {
+                chatBadge.className = 'feature-badge enabled';
+                chatBadge.querySelector('.feature-dot').className = 'feature-dot enabled';
+            }
+
+            if (callEnabled || chatEnabled) {
+                successBox.style.display = 'block';
+                warningBox.style.display = 'none';
+            } else {
                 successBox.style.display = 'none';
                 warningBox.style.display = 'block';
             }
         }
 
+        // Show setup tab
+        function showSetupTab(tab) {
+            var buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(function(btn) { btn.classList.remove('active'); });
+            event.target.classList.add('active');
+
+            document.getElementById('setup-webrtc').style.display = tab === 'webrtc' ? 'block' : 'none';
+            document.getElementById('setup-webchat').style.display = tab === 'webchat' ? 'block' : 'none';
+        }
+
         // Set the API URL dynamically before widget-loader.js runs
         (function() {
-            var widget = document.getElementById('demo-widget');
-            if (widget) {
+            var widgets = document.querySelectorAll('[data-yap-widget]');
+            widgets.forEach(function(widget) {
                 widget.setAttribute('data-yap-api-url', window.location.origin);
-            }
+            });
         })();
 
         // Check config status on DOM ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', checkWebRTCConfig);
+            document.addEventListener('DOMContentLoaded', checkConfig);
         } else {
-            checkWebRTCConfig();
+            checkConfig();
         }
     </script>
     <script src="widget-loader.js"></script>

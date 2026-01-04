@@ -1,6 +1,26 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Device } from '@twilio/voice-sdk';
 
+// Helper to safely parse JSON from responses (handles HTML error pages)
+const safeJsonParse = async (response) => {
+    const text = await response.text();
+    try {
+        return JSON.parse(text);
+    } catch (e) {
+        // If it's not JSON, it's likely an HTML error page
+        if (response.status === 429) {
+            return { error: 'Too many requests. Please wait a moment and try again.' };
+        }
+        if (response.status === 404) {
+            return { error: 'Service not found. Please check the API URL.' };
+        }
+        if (response.status >= 500) {
+            return { error: 'Server error. Please try again later.' };
+        }
+        return { error: `Request failed (${response.status})` };
+    }
+};
+
 // Widget states
 const STATES = {
     INITIALIZING: 'initializing',
@@ -322,20 +342,18 @@ export default function DialWidget({
         try {
             // First, check if WebRTC is enabled and get config
             const configResponse = await fetch(`${apiUrl}/api/v1/webrtc/config`);
+            const configData = await safeJsonParse(configResponse);
             if (!configResponse.ok) {
-                const error = await configResponse.json();
-                throw new Error(error.error || 'WebRTC is not available');
+                throw new Error(configData.error || 'WebRTC is not available');
             }
-            const configData = await configResponse.json();
             setConfig(configData);
 
             // Get access token
             const tokenResponse = await fetch(`${apiUrl}/api/v1/webrtc/token`);
+            const tokenData = await safeJsonParse(tokenResponse);
             if (!tokenResponse.ok) {
-                const error = await tokenResponse.json();
-                throw new Error(error.error || 'Failed to get access token');
+                throw new Error(tokenData.error || 'Failed to get access token');
             }
-            const tokenData = await tokenResponse.json();
 
             // Create and register device
             const twilioDevice = new Device(tokenData.token, {
@@ -358,8 +376,10 @@ export default function DialWidget({
                 // Refresh token before it expires
                 try {
                     const response = await fetch(`${apiUrl}/api/v1/webrtc/token`);
-                    const data = await response.json();
-                    twilioDevice.updateToken(data.token);
+                    const data = await safeJsonParse(response);
+                    if (response.ok && data.token) {
+                        twilioDevice.updateToken(data.token);
+                    }
                 } catch (e) {
                     console.error('Failed to refresh token:', e);
                 }
