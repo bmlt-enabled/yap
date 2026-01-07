@@ -26,7 +26,8 @@ apiClient.interceptors.response.use(
         if (error.response && (error.response.status === 401 || error.response.status === 419)) {
             // Session expired - redirect to login
             localStorage.removeItem('session');
-            window.location.href = '/login';
+            const basePath = typeof rootUrl !== 'undefined' && rootUrl ? `${rootUrl}/${baseUrl}` : `/${baseUrl}`;
+            window.location.href = `${basePath}/login`;
         }
         return Promise.reject(error);
     }

@@ -3,11 +3,23 @@ import { SignInPage } from '@toolpad/core/SignInPage';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '../SessionContext';
 import apiClient from "../services/api";
+import { useColorScheme } from '@mui/material/styles';
+import { IconButton, Tooltip } from '@mui/material';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 export default function LoginPage() {
     const { setSession } = useSession();
     const navigate = useNavigate();
     const [version, setVersion] = React.useState('');
+    const { mode, systemMode, setMode } = useColorScheme();
+
+    // Resolve actual mode (system mode resolves to light/dark based on OS preference)
+    const resolvedMode = mode === 'system' ? systemMode : mode;
+
+    const toggleColorMode = () => {
+        setMode(resolvedMode === 'dark' ? 'light' : 'dark');
+    };
 
     React.useEffect(() => {
         const fetchVersion = async () => {
@@ -64,16 +76,15 @@ export default function LoginPage() {
                 providers={[{ id: 'credentials', name: 'Username and Password' }]}
                 slotProps={{ emailField: { autoFocus: true, label: 'Username', type: 'text', placeholder: 'Username' } }}
             />
-            <div style={{ 
-                marginTop: '1rem', 
-                color: '#666', 
-                fontSize: '0.875rem',
-                position: 'fixed',
-                bottom: '1rem',
-                left: '50%',
-                transform: 'translateX(-50%)'
-            }}>
-                {version ? `Version ${version}` : 'Loading version...'}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '-12rem' }}>
+                <Tooltip title={`Switch to ${resolvedMode === 'dark' ? 'light' : 'dark'} mode`}>
+                    <IconButton onClick={toggleColorMode} color="inherit">
+                        {resolvedMode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+                    </IconButton>
+                </Tooltip>
+                <div style={{ color: '#666', fontSize: '0.875rem', marginTop: '0.5rem' }}>
+                    {version ? `Version ${version}` : 'Loading version...'}
+                </div>
             </div>
         </div>
     );
