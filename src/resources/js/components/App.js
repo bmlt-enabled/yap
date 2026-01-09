@@ -29,35 +29,6 @@ import {SessionContext} from "../SessionContext"
 import ErrorBoundary from "./ErrorBoundary";
 import { LocalizationProvider } from "../contexts/LocalizationContext";
 import ChangePasswordDialog from "../dialogs/ChangePasswordDialog";
-// Minimal wrapper for login page - uses AppProvider for theming but no auth
-function LoginWrapper() {
-    const [session, setSession] = React.useState(() => {
-        const storedSession = localStorage.getItem('session');
-        return storedSession ? JSON.parse(storedSession) : null;
-    });
-
-    const sessionContextValue = React.useMemo(
-        () => ({
-            session,
-            setSession,
-            openChangePassword: () => {}
-        }),
-        [session, setSession],
-    );
-
-    const branding = {
-        title: 'Yap',
-        logo: '',
-    };
-
-    return (
-        <SessionContext.Provider value={sessionContextValue}>
-            <AppProvider branding={branding}>
-                <LoginPage />
-            </AppProvider>
-        </SessionContext.Provider>
-    );
-}
 
 export default function App() {
     const [session, setSession] = React.useState(() => {
@@ -176,20 +147,12 @@ if (document.getElementById('root')) {
 
     const router = createBrowserRouter([
         {
-            path: '/login',
-            Component: LoginWrapper,
-        },
-        {
-            path: '/',
             Component: App,
             children: [
                 {
+                    path: '/',
                     Component: Layout,
                     children: [
-                        {
-                            index: true,
-                            Component: Dashboard,
-                        },
                         {
                             path: 'dashboard',
                             Component: Dashboard,
@@ -224,6 +187,10 @@ if (document.getElementById('root')) {
                         },
                     ],
                 },
+                {
+                    path: '/login',
+                    Component: LoginPage,
+                }
             ],
         },
     ], {

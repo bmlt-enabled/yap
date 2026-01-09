@@ -7,13 +7,17 @@ run: serve
 serve:
 	env ENVIRONMENT=dev php -dxdebug.mode=debug -dxdebug.start_with_request=yes -S localhost:8000 -t . server.php
 
+.PHONY: e2e-serve
+e2e-serve:
+	env ENVIRONMENT=test php -S localhost:8001 -t . server.php
+
 .PHONY: e2e-test
 e2e-test:
-	BASE_URL=http://localhost:8000 npx playwright test
+	BASE_URL=http://localhost:8001 npx playwright test
 
 .PHONY: e2e-test-ui
 e2e-test-ui:
-	BASE_URL=http://localhost:8000 npx playwright test --ui
+	BASE_URL=http://localhost:8001 npx playwright test --ui
 
 .PHONY: lint
 lint:
