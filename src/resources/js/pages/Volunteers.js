@@ -1,4 +1,5 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
+import { useBlocker } from "react-router-dom";
 import ServiceBodiesDropdown from "../components/ServiceBodiesDropdown";
 import { useLocalization } from "../contexts/LocalizationContext";
 import {
@@ -28,6 +29,11 @@ import {
     CircularProgress,
     Checkbox,
     Typography,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
 } from '@mui/material';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import apiClient from "../services/api";
@@ -52,7 +58,26 @@ import SortableVolunteer from "../components/SortableVolunteer";
     const [selectedGroupId, setSelectedGroupId] = useState(0);
     const [selectedDays, setSelectedDays] = useState([]);
     const [phoneValidationCountry, setPhoneValidationCountry] = useState('US');
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const daysOfWeek = getWord('days_of_the_week');
+
+    // Navigation blocker for unsaved changes
+    const blocker = useBlocker(
+        ({ currentLocation, nextLocation }) =>
+            hasUnsavedChanges && currentLocation.pathname !== nextLocation.pathname
+    );
+
+    // Browser beforeunload handler
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (hasUnsavedChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [hasUnsavedChanges]);
        
     // Get current browser timezone
     React.useEffect(() => {
@@ -103,10 +128,12 @@ import SortableVolunteer from "../components/SortableVolunteer";
     const serviceBodiesHandleChange = (event, index) => {
         setServiceBodyId(event)
         getVolunteers(event)
+        setHasUnsavedChanges(false);
     }
 
     const handleAddVolunteer = () => {
         setVolunteers([...volunteers, {...defaultVolunteer}]);
+        setHasUnsavedChanges(true);
     };
 
     const getVolunteers = async (serviceBodyId) => {
@@ -133,6 +160,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
             let response = await apiClient.post(`/api/v1/volunteers?serviceBodyId=${serviceBodyId}`, encodedVolunteers);
             let responseData = await response.data;
             setVolunteers(responseData.data || []);
+            setHasUnsavedChanges(false);
         } catch (error) {
             console.error('Error saving volunteers:', error);
         } finally {
@@ -168,6 +196,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
         });
 
         setVolunteers(updatedVolunteers);
+        setHasUnsavedChanges(true);
         setShowModal(false);
         setShiftData({ ...defaultShift, tz: currentTimezone });
         setTimezoneOpen(false);
@@ -178,12 +207,14 @@ import SortableVolunteer from "../components/SortableVolunteer";
         const updatedVolunteers = [...volunteers];
         updatedVolunteers[volunteerIndex].volunteer_shift_schedule.splice(shiftIndex, 1);
         setVolunteers(updatedVolunteers);
+        setHasUnsavedChanges(true);
     };  
 
     const handleRemoveAllShifts = (volunteerIndex) => {
         const updatedVolunteers = [...volunteers];
         updatedVolunteers[volunteerIndex].volunteer_shift_schedule = [];
         setVolunteers(updatedVolunteers);
+        setHasUnsavedChanges(true);
     };
 
     const handleDragEnd = (event) => {
@@ -195,6 +226,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
                 const newIndex = parseInt(over.id);
                 return arrayMove(items, oldIndex, newIndex);
             });
+            setHasUnsavedChanges(true);
         }
     };
 
@@ -251,6 +283,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
 
             // Add the group reference to the volunteers list
             setVolunteers([...volunteers, groupReference]);
+            setHasUnsavedChanges(true);
 
             // Close modal and reset selection
             setShowGroupModal(false);
@@ -310,6 +343,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
                                 daysOfWeek={daysOfWeek}
                                 getWord={getWord}
                                 phoneValidationCountry={phoneValidationCountry}
+                                onVolunteerChange={() => setHasUnsavedChanges(true)}
                             />
                         ))}
                     </SortableContext>
@@ -582,6 +616,24 @@ import SortableVolunteer from "../components/SortableVolunteer";
                     </Box>
                 </Box>
             </Modal>
+
+            {/* Unsaved Changes Confirmation Dialog */}
+            <Dialog open={blocker.state === 'blocked'} onClose={() => blocker.reset()}>
+                <DialogTitle>{getWord('unsaved_changes') || 'Unsaved Changes'}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {getWord('unsaved_changes_warning') || 'You have unsaved changes. Are you sure you want to leave? Your changes will be lost.'}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => blocker.reset()}>
+                        {getWord('stay') || 'Stay'}
+                    </Button>
+                    <Button onClick={() => blocker.proceed()} color="error">
+                        {getWord('discard_changes') || 'Discard Changes'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
             </div>
         </Box>
     );

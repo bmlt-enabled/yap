@@ -22,33 +22,16 @@ runs:
         npm run build
       shell: bash
 
-    - name: Setup database
+    - name: Setup env file
       run: |
         cd src
         mv .env.pipeline .env
-        ENVIRONMENT=test php artisan migrate --force
-        ENVIRONMENT=test php artisan db:seed --class=TestEnvironmentSeeder --force
-      shell: bash
-
-    - name: Start server
-      run: |
-        cd src
-        ENVIRONMENT=test php -S 127.0.0.1:8000 -t . server.php > server.log 2>&1 &
-        # Wait for server to be ready
-        for i in {1..30}; do
-          if curl -s http://127.0.0.1:8000/admin/login > /dev/null 2>&1; then
-            echo "Server is ready"
-            break
-          fi
-          echo "Waiting for server... ($i)"
-          sleep 2
-        done
       shell: bash
 
     - name: Run Playwright tests
       run: |
         cd src
-        BASE_URL=http://127.0.0.1:8000 npx playwright test
+        npx playwright test
       shell: bash
 
     - name: Upload Playwright Report

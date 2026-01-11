@@ -12,7 +12,7 @@ class TestEnvironmentSeeder extends Seeder
     {
         if (getenv("ENVIRONMENT") === "test") {
             DB::statement("
-                INSERT INTO users (id, name, username, password, permissions, is_admin)
+                INSERT IGNORE INTO users (id, name, username, password, permissions, is_admin)
                 VALUES (?, ?, ?, SHA2(?, 256), 0, 1);
             ", [Str::uuid()->toString(), 'admin', 'admin', 'admin']);
         }

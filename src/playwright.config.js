@@ -16,7 +16,7 @@ export default defineConfig({
     ['junit', { outputFile: 'tests/e2e-results.xml' }],
   ],
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:8000',
+    baseURL: process.env.BASE_URL || 'http://127.0.0.1:8000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -26,10 +26,10 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: process.env.CI ? undefined : {
-    command: 'ENVIRONMENT=test php -S 127.0.0.1:8000 -t . server.php',
-    url: 'http://localhost:8000',
-    reuseExistingServer: !process.env.CI,
+  webServer: {
+    command: 'ENVIRONMENT=test php artisan migrate --force && ENVIRONMENT=test php artisan db:seed --class=TestEnvironmentSeeder --force && ENVIRONMENT=test php -S 127.0.0.1:8000 -t . server.php 2>/dev/null',
+    url: 'http://127.0.0.1:8000',
+    reuseExistingServer: false,
     timeout: 120 * 1000,
   },
 });

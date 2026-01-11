@@ -5,23 +5,15 @@ run: serve
 
 .PHONY: serve
 serve:
-	env ENVIRONMENT=dev php -dxdebug.mode=debug -dxdebug.start_with_request=yes -S localhost:8000 -t . server.php
-
-.PHONY: e2e-serve
-e2e-serve:
-	env ENVIRONMENT=test php -S localhost:8001 -t . server.php
+	env ENVIRONMENT=dev php -dxdebug.mode=debug -dxdebug.start_with_request=yes -S 127.0.0.1:8001 -t . server.php
 
 .PHONY: e2e-test
 e2e-test:
-    ENVIRONMENT=test php artisan migrate --force
-    ENVIRONMENT=test php artisan db:seed --class=TestEnvironmentSeeder --force
-	BASE_URL=http://localhost:8001 npx playwright test
+	npx playwright test
 
 .PHONY: e2e-test-ui
 e2e-test-ui:
-    ENVIRONMENT=test php artisan migrate --force
-    ENVIRONMENT=test php artisan db:seed --class=TestEnvironmentSeeder --force
-	BASE_URL=http://localhost:8001 npx playwright test --ui
+	npx playwright test --ui
 
 .PHONY: lint
 lint:
