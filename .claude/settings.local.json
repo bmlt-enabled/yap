@@ -28,7 +28,9 @@
       "Bash(git stash:*)",
       "Bash(git checkout:*)",
       "Bash(gh run list:*)",
-      "Bash(gh run view:*)"
+      "Bash(gh run view:*)",
+      "Bash(xargs kill:*)",
+      "Bash(npm ls:*)"
     ],
     "deny": [],
     "ask": []

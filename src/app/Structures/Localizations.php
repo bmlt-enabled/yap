@@ -118,6 +118,10 @@ class Localizations
         'you_have_a_message_from_the' => "You have a message from the",
         'from_the_caller' => "from the caller",
         'listen_to_message' => "Listen to message",
+        'unsaved_changes' => "Unsaved Changes",
+        'unsaved_changes_warning' => "You have unsaved changes. Are you sure you want to leave? Your changes will be lost.",
+        'discard_changes' => "Discard Changes",
+        'stay' => "Stay",
     ];
     public $enAU = [
         'language_title' => "english",
@@ -233,6 +237,10 @@ class Localizations
         'you_have_a_message_from_the' => "You have a message from the",
         'from_the_caller' => "from the caller",
         'listen_to_message' => "Listen to message",
+        'unsaved_changes' => "Unsaved Changes",
+        'unsaved_changes_warning' => "You have unsaved changes. Are you sure you want to leave? Your changes will be lost.",
+        'discard_changes' => "Discard Changes",
+        'stay' => "Stay",
     ];
     public $esUS = [
         'language_title' => "español",
@@ -348,6 +356,10 @@ class Localizations
         'you_have_a_message_from_the' => "tienes un mensaje del",
         'from_the_caller' => "de la persona que llama",
         'listen_to_message' => "Escuchar mensaje",
+        'unsaved_changes' => "Cambios sin guardar",
+        'unsaved_changes_warning' => "Tiene cambios sin guardar. ¿Está seguro de que desea salir? Sus cambios se perderán.",
+        'discard_changes' => "Descartar cambios",
+        'stay' => "Quedarse",
     ];
     public $piglatin = [
         'language_title' => "igpay atinlay",
@@ -455,6 +467,10 @@ class Localizations
         'you_have_a_message_from_the' => "ouyay avehay ayay essagemay omfray ethay",
         'from_the_caller' => "omfray ethay allercay",
         'listen_to_message' => "Iistenlay otay essagemay",
+        'unsaved_changes' => "Unsavedway Angeschay",
+        'unsaved_changes_warning' => "Ouyay avehay unsavedway angeschay. Areway ouyay uresay ouyay antway otay eavelay? Ouryay angeschay illway ebay ostlay.",
+        'discard_changes' => "Iscarday Angeschay",
+        'stay' => "Aystay",
     ];
     public $ptBR = [
         'language_title' => "português",
@@ -570,6 +586,10 @@ class Localizations
         'you_have_a_message_from_the' => "You have a message from the",
         'from_the_caller' => "from the caller",
         'listen_to_message' => "Listen to message",
+        'unsaved_changes' => "Alterações não salvas",
+        'unsaved_changes_warning' => "Você tem alterações não salvas. Tem certeza de que deseja sair? Suas alterações serão perdidas.",
+        'discard_changes' => "Descartar alterações",
+        'stay' => "Ficar",
     ];
     public $frCA = [
         'language_title' => "français",
@@ -685,6 +705,10 @@ class Localizations
         'you_have_a_message_from_the' => "You have a message from the",
         'from_the_caller' => "from the caller",
         'listen_to_message' => "écouter le message",
+        'unsaved_changes' => "Modifications non enregistrées",
+        'unsaved_changes_warning' => "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter? Vos modifications seront perdues.",
+        'discard_changes' => "Abandonner les modifications",
+        'stay' => "Rester",
     ];
     public $itIT = [
         'language_title' => "italiano",
@@ -800,6 +824,10 @@ class Localizations
         'you_have_a_message_from_the' => "You have a message from the",
         'from_the_caller' => "from the caller",
         'listen_to_message' => "Listen to message",
+        'unsaved_changes' => "Modifiche non salvate",
+        'unsaved_changes_warning' => "Hai delle modifiche non salvate. Sei sicuro di voler uscire? Le tue modifiche andranno perse.",
+        'discard_changes' => "Annulla modifiche",
+        'stay' => "Rimani",
     ];
 
     public function setLocalization($language, $localization): void

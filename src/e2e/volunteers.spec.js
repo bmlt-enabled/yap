@@ -176,4 +176,122 @@ test.describe('Volunteers', () => {
     await page.waitForTimeout(500);
     await expect(page.getByText(/invalid.?phone.?number|invalid_phone_number/i)).not.toBeVisible({ timeout: 5000 });
   });
+
+  test('shows confirmation dialog when navigating away with unsaved changes', async ({ authenticatedPage: page }) => {
+    await page.getByRole('link', { name: 'Volunteers' }).click();
+    await page.waitForURL('**/volunteers');
+
+    // Wait for service body dropdown to load
+    try {
+      await page.waitForSelector('#service-body-select', { timeout: 10000 });
+    } catch {
+      console.log('No service bodies available - skipping unsaved changes test');
+      return;
+    }
+
+    // Select a service body
+    await page.locator('#service-body-select').click();
+    const options = page.locator('[role="option"]');
+    const optionCount = await options.count();
+    if (optionCount <= 1) {
+      console.log('No service bodies to select - skipping test');
+      return;
+    }
+    await options.nth(1).click();
+
+    // Wait for volunteers to load
+    await page.waitForSelector('button:has-text("add_volunteer"), button:has-text("Add Volunteer")', { timeout: 5000 });
+
+    // Make a change (add a volunteer)
+    const addButton = page.getByRole('button', { name: /add.?volunteer/i });
+    await addButton.click();
+
+    // Fill in some data
+    const volunteerNameField = page.getByRole('textbox', { name: /volunteer.?name/i });
+    await expect(volunteerNameField).toBeVisible({ timeout: 10000 });
+    await volunteerNameField.fill('Unsaved Test Volunteer');
+
+    // Try to navigate away
+    await page.getByRole('link', { name: 'Settings' }).click();
+
+    // Confirm dialog should appear
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole('heading', { name: /unsaved.?changes/i })).toBeVisible();
+
+    // Click "Stay" to remain on page
+    await page.getByRole('button', { name: /stay/i }).click();
+
+    // Should still be on volunteers page
+    await expect(page).toHaveURL(/.*volunteers/);
+
+    // Try to navigate away again
+    await page.getByRole('link', { name: 'Settings' }).click();
+
+    // Dialog should appear again
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
+
+    // Click "Discard Changes" to leave
+    await page.getByRole('button', { name: /discard/i }).click();
+
+    // Should now be on settings page
+    await expect(page).toHaveURL(/.*settings/);
+  });
+
+  test('no confirmation dialog when navigating away without changes', async ({ authenticatedPage: page }) => {
+    await page.getByRole('link', { name: 'Volunteers' }).click();
+    await page.waitForURL('**/volunteers');
+
+    // Navigate away without making changes
+    await page.getByRole('link', { name: 'Settings' }).click();
+
+    // Should navigate directly without dialog
+    await expect(page).toHaveURL(/.*settings/);
+  });
+
+  test('no confirmation dialog after saving changes', async ({ authenticatedPage: page }) => {
+    await page.getByRole('link', { name: 'Volunteers' }).click();
+    await page.waitForURL('**/volunteers');
+
+    // Wait for service body dropdown to load
+    try {
+      await page.waitForSelector('#service-body-select', { timeout: 10000 });
+    } catch {
+      console.log('No service bodies available - skipping save test');
+      return;
+    }
+
+    // Select a service body
+    await page.locator('#service-body-select').click();
+    const options = page.locator('[role="option"]');
+    const optionCount = await options.count();
+    if (optionCount <= 1) {
+      console.log('No service bodies to select - skipping test');
+      return;
+    }
+    await options.nth(1).click();
+
+    // Wait for volunteers to load
+    await page.waitForSelector('button:has-text("add_volunteer"), button:has-text("Add Volunteer")', { timeout: 5000 });
+
+    // Make a change
+    const addButton = page.getByRole('button', { name: /add.?volunteer/i });
+    await addButton.click();
+
+    // Fill in data
+    const volunteerNameField = page.getByRole('textbox', { name: /volunteer.?name/i });
+    await expect(volunteerNameField).toBeVisible({ timeout: 10000 });
+    await volunteerNameField.fill('Saved Test Volunteer');
+
+    // Save the changes
+    await page.getByRole('button', { name: /save/i }).click();
+
+    // Wait for save to complete
+    await page.waitForTimeout(2000);
+
+    // Navigate away - should not show dialog
+    await page.getByRole('link', { name: 'Settings' }).click();
+
+    // Should navigate directly without dialog
+    await expect(page).toHaveURL(/.*settings/);
+  });
 });

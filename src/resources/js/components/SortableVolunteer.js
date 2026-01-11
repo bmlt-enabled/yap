@@ -17,7 +17,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 
-export default function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expanded, toggleExpand, handleAddShift, handleRemoveShift, handleRemoveAllShifts, daysOfWeek, getWord, phoneValidationCountry }) {
+export default function SortableVolunteer({ volunteer, index, volunteers, setVolunteers, expanded, toggleExpand, handleAddShift, handleRemoveShift, handleRemoveAllShifts, daysOfWeek, getWord, phoneValidationCountry, onVolunteerChange }) {
     const [phoneError, setPhoneError] = useState(false);
 
     const {
@@ -105,6 +105,7 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
                                                     : v
                                             )
                                         );
+                                        onVolunteerChange?.();
                                     }}
                                 />
                             }
@@ -117,7 +118,10 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
                     <Button
                         variant="contained"
                         color="error"
-                        onClick={() => setVolunteers(volunteers.filter((_, i) => i !== index))}
+                        onClick={() => {
+                            setVolunteers(volunteers.filter((_, i) => i !== index));
+                            onVolunteerChange?.();
+                        }}
                     >
                         {getWord('remove')}
                     </Button>
@@ -162,13 +166,14 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
                                 checked={!!volunteer.volunteer_enabled}
                                 onChange={e => {
                                     const newValue = e.target.checked;
-                                    setVolunteers(prevVolunteers => 
-                                        prevVolunteers.map((v, i) => 
-                                            i === index 
+                                    setVolunteers(prevVolunteers =>
+                                        prevVolunteers.map((v, i) =>
+                                            i === index
                                                 ? { ...v, volunteer_enabled: newValue }
                                                 : v
                                         )
                                     );
+                                    onVolunteerChange?.();
                                 }}
                             />
                         }
@@ -182,15 +187,19 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
                         const updatedVolunteers = [...volunteers];
                         updatedVolunteers[index].volunteer_name = e.target.value;
                         setVolunteers(updatedVolunteers);
+                        onVolunteerChange?.();
                     }}
                     size="small"
                     margin="normal"
                     sx={{ position: 'relative', zIndex: 2 }}
                 />
-                <Button 
-                    variant="contained" 
+                <Button
+                    variant="contained"
                     color="error"
-                    onClick={() => setVolunteers(volunteers.filter((_, i) => i !== index))}
+                    onClick={() => {
+                        setVolunteers(volunteers.filter((_, i) => i !== index));
+                        onVolunteerChange?.();
+                    }}
                     sx={{ position: 'relative', zIndex: 2 }}
                 >
                     {getWord('remove')}
@@ -214,6 +223,7 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
                             const updatedVolunteers = [...volunteers];
                             updatedVolunteers[index].volunteer_phone_number = value;
                             setVolunteers(updatedVolunteers);
+                            onVolunteerChange?.();
                         }}
                         margin="normal"
                     />
@@ -228,6 +238,7 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
                                 const updatedVolunteers = [...volunteers];
                                 updatedVolunteers[index].volunteer_gender = parseInt(e.target.value, 10);
                                 setVolunteers(updatedVolunteers);
+                                onVolunteerChange?.();
                             }}
                         >
                             <FormControlLabel value={0} control={<Radio />} label={getWord('unassigned')} labelPlacement="bottom"/>
@@ -245,6 +256,7 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
                                     const updatedVolunteers = [...volunteers];
                                     updatedVolunteers[index].volunteer_responder = e.target.checked ? 1 : 0;
                                     setVolunteers(updatedVolunteers);
+                                    onVolunteerChange?.();
                                 }}
                             />
                         }
@@ -371,6 +383,7 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
                         const updatedVolunteers = [...volunteers];
                         updatedVolunteers[index].volunteer_notes = e.target.value;
                         setVolunteers(updatedVolunteers);
+                        onVolunteerChange?.();
                     }}
                     margin="normal"
                     sx={{ position: 'relative', zIndex: 2 }}
