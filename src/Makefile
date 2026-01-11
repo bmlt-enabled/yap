@@ -13,10 +13,14 @@ e2e-serve:
 
 .PHONY: e2e-test
 e2e-test:
+    ENVIRONMENT=test php artisan migrate --force
+    ENVIRONMENT=test php artisan db:seed --class=TestEnvironmentSeeder --force
 	BASE_URL=http://localhost:8001 npx playwright test
 
 .PHONY: e2e-test-ui
 e2e-test-ui:
+    ENVIRONMENT=test php artisan migrate --force
+    ENVIRONMENT=test php artisan db:seed --class=TestEnvironmentSeeder --force
 	BASE_URL=http://localhost:8001 npx playwright test --ui
 
 .PHONY: lint
