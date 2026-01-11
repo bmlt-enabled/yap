@@ -23,7 +23,10 @@
       "Bash(BASE_URL=http://127.0.0.1:8000 npx playwright test:*)",
       "Bash(curl:*)",
       "Bash(pkill:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(lsof:*)",
+      "Bash(git stash:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
