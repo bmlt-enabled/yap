@@ -19,7 +19,7 @@ import GroupEditDialog from "../dialogs/GroupEditDialog";
 import VolunteersManager from "../components/VolunteersManager";
 
 function Groups() {
-    const { getWord } = useLocalization();
+    const { getWord, loading: localizationsLoading, isLoaded, refreshLocalizations } = useLocalization();
     const [serviceBodyId, setServiceBodyId] = useState(0);
     const [serviceBodies, setServiceBodies] = useState([]);
     const [groups, setGroups] = useState([]);
@@ -46,6 +46,13 @@ function Groups() {
         };
         loadServiceBodies();
     }, []);
+
+    // Retry loading localizations if initial load failed (e.g., before auth)
+    useEffect(() => {
+        if (!localizationsLoading && !isLoaded()) {
+            refreshLocalizations();
+        }
+    }, [localizationsLoading, isLoaded, refreshLocalizations]);
 
     const loadGroups = async (serviceBodyId) => {
         if (!serviceBodyId || serviceBodyId === 0) {
@@ -120,6 +127,14 @@ function Groups() {
     };
 
     const selectedGroup = groups.find(g => g.id === selectedGroupId);
+
+    if (localizationsLoading || !isLoaded()) {
+        return (
+            <Box sx={{ p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
 
     return (
         <Box sx={{ p: 3 }}>

@@ -42,7 +42,7 @@ import {defaultShift} from "../models/ShiftModel";
 import SortableVolunteer from "../components/SortableVolunteer";
 
     function Volunteers() {
-    const { getWord, loading: localizationsLoading } = useLocalization();
+    const { getWord, loading: localizationsLoading, isLoaded, refreshLocalizations } = useLocalization();
     const [volunteers, setVolunteers] = useState([]);
     const [serviceBodyId, setServiceBodyId] = useState();
     const [showModal, setShowModal] = useState(false);
@@ -78,6 +78,13 @@ import SortableVolunteer from "../components/SortableVolunteer";
         window.addEventListener('beforeunload', handleBeforeUnload);
         return () => window.removeEventListener('beforeunload', handleBeforeUnload);
     }, [hasUnsavedChanges]);
+
+    // Retry loading localizations if initial load failed (e.g., before auth)
+    useEffect(() => {
+        if (!localizationsLoading && !isLoaded()) {
+            refreshLocalizations();
+        }
+    }, [localizationsLoading, isLoaded, refreshLocalizations]);
        
     // Get current browser timezone
     React.useEffect(() => {
@@ -293,12 +300,20 @@ import SortableVolunteer from "../components/SortableVolunteer";
         }
     };
 
+    if (localizationsLoading || !isLoaded()) {
+        return (
+            <Box sx={{ p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
     return (
         <Box sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                 <VolunteerActivismIcon sx={{ fontSize: 40, mr: 2 }} />
                 <Typography variant="h4">
-                    Volunteers
+                    {getWord('volunteers') || 'Volunteers'}
                 </Typography>
             </Box>
             <div className="container">
