@@ -31,7 +31,7 @@ simulate:
 
 .PHONY: test
 test:
-	php -dxdebug.mode=debug -dxdebug.start_with_request=yes -dxdebug.client_port=9003 vendor/bin/pest
+	ENVIRONMENT=test php -dxdebug.mode=debug -dxdebug.start_with_request=yes -dxdebug.client_port=9003 vendor/bin/pest
 
 // To run a specific test, use the following command: make test-debug test=SmsGatewayTest
 .PHONY: test-debug
@@ -40,11 +40,11 @@ test-debug:
 
 .PHONY: coverage-xml
 coverage-xml:
-	XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-clover coverage.xml
+	ENVIRONMENT=test XDEBUG_MODE=coverage php vendor/bin/pest --coverage --coverage-clover coverage.xml
 
 .PHONY: coverage
-coverage:
-	XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-html tests/reports/coverage
+coverage:	
+	ENVIRONMENT=test XDEBUG_MODE=coverage php vendor/bin/pest --coverage --coverage-html tests/reports/coverage
 
 .PHONY: cache-clear
 cache-clear:
