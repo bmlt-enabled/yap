@@ -3,7 +3,7 @@
         "php": "^8.2.0",
         "bmlt-enabled/bmlt-root-server-php-client": "^1.0.4",
         "bmlt/fetch-meditation": "^1.2",
-        "darkaonline/l5-swagger": "^9.0.0",
+        "darkaonline/l5-swagger": "^10.0.0",
         "guzzlehttp/guzzle": "^7.8.1",
         "laravel/framework": "^12.0.0",
         "laravel/sanctum": "^4.0.0",
