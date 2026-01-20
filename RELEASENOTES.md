@@ -5,6 +5,7 @@
 * Custom Extensions are now included in call detail reports [#1433]
 * Dialbacks are now included in the call detail reports [#1409]
 * HTML formatted notifications for voicemail.
+* Added enabled field to volunteer CSV and JSON exports, with download buttons on Volunteers page [#1411]
 
 ### 4.5.0 (July 11, 2025)
 * Added new feature that allow for creating a custom prompt for language selection feature. [#1228]

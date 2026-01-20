@@ -17,4 +17,5 @@ class VolunteerReportInfo
     public $notes;
     public $shift_info = [];
     public $service_body_id;
+    public $enabled = false;
 }

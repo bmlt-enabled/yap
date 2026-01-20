@@ -284,7 +284,8 @@ test('return volunteers json', function () {
             "start_time"=>$shiftStart,
             "end_time"=>$shiftEnd,
             "day_name"=>"Sunday"
-        ]]
+        ]],
+        "enabled"=>false
     ]];
     $response
         ->assertSimilarJson($expectedResponse)
@@ -339,7 +340,8 @@ test('return volunteers without notes json', function () {
             "start_time"=>$shiftStart,
             "end_time"=>$shiftEnd,
             "day_name"=>"Sunday"
-        ]]
+        ]],
+        "enabled"=>false
     ]];
     $response
         ->assertSimilarJson($expectedResponse)
@@ -408,7 +410,8 @@ test('return volunteers recursively json', function () {
             "start_time"=>$shiftStart,
             "end_time"=>$shiftEnd,
             "day_name"=>"Sunday"
-        ]]
+        ]],
+        "enabled"=>false
     ],[
         "name"=>sprintf("%s", $volunteer_name),
         "number"=>$volunteer_phone_number,
@@ -424,7 +427,8 @@ test('return volunteers recursively json', function () {
             "start_time"=>$shiftStart,
             "end_time"=>$shiftEnd,
             "day_name"=>"Sunday"
-        ]]
+        ]],
+        "enabled"=>false
     ]];
     $response
         ->assertSimilarJson($expectedResponse)
@@ -513,7 +517,8 @@ test('return volunteers with groups recursively json', function () {
             "start_time"=>$shiftStart,
             "end_time"=>$shiftEnd,
             "day_name"=>"Sunday"
-        ]]
+        ]],
+        "enabled"=>false
     ],[
         "name"=>sprintf("%s", $volunteer_name),
         "number"=>$volunteer_phone_number,
@@ -529,7 +534,8 @@ test('return volunteers with groups recursively json', function () {
             "start_time"=>$shiftStart,
             "end_time"=>$shiftEnd,
             "day_name"=>"Sunday"
-        ]]
+        ]],
+        "enabled"=>false
     ],[
         "name"=>sprintf("%s", $volunteer_name),
         "number"=>$volunteer_phone_number,
@@ -545,7 +551,8 @@ test('return volunteers with groups recursively json', function () {
             "start_time"=>$shiftStart,
             "end_time"=>$shiftEnd,
             "day_name"=>"Sunday"
-        ]]
+        ]],
+        "enabled"=>false
     ]];
     $response
         ->assertSimilarJson($expectedResponse)
@@ -599,7 +606,7 @@ test('return volunteers recursively csv', function () {
         "recurse" => "true"
     ]);
 
-    $expectedResponse = "name,number,gender,responder,type,language,notes,service_body_id,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$firstServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\",\"\"day_name\"\":\"\"Sunday\"\"}]\"\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$secondServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\",\"\"day_name\"\":\"\"Sunday\"\"}]\"\n";
+    $expectedResponse = "name,number,gender,responder,type,language,notes,service_body_id,shift_info,enabled\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$firstServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\",\"\"day_name\"\":\"\"Sunday\"\"}]\",\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$secondServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\",\"\"day_name\"\":\"\"Sunday\"\"}]\",\n";
     $response
         ->assertContent($expectedResponse)
         ->assertHeader("Content-Type", "text/plain; charset=utf-8")
@@ -646,7 +653,7 @@ test('return volunteers csv', function () {
         "fmt" => "csv"
     ]);
 
-    $expectedResponse = "name,number,gender,responder,type,language,notes,service_body_id,shift_info\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$firstServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\",\"\"day_name\"\":\"\"Sunday\"\"}]\"\n";
+    $expectedResponse = "name,number,gender,responder,type,language,notes,service_body_id,shift_info,enabled\n\"Corey \",\"(555) 111-2222\",0,0,PHONE,\"[\"\"en-US\"\"]\",\"$notes\",$firstServiceBodyId,\"[{\"\"day\"\":1,\"\"tz\"\":\"\"America\/New_York\"\",\"\"start_time\"\":\"\"12:00 AM\"\",\"\"end_time\"\":\"\"11:59 PM\"\",\"\"day_name\"\":\"\"Sunday\"\"}]\",\n";
     $response
         ->assertContent($expectedResponse)
         ->assertHeader("Content-Type", "text/plain; charset=utf-8")
