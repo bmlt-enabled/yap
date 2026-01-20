@@ -34,6 +34,7 @@ import {
     DialogContent,
     DialogContentText,
     DialogActions,
+    Menu,
 } from '@mui/material';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import apiClient from "../services/api";
@@ -59,6 +60,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
     const [selectedDays, setSelectedDays] = useState([]);
     const [phoneValidationCountry, setPhoneValidationCountry] = useState('US');
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+    const [downloadMenuAnchor, setDownloadMenuAnchor] = useState(null);
     const daysOfWeek = getWord('days_of_the_week');
 
     // Navigation blocker for unsaved changes
@@ -300,6 +302,45 @@ import SortableVolunteer from "../components/SortableVolunteer";
         }
     };
 
+    const handleDownloadMenuOpen = (event) => {
+        setDownloadMenuAnchor(event.currentTarget);
+    };
+
+    const handleDownloadMenuClose = () => {
+        setDownloadMenuAnchor(null);
+    };
+
+    const handleDownloadVolunteerList = async (format, recurse = false) => {
+        handleDownloadMenuClose();
+        try {
+            const url = `/api/v1/volunteers/download?service_body_id=${serviceBodyId}&fmt=${format}&recurse=${recurse}`;
+            const response = await apiClient.get(url, {
+                responseType: format === 'csv' ? 'blob' : 'json'
+            });
+
+            let blob;
+            let filename;
+            if (format === 'csv') {
+                blob = new Blob([response.data], { type: 'text/csv' });
+                filename = `${serviceBodyId}-volunteer-list${recurse ? '-recursive' : ''}.csv`;
+            } else {
+                blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' });
+                filename = `${serviceBodyId}-volunteer-list${recurse ? '-recursive' : ''}.json`;
+            }
+
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(downloadUrl);
+        } catch (error) {
+            console.error('Error downloading volunteer list:', error);
+        }
+    };
+
     if (localizationsLoading || !isLoaded()) {
         return (
             <Box sx={{ p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
@@ -320,13 +361,26 @@ import SortableVolunteer from "../components/SortableVolunteer";
                 <div className="form-group">
                     <ServiceBodiesDropdown handleChange={serviceBodiesHandleChange}/>
                 {serviceBodyId > 0 ?
-                    <ButtonGroup sx={{
-                        padding: 2
-                    }}>
-                        <Button variant="contained" color="primary" onClick={handleAddVolunteer}>{getWord('add_volunteer')}</Button>
-                        <Button variant="contained" color="success" onClick={saveVolunteers}>{getWord('save_volunteers')}</Button>
-                        <Button variant="contained" color="warning" onClick={handleShowGroupModal}>{getWord('include_group')}</Button>
-                    </ButtonGroup> : ""}
+                    <>
+                        <ButtonGroup sx={{
+                            padding: 2
+                        }}>
+                            <Button variant="contained" color="primary" onClick={handleAddVolunteer}>{getWord('add_volunteer')}</Button>
+                            <Button variant="contained" color="success" onClick={saveVolunteers}>{getWord('save_volunteers')}</Button>
+                            <Button variant="contained" color="warning" onClick={handleShowGroupModal}>{getWord('include_group')}</Button>
+                            <Button variant="contained" color="secondary" onClick={handleDownloadMenuOpen}>{getWord('volunteer_list') || 'Volunteer List'}</Button>
+                        </ButtonGroup>
+                        <Menu
+                            anchorEl={downloadMenuAnchor}
+                            open={Boolean(downloadMenuAnchor)}
+                            onClose={handleDownloadMenuClose}
+                        >
+                            <MenuItem onClick={() => handleDownloadVolunteerList('csv', false)}>CSV</MenuItem>
+                            <MenuItem onClick={() => handleDownloadVolunteerList('json', false)}>JSON</MenuItem>
+                            <MenuItem onClick={() => handleDownloadVolunteerList('csv', true)}>{getWord('recursive') || 'Recursive'} CSV</MenuItem>
+                            <MenuItem onClick={() => handleDownloadVolunteerList('json', true)}>{getWord('recursive') || 'Recursive'} JSON</MenuItem>
+                        </Menu>
+                    </> : ""}
             </div>
 
             {loading ? (

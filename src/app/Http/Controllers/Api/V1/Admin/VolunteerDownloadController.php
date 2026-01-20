@@ -59,7 +59,8 @@ class VolunteerDownloadController extends Controller
      *                         @OA\Property(property="language", type="array", @OA\Items(type="string")),
      *                         @OA\Property(property="notes", type="string"),
      *                         @OA\Property(property="service_body_id", type="integer"),
-     *                         @OA\Property(property="shift_info", type="object")
+     *                         @OA\Property(property="shift_info", type="object"),
+     *                         @OA\Property(property="enabled", type="boolean")
      *                     )
      *                 ),
      *                 @OA\Schema(
@@ -79,7 +80,7 @@ class VolunteerDownloadController extends Controller
             if ($request->get('fmt') == "csv") {
                 $handle = fopen('php://memory', 'rw');
                 try {
-                    fputcsv($handle, array("name", "number", "gender", "responder", "type", "language", "notes", "service_body_id", "shift_info"));
+                    fputcsv($handle, array("name", "number", "gender", "responder", "type", "language", "notes", "service_body_id", "shift_info", "enabled"));
                     foreach ($report as $item) {
                             fputcsv($handle, array(
                             $item->name,
@@ -90,7 +91,8 @@ class VolunteerDownloadController extends Controller
                             json_encode($item->language),
                             $item->notes,
                             $item->service_body_id,
-                            json_encode($item->shift_info)
+                            json_encode($item->shift_info),
+                            $item->enabled
                             ));
                     }
                     fseek($handle, 0);

@@ -148,6 +148,8 @@ class Localizations
         'ok' => "OK",
         'cancel' => "Cancel",
         'select_a_service_body' => "Select a Service Body",
+        'volunteer_list' => "Volunteer List",
+        'recursive' => "Recursive",
     ];
     public $enAU = [
         'language_title' => "english",
@@ -293,6 +295,8 @@ class Localizations
         'ok' => "OK",
         'cancel' => "Cancel",
         'select_a_service_body' => "Select a Service Body",
+        'volunteer_list' => "Volunteer List",
+        'recursive' => "Recursive",
     ];
     public $esUS = [
         'language_title' => "español",
@@ -438,6 +442,8 @@ class Localizations
         'ok' => "OK",
         'cancel' => "Cancelar",
         'select_a_service_body' => "Seleccionar un organismo de servicio",
+        'volunteer_list' => "Lista de voluntarios",
+        'recursive' => "Recursivo",
     ];
     public $piglatin = [
         'language_title' => "igpay atinlay",
@@ -575,6 +581,8 @@ class Localizations
         'ok' => "OKway",
         'cancel' => "Ancelcay",
         'select_a_service_body' => "Electsay away Ervicesay Odybay",
+        'volunteer_list' => "Olunteervay Istlay",
+        'recursive' => "Ecursiveray",
     ];
     public $ptBR = [
         'language_title' => "português",
@@ -720,6 +728,8 @@ class Localizations
         'ok' => "OK",
         'cancel' => "Cancelar",
         'select_a_service_body' => "Selecionar um corpo de serviço",
+        'volunteer_list' => "Lista de voluntários",
+        'recursive' => "Recursivo",
     ];
     public $frCA = [
         'language_title' => "français",
@@ -865,6 +875,8 @@ class Localizations
         'ok' => "OK",
         'cancel' => "Annuler",
         'select_a_service_body' => "Sélectionner un comité de service",
+        'volunteer_list' => "Liste des volontaires",
+        'recursive' => "Récursif",
     ];
     public $itIT = [
         'language_title' => "italiano",
@@ -1010,6 +1022,8 @@ class Localizations
         'ok' => "OK",
         'cancel' => "Annulla",
         'select_a_service_body' => "Seleziona una struttura di servizio",
+        'volunteer_list' => "Elenco volontari",
+        'recursive' => "Ricorsivo",
     ];
 
     public function setLocalization($language, $localization): void

@@ -176,6 +176,7 @@ class VolunteerService extends Service
             $volunteerInfo->responder = $volunteer->volunteer_responder ?? VolunteerResponderOption::UNSPECIFIED;
             $volunteerInfo->service_body_id = $volunteer->service_body_id;
             $volunteerInfo->notes = $volunteer->volunteer_notes ?? "";
+            $volunteerInfo->enabled = $volunteer->volunteer_enabled ?? false;
             if (strlen($this->settings->get('language_selections')) > 0) {
                 if (property_exists($volunteer, 'volunteer_language')) {
                     $volunteerInfo->language = $volunteer->volunteer_language;
