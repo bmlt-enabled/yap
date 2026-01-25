@@ -3,17 +3,20 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\AuthorizationService;
 use App\Services\ReportsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CdrController extends Controller
 {
-    private $reportsService;
+    private ReportsService $reportsService;
+    private AuthorizationService $authorizationService;
 
-    public function __construct(ReportsService $reportsService)
+    public function __construct(ReportsService $reportsService, AuthorizationService $authorizationService)
     {
         $this->reportsService = $reportsService;
+        $this->authorizationService = $authorizationService;
     }
 
     /**
@@ -73,8 +76,15 @@ class CdrController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        $serviceBodyId = $request->get('service_body_id');
+
+        // Validate access to service_body_id=0 (unattached records)
+        if (intval($serviceBodyId) == 0 && !$this->authorizationService->isRootServiceBodyAdmin()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         return response()->json($this->reportsService->getCallDetailRecords(
-            $request->get('service_body_id'),
+            $serviceBodyId,
             $request->get('date_range_start'),
             $request->get('date_range_end'),
             filter_var($request->get('recurse'), FILTER_VALIDATE_BOOLEAN)

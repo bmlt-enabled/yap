@@ -11,20 +11,29 @@ class ReportsService extends Service
 {
     private RootServerService $rootServerService;
     private ReportsRepository $reportsRepository;
+    private AuthorizationService $authorizationService;
 
     public function __construct(
         RootServerService $rootServerService,
         ReportsRepository $reportsRepository,
+        AuthorizationService $authorizationService,
     ) {
         parent::__construct(App::make(SettingsService::class));
         $this->rootServerService = $rootServerService;
         $this->reportsRepository = $reportsRepository;
+        $this->authorizationService = $authorizationService;
     }
 
     private function getServiceBodies($serviceBodyId, $recurse): array
     {
         if (intval($serviceBodyId) == 0) {
-            return array_column($this->rootServerService->getServiceBodiesForUser(true), "id");
+            $bodies = array_column($this->rootServerService->getServiceBodiesForUser(true), "id");
+
+            // Root service body admins can see unattached records (service_body_id = 0/NULL)
+            if ($this->authorizationService->isRootServiceBodyAdmin()) {
+                $bodies[] = 0;
+            }
+            return $bodies;
         } elseif ($recurse) {
             return $this->rootServerService->getServiceBodiesForUserRecursively($serviceBodyId);
         } else {
