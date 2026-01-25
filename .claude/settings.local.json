@@ -30,7 +30,8 @@
       "Bash(gh run list:*)",
       "Bash(gh run view:*)",
       "Bash(xargs kill:*)",
-      "Bash(npm ls:*)"
+      "Bash(npm ls:*)",
+      "Bash(gh issue view:*)"
     ],
     "deny": [],
     "ask": []
