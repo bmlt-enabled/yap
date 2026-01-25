@@ -131,9 +131,9 @@ function Dashboard() {
                 </Stack>
             </Paper>
 
-            {/* Info Cards - 2x2 Grid */}
+            {/* Info Cards - 2 Card Layout */}
             <Grid container spacing={3}>
-                {/* Version Card */}
+                {/* System Info Card - Version & Status Combined */}
                 <Grid item xs={12} md={6}>
                     <Card
                         sx={{
@@ -146,194 +146,150 @@ function Dashboard() {
                         }}
                     >
                         <CardContent>
-                            <Stack spacing={2}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <InfoIcon color="primary" sx={{ fontSize: 40 }} />
-                                    {versionStatus === 'current' && (
-                                        <Chip
-                                            label="Latest"
-                                            color="success"
+                            <Stack spacing={3}>
+                                {/* Version Section */}
+                                <Box>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                                        <Stack direction="row" spacing={1} alignItems="center">
+                                            <InfoIcon color="primary" />
+                                            <Typography variant="subtitle2" color="text.secondary">
+                                                Version
+                                            </Typography>
+                                        </Stack>
+                                        {versionStatus === 'current' && (
+                                            <Chip label="Latest" color="success" size="small" icon={<CheckIcon />} />
+                                        )}
+                                        {versionStatus === 'pre-release' && (
+                                            <Chip label="Pre-Release" color="warning" size="small" icon={<WarningIcon />} />
+                                        )}
+                                        {versionStatus === 'update-available' && (
+                                            <Chip label="Update Available" color="info" size="small" icon={<InfoIcon />} />
+                                        )}
+                                    </Box>
+                                    <Typography variant="h3" fontWeight="bold" color="primary">
+                                        v{version}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        {versionMessage || 'Loading version information...'}
+                                    </Typography>
+                                    {latestVersion && versionStatus === 'update-available' && (
+                                        <Button
+                                            variant="outlined"
                                             size="small"
-                                            icon={<CheckIcon />}
-                                        />
-                                    )}
-                                    {versionStatus === 'pre-release' && (
-                                        <Chip
-                                            label="Pre-Release"
-                                            color="warning"
-                                            size="small"
-                                            icon={<WarningIcon />}
-                                        />
-                                    )}
-                                    {versionStatus === 'update-available' && (
-                                        <Chip
-                                            label="Update Available"
-                                            color="info"
-                                            size="small"
-                                            icon={<InfoIcon />}
-                                        />
+                                            href="https://github.com/bmlt-enabled/yap/releases/latest"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            sx={{ mt: 1 }}
+                                        >
+                                            Download v{latestVersion}
+                                        </Button>
                                     )}
                                 </Box>
-                                <Typography variant="h6" fontWeight="600">
-                                    System Version
-                                </Typography>
-                                <Typography variant="h3" fontWeight="bold" color="primary">
-                                    v{version}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    {versionMessage || 'Loading version information...'}
-                                </Typography>
-                                {latestVersion && versionStatus === 'update-available' && (
+
+                                <Divider />
+
+                                {/* Status Section */}
+                                <Box>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                                        <Stack direction="row" spacing={1} alignItems="center">
+                                            {systemStatus === 'healthy' && <CheckIcon color="success" />}
+                                            {systemStatus === 'warning' && <WarningIcon color="warning" />}
+                                            {systemStatus === 'error' && <ErrorIcon color="error" />}
+                                            {systemStatus === 'checking' && <InfoIcon color="action" />}
+                                            <Typography variant="subtitle2" color="text.secondary">
+                                                System Status
+                                            </Typography>
+                                        </Stack>
+                                        {systemStatus === 'healthy' && (
+                                            <Chip label="Healthy" color="success" size="small" />
+                                        )}
+                                        {systemStatus === 'warning' && (
+                                            <Chip label="Warning" color="warning" size="small" />
+                                        )}
+                                        {systemStatus === 'error' && (
+                                            <Chip label="Error" color="error" size="small" />
+                                        )}
+                                    </Box>
+                                    <Typography
+                                        variant="h6"
+                                        fontWeight="bold"
+                                        color={
+                                            systemStatus === 'healthy' ? 'success.main' :
+                                            systemStatus === 'warning' ? 'warning.main' :
+                                            systemStatus === 'error' ? 'error.main' : 'text.secondary'
+                                        }
+                                    >
+                                        {systemStatus === 'healthy' ? 'All Systems Operational' :
+                                         systemStatus === 'checking' ? 'Checking...' : 'Issues Detected'}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        {systemMessage}
+                                    </Typography>
+                                </Box>
+                            </Stack>
+                        </CardContent>
+                    </Card>
+                </Grid>
+
+                {/* Documentation Card - Both Docs Combined */}
+                <Grid item xs={12} md={6}>
+                    <Card
+                        sx={{
+                            height: '100%',
+                            transition: 'transform 0.2s, box-shadow 0.2s',
+                            '&:hover': {
+                                transform: 'translateY(-4px)',
+                                boxShadow: 4
+                            }
+                        }}
+                    >
+                        <CardContent>
+                            <Stack spacing={3}>
+                                <Box>
+                                    <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+                                        <DocumentationIcon color="primary" />
+                                        <Typography variant="h6" fontWeight="600">
+                                            Documentation
+                                        </Typography>
+                                    </Stack>
+                                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                        Learn how to configure and use Yap for your organization
+                                    </Typography>
                                     <Button
-                                        variant="outlined"
-                                        size="small"
-                                        href="https://github.com/bmlt-enabled/yap/releases/latest"
+                                        variant="contained"
+                                        href="https://yap.bmlt.app"
                                         target="_blank"
                                         rel="noopener noreferrer"
+                                        startIcon={<DocumentationIcon />}
+                                        fullWidth
                                     >
-                                        Download v{latestVersion}
+                                        View Documentation
                                     </Button>
-                                )}
-                            </Stack>
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                {/* System Status Card */}
-                <Grid item xs={12} md={6}>
-                    <Card
-                        sx={{
-                            height: '100%',
-                            transition: 'transform 0.2s, box-shadow 0.2s',
-                            '&:hover': {
-                                transform: 'translateY(-4px)',
-                                boxShadow: 4
-                            }
-                        }}
-                    >
-                        <CardContent>
-                            <Stack spacing={2}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    {systemStatus === 'healthy' && <CheckIcon color="success" sx={{ fontSize: 40 }} />}
-                                    {systemStatus === 'warning' && <WarningIcon color="warning" sx={{ fontSize: 40 }} />}
-                                    {systemStatus === 'error' && <ErrorIcon color="error" sx={{ fontSize: 40 }} />}
-                                    {systemStatus === 'checking' && <InfoIcon color="action" sx={{ fontSize: 40 }} />}
-
-                                    {systemStatus === 'healthy' && (
-                                        <Chip
-                                            label="Healthy"
-                                            color="success"
-                                            size="small"
-                                            icon={<CheckIcon />}
-                                        />
-                                    )}
-                                    {systemStatus === 'warning' && (
-                                        <Chip
-                                            label="Warning"
-                                            color="warning"
-                                            size="small"
-                                            icon={<WarningIcon />}
-                                        />
-                                    )}
-                                    {systemStatus === 'error' && (
-                                        <Chip
-                                            label="Error"
-                                            color="error"
-                                            size="small"
-                                            icon={<ErrorIcon />}
-                                        />
-                                    )}
                                 </Box>
-                                <Typography variant="h6" fontWeight="600">
-                                    System Status
-                                </Typography>
-                                <Typography
-                                    variant="h6"
-                                    fontWeight="bold"
-                                    color={
-                                        systemStatus === 'healthy' ? 'success.main' :
-                                        systemStatus === 'warning' ? 'warning.main' :
-                                        systemStatus === 'error' ? 'error.main' : 'text.secondary'
-                                    }
-                                >
-                                    {systemStatus === 'healthy' ? 'All Systems Operational' :
-                                     systemStatus === 'checking' ? 'Checking...' : 'Issues Detected'}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    {systemMessage}
-                                </Typography>
-                            </Stack>
-                        </CardContent>
-                    </Card>
-                </Grid>
 
-                {/* Documentation Card */}
-                <Grid item xs={12} md={6}>
-                    <Card
-                        sx={{
-                            height: '100%',
-                            transition: 'transform 0.2s, box-shadow 0.2s',
-                            '&:hover': {
-                                transform: 'translateY(-4px)',
-                                boxShadow: 4
-                            }
-                        }}
-                    >
-                        <CardContent>
-                            <Stack spacing={2}>
-                                <DocumentationIcon color="primary" sx={{ fontSize: 40 }} />
-                                <Typography variant="h6" fontWeight="600">
-                                    Documentation
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Learn how to configure and use Yap for your organization
-                                </Typography>
-                                <Button
-                                    variant="contained"
-                                    href="https://yap.bmlt.app"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    startIcon={<DocumentationIcon />}
-                                    fullWidth
-                                >
-                                    View Documentation
-                                </Button>
-                            </Stack>
-                        </CardContent>
-                    </Card>
-                </Grid>
+                                <Divider />
 
-                {/* API Documentation Card */}
-                <Grid item xs={12} md={6}>
-                    <Card
-                        sx={{
-                            height: '100%',
-                            transition: 'transform 0.2s, box-shadow 0.2s',
-                            '&:hover': {
-                                transform: 'translateY(-4px)',
-                                boxShadow: 4
-                            }
-                        }}
-                    >
-                        <CardContent>
-                            <Stack spacing={2}>
-                                <ApiIcon color="primary" sx={{ fontSize: 40 }} />
-                                <Typography variant="h6" fontWeight="600">
-                                    API Documentation
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Explore the REST API endpoints and integration options
-                                </Typography>
-                                <Button
-                                    variant="outlined"
-                                    href="/api/v1/documentation"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    startIcon={<ApiIcon />}
-                                    fullWidth
-                                >
-                                    API Reference
-                                </Button>
+                                <Box>
+                                    <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+                                        <ApiIcon color="primary" />
+                                        <Typography variant="h6" fontWeight="600">
+                                            API Reference
+                                        </Typography>
+                                    </Stack>
+                                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                        Explore the REST API endpoints and integration options
+                                    </Typography>
+                                    <Button
+                                        variant="outlined"
+                                        href="/api/v1/documentation"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        startIcon={<ApiIcon />}
+                                        fullWidth
+                                    >
+                                        API Reference
+                                    </Button>
+                                </Box>
                             </Stack>
                         </CardContent>
                     </Card>

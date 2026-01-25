@@ -139,8 +139,8 @@ function Groups() {
     return (
         <Box sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <Diversity1Icon sx={{ fontSize: 40, mr: 2 }} />
-                <Typography variant="h4">
+                <Diversity1Icon sx={{ fontSize: 40, mr: 2, color: 'primary.main' }} />
+                <Typography variant="h4" fontWeight={600}>
                     {getWord('groups') || 'Groups'}
                 </Typography>
             </Box>

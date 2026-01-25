@@ -8,13 +8,15 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Paper,
+    Card,
+    CardContent,
     Checkbox,
     Typography,
     Alert,
     Snackbar,
     IconButton,
-    Chip
+    Chip,
+    CircularProgress
 } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -129,8 +131,8 @@ function Users() {
         <Box sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <PeopleIcon sx={{ fontSize: 40, mr: 2 }} />
-                    <Typography variant="h4">
+                    <PeopleIcon sx={{ fontSize: 40, mr: 2, color: 'primary.main' }} />
+                    <Typography variant="h4" fontWeight={600}>
                         Users
                     </Typography>
                 </Box>
@@ -144,10 +146,14 @@ function Users() {
             </Box>
 
             {loading ? (
-                <Typography>Loading...</Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+                    <CircularProgress />
+                </Box>
             ) : (
-                <TableContainer component={Paper}>
-                    <Table>
+                <Card>
+                    <CardContent>
+                        <TableContainer>
+                            <Table>
                         <TableHead>
                             <TableRow>
                                 <TableCell>Actions</TableCell>
@@ -271,7 +277,9 @@ function Users() {
                             ))}
                         </TableBody>
                     </Table>
-                </TableContainer>
+                        </TableContainer>
+                    </CardContent>
+                </Card>
             )}
 
             {showDialog && (

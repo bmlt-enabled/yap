@@ -29,6 +29,7 @@ import {SessionContext} from "../SessionContext"
 import ErrorBoundary from "./ErrorBoundary";
 import { LocalizationProvider } from "../contexts/LocalizationContext";
 import ChangePasswordDialog from "../dialogs/ChangePasswordDialog";
+import theme from "../theme/theme";
 
 export default function App() {
     const [session, setSession] = React.useState(() => {
@@ -128,6 +129,7 @@ export default function App() {
                     session={session}
                     navigation={navigation}
                     router={router}
+                    theme={theme}
                 >
                     <Outlet/>
                     <ChangePasswordDialog

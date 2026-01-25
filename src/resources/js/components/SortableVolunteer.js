@@ -136,11 +136,18 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
             ref={setNodeRef}
             style={style}
             sx={{
-                border: '1px solid #ccc',
+                border: '1px solid',
+                borderColor: 'divider',
                 margin: 2,
                 padding: 2,
                 borderRadius: 2,
                 position: 'relative',
+                bgcolor: 'background.paper',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                transition: 'box-shadow 0.2s ease-in-out',
+                '&:hover': {
+                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.12)',
+                },
             }}
         >
             <Box
@@ -208,7 +215,8 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
 
             <Collapse in={expanded[index]}>
                 <Box sx={{
-                    borderTop: '1px solid #aaa',
+                    borderTop: '1px solid',
+                    borderColor: 'divider',
                     position: 'relative',
                     zIndex: 2,
                 }}>
@@ -276,7 +284,8 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
                 {Array.isArray(volunteer.volunteer_shift_schedule) && volunteer.volunteer_shift_schedule.length > 0 && volunteer.volunteer_shift_schedule.map((shift, shiftIndex) => (
                     <Box key={shiftIndex} sx={{
                         backgroundColor: 'transparent',
-                        border: '1px solid #e9ecef',
+                        border: '1px solid',
+                        borderColor: 'divider',
                         padding: 2,
                         marginTop: 2,
                         borderRadius: 2,
@@ -296,8 +305,8 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
                                 gap: 1
                             }}>
                                 <Box sx={{
-                                    backgroundColor: '#007bff',
-                                    color: 'white',
+                                    backgroundColor: 'primary.main',
+                                    color: 'primary.contrastText',
                                     padding: '4px 8px',
                                     borderRadius: 1,
                                     fontSize: '0.875rem',
@@ -311,15 +320,15 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: 1,
-                                    color: '#495057'
+                                    color: 'text.secondary'
                                 }}>
                                     <span style={{ fontWeight: 'bold' }}>{shift.start_time}</span>
                                     <span>→</span>
                                     <span style={{ fontWeight: 'bold' }}>{shift.end_time}</span>
                                     {shift.tz && (
                                         <Box sx={{
-                                            backgroundColor: '#6c757d',
-                                            color: 'white',
+                                            backgroundColor: 'grey.600',
+                                            color: 'common.white',
                                             padding: '2px 6px',
                                             borderRadius: 1,
                                             fontSize: '0.7rem',
@@ -337,26 +346,26 @@ export default function SortableVolunteer({ volunteer, index, volunteers, setVol
                             }}>
                                 {shift.type?.includes('PHONE') && (
                                     <Box sx={{
-                                        backgroundColor: '#28a745',
-                                        color: 'white',
+                                        backgroundColor: 'success.main',
+                                        color: 'success.contrastText',
                                         padding: '2px 6px',
                                         borderRadius: 1,
                                         fontSize: '0.75rem',
                                         fontWeight: 'bold'
                                     }}>
-                                        📞 Phone
+                                        Phone
                                     </Box>
                                 )}
                                 {shift.type?.includes('SMS') && (
                                     <Box sx={{
-                                        backgroundColor: '#17a2b8',
-                                        color: 'white',
+                                        backgroundColor: 'info.main',
+                                        color: 'info.contrastText',
                                         padding: '2px 6px',
                                         borderRadius: 1,
                                         fontSize: '0.75rem',
                                         fontWeight: 'bold'
                                     }}>
-                                        💬 SMS
+                                        SMS
                                     </Box>
                                 )}
                             </Box>
