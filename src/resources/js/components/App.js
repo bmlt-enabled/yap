@@ -1,7 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PeopleIcon from '@mui/icons-material/People';
@@ -123,27 +121,25 @@ export default function App() {
     }), [signIn, signOut]);
 
     return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <SessionContext.Provider value={sessionContextValue}>
-                <LocalizationProvider>
-                    <AppProvider
-                        branding={branding}
-                        authentication={authentication}
-                        session={session}
-                        navigation={navigation}
-                        router={router}
-                    >
-                        <Outlet/>
-                        <ChangePasswordDialog
-                            open={showPasswordDialog}
-                            onClose={() => setShowPasswordDialog(false)}
-                            username={session?.user?.username}
-                        />
-                    </AppProvider>
-                </LocalizationProvider>
-            </SessionContext.Provider>
-        </ThemeProvider>
+        <SessionContext.Provider value={sessionContextValue}>
+            <LocalizationProvider>
+                <AppProvider
+                    branding={branding}
+                    authentication={authentication}
+                    session={session}
+                    navigation={navigation}
+                    router={router}
+                    theme={theme}
+                >
+                    <Outlet/>
+                    <ChangePasswordDialog
+                        open={showPasswordDialog}
+                        onClose={() => setShowPasswordDialog(false)}
+                        username={session?.user?.username}
+                    />
+                </AppProvider>
+            </LocalizationProvider>
+        </SessionContext.Provider>
     );
 }
 
