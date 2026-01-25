@@ -352,8 +352,8 @@ import SortableVolunteer from "../components/SortableVolunteer";
     return (
         <Box sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <VolunteerActivismIcon sx={{ fontSize: 40, mr: 2 }} />
-                <Typography variant="h4">
+                <VolunteerActivismIcon sx={{ fontSize: 40, mr: 2, color: 'primary.main' }} />
+                <Typography variant="h4" fontWeight={600}>
                     {getWord('volunteers') || 'Volunteers'}
                 </Typography>
             </Box>
@@ -430,8 +430,8 @@ import SortableVolunteer from "../components/SortableVolunteer";
                     transform: 'translate(-50%, -50%)',
                     width: 400,
                     bgcolor: 'background.paper',
-                    border: '2px solid #000',
-                    boxShadow: 24,
+                    borderRadius: 3,
+                    boxShadow: '0 24px 48px rgba(0, 0, 0, 0.2)',
                     p: 4
                 }}>
                     <h2>{getWord('add_shift')}</h2>
@@ -635,8 +635,8 @@ import SortableVolunteer from "../components/SortableVolunteer";
                     transform: 'translate(-50%, -50%)',
                     width: 500,
                     bgcolor: 'background.paper',
-                    border: '2px solid #000',
-                    boxShadow: 24,
+                    borderRadius: 3,
+                    boxShadow: '0 24px 48px rgba(0, 0, 0, 0.2)',
                     p: 4
                 }}>
                     <h2>{getWord('include_group') || 'Include Group'}</h2>

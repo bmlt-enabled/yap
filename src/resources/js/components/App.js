@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PeopleIcon from '@mui/icons-material/People';
@@ -29,6 +31,7 @@ import {SessionContext} from "../SessionContext"
 import ErrorBoundary from "./ErrorBoundary";
 import { LocalizationProvider } from "../contexts/LocalizationContext";
 import ChangePasswordDialog from "../dialogs/ChangePasswordDialog";
+import theme from "../theme/theme";
 
 export default function App() {
     const [session, setSession] = React.useState(() => {
@@ -120,24 +123,27 @@ export default function App() {
     }), [signIn, signOut]);
 
     return (
-        <SessionContext.Provider value={sessionContextValue}>
-            <LocalizationProvider>
-                <AppProvider
-                    branding={branding}
-                    authentication={authentication}
-                    session={session}
-                    navigation={navigation}
-                    router={router}
-                >
-                    <Outlet/>
-                    <ChangePasswordDialog
-                        open={showPasswordDialog}
-                        onClose={() => setShowPasswordDialog(false)}
-                        username={session?.user?.username}
-                    />
-                </AppProvider>
-            </LocalizationProvider>
-        </SessionContext.Provider>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <SessionContext.Provider value={sessionContextValue}>
+                <LocalizationProvider>
+                    <AppProvider
+                        branding={branding}
+                        authentication={authentication}
+                        session={session}
+                        navigation={navigation}
+                        router={router}
+                    >
+                        <Outlet/>
+                        <ChangePasswordDialog
+                            open={showPasswordDialog}
+                            onClose={() => setShowPasswordDialog(false)}
+                            username={session?.user?.username}
+                        />
+                    </AppProvider>
+                </LocalizationProvider>
+            </SessionContext.Provider>
+        </ThemeProvider>
     );
 }
 

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Box, Typography} from "@mui/material";
+import {Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Box, Typography, Card, CardContent, CircularProgress} from "@mui/material";
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import apiClient from "../services/api";
 import {CallHandlingDialog} from "../dialogs/CallHandlingDialog";
@@ -60,77 +60,90 @@ function ServiceBodies()
     return (
         <Box sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <AccountTreeIcon sx={{ fontSize: 40, mr: 2 }} />
-                <Typography variant="h4">
+                <AccountTreeIcon sx={{ fontSize: 40, mr: 2, color: 'primary.main' }} />
+                <Typography variant="h4" fontWeight={600}>
                     Service Bodies
                 </Typography>
             </Box>
-            {list.length > 0 ?
-            <TableContainer>
-                <CallHandlingDialog 
-                    open={openCallHandlingDialog} 
-                    onClose={closeCallHandlingDialog} 
-                    serviceBodyId={selectedServiceBody?.id} 
-                />
-                <ServiceBodyConfigurationDialog
-                    open={openConfigDialog}
-                    onClose={closeConfigDialog}
-                    serviceBodyId={selectedServiceBody?.id}
-                    serviceBodyName={selectedServiceBody?.name}
-                />
-                <VoicemailDialog
-                    open={openVoicemailDialog}
-                    onClose={closeVoicemailDialog}
-                    serviceBodyId={selectedServiceBody?.id}
-                    serviceBodyName={selectedServiceBody?.name}
-                />
-                <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Service Bodies</TableCell>
-                            <TableCell>Helpline</TableCell>
-                            <TableCell>Action</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {list.map((item) => (
-                            <TableRow
-                                key={item.id}
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                <TableCell component="th" scope="row">
-                                    {item.name} ({item.id})
-                                </TableCell>
-                                <TableCell>{item.helpline}</TableCell>
-                                <TableCell>
-                                    <Button 
-                                        variant="contained" 
-                                        size="small" 
-                                        onClick={() => handleCallHandlingClick(item)}
-                                    >
-                                        Call Handling
-                                    </Button>&nbsp;
-                                    <Button 
-                                        variant="contained" 
-                                        size="small" 
-                                        color="success"
-                                        onClick={() => handleConfigClick(item)}
-                                    >
-                                        Configure
-                                    </Button>&nbsp;
-                                    <Button 
-                                        variant="contained" 
-                                        size="small" 
-                                        color="warning"
-                                        onClick={() => handleVoicemailClick(item)}
-                                    >
-                                        Voicemail
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer> : "Loading..."}
+            <CallHandlingDialog
+                open={openCallHandlingDialog}
+                onClose={closeCallHandlingDialog}
+                serviceBodyId={selectedServiceBody?.id}
+            />
+            <ServiceBodyConfigurationDialog
+                open={openConfigDialog}
+                onClose={closeConfigDialog}
+                serviceBodyId={selectedServiceBody?.id}
+                serviceBodyName={selectedServiceBody?.name}
+            />
+            <VoicemailDialog
+                open={openVoicemailDialog}
+                onClose={closeVoicemailDialog}
+                serviceBodyId={selectedServiceBody?.id}
+                serviceBodyName={selectedServiceBody?.name}
+            />
+            {loading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+                    <CircularProgress />
+                </Box>
+            ) : list.length > 0 ? (
+                <Card>
+                    <CardContent>
+                        <TableContainer>
+                            <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Service Bodies</TableCell>
+                                        <TableCell>Helpline</TableCell>
+                                        <TableCell>Action</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {list.map((item) => (
+                                        <TableRow
+                                            key={item.id}
+                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                            <TableCell component="th" scope="row">
+                                                {item.name} ({item.id})
+                                            </TableCell>
+                                            <TableCell>{item.helpline}</TableCell>
+                                            <TableCell>
+                                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                                    <Button
+                                                        variant="contained"
+                                                        size="small"
+                                                        onClick={() => handleCallHandlingClick(item)}
+                                                    >
+                                                        Call Handling
+                                                    </Button>
+                                                    <Button
+                                                        variant="contained"
+                                                        size="small"
+                                                        color="success"
+                                                        onClick={() => handleConfigClick(item)}
+                                                    >
+                                                        Configure
+                                                    </Button>
+                                                    <Button
+                                                        variant="contained"
+                                                        size="small"
+                                                        color="warning"
+                                                        onClick={() => handleVoicemailClick(item)}
+                                                    >
+                                                        Voicemail
+                                                    </Button>
+                                                </Box>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </CardContent>
+                </Card>
+            ) : (
+                <Typography color="text.secondary">No service bodies found.</Typography>
+            )}
         </Box>
     )
 }
