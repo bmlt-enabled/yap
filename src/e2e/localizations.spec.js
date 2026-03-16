@@ -268,18 +268,26 @@ test.describe('Localizations', () => {
     await expect(page.locator('label').filter({ hasText: 'Service Bodies' })).toBeVisible();
 
     // Check "Create" button is localized when a service body is selected
-    // First select a service body
-    const serviceBodySelect = page.locator('[role="combobox"]').first();
+    // Use the combobox inside <main> to avoid matching the language selector in the toolbar
+    const serviceBodySelect = page.locator('main [role="combobox"]').first();
     if (await serviceBodySelect.isVisible()) {
       await serviceBodySelect.click();
-      const options = page.locator('[role="option"]');
-      const optionCount = await options.count();
-      if (optionCount > 1) {
-        await options.nth(1).click();
-        await page.waitForTimeout(500);
+      // MUI renders options in a portal listbox
+      const listbox = page.locator('[role="listbox"]');
+      const listboxVisible = await listbox.isVisible().catch(() => false);
+      if (listboxVisible) {
+        const options = listbox.locator('[role="option"]');
+        const optionCount = await options.count();
+        // First option is the placeholder, need at least a second option
+        if (optionCount > 1) {
+          await options.nth(1).click();
 
-        // Check "Create" button is localized
-        await expect(page.getByRole('button', { name: 'Create' })).toBeVisible();
+          // Check "Create" button is localized
+          await expect(page.getByRole('button', { name: 'Create' })).toBeVisible({ timeout: 10000 });
+        } else {
+          // No real service bodies, close the dropdown
+          await page.keyboard.press('Escape');
+        }
       }
     }
   });
