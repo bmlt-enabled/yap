@@ -26,8 +26,6 @@ test('version test', function ($method) {
         ->assertHeader("Content-Type", "application/json")
         ->assertJsonStructure([
             'version',
-            'status',
-            'message',
         ])
         ->assertJson([
             'version' => $settings->version(),
@@ -54,9 +52,8 @@ test('version test as jsonp', function ($method) {
     $data = json_decode($jsonString, true);
 
     // Assert the structure and version
-    expect($data)->toHaveKeys(['version', 'status', 'message']);
+    expect($data)->toHaveKeys(['version']);
     expect($data['version'])->toBe($settings->version());
-    expect($data['status'])->toBeIn(['current', 'pre-release', 'update-available', 'unknown']);
 })->with(['GET']);
 
 test('fake twilio credentials should return a rest error', function ($method) {
@@ -103,8 +100,6 @@ test('version test check cors headers', function ($method) {
         ->assertHeader("Access-Control-Allow-Origin", "*")
         ->assertJsonStructure([
             'version',
-            'status',
-            'message',
         ]);
 
     // Verify the version is in the response
