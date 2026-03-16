@@ -18,7 +18,10 @@ Route::group([
     Route::post('login', [AuthController::class, 'login'])
         ->middleware('throttle:60,1')  // 60 attempts per minute
         ->name('login');
-    Route::get('version', [UpgradeAdvisorController::class, 'version']);
+    Route::get('version', function (\App\Services\SettingsService $settings) {
+        return response()->json(['version' => $settings->version()]);
+    });
+    Route::get('settings/localizations', [SettingsController::class, 'getLocalizations']);
     Route::get('upgrade', [UpgradeAdvisorController::class, 'index']);
     Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
 
@@ -80,7 +83,6 @@ Route::group([
         Route::controller(SettingsController::class)->group(function () {
             Route::get('settings', 'index');
             Route::get('settings/allowlist', 'allowlist');
-            Route::get('settings/localizations', 'getLocalizations');
             Route::get('settings/timezones', 'getTimezones');
             Route::get('settings/serviceBody/{serviceBodyId}', 'getServiceBodyConfiguration');
             Route::post('settings/serviceBody/{serviceBodyId}', 'saveServiceBodyConfiguration');
