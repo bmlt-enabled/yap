@@ -608,20 +608,10 @@ class CallFlowController extends Controller
         $twiml = new VoiceResponse();
         if (($digits == 1 || $digits == 3) && count($sms_messages) > 0) {
             if ($this->settings->get("sms_combine")) {
-                $this->twilio->client()->messages->create(
-                    $request->get('From'),
-                    array("from" => $request->get('To'),
-                        "body" => implode(
-                            "\n\n",
-                            $sms_messages
-                        ))
-                );
+                $this->twilio->sendSms(implode("\n\n", $sms_messages), $request->get('From'), $request->get('To'));
             } else {
                 for ($i = 0; $i < count($sms_messages); $i++) {
-                    $this->twilio->client()->messages->create(
-                        $request->get('From'),
-                        array("from" => $request->get('To'), "body" => $sms_messages[$i])
-                    );
+                    $this->twilio->sendSms($sms_messages[$i], $request->get('From'), $request->get('To'));
                 }
             }
         }

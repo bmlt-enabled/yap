@@ -41,8 +41,28 @@ class TwilioService extends Service
     {
         if (isset($from) && isset($to)
             && str_replace("+", "", $from) != self::ANONYMOUS_NUMBER && $this->mobileCheck($from)) {
-            $this->client()->messages->create($from, array("from" => $to, "body" => $message));
+            $this->client()->messages->create($from, array("from" => $to, "body" => $this->formatSmsComplianceMessage($message)));
         }
+    }
+
+    public function formatSmsComplianceMessage($message): string
+    {
+        $title = $this->settings()->get('title');
+        $optOutMessage = $this->settings()->get('sms_opt_out_message');
+
+        $parts = [];
+
+        if (!empty($title)) {
+            $parts[] = $title;
+        }
+
+        $parts[] = $message;
+
+        if (!empty($optOutMessage)) {
+            $parts[count($parts) - 1] .= " – {" . $optOutMessage . "}";
+        }
+
+        return implode("\n", $parts);
     }
 
     public function incrementNoAnswerCount(): void

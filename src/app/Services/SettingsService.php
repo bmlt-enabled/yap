@@ -68,6 +68,7 @@ class SettingsService
         'sms_combine' => ['description' => '/meeting-search/sms-options#combine-results' , 'default' => false, 'overridable' => true, 'hidden' => false],
         'sms_dialback_options' => ['description' => '/helpline/dialback' , 'default' => 0, 'overridable' => true, 'hidden' => false],
         'sms_helpline_keyword' => ['description' => '/helpline/sms-volunteer-routing', 'default' => 'talk', 'overridable' => true, 'hidden' => false],
+        'sms_opt_out_message' => ['description' => '/meeting-search/sms-options#opt-out-message', 'default' => 'Reply STOP to opt-out', 'overridable' => true, 'hidden' => false],
         'sms_summary_page' => ['description' => '/meeting-search/results-counts-maximums', 'default' => false, 'overridable' => true, 'hidden' => false],
         'spad_option' => ['description' => '/miscellaneous/playback-for-readings' , 'default' => false, 'overridable' => true, 'hidden' => false],
         'speech_gathering' => ['description' => '/general/voice-recognition-options', 'default' => false, 'overridable' => true, 'hidden' => false],
