@@ -27,9 +27,81 @@ import {AppProvider} from "@toolpad/core";
 import LoginPage from "../pages/Login";
 import {SessionContext} from "../SessionContext"
 import ErrorBoundary from "./ErrorBoundary";
-import { LocalizationProvider } from "../contexts/LocalizationContext";
+import { LocalizationProvider, useLocalization } from "../contexts/LocalizationContext";
 import ChangePasswordDialog from "../dialogs/ChangePasswordDialog";
 import theme from "../theme/theme";
+
+// Inner component that can use localization context
+function AppContent({ session, authentication, router, showPasswordDialog, setShowPasswordDialog }) {
+    const { getWord } = useLocalization();
+
+    const branding = {
+        title: 'Yap',
+        homeUrl: '/dashboard',
+        logo: '',
+    };
+
+    const navigation = [
+        {
+            segment: 'dashboard',
+            title: getWord('dashboard') || 'Dashboard',
+            icon: <DashboardIcon />
+        },
+        {
+            segment: 'reports',
+            title: getWord('reports') || 'Reports',
+            icon: <AssessmentIcon />
+        },
+        {
+            segment: 'serviceBodies',
+            title: getWord('service_bodies') || 'Service Bodies',
+            icon: <AccountTreeIcon />
+        },
+        {
+            segment: 'schedule',
+            title: getWord('schedules') || 'Schedules',
+            icon: <CalendarMonthIcon />
+        },
+        {
+            segment: 'settings',
+            title: getWord('settings') || 'Settings',
+            icon: <SettingsIcon />,
+        },
+        {
+            segment: 'volunteers',
+            title: getWord('volunteers') || 'Volunteers',
+            icon: <VolunteerActivismIcon />,
+        },
+        {
+            segment: 'groups',
+            title: getWord('groups') || 'Groups',
+            icon: <Diversity1Icon />,
+        },
+        {
+            segment: 'users',
+            title: getWord('users') || 'Users',
+            icon: <PeopleIcon />,
+        },
+    ];
+
+    return (
+        <AppProvider
+            branding={branding}
+            authentication={authentication}
+            session={session}
+            navigation={navigation}
+            router={router}
+            theme={theme}
+        >
+            <Outlet/>
+            <ChangePasswordDialog
+                open={showPasswordDialog}
+                onClose={() => setShowPasswordDialog(false)}
+                username={session?.user?.username}
+            />
+        </AppProvider>
+    );
+}
 
 export default function App() {
     const [session, setSession] = React.useState(() => {
@@ -66,55 +138,6 @@ export default function App() {
         [session, setSession],
     );
 
-    const branding = {
-        title: 'Yap',
-        homeUrl: '/dashboard',
-        logo: '',
-    };
-
-    const navigation = [
-        {
-            segment: 'dashboard',
-            title: "Dashboard",
-            icon: <DashboardIcon />
-        },
-        {
-            segment: 'reports',
-            title: "Reports",
-            icon: <AssessmentIcon />
-        },
-        {
-            segment: 'serviceBodies',
-            title: "Service Bodies",
-            icon: <AccountTreeIcon />
-        },
-        {
-            segment: 'schedule',
-            title: "Schedules",
-            icon: <CalendarMonthIcon />
-        },
-        {
-            segment: 'settings',
-            title: 'Settings',
-            icon: <SettingsIcon />,
-        },
-        {
-            segment: 'volunteers',
-            title: 'Volunteers',
-            icon: <VolunteerActivismIcon />,
-        },
-        {
-            segment: 'groups',
-            title: 'Groups',
-            icon: <Diversity1Icon />,
-        },
-        {
-            segment: 'users',
-            title: 'Users',
-            icon: <PeopleIcon />,
-        },
-    ];
-
     const authentication = React.useMemo(() => ({
         signIn,
         signOut,
@@ -123,21 +146,13 @@ export default function App() {
     return (
         <SessionContext.Provider value={sessionContextValue}>
             <LocalizationProvider>
-                <AppProvider
-                    branding={branding}
-                    authentication={authentication}
+                <AppContent
                     session={session}
-                    navigation={navigation}
+                    authentication={authentication}
                     router={router}
-                    theme={theme}
-                >
-                    <Outlet/>
-                    <ChangePasswordDialog
-                        open={showPasswordDialog}
-                        onClose={() => setShowPasswordDialog(false)}
-                        username={session?.user?.username}
-                    />
-                </AppProvider>
+                    showPasswordDialog={showPasswordDialog}
+                    setShowPasswordDialog={setShowPasswordDialog}
+                />
             </LocalizationProvider>
         </SessionContext.Provider>
     );

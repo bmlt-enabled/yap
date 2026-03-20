@@ -22,13 +22,16 @@ class AuthController extends Controller
 {
     protected AuthorizationService $authz;
     protected AuthenticationService $authn;
+    protected SettingsService $settings;
 
     public function __construct(
         AuthorizationService  $authz,
         AuthenticationService $authn,
+        SettingsService $settings,
     ) {
         $this->authz = $authz;
         $this->authn = $authn;
+        $this->settings = $settings;
     }
 
     /**
@@ -62,6 +65,7 @@ class AuthController extends Controller
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
+            'language' => 'sometimes|string',
         ]);
 
         $user = $this->authn->authenticateApi(
@@ -74,6 +78,11 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
+
+        // Set session language if provided
+        if ($request->has('language')) {
+            $this->settings->setSessionLanguage($request->input('language'));
+        }
 
         return response()->json([
             'status' => 'success',

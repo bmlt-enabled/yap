@@ -14,7 +14,10 @@ class LocalizationsManager {
      */
     async fetchLocalizations() {
         try {
-            const response = await apiClient.get('/api/v1/settings/localizations');
+            const language = localStorage.getItem('preferredLanguage') || 'en-US';
+            const response = await apiClient.get('/api/v1/settings/localizations', {
+                params: { language }
+            });
             this.localizations = response.data;
             return this.localizations;
         } catch (error) {

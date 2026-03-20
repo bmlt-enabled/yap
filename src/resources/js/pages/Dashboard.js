@@ -22,15 +22,17 @@ import {
     Warning as WarningIcon,
     Error as ErrorIcon
 } from "@mui/icons-material";
+import { useLocalization } from "../contexts/LocalizationContext";
 
 function Dashboard() {
+    const { getWord } = useLocalization();
     const [name, setName] = useState('');
     const [version, setVersion] = useState('');
     const [versionStatus, setVersionStatus] = useState('unknown');
     const [versionMessage, setVersionMessage] = useState('');
     const [latestVersion, setLatestVersion] = useState('');
     const [systemStatus, setSystemStatus] = useState('checking');
-    const [systemMessage, setSystemMessage] = useState('Checking system status...');
+    const [systemMessage, setSystemMessage] = useState('');
 
     const getUser = async () => {
         apiClient.get('/api/v1/user', {
@@ -87,13 +89,13 @@ function Dashboard() {
                 // All good
                 else if (response.data.status === true) {
                     setSystemStatus('healthy');
-                    setSystemMessage('All systems operational');
+                    setSystemMessage('');
                 }
             }
         } catch (error) {
             console.error('Error fetching upgrade advisor status:', error);
             setSystemStatus('error');
-            setSystemMessage('Unable to check system status');
+            setSystemMessage('');
         }
     };
 
@@ -122,10 +124,10 @@ function Dashboard() {
                     </Avatar>
                     <Box>
                         <Typography variant="h4" fontWeight="bold" gutterBottom>
-                            Welcome back, {name || 'User'}!
+                            {getWord('welcome_back') || 'Welcome back'}, {name || getWord('user') || 'User'}!
                         </Typography>
                         <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                            Manage your Yap Phone System configuration and view reports
+                            {getWord('dashboard_subtitle') || 'Manage your Yap Phone System configuration and view reports'}
                         </Typography>
                     </Box>
                 </Stack>
@@ -153,24 +155,24 @@ function Dashboard() {
                                         <Stack direction="row" spacing={1} alignItems="center">
                                             <InfoIcon color="primary" />
                                             <Typography variant="subtitle2" color="text.secondary">
-                                                Version
+                                                {getWord('version') || 'Version'}
                                             </Typography>
                                         </Stack>
                                         {versionStatus === 'current' && (
-                                            <Chip label="Latest" color="success" size="small" icon={<CheckIcon />} />
+                                            <Chip label={getWord('latest') || 'Latest'} color="success" size="small" icon={<CheckIcon />} />
                                         )}
                                         {versionStatus === 'pre-release' && (
-                                            <Chip label="Pre-Release" color="warning" size="small" icon={<WarningIcon />} />
+                                            <Chip label={getWord('pre_release') || 'Pre-Release'} color="warning" size="small" icon={<WarningIcon />} />
                                         )}
                                         {versionStatus === 'update-available' && (
-                                            <Chip label="Update Available" color="info" size="small" icon={<InfoIcon />} />
+                                            <Chip label={getWord('update_available') || 'Update Available'} color="info" size="small" icon={<InfoIcon />} />
                                         )}
                                     </Box>
                                     <Typography variant="h3" fontWeight="bold" color="primary">
                                         v{version}
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
-                                        {versionMessage || 'Loading version information...'}
+                                        {versionMessage || (getWord('loading_version') || 'Loading version information...')}
                                     </Typography>
                                     {latestVersion && versionStatus === 'update-available' && (
                                         <Button
@@ -181,7 +183,7 @@ function Dashboard() {
                                             rel="noopener noreferrer"
                                             sx={{ mt: 1 }}
                                         >
-                                            Download v{latestVersion}
+                                            {getWord('download') || 'Download'} v{latestVersion}
                                         </Button>
                                     )}
                                 </Box>
@@ -197,17 +199,17 @@ function Dashboard() {
                                             {systemStatus === 'error' && <ErrorIcon color="error" />}
                                             {systemStatus === 'checking' && <InfoIcon color="action" />}
                                             <Typography variant="subtitle2" color="text.secondary">
-                                                System Status
+                                                {getWord('system_status') || 'System Status'}
                                             </Typography>
                                         </Stack>
                                         {systemStatus === 'healthy' && (
-                                            <Chip label="Healthy" color="success" size="small" />
+                                            <Chip label={getWord('healthy') || 'Healthy'} color="success" size="small" />
                                         )}
                                         {systemStatus === 'warning' && (
-                                            <Chip label="Warning" color="warning" size="small" />
+                                            <Chip label={getWord('warning') || 'Warning'} color="warning" size="small" />
                                         )}
                                         {systemStatus === 'error' && (
-                                            <Chip label="Error" color="error" size="small" />
+                                            <Chip label={getWord('error') || 'Error'} color="error" size="small" />
                                         )}
                                     </Box>
                                     <Typography
@@ -219,11 +221,16 @@ function Dashboard() {
                                             systemStatus === 'error' ? 'error.main' : 'text.secondary'
                                         }
                                     >
-                                        {systemStatus === 'healthy' ? 'All Systems Operational' :
-                                         systemStatus === 'checking' ? 'Checking...' : 'Issues Detected'}
+                                        {systemStatus === 'healthy' ? (getWord('all_systems_operational') || 'All Systems Operational') :
+                                         systemStatus === 'checking' ? (getWord('checking') || 'Checking...') : (getWord('issues_detected') || 'Issues Detected')}
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
-                                        {systemMessage}
+                                        {systemMessage || (
+                                            systemStatus === 'healthy' ? (getWord('all_systems_operational') || 'All systems operational') :
+                                            systemStatus === 'checking' ? (getWord('checking_system_status') || 'Checking system status...') :
+                                            systemStatus === 'error' ? (getWord('unable_to_check_status') || 'Unable to check system status') :
+                                            ''
+                                        )}
                                     </Typography>
                                 </Box>
                             </Stack>
@@ -249,11 +256,11 @@ function Dashboard() {
                                     <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
                                         <DocumentationIcon color="primary" />
                                         <Typography variant="h6" fontWeight="600">
-                                            Documentation
+                                            {getWord('documentation') || 'Documentation'}
                                         </Typography>
                                     </Stack>
                                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                        Learn how to configure and use Yap for your organization
+                                        {getWord('documentation_description') || 'Learn how to configure and use Yap for your organization'}
                                     </Typography>
                                     <Button
                                         variant="contained"
@@ -263,7 +270,7 @@ function Dashboard() {
                                         startIcon={<DocumentationIcon />}
                                         fullWidth
                                     >
-                                        View Documentation
+                                        {getWord('view_documentation') || 'View Documentation'}
                                     </Button>
                                 </Box>
 
@@ -273,11 +280,11 @@ function Dashboard() {
                                     <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
                                         <ApiIcon color="primary" />
                                         <Typography variant="h6" fontWeight="600">
-                                            API Reference
+                                            {getWord('api_reference') || 'API Reference'}
                                         </Typography>
                                     </Stack>
                                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                        Explore the REST API endpoints and integration options
+                                        {getWord('api_reference_description') || 'Explore the REST API endpoints and integration options'}
                                     </Typography>
                                     <Button
                                         variant="outlined"
@@ -287,7 +294,7 @@ function Dashboard() {
                                         startIcon={<ApiIcon />}
                                         fullWidth
                                     >
-                                        API Reference
+                                        {getWord('api_reference') || 'API Reference'}
                                     </Button>
                                 </Box>
                             </Stack>
@@ -300,42 +307,42 @@ function Dashboard() {
             <Card sx={{ mt: 4 }}>
                 <CardContent>
                     <Typography variant="h5" fontWeight="600" gutterBottom>
-                        Quick Start Guide
+                        {getWord('quick_start_guide') || 'Quick Start Guide'}
                     </Typography>
                     <Divider sx={{ my: 2 }} />
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
                             <Typography variant="h6" color="primary" gutterBottom>
-                                Getting Started
+                                {getWord('getting_started') || 'Getting Started'}
                             </Typography>
                             <Stack spacing={1}>
                                 <Typography variant="body2">
-                                    • Configure your service bodies and volunteers
+                                    • {getWord('getting_started_step1') || 'Configure your service bodies and volunteers'}
                                 </Typography>
                                 <Typography variant="body2">
-                                    • Set up call handling preferences
+                                    • {getWord('getting_started_step2') || 'Set up call handling preferences'}
                                 </Typography>
                                 <Typography variant="body2">
-                                    • Configure SMS messaging options
+                                    • {getWord('getting_started_step3') || 'Configure SMS messaging options'}
                                 </Typography>
                                 <Typography variant="body2">
-                                    • Test your configuration
+                                    • {getWord('getting_started_step4') || 'Test your configuration'}
                                 </Typography>
                             </Stack>
                         </Grid>
                         <Grid item xs={12} md={6}>
                             <Typography variant="h6" color="primary" gutterBottom>
-                                Need Help?
+                                {getWord('need_help') || 'Need Help?'}
                             </Typography>
                             <Stack spacing={1}>
                                 <Typography variant="body2">
-                                    • Check the <a href="https://yap.bmlt.app" target="_blank" rel="noopener noreferrer">documentation</a> for detailed guides
+                                    • {getWord('need_help_step1') || 'Check the'} <a href="https://yap.bmlt.app" target="_blank" rel="noopener noreferrer">{getWord('documentation') || 'documentation'}</a> {getWord('need_help_step1_suffix') || 'for detailed guides'}
                                 </Typography>
                                 <Typography variant="body2">
-                                    • Review the API docs for integration details
+                                    • {getWord('need_help_step2') || 'Review the API docs for integration details'}
                                 </Typography>
                                 <Typography variant="body2">
-                                    • Contact your system administrator for assistance
+                                    • {getWord('need_help_step3') || 'Contact your system administrator for assistance'}
                                 </Typography>
                             </Stack>
                         </Grid>

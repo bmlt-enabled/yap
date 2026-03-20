@@ -269,24 +269,30 @@ class SettingsController extends Controller
      *     )
      * )
      */
-    public function getLocalizations()
+    public function getLocalizations(Request $request)
     {
         $localizations = new Localizations();
-        
-        // Get the current language from the session via SettingsService
-        $currentLanguage = $this->settingsService->getWordLanguage();
-        
+
+        // Check for language query parameter first, then fall back to session
+        $currentLanguage = $request->query('language') ?? $this->settingsService->getWordLanguage();
+
+        // Validate language is available
+        $availableLanguages = $this->settingsService->availableLanguages();
+        if (!array_key_exists($currentLanguage, $availableLanguages)) {
+            $currentLanguage = 'en-US';
+        }
+
         // Get the localization data for the current language
         $localizationData = $localizations->getLocalization($currentLanguage);
-        
+
         // Convert to array if it's an object
         if (is_object($localizationData)) {
             $localizationData = (array) $localizationData;
         }
-        
+
         // Sort the localization data alphabetically by keys
         ksort($localizationData);
-        
+
         return response()->json($localizationData);
     }
 
