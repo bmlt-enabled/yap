@@ -1,6 +1,9 @@
 # Release Notes
 
-### 4.5.0 (UNRELEASED)
+### 4.5.1 (UNRELEASED)
+* Added Twilio SHAKEN/STIR trusted calling support. CallToken is forwarded from inbound to outbound calls to maintain full attestation (Level A). StirVerstat is logged on inbound calls for observability. [#1560]
+
+### 4.5.0
 * Added new feature that allow for creating a custom prompt for language selection feature. [#1228]
 * Fix to add some missing translations for Spanish.
 * Fix for SMS + Email full translation for language selected by caller. [#1387]
