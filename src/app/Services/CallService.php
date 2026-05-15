@@ -120,6 +120,14 @@ class CallService extends Service
         }
     }
 
+    public function getCallTokenForForwarding($serviceBodyCallHandling): ?string
+    {
+        if ($serviceBodyCallHandling->forced_caller_id_enabled) {
+            return null;
+        }
+        return $_SESSION['call_token'] ?? null;
+    }
+
     public function getVoicemailMessage($callerSid, $callerId, $smsDialbackOptions, $serviceBodyName, $callerNumber, $recordingUrl) : string
     {
         $dialbackString = $this->getDialbackString($callerSid, $callerId, $smsDialbackOptions);
