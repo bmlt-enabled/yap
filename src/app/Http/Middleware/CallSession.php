@@ -59,6 +59,14 @@ class CallSession
             $_SESSION['initial_webhook'] = str_replace("&", "&amp;", $webhook_array[count($webhook_array) - 1]);
         }
 
+        // Capture SHAKEN/STIR parameters from inbound call
+        if ($request->has('CallToken') && !isset($_SESSION['call_token'])) {
+            $_SESSION['call_token'] = $request->get('CallToken');
+        }
+        if ($request->has('StirVerstat') && !isset($_SESSION['stir_verstat'])) {
+            $_SESSION['stir_verstat'] = $request->get('StirVerstat');
+        }
+
         // Override specific values for the session
         foreach ($request->all() as $key => $value) {
             if (str_contains($key, "override_")) {
