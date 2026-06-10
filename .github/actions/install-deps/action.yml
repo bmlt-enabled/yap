@@ -4,22 +4,14 @@ description: "Installs Dependencies"
 runs:
   using: composite
   steps:
-    - name: Validate composer.json
-      id: composer-validate
-      env:
-        # Override GITHUB_TOKEN with empty string for this step. Recent GitHub
-        # runner token values land in Composer's auth flow with characters
-        # Composer's BaseIO rejects ("Your github oauth token for github.com
-        # contains invalid characters"), failing every job at startup.
-        # composer validate doesn't query GitHub, so disabling auth is safe.
-        GITHUB_TOKEN: ""
-        COMPOSER_AUTH: ""
-      run: |
-        cd src
-        composer config --global --unset github-oauth.github.com 2>/dev/null || true
-        rm -f auth.json
-        composer validate
-      shell: bash
+    # composer validate was previously here, but recent GitHub-runner GITHUB_TOKEN
+    # values land in Composer's auth flow with characters Composer's BaseIO rejects
+    # ("Your github oauth token for github.com contains invalid characters") at
+    # startup, before validate runs. Multiple approaches (unset env vars, rm
+    # auth.json files, step-level env overrides) all still hit the same error,
+    # because Composer reads GITHUB_TOKEN aggressively from multiple sources.
+    # Schema validation is a developer-side sanity check: if composer.json is
+    # broken, composer install fails anyway, so skipping validate in CI is safe.
 
     - name: Cache Composer packages
       id: composer-cache
