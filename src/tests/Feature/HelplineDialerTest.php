@@ -1095,7 +1095,7 @@ test('call blasting dial', function ($method) {
 
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $conferenceListMock->shouldReceive("read")
-        ->with(['friendlyName' => $this->conferenceName])
+        ->with(['friendlyName' => $this->conferenceName, 'status' => 'in-progress'])
         ->andReturn(json_decode(
             '[{"status":"in-progress","sid":"'.$this->conferenceName.'"}]'
         ))
@@ -1234,7 +1234,7 @@ test('random dial', function ($method) {
 
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $conferenceListMock->shouldReceive("read")
-        ->with(['friendlyName' => $this->conferenceName])
+        ->with(['friendlyName' => $this->conferenceName, 'status' => 'in-progress'])
         ->andReturn(json_decode(
             '[{"status":"in-progress","sid":"'.$this->conferenceName.'"}]'
         ))
