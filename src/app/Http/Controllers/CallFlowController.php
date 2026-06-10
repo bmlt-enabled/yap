@@ -725,7 +725,7 @@ class CallFlowController extends Controller
         $twiml = new VoiceResponse();
         if ($request->get('Digits') == "1") {
             $conferences = $this->twilio->client()->conferences
-                ->read(array ("friendlyName" => $request->get('conference_name') ));
+                ->read(array ("friendlyName" => $request->get('conference_name'), "status" => "in-progress"));
             $participants = $this->twilio->client()->conferences($conferences[0]->sid)->participants->read();
 
             if (count($participants) == 2) {
@@ -765,7 +765,7 @@ class CallFlowController extends Controller
     public function helplineOutdialResponse(Request $request)
     {
         $conferences = $this->twilio->client()->conferences
-            ->read(array ("friendlyName" => $request->get('conference_name') ));
+            ->read(array ("friendlyName" => $request->get('conference_name'), "status" => "in-progress"));
         $participants = $this->twilio->client()->conferences($conferences[0]->sid)->participants->read();
 
         $twiml = new VoiceResponse();
