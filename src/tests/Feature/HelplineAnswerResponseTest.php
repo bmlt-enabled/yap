@@ -22,7 +22,7 @@ beforeEach(function () {
 
     // mocking TwilioRestClient->conferences->read()
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
-    $conferenceListMock->shouldReceive("read")->with(['friendlyName' => $this->conferenceName])
+    $conferenceListMock->shouldReceive("read")->with(['friendlyName' => $this->conferenceName, 'status' => 'in-progress'])
         ->andReturn(json_decode('[{"sid":"'.$this->conferenceSid.'"}]'));
     $this->twilioClient->conferences = $conferenceListMock;
 });
