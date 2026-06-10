@@ -8,6 +8,11 @@ runs:
       id: composer-validate
       run: |
         cd src
+        # setup-php auto-injects GITHUB_TOKEN into Composer's auth.json; recent
+        # runner token formats have triggered Composer's "invalid characters"
+        # rejection at startup. composer validate doesn't need GitHub auth, so
+        # strip any stored token before validating.
+        composer config --global --unset github-oauth.github.com 2>/dev/null || true
         composer validate
       shell: bash
 
