@@ -274,7 +274,7 @@ class HelplineController extends Controller
         for ($i = 0; $i < ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRIES; $i++) {
             $conferences = $this->twilio->client()
                 ->conferences
-                ->read(array("friendlyName" => $request->get('FriendlyName')));
+                ->read(array("friendlyName" => $request->get('FriendlyName'), "status" => "in-progress"));
 
             if ($i > 0) {
                 Log::debug("conferences eventual consistency issue, retry $i");
@@ -287,7 +287,7 @@ class HelplineController extends Controller
             sleep(0.5);
         }
 
-        if (count($conferences) > 0 && $conferences[0]->status != TwilioCallStatus::COMPLETED) {
+        if (count($conferences) > 0) {
             $sms_body = $this->settings->word('you_have_an_incoming_phoneline_call_from') . " ";
 
             if ($request->has('StatusCallbackEvent') && $request->get('StatusCallbackEvent') == 'participant-join' &&

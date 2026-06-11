@@ -97,7 +97,7 @@ class CallService extends Service
 
     public function setConferenceParticipant($friendlyname, $callsid, $role): void
     {
-        $conferences = $this->twilio->client()->conferences->read(array ("friendlyName" => $friendlyname ));
+        $conferences = $this->twilio->client()->conferences->read(array ("friendlyName" => $friendlyname, "status" => "in-progress"));
         $conferencesid = $conferences[0]->sid;
         $this->reports->setConferenceParticipant($friendlyname, $conferencesid, $callsid, $role);
     }
