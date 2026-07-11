@@ -156,7 +156,7 @@ test('do nothing', function ($method) {
 
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $conferenceListMock->shouldReceive("read")
-        ->with(['friendlyName' => $this->conferenceName])
+        ->with(['friendlyName' => $this->conferenceName, 'status' => 'in-progress'])
         ->andReturn(json_decode(
             '[{"status":"in-progress","sid":"'.$this->conferenceName.'"}]'
         ))
@@ -229,7 +229,7 @@ test('mark the caller as having entered the conference for reporting purposes', 
 
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $conferenceListMock->shouldReceive("read")
-        ->with(['friendlyName' => $this->conferenceName])
+        ->with(['friendlyName' => $this->conferenceName, 'status' => 'in-progress'])
         ->andReturn(json_decode(
             '[{"status":"in-progress","sid":"'.$this->conferenceName.'"}]'
         ))
@@ -360,7 +360,7 @@ test('mark the caller as having entered the conference for reporting purposes, w
 
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $conferenceListMock->shouldReceive("read")
-        ->with(['friendlyName' => $this->conferenceName])
+        ->with(['friendlyName' => $this->conferenceName, 'status' => 'in-progress'])
         ->andReturn(json_decode(
             '[{"status":"in-progress","sid":"'.$this->conferenceName.'"}]'
         ))
@@ -488,7 +488,7 @@ test('an invalid or busy outgoing call happens with linear and voicemail and one
 
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $conferenceListMock->shouldReceive("read")
-        ->with(['friendlyName' => $this->conferenceName])
+        ->with(['friendlyName' => $this->conferenceName, 'status' => 'in-progress'])
         ->andReturn(json_decode(
             '[{"status":"in-progress","sid":"'.$this->conferenceName.'"}]'
         ))
@@ -647,7 +647,7 @@ test('an invalid or busy outgoing call happens with linear and voicemail and two
 
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $conferenceListMock->shouldReceive("read")
-        ->with(['friendlyName' => $this->conferenceName])
+        ->with(['friendlyName' => $this->conferenceName, 'status' => 'in-progress'])
         ->andReturn(json_decode(
             '[{"status":"in-progress","sid":"'.$this->conferenceName.'"}]'
         ))
@@ -1003,7 +1003,7 @@ test('caller leaves the call', function ($method) {
 
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $conferenceListMock->shouldReceive("read")
-        ->with(['friendlyName' => $this->conferenceName])
+        ->with(['friendlyName' => $this->conferenceName, 'status' => 'in-progress'])
         ->andReturn([])
         ->times(ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRIES);
     $this->twilioClient->conferences = $conferenceListMock;
@@ -1039,7 +1039,7 @@ test('volunteer leave the call', function ($method) {
 
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
     $conferenceListMock->shouldReceive("read")
-        ->with(['friendlyName' => $this->conferenceName])
+        ->with(['friendlyName' => $this->conferenceName, 'status' => 'in-progress'])
         ->andReturn([])
         ->times(ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRIES);
     $this->twilioClient->conferences = $conferenceListMock;
