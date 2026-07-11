@@ -10,9 +10,14 @@ class TrustProxies extends Middleware
     /**
      * The trusted proxies for this application.
      *
+     * Trust all forwarding proxies. yap is deployed behind an AWS ELB (whose
+     * IPs are dynamic) and is not directly reachable, so '*' is the setting
+     * Laravel documents for this topology. This lets $request->fullUrl()
+     * reflect the public scheme/host that Twilio signed its webhooks against.
+     *
      * @var array|string|null
      */
-    protected $proxies;
+    protected $proxies = '*';
 
     /**
      * The headers that should be used to detect proxies.
