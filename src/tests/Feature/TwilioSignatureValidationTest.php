@@ -77,3 +77,33 @@ test('dev bypass skips validation for unsigned requests in non-production', func
 
     $response->assertStatus(200);
 })->with(['GET', 'POST']);
+
+// Regression coverage for the disclosed PoC (issue #1566): forged, unsigned
+// POSTs to the SMS gateway and the dialback dialer previously reached the
+// controller and drove call/SMS logic (persisting attacker-controlled rows).
+// With an auth token configured, the middleware must now reject these before
+// the controller runs. A 403 here means the controller never executed and
+// nothing was persisted.
+test('forged unsigned PoC POST to /sms-gateway is rejected', function () {
+    $_SESSION["override_twilio_auth_token"] = "testtoken";
+
+    $response = $this->call('POST', '/sms-gateway.php', [
+        'SmsSid' => 'SMforgedATTACKER0001',
+        'From' => '+15005550001',
+        'To' => '+15005550002',
+        'Body' => 'FORGED-NO-SIGNATURE-PAYLOAD',
+    ]);
+
+    $response->assertStatus(403);
+});
+
+test('forged unsigned PoC POST to /dialback-dialer is rejected', function () {
+    $_SESSION["override_twilio_auth_token"] = "testtoken";
+
+    $response = $this->call('POST', '/dialback-dialer.php', [
+        'Digits' => '0000',
+        'Called' => '+15005550002',
+    ]);
+
+    $response->assertStatus(403);
+});
