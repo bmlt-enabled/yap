@@ -49,6 +49,27 @@ test('allows a genuinely signed Twilio request', function ($method) {
     $response->assertStatus(200);
 })->with(['GET', 'POST']);
 
+test('allows a genuinely signed Twilio POST that carries body params', function () {
+    $_SESSION["override_twilio_auth_token"] = "testtoken";
+
+    // A real Twilio webhook always POSTs body params (CallSid, From, ...). The
+    // middleware signs against $request->post() (POST body only) — never
+    // $request->all() — so a request bearing these params must still validate.
+    // This guards the exact regression where body-param handling breaks.
+    $params = [
+        'CallSid' => 'CA00000000000000000000000000000000',
+        'From' => '+15555550123',
+        'To' => '+15555550100',
+        'Digits' => '1',
+    ];
+
+    $signature = (new RequestValidator("testtoken"))->computeSignature('http://localhost', $params);
+
+    $response = $this->call('POST', '/', $params, [], [], ['HTTP_X_TWILIO_SIGNATURE' => $signature]);
+
+    $response->assertStatus(200);
+});
+
 test('dev bypass skips validation for unsigned requests in non-production', function ($method) {
     config(['twilio.disable_signature_validation' => true]);
 
