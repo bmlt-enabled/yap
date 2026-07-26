@@ -20,8 +20,10 @@ class ValidateTwilioSignature
     /**
      * Handle an incoming request.
      *
-     * Validates that the request is actually from Twilio by checking
-     * the X-Twilio-Signature header against the request body.
+     * Verifies that the request actually originated from Twilio by validating
+     * the X-Twilio-Signature header against the request URL and body. Fails
+     * closed: if no auth token is configured, or the signature is missing or
+     * invalid, the request is rejected with HTTP 403.
      *
      * @param Request $request
      * @param Closure $next
@@ -29,31 +31,39 @@ class ValidateTwilioSignature
      */
     public function handle(Request $request, Closure $next): mixed
     {
+        // Development-only bypass. Off by default, and only ever honored outside
+        // of production, so a misconfigured production deployment can never skip
+        // validation. Used by the test suite (see phpunit.xml).
+        $bypass = !app()->environment('production')
+            && config('twilio.disable_signature_validation', false);
+
+        if ($bypass) {
+            Log::warning('Twilio signature validation bypassed (non-production dev flag enabled)');
+            return $next($request);
+        }
+
         $authToken = $this->settings->get('twilio_auth_token');
 
-        // If no auth token configured, skip validation (for development)
+        // Fail closed: with no auth token we cannot verify the signature, so the
+        // request is rejected rather than allowed through.
         if (empty($authToken)) {
-            Log::warning('Twilio signature validation skipped: no auth token configured');
-            return $next($request);
+            Log::warning('Twilio signature validation failed: no auth token configured', [
+                'ip' => $request->ip(),
+            ]);
+            return response('Forbidden', 403);
         }
 
         $validator = new RequestValidator($authToken);
         $signature = $request->header('X-Twilio-Signature', '');
 
-        // Build the URL that Twilio used to sign the request
-        // When behind a proxy (ngrok, load balancer), we need to use the original URL
-        $url = $this->getSignatureUrl($request);
+        // Validate against the URL the framework resolved (honoring the trusted
+        // proxy configuration in TrustProxies), never raw client-supplied
+        // forwarding headers.
+        $url = $request->fullUrl();
 
-        // For POST requests, Twilio signs using POST body params only (not query params)
-        // $request->all() merges both, so we need to use post() for POST requests
+        // Twilio signs POST requests using the POST body params only; for GET the
+        // query string is already part of the URL.
         $params = $request->isMethod('POST') ? $request->post() : [];
-
-        Log::debug('Twilio signature validation attempt', [
-            'url' => $url,
-            'method' => $request->method(),
-            'params_count' => count($params),
-            'has_signature' => !empty($signature),
-        ]);
 
         if (!$validator->validate($signature, $url, $params)) {
             Log::warning('Invalid Twilio signature rejected', [
@@ -64,43 +74,5 @@ class ValidateTwilioSignature
         }
 
         return $next($request);
-    }
-
-    /**
-     * Get the URL that Twilio used to sign the request.
-     *
-     * When behind a reverse proxy (ngrok, load balancer, etc.), the URL
-     * Laravel sees may differ from what Twilio sent the request to.
-     * We reconstruct the original URL from forwarded headers.
-     *
-     * @param Request $request
-     * @return string
-     */
-    protected function getSignatureUrl(Request $request): string
-    {
-        // Check for X-Original-Host (set by some proxies) or X-Forwarded-Host
-        $host = $request->header('X-Original-Host')
-            ?? $request->header('X-Forwarded-Host')
-            ?? $request->getHost();
-
-        // Check for X-Forwarded-Proto for the scheme
-        $scheme = $request->header('X-Forwarded-Proto') ?? $request->getScheme();
-
-        // Use the raw REQUEST_URI to preserve exact encoding as Twilio sent it
-        // Laravel's getRequestUri() may re-encode the query string differently
-        $requestUri = $_SERVER['REQUEST_URI'] ?? $request->getRequestUri();
-
-        $url = $scheme . '://' . $host . $requestUri;
-
-        Log::debug('Twilio signature validation URL constructed', [
-            'constructed_url' => $url,
-            'scheme' => $scheme,
-            'host' => $host,
-            'request_uri' => $requestUri,
-            'x_forwarded_host' => $request->header('X-Forwarded-Host'),
-            'x_forwarded_proto' => $request->header('X-Forwarded-Proto'),
-        ]);
-
-        return $url;
     }
 }
