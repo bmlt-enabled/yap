@@ -8,6 +8,7 @@ use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
 use App\Constants\VolunteerRoutingType;
 use App\Constants\VolunteerType;
+use App\Http\Controllers\MediaController;
 use App\Models\ConfigData;
 use App\Models\Session;
 use App\Services\RootServerService;
@@ -34,6 +35,7 @@ beforeEach(function () {
     $this->callSid = "abc123";
     $this->callerNumber = "+17325551212";
     $this->recordingUrl = "https://example.org/tests/fake";
+    $this->proxyUrl = MediaController::proxyUrl($this->recordingUrl);
 });
 
 test('voicemail complete send sms using primary contact', function ($method) {
@@ -57,9 +59,9 @@ test('voicemail complete send sms using primary contact', function ($method) {
         ->withArgs([$serviceBodyCallHandlingData->primary_contact, [
             "from" => $this->callerNumber,
             "body" => sprintf(
-                'You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: %s.mp3. ',
+                'You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: %s. ',
                 $this->callerNumber,
-                $this->recordingUrl
+                $this->proxyUrl
             ),
             ]])->times(1);
     $this->utility->client->messages = $messageListMock;
@@ -142,9 +144,9 @@ test('voicemail complete send sms using volunteer responder option', function ($
         ->withArgs([$volunteer->volunteer_phone_number, [
             "from" => $this->callerNumber,
             "body" => sprintf(
-                'You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: %s.mp3. ',
+                'You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: %s. ',
                 $this->callerNumber,
-                $this->recordingUrl
+                $this->proxyUrl
             ),
         ]])->times(1);
     $this->utility->client->messages = $messageListMock;
@@ -238,9 +240,9 @@ test('voicemail complete send sms using volunteer responder option and dialback 
         ->withArgs([$volunteer->volunteer_phone_number, [
             "from" => $this->callerNumber,
             "body" => sprintf(
-                'You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: %s.mp3. Tap to dialback: +17325551212,,,9,,,%s#.  PIN: %s',
+                'You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: %s. Tap to dialback: +17325551212,,,9,,,%s#.  PIN: %s',
                 $this->callerNumber,
-                $this->recordingUrl,
+                $this->proxyUrl,
                 $pin,
                 $pin
             ),
@@ -341,9 +343,9 @@ test('voicemail complete send sms using volunteer responder option and dialback 
         ->withArgs([$volunteer->volunteer_phone_number, [
             "from" => $this->callerNumber,
             "body" => sprintf(
-                'ouyay avehay ayay essagemay omfray ethay Finger Lakes Area Service elplinehay omfray ethay allercay %s. oicemailvay: %s.mp3. aptay ootay ialbackdray: +17325551212,,,2,,,9,,,%s#.  PIN: %s',
+                'ouyay avehay ayay essagemay omfray ethay Finger Lakes Area Service elplinehay omfray ethay allercay %s. oicemailvay: %s. aptay ootay ialbackdray: +17325551212,,,2,,,9,,,%s#.  PIN: %s',
                 $this->callerNumber,
-                $this->recordingUrl,
+                $this->proxyUrl,
                 $pin,
                 $pin
             ),
@@ -461,7 +463,7 @@ test('voicemail complete send email using primary contact with dialback disabled
     Assert::assertTrue($mailer->FromName == $smtp_from_name);
     Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
     Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
-    $body = sprintf("You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: https://example.org/tests/fake.mp3. ", $this->callerNumber);
+    $body = sprintf("You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: %s. ", $this->callerNumber, $this->proxyUrl);
     Assert::assertTrue($mailer->Body == $body);
     Assert::assertTrue($mailer->Subject == "Helpline Voicemail from Finger Lakes Area Service");
     Assert::assertTrue($mailer->getAttachments()[0][1] == "https://example.org/tests/fake.mp3");
@@ -562,7 +564,7 @@ test('voicemail complete send email using primary contact with dialback enabled'
     Assert::assertTrue($mailer->FromName == $smtp_from_name);
     Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
     Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
-    $body = sprintf("You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: https://example.org/tests/fake.mp3. ", $this->callerNumber);
+    $body = sprintf("You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: %s. ", $this->callerNumber, $this->proxyUrl);
     $body .= sprintf("Tap to dialback: %s,,,9,,,%s#.  PIN: %s", $this->callerNumber, $pin, $pin);
     Assert::assertTrue($mailer->Body == $body);
     Assert::assertTrue($mailer->Subject == "Helpline Voicemail from Finger Lakes Area Service");
@@ -667,7 +669,7 @@ test('voicemail complete send email using primary contact with dialback enabled 
     Assert::assertTrue($mailer->FromName == $smtp_from_name);
     Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
     Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
-    $body = sprintf("ouyay avehay ayay essagemay omfray ethay Finger Lakes Area Service elplinehay omfray ethay allercay %s. oicemailvay: https://example.org/tests/fake.mp3. ", $this->callerNumber);
+    $body = sprintf("ouyay avehay ayay essagemay omfray ethay Finger Lakes Area Service elplinehay omfray ethay allercay %s. oicemailvay: %s. ", $this->callerNumber, $this->proxyUrl);
     $body .= sprintf("aptay ootay ialbackdray: %s,,,2,,,9,,,%s#.  PIN: %s", $this->callerNumber, $pin, $pin);
     Assert::assertTrue($mailer->Body == $body);
     // TODO: Need to translate the subject.

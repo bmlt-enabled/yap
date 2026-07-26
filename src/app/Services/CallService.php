@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Constants\SearchType;
 use App\Constants\SpecialPhoneNumber;
+use App\Http\Controllers\MediaController;
 use App\Models\Alert;
 use App\Repositories\ReportsRepository;
 use App\Repositories\VoicemailRepository;
@@ -132,14 +133,14 @@ class CallService extends Service
     {
         $dialbackString = $this->getDialbackString($callerSid, $callerId, $smsDialbackOptions);
         return sprintf(
-            "%s %s %s %s %s. %s: %s.mp3. %s",
+            "%s %s %s %s %s. %s: %s. %s",
             $this->settings->word('you_have_a_message_from_the'),
             $serviceBodyName,
             strtolower($this->settings->word('helpline')),
             $this->settings->word('from_the_caller'),
             $callerNumber,
             $this->settings->word('voicemail'),
-            $recordingUrl,
+            MediaController::proxyUrl($recordingUrl),
             $dialbackString
         );
     }
