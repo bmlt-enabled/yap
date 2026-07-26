@@ -1,7 +1,10 @@
 # Release Notes
 
-### 4.5.1 (UNRELEASED)
+### 4.5.2 (UNRELEASED)
 * Added an authenticated media proxy so voicemail recording links in notification emails, SMS, and the admin portal keep working now that Twilio enforces HTTP Basic Auth on media URLs. Links are served through a signed YAP endpoint that streams the recording using the account credentials server-side. [#1573]
+* Enforce Twilio webhook signature validation on all inbound routes (IVR call flow, SMS gateway, voicemail, dialback, helpline routing, status callbacks, TwiML readings) so spoofed requests are rejected. [#1569]
+
+### 4.5.1 (May 14, 2026)
 * Added Twilio SHAKEN/STIR trusted calling support. CallToken is forwarded from inbound to outbound calls to maintain full attestation (Level A). StirVerstat is logged on inbound calls for observability. [#1560]
 
 ### 4.5.0
