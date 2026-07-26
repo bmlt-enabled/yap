@@ -16,6 +16,7 @@ use App\Http\Middleware\SessionKey;
 use App\Http\Middleware\SmsBlackhole;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
+use App\Http\Middleware\ValidateTwilioSignature;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Auth\Middleware\Authorize;
@@ -101,6 +102,7 @@ class Kernel extends HttpKernel
         'password.confirm' => RequirePassword::class,
         'signed' => ValidateSignature::class,
         'throttle' => ThrottleRequests::class,
+        'twilio.signature' => ValidateTwilioSignature::class,
         'verified' => EnsureEmailIsVerified::class,
     ];
 }
