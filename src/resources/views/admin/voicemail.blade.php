@@ -16,17 +16,17 @@
         var lightTheme = "<?php echo url("/public/dist/css/yap-tabulator-dark.min.css")?>";
         loadTabulatorTheme();
         <?php
-            $voicemailRows = $voicemail->get($_REQUEST['service_body_id']);
-            foreach ($voicemailRows as $voicemailRow) {
-                $voicemailRow->recording_url = null;
-                if (!empty($voicemailRow->meta)) {
-                    $voicemailMeta = json_decode($voicemailRow->meta);
-                    if (isset($voicemailMeta->url)) {
-                        $voicemailRow->recording_url =
-                            \App\Http\Controllers\MediaController::proxyUrl($voicemailMeta->url);
-                    }
+        $voicemailRows = $voicemail->get($_REQUEST['service_body_id']);
+        foreach ($voicemailRows as $voicemailRow) {
+            $voicemailRow->recording_url = null;
+            if (!empty($voicemailRow->meta)) {
+                $voicemailMeta = json_decode($voicemailRow->meta);
+                if (isset($voicemailMeta->url)) {
+                    $voicemailRow->recording_url =
+                        \App\Http\Controllers\MediaController::proxyUrl($voicemailMeta->url);
                 }
             }
+        }
         ?>
         var data = <?php echo json_encode($voicemailRows)?>;
         var table = new Tabulator("#voicemail-table", {
