@@ -75,7 +75,12 @@ class VoicemailService extends Service
                 $this->mailer->addAddress($recipient);
             }
             $recordingUrlWithExtension = sprintf("%s.mp3", $recordingUrl);
-            $recordingDataString = Http::get($recordingUrlWithExtension);
+            // Twilio enforces HTTP Basic Auth on stored media, so authenticate
+            // server-side with the account credentials before attaching.
+            $recordingDataString = Http::withBasicAuth(
+                $this->settings->get('twilio_account_sid'),
+                $this->settings->get('twilio_auth_token')
+            )->get($recordingUrlWithExtension);
             $this->mailer->addStringAttachment($recordingDataString, $recordingUrlWithExtension);
             $caller_id = $this->call->getOutboundDialingCallerId($serviceBodyCallHandling);
             $body = $this->call->getVoicemailMessage(

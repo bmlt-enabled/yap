@@ -1,5 +1,8 @@
 <?php
 
+use App\Services\SettingsService;
+use App\Services\TwilioService;
+use Tests\FakeTwilioHttpClient;
 use Twilio\Security\RequestValidator;
 
 beforeEach(function () {
@@ -62,6 +65,39 @@ test('allows a genuinely signed Twilio POST that carries body params', function 
         'To' => '+15555550100',
         'Digits' => '1',
     ];
+
+    // CallFlowController@index fetches the call + incoming-number records from
+    // Twilio whenever CallSid is present. Mock the client so the controller
+    // succeeds without hitting the live API (which 401s under test creds).
+    $settingsService = new SettingsService();
+    $twilioClient = mock('Twilio\Rest\Client', [
+        "username" => "fake",
+        "password" => "fake",
+        "httpClient" => new FakeTwilioHttpClient()
+    ])->makePartial();
+    $twilioService = mock(TwilioService::class)->makePartial();
+    $twilioService->shouldReceive("client")->withArgs([])->andReturn($twilioClient);
+    $twilioService->shouldReceive("settings")->andReturn($settingsService);
+    app()->instance(SettingsService::class, $settingsService);
+
+    $callInstance = mock('\Twilio\Rest\Api\V2010\Account\CallInstance');
+    $callInstance->phoneNumberSid = "fakePhoneNumberSid";
+    $callContext = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
+    $callContext->shouldReceive('fetch')->withNoArgs()->andReturn($callInstance);
+    $twilioClient->shouldReceive('calls')
+        ->withArgs([$params['CallSid']])->andReturn($callContext);
+
+    $incomingPhoneNumberInstance = mock('\Twilio\Rest\Api\V2010\Account\IncomingPhoneNumberInstance');
+    // Status callback already points at status.php, so no misconfiguration alert.
+    $incomingPhoneNumberInstance->statusCallback = "https://example.org/status.php";
+    $incomingPhoneNumberInstance->phoneNumber = "5556661212";
+    $incomingPhoneNumberContext = mock('\Twilio\Rest\Api\V2010\Account\IncomingPhoneNumberContext');
+    $incomingPhoneNumberContext->shouldReceive('fetch')->withNoArgs()
+        ->andReturn($incomingPhoneNumberInstance);
+    $twilioClient->shouldReceive('incomingPhoneNumbers')
+        ->withArgs(["fakePhoneNumberSid"])->andReturn($incomingPhoneNumberContext);
+
+    app()->instance(TwilioService::class, $twilioService);
 
     $signature = (new RequestValidator("testtoken"))->computeSignature('http://localhost', $params);
 

@@ -28,6 +28,10 @@ Route::match(array('GET', 'POST'), "upgrade-advisor{ext}", 'App\Http\Controllers
     ->where('ext', $ext);
 Route::match(array('GET', 'POST'), "/version", 'App\Http\Controllers\UpgradeAdvisorController@version');
 Route::get("/callWidget", 'App\Http\Controllers\CallWidgetController@index');
+// Signed proxy for Twilio-hosted recordings/voicemails. Public (voicemail
+// notification recipients are not logged in) but protected by a signed URL and
+// a Twilio host allowlist inside the controller. Not a Twilio-facing webhook.
+Route::get("/media", 'App\Http\Controllers\MediaController@stream')->name('media');
 
 // --- Twilio-facing inbound webhooks ---
 // Every route Twilio calls (IVR call flow, SMS gateway, voicemail, dialback,

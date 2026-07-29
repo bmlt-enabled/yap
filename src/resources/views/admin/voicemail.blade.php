@@ -15,7 +15,20 @@
         var darkTheme = "<?php echo url("/public/dist/css/yap-tabulator-dark.min.css")?>";
         var lightTheme = "<?php echo url("/public/dist/css/yap-tabulator-dark.min.css")?>";
         loadTabulatorTheme();
-        var data = <?php echo json_encode($voicemail->get($_REQUEST['service_body_id']))?>;
+        <?php
+        $voicemailRows = $voicemail->get($_REQUEST['service_body_id']);
+        foreach ($voicemailRows as $voicemailRow) {
+            $voicemailRow->recording_url = null;
+            if (!empty($voicemailRow->meta)) {
+                $voicemailMeta = json_decode($voicemailRow->meta);
+                if (isset($voicemailMeta->url)) {
+                    $voicemailRow->recording_url =
+                        \App\Http\Controllers\MediaController::proxyUrl($voicemailMeta->url);
+                }
+            }
+        }
+        ?>
+        var data = <?php echo json_encode($voicemailRows)?>;
         var table = new Tabulator("#voicemail-table", {
             data: data,
             layout:"fitColumns",
@@ -40,10 +53,9 @@
                         var actionString = "";
                         var row = cell.getRow();
                         var callsid = row.getData().callsid
-                        var meta = row.getData().meta
-                        if (meta != null) {
-                            var voicemailLink = JSON.parse(meta)['url'].concat('.mp3');
-                            actionString = "<button class=\"btn btn-sm btn-primary\" onclick=\"location.href='" + voicemailLink + "'\">Play</button> "
+                        var recordingUrl = row.getData().recording_url
+                        if (recordingUrl != null) {
+                            actionString = "<button class=\"btn btn-sm btn-primary\" onclick=\"location.href='" + recordingUrl + "'\">Play</button> "
                         }
                         actionString += "<button class=\"btn btn-sm btn-danger\" onclick=\"deleteVoicemail('" + callsid + "')\">Delete</button>";
                         return actionString;
