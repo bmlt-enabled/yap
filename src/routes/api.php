@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\Admin\VoicemailController;
 use App\Http\Controllers\Api\V1\WebRtcController;
 use App\Http\Controllers\Api\V1\WebChatController;
 use App\Http\Controllers\UpgradeAdvisorController;
+use App\Services\SettingsService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Admin\SettingsController;
 
@@ -25,40 +26,47 @@ Route::group([
     Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
 
     // WebRTC Widget endpoints (public, rate-limited)
+    // EXPERIMENTAL, default off: registered only when webrtc_enabled is true, so
+    // a disabled feature is a 404 rather than a reachable endpoint that refuses.
     // Token endpoint uses configurable rate limit (default: 5/min)
-    Route::group(['prefix' => 'webrtc'], function () {
-        Route::get('token', [WebRtcController::class, 'token'])
-            ->middleware('throttle:webrtc-token')
-            ->name('webrtc.token');
-        Route::get('config', [WebRtcController::class, 'config'])
-            ->middleware('throttle:60,1')
-            ->name('webrtc.config');
-    });
+    if (SettingsService::featureEnabledAtBoot('webrtc_enabled')) {
+        Route::group(['prefix' => 'webrtc'], function () {
+            Route::get('token', [WebRtcController::class, 'token'])
+                ->middleware('throttle:webrtc-token')
+                ->name('webrtc.token');
+            Route::get('config', [WebRtcController::class, 'config'])
+                ->middleware('throttle:60,1')
+                ->name('webrtc.config');
+        });
+    }
 
     // WebChat Widget endpoints (public, rate-limited)
-    Route::group(['prefix' => 'webchat'], function () {
-        Route::get('config', [WebChatController::class, 'config'])
-            ->middleware('throttle:60,1')
-            ->name('webchat.config');
-        Route::get('meetings', [WebChatController::class, 'searchMeetings'])
-            ->middleware('throttle:30,1')
-            ->name('webchat.meetings');
-        Route::get('session', [WebChatController::class, 'getSession'])
-            ->middleware('throttle:60,1')
-            ->name('webchat.session.get');
-        Route::post('session', [WebChatController::class, 'createSession'])
-            ->middleware('throttle:webchat')
-            ->name('webchat.session.create');
-        Route::post('session/{sessionId}/message', [WebChatController::class, 'sendMessage'])
-            ->middleware('throttle:webchat')
-            ->name('webchat.message.send');
-        Route::get('session/{sessionId}/messages', [WebChatController::class, 'getMessages'])
-            ->middleware('throttle:120,1')
-            ->name('webchat.messages.get');
-        Route::post('session/{sessionId}/close', [WebChatController::class, 'closeSession'])
-            ->middleware('throttle:60,1')
-            ->name('webchat.session.close');
-    });
+    // EXPERIMENTAL, default off: see the note on the webrtc group above.
+    if (SettingsService::featureEnabledAtBoot('webchat_enabled')) {
+        Route::group(['prefix' => 'webchat'], function () {
+            Route::get('config', [WebChatController::class, 'config'])
+                ->middleware('throttle:60,1')
+                ->name('webchat.config');
+            Route::get('meetings', [WebChatController::class, 'searchMeetings'])
+                ->middleware('throttle:30,1')
+                ->name('webchat.meetings');
+            Route::get('session', [WebChatController::class, 'getSession'])
+                ->middleware('throttle:60,1')
+                ->name('webchat.session.get');
+            Route::post('session', [WebChatController::class, 'createSession'])
+                ->middleware('throttle:webchat')
+                ->name('webchat.session.create');
+            Route::post('session/{sessionId}/message', [WebChatController::class, 'sendMessage'])
+                ->middleware('throttle:webchat')
+                ->name('webchat.message.send');
+            Route::get('session/{sessionId}/messages', [WebChatController::class, 'getMessages'])
+                ->middleware('throttle:120,1')
+                ->name('webchat.messages.get');
+            Route::post('session/{sessionId}/close', [WebChatController::class, 'closeSession'])
+                ->middleware('throttle:60,1')
+                ->name('webchat.session.close');
+        });
+    }
 
     Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::resource('user', 'AuthController')->only(['index']);

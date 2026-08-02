@@ -86,20 +86,20 @@ class SettingsService
         'voicemail_playback_grace_hours' => ['description' => '', 'default' => 48, 'overridable' => true, 'hidden' => false],
         'volunteer_auto_answer' => ['description' => '/helpline/volunteer-auto-answer', 'default'=>false, 'overridable' => true, 'hidden' => false],
         'word_language' => ['description' => '', 'default' => 'en-US', 'overridable' => true, 'hidden' => false],
-        'webrtc_enabled' => ['description' => '/webrtc/enabling-webrtc', 'default' => false, 'overridable' => false, 'hidden' => false],
-        'twilio_api_key' => ['description' => '/webrtc/twilio-api-key', 'default' => '', 'overridable' => false, 'hidden' => true],
-        'twilio_api_secret' => ['description' => '/webrtc/twilio-api-secret', 'default' => '', 'overridable' => false, 'hidden' => true],
-        'twilio_twiml_app_sid' => ['description' => '/webrtc/twiml-app-sid', 'default' => '', 'overridable' => false, 'hidden' => true],
-        'webrtc_allowed_origins' => ['description' => '/webrtc/cors-origins', 'default' => '*', 'overridable' => false, 'hidden' => false],
-        'webrtc_token_rate_limit' => ['description' => '/webrtc/rate-limiting', 'default' => 5, 'overridable' => false, 'hidden' => false],
-        'webrtc_call_rate_limit' => ['description' => '/webrtc/rate-limiting', 'default' => 3, 'overridable' => false, 'hidden' => false],
-        'webchat_enabled' => ['description' => '/webchat/enabling-webchat', 'default' => false, 'overridable' => false, 'hidden' => false],
-        'webchat_timeout_minutes' => ['description' => '/webchat/session-timeout', 'default' => 30, 'overridable' => false, 'hidden' => false],
-        'webchat_meeting_search_enabled' => ['description' => '/webchat/meeting-search', 'default' => true, 'overridable' => false, 'hidden' => false],
-        'webchat_no_coverage_message' => ['description' => '/webchat/custom-messages', 'default' => 'Sorry, there is no coverage for your location.', 'overridable' => true, 'hidden' => false],
-        'webchat_no_volunteers_message' => ['description' => '/webchat/custom-messages', 'default' => 'Sorry, no volunteers are available at this time. Please try again later.', 'overridable' => true, 'hidden' => false],
-        'webchat_volunteer_sms_prefix' => ['description' => '/webchat/custom-messages', 'default' => 'New web chat request', 'overridable' => true, 'hidden' => false],
-        'webchat_rate_limit' => ['description' => '/webchat/rate-limiting', 'default' => 10, 'overridable' => false, 'hidden' => false]
+        'webrtc_enabled' => ['description' => '', 'default' => false, 'overridable' => false, 'hidden' => false],
+        'twilio_api_key' => ['description' => '', 'default' => '', 'overridable' => false, 'hidden' => true],
+        'twilio_api_secret' => ['description' => '', 'default' => '', 'overridable' => false, 'hidden' => true],
+        'twilio_twiml_app_sid' => ['description' => '', 'default' => '', 'overridable' => false, 'hidden' => true],
+        'webrtc_allowed_origins' => ['description' => '', 'default' => '*', 'overridable' => false, 'hidden' => false],
+        'webrtc_token_rate_limit' => ['description' => '', 'default' => 5, 'overridable' => false, 'hidden' => false],
+        'webrtc_call_rate_limit' => ['description' => '', 'default' => 3, 'overridable' => false, 'hidden' => false],
+        'webchat_enabled' => ['description' => '', 'default' => false, 'overridable' => false, 'hidden' => false],
+        'webchat_timeout_minutes' => ['description' => '', 'default' => 30, 'overridable' => false, 'hidden' => false],
+        'webchat_meeting_search_enabled' => ['description' => '', 'default' => true, 'overridable' => false, 'hidden' => false],
+        'webchat_no_coverage_message' => ['description' => '', 'default' => 'Sorry, there is no coverage for your location.', 'overridable' => true, 'hidden' => false],
+        'webchat_no_volunteers_message' => ['description' => '', 'default' => 'Sorry, no volunteers are available at this time. Please try again later.', 'overridable' => true, 'hidden' => false],
+        'webchat_volunteer_sms_prefix' => ['description' => '', 'default' => 'New web chat request', 'overridable' => true, 'hidden' => false],
+        'webchat_rate_limit' => ['description' => '', 'default' => 10, 'overridable' => false, 'hidden' => false]
     ];
 
     public static array $dateCalculationsMap =
@@ -192,6 +192,29 @@ class SettingsService
     public function has($name): bool
     {
         return !is_null($this->get($name));
+    }
+
+    /**
+     * Read a boolean feature flag during route registration.
+     *
+     * Route files are loaded from RouteServiceProvider::boot(), earlier in the
+     * lifecycle than a controller runs: no session has been started and the
+     * request is not fully resolved. Only settings with 'overridable' => false
+     * are safe here, since get() consults request()/session() for overridable
+     * ones. Anything unexpected fails closed - these flags guard experimental
+     * features that ship off, so "off" is the safe answer.
+     *
+     * Note this reads the flag at boot, which means `php artisan route:cache`
+     * freezes whichever value was current when the cache was built. Run
+     * `php artisan route:clear` after toggling one of these settings.
+     */
+    public static function featureEnabledAtBoot(string $name): bool
+    {
+        try {
+            return (bool)app(self::class)->get($name);
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     public function geocodingApiUri(): string
