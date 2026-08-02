@@ -72,20 +72,3 @@ test('security: missing token rejected on protected endpoint', function () {
 
     $response->assertStatus(401);
 });
-
-test('security: database reset blocked in production environment', function () {
-    // The endpoint checks config('app.env'), so we need to set that
-    config(['app.env' => 'production']);
-
-    $response = $this->post('/api/resetDatabase');
-
-    // Should return 403 in production
-    $response->assertStatus(403);
-    $response->assertJson([
-        'status' => 'error',
-        'message' => 'Cannot reset database in production environment.'
-    ]);
-
-    // Restore test environment
-    config(['app.env' => 'testing']);
-});

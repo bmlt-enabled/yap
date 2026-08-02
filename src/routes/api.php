@@ -6,7 +6,6 @@ use App\Http\Controllers\Api\V1\Admin\VoicemailController;
 use App\Http\Controllers\Api\V1\WebRtcController;
 use App\Http\Controllers\Api\V1\WebChatController;
 use App\Http\Controllers\UpgradeAdvisorController;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Admin\SettingsController;
 
@@ -88,19 +87,4 @@ Route::group([
             Route::post('settings/serviceBody/{serviceBodyId}', 'saveServiceBodyConfiguration');
         });
     });
-});
-
-Route::post('/resetDatabase', function () {
-    $env = config('app.env'); // Get the current environment
-    if ($env === 'production') {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Cannot reset database in production environment.'
-        ], 403);
-    }
-    Artisan::call('migrate:fresh --seed');
-    return response()->json([
-        'status' => 'database reset',
-        'migrationOutput' => Artisan::output(),
-    ]);
 });

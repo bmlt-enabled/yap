@@ -1,12 +1,12 @@
-import { test, expect } from './fixtures/auth.js';
+import { test, expect, resetDatabase } from './fixtures/auth.js';
 
 test.describe('Localizations', () => {
   // Ensure tests run in order - setup must complete before other tests
   test.describe.configure({ mode: 'serial' });
 
-  test.beforeAll(async ({ request, baseURL }) => {
+  test.beforeAll(() => {
     // Reset database first
-    await request.post(`${baseURL}/api/resetDatabase`);
+    resetDatabase();
   });
 
   // This test must run first to configure call handling via UI
