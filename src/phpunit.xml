@@ -4,8 +4,7 @@
          bootstrap="vendor/autoload.php"
          colors="true"
          cacheDirectory=".phpunit.cache"
-         displayDetailsOnTestsThatTriggerWarnings="true"
-         stopOnFailure="true">
+         displayDetailsOnTestsThatTriggerWarnings="true">
   <testsuites>
     <testsuite name="Feature">
       <directory>./tests/Feature</directory>
