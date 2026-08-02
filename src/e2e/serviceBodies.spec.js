@@ -1,8 +1,8 @@
-import { test, expect } from './fixtures/auth.js';
+import { test, expect, resetDatabase } from './fixtures/auth.js';
 
 test.describe('Service Bodies', () => {
-  test.beforeAll(async ({ request, baseURL }) => {
-    await request.post(`${baseURL}/api/resetDatabase`);
+  test.beforeAll(() => {
+    resetDatabase();
   });
 
   test('can view service bodies list', async ({ authenticatedPage: page }) => {

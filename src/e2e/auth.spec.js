@@ -1,9 +1,9 @@
-import { test, expect } from './fixtures/auth.js';
+import { test, expect, resetDatabase } from './fixtures/auth.js';
 
 test.describe('Authentication', () => {
-  test.beforeAll(async ({ request, baseURL }) => {
+  test.beforeAll(() => {
     // Reset database first
-    await request.post(`${baseURL}/api/resetDatabase`);
+    resetDatabase();
   });
 
   test('login with Yap admin credentials', async ({ page, baseURL }) => {
