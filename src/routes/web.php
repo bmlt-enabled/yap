@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\SettingsService;
 use Illuminate\Support\Facades\Route;
 
 $ext = '(\.php)?$';
@@ -89,10 +90,18 @@ Route::middleware('twilio.signature')->group(function () use ($ext) {
         ->where('ext', $ext);
 
     // WebRTC Call Handler - TwiML Application webhook endpoint (also rate limited)
-    Route::match(array('GET', 'POST'), "/webrtc-call", 'App\Http\Controllers\WebRtcCallController@handleCall')
-        ->middleware('throttle:webrtc-call');
-    Route::match(array('GET', 'POST'), "/webrtc-status", 'App\Http\Controllers\WebRtcCallController@statusCallback');
+    // EXPERIMENTAL, default off: registered only when webrtc_enabled is true.
+    if (SettingsService::featureEnabledAtBoot('webrtc_enabled')) {
+        Route::match(array('GET', 'POST'), "/webrtc-call", 'App\Http\Controllers\WebRtcCallController@handleCall')
+            ->middleware('throttle:webrtc-call');
+        Route::match(array('GET', 'POST'), "/webrtc-status", 'App\Http\Controllers\WebRtcCallController@statusCallback');
+    }
 
     // WebChat SMS webhook - receives volunteer SMS replies
-    Route::match(array('GET', 'POST'), "/webchat-sms", 'App\Http\Controllers\WebChatSmsController@handleSms');
+    // EXPERIMENTAL, default off: registered only when webchat_enabled is true.
+    // handleSms() also gates on the flag, so this stays closed even if the route
+    // table was cached while the feature was on.
+    if (SettingsService::featureEnabledAtBoot('webchat_enabled')) {
+        Route::match(array('GET', 'POST'), "/webchat-sms", 'App\Http\Controllers\WebChatSmsController@handleSms');
+    }
 });

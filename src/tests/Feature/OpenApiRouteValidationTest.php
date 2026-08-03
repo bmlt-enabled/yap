@@ -33,7 +33,7 @@ test('openapi annotations match actual routes', function () {
             }
         }
 
-        if (!$found) {
+        if (!$found && !isConditionallyRegistered($docRoute['path'])) {
             $nonExistent[] = sprintf(
                 "%s %s (documented in %s but route doesn't exist)",
                 $docRoute['method'],
@@ -237,4 +237,23 @@ function shouldBeDocumented(array $route): bool
 
     // All other API routes should be documented
     return true;
+}
+
+/**
+ * Determine if a documented route is only registered when a feature flag is on.
+ *
+ * WebChat and WebRTC are experimental and ship disabled in 5.0.0, so their
+ * routes are registered conditionally (see routes/api.php). Their @OA
+ * annotations are kept for operators who enable the features, but the routes
+ * are legitimately absent from the default route table, so "documented but
+ * doesn't exist" is expected here rather than documentation drift.
+ *
+ * This exemption is one-directional: when the flags are on the routes do get
+ * registered, and the undocumented check above still requires them to carry
+ * annotations. Remove this when the features are promoted in 5.1.0.
+ */
+function isConditionallyRegistered(string $path): bool
+{
+    return str_starts_with(strtolower($path), '/api/v1/webchat/')
+        || str_starts_with(strtolower($path), '/api/v1/webrtc/');
 }

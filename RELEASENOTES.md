@@ -1,6 +1,8 @@
 # Release Notes
 
 ### 5.0.0 (UNRELEASED)
+* **WebChat and WebRTC are EXPERIMENTAL in this release.** Both are disabled by default (`webchat_enabled` and `webrtc_enabled` default to `false`) and are unsupported in 5.0.0 — they ship without test coverage and their behavior may change or be removed in a future release. Do not enable them on a production helpline. While disabled, none of their routes are registered at all, so every WebChat/WebRTC endpoint returns 404. If you enable or disable either setting and you have run `php artisan route:cache`, run `php artisan route:clear` for the change to take effect. [#1577]
+* Fixed the WebChat volunteer SMS webhook (`/webchat-sms`) accepting and routing inbound messages even when WebChat was disabled. [#1577]
 * Volunteer shifts display are now sorted by day [#1338]
 * Custom Extensions are now included in call detail reports [#1433]
 * Dialbacks are now included in the call detail reports [#1409]
