@@ -14,11 +14,28 @@ use App\Services\RootServerService;
 use App\Structures\ServiceBodyCallHandling;
 use App\Structures\VolunteerData;
 use App\Structures\VolunteerRoutingParameters;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Testing\Assert;
 use PHPMailer\PHPMailer\PHPMailer;
 use Tests\RootServerMocks;
 
 beforeEach(function () {
+    // VoicemailService::sendEmailForVoicemail() fetches the recording over the
+    // network (Http::get) while assembling the notification email, so this file
+    // depended on demo.bmlt.app being reachable from whatever host runs the
+    // suite. When that connect times out, the service's catch swallows a
+    // GuzzleHttp ConnectException and returns before setting Body/AltBody,
+    // failing every body and attachment assertion here - 48 of them, seen on a
+    // CI runner that could not reach the host on port 80.
+    //
+    // Stub only that host so the assertions exercise the mail assembly rather
+    // than the network. Nothing here asserts the downloaded bytes; the
+    // attachment assertions cover path, name, encoding, MIME type and
+    // disposition, all of which PHPMailer derives from the URL.
+    Http::fake([
+        'demo.bmlt.app/*' => Http::response('fake-recording-bytes', 200),
+    ]);
+
     $this->rootServerMocks = new RootServerMocks();
     $this->serviceBodyId = "1053";
     $this->parentServiceBodyId = "1052";
