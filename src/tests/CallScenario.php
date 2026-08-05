@@ -18,6 +18,8 @@ class CallScenario extends TwilioCallTestBuilder
 
     private ?string $conferenceStatusCallback = null;
 
+    private bool $useCookies = true;
+
     public function __construct(array $settings = [])
     {
         $this->callSid = 'CA' . Str::uuid()->toString();
@@ -28,20 +30,73 @@ class CallScenario extends TwilioCallTestBuilder
         }
     }
 
+    public function withoutCookies(): self
+    {
+        $this->useCookies = false;
+
+        return $this;
+    }
+
+    public function withCallData(array $data): self
+    {
+        $this->callData = array_merge($this->callData, $data);
+
+        return $this;
+    }
+
+    /** @return array<string, mixed> */
+    public function getCallData(): array
+    {
+        return $this->callData;
+    }
+
+    public function getCallSid(): string
+    {
+        return $this->callSid;
+    }
+
+    public function callEndpoint(string $path, array $params = []): self
+    {
+        $this->lastResponse = $this->call('GET', $path, array_merge($this->callData, $params));
+        $this->lastResponse->assertStatus(200);
+
+        return $this;
+    }
+
+    public function hideConferenceFromApi(): self
+    {
+        $this->twilio->conferences = [];
+
+        return $this;
+    }
+
     public function startCall(string $fromNumber, string $toNumber, string $method = 'GET'): self
     {
-        $this->callData = [
+        $this->callData = array_merge([
             'CallSid' => $this->callSid,
             'Called' => $toNumber,
             'From' => $fromNumber,
             'To' => $toNumber,
-        ];
+        ], $this->callData);
 
         $this->twilio->registerInboundCall($this->callSid, $fromNumber, $toNumber, $this->phoneNumberSid);
         $this->twilio->registerIncomingPhoneNumber($this->phoneNumberSid, $toNumber);
 
-        $this->lastResponse = test()->call($method, '/index.php', $this->callData);
+        $this->lastResponse = $this->call($method, '/index.php', $this->callData);
         $this->lastResponse->assertStatus(200);
+
+        return $this;
+    }
+
+    public function navigateToHelplineConference(bool $genderRouting = false, ?int $genderDigit = 2): self
+    {
+        $this->pressDigits('1')->followRedirect();
+
+        if ($genderRouting) {
+            $this->followRedirect()
+                ->pressDigits((string) $genderDigit)
+                ->followRedirect();
+        }
 
         return $this;
     }
@@ -128,9 +183,31 @@ class CallScenario extends TwilioCallTestBuilder
         return $this;
     }
 
+    public function fetchVolunteerOutdialTwiml(int $n): string
+    {
+        $leg = $this->pendingLeg($n);
+        $this->lastResponse = $this->dispatchWebhook(
+            $leg['url'],
+            [
+                'CallSid' => $leg['sid'],
+                'Called' => $leg['to'],
+            ],
+        );
+        $this->lastResponse->assertStatus(200);
+
+        return $this->lastResponse->getContent();
+    }
+
     public function volunteerRejects(int $n): self
     {
-        return $this->answerVolunteer($n, '2');
+        $this->answerVolunteer($n, '2');
+
+        $leg = $this->pendingLeg($n);
+        if (!str_contains((string) $leg['statusCallback'], 'noop=1')) {
+            $this->volunteerCallEnded($n);
+        }
+
+        return $this;
     }
 
     public function volunteerNoAnswer(int $n, string $status = TwilioCallStatus::NOANSWER): self
@@ -145,6 +222,45 @@ class CallScenario extends TwilioCallTestBuilder
             ],
         );
         $this->lastResponse->assertStatus(200);
+
+        return $this;
+    }
+
+    public function volunteerCallEnded(int $n, string $status = TwilioCallStatus::COMPLETED): self
+    {
+        $leg = $this->pendingLeg($n);
+        $this->lastResponse = $this->dispatchWebhook(
+            $leg['statusCallback'],
+            [
+                'CallSid' => $leg['sid'],
+                'Called' => $leg['to'],
+                'CallStatus' => $status,
+                'FriendlyName' => $this->conferenceName,
+            ],
+        );
+        $this->lastResponse->assertStatus(200);
+
+        return $this;
+    }
+
+    public function applyVolunteerOutcome(int $n, string $outcome): self
+    {
+        return match ($outcome) {
+            'answered' => $this->answerVolunteer($n),
+            'rejected' => $this->volunteerRejects($n),
+            'no-answer' => $this->volunteerNoAnswer($n),
+            'busy' => $this->volunteerNoAnswer($n, TwilioCallStatus::BUSY),
+            'failed' => $this->volunteerNoAnswer($n, TwilioCallStatus::FAILED),
+            default => throw new \InvalidArgumentException("Unknown volunteer outcome: {$outcome}"),
+        };
+    }
+
+    public function blastAllNoAnswer(): self
+    {
+        $count = count($this->twilio->pendingLegs);
+        for ($n = 1; $n <= $count; $n++) {
+            $this->volunteerNoAnswer($n);
+        }
 
         return $this;
     }
@@ -169,8 +285,11 @@ class CallScenario extends TwilioCallTestBuilder
 
     public function followCallerRedirect(): self
     {
-        $update = $this->twilio->callUpdates[0] ?? null;
-        if ($update === null || !isset($update['url'])) {
+        $update = collect($this->twilio->callUpdates)
+            ->reverse()
+            ->first(fn (array $entry) => isset($entry['url']));
+
+        if ($update === null) {
             throw new \RuntimeException('No call redirect was recorded.');
         }
 
@@ -182,6 +301,31 @@ class CallScenario extends TwilioCallTestBuilder
             ],
         );
         $this->lastResponse->assertStatus(200);
+
+        return $this;
+    }
+
+    public function assertDialedInOrder(array $numbers): self
+    {
+        expect($this->twilio)->toHaveDialedInOrder($numbers);
+
+        return $this;
+    }
+
+    public function assertRedirectedToVoicemail(): self
+    {
+        expect($this->twilio)->toHaveRedirectedCall('voicemail.php');
+
+        return $this;
+    }
+
+    public function assertHungUp(string $callSid): self
+    {
+        $match = collect($this->twilio->callUpdates)->first(
+            fn (array $update) => ($update['sid'] ?? null) === $callSid
+                && ($update['status'] ?? null) === TwilioCallStatus::COMPLETED
+        );
+        Assert::assertNotNull($match, "Expected call {$callSid} to be hung up.");
 
         return $this;
     }
@@ -209,12 +353,21 @@ class CallScenario extends TwilioCallTestBuilder
         return $this->twilio->pendingLegs[$index];
     }
 
+    protected function call($method, string $uri, array $data): TestResponse
+    {
+        if (!$this->useCookies) {
+            return test()->call($method, $uri, $data, [], [], [], null);
+        }
+
+        return parent::call($method, $uri, $data);
+    }
+
     private function dispatchWebhook(string $url, array $params = []): TestResponse
     {
         [$path, $query] = $this->normalizeWebhookUrl($url);
         $data = array_merge($this->callData, $query, $params);
 
-        return test()->call('GET', $path, $data);
+        return $this->call('GET', $path, $data);
     }
 
     /** @return array{0: string, 1: array<string, string>} */
