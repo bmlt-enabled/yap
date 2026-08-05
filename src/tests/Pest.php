@@ -6,8 +6,10 @@ use App\Services\TwilioService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Tests\Fakes\FakeTwilioAccount;
 use Tests\FakeTwilioHttpClient;
 use Tests\FakeTwilioUnauthorizedHttpClient;
+use Tests\Support\TwimlExpectations;
 use Tests\TestCase;
 use Tests\TwilioTestUtility;
 use Twilio\Rest\Client;
@@ -39,6 +41,48 @@ uses(TestCase::class, RefreshDatabase::class)
         expect(date_default_timezone_get())->toBe('UTC');
     })
     ->in('Feature');
+
+/**
+ * Opt-in Twilio harness: stateful FakeTwilioAccount wired through the same Client
+ * seam as setupTwilioService(), without disturbing per-test Mockery expectations
+ * in the legacy helpline tests.
+ *
+ * @return array{0: TwilioTestUtility, 1: FakeTwilioAccount}
+ */
+function setupFakeTwilioService(): array
+{
+    $utility = new TwilioTestUtility();
+    $account = new FakeTwilioAccount();
+    $fakeHttpClient = new FakeTwilioHttpClient();
+    $utility->client = mock('Twilio\Rest\Client', [
+        "username" => "fake",
+        "password" => "fake",
+        "httpClient" => $fakeHttpClient
+    ])->makePartial();
+
+    $utility->client->calls = $account->callList();
+    $utility->client->shouldReceive('calls')->andReturnUsing(
+        fn (string $sid) => $account->callContext($sid)
+    );
+    $utility->client->conferences = $account->conferenceList();
+    $utility->client->shouldReceive('conferences')->andReturnUsing(
+        fn (?string $sid = null) => $sid !== null ? $account->conferenceContext($sid) : $account->conferenceList()
+    );
+    $utility->client->messages = $account->messageList();
+    $utility->client->lookups = (object) ['v1' => $account->lookupsV1()];
+    $utility->client->shouldReceive('incomingPhoneNumbers')->andReturnUsing(
+        fn (string $sid) => $account->incomingPhoneNumberContext($sid)
+    );
+    $utility->client->shouldReceive('getAccountSid')->andReturn('AC123');
+
+    $utility->twilio = mock(TwilioService::class)->makePartial();
+    $utility->settings = app(SettingsService::class);
+    app()->instance(TwilioService::class, $utility->twilio);
+    $utility->twilio->shouldReceive('client')->withArgs([])->andReturn($utility->client);
+    $utility->twilio->shouldReceive('settings')->andReturn($utility->settings);
+
+    return [$utility, $account];
+}
 
 function setupTwilioService(): TwilioTestUtility
 {
@@ -86,6 +130,65 @@ function getSessionCookieValue($response)
 expect()->extend('hasQueryParam', function ($param, $pattern) {
     $queryString = Str::after($this->value, '?');
     return expect($queryString)->toMatch('/' . $param . '=' . $pattern . '/');
+});
+
+expect()->extend('toRedirectTo', function (string $uri) {
+    TwimlExpectations::assertRedirectsTo($this->value, $uri);
+
+    return $this;
+});
+
+expect()->extend('toGatherTo', function (string $action) {
+    TwimlExpectations::assertGathersTo($this->value, $action);
+
+    return $this;
+});
+
+expect()->extend('toDialConference', function (?string $conferenceName = null) {
+    TwimlExpectations::assertDialsConference($this->value, $conferenceName);
+
+    return $this;
+});
+
+expect()->extend('toHaveDialed', function (string ...$numbers) {
+    /** @var FakeTwilioAccount $account */
+    $account = $this->value;
+    foreach ($numbers as $number) {
+        expect($account->dialedNumbers())->toContain($number);
+    }
+
+    return $this;
+});
+
+expect()->extend('toHaveDialedInOrder', function (array $numbers) {
+    /** @var FakeTwilioAccount $account */
+    $account = $this->value;
+    expect($account->dialedNumbers())->toBe($numbers);
+
+    return $this;
+});
+
+expect()->extend('toHaveSentSms', function (string $to, ?string $bodyContains = null) {
+    /** @var FakeTwilioAccount $account */
+    $account = $this->value;
+    $match = collect($account->messages)->first(
+        fn (array $message) => $message['to'] === $to
+            && ($bodyContains === null || str_contains((string) $message['body'], $bodyContains))
+    );
+    expect($match)->not->toBeNull("Expected SMS to {$to}" . ($bodyContains ? " containing '{$bodyContains}'" : ''));
+
+    return $this;
+});
+
+expect()->extend('toHaveRedirectedCall', function (string $url) {
+    /** @var FakeTwilioAccount $account */
+    $account = $this->value;
+    $match = collect($account->callUpdates)->first(
+        fn (array $update) => isset($update['url']) && str_contains($update['url'], $url)
+    );
+    expect($match)->not->toBeNull("Expected a call redirect to URL containing '{$url}'");
+
+    return $this;
 });
 
 expect()->extend('toHaveUrlAndQueryStringMatching', function (string $baseUrl, array $expectedQuery) {
