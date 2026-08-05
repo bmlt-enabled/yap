@@ -1,0 +1,14 @@
+{
+    "results": [
+        {
+            "formatted_address": "Buffalo, NY, USA",
+            "geometry": {
+                "location": {
+                    "lat": 42.8864163,
+                    "lng": -78.8781493
+                }
+            }
+        }
+    ],
+    "status": "OK"
+}

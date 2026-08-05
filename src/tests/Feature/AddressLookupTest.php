@@ -1,9 +1,18 @@
 <?php
 
 use App\Services\SettingsService;
+use Tests\FakeHttp;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
+});
+
+beforeEach(function () {
+    // Serve Google's geocoder from fixtures. These tests assert the spoken
+    // formatted_address ("Raleigh, NC, USA"), which only the real geocoding
+    // path produces - custom_geocoding would set it to the raw input instead
+    // and quietly stop testing the formatting.
+    FakeHttp::install();
 });
 
 test('search by address for meeting information with speech text result with google api key', function ($method) {

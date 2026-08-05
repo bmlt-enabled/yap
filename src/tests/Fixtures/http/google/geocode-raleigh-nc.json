@@ -1,0 +1,14 @@
+{
+    "results": [
+        {
+            "formatted_address": "Raleigh, NC, USA",
+            "geometry": {
+                "location": {
+                    "lat": 35.7795897,
+                    "lng": -78.6381787
+                }
+            }
+        }
+    ],
+    "status": "OK"
+}

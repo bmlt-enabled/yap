@@ -12,9 +12,11 @@ use App\Structures\VolunteerData;
 use App\Structures\VolunteerInfo;
 use App\Utilities\VolunteerScheduleHelpers;
 use Laravel\Sanctum\Sanctum;
+use Tests\FakeHttp;
 use Tests\RootServerMocks;
 
 beforeEach(function () {
+    FakeHttp::install();
     $this->rootServerMocks = new RootServerMocks();
     $this->id = "200";
     $this->serviceBodyId = "44";

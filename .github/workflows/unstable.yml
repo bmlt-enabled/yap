@@ -38,7 +38,6 @@ jobs:
       - name: Test w/Coverage
         uses: ./.github/actions/test-coverage
         env:
-          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   package:

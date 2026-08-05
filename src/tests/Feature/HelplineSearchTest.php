@@ -8,9 +8,11 @@ use App\Services\RootServerService;
 use App\Structures\Coordinates;
 use App\Structures\ServiceBodyCallHandling;
 use Illuminate\Testing\Assert;
+use Tests\FakeHttp;
 use Tests\RootServerMocks;
 
 beforeEach(function () {
+    FakeHttp::install();
     $this->rootServerMocks = new RootServerMocks();
     $this->callSid = "abc123";
     $this->serviceBodyId = "1053";

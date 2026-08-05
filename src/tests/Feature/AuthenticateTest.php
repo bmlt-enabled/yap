@@ -3,9 +3,16 @@
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Tests\FakeHttp;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
+});
+
+beforeEach(function () {
+    // The login endpoint falls through to the BMLT root server, so these tests
+    // used to POST real credentials at it on every run.
+    FakeHttp::install();
 });
 
 test('test login for invalid credentials', function () {

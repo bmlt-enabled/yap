@@ -1,9 +1,16 @@
 <?php
 
 use App\Models\User;
+use Tests\FakeHttp;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
+});
+
+beforeEach(function () {
+    // Failed logins fall through to the BMLT root server. The rate-limit test
+    // below makes 60 of them, so this used to be 60 live POSTs per run.
+    FakeHttp::install();
 });
 
 test('security: rate limits after multiple failed login attempts', function () {

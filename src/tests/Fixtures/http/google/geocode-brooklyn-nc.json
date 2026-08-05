@@ -1,0 +1,14 @@
+{
+    "results": [
+        {
+            "formatted_address": "Brooklyn, Wilmington, NC 28401, USA",
+            "geometry": {
+                "location": {
+                    "lat": 34.247433,
+                    "lng": -77.9404247
+                }
+            }
+        }
+    ],
+    "status": "OK"
+}
