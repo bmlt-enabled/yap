@@ -341,7 +341,34 @@ class FakeTwilioAccount
                     'statusCallback' => 'status.php',
                 ];
 
-                return (object) $record;
+                return $this->account->hydrateIncomingPhoneNumber($record);
+            }
+        };
+    }
+
+    /**
+     * Twilio's IncomingPhoneNumberInstance stringifies to the E.164 number; the
+     * app logs it with sprintf("%s", $instance) in CallFlowController::index().
+     */
+    public function hydrateIncomingPhoneNumber(array $record): object
+    {
+        return new class ($record) {
+            public string $sid;
+
+            public string $phoneNumber;
+
+            public ?string $statusCallback;
+
+            public function __construct(array $record)
+            {
+                $this->sid = $record['sid'];
+                $this->phoneNumber = $record['phoneNumber'];
+                $this->statusCallback = $record['statusCallback'] ?? null;
+            }
+
+            public function __toString(): string
+            {
+                return $this->phoneNumber;
             }
         };
     }
