@@ -7,14 +7,28 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Tests\FakeTwilioHttpClient;
+use Tests\FakeTwilioUnauthorizedHttpClient;
 use Tests\TestCase;
 use Tests\TwilioTestUtility;
+use Twilio\Rest\Client;
 
 uses(TestCase::class, RefreshDatabase::class)
     ->beforeAll(function () {
         putenv("ENVIRONMENT=test");
     })
     ->beforeEach(function () {
+        // Keep the suite hermetic. Everything the app fetches goes through
+        // App\Services\HttpService, which is built entirely on the Http facade,
+        // so this turns any request a test forgot to fake into a loud failure
+        // naming the URL instead of a silent call to someone else's server.
+        //
+        // Set YAP_ALLOW_STRAY_HTTP=1 to let real requests through while
+        // debugging locally - e.g. to re-record a fixture. It is deliberately
+        // not set anywhere in CI.
+        if (!getenv("YAP_ALLOW_STRAY_HTTP")) {
+            Http::preventStrayRequests();
+        }
+
         $this->artisan('migrate:fresh');
     })
     ->in('Feature');
@@ -35,6 +49,24 @@ function setupTwilioService(): TwilioTestUtility
     $utility->twilio->shouldReceive("client")->withArgs([])->andReturn($utility->client);
     $utility->twilio->shouldReceive("settings")->andReturn($utility->settings);
     return $utility;
+}
+
+/**
+ * Bind a TwilioService whose client answers every request with the 401 the real
+ * API returns for bad credentials, so tests that assert on that error do not
+ * have to reach api.twilio.com to provoke it.
+ */
+function useUnauthorizedTwilioClient(): void
+{
+    $twilio = mock(TwilioService::class)->makePartial();
+    $twilio->shouldReceive("client")->andReturn(new Client(
+        "fake",
+        "fake",
+        null,
+        null,
+        new FakeTwilioUnauthorizedHttpClient()
+    ));
+    app()->instance(TwilioService::class, $twilio);
 }
 
 function getSessionCookieValue($response)

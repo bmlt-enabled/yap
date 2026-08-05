@@ -1,0 +1,14 @@
+{
+    "results": [
+        {
+            "formatted_address": "Brooklyn, NY, USA",
+            "geometry": {
+                "location": {
+                    "lat": 40.6526006,
+                    "lng": -73.9497211
+                }
+            }
+        }
+    ],
+    "status": "OK"
+}

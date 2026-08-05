@@ -5,9 +5,11 @@ use App\Services\GeocodingService;
 use App\Services\SettingsService;
 use App\Services\TimeZoneService;
 use App\Services\TwilioService;
+use Tests\FakeHttp;
 use Tests\FakeTwilioHttpClient;
 
 beforeEach(function () {
+    FakeHttp::install();
     $fakeHttpClient = new FakeTwilioHttpClient();
     $this->twilioClient = mock('Twilio\Rest\Client', [
         "username" => "fake",
@@ -61,6 +63,7 @@ test('fake twilio credentials should return a rest error', function ($method) {
     $settings->set("twilio_account_sid", "fake");
     $settings->set("twilio_auth_token", "fake");
     app()->instance(SettingsService::class, $settings);
+    useUnauthorizedTwilioClient();
     $response = $this->call($method, '/api/v1/upgrade');
     # should return a rest error simliar to this
     $response
@@ -78,6 +81,7 @@ test('fake twilio credentials should return a rest error but suppress it', funct
     $settings->set("twilio_auth_token", "fake");
     $settings->set("exclude_errors_on_login_page", ["twilioFakeCredentials"]);
     app()->instance(SettingsService::class, $settings);
+    useUnauthorizedTwilioClient();
     $response = $this->call($method, '/api/v1/upgrade');
     # should return a rest error simliar to this
     $response

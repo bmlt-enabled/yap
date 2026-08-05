@@ -20,7 +20,11 @@ INSERT INTO users (id, name, username, password, permissions, is_admin) VALUES (
 
 ### Testing
 
-After cloning, add a file called `.env.testing` with the value `GOOGLE_MAPS_API_KEY=<value>`.  Then run `make test`.
+After cloning, run `make test`. The test suite is hermetic — it makes no network
+calls, so no API keys or other secrets are needed. Outbound HTTP is stubbed from
+fixtures in `src/tests/Fixtures/http/`, and `Http::preventStrayRequests()` fails
+any test that tries to reach the network. See `src/tests/Fixtures/http/README.md`
+if you need to add or refresh a fixture.
 
 To run code coverage, you can run `make coverage`.
 
