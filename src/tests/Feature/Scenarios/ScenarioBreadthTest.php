@@ -63,7 +63,7 @@ function breadthSeedCallHandling(
 
 function breadthSeedVolunteers(bool $genderRouting = false): void
 {
-  $serviceBodyId = test()->serviceBodyId;
+    $serviceBodyId = test()->serviceBodyId;
 
     if ($genderRouting) {
         ConfigData::createVolunteers((int) $serviceBodyId, [
@@ -321,7 +321,7 @@ test('blasting duplicate noop increment would skip voicemail if count overshoots
 
     app(\App\Services\TwilioService::class)->incrementNoAnswerCount();
 
-  $redirectCountAfterOvershoot = collect($scenario->twilio->callUpdates)
+    $redirectCountAfterOvershoot = collect($scenario->twilio->callUpdates)
         ->filter(fn (array $update) => isset($update['url']) && str_contains($update['url'], 'voicemail.php'))
         ->count();
     expect($redirectCountAfterOvershoot)->toBe(1);
