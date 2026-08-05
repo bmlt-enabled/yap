@@ -3,8 +3,10 @@
 namespace Tests;
 
 use App\Constants\TwilioCallStatus;
+use App\Models\RecordEvent;
 use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
+use PHPUnit\Framework\Assert;
 use Tests\Fakes\FakeTwilioAccount;
 use Tests\Support\TwimlExpectations;
 
@@ -237,5 +239,23 @@ class CallScenario extends TwilioCallTestBuilder
         }
 
         return [$path, $query];
+    }
+
+    public function assertHasEvent(int $eventId): self
+    {
+        $callSids = [$this->callSid];
+        foreach ($this->twilio->pendingLegs as $leg) {
+            $callSids[] = $leg['sid'];
+        }
+
+        $event = RecordEvent::whereIn('callsid', array_unique($callSids))
+            ->where('event_id', $eventId)
+            ->first();
+        Assert::assertNotNull(
+            $event,
+            "Expected to find event with ID {$eventId} for scenario calls " . implode(', ', $callSids),
+        );
+
+        return $this;
     }
 }
