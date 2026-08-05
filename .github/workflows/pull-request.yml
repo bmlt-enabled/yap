@@ -41,8 +41,6 @@ jobs:
 
       - name: Test
         uses: ./.github/actions/test
-        env:
-          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
 
       - name: Auto-approve
         if: github.actor == 'renovate[bot]'
@@ -78,5 +76,3 @@ jobs:
 
       - name: E2E Tests
         uses: ./.github/actions/e2e-test
-        env:
-          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}

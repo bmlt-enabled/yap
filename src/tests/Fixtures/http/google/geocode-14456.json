@@ -1,0 +1,14 @@
+{
+    "results": [
+        {
+            "formatted_address": "Geneva, NY 14456, USA",
+            "geometry": {
+                "location": {
+                    "lat": 42.8361156,
+                    "lng": -76.9873477
+                }
+            }
+        }
+    ],
+    "status": "OK"
+}

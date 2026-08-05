@@ -8,9 +8,24 @@
  * causing HTTP 419 errors for all Twilio callbacks.
  */
 
+use App\Services\ReadingService;
+use Tests\FakeHttp;
+
 beforeEach(function () {
     // Enable CSRF middleware for these tests to ensure exemptions work
     $this->withMiddleware();
+
+    // These routes are only asserted not to return 419, so they passed whether
+    // or not their outbound calls succeeded - but they still made them. Stub
+    // the three transports they reach: the Http facade (BMLT/Google), the
+    // Twilio SDK, and fetch-meditation's own Guzzle client behind
+    // ReadingService, which Http::preventStrayRequests() cannot see.
+    FakeHttp::install();
+    setupTwilioService();
+
+    $readingService = Mockery::mock(ReadingService::class);
+    $readingService->shouldReceive('get')->andReturn(['Reading', 'Content']);
+    app()->instance(ReadingService::class, $readingService);
 });
 
 test('twilio webhook routes do not return 419 CSRF error', function ($route) {

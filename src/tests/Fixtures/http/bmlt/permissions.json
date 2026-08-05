@@ -1,0 +1,9 @@
+{
+    "service_body": [
+        {
+            "id": 1,
+            "name": "Greater New York Region",
+            "permissions": 3
+        }
+    ]
+}

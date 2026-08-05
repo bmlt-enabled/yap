@@ -1,8 +1,11 @@
 <?php
 
 use App\Services\SettingsService;
+use Tests\FakeHttp;
 
 beforeEach(function () {
+    FakeHttp::install();
+
     $this->utility = setupTwilioService();
 
     $this->settings = new SettingsService();

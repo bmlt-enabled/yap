@@ -2,9 +2,14 @@
 
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
+use Tests\FakeHttp;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
+});
+
+beforeEach(function () {
+    FakeHttp::install();
 });
 
 test('security: SQL injection in login username does not bypass auth', function () {

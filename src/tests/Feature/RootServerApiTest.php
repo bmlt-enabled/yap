@@ -2,8 +2,10 @@
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Tests\FakeHttp;
 
 beforeEach(function () {
+    FakeHttp::install();
 });
 
 test('get service bodies', function () {

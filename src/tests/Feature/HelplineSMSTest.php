@@ -10,9 +10,11 @@ use App\Services\RootServerService;
 use App\Services\SettingsService;
 use App\Structures\ServiceBodyCallHandling;
 use App\Structures\VolunteerData;
+use Tests\FakeHttp;
 use Tests\RootServerMocks;
 
 beforeEach(function () {
+    FakeHttp::install();
     $this->utility = setupTwilioService();
     $this->settings = new SettingsService();
     app()->instance(SettingsService::class, $this->settings);
