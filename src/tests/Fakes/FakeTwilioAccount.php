@@ -36,6 +36,28 @@ class FakeTwilioAccount
         $this->conferenceReadCount = 0;
     }
 
+    public function recordConferenceRead(): bool
+    {
+        $this->conferenceReadCount++;
+
+        return $this->conferenceReadCount <= $this->conferenceReadsBeforeVisible;
+    }
+
+    /** @return array<string, mixed> */
+    public function incomingPhoneNumberRecord(string $sid): array
+    {
+        return $this->incomingPhoneNumbers[$sid] ?? [
+            'sid' => $sid,
+            'phoneNumber' => '+12125551212',
+            'statusCallback' => 'status.php',
+        ];
+    }
+
+    public function phoneLookupFor(string $number): object
+    {
+        return $this->phoneLookups[$number] ?? (object) ['phoneNumber' => $number];
+    }
+
     public function registerInboundCall(
         string $callSid,
         string $from,
@@ -157,8 +179,7 @@ class FakeTwilioAccount
 
             public function read(array $filters = []): array
             {
-                $this->account->conferenceReadCount++;
-                if ($this->account->conferenceReadCount <= $this->account->conferenceReadsBeforeVisible) {
+                if ($this->account->recordConferenceRead()) {
                     return [];
                 }
 
@@ -314,8 +335,7 @@ class FakeTwilioAccount
 
                     public function fetch(): object
                     {
-                        return $this->account->phoneLookups[$this->number]
-                            ?? (object) ['phoneNumber' => $this->number];
+                        return $this->account->phoneLookupFor($this->number);
                     }
                 };
             }
@@ -335,13 +355,9 @@ class FakeTwilioAccount
 
             public function fetch(): object
             {
-                $record = $this->account->incomingPhoneNumbers[$this->sid] ?? [
-                    'sid' => $this->sid,
-                    'phoneNumber' => '+12125551212',
-                    'statusCallback' => 'status.php',
-                ];
-
-                return $this->account->hydrateIncomingPhoneNumber($record);
+                return $this->account->hydrateIncomingPhoneNumber(
+                    $this->account->incomingPhoneNumberRecord($this->sid),
+                );
             }
         };
     }
