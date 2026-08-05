@@ -3,10 +3,11 @@
 namespace Tests;
 
 use App\Models\RecordEvent;
-use Illuminate\Testing\TestResponse;
-use Illuminate\Support\Str;
-use Twilio\Rest\Client;
 use DateTime;
+use Illuminate\Support\Str;
+use Illuminate\Testing\TestResponse;
+use PHPUnit\Framework\Assert;
+use Twilio\Rest\Client;
 
 class TwilioCallTestBuilder
 {
@@ -46,18 +47,18 @@ class TwilioCallTestBuilder
         $callContext = mock('\Twilio\Rest\Api\V2010\Account\CallContext');
         $callContext->shouldReceive('fetch')->withNoArgs()->andReturn($callInstance);
         $this->utility->twilio->client()->shouldReceive('calls')
-            ->withArgs([$this->callSid])->andReturn($callContext); //->once();
+            ->withArgs([$this->callSid])->andReturn($callContext);
     
         $incomingPhoneNumberContext = mock('\Twilio\Rest\Api\V2010\Account\IncomingPhoneNumberContext');
         $incomingPhoneNumberInstance= mock('\Twilio\Rest\Api\V2010\Account\IncomingPhoneNumberInstance');
         $incomingPhoneNumberInstance->statusCallback = "blah.php";
         $incomingPhoneNumberInstance->phoneNumber = $toNumber;
         $incomingPhoneNumberContext->shouldReceive('fetch')->withNoArgs()
-            ->andReturn($incomingPhoneNumberInstance); //->once();
+            ->andReturn($incomingPhoneNumberInstance);
     
         // mocking TwilioRestClient->incomingPhoneNumbers()->fetch();
         $this->utility->twilio->client()->shouldReceive('incomingPhoneNumbers')
-            ->withArgs([$this->phoneNumberSid])->andReturn($incomingPhoneNumberContext); //->once();
+            ->withArgs([$this->phoneNumberSid])->andReturn($incomingPhoneNumberContext);
 
         $this->lastResponse = test()->call($method, '/index.php', $this->callData);
         $this->lastResponse->assertStatus(200);
@@ -75,8 +76,8 @@ class TwilioCallTestBuilder
     {
         $xml = simplexml_load_string($this->lastResponse->getContent());
         $redirectElements = $xml->xpath('//Redirect');
-        assert(!empty($redirectElements), "Expected TwiML to contain <Redirect> tag");
-        assert((string)$redirectElements[0] === $uri, "Expected Redirect to point to {$uri}, got " . (string)$redirectElements[0]);
+        Assert::assertNotEmpty($redirectElements, 'Expected TwiML to contain <Redirect> tag');
+        Assert::assertSame($uri, (string)$redirectElements[0], "Expected Redirect to point to {$uri}, got " . (string)$redirectElements[0]);
         return $this;
     }
     
@@ -90,7 +91,7 @@ class TwilioCallTestBuilder
     {
         $xml = simplexml_load_string($this->lastResponse->getContent());
         $redirectElements = $xml->xpath('//Redirect');
-        assert(!empty($redirectElements), "Cannot follow redirect - no Redirect tag found");
+        Assert::assertNotEmpty($redirectElements, 'Cannot follow redirect - no Redirect tag found');
         $uri = (string)$redirectElements[0];
         $this->lastResponse = $this->call('GET', $uri, $this->callData);
         $this->lastResponse->assertStatus(200);
@@ -101,8 +102,8 @@ class TwilioCallTestBuilder
     {
         $xml = simplexml_load_string($this->lastResponse->getContent());
         $elements = $xml->xpath('//' . $tag);
-        assert(!empty($elements), "Cannot find {$attribute} - no {$tag} tag found");
-        assert(isset($elements[0][$attribute]), "Cannot find {$attribute} attribute in {$tag} tag");
+        Assert::assertNotEmpty($elements, "Cannot find {$attribute} - no {$tag} tag found");
+        Assert::assertTrue(isset($elements[0][$attribute]), "Cannot find {$attribute} attribute in {$tag} tag");
         return (string)$elements[0][$attribute];
     }
 
@@ -121,7 +122,7 @@ class TwilioCallTestBuilder
         $xml = simplexml_load_string($this->lastResponse->getContent());
         $elements = $xml->xpath('//' . $tag);
         $actualContent = $this->lastResponse->getContent();
-        assert(!empty($elements), "Expected TwiML to contain <{$tag}> but got:\n{$actualContent}");
+        Assert::assertNotEmpty($elements, "Expected TwiML to contain <{$tag}> but got:\n{$actualContent}");
         
         if (!empty($attributes) || $content !== null) {
             $found = false;
@@ -149,7 +150,7 @@ class TwilioCallTestBuilder
             }
             $errorMessage .= " but got:\n{$actualContent}";
             
-            assert($found, $errorMessage);
+            Assert::assertTrue($found, $errorMessage);
         }
         
         return $this;
@@ -165,7 +166,7 @@ class TwilioCallTestBuilder
         $event = RecordEvent::where('callsid', $this->callSid)
             ->where('event_id', $eventId)
             ->first();
-        assert($event !== null, "Expected to find event with ID {$eventId} for call {$this->callSid}");
+        Assert::assertNotNull($event, "Expected to find event with ID {$eventId} for call {$this->callSid}");
         return $this;
     }
 }

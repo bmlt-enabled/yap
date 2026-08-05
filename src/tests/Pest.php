@@ -17,6 +17,9 @@ uses(TestCase::class, RefreshDatabase::class)
         putenv("ENVIRONMENT=test");
     })
     ->beforeEach(function () {
+        mt_srand(1580);
+        date_default_timezone_set('UTC');
+
         // Keep the suite hermetic. Everything the app fetches goes through
         // App\Services\HttpService, which is built entirely on the Http facade,
         // so this turns any request a test forgot to fake into a loud failure
@@ -30,6 +33,10 @@ uses(TestCase::class, RefreshDatabase::class)
         }
 
         $this->artisan('migrate:fresh');
+    })
+    ->afterEach(function () {
+        date_default_timezone_set('UTC');
+        expect(date_default_timezone_get())->toBe('UTC');
     })
     ->in('Feature');
 
