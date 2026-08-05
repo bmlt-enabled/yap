@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\ConfigData;
 use App\Models\User;
+use App\Structures\Settings;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Tests\FakeHttp;
@@ -96,4 +98,56 @@ test('test login for bmlt user with valid credentials', function () {
     ])->getJson('/api/v1/settings'); // Replace with your actual protected endpoint
 
     $protectedResponse->assertStatus(200);
+});
+
+test('login seeds override settings for auth v2 service body admin', function () {
+    $serviceBodyId = 1;
+    $distinctiveTitle = 'override-title-1579-v2';
+
+    $config = new Settings();
+    $config->title = $distinctiveTitle;
+    ConfigData::createServiceBodyConfiguration($serviceBodyId, $config);
+
+    $username = 'sb_admin_v2';
+    $password = 'testpass';
+    User::saveUser('SB Admin', $username, $password, [], [(string) $serviceBodyId]);
+
+    $result = $this->post('/api/v1/login', [
+        'username' => $username,
+        'password' => $password,
+    ]);
+
+    $result->assertStatus(200)
+        ->assertSessionHas('override_title', $distinctiveTitle);
+});
+
+test('login seeds override settings for auth v1 bmlt user', function () {
+    $serviceBodyId = 1;
+    $distinctiveTitle = 'override-title-1579-v1';
+
+    $config = new Settings();
+    $config->title = $distinctiveTitle;
+    ConfigData::createServiceBodyConfiguration($serviceBodyId, $config);
+
+    $result = $this->post('/api/v1/login', [
+        'username' => 'gnyr_admin',
+        'password' => 'CoreysGoryStory',
+    ]);
+
+    $result->assertStatus(200)
+        ->assertSessionHas('override_title', $distinctiveTitle);
+});
+
+test('login for auth v2 user with no service body rights does not error', function () {
+    $username = 'no_rights_user';
+    $password = 'testpass';
+    User::saveUser('No Rights', $username, $password, [], []);
+
+    $result = $this->post('/api/v1/login', [
+        'username' => $username,
+        'password' => $password,
+    ]);
+
+    $result->assertStatus(200);
+    expect(session()->has('override_title'))->toBeFalse();
 });
