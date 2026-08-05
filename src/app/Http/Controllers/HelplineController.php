@@ -436,7 +436,7 @@ class HelplineController extends Controller
         $volunteer_routing_parameters->tracker = $tracker;
         $volunteer_routing_parameters->cycle_algorithm = $serviceBodyCallHandling->call_strategy;
         $volunteer_routing_parameters->volunteer_type = VolunteerType::PHONE;
-        $volunteer_routing_parameters->volunteer_gender = session()->has('Gender') ?? VolunteerGender::UNSPECIFIED;
+        $volunteer_routing_parameters->volunteer_gender = session()->get('Gender') ?? VolunteerGender::UNSPECIFIED;
         $volunteer_routing_parameters->volunteer_responder = VolunteerResponderOption::UNSPECIFIED;
         $volunteer_routing_parameters->volunteer_language = $this->settings->get('language');
         session()->put("volunteer_routing_parameters", $volunteer_routing_parameters);
