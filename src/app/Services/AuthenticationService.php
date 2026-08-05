@@ -52,11 +52,12 @@ class AuthenticationService extends Service
             'auth_service_bodies' => explode(",", $user->service_bodies)
         ]);
 
-        session()->put([
-            'auth_service_bodies_rights' => $this->rootServer->getServiceBodiesRightsIds()
-        ]);
+        $rights = $this->rootServer->getServiceBodiesRightsIds();
+        session()->put('auth_service_bodies_rights', $rights);
 
-        $this->session->setConfigForService(session()->get('auth_service_bodies_rights'));
+        if (!empty($rights)) {
+            $this->session->setConfigForService($rights[0]);
+        }
         return $user;
     }
 
