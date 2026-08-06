@@ -2,29 +2,8 @@
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 const DB_UUID_MIGRATION = '2025_01_01_163927_convert_id_to_guid_in_users_table';
-const DB_TOKENABLE_MIGRATION = '2025_01_01_174842_update_tokenable_id_to_uuid';
-
-function rollbackPendingDestructiveMigrations(): void
-{
-    if (!Schema::hasTable('migrations_v2')) {
-        return;
-    }
-
-    $ran = DB::table('migrations_v2')->pluck('migration')->all();
-    $steps = 0;
-    if (in_array(DB_TOKENABLE_MIGRATION, $ran, true)) {
-        $steps++;
-    }
-    if (in_array(DB_UUID_MIGRATION, $ran, true)) {
-        $steps++;
-    }
-    if ($steps > 0) {
-        Artisan::call('migrate:rollback', ['--step' => $steps, '--force' => true]);
-    }
-}
 
 test('returns maintenance page when destructive migrations are pending', function () {
     DB::table('migrations_v2')->where('migration', DB_UUID_MIGRATION)->delete();
@@ -47,8 +26,6 @@ test('allows requests when all migrations have been applied', function () {
 });
 
 test('config check blocks migration middleware when config is missing', function () {
-    rollbackPendingDestructiveMigrations();
-
     $settings = app(\App\Services\SettingsService::class);
     $configPath = $settings->getConfigFilenameForEnvironment();
 
