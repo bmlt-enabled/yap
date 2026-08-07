@@ -9,22 +9,22 @@ beforeAll(function () {
 
 beforeEach(function () {
     // Failed logins fall through to the BMLT root server. The rate-limit test
-    // below makes 60 of them, so this used to be 60 live POSTs per run.
+    // below makes several of them, so FakeHttp avoids live POSTs per run.
     FakeHttp::install();
 });
 
 test('security: rate limits after multiple failed login attempts', function () {
     User::saveUser('Test', 'testuser', 'correctpass', [], []);
 
-    // Attempt 60 rapid failed logins (rate limit is 60 per minute)
-    for ($i = 0; $i < 60; $i++) {
+    // Attempt 5 rapid failed logins (login route limit is 5 per minute)
+    for ($i = 0; $i < 5; $i++) {
         $this->post('/api/v1/login', [
             'username' => 'testuser',
             'password' => 'wrongpass'
         ]);
     }
 
-    // 61st attempt should be rate limited (429)
+    // 6th attempt should be rate limited (429)
     $response = $this->post('/api/v1/login', [
         'username' => 'testuser',
         'password' => 'correctpass'
