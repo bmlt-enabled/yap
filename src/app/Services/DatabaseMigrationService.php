@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use Illuminate\Database\Migrations\Migrator;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class DatabaseMigrationService
@@ -15,8 +14,6 @@ class DatabaseMigrationService
     public const DESTRUCTIVE_MIGRATIONS = [
         '2025_01_01_163927_convert_id_to_guid_in_users_table',
     ];
-
-    public const ADVISORY_LOCK_NAME = 'yap_migrate';
 
     private Migrator $migrator;
 
@@ -49,6 +46,9 @@ class DatabaseMigrationService
         ));
     }
 
+    /**
+     * Run pending safe migrations. Caller must hold the yap-db-migrations advisory lock.
+     */
     public function runSafePendingMigrations(): void
     {
         $safe = $this->pendingSafeMigrationNames();
@@ -56,35 +56,15 @@ class DatabaseMigrationService
             return;
         }
 
-        if (!$this->acquireAdvisoryLock()) {
-            return;
-        }
-
-        try {
-            foreach ($safe as $migration) {
-                Log::warning("Auto-running database migration: {$migration}");
-                $path = $this->migrationPath() . DIRECTORY_SEPARATOR . $migration . '.php';
-                $this->migrator->run([$path], ['force' => true]);
-            }
-        } finally {
-            $this->releaseAdvisoryLock();
+        foreach ($safe as $migration) {
+            Log::warning("Auto-running database migration: {$migration}");
+            $path = $this->migrationPath() . DIRECTORY_SEPARATOR . $migration . '.php';
+            $this->migrator->run([$path], ['force' => true]);
         }
     }
 
     private function migrationPath(): string
     {
         return database_path('migrations');
-    }
-
-    private function acquireAdvisoryLock(): bool
-    {
-        $result = DB::selectOne('SELECT GET_LOCK(?, 0) as locked', [self::ADVISORY_LOCK_NAME]);
-
-        return (int) $result->locked === 1;
-    }
-
-    private function releaseAdvisoryLock(): void
-    {
-        DB::select('SELECT RELEASE_LOCK(?)', [self::ADVISORY_LOCK_NAME]);
     }
 }
