@@ -96,7 +96,7 @@ class VolunteerService extends Service
                 if (isset($volunteers[$v]->time_zone) && $volunteers[$v]->time_zone !== "") {
                     date_default_timezone_set($volunteers[$v]->time_zone);
                 }
-                $current_time = new DateTime();
+                $current_time = now();
                 if (VolunteerRoutingHelpers::checkVolunteerRoutingTime($current_time, $volunteers, $v)
                     && VolunteerRoutingHelpers::checkVolunteerRoutingType($volunteer_routing_params, $volunteers, $v)
                     && VolunteerRoutingHelpers::checkVolunteerRoutingGender($volunteer_routing_params, $volunteers, $v)

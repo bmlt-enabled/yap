@@ -23,7 +23,15 @@ const BREADTH_YSK_MARKER = 'https://example.org/ysk-continuity-marker.mp3';
 
 function breadthVolunteer(string $name, string $phoneNumber, int $gender): array
 {
-    $today = (int) (new DateTime())->format('N') % 7 + 1;
+    $shifts = [];
+    foreach (range(1, 7) as $day) {
+        $shifts[] = [
+            'day' => $day,
+            'tz' => 'America/New_York',
+            'start_time' => '12:00 AM',
+            'end_time' => '11:59 PM',
+        ];
+    }
 
     return [
         'volunteer_name' => $name,
@@ -32,12 +40,7 @@ function breadthVolunteer(string $name, string $phoneNumber, int $gender): array
         'volunteer_responder' => 0,
         'volunteer_notes' => '',
         'volunteer_enabled' => true,
-        'volunteer_shift_schedule' => base64_encode(json_encode([[
-            'day' => $today,
-            'tz' => 'America/New_York',
-            'start_time' => '12:00 AM',
-            'end_time' => '11:59 PM',
-        ]])),
+        'volunteer_shift_schedule' => base64_encode(json_encode($shifts)),
     ];
 }
 

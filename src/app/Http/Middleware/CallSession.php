@@ -60,6 +60,11 @@ class CallSession
             $request->session()->put('initial_webhook', $initial_webhook);
         }
 
+        // SHAKEN/STIR CallToken for authenticated call forwarding on volunteer outdial
+        if ($request->has('CallToken') && !$request->session()->has('call_token')) {
+            $request->session()->put('call_token', $request->get('CallToken'));
+        }
+
         // Override specific values for the session
         foreach ($request->all() as $key => $value) {
             if (str_contains($key, "override_")) {

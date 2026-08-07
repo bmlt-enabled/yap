@@ -10,3 +10,9 @@ runs:
         cd src
         vendor/squizlabs/php_codesniffer/bin/phpcs
       shell: bash
+
+    - name: Session has() value-position guard
+      run: |
+        cd src
+        bash scripts/session-has-value-position-guard.sh
+      shell: bash

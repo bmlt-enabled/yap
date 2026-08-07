@@ -124,6 +124,7 @@ test('meeting search with valid latitude and longitude suppressing voice results
         'Longitude' => $this->longitude,
         'To' => $this->to,
         'From' => $this->from,
+        'Timestamp' => '2024-02-19 00:00:00',
     ]);
 
     $response
