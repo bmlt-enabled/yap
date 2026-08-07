@@ -4,18 +4,28 @@ namespace App\Http\Middleware;
 
 use App\Services\SettingsService;
 use Closure;
+use Illuminate\Database\Migrations\MigrationRepository;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DatabaseMigrations
 {
-    private SettingsService $settings;
+    /**
+     * Update this when adding a new migration so the middleware knows the schema
+     * is current and can skip calling Artisan on every request.
+     */
+    private const LATEST_MIGRATION = '2026_01_03_000000_create_chat_sessions_table';
 
-    public function __construct(SettingsService $settings)
-    {
-        $this->settings = $settings;
+    private const MIGRATION_LOCK_NAME = 'yap-db-migrations';
+
+    public function __construct(
+        private SettingsService $settings,
+        private MigrationRepository $migrationRepository,
+    ) {
     }
 
     /**
@@ -27,10 +37,35 @@ class DatabaseMigrations
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($this->settings->has('mysql_hostname')) {
-            Artisan::call("migrate", array('--force' => true));
+        if (!$this->isDatabaseConfigured()) {
+            return $next($request);
+        }
+
+        if ($this->migrationsShouldRun()) {
+            try {
+                ini_set('max_execution_time', '600');
+                DB::select('SELECT GET_LOCK(?, 600)', [self::MIGRATION_LOCK_NAME]);
+                Artisan::call('migrate', ['--force' => true]);
+            } finally {
+                DB::statement('SELECT RELEASE_LOCK(?)', [self::MIGRATION_LOCK_NAME]);
+            }
         }
 
         return $next($request);
+    }
+
+    public function isDatabaseConfigured(): bool
+    {
+        return !empty($this->settings->get('mysql_hostname'))
+            && !empty($this->settings->get('mysql_database'));
+    }
+
+    public function migrationsShouldRun(): bool
+    {
+        if (!Schema::hasTable(config('database.migrations'))) {
+            return true;
+        }
+
+        return !in_array(self::LATEST_MIGRATION, $this->migrationRepository->getRan(), true);
     }
 }

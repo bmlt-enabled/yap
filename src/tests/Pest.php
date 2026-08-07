@@ -48,6 +48,9 @@ uses(TestCase::class, RefreshDatabase::class)
     })
     ->in('Feature');
 
+uses(TestCase::class)
+    ->in('Unit');
+
 /**
  * Opt-in Twilio harness: stateful FakeTwilioAccount wired through the same Client
  * seam as setupTwilioService(), without disturbing per-test Mockery expectations
