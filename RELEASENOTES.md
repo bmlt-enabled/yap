@@ -1,11 +1,25 @@
 # Release Notes
 
 ### 5.0.0 (UNRELEASED)
-* **Twilio signature validation on all inbound webhooks.** Yap 5.0 validates `X-Twilio-Signature` on every Twilio-facing route (full IVR, SMS, voicemail, dialback, status callbacks). Validation fails closed: an empty `twilio_auth_token` or a URL/proxy mismatch causes HTTP 403 on every inbound call. Run `php artisan yap:preflight` before upgrading. See the [4.x → 5.x upgrade guide](https://yap.bmlt.app/docs/miscellaneous/upgrading-from-yap-4x-to-yap-5x). [#1589]
+
+**Self-hosted operators: read the [4.x → 5.x upgrade guide](https://yap.bmlt.app/docs/miscellaneous/upgrading-from-yap-4x-to-yap-5x) before deploying.** Back up your database — the UUID migration is not reversible without your own backup.
+
+#### Breaking changes
+
+* **Laravel 10 → 12, PHP 8.2+.** `composer.json` requires `^8.2`; the official Docker image uses PHP 8.5. PHP 8.1 is no longer supported. MySQL 8.0+ (or MariaDB 10.3+) is required.
+* **Destructive UUID migration for `users.id`.** Integer user ids become UUIDs. Run `php artisan yap:preflight` before deploying; run `php artisan migrate` manually for the UUID step after backup. Safe migrations may auto-apply on the first HTTP request.
+* **Twilio signature validation on all inbound webhooks.** Yap 5.0 validates `X-Twilio-Signature` on every Twilio-facing route (full IVR, SMS, voicemail, dialback, status callbacks). Validation fails closed: an empty `twilio_auth_token` or a URL/proxy mismatch causes HTTP 403 on every inbound call. [#1589]
 * **Trusted proxies are opt-in.** `TrustProxies` no longer defaults to `*`. Set `TRUSTED_PROXIES` when behind ngrok, a load balancer, or another reverse proxy so signature validation sees the public URL Twilio signed. [#1589]
-* **Fixed service-body override settings not seeding at login for database-authenticated admins.** A regression in the `$_SESSION` → `session()` rewrite passed the full service-body rights array to `setConfigForService()` on the V2 auth path instead of the first service-body id, so override settings never landed in the admin session and the settings UI showed global defaults for service-body admins. [#1579]
+* **Do not use `SESSION_DRIVER=database`.** Yap's `sessions` table stores call PINs, not Laravel sessions.
+* **Admin auth is Sanctum.** The legacy `AdminAuthenticator` and cookie-based admin API are removed. Authenticate with `POST /api/v1/login` and send a bearer token. Several legacy routes are removed or moved — see the upgrade guide.
+* **Admin UI is a React SPA** at `/admin`. Legacy `/adminv2` and server-rendered admin pages are gone.
+* **WebChat and WebRTC are experimental and default off.** Routes are not registered while disabled.
+* **Custom extensions:** `ConfigData::getVolunteers()` / `getVolunteersRecursively()` / `getGroupVolunteers()` now return decoded objects with expanded shift schedules (4.5.x returned raw JSON strings).
+
+#### Features and fixes
+
 * **Fixed gender routing always dialing MALE volunteers.** A regression in the `$_SESSION` → `session()` rewrite turned the caller's gender selection into a boolean existence check, so on service bodies with `gender_routing_enabled` a caller who pressed 2 to speak to a woman — or 3 to speak to either — was routed to a male volunteer, and fell through to the fallback number or voicemail when no male volunteer was on shift. **`5.0.0-beta1` and `5.0.0-beta2` are affected**; upgrade if you use gender routing. [#1578]
-* **WebChat and WebRTC are EXPERIMENTAL in this release.** Both are disabled by default (`webchat_enabled` and `webrtc_enabled` default to `false`) and are unsupported in 5.0.0 — they ship without test coverage and their behavior may change or be removed in a future release. Do not enable them on a production helpline. While disabled, none of their routes are registered at all, so every WebChat/WebRTC endpoint returns 404. If you enable or disable either setting and you have run `php artisan route:cache`, run `php artisan route:clear` for the change to take effect. [#1577]
+* **Fixed service-body override settings not seeding at login for database-authenticated admins.** A regression in the `$_SESSION` → `session()` rewrite passed the full service-body rights array to `setConfigForService()` on the V2 auth path instead of the first service-body id, so override settings never landed in the admin session and the settings UI showed global defaults for service-body admins. [#1579]
 * Fixed the WebChat volunteer SMS webhook (`/webchat-sms`) accepting and routing inbound messages even when WebChat was disabled. [#1577]
 * Volunteer shifts display are now sorted by day [#1338]
 * Custom Extensions are now included in call detail reports [#1433]
