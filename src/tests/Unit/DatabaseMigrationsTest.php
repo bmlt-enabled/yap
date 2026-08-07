@@ -1,16 +1,21 @@
 <?php
 
 use App\Http\Middleware\DatabaseMigrations;
+use App\Services\DatabaseMigrationService;
 use App\Services\SettingsService;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-function makeDatabaseMigrationsMiddleware(SettingsService $settings): DatabaseMigrations
-{
-    return new DatabaseMigrations($settings);
+function makeDatabaseMigrationsMiddleware(
+    SettingsService $settings,
+    ?DatabaseMigrationService $migrationService = null,
+): DatabaseMigrations {
+    $migrationService ??= mock(DatabaseMigrationService::class);
+    $migrationService->shouldReceive('pendingDestructiveMigrationNames')->andReturn([]);
+
+    return new DatabaseMigrations($settings, $migrationService);
 }
 
 function mockLatestMigrationExists(bool $exists): void
@@ -23,13 +28,15 @@ function mockLatestMigrationExists(bool $exists): void
 }
 
 test('skips migrations when mysql hostname is empty', function () {
-    Artisan::spy();
-
     $settings = mock(SettingsService::class);
     $settings->shouldReceive('get')->with('mysql_hostname')->andReturn('');
     $settings->shouldReceive('get')->with('mysql_database')->andReturn('yap');
 
-    $middleware = makeDatabaseMigrationsMiddleware($settings);
+    $migrationService = mock(DatabaseMigrationService::class);
+    $migrationService->shouldNotReceive('pendingDestructiveMigrationNames');
+    $migrationService->shouldNotReceive('runSafePendingMigrations');
+
+    $middleware = new DatabaseMigrations($settings, $migrationService);
     $called = false;
 
     $middleware->handle(Request::create('/'), function () use (&$called) {
@@ -39,17 +46,18 @@ test('skips migrations when mysql hostname is empty', function () {
     });
 
     expect($called)->toBeTrue();
-    Artisan::shouldNotHaveReceived('call');
 });
 
 test('skips migrations when mysql database is empty', function () {
-    Artisan::spy();
-
     $settings = mock(SettingsService::class);
     $settings->shouldReceive('get')->with('mysql_hostname')->andReturn('127.0.0.1');
     $settings->shouldReceive('get')->with('mysql_database')->andReturn('');
 
-    $middleware = makeDatabaseMigrationsMiddleware($settings);
+    $migrationService = mock(DatabaseMigrationService::class);
+    $migrationService->shouldNotReceive('pendingDestructiveMigrationNames');
+    $migrationService->shouldNotReceive('runSafePendingMigrations');
+
+    $middleware = new DatabaseMigrations($settings, $migrationService);
     $called = false;
 
     $middleware->handle(Request::create('/'), function () use (&$called) {
@@ -59,11 +67,9 @@ test('skips migrations when mysql database is empty', function () {
     });
 
     expect($called)->toBeTrue();
-    Artisan::shouldNotHaveReceived('call');
 });
 
 test('skips migrations when schema is up to date', function () {
-    Artisan::spy();
     Schema::shouldReceive('hasTable')->with('migrations_v2')->andReturn(true);
     mockLatestMigrationExists(true);
 
@@ -71,7 +77,11 @@ test('skips migrations when schema is up to date', function () {
     $settings->shouldReceive('get')->with('mysql_hostname')->andReturn('127.0.0.1');
     $settings->shouldReceive('get')->with('mysql_database')->andReturn('yap');
 
-    $middleware = makeDatabaseMigrationsMiddleware($settings);
+    $migrationService = mock(DatabaseMigrationService::class);
+    $migrationService->shouldReceive('pendingDestructiveMigrationNames')->once()->andReturn([]);
+    $migrationService->shouldNotReceive('runSafePendingMigrations');
+
+    $middleware = new DatabaseMigrations($settings, $migrationService);
     $called = false;
 
     $middleware->handle(Request::create('/'), function () use (&$called) {
@@ -81,13 +91,9 @@ test('skips migrations when schema is up to date', function () {
     });
 
     expect($called)->toBeTrue();
-    Artisan::shouldNotHaveReceived('call');
 });
 
 test('runs migrations when configured and latest migration is missing', function () {
-    Artisan::shouldReceive('call')
-        ->once()
-        ->with('migrate', ['--force' => true]);
     Schema::shouldReceive('hasTable')->with('migrations_v2')->andReturn(true);
     mockLatestMigrationExists(false);
     DB::partialMock()
@@ -103,7 +109,11 @@ test('runs migrations when configured and latest migration is missing', function
     $settings->shouldReceive('get')->with('mysql_hostname')->andReturn('127.0.0.1');
     $settings->shouldReceive('get')->with('mysql_database')->andReturn('yap');
 
-    $middleware = makeDatabaseMigrationsMiddleware($settings);
+    $migrationService = mock(DatabaseMigrationService::class);
+    $migrationService->shouldReceive('pendingDestructiveMigrationNames')->once()->andReturn([]);
+    $migrationService->shouldReceive('runSafePendingMigrations')->once();
+
+    $middleware = new DatabaseMigrations($settings, $migrationService);
     $called = false;
 
     $middleware->handle(Request::create('/'), function () use (&$called) {
@@ -116,9 +126,6 @@ test('runs migrations when configured and latest migration is missing', function
 });
 
 test('runs migrations when configured and migrations table is missing', function () {
-    Artisan::shouldReceive('call')
-        ->once()
-        ->with('migrate', ['--force' => true]);
     Schema::shouldReceive('hasTable')->with('migrations_v2')->andReturn(false);
     DB::partialMock()
         ->shouldReceive('select')
@@ -134,7 +141,11 @@ test('runs migrations when configured and migrations table is missing', function
     $settings->shouldReceive('get')->with('mysql_hostname')->andReturn('127.0.0.1');
     $settings->shouldReceive('get')->with('mysql_database')->andReturn('yap');
 
-    $middleware = makeDatabaseMigrationsMiddleware($settings);
+    $migrationService = mock(DatabaseMigrationService::class);
+    $migrationService->shouldReceive('pendingDestructiveMigrationNames')->once()->andReturn([]);
+    $migrationService->shouldReceive('runSafePendingMigrations')->once();
+
+    $middleware = new DatabaseMigrations($settings, $migrationService);
     $called = false;
 
     $middleware->handle(Request::create('/'), function () use (&$called) {
@@ -144,4 +155,29 @@ test('runs migrations when configured and migrations table is missing', function
     });
 
     expect($called)->toBeTrue();
+});
+
+test('returns maintenance page when destructive migrations are pending', function () {
+    $settings = mock(SettingsService::class);
+    $settings->shouldReceive('get')->with('mysql_hostname')->andReturn('127.0.0.1');
+    $settings->shouldReceive('get')->with('mysql_database')->andReturn('yap');
+
+    $migrationService = mock(DatabaseMigrationService::class);
+    $migrationService->shouldReceive('pendingDestructiveMigrationNames')->once()->andReturn([
+        '2025_01_01_163927_convert_id_to_guid_in_users_table',
+    ]);
+    $migrationService->shouldNotReceive('runSafePendingMigrations');
+
+    $middleware = new DatabaseMigrations($settings, $migrationService);
+    $called = false;
+
+    $response = $middleware->handle(Request::create('/'), function () use (&$called) {
+        $called = true;
+
+        return response('ok');
+    });
+
+    expect($called)->toBeFalse();
+    expect($response->getStatusCode())->toBe(503);
+    expect($response->getContent())->toContain('Database Upgrade Required');
 });

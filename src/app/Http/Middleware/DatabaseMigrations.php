@@ -2,12 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\DatabaseMigrationService;
 use App\Services\SettingsService;
 use Closure;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -23,6 +23,7 @@ class DatabaseMigrations
 
     public function __construct(
         private SettingsService $settings,
+        private DatabaseMigrationService $migrationService,
     ) {
     }
 
@@ -39,11 +40,20 @@ class DatabaseMigrations
             return $next($request);
         }
 
+        $destructive = $this->migrationService->pendingDestructiveMigrationNames();
+        if (!empty($destructive)) {
+            return response()->view(
+                'admin.pending-destructive-migrations',
+                ['migrations' => $destructive],
+                503
+            );
+        }
+
         if ($this->migrationsShouldRun()) {
             try {
                 ini_set('max_execution_time', '600');
                 DB::select('SELECT GET_LOCK(?, 600)', [self::MIGRATION_LOCK_NAME]);
-                Artisan::call('migrate', ['--force' => true]);
+                $this->migrationService->runSafePendingMigrations();
             } finally {
                 DB::statement('SELECT RELEASE_LOCK(?)', [self::MIGRATION_LOCK_NAME]);
             }
