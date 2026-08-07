@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use App\Services\SettingsService;
 use Closure;
-use Illuminate\Database\Migrations\MigrationRepository;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -24,7 +23,6 @@ class DatabaseMigrations
 
     public function __construct(
         private SettingsService $settings,
-        private MigrationRepository $migrationRepository,
     ) {
     }
 
@@ -62,10 +60,14 @@ class DatabaseMigrations
 
     public function migrationsShouldRun(): bool
     {
-        if (!Schema::hasTable(config('database.migrations'))) {
+        $table = config('database.migrations');
+
+        if (!Schema::hasTable($table)) {
             return true;
         }
 
-        return !in_array(self::LATEST_MIGRATION, $this->migrationRepository->getRan(), true);
+        return !DB::table($table)
+            ->where('migration', self::LATEST_MIGRATION)
+            ->exists();
     }
 }

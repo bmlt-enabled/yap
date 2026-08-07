@@ -2,20 +2,24 @@
 
 use App\Http\Middleware\DatabaseMigrations;
 use App\Services\SettingsService;
-use Illuminate\Database\Migrations\MigrationRepository;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-function makeDatabaseMigrationsMiddleware(
-    SettingsService $settings,
-    ?MigrationRepository $repository = null,
-): DatabaseMigrations {
-    return new DatabaseMigrations(
-        $settings,
-        $repository ?? mock(MigrationRepository::class),
-    );
+function makeDatabaseMigrationsMiddleware(SettingsService $settings): DatabaseMigrations
+{
+    return new DatabaseMigrations($settings);
+}
+
+function mockLatestMigrationExists(bool $exists): void
+{
+    $query = mock(Builder::class);
+    $query->shouldReceive('where')->with('migration', '2026_01_03_000000_create_chat_sessions_table')->andReturnSelf();
+    $query->shouldReceive('exists')->andReturn($exists);
+
+    DB::shouldReceive('table')->with('migrations_v2')->andReturn($query);
 }
 
 test('skips migrations when mysql hostname is empty', function () {
@@ -61,17 +65,13 @@ test('skips migrations when mysql database is empty', function () {
 test('skips migrations when schema is up to date', function () {
     Artisan::spy();
     Schema::shouldReceive('hasTable')->with('migrations_v2')->andReturn(true);
+    mockLatestMigrationExists(true);
 
     $settings = mock(SettingsService::class);
     $settings->shouldReceive('get')->with('mysql_hostname')->andReturn('127.0.0.1');
     $settings->shouldReceive('get')->with('mysql_database')->andReturn('yap');
 
-    $repository = mock(MigrationRepository::class);
-    $repository->shouldReceive('getRan')->andReturn([
-        '2026_01_03_000000_create_chat_sessions_table',
-    ]);
-
-    $middleware = makeDatabaseMigrationsMiddleware($settings, $repository);
+    $middleware = makeDatabaseMigrationsMiddleware($settings);
     $called = false;
 
     $middleware->handle(Request::create('/'), function () use (&$called) {
@@ -89,6 +89,7 @@ test('runs migrations when configured and latest migration is missing', function
         ->once()
         ->with('migrate', ['--force' => true]);
     Schema::shouldReceive('hasTable')->with('migrations_v2')->andReturn(true);
+    mockLatestMigrationExists(false);
     DB::partialMock()
         ->shouldReceive('select')
         ->once()
@@ -102,12 +103,7 @@ test('runs migrations when configured and latest migration is missing', function
     $settings->shouldReceive('get')->with('mysql_hostname')->andReturn('127.0.0.1');
     $settings->shouldReceive('get')->with('mysql_database')->andReturn('yap');
 
-    $repository = mock(MigrationRepository::class);
-    $repository->shouldReceive('getRan')->andReturn([
-        '2024_03_24_035821_create_config_table',
-    ]);
-
-    $middleware = makeDatabaseMigrationsMiddleware($settings, $repository);
+    $middleware = makeDatabaseMigrationsMiddleware($settings);
     $called = false;
 
     $middleware->handle(Request::create('/'), function () use (&$called) {
@@ -132,15 +128,13 @@ test('runs migrations when configured and migrations table is missing', function
         ->shouldReceive('statement')
         ->once()
         ->with('SELECT RELEASE_LOCK(?)', ['yap-db-migrations']);
+    DB::shouldNotReceive('table');
 
     $settings = mock(SettingsService::class);
     $settings->shouldReceive('get')->with('mysql_hostname')->andReturn('127.0.0.1');
     $settings->shouldReceive('get')->with('mysql_database')->andReturn('yap');
 
-    $repository = mock(MigrationRepository::class);
-    $repository->shouldNotReceive('getRan');
-
-    $middleware = makeDatabaseMigrationsMiddleware($settings, $repository);
+    $middleware = makeDatabaseMigrationsMiddleware($settings);
     $called = false;
 
     $middleware->handle(Request::create('/'), function () use (&$called) {
