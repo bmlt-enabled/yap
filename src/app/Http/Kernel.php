@@ -34,6 +34,26 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 class Kernel extends HttpKernel
 {
     /**
+     * Run API throttling before authentication so unauthenticated bursts on
+     * auth:sanctum routes are rate-limited instead of returning 401 forever.
+     *
+     * @var array<int, class-string|string>
+     */
+    protected $middlewarePriority = [
+        \Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
+        \Illuminate\Cookie\Middleware\EncryptCookies::class,
+        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        \Illuminate\Routing\Middleware\ThrottleRequestsWithRedis::class,
+        \Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests::class,
+        \Illuminate\Contracts\Session\Middleware\AuthenticatesSessions::class,
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        \Illuminate\Auth\Middleware\Authorize::class,
+    ];
+
+    /**
      * The application's global HTTP middleware stack.
      *
      * These middleware are run during every request to your application.
@@ -66,9 +86,12 @@ class Kernel extends HttpKernel
         'web' => [
             EncryptCookies::class,
             AddQueuedCookiesToResponse::class,
+            // StartSession also runs in the global stack; the middleware is
+            // idempotent and does not double-start or reset the session.
             StartSession::class,
-//            \Illuminate\Session\Middleware\AuthenticateSession::class,
-//            ShareErrorsFromSession::class,
+            // Off in 4.5.x; Sanctum bearer tokens are the primary API auth path.
+            // \Illuminate\Session\Middleware\AuthenticateSession::class,
+            // ShareErrorsFromSession runs in the global stack instead.
             VerifyCsrfToken::class,
             SubstituteBindings::class,
             CallBlocklist::class,
@@ -76,8 +99,9 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-//            EnsureFrontendRequestsAreStateful::class,
-//            'throttle:api',
+            // SPA login uses session()->regenerate(); global StartSession covers API
+            // routes — EnsureFrontendRequestsAreStateful is not required today.
+            'throttle:api',
             SubstituteBindings::class,
         ],
     ];
@@ -90,12 +114,10 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        //'authForAdminPortal' => AdminAuthenticator::class,
+        // authForAdminPortal, auth.basic, and guest were removed — no routes reference them.
         'auth' => Authenticate::class,
-//        'auth.basic' => AuthenticateWithBasicAuth::class,
         'cache.headers' => SetCacheHeaders::class,
         'can' => Authorize::class,
-        //'guest' => RedirectIfAuthenticated::class,
         'password.confirm' => RequirePassword::class,
         'signed' => ValidateSignature::class,
         'throttle' => ThrottleRequests::class,
