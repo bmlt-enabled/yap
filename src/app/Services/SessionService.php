@@ -24,7 +24,11 @@ class SessionService extends Service
 
             if (isset($service_body_config)) {
                 foreach ($service_body_config as $item => $value) {
-                    // Skip setting "twilio_account_sid" and "twilio_auth_token" if "call_state" is in the session
+                    // Skip Twilio credentials mid-call so a service-body override cannot swap the
+                    // auth token after the first webhook. ValidateTwilioSignature reads
+                    // twilio_auth_token on every request: per-service-body subaccount tokens apply
+                    // only when override_service_body_id is present on the *first* webhook (before
+                    // call_state is set). Later hops keep the token established at call start.
                     if (($item == "twilio_account_sid" || $item == "twilio_auth_token") && session()->has('call_state')) {
                         continue;
                     }
