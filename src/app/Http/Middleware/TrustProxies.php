@@ -8,17 +8,20 @@ use Illuminate\Http\Request;
 class TrustProxies extends Middleware
 {
     /**
-     * The trusted proxies for this application.
+     * Trusted proxies for this application.
      *
-     * Set to '*' to trust all proxies (needed for ngrok, load balancers, etc.)
-     * This is safe because we validate Twilio signatures on webhook endpoints.
+     * Defaults to trusting none. Set TRUSTED_PROXIES when Yap runs behind a
+     * reverse proxy or load balancer so $request->fullUrl() matches the public
+     * URL Twilio signed. Signature validation does not make trusting proxies
+     * "safe" on its own — it depends on those same forwarded headers — so
+     * proxy trust is opt-in via config/trustedproxy.php (TRUSTED_PROXIES env).
      *
      * @var array|string|null
      */
-    protected $proxies = '*';
+    protected $proxies = null;
 
     /**
-     * The headers that should be used to detect proxies.
+     * Headers used to reconstruct the client-facing URL behind a proxy.
      *
      * @var int
      */
@@ -27,5 +30,6 @@ class TrustProxies extends Middleware
         Request::HEADER_X_FORWARDED_HOST |
         Request::HEADER_X_FORWARDED_PORT |
         Request::HEADER_X_FORWARDED_PROTO |
+        Request::HEADER_X_FORWARDED_PREFIX |
         Request::HEADER_X_FORWARDED_AWS_ELB;
 }

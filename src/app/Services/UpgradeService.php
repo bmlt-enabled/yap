@@ -38,9 +38,19 @@ class UpgradeService extends Service
     {
         $warnings = "";
         foreach ($this->settings->minimalRequiredSettings() as $setting) {
-            if (!$this->settings->has($setting)) {
+            if (!$this->settings->has($setting) || $this->settings->get($setting) === '') {
                 return $this->getState(false, "Missing required setting: " . $setting);
             }
+        }
+
+        if (empty($this->settings->get('twilio_auth_token'))) {
+            return $this->getState(
+                false,
+                'twilio_auth_token is empty. Yap 5.0 validates Twilio signatures on every inbound webhook and rejects '
+                . 'requests when no auth token is configured, so every call would return HTTP 403. '
+                . 'Set $twilio_auth_token in config.php before upgrading.',
+                $warnings,
+            );
         }
 
         $root_server_settings = $this->rootServer->getServerInfo();
