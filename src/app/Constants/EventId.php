@@ -31,6 +31,7 @@ class EventId
     const VOLUNTEER_NUMBER_BAD = 26;
     const VOLUNTEER_NUMBER_BUSY = 27;
     const CUSTOM_EXTENSION = 28;
+    const STIR_VERSTAT_RECEIVED = 29;
 
     public static function getEventById($id)
     {
@@ -91,6 +92,8 @@ class EventId
                 return "Volunteer Number is Busy";
             case self::CUSTOM_EXTENSION:
                 return "Custom Extension";
+            case self::STIR_VERSTAT_RECEIVED:
+                return "STIR/SHAKEN Verification Status Received";
         }
     }
 }

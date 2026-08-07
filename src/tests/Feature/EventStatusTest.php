@@ -47,4 +47,5 @@ test('test event ids', function () {
     $this->assertTrue(EventId::getEventById(EventId::SPAD_LOOKUP) == "SPAD Lookup");
     $this->assertTrue(EventId::getEventById(EventId::SPAD_LOOKUP_SMS) == "SPAD Lookup via SMS");
     $this->assertTrue(EventId::getEventById(EventId::CUSTOM_EXTENSION) == "Custom Extension");
+    $this->assertTrue(EventId::getEventById(EventId::STIR_VERSTAT_RECEIVED) == "STIR/SHAKEN Verification Status Received");
 });
