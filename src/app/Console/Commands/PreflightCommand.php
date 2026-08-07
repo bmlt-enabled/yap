@@ -2,63 +2,45 @@
 
 namespace App\Console\Commands;
 
-use App\Services\SettingsService;
+use App\Services\Preflight\PreflightService;
 use Illuminate\Console\Command;
 
 class PreflightCommand extends Command
 {
     protected $signature = 'yap:preflight';
 
-    protected $description = 'Pre-deployment checks for Yap 5.x (Twilio signature validation, proxy config, required settings)';
+    protected $description = 'Validate environment and database readiness before upgrading to Yap 5.0';
 
-    public function handle(SettingsService $settings): int
+    public function handle(PreflightService $preflight): int
     {
-        $failed = false;
+        $result = $preflight->run();
 
-        if (empty($settings->get('twilio_auth_token'))) {
-            $failed = true;
-            $this->error(
-                'twilio_auth_token is empty. Yap 5.0 validates Twilio signatures on every inbound webhook and fails closed: '
-                . 'without an auth token, every call and SMS to the IVR returns HTTP 403. '
-                . 'Set $twilio_auth_token in config.php to the Auth Token for the Twilio account that owns your phone numbers.'
-            );
-        }
+        $this->info('Yap preflight checks');
+        $this->newLine();
 
-        if (config('twilio.disable_signature_validation') && !app()->environment('production')) {
-            $this->warn(
-                'TWILIO_DISABLE_SIGNATURE_VALIDATION is enabled. Signature checks are bypassed outside production only; '
-                . 'do not set this on a live helpline.'
-            );
-        }
+        foreach ($result['checks'] as $check) {
+            $status = $check['passed']
+                ? 'PASS'
+                : ($check['blocking'] ? 'FAIL' : 'WARN');
 
-        $trustedProxies = config('trustedproxy.proxies');
-        if (empty($trustedProxies)) {
-            $this->line(
-                'TRUSTED_PROXIES is not set (default). Direct connections and tests need no proxy trust. '
-                . 'If Yap sits behind ngrok, a load balancer, or another reverse proxy, set TRUSTED_PROXIES=* '
-                . 'or a comma-separated list of proxy IPs so Twilio signature validation sees the public URL Twilio signed.'
-            );
-        }
+            $this->line(sprintf('[%s] %s', $status, $check['label']));
+            $this->line('  ' . $check['message']);
 
-        foreach ($settings->minimalRequiredSettings() as $setting) {
-            if ($setting === 'twilio_auth_token') {
-                continue;
+            if (!$check['passed'] && !empty($check['remediation'])) {
+                $this->line('  → ' . $check['remediation']);
             }
 
-            if (!$settings->has($setting) || $settings->get($setting) === '') {
-                $failed = true;
-                $this->error("Missing required setting: {$setting}");
-            }
+            $this->newLine();
         }
 
-        if ($failed) {
-            $this->error('Preflight failed. Resolve the issues above before upgrading or taking traffic.');
+        if ($result['passed']) {
+            $this->info('All blocking preflight checks passed.');
 
-            return self::FAILURE;
+            return self::SUCCESS;
         }
 
-        $this->info('Preflight passed.');
+        $this->error('One or more blocking preflight checks failed. Resolve them before upgrading.');
 
-        return self::SUCCESS;
+        return self::FAILURE;
     }
 }
