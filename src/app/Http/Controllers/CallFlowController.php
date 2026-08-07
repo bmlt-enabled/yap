@@ -82,6 +82,13 @@ class CallFlowController extends Controller
             }
         }
 
+        if ($request->has('StirVerstat')) {
+            $this->call->insertCallEventRecord(
+                EventId::STIR_VERSTAT_RECEIVED,
+                (object)['stir_verstat' => $request->get('StirVerstat')]
+            );
+        }
+
         $digit = $this->call->getDigitResponse($request, 'language_selections', 'Digits');
 
         $twiml = new VoiceResponse();
