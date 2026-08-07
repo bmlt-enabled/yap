@@ -3,6 +3,13 @@ import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
+/** Reused across tests so the login route throttle (5/min) is not exhausted. */
+let cachedAuthStorage = null;
+
+export function invalidateCachedAuth() {
+  cachedAuthStorage = null;
+}
+
 async function login(page, baseURL, username, password) {
   await page.goto(`${baseURL}/admin/login`);
 
@@ -23,16 +30,32 @@ async function login(page, baseURL, username, password) {
   await page.waitForTimeout(1000);
 }
 
+async function createAuthenticatedContext(browser, baseURL) {
+  if (!cachedAuthStorage) {
+    const bootstrap = await browser.newContext();
+    const page = await bootstrap.newPage();
+    await login(page, baseURL, 'admin', 'admin');
+    cachedAuthStorage = await bootstrap.storageState();
+    await bootstrap.close();
+  }
+
+  return browser.newContext({ storageState: cachedAuthStorage });
+}
+
 export const test = base.extend({
   // Use local admin user for all authenticated tests
   // BMLT users (like gnyr_admin) won't work in CI without a BMLT server
-  authenticatedPage: async ({ page, baseURL }, use) => {
-    await login(page, baseURL, 'admin', 'admin');
+  authenticatedPage: async ({ browser, baseURL }, use) => {
+    const context = await createAuthenticatedContext(browser, baseURL);
+    const page = await context.newPage();
     await use(page);
+    await context.close();
   },
-  adminPage: async ({ page, baseURL }, use) => {
-    await login(page, baseURL, 'admin', 'admin');
+  adminPage: async ({ browser, baseURL }, use) => {
+    const context = await createAuthenticatedContext(browser, baseURL);
+    const page = await context.newPage();
     await use(page);
+    await context.close();
   },
 });
 
@@ -86,6 +109,7 @@ export function resetDatabase() {
 
   run(['artisan', 'migrate:fresh', '--force']);
   run(['artisan', 'db:seed', '--class=TestEnvironmentSeeder', '--force']);
+  invalidateCachedAuth();
 }
 
 export { expect };
