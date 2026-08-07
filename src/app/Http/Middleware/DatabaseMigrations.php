@@ -8,16 +8,23 @@ use Closure;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DatabaseMigrations
 {
-    private SettingsService $settings;
-    private DatabaseMigrationService $migrationService;
+    /**
+     * Update this when adding a new migration so the middleware knows the schema
+     * is current and can skip calling Artisan on every request.
+     */
+    private const LATEST_MIGRATION = '2026_01_03_000000_create_chat_sessions_table';
 
-    public function __construct(SettingsService $settings, DatabaseMigrationService $migrationService)
-    {
-        $this->settings = $settings;
-        $this->migrationService = $migrationService;
+    private const MIGRATION_LOCK_NAME = 'yap-db-migrations';
+
+    public function __construct(
+        private SettingsService $settings,
+        private DatabaseMigrationService $migrationService,
+    ) {
     }
 
     /**
@@ -29,7 +36,7 @@ class DatabaseMigrations
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!$this->settings->has('mysql_hostname')) {
+        if (!$this->isDatabaseConfigured()) {
             return $next($request);
         }
 
@@ -42,8 +49,35 @@ class DatabaseMigrations
             );
         }
 
-        $this->migrationService->runSafePendingMigrations();
+        if ($this->migrationsShouldRun()) {
+            try {
+                ini_set('max_execution_time', '600');
+                DB::select('SELECT GET_LOCK(?, 600)', [self::MIGRATION_LOCK_NAME]);
+                $this->migrationService->runSafePendingMigrations();
+            } finally {
+                DB::statement('SELECT RELEASE_LOCK(?)', [self::MIGRATION_LOCK_NAME]);
+            }
+        }
 
         return $next($request);
+    }
+
+    public function isDatabaseConfigured(): bool
+    {
+        return !empty($this->settings->get('mysql_hostname'))
+            && !empty($this->settings->get('mysql_database'));
+    }
+
+    public function migrationsShouldRun(): bool
+    {
+        $table = config('database.migrations');
+
+        if (!Schema::hasTable($table)) {
+            return true;
+        }
+
+        return !DB::table($table)
+            ->where('migration', self::LATEST_MIGRATION)
+            ->exists();
     }
 }
