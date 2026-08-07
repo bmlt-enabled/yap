@@ -394,4 +394,14 @@ class FakeTwilioAccount
     {
         return array_map(fn (array $leg) => $leg['to'], $this->pendingLegs);
     }
+
+    /** @return array<string, mixed> */
+    public function lastOutboundCallOptions(): array
+    {
+        if ($this->pendingLegs === []) {
+            return [];
+        }
+
+        return $this->pendingLegs[array_key_last($this->pendingLegs)]['options'] ?? [];
+    }
 }

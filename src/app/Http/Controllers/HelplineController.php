@@ -462,6 +462,11 @@ class HelplineController extends Controller
             'originalCallerId'     => $original_caller_id
         );
 
+        $callToken = $this->call->getCallTokenForForwarding($serviceBodyCallHandling);
+        if ($callToken !== null) {
+            $config->options['callToken'] = $callToken;
+        }
+
         $config->voicemail_url = $this->getWebhookUrl($request) . '/voicemail.php?service_body_id='
             . $serviceBodyCallHandling->service_body_id . '&caller_id='
             . trim($config->options['callerId']) . $this->settings->getSessionLink();
