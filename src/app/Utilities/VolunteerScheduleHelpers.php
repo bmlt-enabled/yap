@@ -69,9 +69,9 @@ class VolunteerScheduleHelpers
         if (isset($shift_tz) && $shift_tz != "" && in_array($shift_tz, self::getTimezoneList())) {
             date_default_timezone_set($shift_tz);
         }
-        $mod_meeting_day = (new DateTime())
+        $mod_meeting_day = now()
             ->modify(SettingsService::$dateCalculationsMap[$shift_day])->format("Y-m-d");
-        $mod_meeting_datetime = (new DateTime($mod_meeting_day . " " . $shift_time));
+        $mod_meeting_datetime = new DateTime($mod_meeting_day . " " . $shift_time);
         return str_replace(" ", "T", $mod_meeting_datetime->format("Y-m-d H:i:s"));
     }
 

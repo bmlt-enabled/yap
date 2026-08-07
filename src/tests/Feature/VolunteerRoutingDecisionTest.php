@@ -316,7 +316,7 @@ test('an unspecified responder requirement takes anyone', function () {
 
 test('a volunteer who is not on shift right now is skipped', function () {
     date_default_timezone_set(ROUTING_SHIFT_TZ);
-    $today = (int)(new DateTime())->format('N') % 7 + 1;
+    $today = (int) now()->format('N') % 7 + 1;
     $tomorrow = $today % 7 + 1;
 
     ($this->seedVolunteers)([
@@ -331,7 +331,7 @@ test('a volunteer who is not on shift right now is skipped', function () {
 
 test('nobody on shift falls through to the unknown number', function () {
     date_default_timezone_set(ROUTING_SHIFT_TZ);
-    $tomorrow = ((int)(new DateTime())->format('N') % 7 + 1) % 7 + 1;
+    $tomorrow = ((int) now()->format('N') % 7 + 1) % 7 + 1;
 
     ($this->seedVolunteers)([
         routingVolunteer("Off Shift", ROUTING_FEMALE_NUMBER, shiftSchedule: routingShifts(onlyDay: $tomorrow)),

@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Tests\Fakes\FakeTwilioAccount;
@@ -20,6 +21,10 @@ uses(TestCase::class, RefreshDatabase::class)
     })
     ->beforeEach(function () {
         mt_srand(1580);
+        // Mid-afternoon on a Monday in US/Eastern — safely inside the all-day volunteer
+        // shifts scenario tests seed. Without a frozen clock, CI runners that execute
+        // around midnight UTC/ET can leave volunteers "off shift" and flake on 8.2/8.3.
+        Carbon::setTestNow(Carbon::parse('2024-02-19 15:00:00', 'America/New_York'));
         date_default_timezone_set('UTC');
 
         // Keep the suite hermetic. Everything the app fetches goes through
@@ -37,6 +42,7 @@ uses(TestCase::class, RefreshDatabase::class)
         $this->artisan('migrate:fresh');
     })
     ->afterEach(function () {
+        Carbon::setTestNow();
         date_default_timezone_set('UTC');
         expect(date_default_timezone_get())->toBe('UTC');
     })
