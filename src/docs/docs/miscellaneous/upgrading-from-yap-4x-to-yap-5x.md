@@ -9,13 +9,16 @@ Yap 5.0 validates [Twilio request signatures](https://www.twilio.com/docs/usage/
 
 1. **Set `twilio_auth_token` in `config.php`.** The middleware fails closed: if the auth token is missing or empty, every inbound Twilio request returns HTTP 403 and callers hear silence. Operators who never configured `twilio_auth_token` had a working 4.5.x and would have a completely dead 5.0.0.
 
-2. **Run the preflight check** from your Yap directory:
+2. **Run the preflight check** from your Yap directory against your 4.5.x database, before pointing traffic at the new code:
 
    ```bash
+   cd src
    php artisan yap:preflight
    ```
 
-   Also review `/api/v1/upgrade` in the admin UI — it now treats an empty `twilio_auth_token` as a hard failure.
+   This validates UUID migration blockers (duplicate/empty usernames, schema shape), required settings, `SESSION_DRIVER`, `APP_ENV`, and MySQL/PHP versions — issues that are too late to catch once HTTP traffic hits the new folder. See [Upgrading](./upgrading.md) for the full step-by-step procedure.
+
+   After deploying, review `/api/v1/upgrade` — it exposes the same `checks` array plus root-server, Google Maps, and Twilio webhook validations.
 
 3. **Configure trusted proxies if you use a reverse proxy, load balancer, or tunnel.** Twilio signs the public URL it calls. Yap validates against `$request->fullUrl()`, which only honors `X-Forwarded-Host`, `X-Forwarded-Proto`, `X-Forwarded-Port`, and `X-Forwarded-Prefix` from **trusted** proxies.
 
