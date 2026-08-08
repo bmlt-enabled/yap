@@ -26,12 +26,12 @@ The Twilio Console **Monitor → Logs → Errors** page shows webhook failures (
 Common Twilio issues:
 
 - **HTTP 403 on every call** — empty `twilio_auth_token`, or `TRUSTED_PROXIES` unset behind a reverse proxy.
-- **HTTP 503 Database Upgrade Required** — run `php artisan migrate` after a major upgrade.
+- **HTTP 503 Database Upgrade Required** — a server administrator must complete the database upgrade step described on that page.
 - **Silent hang-ups** — check `laravel.log` and Twilio's request inspector for the call SID.
 
 ## Upgrade advisor
 
-`GET /api/v1/upgrade` (or `php artisan yap:preflight` before deploy) validates configuration, database shape, Twilio webhooks, and Google Maps connectivity. Use it after any config change.
+The **upgrade advisor** at `/api/v1/upgrade` (or the admin **Dashboard** after login) validates configuration, database shape, Twilio webhooks, and Google Maps connectivity. Use it after any config change.
 
 ## Call-flow tracing
 

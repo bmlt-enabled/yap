@@ -6,7 +6,7 @@ sidebar_position: 2
 
 Yap 5.0 runs on **PHP 8.2 or newer** with **MySQL 8.0+** (or MariaDB 10.3+) and an Apache-based web server with `mod_rewrite` enabled.
 
-Most install problems on shared Linux hosting come from **disabled PHP extensions**, not from missing Yap files. The upgrade advisor and `php artisan yap:preflight` check that required extensions are loaded.
+Most install problems on shared Linux hosting come from **disabled PHP extensions**, not from missing Yap files. The **upgrade advisor** (`/api/v1/upgrade`) and admin **Dashboard** check that required extensions are loaded.
 
 ## Required PHP extensions
 
@@ -72,29 +72,13 @@ The official Yap Docker image (`docker/Dockerfile`) ships PHP 8.5 with `pdo`, `p
 
 ## Verify your server
 
-From SSH or your host's terminal:
+Ask your hosting provider to confirm the extensions in the table above are enabled for your PHP version, or use your host's **PHP extensions** control panel.
 
-```bash
-php -v
-php -m
-```
+After Yap is deployed, open the **upgrade advisor** in your browser:
 
-Look for `fileinfo`, `pdo_mysql`, `curl`, `mbstring`, and `openssl` in the `php -m` output.
+`https://your-yap-host/api/v1/upgrade`
 
-From a browser or curl after Yap is deployed:
-
-```bash
-curl https://your-yap-host/api/v1/upgrade
-```
-
-The `checks` array includes **PHP extensions** — any missing extension is listed with remediation text.
-
-Or run preflight before a 4.x → 5.x upgrade:
-
-```bash
-cd src
-php artisan yap:preflight
-```
+The `checks` array includes **PHP extensions** — any missing extension is listed with remediation text. You can also log into `/admin` and review system status on the **Dashboard**.
 
 ## Common errors
 
@@ -103,7 +87,7 @@ php artisan yap:preflight
 | `Class 'finfo' not found` | `fileinfo` extension disabled |
 | `could not find driver` | `pdo` or `pdo_mysql` not installed |
 | `Call to undefined function curl_init()` | `curl` extension missing |
-| HTTP 500 on first admin login | Check `storage/logs/laravel.log` and `php -m` |
+| HTTP 500 on first admin login | Check with your host that required extensions are enabled; review the upgrade advisor `checks` array |
 
 ## `build.txt` is not a requirements file
 

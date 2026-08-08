@@ -7,22 +7,22 @@ sidebar_position: 7
 
 See [Upgrading from Yap 4.x to Yap 5.x](./upgrading-from-yap-4x-to-yap-5x) for release-critical changes in 5.0 (Twilio signature validation, `TRUSTED_PROXIES`, and related breaking changes).
 
-Upgrading to Yap 5.0 includes a destructive UUID migration that is **blocked** until you run `php artisan migrate` manually. Safe schema migrations may run automatically on the first HTTP request; the UUID conversion returns HTTP 503 until you migrate. Run preflight checks **before** pointing traffic at the new folder.
+Upgrading to Yap 5.0 includes a destructive UUID migration that is **blocked** until a server administrator completes the database upgrade step. Safe schema migrations may run automatically on the first HTTP request; the UUID conversion shows a **Database Upgrade Required** page until that step is finished. Run the upgrade advisor **before** pointing traffic at the new folder.
 
-## Step 1: Run preflight against your 4.5.x database
+## Step 1: Run the upgrade advisor against your 4.5.x database
 
 1. Create a new folder with the Yap 5.0 code.
 2. Copy `config.php` from your existing 4.5.x install into the new folder.
-3. From the new folder, run:
+3. Point your web server at the new folder temporarily (or use a staging URL) so the upgrade advisor can reach your database through `config.php`.
+4. Open the **upgrade advisor** in your browser:
 
-```bash
-cd src
-php artisan yap:preflight
-```
+   `https://your-yap-host/api/v1/upgrade`
 
-This command validates your database and environment **without booting the web stack**. It exits with a non-zero status when any blocking issue is found and prints remediation guidance for each check.
+   Or log into the admin portal at `/admin` and review the system status on the **Dashboard**.
 
-Preflight validates:
+The upgrade advisor validates your database and environment over HTTP. When `status` is `false`, read the `checks` array — each failed check includes remediation text. Fix every blocking failure before going live.
+
+The advisor checks:
 
 - Required `config.php` settings
 - Duplicate or empty `users.username` values (UUID migration blockers)
@@ -34,21 +34,13 @@ Preflight validates:
 - `APP_ENV` value (several guards compare against the exact string `production`)
 - MySQL and PHP versions against Yap 5.0 requirements
 
-Fix every `[FAIL]` result before continuing.
-
 ## Step 2: Deploy the new folder
 
-Once preflight passes, copy over any other local customizations, update your web server to point at the new folder, and monitor the first requests.
+Once the upgrade advisor reports no blocking failures, copy over any other local customizations, update your web server to point at the new folder for production traffic, and monitor the first requests.
 
-## Step 3: Confirm with the upgrade advisor
+## Step 3: Confirm after the upgrade
 
-After the upgrade, call the upgrade advisor to confirm runtime settings:
-
-```bash
-curl https://your-yap-host/api/v1/upgrade
-```
-
-The response includes the same `checks` array as `php artisan yap:preflight`, plus the existing root-server, Google Maps, and Twilio webhook validations.
+Re-open the upgrade advisor (`/api/v1/upgrade`) or refresh the admin **Dashboard**. The response includes the same `checks` array plus root-server, Google Maps, and Twilio webhook validations.
 
 ## General upgrade notes
 

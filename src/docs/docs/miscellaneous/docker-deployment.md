@@ -24,7 +24,7 @@ The image installs `pdo`, `pdo_mysql`, and `mbstring`. Other required extensions
 
 ## Database
 
-Point `config.php` at your MySQL 8.0+ or MariaDB 10.3+ instance. Run `php artisan yap:preflight` and `php artisan migrate` from a shell in the container before sending live Twilio traffic at a 4.x → 5.x upgrade.
+Point `config.php` at your MySQL 8.0+ or MariaDB 10.3+ instance. Before sending live Twilio traffic at a 4.x → 5.x upgrade, confirm the **upgrade advisor** (`/api/v1/upgrade`) reports no blocking failures and coordinate with your server administrator for any **Database Upgrade Required** step.
 
 ## Upgrading
 

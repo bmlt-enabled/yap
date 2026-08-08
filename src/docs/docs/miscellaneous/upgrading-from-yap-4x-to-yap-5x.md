@@ -9,10 +9,10 @@ Yap 5.0 is a major release for self-hosted operators. It upgrades Laravel 10 →
 
 ## 1. Back up your database
 
-Take a full MySQL/MariaDB backup **before** you upload the new code or run any migration. `php artisan migrate:rollback` is not a supported recovery path for production:
+Take a full MySQL/MariaDB backup **before** you upload the new code or run any migration. Restoring from a backup is the supported recovery path for production — rolling back migrations is not.
 
 - The UUID migration rewrites every row in `users` and changes the primary key type.
-- If anything goes wrong mid-migration, restore from **your** backup — not from `migrate:rollback`.
+- If anything goes wrong mid-migration, restore from **your** backup — do not attempt to roll back migrations.
 - The migration creates a `users_pre_uuid_backup` table during `up()` as an emergency artifact, but you should not treat that as your upgrade rollback plan.
 
 ## 2. Migrations and the first HTTP request
@@ -22,13 +22,13 @@ Yap runs database migrations from the web middleware on incoming requests (see `
 | Migration type | Behavior on first HTTP request |
 |---|---|
 | **Safe** (schema additions, indexes, new tables) | Applied automatically on the first request that reaches the new code. |
-| **Destructive** (UUID conversion of `users.id`) | **Blocked.** Every web request returns HTTP 503 with a "Database Upgrade Required" page until you run `php artisan migrate` manually from a shell. |
+| **Destructive** (UUID conversion of `users.id`) | **Blocked.** Every web request shows a **Database Upgrade Required** page until a server administrator completes the database upgrade during a maintenance window. |
 
 **Take the site down or block traffic** until you have:
 
 1. A verified database backup.
-2. Run `php artisan yap:preflight` successfully (see below).
-3. A maintenance window to run `php artisan migrate` when you are ready for the UUID conversion.
+2. A passing upgrade advisor result (see section 3).
+3. A maintenance window for your server administrator to complete the destructive database upgrade when you are ready for the UUID conversion.
 
 Do not let Twilio webhooks or operators hit the new folder until you are prepared. Even "safe" auto-migrations modify your database on the first request.
 
@@ -36,23 +36,22 @@ Do not let Twilio webhooks or operators hit the new folder until you are prepare
 
 1. Create a new folder with the Yap 5.0 code.
 2. Copy `config.php` from your 4.5.x install.
-3. Run preflight (step 3 below).
-4. Point your web server at the new folder **only after** preflight passes.
-5. Run `cd src && php artisan migrate` to apply the UUID migration.
-6. Confirm with `GET /api/v1/upgrade`.
+3. Run the upgrade advisor (section 3).
+4. Point your web server at the new folder **only after** the advisor shows no blocking failures.
+5. Work with your server administrator to complete the database upgrade when the **Database Upgrade Required** page appears.
+6. Confirm with the upgrade advisor (`/api/v1/upgrade`) or the admin **Dashboard**.
 
 See also [Upgrading](./upgrading.md) for the step-by-step checklist.
 
-## 3. Run `php artisan yap:preflight` before deploying
+## 3. Run the upgrade advisor before deploying
 
-From the **new** Yap 5.0 folder, with your existing `config.php` pointing at your production database:
+With your existing `config.php` pointing at your production database and the new Yap 5.0 code reachable over HTTP, open the **upgrade advisor** in your browser:
 
-```bash
-cd src
-php artisan yap:preflight
-```
+`https://your-yap-host/api/v1/upgrade`
 
-Preflight validates your environment and database **without serving web traffic**. It exits with a non-zero status when any blocking check fails and prints remediation guidance for each one.
+Or log into `/admin` and review system status on the **Dashboard**. Both use the same checks.
+
+The upgrade advisor validates your environment and database. When `status` is `false`, read the `checks` array — each failed check includes remediation guidance.
 
 | Check | Blocking? | What it means |
 |---|---|---|
@@ -180,7 +179,7 @@ Yap 5.0 serves the admin portal as a single-page application at `/admin` (and su
 - Their routes are **not registered** — every WebChat/WebRTC endpoint returns **404**.
 - Do not enable them on a production helpline in 5.0.0; they ship without test coverage and behavior may change.
 
-If you toggle either setting and have run `php artisan route:cache`, run `php artisan route:clear` for the change to take effect.
+If you toggle either setting, ask your server administrator to clear any cached routes before expecting the new endpoints to register.
 
 ## 12. Custom extensions: volunteer data shape change
 

@@ -35,7 +35,7 @@ static $mysql_password = "";
 static $mysql_database = "";
 ```
 
-9. You can test whether or not you are properly configured by going to https://example.com/api/v1/upgrade.  On first deploy, safe schema migrations may run automatically on the first HTTP request; destructive migrations (such as the 4.x → 5.x UUID conversion) are blocked until you run `php artisan migrate` manually.  See [Upgrading from Yap 4.x to Yap 5.x](../miscellaneous/upgrading-from-yap-4x-to-yap-5x) for details.
+9. You can test whether or not you are properly configured by opening the **upgrade advisor** at `https://example.com/api/v1/upgrade` or logging into `/admin` and reviewing the **Dashboard**. On first deploy, safe schema migrations may run automatically on the first HTTP request; destructive migrations (such as the 4.x → 5.x UUID conversion) are blocked until a server administrator completes the database upgrade. See [Upgrading from Yap 4.x to Yap 5.x](../miscellaneous/upgrading-from-yap-4x-to-yap-5x) for details.
 
 10. Make a call to your number and try it out.  If there is a problem the debugger in the Twilio console will let you know why.  Most likely you did not setup your config.php file correctly.
 
