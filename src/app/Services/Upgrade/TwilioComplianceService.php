@@ -15,16 +15,17 @@ class TwilioComplianceService
     private const ACCOUNT_CONSOLE_URL = 'https://www.twilio.com/console/account/settings';
 
     /**
+     * @param list<object> $incomingPhoneNumbers
      * @return list<UpgradeCheck>
      */
-    public function run(Client $client, SettingsService $settings): array
+    public function run(Client $client, SettingsService $settings, array $incomingPhoneNumbers = []): array
     {
         return [
             $this->checkAccountType($client),
             $this->checkUsVoiceGeoPermissions($client),
             $this->checkTrustHubProfile($client),
             $this->checkSmsA2pBrand($client, $settings),
-            $this->checkTollFreeVerification($client),
+            $this->checkTollFreeVerification($client, $incomingPhoneNumbers),
         ];
     }
 
@@ -152,13 +153,26 @@ class TwilioComplianceService
         }
     }
 
-    private function checkTollFreeVerification(Client $client): UpgradeCheck
+    /**
+     * @param list<object> $incomingPhoneNumbers
+     */
+    private function checkTollFreeVerification(Client $client, array $incomingPhoneNumbers): UpgradeCheck
     {
         try {
+            $numbers = $incomingPhoneNumbers !== []
+                ? $incomingPhoneNumbers
+                : $client->incomingPhoneNumbers->read();
+
             $tollFreeNumbers = [];
-            foreach ($client->incomingPhoneNumbers->read() as $number) {
-                if ($this->isTollFreeNumber((string) $number->phoneNumber)) {
-                    $tollFreeNumbers[$number->sid] = (string) $number->phoneNumber;
+            foreach ($numbers as $number) {
+                $phoneNumber = $number->phoneNumber ?? null;
+                $sid = $number->sid ?? null;
+                if ($phoneNumber === null || $sid === null) {
+                    continue;
+                }
+
+                if ($this->isTollFreeNumber((string) $phoneNumber)) {
+                    $tollFreeNumbers[$sid] = (string) $phoneNumber;
                 }
             }
 
@@ -203,6 +217,12 @@ class TwilioComplianceService
                 'All toll-free numbers are verified for SMS.',
             );
         } catch (RestException $e) {
+            return UpgradeCheck::skip(
+                'toll_free_verification',
+                'Toll-free verification',
+                'Unable to verify toll-free numbers: ' . $e->getMessage(),
+            );
+        } catch (\Throwable $e) {
             return UpgradeCheck::skip(
                 'toll_free_verification',
                 'Toll-free verification',

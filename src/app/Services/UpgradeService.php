@@ -115,8 +115,10 @@ class UpgradeService extends Service
         }
 
         $twilioCredentialsValid = false;
+        $incomingPhoneNumbers = [];
         try {
             foreach ($this->twilio->client()->incomingPhoneNumbers->read() as $number) {
+                $incomingPhoneNumbers[] = $number;
                 if (basename($number->voiceUrl)) {
                     if (!strpos($number->voiceUrl, '.php')
                         && !strpos($number->voiceUrl, 'twiml')
@@ -150,7 +152,7 @@ class UpgradeService extends Service
         }
 
         if ($twilioCredentialsValid) {
-            $checks = $this->appendTwilioComplianceChecks($checks);
+            $checks = $this->appendTwilioComplianceChecks($checks, $incomingPhoneNumbers);
         }
 
         return $this->getState(true, "Ready To Yap!", $warnings, $checks);
@@ -170,13 +172,14 @@ class UpgradeService extends Service
 
     /**
      * @param array<int, array<string, mixed>> $checks
+     * @param list<object> $incomingPhoneNumbers
      * @return array<int, array<string, mixed>>
      */
-    private function appendTwilioComplianceChecks(array $checks): array
+    private function appendTwilioComplianceChecks(array $checks, array $incomingPhoneNumbers = []): array
     {
         $complianceChecks = array_map(
             fn (UpgradeCheck $check) => $check->toArray(),
-            $this->twilioCompliance->run($this->twilio->client(), $this->settings)
+            $this->twilioCompliance->run($this->twilio->client(), $this->settings, $incomingPhoneNumbers)
         );
 
         return array_merge($checks, $complianceChecks);

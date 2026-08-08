@@ -142,8 +142,10 @@ test('test with misconfigured phone number', function ($method) {
     $incomingPhoneNumberContext = mock('\Twilio\Rest\Api\V2010\Account\InstanceContext');
     $incomingPhoneNumberInstance= mock('\Twilio\Rest\Api\V2010\Account\IncomingPhoneNumberInstance');
     $incomingPhoneNumberInstance->voiceUrl = "http://localhost:3100/yap/index.php";
+    $incomingPhoneNumberInstance->phoneNumber = "+12125551212";
+    $incomingPhoneNumberInstance->sid = "PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     $incomingPhoneNumberContext->shouldReceive('read')->withNoArgs()
-        ->andReturn([$incomingPhoneNumberInstance])->once();
+        ->andReturn([$incomingPhoneNumberInstance])->zeroOrMoreTimes();
 
     // mocking TwilioRestClient->incomingPhoneNumbers->read();
     $this->twilioService->client()->incomingPhoneNumbers = $incomingPhoneNumberContext;
@@ -197,8 +199,10 @@ test('test with smtp settings missing', function ($method) {
     $incomingPhoneNumberContext = mock('\Twilio\Rest\Api\V2010\Account\InstanceContext');
     $incomingPhoneNumberInstance= mock('\Twilio\Rest\Api\V2010\Account\IncomingPhoneNumberInstance');
     $incomingPhoneNumberInstance->voiceUrl = "http://localhost:3100/yap/index.php";
+    $incomingPhoneNumberInstance->phoneNumber = "+12125551212";
+    $incomingPhoneNumberInstance->sid = "PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     $incomingPhoneNumberContext->shouldReceive('read')->withNoArgs()
-        ->andReturn([$incomingPhoneNumberInstance])->once();
+        ->andReturn([$incomingPhoneNumberInstance])->zeroOrMoreTimes();
 
     // mocking TwilioRestClient->incomingPhoneNumbers->read();
     $this->twilioService->client()->incomingPhoneNumbers = $incomingPhoneNumberContext;

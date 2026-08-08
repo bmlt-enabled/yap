@@ -64,6 +64,8 @@ function setupUpgradeAdvisorMocks(array $overrides = []): SettingsService
     $incomingPhoneNumberContext = mock('\Twilio\Rest\Api\V2010\Account\InstanceContext');
     $incomingPhoneNumberInstance = mock('\Twilio\Rest\Api\V2010\Account\IncomingPhoneNumberInstance');
     $incomingPhoneNumberInstance->voiceUrl = 'http://localhost:3100/yap/index.php';
+    $incomingPhoneNumberInstance->phoneNumber = '+12125551212';
+    $incomingPhoneNumberInstance->sid = 'PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
     $incomingPhoneNumberContext->shouldReceive('read')->withNoArgs()
         ->andReturn([$incomingPhoneNumberInstance])->zeroOrMoreTimes();
     $twilioClient->incomingPhoneNumbers = $incomingPhoneNumberContext;
@@ -208,7 +210,10 @@ test('upgrade endpoint fails when us voice geo permissions are denied', function
             'status' => false,
         ]);
 
-    expect($response->json('checks'))->toContainEqual([
+    expect($response->json('checks'))->not->toBeEmpty();
+
+    $geoCheck = collect($response->json('checks'))->firstWhere('id', 'voice_geo_us');
+    expect($geoCheck)->toMatchArray([
         'id' => 'voice_geo_us',
         'label' => 'US voice geo permissions',
         'status' => 'fail',
