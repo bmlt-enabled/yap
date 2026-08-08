@@ -18,6 +18,7 @@
 
 #### Features and fixes
 
+* **Upgrade advisor Twilio compliance checks.** `/api/v1/upgrade` and the admin dashboard now validate Twilio account type, US voice geo permissions, Trust Hub profile, A2P SMS brand registration, and toll-free verification — surfacing configuration issues that block volunteer outbound dialing or SMS meeting results before callers get stuck on hold. [#1615]
 * **Fixed gender routing always dialing MALE volunteers.** A regression in the `$_SESSION` → `session()` rewrite turned the caller's gender selection into a boolean existence check, so on service bodies with `gender_routing_enabled` a caller who pressed 2 to speak to a woman — or 3 to speak to either — was routed to a male volunteer, and fell through to the fallback number or voicemail when no male volunteer was on shift. **`5.0.0-beta1` and `5.0.0-beta2` are affected**; upgrade if you use gender routing. [#1578]
 * **Fixed service-body override settings not seeding at login for database-authenticated admins.** A regression in the `$_SESSION` → `session()` rewrite passed the full service-body rights array to `setConfigForService()` on the V2 auth path instead of the first service-body id, so override settings never landed in the admin session and the settings UI showed global defaults for service-body admins. [#1579]
 * Fixed the WebChat volunteer SMS webhook (`/webchat-sms`) accepting and routing inbound messages even when WebChat was disabled. [#1577]

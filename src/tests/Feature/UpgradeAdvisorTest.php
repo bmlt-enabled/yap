@@ -8,6 +8,8 @@ use App\Services\TwilioService;
 use Tests\FakeHttp;
 use Tests\FakeTwilioHttpClient;
 
+use Tests\Support\TwilioComplianceMocks;
+
 beforeEach(function () {
     FakeHttp::install();
     $fakeHttpClient = new FakeTwilioHttpClient();
@@ -16,6 +18,7 @@ beforeEach(function () {
         "password" => "fake",
         "httpClient" => $fakeHttpClient
     ])->makePartial();
+    TwilioComplianceMocks::apply($this->twilioClient);
     $this->twilioService = mock(TwilioService::class)->makePartial();
 });
 

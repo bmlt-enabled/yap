@@ -20,8 +20,15 @@ import {
     CheckCircle as CheckIcon,
     Info as InfoIcon,
     Warning as WarningIcon,
-    Error as ErrorIcon
+    Error as ErrorIcon,
+    RemoveCircleOutline as SkipIcon,
+    OpenInNew as OpenInNewIcon
 } from "@mui/icons-material";
+import Link from "@mui/material/Link";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
 import { useLocalization } from "../contexts/LocalizationContext";
 
 function Dashboard() {
@@ -33,6 +40,22 @@ function Dashboard() {
     const [latestVersion, setLatestVersion] = useState('');
     const [systemStatus, setSystemStatus] = useState('checking');
     const [systemMessage, setSystemMessage] = useState('');
+    const [systemChecks, setSystemChecks] = useState([]);
+
+    const getCheckIcon = (status) => {
+        switch (status) {
+            case 'pass':
+                return <CheckIcon color="success" fontSize="small" />;
+            case 'warn':
+                return <WarningIcon color="warning" fontSize="small" />;
+            case 'fail':
+                return <ErrorIcon color="error" fontSize="small" />;
+            case 'skip':
+                return <SkipIcon color="disabled" fontSize="small" />;
+            default:
+                return <InfoIcon color="action" fontSize="small" />;
+        }
+    };
 
     const getUser = async () => {
         apiClient.get('/api/v1/user', {
@@ -76,26 +99,28 @@ function Dashboard() {
         try {
             const response = await apiClient.get('/api/v1/upgrade');
             if (response.data) {
-                // Check for error messages (status: false)
-                if (response.data.status === false && response.data.message) {
+                const checks = Array.isArray(response.data.checks) ? response.data.checks : [];
+                setSystemChecks(checks);
+
+                const hasFail = checks.some((check) => check.status === 'fail');
+                const hasWarn = checks.some((check) => check.status === 'warn');
+
+                if (response.data.status === false || hasFail) {
                     setSystemStatus('error');
-                    setSystemMessage(response.data.message);
-                }
-                // Check for warnings
-                else if (response.data.warnings) {
+                    setSystemMessage(response.data.message || '');
+                } else if (response.data.warnings || hasWarn) {
                     setSystemStatus('warning');
-                    setSystemMessage(response.data.warnings);
-                }
-                // All good
-                else if (response.data.status === true) {
+                    setSystemMessage(response.data.warnings || response.data.message || '');
+                } else if (response.data.status === true) {
                     setSystemStatus('healthy');
-                    setSystemMessage('');
+                    setSystemMessage(response.data.message || '');
                 }
             }
         } catch (error) {
             console.error('Error fetching upgrade advisor status:', error);
             setSystemStatus('error');
             setSystemMessage('');
+            setSystemChecks([]);
         }
     };
 
@@ -232,6 +257,41 @@ function Dashboard() {
                                             ''
                                         )}
                                     </Typography>
+                                    {systemChecks.length > 0 && (
+                                        <List dense sx={{ mt: 1, pt: 0 }}>
+                                            {systemChecks.map((check) => (
+                                                <ListItem key={check.id} disableGutters sx={{ alignItems: 'flex-start', py: 0.5 }}>
+                                                    <ListItemIcon sx={{ minWidth: 32, mt: 0.25 }}>
+                                                        {getCheckIcon(check.status)}
+                                                    </ListItemIcon>
+                                                    <ListItemText
+                                                        primary={check.label}
+                                                        secondary={
+                                                            <>
+                                                                {check.message && (
+                                                                    <Typography component="span" variant="body2" color="text.secondary" display="block">
+                                                                        {check.message}
+                                                                    </Typography>
+                                                                )}
+                                                                {check.url && (
+                                                                    <Link
+                                                                        href={check.url}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        variant="body2"
+                                                                        sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}
+                                                                    >
+                                                                        {getWord('open_in_twilio_console') || 'Open in Twilio Console'}
+                                                                        <OpenInNewIcon sx={{ fontSize: 14 }} />
+                                                                    </Link>
+                                                                )}
+                                                            </>
+                                                        }
+                                                    />
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    )}
                                 </Box>
                             </Stack>
                         </CardContent>

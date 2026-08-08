@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Constants\AlertId;
 use App\Services\Preflight\PreflightService;
+use App\Services\Upgrade\TwilioComplianceService;
+use App\Services\Upgrade\UpgradeCheck;
 use CurlException;
 use Exception;
 use Illuminate\Support\Facades\App;
@@ -20,6 +22,7 @@ class UpgradeService extends Service
     protected ReportsService $reports;
     protected TwilioService $twilio;
     protected PreflightService $preflight;
+    protected TwilioComplianceService $twilioCompliance;
 
     public function __construct(
         RootServerService $rootServer,
@@ -28,6 +31,7 @@ class UpgradeService extends Service
         ReportsService $reports,
         TwilioService $twilio,
         PreflightService $preflight,
+        TwilioComplianceService $twilioCompliance,
     ) {
         parent::__construct(App::make(SettingsService::class));
         $this->rootServer = $rootServer;
@@ -36,16 +40,17 @@ class UpgradeService extends Service
         $this->reports = $reports;
         $this->twilio = $twilio;
         $this->preflight = $preflight;
+        $this->twilioCompliance = $twilioCompliance;
     }
 
     public function getStatus()
     {
         $preflight = $this->preflight->run();
-        $checks = $preflight['checks'];
+        $checks = $this->normalizePreflightChecks($preflight['checks']);
 
         if (!$preflight['passed']) {
             $failedCheck = collect($checks)->first(
-                fn (array $check) => !$check['passed'] && $check['blocking']
+                fn (array $check) => $check['status'] === UpgradeCheck::STATUS_FAIL
             );
 
             return $this->getState(
@@ -109,6 +114,7 @@ class UpgradeService extends Service
             $warnings = sprintf("%s is/are phone numbers that are missing Twilio Call Status Changes Callback status.php webhook. This will not allow call reporting to work correctly.  For more information review the documentation page https://github.com/bmlt-enabled/yap/wiki/Call-Detail-Records.", implode(",", $misconfiguredPhoneNumbers));
         }
 
+        $twilioCredentialsValid = false;
         try {
             foreach ($this->twilio->client()->incomingPhoneNumbers->read() as $number) {
                 if (basename($number->voiceUrl)) {
@@ -120,6 +126,7 @@ class UpgradeService extends Service
                     }
                 }
             }
+            $twilioCredentialsValid = true;
         } catch (RestException $e) {
             if ($this->isAllowedError("twilioFakeCredentials")) {
                 return $this->getState(false, "Twilio Rest Error: " . $e->getMessage(), $warnings, $checks);
@@ -142,11 +149,65 @@ class UpgradeService extends Service
             DB::select("select 1");
         }
 
+        if ($twilioCredentialsValid) {
+            $checks = $this->appendTwilioComplianceChecks($checks);
+        }
+
         return $this->getState(true, "Ready To Yap!", $warnings, $checks);
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $preflightChecks
+     * @return array<int, array<string, mixed>>
+     */
+    private function normalizePreflightChecks(array $preflightChecks): array
+    {
+        return array_map(
+            fn (array $check) => UpgradeCheck::fromPreflight($check)->toArray(),
+            $preflightChecks
+        );
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $checks
+     * @return array<int, array<string, mixed>>
+     */
+    private function appendTwilioComplianceChecks(array $checks): array
+    {
+        $complianceChecks = array_map(
+            fn (UpgradeCheck $check) => $check->toArray(),
+            $this->twilioCompliance->run($this->twilio->client(), $this->settings)
+        );
+
+        return array_merge($checks, $complianceChecks);
     }
 
     private function getState($status = null, $message = null, $warnings = "", array $checks = [])
     {
+        $hasComplianceFail = collect($checks)->contains(
+            fn (array $check) => $check['status'] === UpgradeCheck::STATUS_FAIL
+        );
+
+        if ($status && $hasComplianceFail) {
+            $status = false;
+            $failedCheck = collect($checks)->first(
+                fn (array $check) => $check['status'] === UpgradeCheck::STATUS_FAIL
+            );
+            $message = $failedCheck['message'] ?? 'Issues detected';
+        }
+
+        $complianceWarnings = collect($checks)
+            ->filter(fn (array $check) => $check['status'] === UpgradeCheck::STATUS_WARN)
+            ->pluck('message')
+            ->filter()
+            ->values()
+            ->all();
+
+        if ($complianceWarnings !== []) {
+            $warningText = implode(' ', $complianceWarnings);
+            $warnings = $warnings === '' ? $warningText : $warnings . ' ' . $warningText;
+        }
+
         try {
             $build = Storage::get("build.txt");
         } catch (Exception $e) {

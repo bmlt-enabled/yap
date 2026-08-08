@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Tests\FakeHttp;
 use Tests\FakeTwilioHttpClient;
 
+use Tests\Support\TwilioComplianceMocks;
+
 function insertLegacyPreflightUser(int $id, string $username): void
 {
     DB::table('users')->insert([
@@ -23,7 +25,7 @@ function insertLegacyPreflightUser(int $id, string $username): void
     ]);
 }
 
-function setupUpgradeAdvisorMocks(): SettingsService
+function setupUpgradeAdvisorMocks(array $overrides = []): SettingsService
 {
     FakeHttp::install();
 
@@ -65,6 +67,7 @@ function setupUpgradeAdvisorMocks(): SettingsService
     $incomingPhoneNumberContext->shouldReceive('read')->withNoArgs()
         ->andReturn([$incomingPhoneNumberInstance])->zeroOrMoreTimes();
     $twilioClient->incomingPhoneNumbers = $incomingPhoneNumberContext;
+    TwilioComplianceMocks::apply($twilioClient, $overrides['twilioCompliance'] ?? []);
 
     return $settingsService;
 }
@@ -154,7 +157,7 @@ test('upgrade endpoint includes preflight checks', function () {
             'version',
             'build',
             'checks' => [
-                '*' => ['id', 'label', 'passed', 'blocking', 'message', 'remediation'],
+                '*' => ['id', 'label', 'status'],
             ],
         ]);
 
@@ -176,4 +179,40 @@ test('upgrade endpoint fails when preflight checks fail', function () {
         ]);
 
     expect($response->json('checks'))->not->toBeEmpty();
+});
+
+test('upgrade endpoint includes twilio compliance checks', function () {
+    insertLegacyPreflightUser(41, 'compliance_check_user');
+    setupUpgradeAdvisorMocks();
+
+    $response = $this->get('/api/v1/upgrade');
+
+    $checks = collect($response->json('checks'));
+    expect($checks->pluck('id'))->toContain('voice_geo_us', 'sms_a2p_brand', 'trust_hub_profile');
+    expect($checks->firstWhere('id', 'voice_geo_us')['status'])->toBe('pass');
+});
+
+test('upgrade endpoint fails when us voice geo permissions are denied', function () {
+    insertLegacyPreflightUser(42, 'geo_denied_user');
+    setupUpgradeAdvisorMocks([
+        'twilioCompliance' => [
+            'usCountry' => ['lowRiskNumbersEnabled' => false],
+        ],
+    ]);
+
+    $response = $this->get('/api/v1/upgrade');
+
+    $response
+        ->assertStatus(200)
+        ->assertJson([
+            'status' => false,
+        ]);
+
+    expect($response->json('checks'))->toContainEqual([
+        'id' => 'voice_geo_us',
+        'label' => 'US voice geo permissions',
+        'status' => 'fail',
+        'message' => 'Low-risk US dialing is not enabled. Volunteer outbound calls to US numbers will fail.',
+        'url' => 'https://www.twilio.com/console/voice/calls/geo-permissions',
+    ]);
 });

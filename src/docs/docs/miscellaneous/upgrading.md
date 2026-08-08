@@ -47,7 +47,7 @@ After the upgrade, call the upgrade advisor to confirm runtime settings:
 curl https://your-yap-host/api/v1/upgrade
 ```
 
-The response includes the same `checks` array as `php artisan yap:preflight`, plus the existing root-server, Google Maps, and Twilio webhook validations.
+The response includes the same `checks` array as `php artisan yap:preflight` (with `status` values of `pass`, `warn`, `fail`, or `skip`), plus root-server, Google Maps, Twilio webhook, and **Twilio compliance** validations (account type, US voice geo permissions, Trust Hub profile, A2P SMS brand registration, and toll-free verification).
 
 ## General upgrade notes
 

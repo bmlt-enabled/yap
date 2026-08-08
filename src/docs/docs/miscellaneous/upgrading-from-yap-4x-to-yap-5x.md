@@ -69,7 +69,7 @@ Preflight validates your environment and database **without serving web traffic*
 | **Empty usernames** | FAIL | One or more `users` rows have NULL or empty `username`. |
 | **Users table schema** | FAIL | `users.id` lacks a primary key, or `users.username` lacks a unique index. |
 
-Fix every `[FAIL]` before continuing. After deploy, `GET /api/v1/upgrade` returns the same `checks` array plus root-server, Google Maps, and Twilio webhook validations.
+Fix every `[FAIL]` before continuing. After deploy, `GET /api/v1/upgrade` returns the same `checks` array plus root-server, Google Maps, Twilio webhook, and Twilio compliance validations (US voice geo permissions, Trust Hub, A2P SMS registration, toll-free verification).
 
 ## 4. `twilio_auth_token` is now required
 
