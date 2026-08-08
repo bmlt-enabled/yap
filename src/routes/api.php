@@ -16,7 +16,7 @@ Route::group([
     'namespace' => 'App\Http\Controllers\Api\V1\Admin',
 ], function () {
     Route::post('login', [AuthController::class, 'login'])
-        ->middleware('throttle:5,1')  // 5 credential attempts per minute (admin panel)
+        ->middleware('throttle:login')  // 5/min production; relaxed when E2E_TESTING=1
         ->name('login');
     Route::get('version', function (\App\Services\SettingsService $settings) {
         return response()->json(['version' => $settings->version()]);

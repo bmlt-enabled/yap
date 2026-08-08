@@ -22,12 +22,19 @@ export default defineConfig({
   },
   projects: [
     {
+      name: 'auth',
+      testMatch: /auth\.spec\.js/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
       name: 'chromium',
+      testIgnore: /auth\.spec\.js/,
+      dependencies: ['auth'],
       use: { ...devices['Desktop Chrome'] },
     },
   ],
   webServer: {
-    command: 'ENVIRONMENT=test php artisan migrate --force && ENVIRONMENT=test php artisan db:seed --class=TestEnvironmentSeeder --force && ENVIRONMENT=test php -S 127.0.0.1:8000 -t . server.php 2>/dev/null',
+    command: 'E2E_TESTING=1 ENVIRONMENT=test php artisan migrate --force && E2E_TESTING=1 ENVIRONMENT=test php artisan db:seed --class=TestEnvironmentSeeder --force && E2E_TESTING=1 ENVIRONMENT=test php -S 127.0.0.1:8000 -t . server.php 2>/dev/null',
     url: 'http://127.0.0.1:8000',
     reuseExistingServer: false,
     timeout: 120 * 1000,

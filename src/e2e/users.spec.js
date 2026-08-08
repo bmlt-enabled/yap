@@ -1,5 +1,26 @@
 import { test, expect } from './fixtures/auth.js';
 
+async function waitForUserDialogReady(page) {
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole('progressbar')).toHaveCount(0, { timeout: 15000 });
+}
+
+async function saveUserDialog(page) {
+  const dialog = page.getByRole('dialog');
+  const saveResponse = page.waitForResponse(
+    (response) =>
+      response.url().includes('/api/v1/users') &&
+      ['POST', 'PUT'].includes(response.request().method()),
+    { timeout: 30000 },
+  );
+  await dialog.getByRole('button', { name: /^save$/i }).click();
+  const response = await saveResponse;
+  const body = await response.text();
+  expect(response.ok(), `User save failed (${response.status()}): ${body}`).toBeTruthy();
+  await expect(dialog).not.toBeVisible({ timeout: 15000 });
+}
+
 test.describe('Users Management', () => {
   test('can view users page as admin', async ({ adminPage: page }) => {
     await page.getByRole('link', { name: 'Users' }).click();
@@ -18,18 +39,14 @@ test.describe('Users Management', () => {
 
     await page.getByRole('button', { name: /add user/i }).click();
 
-    // Wait for dialog to open
-    await expect(page.getByRole('dialog')).toBeVisible();
+    await waitForUserDialogReady(page);
 
     // MUI TextFields use labels, not IDs
     await page.getByLabel('Username').fill(username);
     await page.getByLabel('Display Name').fill(name);
     await page.getByLabel('Password').fill(password);
 
-    await page.getByRole('button', { name: /save/i }).click();
-
-    // Wait for dialog to close and verify user appears in table
-    await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 10000 });
+    await saveUserDialog(page);
     await expect(page.getByRole('cell', { name: username })).toBeVisible();
   });
 
@@ -44,26 +61,22 @@ test.describe('Users Management', () => {
 
     // Create the user first
     await page.getByRole('button', { name: /add user/i }).click();
-    await expect(page.getByRole('dialog')).toBeVisible();
+    await waitForUserDialogReady(page);
     await page.getByLabel('Username').fill(username);
     await page.getByLabel('Display Name').fill(name);
     await page.getByLabel('Password').fill(password);
-    await page.getByRole('button', { name: /save/i }).click();
-    await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 10000 });
+    await saveUserDialog(page);
 
     // Now edit the user - find the row with our username and click its edit button
     const userRow = page.getByRole('row').filter({ hasText: username });
     await userRow.getByRole('button', { name: /edit/i }).click();
 
     // Wait for dialog to open
-    await expect(page.getByRole('dialog')).toBeVisible();
+    await waitForUserDialogReady(page);
 
     // Update the name
     await page.getByLabel('Display Name').fill('Updated Name');
-    await page.getByRole('button', { name: /save/i }).click();
-
-    // Verify update
-    await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 10000 });
+    await saveUserDialog(page);
     await expect(page.getByRole('cell', { name: 'Updated Name' })).toBeVisible();
   });
 
@@ -78,12 +91,11 @@ test.describe('Users Management', () => {
 
     // Create the user first
     await page.getByRole('button', { name: /add user/i }).click();
-    await expect(page.getByRole('dialog')).toBeVisible();
+    await waitForUserDialogReady(page);
     await page.getByLabel('Username').fill(username);
     await page.getByLabel('Display Name').fill(name);
     await page.getByLabel('Password').fill(password);
-    await page.getByRole('button', { name: /save/i }).click();
-    await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 10000 });
+    await saveUserDialog(page);
 
     // Verify user was created
     await expect(page.getByRole('cell', { name: username })).toBeVisible();
