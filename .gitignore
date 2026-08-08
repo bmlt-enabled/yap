@@ -2,5 +2,6 @@
 .DS_Store
 .aider*
 src/playwright-report
+src/e2e/.auth
 src/test-results
 src/tests/e2e-results.xml

@@ -57,6 +57,13 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function configureRateLimiting()
     {
+        RateLimiter::for('login', function (Request $request) {
+            // E2E suites authenticate many times across retries; keep production strict.
+            $perMinute = getenv('E2E_TESTING') ? 120 : 5;
+
+            return Limit::perMinute($perMinute)->by($request->ip());
+        });
+
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->ip());
         });
