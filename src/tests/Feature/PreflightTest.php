@@ -76,7 +76,8 @@ test('yap:preflight passes with a healthy database', function () {
     $this->artisan('yap:preflight')
         ->assertExitCode(0)
         ->expectsOutputToContain('[PASS] Duplicate usernames')
-        ->expectsOutputToContain('[PASS] Twilio auth token');
+        ->expectsOutputToContain('[PASS] Twilio auth token')
+        ->expectsOutputToContain('[PASS] PHP extensions');
 });
 
 test('yap:preflight fails on duplicate usernames', function () {
@@ -159,7 +160,7 @@ test('upgrade endpoint includes preflight checks', function () {
         ]);
 
     $checks = $response->json('checks');
-    expect(collect($checks)->pluck('id'))->toContain('duplicate_usernames', 'twilio_auth_token');
+    expect(collect($checks)->pluck('id'))->toContain('duplicate_usernames', 'twilio_auth_token', 'php_extensions');
 });
 
 test('upgrade endpoint fails when preflight checks fail', function () {

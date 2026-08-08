@@ -30,6 +30,7 @@ Preflight validates:
 - `twilio_auth_token` is present (empty token rejects every IVR call with HTTP 403)
 - `TRUSTED_PROXIES` when behind a reverse proxy (warning when unset)
 - `SESSION_DRIVER` is not `database` (Yap's `sessions` table stores call PINs, not Laravel sessions)
+- Required PHP extensions (`fileinfo`, `pdo_mysql`, `curl`, etc.) — see [PHP requirements](../general/php-requirements)
 - `APP_ENV` value (several guards compare against the exact string `production`)
 - MySQL and PHP versions against Yap 5.0 requirements
 

@@ -18,6 +18,10 @@ Yap ships a PHP 8.5-based Docker image for self-hosters who prefer containers ov
 
 See `.env.example` in the Yap `src/` folder for Laravel-level settings (`TRUSTED_PROXIES`, `SESSION_DRIVER`, `SANCTUM_STATEFUL_DOMAINS`, `TWILIO_DISABLE_SIGNATURE_VALIDATION`). Database credentials and most Yap settings still live in `config.php`.
 
+## PHP extensions
+
+The image installs `pdo`, `pdo_mysql`, and `mbstring`. Other required extensions ship with the base `php:8.5-apache` image. See [PHP requirements](../general/php-requirements) for the full list and how to verify them.
+
 ## Database
 
 Point `config.php` at your MySQL 8.0+ or MariaDB 10.3+ instance. Run `php artisan yap:preflight` and `php artisan migrate` from a shell in the container before sending live Twilio traffic at a 4.x → 5.x upgrade.
