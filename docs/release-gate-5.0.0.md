@@ -48,6 +48,14 @@ Restore a **copy** of a real 4.5.x production database and upgrade end to end on
 
 Record the drill date, database snapshot source, and operator in the release issue before tagging.
 
+## Follow-up: documentation and application cleanup
+
+Full audit: [`docs/audit-5.0.0-docs-and-cleanup.md`](audit-5.0.0-docs-and-cleanup.md). Tracked in [#1611](https://github.com/bmlt-enabled/yap/issues/1611).
+
+**Critical (5.0.0 tag companion):** dead `/info` route (500), `Users.js` dead auth endpoint, Settings cache clear without bearer token, missing `.env.example`, `upgrading.md` UUID migration contradiction.
+
+**Important (5.0.x):** stale MySQL version on docs homepage, wiki URLs in app code, ~30 settings without doc links, thin operator guides (reports, volunteer routing, Docker).
+
 ## Deferred to 5.1.0
 
-See [#1590](https://github.com/bmlt-enabled/yap/issues/1590) — session-driver fidelity in CI, call-PIN table collision, SMS/webchat/`<Record>` legs in `CallScenario`, Clock abstraction, removed-route shims, `ConfigData` decode contract test, coverage floor, dead `/info` route, and promoting WebChat/WebRTC to supported.
+See [#1590](https://github.com/bmlt-enabled/yap/issues/1590) — session-driver fidelity in CI, call-PIN table collision, SMS/webchat/`<Record>` legs in `CallScenario`, Clock abstraction, removed-route shims, `ConfigData` decode contract test, coverage floor, and promoting WebChat/WebRTC to supported.
