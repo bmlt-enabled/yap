@@ -21,7 +21,7 @@ function makeDatabaseMigrationsMiddleware(
 function mockLatestMigrationExists(bool $exists): void
 {
     $query = mock(Builder::class);
-    $query->shouldReceive('where')->with('migration', '2026_01_03_000000_create_chat_sessions_table')->andReturnSelf();
+    $query->shouldReceive('where')->with('migration', '2026_08_08_210000_add_legacy_schema_columns')->andReturnSelf();
     $query->shouldReceive('exists')->andReturn($exists);
 
     DB::shouldReceive('table')->with('migrations_v2')->andReturn($query);

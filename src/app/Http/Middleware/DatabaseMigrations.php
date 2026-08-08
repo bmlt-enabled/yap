@@ -17,7 +17,7 @@ class DatabaseMigrations
      * Update this when adding a new migration so the middleware knows the schema
      * is current and can skip calling Artisan on every request.
      */
-    private const LATEST_MIGRATION = '2026_01_03_000000_create_chat_sessions_table';
+    private const LATEST_MIGRATION = '2026_08_08_210000_add_legacy_schema_columns';
 
     private const MIGRATION_LOCK_NAME = 'yap-db-migrations';
 

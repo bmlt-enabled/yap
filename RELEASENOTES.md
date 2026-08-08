@@ -27,6 +27,7 @@
 * HTML formatted notifications for voicemail.
 * Added enabled field to volunteer CSV and JSON exports, with download buttons on Volunteers page [#1411]
 * Root service body admins can now access meeting request logs that have no service_body_id assigned [#1399]
+* **Legacy schema catch-up for long-running installs.** Upgrades from pre-Laravel databases automatically add missing columns (including `records_events.type` and `records.type`) on the first request or `php artisan migrate`. Manual `ALTER TABLE` is no longer required. [#1613]
 
 ### 4.5.0 (July 11, 2025)
 * Added new feature that allow for creating a custom prompt for language selection feature. [#1228]
