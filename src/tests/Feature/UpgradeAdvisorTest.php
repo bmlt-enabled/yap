@@ -155,7 +155,7 @@ test('test with misconfigured phone number', function ($method) {
             [
                 "status"=>true,
                 "message"=>"Ready To Yap!",
-                "warnings"=>sprintf("%s is/are phone numbers that are missing Twilio Call Status Changes Callback status.php webhook. This will not allow call reporting to work correctly.  For more information review the documentation page https://github.com/bmlt-enabled/yap/wiki/Call-Detail-Records.", $misconfiguredNumber),
+                "warnings"=>sprintf("%s is/are phone numbers that are missing Twilio Call Status Changes Callback status.php webhook. This will not allow call reporting to work correctly.  For more information review the documentation page https://yap.bmlt.app/general/reports.", $misconfiguredNumber),
                 "version"=>$settingsService->version(),
                 "build"=>"local"
             ]

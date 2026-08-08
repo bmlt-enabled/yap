@@ -8,7 +8,7 @@
 
 2. Once the application is configured you will need to customize the config.php file.  There are several settings there that are documented in that file.  There are a number of different ways to utilize the yap platform. 
 
-3. You will need to (`config.php`) enter `$twilio_account_sid` and `$twilio_auth_token`.  You can find this on your account dashboard.  You can also use a different Twilio account using the admin portal under "Service Bodies".  Keep in mind that if a key or keys are set at any parent above, all child service bodies will inherit that key.  In order to use a key, just specify `override_service_body_id` in your webhook with the applicable id.  You will also need to set a webhook for Call Detail Records. It is possible to use dummy credentials as a workaround if you do not intend for a service body to make use of the credentials in `config.php`, but instead use the credentials configured in service body configuration overrides.
+3. You will need to (`config.php`) enter `$twilio_account_sid` and `$twilio_auth_token`.  You can find this on your account dashboard.  **An empty `$twilio_auth_token` causes every inbound IVR call to return HTTP 403** — set a real token before going live.  You can also use a different Twilio account using the admin portal under "Service Bodies".  Keep in mind that if a key or keys are set at any parent above, all child service bodies will inherit that key.  In order to use a key, just specify `override_service_body_id` in your webhook with the applicable id.  You will also need to set a webhook for Call Detail Records. It is possible to use dummy credentials as a workaround if you do not intend for a service body to make use of the credentials in `config.php`, but instead use the credentials configured in service body configuration overrides.
 
 ![twilio-status-callback](/img/status_callback_example.png)
 
@@ -33,6 +33,15 @@ static $mysql_password = "";
 static $mysql_database = "";
 ```
 
-9. You can test whether or not you are properly configured by going to https://example.com/api/v1/upgrade.  This will also run MySQL scripts to initialize/update your database.
+9. You can test whether or not you are properly configured by going to https://example.com/api/v1/upgrade.  On first deploy, safe schema migrations may run automatically on the first HTTP request; destructive migrations (such as the 4.x → 5.x UUID conversion) are blocked until you run `php artisan migrate` manually.  See [Upgrading from Yap 4.x to Yap 5.x](../miscellaneous/upgrading-from-yap-4x-to-yap-5x) for details.
 
 10. Make a call to your number and try it out.  If there is a problem the debugger in the Twilio console will let you know why.  Most likely you did not setup your config.php file correctly.
+
+## Laravel environment variables
+
+Yap stores most settings in `config.php`, but several Laravel `.env` values affect the admin SPA and Twilio webhooks. Copy `src/.env.example` to `src/.env` and review:
+
+- `TRUSTED_PROXIES` — required behind reverse proxies so Twilio signature validation sees the public URL.
+- `SESSION_DRIVER` — use `file` or `redis`; never `database` (conflicts with Yap's call-PIN `sessions` table).
+- `SANCTUM_STATEFUL_DOMAINS` — hosts that receive session cookies for SPA authentication.
+- `TWILIO_DISABLE_SIGNATURE_VALIDATION` — bypass validation outside production only; never on a live helpline.

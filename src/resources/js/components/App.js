@@ -30,6 +30,7 @@ import ErrorBoundary from "./ErrorBoundary";
 import { LocalizationProvider, useLocalization } from "../contexts/LocalizationContext";
 import ChangePasswordDialog from "../dialogs/ChangePasswordDialog";
 import theme from "../theme/theme";
+import apiClient from "../services/api";
 
 // Inner component that can use localization context
 function AppContent({ session, authentication, router, showPasswordDialog, setShowPasswordDialog }) {
@@ -116,9 +117,14 @@ export default function App() {
         navigate('/login');
     }, [navigate]);
 
-    const signOut = React.useCallback(() => {
+    const signOut = React.useCallback(async () => {
+        try {
+            await apiClient.post('/api/v1/logout');
+        } catch (error) {
+            console.error('Error during logout:', error);
+        }
         setSession(null);
-        localStorage.removeItem('session')
+        localStorage.removeItem('session');
         navigate('/login');
     }, [navigate]);
 

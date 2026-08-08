@@ -106,7 +106,7 @@ class UpgradeService extends Service
                 $misconfiguredPhoneNumbers[] = $alert->payload;
             }
 
-            $warnings = sprintf("%s is/are phone numbers that are missing Twilio Call Status Changes Callback status.php webhook. This will not allow call reporting to work correctly.  For more information review the documentation page https://github.com/bmlt-enabled/yap/wiki/Call-Detail-Records.", implode(",", $misconfiguredPhoneNumbers));
+            $warnings = sprintf("%s is/are phone numbers that are missing Twilio Call Status Changes Callback status.php webhook. This will not allow call reporting to work correctly.  For more information review the documentation page https://yap.bmlt.app/general/reports.", implode(",", $misconfiguredPhoneNumbers));
         }
 
         try {
