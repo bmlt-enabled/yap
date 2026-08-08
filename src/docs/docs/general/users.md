@@ -2,9 +2,15 @@
 
 ---
 
-User authentication has primarily been sourced by a BMLT. You can create users outside the BMLT and use Yap’s internal user authentication. To create an admin user run the following MySQL script. Be sure to set a strong password and fill it in the variable before running this on your MySQL instance.
+User authentication is primarily sourced from a BMLT root server. You can also create users in Yap and use Yap's internal authentication. The admin **Users** page (`/admin/users`) lets administrators add, edit, and delete local users when logged in with admin privileges.
 
-Once you log in, using the admin user, you can create / manage additional users.
+## User IDs (Yap 5.0+)
+
+Starting with Yap 5.0, `users.id` is a **UUID**, not an integer. New users created through the admin UI or SQL receive a UUID primary key automatically.
+
+## Creating an admin via SQL
+
+To bootstrap the first admin user, run the following MySQL script. Set a strong password before executing on your instance:
 
 ```sql
 SET @realname = '';
@@ -13,10 +19,24 @@ SET @password = '';
 INSERT INTO users (id, name, username, password, permissions, is_admin) VALUES (UUID(), @realname, @username, SHA2(@password, 256), 0, 1);
 ```
 
-If you happen to forget your password, or need to reset it for some reason.  You can run this query to reset it to something new. (Note: it is not possible to recover a password, as they are stored as one-way hashes).
+Once you log in with that admin user, you can create and manage additional users from the admin UI.
+
+## Password reset
+
+Passwords are stored as one-way SHA-256 hashes and cannot be recovered. Reset with:
 
 ```sql
 SET @username = '';
 SET @newpassword = '';
 UPDATE users set password = SHA2(@newpassword, 256) where username = @username;
 ```
+
+Authenticated users can also change their password from the account menu in the admin SPA.
+
+## Admin UI preferences
+
+The admin SPA stores your **preferred language** in browser `localStorage` (`preferredLanguage`). This affects UI labels on login and throughout the portal. BMLT-sourced users still authenticate against the root server; local users authenticate against Yap's `users` table.
+
+## Permissions
+
+The `permissions` column controls feature access (for example, "Manage Users"). The `is_admin` flag grants full administrative access including the Users page and system-wide settings.

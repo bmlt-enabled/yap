@@ -2,7 +2,7 @@
 
 ### 5.0.0 (UNRELEASED)
 
-**Self-hosted operators: read the [4.x → 5.x upgrade guide](https://yap.bmlt.app/docs/miscellaneous/upgrading-from-yap-4x-to-yap-5x) before deploying.** Back up your database — the UUID migration is not reversible without your own backup.
+**Self-hosted operators: read the [4.x → 5.x upgrade guide](https://yap.bmlt.app/miscellaneous/upgrading-from-yap-4x-to-yap-5x) before deploying.** Back up your database — the UUID migration is not reversible without your own backup.
 
 #### Breaking changes
 
@@ -28,6 +28,7 @@
 * HTML formatted notifications for voicemail.
 * Added enabled field to volunteer CSV and JSON exports, with download buttons on Volunteers page [#1411]
 * Root service body admins can now access meeting request logs that have no service_body_id assigned [#1399]
+* **Legacy schema catch-up for long-running installs.** Upgrades from pre-Laravel databases automatically add missing columns (including `records_events.type` and `records.type`) on the first request or `php artisan migrate`. Manual `ALTER TABLE` is no longer required. [#1613]
 
 ### 4.5.0 (July 11, 2025)
 * Added new feature that allow for creating a custom prompt for language selection feature. [#1228]
@@ -304,7 +305,7 @@
 
 ### 3.7.0 (April 16, 2020)
 * Introducing Yap installer. [#373]
-* Added custom extensions feature that allows for setting up arbitrary call forwards and/or prompt playbacks. (https://github.com/bmlt-enabled/yap/wiki/Custom-Extensions) [#355]
+* Added custom extensions feature that allows for setting up arbitrary call forwards and/or prompt playbacks. (https://yap.bmlt.app/helpline/custom-extensions) [#355]
 * Added an option to combine SMS messages into a single SMS versus individual ones.
 * Added virtual links for those meetings tagged with VM for location-centric virtual meetings.
 * Added support for temporary closures format which hides physical addresses if virtual link is present.

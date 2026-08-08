@@ -161,7 +161,7 @@ BMLT-based and database-local admin accounts both flow through this endpoint. Se
 | **Laravel** | 12.x |
 | **MySQL** | 8.0+ (or MariaDB 10.3+) |
 
-PHP 8.1 is no longer supported. If you run the official Docker image, you get PHP 8.5 on Apache. Bare-metal installs must provide PHP 8.2+ with `pdo_mysql`, and the extensions Yap's `composer.json` expects.
+PHP 8.1 is no longer supported. If you run the official Docker image, you get PHP 8.5 on Apache. Bare-metal and shared-hosting installs must provide PHP 8.2+ with all [required PHP extensions](https://yap.bmlt.app/general/php-requirements) enabled — especially `pdo_mysql` and `fileinfo` (a missing `fileinfo` extension causes `Class 'finfo' not found`).
 
 ## 10. The admin UI is a React SPA
 

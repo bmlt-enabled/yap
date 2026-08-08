@@ -7,7 +7,7 @@ sidebar_position: 7
 
 See [Upgrading from Yap 4.x to Yap 5.x](./upgrading-from-yap-4x-to-yap-5x) for release-critical changes in 5.0 (Twilio signature validation, `TRUSTED_PROXIES`, and related breaking changes).
 
-Upgrading to Yap 5.0 includes a destructive UUID migration that runs automatically on the first HTTP request against the new code. Run preflight checks **before** pointing traffic at the new folder.
+Upgrading to Yap 5.0 includes a destructive UUID migration that is **blocked** until you run `php artisan migrate` manually. Safe schema migrations may run automatically on the first HTTP request; the UUID conversion returns HTTP 503 until you migrate. Run preflight checks **before** pointing traffic at the new folder.
 
 ## Step 1: Run preflight against your 4.5.x database
 
@@ -30,6 +30,7 @@ Preflight validates:
 - `twilio_auth_token` is present (empty token rejects every IVR call with HTTP 403)
 - `TRUSTED_PROXIES` when behind a reverse proxy (warning when unset)
 - `SESSION_DRIVER` is not `database` (Yap's `sessions` table stores call PINs, not Laravel sessions)
+- Required PHP extensions (`fileinfo`, `pdo_mysql`, `curl`, etc.) — see [PHP requirements](../general/php-requirements)
 - `APP_ENV` value (several guards compare against the exact string `production`)
 - MySQL and PHP versions against Yap 5.0 requirements
 

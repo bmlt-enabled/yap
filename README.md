@@ -1,3 +1,7 @@
+# yap
+
+> **Upgrading from Yap 4.x?** Read the [4.x → 5.x upgrade guide](https://yap.bmlt.app/miscellaneous/upgrading-from-yap-4x-to-yap-5x) before deploying. Back up your database — the UUID migration is not reversible without your own backup.
+
 <h1 align="center">yap</h1>
 <h1 align="center">
 <a href="https://github.com/bmlt-enabled/yap/releases/latest"><img src="https://img.shields.io/github/v/release/bmlt-enabled/yap"></a>

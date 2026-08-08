@@ -43,22 +43,8 @@ function Settings() {
 
     const clearCache = async () => {
         try {
-            const response = await fetch(`/api/v1/cache`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')// Example for Laravel CSRF
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            // Handle successful response, e.g., show a success message
-            console.log("Cache cleared successfully");
+            await apiClient.post('/api/v1/cache');
             alert("Cache cleared successfully");
-
         } catch (error) {
             console.error("Error clearing cache:", error);
             alert("Error clearing cache. See console for details.");
@@ -91,7 +77,12 @@ function Settings() {
                             <TableBody>
                                 {settings.map((setting) => (
                                     <TableRow key={setting.key}>
-                                        <TableCell>{setting.key} <a href={setting.docs} target="_blank" rel="noopener noreferrer">📖</a></TableCell>
+                                        <TableCell>
+                                            {setting.key}
+                                            {setting.docs ? (
+                                                <a href={setting.docs} target="_blank" rel="noopener noreferrer"> 📖</a>
+                                            ) : null}
+                                        </TableCell>
                                         <TableCell>{setting.value !== null ? setting.value.toString() : ""}</TableCell>
                                         <TableCell>{setting.source}</TableCell>
                                         <TableCell>{JSON.stringify(setting.default)}</TableCell>
