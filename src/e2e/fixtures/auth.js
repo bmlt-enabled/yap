@@ -30,6 +30,15 @@ async function login(page, baseURL, username, password) {
   await page.waitForTimeout(1000);
 }
 
+async function openAuthenticatedPage(context, baseURL) {
+  const page = await context.newPage();
+  await page.goto(`${baseURL}/admin/dashboard`);
+  // Cached storageState restores localStorage but not the current URL — land on
+  // the dashboard so sidebar navigation links exist before each test runs.
+  await page.getByRole('link', { name: 'Reports' }).waitFor({ state: 'visible', timeout: 30000 });
+  return page;
+}
+
 async function createAuthenticatedContext(browser, baseURL) {
   if (!cachedAuthStorage) {
     const bootstrap = await browser.newContext();
@@ -47,13 +56,13 @@ export const test = base.extend({
   // BMLT users (like gnyr_admin) won't work in CI without a BMLT server
   authenticatedPage: async ({ browser, baseURL }, use) => {
     const context = await createAuthenticatedContext(browser, baseURL);
-    const page = await context.newPage();
+    const page = await openAuthenticatedPage(context, baseURL);
     await use(page);
     await context.close();
   },
   adminPage: async ({ browser, baseURL }, use) => {
     const context = await createAuthenticatedContext(browser, baseURL);
-    const page = await context.newPage();
+    const page = await openAuthenticatedPage(context, baseURL);
     await use(page);
     await context.close();
   },
