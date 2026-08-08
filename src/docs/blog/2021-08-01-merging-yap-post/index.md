@@ -11,7 +11,7 @@ Since Yap 3.0.0 (released in March 2019), it’s been possible to use a single Y
 
 <!--truncate-->
 
-Yap 3 also introduced the concept of configuration precedence [https://github.com/bmlt-enabled/yap/wiki/Configuration-Precedence](https://github.com/bmlt-enabled/yap/wiki/Configuration-Precedence).  This creates the ability to manifest all kinds of powerful capability without requiring access to the config.php on the server (critical for this situation where server management is handled by someone else).  It also has the ability to set a value at regional level while the hierarchy of the BMLT automatically cascades down to the member areas.
+Yap 3 also introduced the concept of configuration precedence [https://yap.bmlt.app/general/configuration-precedence](https://yap.bmlt.app/general/configuration-precedence).  This creates the ability to manifest all kinds of powerful capability without requiring access to the config.php on the server (critical for this situation where server management is handled by someone else).  It also has the ability to set a value at regional level while the hierarchy of the BMLT automatically cascades down to the member areas.
 
 Recently I had to migrate my regional yap server to the zonal server.  Below is the process I followed, feel free to send an email to [help@bmlt.app](mailto:help@bmlt.app) if you’d like more details.
 

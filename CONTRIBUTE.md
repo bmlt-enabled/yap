@@ -50,4 +50,4 @@ npm run docusaurus build
 This only works locally right now.
 
 1. Run `make swagger`.
-2. Browse to `/api/documentation`
+2. Browse to `/api/v1/documentation`

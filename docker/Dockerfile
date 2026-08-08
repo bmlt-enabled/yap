@@ -2,7 +2,7 @@ FROM php:8.5-apache
 
 ENV PHP_INI_PATH "/usr/local/etc/php/php.ini"
 
-RUN docker-php-ext-install pdo pdo_mysql
+RUN docker-php-ext-install pdo pdo_mysql mbstring
 
 RUN echo "log_errors = On" >> ${PHP_INI_PATH} \
   && echo "error_reporting = E_ALL" >> ${PHP_INI_PATH} \

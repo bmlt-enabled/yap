@@ -275,7 +275,7 @@ export function CallHandlingDialog({ open, onClose, serviceBodyId }) {
                             <InputLabel htmlFor="override_en_US_greeting">Recorded Greeting (URL to any MP3): (<Button
                                 href={callHandlingData.override_en_US_greeting}>Play</Button>)</InputLabel>
                             <Typography variant="body2">This setting is not usable with <a
-                                href="https://bmlt.app/yap/#configurationprecedence" target="_blank">Configuration
+                                href="https://yap.bmlt.app/general/configuration-precedence" target="_blank">Configuration
                                 Precedence</a>, like the options under "Configure" button. If you want to use
                                 configuration
                                 overrides, use the setting "en_US_greeting" (or the equivalent language code you want to
@@ -301,7 +301,7 @@ export function CallHandlingDialog({ open, onClose, serviceBodyId }) {
                             <InputLabel htmlFor="override_en_US_voicemail_greeting">Voicemail Greeting (URL to any MP3): (<Button
                                 href={callHandlingData.override_en_US_voicemail_greeting}>Play</Button>)</InputLabel>
                             <Typography variant="body2">This setting is not usable with <a
-                                href="https://bmlt.app/yap/#configurationprecedence" target="_blank">Configuration
+                                href="https://yap.bmlt.app/general/configuration-precedence" target="_blank">Configuration
                                 Precedence</a>, like the options under "Configure" button. If you want to use configuration
                                 overrides, use the setting "en_US_voicemail_greeting" (or the equivalent language code you want
                                 to set).

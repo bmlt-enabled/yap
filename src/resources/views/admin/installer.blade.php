@@ -48,7 +48,7 @@
             <li><?php echo htmlspecialchars($setting); ?></li>
         <?php endforeach; ?>
     </ul>
-    <p>Please refer to the <a href="https://bmlt.app/yap" target="_blank">documentation</a> for detailed configuration instructions.</p>
+    <p>Please refer to the <a href="https://yap.bmlt.app" target="_blank">documentation</a> for detailed configuration instructions.</p>
 </div>
 </body>
 </html>

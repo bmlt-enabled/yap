@@ -31,6 +31,7 @@ class PreflightService
             $this->checkSessionDriver(),
             $this->checkAppEnv(),
             $this->checkPhpVersion(),
+            $this->checkPhpExtensions(),
             ...$this->checkDatabase(),
         ];
 
@@ -333,6 +334,41 @@ class PreflightService
             'php_version',
             'PHP version',
             sprintf('PHP %s meets the minimum (%s) and matches the Docker image target.', $current, self::PHP_MIN_VERSION),
+        );
+    }
+
+    private function checkPhpExtensions(): PreflightCheck
+    {
+        $missing = [];
+        foreach (PhpExtensionRequirements::REQUIRED as $extension => $description) {
+            if (!extension_loaded($extension)) {
+                $missing[$extension] = $description;
+            }
+        }
+
+        if ($missing === []) {
+            return PreflightCheck::pass(
+                'php_extensions',
+                'PHP extensions',
+                sprintf(
+                    'All %d required PHP extensions are loaded.',
+                    count(PhpExtensionRequirements::REQUIRED),
+                ),
+            );
+        }
+
+        $missingList = collect($missing)
+            ->map(fn (string $description, string $extension) => sprintf('%s (%s)', $extension, $description))
+            ->implode('; ');
+
+        return PreflightCheck::fail(
+            'php_extensions',
+            'PHP extensions',
+            'Missing required PHP extension(s): ' . implode(', ', array_keys($missing)) . '.',
+            sprintf(
+                'Enable or install the missing extensions on this server. A common error is "Class \'finfo\' not found" when fileinfo is disabled. Missing: %s. See https://yap.bmlt.app/general/php-requirements for shared-hosting and self-hosted install steps. Verify with: php -m',
+                $missingList,
+            ),
         );
     }
 

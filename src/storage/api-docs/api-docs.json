@@ -111,6 +111,41 @@
                 ]
             }
         },
+        "/api/v1/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout and revoke the current API token",
+                "operationId": "381f04c9359270bcd3e193f333e402f5",
+                "responses": {
+                    "200": {
+                        "description": "Logged out successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/v1/cache": {
             "post": {
                 "tags": [
@@ -2169,6 +2204,9 @@
                                                     },
                                                     "shift_info": {
                                                         "type": "object"
+                                                    },
+                                                    "enabled": {
+                                                        "type": "boolean"
                                                     }
                                                 },
                                                 "type": "object"
@@ -2297,6 +2335,381 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/api/v1/webchat/config": {
+            "get": {
+                "tags": [
+                    "WebChat"
+                ],
+                "summary": "Get webchat widget configuration",
+                "description": "Returns configuration settings for the webchat widget",
+                "operationId": "ed6806bdcccecf0f39b83081e8e6b679",
+                "responses": {
+                    "200": {
+                        "description": "Configuration retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "enabled": {
+                                            "type": "boolean"
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        },
+                                        "language": {
+                                            "type": "string"
+                                        },
+                                        "timeout_minutes": {
+                                            "type": "integer"
+                                        },
+                                        "meeting_search_enabled": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Webchat is not enabled"
+                    }
+                }
+            }
+        },
+        "/api/v1/webchat/session": {
+            "get": {
+                "tags": [
+                    "WebChat"
+                ],
+                "summary": "Get existing session by client ID",
+                "description": "Get session by client ID (for reconnection)",
+                "operationId": "c33ad0650fa64c923e31cf0b076e43ca",
+                "parameters": [
+                    {
+                        "name": "client_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Session found or not found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "WebChat"
+                ],
+                "summary": "Start a new chat session with volunteers",
+                "description": "Start a new chat session",
+                "operationId": "95b315fc317dedbe6e53604b17e00770",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "client_id",
+                                    "location",
+                                    "message"
+                                ],
+                                "properties": {
+                                    "client_id": {
+                                        "description": "Unique client identifier",
+                                        "type": "string"
+                                    },
+                                    "location": {
+                                        "description": "User's location (address or city)",
+                                        "type": "string"
+                                    },
+                                    "message": {
+                                        "description": "Initial message to volunteers",
+                                        "type": "string"
+                                    },
+                                    "latitude": {
+                                        "description": "Optional pre-geocoded latitude",
+                                        "type": "number"
+                                    },
+                                    "longitude": {
+                                        "description": "Optional pre-geocoded longitude",
+                                        "type": "number"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Session created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "session_id": {
+                                            "type": "string"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "403": {
+                        "description": "Webchat is not enabled"
+                    }
+                }
+            }
+        },
+        "/api/v1/webchat/session/{sessionId}/message": {
+            "post": {
+                "tags": [
+                    "WebChat"
+                ],
+                "summary": "Send a message in an existing chat session",
+                "description": "Send a message in an existing session",
+                "operationId": "cf5905eb50dbb9e89e68897af79d42d9",
+                "parameters": [
+                    {
+                        "name": "sessionId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "message"
+                                ],
+                                "properties": {
+                                    "message": {
+                                        "description": "Message content",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Message sent successfully"
+                    },
+                    "400": {
+                        "description": "Validation error or session issue"
+                    }
+                }
+            }
+        },
+        "/api/v1/webchat/session/{sessionId}/messages": {
+            "get": {
+                "tags": [
+                    "WebChat"
+                ],
+                "summary": "Get messages from a chat session",
+                "description": "Get messages from a session (for polling)",
+                "operationId": "a0c27665cc736ea465c4cafae1adef57",
+                "parameters": [
+                    {
+                        "name": "sessionId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "since",
+                        "in": "query",
+                        "description": "ISO 8601 timestamp to get messages since",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Messages retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "session_id": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "enum": [
+                                                "pending",
+                                                "active",
+                                                "closed"
+                                            ]
+                                        },
+                                        "messages": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "content": {
+                                                        "type": "string"
+                                                    },
+                                                    "sender": {
+                                                        "type": "string"
+                                                    },
+                                                    "sender_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "timestamp": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/webchat/session/{sessionId}/close": {
+            "post": {
+                "tags": [
+                    "WebChat"
+                ],
+                "summary": "Close a chat session",
+                "description": "Close a chat session",
+                "operationId": "a30ee719161c4c129f43f91d8e35b531",
+                "parameters": [
+                    {
+                        "name": "sessionId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Session closed successfully"
+                    }
+                }
+            }
+        },
+        "/api/v1/webchat/meetings": {
+            "get": {
+                "tags": [
+                    "WebChat"
+                ],
+                "summary": "Search for meetings near a location",
+                "description": "Search for meetings near a location",
+                "operationId": "6aa1132ea3bd79b0c27f31fc66f1c199",
+                "parameters": [
+                    {
+                        "name": "location",
+                        "in": "query",
+                        "description": "Location to search near (city, address, or zip code)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Maximum number of meetings to return (default: 10)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Meetings found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "location": {
+                                            "type": "string"
+                                        },
+                                        "meetings": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "meeting_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "weekday_tinyint": {
+                                                        "type": "integer"
+                                                    },
+                                                    "start_time": {
+                                                        "type": "string"
+                                                    },
+                                                    "location_text": {
+                                                        "type": "string"
+                                                    },
+                                                    "location_street": {
+                                                        "type": "string"
+                                                    },
+                                                    "formats": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or geocoding failed"
+                    },
+                    "403": {
+                        "description": "Webchat or meeting search is not enabled"
                     }
                 }
             }
@@ -2471,6 +2884,10 @@
         {
             "name": "Voicemails",
             "description": "API Endpoints for managing voicemails"
+        },
+        {
+            "name": "WebChat",
+            "description": "Web chat endpoints for browser-based text communication with volunteers"
         },
         {
             "name": "WebRTC",

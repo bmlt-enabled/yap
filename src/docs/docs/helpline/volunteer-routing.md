@@ -2,7 +2,9 @@
 
 ---
 
-Incompatible with Yap 1.x Volunteer Dialers, you will have reconfigure your setup.
+Incompatible with Yap 1.x Volunteer Dialers — you will have to reconfigure your setup.
+
+## Initial setup
 
 1) You will need to ensure that the following `config.php` parameters are set.  They should be a service body admin that will be responsible for reading and writing data back to your BMLT.  This will not work with the "Server Administrator" account.
 
@@ -18,15 +20,33 @@ static $twilio_account_sid = "";
 static $twilio_auth_token = "";
 ```
 
-3) Head over to your admin login page.  https://your-yap-instance/admin.
-4) Login with any credentials from your BMLT server.
-5) Go to the Service Bodies tab and click "Configure".  From there you should see a check box to enable Volunteer Routing.  Check it off and save.
-6) Go to Volunteers, and you should see that service body in the dropdown, and select it.
-7) Click Add Volunteer.  Fill out the Name field, and then click the "+" to expand out the rest of the details.  You should be able to start populating the number and shift information.  You will also have to click "Enable" in the bottom right.  Once you are done, click "Save Volunteers".
-8) You can also sort the sequence by dragging and dropping the volunteer cards.
-9) Go to Schedules to preview your changes.  Select your service body from the dropdown, and it should render onto the calendar.
-10) You can now test to see if things are working.
+3) Head over to your admin login page at `https://your-yap-instance/admin`.
+4) Login with any credentials from your BMLT server (or a Yap-local user).
+5) Go to the **Service Bodies** tab and click **Configure**.  Enable **Volunteer Routing** and save.
+6) Go to **Volunteers**, select your service body, and add volunteers with phone numbers and shift windows.
+7) Click **Enable** on each volunteer card, then **Save Volunteers**.
+8) Drag and drop volunteer cards to set dial order.
+9) Go to **Schedules** to preview the calendar for your service body.
+10) Place a test call to confirm routing.
 
-    * Volunteer Routing Redirect: You do this by setting in the Service Body Call Handling the Volunteer Routing mechanism to "Volunteers Redirect" and specifying the respective Service Body Id in the "Volunteers Redirect Id" field.
-    * Forced Caller Id: This setting changes the outgoing display caller id.
-    * Call Timeout: This is the number of seconds before trying the next number for volunteer routing.
+## Call strategies
+
+Configure these under **Service Bodies → Configure → Call Handling**:
+
+| Strategy | Behavior |
+|---|---|
+| **Linear cycle** | Dial volunteers in order; try the next on no-answer until the list is exhausted. |
+| **Blasting** | Ring multiple volunteers at once; first to answer wins. |
+| **Random loop** | Shuffle order each cycle, then fall through to voicemail. |
+| **Responder** | Route to a single designated responder number. |
+| **Groups** | Dial members of a volunteer group (configure groups on the **Groups** tab). |
+
+Most strategies support a fallback to voicemail when no volunteer answers within the configured **Call Timeout**.
+
+## Redirect and overrides
+
+* **Volunteer Routing Redirect**: Set the mechanism to "Volunteers Redirect" and specify the target service body ID in **Volunteers Redirect Id**.
+* **Forced Caller Id**: Changes the outgoing display caller ID for volunteer outdials.
+* **Call Timeout**: Seconds before trying the next number (or next strategy step).
+
+See also [checking call routing](./checking-call-routing) and [helpline call routing](./helpline-call-routing).

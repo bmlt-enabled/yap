@@ -54,7 +54,7 @@ function Users() {
 
     const loadCurrentUser = async () => {
         try {
-            const response = await apiClient.get(`/api/v1/auth/check`);
+            const response = await apiClient.get('/api/v1/user');
             setCurrentUsername(response.data.username);
             setIsAdmin(response.data.is_admin);
         } catch (error) {

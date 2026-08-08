@@ -6,7 +6,7 @@ const darkCodeTheme = require('prism-react-renderer').themes.nightOwl;
 (module.exports = {
   title: 'Yap Docs',
   tagline: 'Yap is cool',
-  url: 'https://yapdocs.com',
+  url: 'https://yap.bmlt.app',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   markdown: {
@@ -26,14 +26,14 @@ const darkCodeTheme = require('prism-react-renderer').themes.nightOwl;
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
-          editUrl: 'https://github.com/bmlt-enabled/yap/edit/main/docs/',
+          editUrl: 'https://github.com/bmlt-enabled/yap/edit/main/src/docs/docs/',
           routeBasePath: '/',
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           editUrl:
-            'https://github.com/bmlt-enabled/yap/edit/main/docs/',
+            'https://github.com/bmlt-enabled/yap/edit/main/src/docs/blog/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),

@@ -41,6 +41,28 @@ test('security: invalid token is rejected', function () {
     $response->assertStatus(401);
 });
 
+test('security: logout revokes sanctum token', function () {
+    User::saveUser('Test', 'testuser', 'testpass', [], []);
+
+    $loginResponse = $this->post('/api/v1/login', [
+        'username' => 'testuser',
+        'password' => 'testpass'
+    ]);
+    $loginResponse->assertStatus(200);
+
+    $token = $loginResponse->json('token');
+
+    $this->withHeaders([
+        'Authorization' => 'Bearer ' . $token,
+    ])->postJson('/api/v1/logout')->assertStatus(200);
+
+    auth()->forgetGuards();
+
+    $this->withHeaders([
+        'Authorization' => 'Bearer ' . $token,
+    ])->getJson('/api/v1/settings')->assertStatus(401);
+});
+
 test('security: token invalidated after manual deletion', function () {
     // Create user and login
     User::saveUser('Test', 'testuser', 'testpass', [], []);

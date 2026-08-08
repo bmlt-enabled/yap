@@ -69,6 +69,7 @@ Route::group([
     }
 
     Route::group(['middleware' => ['auth:sanctum']], function () {
+        Route::post('logout', [AuthController::class, 'logout']);
         Route::resource('user', 'AuthController')->only(['index']);
         Route::resource('volunteers', 'ConfigureVolunteersController')->only(['index', 'store']);
         Route::resource('callHandling', 'ServiceBodyCallHandlingController')->only(['index', 'store']);
