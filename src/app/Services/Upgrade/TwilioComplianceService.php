@@ -8,6 +8,14 @@ use Twilio\Rest\Client;
 
 class TwilioComplianceService
 {
+    public const CHECK_IDS = [
+        'twilio_account_type',
+        'voice_geo_us',
+        'trust_hub_profile',
+        'sms_a2p_brand',
+        'toll_free_verification',
+    ];
+
     private const VOICE_GEO_CONSOLE_URL = 'https://www.twilio.com/console/voice/calls/geo-permissions';
     private const TRUST_HUB_CONSOLE_URL = 'https://www.twilio.com/console/trust-hub/customer-profiles';
     private const A2P_CONSOLE_URL = 'https://www.twilio.com/console/sms/a2p-brand-registration';

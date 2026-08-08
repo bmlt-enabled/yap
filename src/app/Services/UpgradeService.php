@@ -200,7 +200,8 @@ class UpgradeService extends Service
         }
 
         $complianceWarnings = collect($checks)
-            ->filter(fn (array $check) => $check['status'] === UpgradeCheck::STATUS_WARN)
+            ->filter(fn (array $check) => $check['status'] === UpgradeCheck::STATUS_WARN
+                && in_array($check['id'], TwilioComplianceService::CHECK_IDS, true))
             ->pluck('message')
             ->filter()
             ->values()
