@@ -65,7 +65,11 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->ip());
+            // The Playwright suite issues hundreds of authenticated API calls; keep
+            // production at 60/min but avoid 429s during E2E runs.
+            $perMinute = getenv('E2E_TESTING') ? 600 : 60;
+
+            return Limit::perMinute($perMinute)->by($request->ip());
         });
 
         // WebRTC token endpoint - configurable limit (default: 5/min)
