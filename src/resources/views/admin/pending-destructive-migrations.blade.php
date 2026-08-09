@@ -63,8 +63,7 @@
     </p>
     <p>
         After the migration completes successfully, reload this page. If the migration
-        fails, consult the <code>users_pre_uuid_backup</code> table for recovery data
-        and restore from your own backup if needed.
+        fails, restore from your own database backup.
     </p>
     <p>
         For other configuration checks (PHP extensions, Twilio, database shape), open

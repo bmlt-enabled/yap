@@ -10,10 +10,10 @@ class DatabaseMigrationService
     /**
      * Migration basenames that alter or drop primary keys or otherwise require
      * operator opt-in. These must be applied manually via php artisan migrate.
+     *
+     * @var list<string>
      */
-    public const DESTRUCTIVE_MIGRATIONS = [
-        '2025_01_01_163927_convert_id_to_guid_in_users_table',
-    ];
+    public const DESTRUCTIVE_MIGRATIONS = [];
 
     private Migrator $migrator;
 

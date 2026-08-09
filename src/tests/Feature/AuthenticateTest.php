@@ -4,7 +4,6 @@ use App\Models\ConfigData;
 use App\Models\User;
 use App\Structures\Settings;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Tests\FakeHttp;
 
 beforeAll(function () {
@@ -57,9 +56,9 @@ test('test login for admin yap user with valid credentials', function () {
     $username = 'admin1';
     $password = 'admin1';
     DB::statement("
-                INSERT INTO users (id, name, username, password, permissions, is_admin)
-                VALUES (?, ?, ?, SHA2(?, 256), 0, 1);
-            ", [Str::uuid()->toString(), 'admin', $username, $password]);
+                INSERT INTO users (name, username, password, permissions, is_admin)
+                VALUES ('admin', ?, SHA2(?, 256), 0, 1);
+            ", [$username, $password]);
 
     $result = $this->post(
         '/api/v1/login',

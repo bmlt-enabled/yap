@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class TestEnvironmentSeeder extends Seeder
 {
@@ -12,9 +11,9 @@ class TestEnvironmentSeeder extends Seeder
     {
         if (getenv("ENVIRONMENT") === "test") {
             DB::statement("
-                INSERT IGNORE INTO users (id, name, username, password, permissions, is_admin)
-                VALUES (?, ?, ?, SHA2(?, 256), 0, 1);
-            ", [Str::uuid()->toString(), 'admin', 'admin', 'admin']);
+                INSERT IGNORE INTO users (name, username, password, permissions, is_admin)
+                VALUES ('admin', 'admin', SHA2('admin', 256), 0, 1);
+            ");
         }
     }
 }

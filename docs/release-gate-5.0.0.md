@@ -42,9 +42,8 @@ Restore a **copy** of a real 4.5.x production database and upgrade end to end on
 1. Back up the database.
 2. Deploy the 5.0.0 artifact.
 3. Run `php artisan yap:preflight` — all checks must pass.
-4. Run `php artisan migrate` manually for the UUID migration step.
-5. Verify the `users` table: primary key present, ids distinct, row count preserved.
-6. Log in as a service-body admin (database auth path) and confirm `override_*` settings seed in the admin session.
+4. Verify the `users` table: primary key present, ids distinct, row count preserved.
+5. Log in as a service-body admin (database auth path) and confirm `override_*` settings seed in the admin session.
 
 Record the drill date, database snapshot source, and operator in the release issue before tagging.
 

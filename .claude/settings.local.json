@@ -35,5 +35,8 @@
     ],
     "deny": [],
     "ask": []
+  },
+  "attribution": {
+    "commit": "🐦‍⬛ Generated with Cursor, orchestrated by Crow\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nCrow-Session: FC395A64-A9ED-44DE-A5BB-E7CD14531439"
   }
 }

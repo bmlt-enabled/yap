@@ -114,7 +114,7 @@ class PreflightService
             'duplicate_usernames',
             'Duplicate usernames',
             sprintf('%d duplicate username value(s) found (e.g. %s).', count($duplicateUsernames), $examples),
-            'Resolve duplicate usernames before upgrading. The UUID migration reassigns user ids by username, so duplicates collide and break the primary key mid-migration.',
+            'Resolve duplicate usernames before upgrading. Usernames are the stable identifier for local accounts in the admin UI and API.',
         );
     }
 
@@ -138,7 +138,7 @@ class PreflightService
             'empty_usernames',
             'Empty usernames',
             sprintf('%d user(s) have a NULL or empty username.', $nullOrEmptyUsername),
-            'Assign a unique username to every user row before upgrading. Rows with NULL username keep id = NULL and the primary-key step of the UUID migration fails.',
+            'Assign a unique username to every user row before upgrading. Local admin login and user management require a non-empty username.',
         );
     }
 
@@ -152,7 +152,7 @@ class PreflightService
                 'users_schema',
                 'Users table schema',
                 'users.id does not have a primary key.',
-                'Restore a PRIMARY KEY on users.id before upgrading. The UUID migration drops and recreates this key.',
+                'Restore a PRIMARY KEY on users.id before upgrading.',
             );
         }
 

@@ -4,9 +4,9 @@
 
 User authentication is primarily sourced from a BMLT root server. You can also create users in Yap and use Yap's internal authentication. The admin **Users** page (`/admin/users`) lets administrators add, edit, and delete local users when logged in with admin privileges.
 
-## User IDs (Yap 5.0+)
+## User IDs
 
-Starting with Yap 5.0, `users.id` is a **UUID**, not an integer. New users created through the admin UI or SQL receive a UUID primary key automatically.
+`users.id` is an integer auto-increment primary key (unchanged from 4.5.x). **Usernames** are the stable identifier for local accounts in the admin UI and API. Prefer creating users through the admin UI rather than raw SQL.
 
 ## Creating an admin via SQL
 
@@ -16,7 +16,7 @@ To bootstrap the first admin user, run the following MySQL script. Set a strong 
 SET @realname = '';
 SET @username = '';
 SET @password = '';
-INSERT INTO users (id, name, username, password, permissions, is_admin) VALUES (UUID(), @realname, @username, SHA2(@password, 256), 0, 1);
+INSERT INTO users (name, username, password, permissions, is_admin) VALUES (@realname, @username, SHA2(@password, 256), 0, 1);
 ```
 
 Once you log in with that admin user, you can create and manage additional users from the admin UI.

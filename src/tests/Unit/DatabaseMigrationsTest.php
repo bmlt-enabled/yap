@@ -164,7 +164,7 @@ test('returns maintenance page when destructive migrations are pending', functio
 
     $migrationService = mock(DatabaseMigrationService::class);
     $migrationService->shouldReceive('pendingDestructiveMigrationNames')->once()->andReturn([
-        '2025_01_01_163927_convert_id_to_guid_in_users_table',
+        '2025_01_01_000000_example_destructive_migration',
     ]);
     $migrationService->shouldNotReceive('runSafePendingMigrations');
 

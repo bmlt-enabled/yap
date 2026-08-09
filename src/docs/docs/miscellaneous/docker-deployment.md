@@ -28,4 +28,4 @@ Point `config.php` at your MySQL 8.0+ or MariaDB 10.3+ instance. Before sending 
 
 ## Upgrading
 
-Follow [Upgrading from Yap 4.x to Yap 5.x](./upgrading-from-yap-4x-to-yap-5x) — back up the database, confirm upgrade advisor checks pass, then schedule the destructive UUID migration with whoever manages your server or container.
+Follow [Upgrading from Yap 4.x to Yap 5.x](./upgrading-from-yap-4x-to-yap-5x) — back up the database and confirm upgrade advisor checks pass before pointing traffic at the container.

@@ -3,34 +3,26 @@ title: Upgrading from Yap 4.x to Yap 5.x
 sidebar_position: 6
 ---
 
-**BACK UP YOUR DATABASE. THIS UPGRADE IS NOT REVERSIBLE.**
+**BACK UP YOUR DATABASE before upgrading.**
 
-Yap 5.0 is a major release for self-hosted operators. It upgrades Laravel 10 → 12, requires PHP 8.2+, replaces the legacy admin UI with a React SPA, migrates `users.id` from integers to UUIDs, and enforces Twilio webhook signature validation on every inbound call. Read this guide completely before you deploy.
+Yap 5.0 is a major release for self-hosted operators. It upgrades Laravel 10 → 12, requires PHP 8.2+, replaces the legacy admin UI with a React SPA, and enforces Twilio webhook signature validation on every inbound call. Read this guide completely before you deploy.
 
 ## 1. Back up your database
 
-Take a full MySQL/MariaDB backup **before** you upload the new code or run any migration. Rolling back the UUID migration is not a supported recovery path for production:
+Take a full MySQL/MariaDB backup **before** you upload the new code or run any migration. If anything goes wrong, restore from **your** backup.
 
-- The UUID migration rewrites every row in `users` and changes the primary key type.
-- If anything goes wrong mid-migration, restore from **your** backup.
-- The migration creates a `users_pre_uuid_backup` table during `up()` as an emergency artifact, but you should not treat that as your upgrade rollback plan.
+**5.0.0-beta note:** Early betas included a destructive UUID migration for `users.id`. If you upgraded a beta and ran that migration, restore from your pre-beta backup before installing the final 5.0.0 release. Final 5.0.0 keeps integer user ids (same as 4.5.x).
 
 ## 2. Migrations and the first HTTP request
 
-Yap runs database migrations from the web middleware on incoming requests (see `DatabaseMigrations` middleware). Understand what happens **before** you point traffic at the new folder:
-
-| Migration type | Behavior on first HTTP request |
-|---|---|
-| **Safe** (schema additions, indexes, new tables) | Applied automatically on the first request that reaches the new code. |
-| **Destructive** (UUID conversion of `users.id`) | **Blocked.** Every web request returns HTTP 503 with a "Database Upgrade Required" page until a server administrator applies the migration from a shell. |
+Yap runs database migrations from the web middleware on incoming requests (see `DatabaseMigrations` middleware). Schema additions, indexes, and new tables are applied automatically on the first request that reaches the new code.
 
 **Take the site down or block traffic** until you have:
 
 1. A verified database backup.
 2. Upgrade advisor checks passing (see section 3).
-3. A maintenance window scheduled with your server administrator or hosting provider for the UUID conversion.
 
-Do not let Twilio webhooks or operators hit the new folder until you are prepared. Even "safe" auto-migrations modify your database on the first request.
+Do not let Twilio webhooks or operators hit the new folder until upgrade advisor checks pass. The first HTTP request may modify your database when safe migrations are pending.
 
 ### Upgrade procedure (summary)
 
@@ -38,8 +30,7 @@ Do not let Twilio webhooks or operators hit the new folder until you are prepare
 2. Copy `config.php` from your 4.5.x install.
 3. Run upgrade advisor checks (section 3 below).
 4. Point your web server at the new folder **only after** upgrade advisor checks pass.
-5. Ask your server administrator to apply the destructive UUID migration during your maintenance window.
-6. Confirm with `GET /api/v1/upgrade` or the admin **System Health** page.
+5. Confirm with `GET /api/v1/upgrade` or the admin **System Health** page.
 
 See also [Upgrading](./upgrading.md) for the step-by-step checklist.
 
@@ -69,7 +60,7 @@ The upgrade advisor validates your environment and database over HTTP. It lists 
 | **PHP version** | FAIL / WARN | FAIL below PHP 8.2. WARN if below PHP 8.5 (official Docker image target). |
 | **Database connection** | FAIL | Cannot connect with your `config.php` MySQL settings. |
 | **MySQL version** | FAIL | Below MySQL 8.0 or MariaDB 10.3 (Laravel 12 requirement). |
-| **Duplicate usernames** | FAIL | Two or more `users` rows share a username. The UUID migration maps by username; duplicates collide. |
+| **Duplicate usernames** | FAIL | Two or more `users` rows share a username. Resolve duplicates — usernames are the stable key for local admin accounts. |
 | **Empty usernames** | FAIL | One or more `users` rows have NULL or empty `username`. |
 | **Users table schema** | FAIL | `users.id` lacks a primary key, or `users.username` lacks a unique index. |
 
@@ -111,13 +102,11 @@ Helplines that resolve the service body later in the IVR (without `override_serv
 
 `TWILIO_DISABLE_SIGNATURE_VALIDATION=true` bypasses validation **only outside production**. Do not enable it on a live helpline.
 
-## 5. `users.id` is now a UUID
+## 5. `users.id` stays an integer
 
-The migration `2025_01_01_163927_convert_id_to_guid_in_users_table` replaces integer `users.id` values with UUIDs. Any external reporting script, BI export, or custom integration that joins on the integer id **breaks** after upgrade.
+Yap 5.0 keeps the same integer auto-increment `users.id` primary key as 4.5.x. Sanctum API tokens reference that integer in `personal_access_tokens.tokenable_id`. **Usernames** are the stable identifier for local admin accounts in the UI and API — not numeric ids.
 
-- Upgrade advisor checks for duplicate and empty usernames before the migration runs.
-- Sanctum API tokens reference `tokenable_id` as a UUID after upgrade.
-- If you store Yap user ids anywhere outside Yap, plan to re-map them or switch to username as the stable key.
+If you store Yap user ids anywhere outside Yap, they continue to work after upgrade. If you upgraded a **5.0.0-beta** that ran the removed UUID migration, restore from your pre-beta backup before installing final 5.0.0.
 
 ## 6. Do not set `SESSION_DRIVER=database`
 

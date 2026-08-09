@@ -13,7 +13,7 @@
 2. Create an admin user in the database
 
 ```sql
-INSERT INTO users (id, name, username, password, permissions, is_admin) VALUES (UUID(), 'admin', 'admin', SHA2('admin', 256), 0, 1);
+INSERT INTO users (name, username, password, permissions, is_admin) VALUES ('admin', 'admin', SHA2('admin', 256), 0, 1);
 ```
 
 3. Log with username: `admin`, password: `admin`.

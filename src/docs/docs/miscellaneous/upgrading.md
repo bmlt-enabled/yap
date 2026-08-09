@@ -7,7 +7,7 @@ sidebar_position: 7
 
 See [Upgrading from Yap 4.x to Yap 5.x](./upgrading-from-yap-4x-to-yap-5x) for release-critical changes in 5.0 (Twilio signature validation, `TRUSTED_PROXIES`, and related breaking changes).
 
-Upgrading to Yap 5.0 includes a destructive UUID migration that is **blocked** until a server administrator applies it. Safe schema migrations may run automatically on the first HTTP request; the UUID conversion returns HTTP 503 until the destructive migration completes. Run upgrade advisor checks **before** pointing traffic at the new folder.
+Schema migrations run automatically on the first HTTP request against the new code. Run upgrade advisor checks **before** pointing traffic at the new folder.
 
 ## Step 1: Run upgrade advisor checks against your 4.5.x database
 
@@ -27,7 +27,7 @@ The upgrade advisor validates your database and environment over HTTP. It report
 Upgrade advisor checks include:
 
 - Required `config.php` settings
-- Duplicate or empty `users.username` values (UUID migration blockers)
+- Duplicate or empty `users.username` values
 - `users` primary key and `username` unique index shape
 - `twilio_auth_token` is present (empty token rejects every IVR call with HTTP 403)
 - `TRUSTED_PROXIES` when behind a reverse proxy (warning when unset)

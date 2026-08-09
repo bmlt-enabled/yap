@@ -26,7 +26,7 @@ The Twilio Console **Monitor → Logs → Errors** page shows webhook failures (
 Common Twilio issues:
 
 - **HTTP 403 on every call** — empty `twilio_auth_token`, or `TRUSTED_PROXIES` unset behind a reverse proxy.
-- **HTTP 503 Database Upgrade Required** — a destructive database migration is pending after a major upgrade. Contact your server administrator or hosting provider to apply it during a maintenance window. See [Upgrading from Yap 4.x to Yap 5.x](./upgrading-from-yap-4x-to-yap-5x).
+- **HTTP 503 Database Upgrade Required** — a migration that requires operator attention is pending after a major upgrade. Contact your server administrator or hosting provider. See [Upgrading from Yap 4.x to Yap 5.x](./upgrading-from-yap-4x-to-yap-5x).
 - **Silent hang-ups** — check `laravel.log` and Twilio's request inspector for the call SID.
 
 ## Upgrade advisor

@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Tests\FakeHttp;
 
 beforeEach(function () {
@@ -36,9 +35,9 @@ test('get service bodies for admin user', function () {
     $username = 'admin1';
     $password = 'admin1';
     DB::statement("
-                INSERT INTO users (id, name, username, password, permissions, is_admin)
-                VALUES (?, ?, ?, SHA2(?, 256), 0, 1);
-            ", [Str::uuid()->toString(), 'admin', $username, $password]);
+                INSERT INTO users (name, username, password, permissions, is_admin)
+                VALUES ('admin', ?, SHA2(?, 256), 0, 1);
+            ", [$username, $password]);
 
     $result = $this->post(
         '/api/v1/login',
