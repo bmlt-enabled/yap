@@ -21,15 +21,9 @@ import {
     Info as InfoIcon,
     Warning as WarningIcon,
     Error as ErrorIcon,
-    RemoveCircleOutline as SkipIcon,
-    OpenInNew as OpenInNewIcon
 } from "@mui/icons-material";
-import Link from "@mui/material/Link";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import { useLocalization } from "../contexts/LocalizationContext";
+import UpgradeChecksList from "../components/UpgradeChecksList";
 
 function Dashboard() {
     const { getWord } = useLocalization();
@@ -41,21 +35,6 @@ function Dashboard() {
     const [systemStatus, setSystemStatus] = useState('checking');
     const [systemMessage, setSystemMessage] = useState('');
     const [systemChecks, setSystemChecks] = useState([]);
-
-    const getCheckIcon = (status) => {
-        switch (status) {
-            case 'pass':
-                return <CheckIcon color="success" fontSize="small" />;
-            case 'warn':
-                return <WarningIcon color="warning" fontSize="small" />;
-            case 'fail':
-                return <ErrorIcon color="error" fontSize="small" />;
-            case 'skip':
-                return <SkipIcon color="disabled" fontSize="small" />;
-            default:
-                return <InfoIcon color="action" fontSize="small" />;
-        }
-    };
 
     const getUser = async () => {
         apiClient.get('/api/v1/user', {
@@ -258,39 +237,7 @@ function Dashboard() {
                                         )}
                                     </Typography>
                                     {systemChecks.length > 0 && (
-                                        <List dense sx={{ mt: 1, pt: 0 }}>
-                                            {systemChecks.map((check) => (
-                                                <ListItem key={check.id} disableGutters sx={{ alignItems: 'flex-start', py: 0.5 }}>
-                                                    <ListItemIcon sx={{ minWidth: 32, mt: 0.25 }}>
-                                                        {getCheckIcon(check.status)}
-                                                    </ListItemIcon>
-                                                    <ListItemText
-                                                        primary={check.label}
-                                                        secondary={
-                                                            <>
-                                                                {check.message && (
-                                                                    <Typography component="span" variant="body2" color="text.secondary" display="block">
-                                                                        {check.message}
-                                                                    </Typography>
-                                                                )}
-                                                                {check.url && (
-                                                                    <Link
-                                                                        href={check.url}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        variant="body2"
-                                                                        sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}
-                                                                    >
-                                                                        {getWord('open_in_twilio_console') || 'Open in Twilio Console'}
-                                                                        <OpenInNewIcon sx={{ fontSize: 14 }} />
-                                                                    </Link>
-                                                                )}
-                                                            </>
-                                                        }
-                                                    />
-                                                </ListItem>
-                                            ))}
-                                        </List>
+                                        <UpgradeChecksList checks={systemChecks} />
                                     )}
                                 </Box>
                             </Stack>

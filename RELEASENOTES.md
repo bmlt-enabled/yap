@@ -7,7 +7,7 @@
 #### Breaking changes
 
 * **Laravel 10 → 12, PHP 8.2+.** `composer.json` requires `^8.2`; the official Docker image uses PHP 8.5. PHP 8.1 is no longer supported. MySQL 8.0+ (or MariaDB 10.3+) is required.
-* **Destructive UUID migration for `users.id`.** Integer user ids become UUIDs. Run `php artisan yap:preflight` before deploying; run `php artisan migrate` manually for the UUID step after backup. Safe migrations may auto-apply on the first HTTP request.
+* **Destructive UUID migration for `users.id`.** Integer user ids become UUIDs. Confirm upgrade advisor checks pass at `GET /api/v1/upgrade` (or **System Health** in the admin portal) before deploying; schedule the UUID migration with your server administrator after backup. Safe migrations may auto-apply on the first HTTP request.
 * **Twilio signature validation on all inbound webhooks.** Yap 5.0 validates `X-Twilio-Signature` on every Twilio-facing route (full IVR, SMS, voicemail, dialback, status callbacks). Validation fails closed: an empty `twilio_auth_token` or a URL/proxy mismatch causes HTTP 403 on every inbound call. [#1589]
 * **Trusted proxies are opt-in.** `TrustProxies` no longer defaults to `*`. Set `TRUSTED_PROXIES` when behind ngrok, a load balancer, or another reverse proxy so signature validation sees the public URL Twilio signed. [#1589]
 * **Do not use `SESSION_DRIVER=database`.** Yap's `sessions` table stores call PINs, not Laravel sessions.
@@ -18,7 +18,8 @@
 
 #### Features and fixes
 
-* **Upgrade advisor Twilio compliance checks.** `/api/v1/upgrade` and the admin dashboard now validate Twilio account type, US voice geo permissions, Trust Hub profile, A2P SMS brand registration, and toll-free verification — surfacing configuration issues that block volunteer outbound dialing or SMS meeting results before callers get stuck on hold. [#1615]
+* **Upgrade advisor Twilio compliance checks.** `/api/v1/upgrade` and the admin **Dashboard** / **System Health** pages now validate Twilio account type, US voice geo permissions, Trust Hub profile, A2P SMS brand registration, and toll-free verification — surfacing configuration issues that block volunteer outbound dialing or SMS meeting results before callers get stuck on hold. [#1615]
+* **Operator docs and admin UI use upgrade advisor instead of CLI.** Operator-facing documentation and the HTTP 503 migration page no longer instruct running `php artisan` commands. Preflight checks are surfaced on **Dashboard** and the new **System Health** page; `yap:preflight` remains documented for developers in `CONTRIBUTE.md`. [#1617]
 * **Fixed gender routing always dialing MALE volunteers.** A regression in the `$_SESSION` → `session()` rewrite turned the caller's gender selection into a boolean existence check, so on service bodies with `gender_routing_enabled` a caller who pressed 2 to speak to a woman — or 3 to speak to either — was routed to a male volunteer, and fell through to the fallback number or voicemail when no male volunteer was on shift. **`5.0.0-beta1` and `5.0.0-beta2` are affected**; upgrade if you use gender routing. [#1578]
 * **Fixed service-body override settings not seeding at login for database-authenticated admins.** A regression in the `$_SESSION` → `session()` rewrite passed the full service-body rights array to `setConfigForService()` on the V2 auth path instead of the first service-body id, so override settings never landed in the admin session and the settings UI showed global defaults for service-body admins. [#1579]
 * Fixed the WebChat volunteer SMS webhook (`/webchat-sms`) accepting and routing inbound messages even when WebChat was disabled. [#1577]
@@ -28,7 +29,7 @@
 * HTML formatted notifications for voicemail.
 * Added enabled field to volunteer CSV and JSON exports, with download buttons on Volunteers page [#1411]
 * Root service body admins can now access meeting request logs that have no service_body_id assigned [#1399]
-* **Legacy schema catch-up for long-running installs.** Upgrades from pre-Laravel databases automatically add missing columns (including `records_events.type` and `records.type`) on the first request or `php artisan migrate`. Manual `ALTER TABLE` is no longer required. [#1613]
+* **Legacy schema catch-up for long-running installs.** Upgrades from pre-Laravel databases automatically add missing columns (including `records_events.type` and `records.type`) on the first HTTP request. Manual `ALTER TABLE` is no longer required. [#1613]
 
 ### 4.5.0 (July 11, 2025)
 * Added new feature that allow for creating a custom prompt for language selection feature. [#1228]

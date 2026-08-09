@@ -45,6 +45,19 @@ To test building the docs run:
 npm run docusaurus build
 ```
 
+### Preflight checks (developers)
+
+Operators verify configuration through `GET /api/v1/upgrade` or the admin **System Health** page — no shell access required.
+
+For local development and CI, you can run the same blocking checks from the shell:
+
+```shell
+cd src
+php artisan yap:preflight
+```
+
+This exits non-zero when any blocking check fails. It is useful before cutting a release or testing an upgrade against a copy of production data.
+
 ### API Docs (WIP)
 
 This only works locally right now.

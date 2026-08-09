@@ -24,8 +24,8 @@ The image installs `pdo`, `pdo_mysql`, and `mbstring`. Other required extensions
 
 ## Database
 
-Point `config.php` at your MySQL 8.0+ or MariaDB 10.3+ instance. Run `php artisan yap:preflight` and `php artisan migrate` from a shell in the container before sending live Twilio traffic at a 4.x → 5.x upgrade.
+Point `config.php` at your MySQL 8.0+ or MariaDB 10.3+ instance. Before sending live Twilio traffic at a 4.x → 5.x upgrade, open `https://your-yap-host/api/v1/upgrade` (or the admin **System Health** page) to confirm upgrade advisor checks pass. Destructive migrations still require a server administrator with shell access to the container.
 
 ## Upgrading
 
-Follow [Upgrading from Yap 4.x to Yap 5.x](./upgrading-from-yap-4x-to-yap-5x) — back up the database, run preflight, then migrate manually during a maintenance window.
+Follow [Upgrading from Yap 4.x to Yap 5.x](./upgrading-from-yap-4x-to-yap-5x) — back up the database, confirm upgrade advisor checks pass, then schedule the destructive UUID migration with whoever manages your server or container.

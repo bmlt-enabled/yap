@@ -6,7 +6,7 @@ sidebar_position: 2
 
 Yap 5.0 runs on **PHP 8.2 or newer** with **MySQL 8.0+** (or MariaDB 10.3+) and an Apache-based web server with `mod_rewrite` enabled.
 
-Most install problems on shared Linux hosting come from **disabled PHP extensions**, not from missing Yap files. The upgrade advisor and `php artisan yap:preflight` check that required extensions are loaded.
+Most install problems on shared Linux hosting come from **disabled PHP extensions**, not from missing Yap files. The [upgrade advisor](https://yap.bmlt.app/miscellaneous/loggingdebugging#upgrade-advisor) checks that required extensions are loaded.
 
 ## Required PHP extensions
 
@@ -72,29 +72,15 @@ The official Yap Docker image (`docker/Dockerfile`) ships PHP 8.5 with `pdo`, `p
 
 ## Verify your server
 
-From SSH or your host's terminal:
+If your host provides a PHP info page or terminal, you can confirm the PHP version and loaded modules. Look for `fileinfo`, `pdo_mysql`, `curl`, `mbstring`, and `openssl`.
 
-```bash
-php -v
-php -m
+After Yap is deployed, open the upgrade advisor in your browser:
+
+```
+https://your-yap-host/api/v1/upgrade
 ```
 
-Look for `fileinfo`, `pdo_mysql`, `curl`, `mbstring`, and `openssl` in the `php -m` output.
-
-From a browser or curl after Yap is deployed:
-
-```bash
-curl https://your-yap-host/api/v1/upgrade
-```
-
-The `checks` array includes **PHP extensions** — any missing extension is listed with remediation text.
-
-Or run preflight before a 4.x → 5.x upgrade:
-
-```bash
-cd src
-php artisan yap:preflight
-```
+The `checks` array includes **PHP extensions** — any missing extension is listed with remediation text. You can also log in to the admin portal and open **Dashboard** or **System Health** for the same checks.
 
 ## Common errors
 

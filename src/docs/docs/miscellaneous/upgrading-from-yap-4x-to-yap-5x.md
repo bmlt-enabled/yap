@@ -9,10 +9,10 @@ Yap 5.0 is a major release for self-hosted operators. It upgrades Laravel 10 →
 
 ## 1. Back up your database
 
-Take a full MySQL/MariaDB backup **before** you upload the new code or run any migration. `php artisan migrate:rollback` is not a supported recovery path for production:
+Take a full MySQL/MariaDB backup **before** you upload the new code or run any migration. Rolling back the UUID migration is not a supported recovery path for production:
 
 - The UUID migration rewrites every row in `users` and changes the primary key type.
-- If anything goes wrong mid-migration, restore from **your** backup — not from `migrate:rollback`.
+- If anything goes wrong mid-migration, restore from **your** backup.
 - The migration creates a `users_pre_uuid_backup` table during `up()` as an emergency artifact, but you should not treat that as your upgrade rollback plan.
 
 ## 2. Migrations and the first HTTP request
@@ -22,13 +22,13 @@ Yap runs database migrations from the web middleware on incoming requests (see `
 | Migration type | Behavior on first HTTP request |
 |---|---|
 | **Safe** (schema additions, indexes, new tables) | Applied automatically on the first request that reaches the new code. |
-| **Destructive** (UUID conversion of `users.id`) | **Blocked.** Every web request returns HTTP 503 with a "Database Upgrade Required" page until you run `php artisan migrate` manually from a shell. |
+| **Destructive** (UUID conversion of `users.id`) | **Blocked.** Every web request returns HTTP 503 with a "Database Upgrade Required" page until a server administrator applies the migration from a shell. |
 
 **Take the site down or block traffic** until you have:
 
 1. A verified database backup.
-2. Run `php artisan yap:preflight` successfully (see below).
-3. A maintenance window to run `php artisan migrate` when you are ready for the UUID conversion.
+2. Upgrade advisor checks passing (see section 3).
+3. A maintenance window scheduled with your server administrator or hosting provider for the UUID conversion.
 
 Do not let Twilio webhooks or operators hit the new folder until you are prepared. Even "safe" auto-migrations modify your database on the first request.
 
@@ -36,23 +36,27 @@ Do not let Twilio webhooks or operators hit the new folder until you are prepare
 
 1. Create a new folder with the Yap 5.0 code.
 2. Copy `config.php` from your 4.5.x install.
-3. Run preflight (step 3 below).
-4. Point your web server at the new folder **only after** preflight passes.
-5. Run `cd src && php artisan migrate` to apply the UUID migration.
-6. Confirm with `GET /api/v1/upgrade`.
+3. Run upgrade advisor checks (section 3 below).
+4. Point your web server at the new folder **only after** upgrade advisor checks pass.
+5. Ask your server administrator to apply the destructive UUID migration during your maintenance window.
+6. Confirm with `GET /api/v1/upgrade` or the admin **System Health** page.
 
 See also [Upgrading](./upgrading.md) for the step-by-step checklist.
 
-## 3. Run `php artisan yap:preflight` before deploying
+## 3. Run upgrade advisor checks before deploying
 
 From the **new** Yap 5.0 folder, with your existing `config.php` pointing at your production database:
 
-```bash
-cd src
-php artisan yap:preflight
+1. Point a staging URL or temporary vhost at the new folder so you can reach it over HTTPS without live Twilio traffic.
+2. Open the upgrade advisor in your browser:
+
+```
+https://your-staging-host/api/v1/upgrade
 ```
 
-Preflight validates your environment and database **without serving web traffic**. It exits with a non-zero status when any blocking check fails and prints remediation guidance for each one.
+Or log in to `/admin` and open **Dashboard** or **System Health**.
+
+The upgrade advisor validates your environment and database over HTTP. It lists each check with status `pass`, `warn`, `fail`, or `skip`, plus remediation text for failures.
 
 | Check | Blocking? | What it means |
 |---|---|---|
@@ -69,7 +73,7 @@ Preflight validates your environment and database **without serving web traffic*
 | **Empty usernames** | FAIL | One or more `users` rows have NULL or empty `username`. |
 | **Users table schema** | FAIL | `users.id` lacks a primary key, or `users.username` lacks a unique index. |
 
-Fix every `[FAIL]` before continuing. After deploy, `GET /api/v1/upgrade` returns the same `checks` array plus root-server, Google Maps, Twilio webhook, and Twilio compliance validations (US voice geo permissions, Trust Hub, A2P SMS registration, toll-free verification).
+Fix every `fail` result before continuing. After deploy, `GET /api/v1/upgrade` and the admin **System Health** page return the same `checks` array plus root-server, Google Maps, Twilio webhook, and Twilio compliance validations (US voice geo permissions, Trust Hub, A2P SMS registration, toll-free verification).
 
 ## 4. `twilio_auth_token` is now required
 
@@ -81,7 +85,7 @@ Yap 4.5.x did **not** validate Twilio request signatures. Yap 5.0 validates `X-T
 - A missing or invalid signature → HTTP **403**.
 - A URL mismatch (proxy/host/scheme) → HTTP **403** (same total outage).
 
-Set `twilio_auth_token` in `config.php` to the Auth Token for the Twilio account that owns your phone numbers. Run preflight to confirm it is present before you deploy.
+Set `twilio_auth_token` in `config.php` to the Auth Token for the Twilio account that owns your phone numbers. Confirm it is present in the upgrade advisor before you deploy.
 
 ### Reverse proxies and `TRUSTED_PROXIES`
 
@@ -111,7 +115,7 @@ Helplines that resolve the service body later in the IVR (without `override_serv
 
 The migration `2025_01_01_163927_convert_id_to_guid_in_users_table` replaces integer `users.id` values with UUIDs. Any external reporting script, BI export, or custom integration that joins on the integer id **breaks** after upgrade.
 
-- Preflight checks for duplicate and empty usernames before the migration runs.
+- Upgrade advisor checks for duplicate and empty usernames before the migration runs.
 - Sanctum API tokens reference `tokenable_id` as a UUID after upgrade.
 - If you store Yap user ids anywhere outside Yap, plan to re-map them or switch to username as the stable key.
 
@@ -122,7 +126,7 @@ Laravel's `config/session.php` defaults to the `file` driver, which masks a nami
 - Laravel expects a `sessions` table for `SESSION_DRIVER=database`.
 - Yap's `sessions` table stores **call PINs** (`callsid`, `timestamp`, `pin`) for dialback — not Laravel admin sessions.
 
-If you set `SESSION_DRIVER=database`, Laravel will read and write the wrong table. Use `file` (default), `redis`, or another driver. Preflight fails if `SESSION_DRIVER=database`.
+If you set `SESSION_DRIVER=database`, Laravel will read and write the wrong table. Use `file` (default), `redis`, or another driver. Upgrade advisor fails if `SESSION_DRIVER=database`.
 
 ## 7. Removed and moved routes
 
@@ -180,7 +184,7 @@ Yap 5.0 serves the admin portal as a single-page application at `/admin` (and su
 - Their routes are **not registered** — every WebChat/WebRTC endpoint returns **404**.
 - Do not enable them on a production helpline in 5.0.0; they ship without test coverage and behavior may change.
 
-If you toggle either setting and have run `php artisan route:cache`, run `php artisan route:clear` for the change to take effect.
+On typical shared-hosting deployments, route changes take effect on the next request. If your server administrator uses Laravel route caching, they must clear the route cache after toggling these settings.
 
 ## 12. Custom extensions: volunteer data shape change
 
@@ -207,8 +211,12 @@ Beta releases did not document these breaking changes. See [RELEASENOTES.md](htt
 
 ## After upgrading
 
-```bash
-curl https://your-yap-host/api/v1/upgrade
+Open the upgrade advisor:
+
+```
+https://your-yap-host/api/v1/upgrade
 ```
 
-Confirm all preflight checks pass, Twilio webhooks validate, and the admin UI loads. Place a test call through your full IVR path (including gender routing, if enabled) before reopening traffic.
+Or review **System Health** in the admin portal after login.
+
+Confirm all upgrade advisor checks pass, Twilio webhooks validate, and the admin UI loads. Place a test call through your full IVR path (including gender routing, if enabled) before reopening traffic.

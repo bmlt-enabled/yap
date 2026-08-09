@@ -8,6 +8,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import Diversity1Icon from '@mui/icons-material/Diversity1';
+import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import {
     createBrowserRouter,
     Outlet, RouterProvider,
@@ -18,6 +19,7 @@ import Layout from "../layouts/Layout"
 import ServiceBodies from "../pages/ServiceBodies";
 import Schedules from "../pages/Schedules";
 import Dashboard from "../pages/Dashboard";
+import SystemHealth from "../pages/SystemHealth";
 import Reports from "../pages/Reports";
 import Volunteers from "../pages/Volunteers";
 import Groups from "../pages/Groups";
@@ -47,6 +49,11 @@ function AppContent({ session, authentication, router, showPasswordDialog, setSh
             segment: 'dashboard',
             title: getWord('dashboard') || 'Dashboard',
             icon: <DashboardIcon />
+        },
+        {
+            segment: 'systemHealth',
+            title: getWord('system_health') || 'System Health',
+            icon: <HealthAndSafetyIcon />
         },
         {
             segment: 'reports',
@@ -179,6 +186,10 @@ if (document.getElementById('root')) {
                         {
                             path: 'dashboard',
                             Component: Dashboard,
+                        },
+                        {
+                            path: 'systemHealth',
+                            Component: SystemHealth,
                         },
                         {
                             path: 'reports',
