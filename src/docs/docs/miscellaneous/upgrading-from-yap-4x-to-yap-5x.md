@@ -11,8 +11,6 @@ Yap 5.0 is a major release for self-hosted operators. It upgrades Laravel 10 →
 
 Take a full MySQL/MariaDB backup **before** you upload the new code or run any migration. If anything goes wrong, restore from **your** backup.
 
-**5.0.0-beta note:** Early betas included a destructive UUID migration for `users.id`. If you upgraded a beta and ran that migration, restore from your pre-beta backup before installing the final 5.0.0 release. Final 5.0.0 keeps integer user ids (same as 4.5.x).
-
 ## 2. Migrations and the first HTTP request
 
 Yap runs database migrations from the web middleware on incoming requests (see `DatabaseMigrations` middleware). Schema additions, indexes, and new tables are applied automatically on the first request that reaches the new code.
@@ -55,14 +53,14 @@ The upgrade advisor validates your environment and database over HTTP. It lists 
 | **Twilio auth token** | FAIL | `twilio_auth_token` is missing or empty. Every inbound Twilio webhook will return HTTP 403 in 5.0 (see section 4). |
 | **Twilio signature bypass** | WARN | `TWILIO_DISABLE_SIGNATURE_VALIDATION` is enabled outside production. Do not use this on a live helpline. |
 | **Trusted proxies** | WARN | `TRUSTED_PROXIES` is unset. Fine for direct connections; required behind a reverse proxy (see section 4). |
-| **Session driver** | FAIL | `SESSION_DRIVER=database`. Conflicts with Yap's call-PIN `sessions` table (see section 6). |
+| **Session driver** | FAIL | `SESSION_DRIVER=database`. Conflicts with Yap's call-PIN `sessions` table (see section 5). |
 | **APP_ENV** | WARN | Not exactly `production`. Several security guards only apply strict behavior when `APP_ENV=production`. |
 | **PHP version** | FAIL / WARN | FAIL below PHP 8.2. WARN if below PHP 8.5 (official Docker image target). |
 | **Database connection** | FAIL | Cannot connect with your `config.php` MySQL settings. |
 | **MySQL version** | FAIL | Below MySQL 8.0 or MariaDB 10.3 (Laravel 12 requirement). |
 | **Duplicate usernames** | FAIL | Two or more `users` rows share a username. Resolve duplicates — usernames are the stable key for local admin accounts. |
 | **Empty usernames** | FAIL | One or more `users` rows have NULL or empty `username`. |
-| **Users table schema** | FAIL | `users.id` lacks a primary key, or `users.username` lacks a unique index. |
+| **Users table schema** | FAIL | The `users` table lacks a primary key, or `username` lacks a unique index. |
 
 Fix every `fail` result before continuing. After deploy, `GET /api/v1/upgrade` and the admin **System Health** page return the same `checks` array plus root-server, Google Maps, Twilio webhook, and Twilio compliance validations (US voice geo permissions, Trust Hub, A2P SMS registration, toll-free verification).
 
@@ -102,13 +100,7 @@ Helplines that resolve the service body later in the IVR (without `override_serv
 
 `TWILIO_DISABLE_SIGNATURE_VALIDATION=true` bypasses validation **only outside production**. Do not enable it on a live helpline.
 
-## 5. `users.id` stays an integer
-
-Yap 5.0 keeps the same integer auto-increment `users.id` primary key as 4.5.x. Sanctum API tokens reference that integer in `personal_access_tokens.tokenable_id`. **Usernames** are the stable identifier for local admin accounts in the UI and API — not numeric ids.
-
-If you store Yap user ids anywhere outside Yap, they continue to work after upgrade. If you upgraded a **5.0.0-beta** that ran the removed UUID migration, restore from your pre-beta backup before installing final 5.0.0.
-
-## 6. Do not set `SESSION_DRIVER=database`
+## 5. Do not set `SESSION_DRIVER=database`
 
 Laravel's `config/session.php` defaults to the `file` driver, which masks a naming collision:
 
@@ -117,7 +109,7 @@ Laravel's `config/session.php` defaults to the `file` driver, which masks a nami
 
 If you set `SESSION_DRIVER=database`, Laravel will read and write the wrong table. Use `file` (default), `redis`, or another driver. Upgrade advisor fails if `SESSION_DRIVER=database`.
 
-## 7. Removed and moved routes
+## 6. Removed and moved routes
 
 Update bookmarks, monitoring probes, and automation that hit legacy URLs.
 
@@ -125,7 +117,7 @@ Update bookmarks, monitoring probes, and automation that hit legacy URLs.
 |---|---|
 | `/callWidget` | **Removed** |
 | `/v1/session/delete` | **Removed** |
-| `/admin/auth/rights` | **Removed** (admin auth is API-driven; see section 8) |
+| `/admin/auth/rights` | **Removed** (admin auth is API-driven; see section 7) |
 | `/admin/auth/logout` | **Removed** |
 | `/admin/auth/timeout` | **Removed** |
 | `/admin/auth/invalid` | **Removed** |
@@ -136,7 +128,7 @@ Update bookmarks, monitoring probes, and automation that hit legacy URLs.
 
 Twilio call-flow `.php` endpoints (`/index.php`, `/helpline-search.php`, etc.) are unchanged.
 
-## 8. Auth is Sanctum now
+## 7. Auth is Sanctum now
 
 The custom `AdminAuthenticator` and session-cookie admin API from 4.5.x are gone. The admin React SPA and any scripted admin access must authenticate through the REST API:
 
@@ -146,7 +138,7 @@ The custom `AdminAuthenticator` and session-cookie admin API from 4.5.x are gone
 
 BMLT-based and database-local admin accounts both flow through this endpoint. Session cookies still back the browser UI, but API clients must use Sanctum tokens.
 
-## 9. PHP and Laravel requirements
+## 8. PHP and Laravel requirements
 
 | Component | Requirement |
 |---|---|
@@ -156,7 +148,7 @@ BMLT-based and database-local admin accounts both flow through this endpoint. Se
 
 PHP 8.1 is no longer supported. If you run the official Docker image, you get PHP 8.5 on Apache. Bare-metal and shared-hosting installs must provide PHP 8.2+ with all [required PHP extensions](https://yap.bmlt.app/general/php-requirements) enabled — especially `pdo_mysql` and `fileinfo` (a missing `fileinfo` extension causes `Class 'finfo' not found`).
 
-## 10. The admin UI is a React SPA
+## 9. The admin UI is a React SPA
 
 Yap 5.0 serves the admin portal as a single-page application at `/admin` (and sub-paths). The legacy server-rendered admin pages are gone.
 
@@ -166,7 +158,7 @@ Yap 5.0 serves the admin portal as a single-page application at `/admin` (and su
 
 **Content-Security-Policy:** If your reverse proxy or web server injects a strict CSP, ensure it allows the compiled JS bundle, inline bootstrapping in `admin.blade.php`, and API calls to your own origin. A CSP that blocks inline scripts or `eval` may prevent the admin UI from loading.
 
-## 11. WebChat and WebRTC are experimental and default off
+## 10. WebChat and WebRTC are experimental and default off
 
 `webchat_enabled` and `webrtc_enabled` default to `false` in 5.0.0. While disabled:
 
@@ -175,7 +167,7 @@ Yap 5.0 serves the admin portal as a single-page application at `/admin` (and su
 
 On typical shared-hosting deployments, route changes take effect on the next request. If your server administrator uses Laravel route caching, they must clear the route cache after toggling these settings.
 
-## 12. Custom extensions: volunteer data shape change
+## 11. Custom extensions: volunteer data shape change
 
 In 4.5.x, `ConfigData::getVolunteers()`, `getVolunteersRecursively()`, and `getGroupVolunteers()` returned rows whose `data` field was a **raw JSON string** with base64-encoded shift schedules inside.
 
@@ -185,18 +177,6 @@ In 5.0.0, these methods return **decoded** objects:
 - Each volunteer's `volunteer_shift_schedule` is base64-decoded and expanded to an array of shift objects (with `day_name` populated).
 
 Custom extensions or external scripts that read volunteer config directly from the database or these APIs must expect decoded objects, not raw JSON strings.
-
-## 13. Known regressions fixed in 5.0.0
-
-If you ran **`5.0.0-beta1`** or **`5.0.0-beta2`**, upgrade to the final 5.0.0 release. Those betas shipped with regressions that are fixed in 5.0.0:
-
-| Issue | Symptom | Fixed in |
-|---|---|---|
-| **Gender routing** [#1578] | On service bodies with `gender_routing_enabled`, a caller who pressed 2 (woman) or 3 (either) was routed to a **male** volunteer due to a `session()` rewrite bug. Callers often fell through to fallback or voicemail. | 5.0.0 |
-| **Service-body override settings at login** [#1579] | Database-authenticated service-body admins saw global defaults in the settings UI because override config never seeded into the admin session. | 5.0.0 |
-| **WebChat SMS when disabled** [#1577] | `/webchat-sms` accepted inbound messages even when WebChat was disabled. | 5.0.0 |
-
-Beta releases did not document these breaking changes. See [RELEASENOTES.md](https://github.com/bmlt-enabled/yap/blob/main/RELEASENOTES.md) for the full 5.0.0 changelog.
 
 ## After upgrading
 

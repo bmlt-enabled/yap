@@ -15,7 +15,7 @@ Tracking document for [issue #1590](https://github.com/bmlt-enabled/yap/issues/1
 | 3 | [#1581](https://github.com/bmlt-enabled/yap/issues/1581) — `FakeTwilioAccount` + `CallScenario` | Done | `src/tests/Fakes/FakeTwilioAccount.php`, `src/tests/CallScenario.php` |
 | 3 | [#1582](https://github.com/bmlt-enabled/yap/issues/1582) — scenario breadth | Done | `src/tests/Feature/Scenarios/ScenarioBreadthTest.php` |
 | 3 | [#1583](https://github.com/bmlt-enabled/yap/issues/1583) — hermetic suite | Done | `src/tests/Fixtures/http/`, `FakeHttp` |
-| 4 | [#1584](https://github.com/bmlt-enabled/yap/issues/1584) — stop auto-migrate landmine | Done | `DatabaseMigrations` middleware gated; `UuidMigrationTest` |
+| 4 | [#1584](https://github.com/bmlt-enabled/yap/issues/1584) — stop auto-migrate landmine | Done | `DatabaseMigrations` middleware gated |
 | 4 | [#1585](https://github.com/bmlt-enabled/yap/issues/1585) — `yap:preflight` | Done | `src/app/Console/Commands/PreflightCommand.php` |
 | 4 | [#1586](https://github.com/bmlt-enabled/yap/issues/1586) — upgrade guide + release notes | Done | `src/docs/docs/miscellaneous/upgrading-from-yap-4x-to-yap-5x.md`, `RELEASENOTES.md` |
 | 4 | [#1587](https://github.com/bmlt-enabled/yap/issues/1587) — session rewrite audit | Done | `docs/session-rewrite-audit.md` |
@@ -51,7 +51,7 @@ Record the drill date, database snapshot source, and operator in the release iss
 
 Full audit: [`docs/audit-5.0.0-docs-and-cleanup.md`](audit-5.0.0-docs-and-cleanup.md). Tracked in [#1611](https://github.com/bmlt-enabled/yap/issues/1611).
 
-**Critical (5.0.0 tag companion):** dead `/info` route (500), `Users.js` dead auth endpoint, Settings cache clear without bearer token, missing `.env.example`, `upgrading.md` UUID migration contradiction.
+**Critical (5.0.0 tag companion):** dead `/info` route (500), `Users.js` dead auth endpoint, Settings cache clear without bearer token, missing `.env.example` — tracked in [#1611](https://github.com/bmlt-enabled/yap/issues/1611) / [#1612](https://github.com/bmlt-enabled/yap/pull/1612).
 
 **Important (5.0.x):** stale MySQL version on docs homepage, wiki URLs in app code, ~30 settings without doc links, thin operator guides (reports, volunteer routing, Docker).
 
