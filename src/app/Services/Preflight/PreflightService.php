@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Schema;
 class PreflightService
 {
     private const PHP_MIN_VERSION = '8.2.0';
-    private const PHP_DOCKER_VERSION = '8.5.0';
     private const MYSQL_MIN_VERSION = '8.0.0';
     private const MARIADB_MIN_VERSION = '10.3.0';
 
@@ -231,11 +230,10 @@ class PreflightService
             );
         }
 
-        return PreflightCheck::warn(
+        return PreflightCheck::pass(
             'trusted_proxies',
             'Trusted proxies',
-            'TRUSTED_PROXIES is not set (default).',
-            'Direct connections need no proxy trust. If Yap sits behind ngrok, a load balancer, or another reverse proxy, set TRUSTED_PROXIES=* or a comma-separated list of proxy IPs so Twilio signature validation sees the public URL Twilio signed.',
+            'TRUSTED_PROXIES is not set — not required for direct Apache/nginx→PHP connections.',
         );
     }
 
@@ -321,19 +319,10 @@ class PreflightService
             );
         }
 
-        if (version_compare($current, self::PHP_DOCKER_VERSION, '<')) {
-            return PreflightCheck::warn(
-                'php_version',
-                'PHP version',
-                sprintf('PHP %s meets the minimum (%s) but the official Docker image uses PHP %s.', $current, self::PHP_MIN_VERSION, self::PHP_DOCKER_VERSION),
-                sprintf('Consider upgrading to PHP %s to match the supported docker/Dockerfile image.', self::PHP_DOCKER_VERSION),
-            );
-        }
-
         return PreflightCheck::pass(
             'php_version',
             'PHP version',
-            sprintf('PHP %s meets the minimum (%s) and matches the Docker image target.', $current, self::PHP_MIN_VERSION),
+            sprintf('PHP %s meets the minimum requirement (%s).', $current, self::PHP_MIN_VERSION),
         );
     }
 

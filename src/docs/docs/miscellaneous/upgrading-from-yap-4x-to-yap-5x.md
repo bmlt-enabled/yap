@@ -45,7 +45,7 @@ From the **new** Yap 5.0 folder, with your existing `config.php` pointing at you
 https://your-staging-host/api/v1/upgrade
 ```
 
-Or log in to `/admin` and open **Dashboard** or **System Health**.
+Or log in to `/admin` and open **System Health** (the **Dashboard** shows a summary only).
 
 The upgrade advisor validates your environment and database over HTTP. It lists each check with status `pass`, `warn`, `fail`, or `skip`, plus remediation text for failures.
 
@@ -54,10 +54,10 @@ The upgrade advisor validates your environment and database over HTTP. It lists 
 | **Required settings** | FAIL | A value from `minimalRequiredSettings()` is missing or empty in `config.php`. Set each required key before upgrading. |
 | **Twilio auth token** | FAIL | `twilio_auth_token` is missing or empty. Every inbound Twilio webhook will return HTTP 403 in 5.0 (see section 4). |
 | **Twilio signature bypass** | WARN | `TWILIO_DISABLE_SIGNATURE_VALIDATION` is enabled outside production. Do not use this on a live helpline. |
-| **Trusted proxies** | WARN | `TRUSTED_PROXIES` is unset. Fine for direct connections; required behind a reverse proxy (see section 4). |
+| **Trusted proxies** | — | `TRUSTED_PROXIES` unset is fine for direct connections; required behind a reverse proxy (see section 4). |
 | **Session driver** | FAIL | `SESSION_DRIVER=database`. Conflicts with Yap's call-PIN `sessions` table (see section 6). |
 | **APP_ENV** | WARN | Not exactly `production`. Several security guards only apply strict behavior when `APP_ENV=production`. |
-| **PHP version** | FAIL / WARN | FAIL below PHP 8.2. WARN if below PHP 8.5 (official Docker image target). |
+| **PHP version** | FAIL | FAIL below PHP 8.2 (composer.json minimum). |
 | **Database connection** | FAIL | Cannot connect with your `config.php` MySQL settings. |
 | **MySQL version** | FAIL | Below MySQL 8.0 or MariaDB 10.3 (Laravel 12 requirement). |
 | **Duplicate usernames** | FAIL | Two or more `users` rows share a username. Resolve duplicates — usernames are the stable key for local admin accounts. |
