@@ -21,9 +21,10 @@ import {
     Info as InfoIcon,
     Warning as WarningIcon,
     Error as ErrorIcon,
+    HealthAndSafety as HealthAndSafetyIcon,
 } from "@mui/icons-material";
+import { Link as RouterLink } from "react-router-dom";
 import { useLocalization } from "../contexts/LocalizationContext";
-import UpgradeChecksList from "../components/UpgradeChecksList";
 
 function Dashboard() {
     const { getWord } = useLocalization();
@@ -34,7 +35,6 @@ function Dashboard() {
     const [latestVersion, setLatestVersion] = useState('');
     const [systemStatus, setSystemStatus] = useState('checking');
     const [systemMessage, setSystemMessage] = useState('');
-    const [systemChecks, setSystemChecks] = useState([]);
 
     const getUser = async () => {
         apiClient.get('/api/v1/user', {
@@ -79,8 +79,6 @@ function Dashboard() {
             const response = await apiClient.get('/api/v1/upgrade');
             if (response.data) {
                 const checks = Array.isArray(response.data.checks) ? response.data.checks : [];
-                setSystemChecks(checks);
-
                 const hasFail = checks.some((check) => check.status === 'fail');
                 const hasWarn = checks.some((check) => check.status === 'warn');
 
@@ -99,7 +97,6 @@ function Dashboard() {
             console.error('Error fetching upgrade advisor status:', error);
             setSystemStatus('error');
             setSystemMessage('');
-            setSystemChecks([]);
         }
     };
 
@@ -236,9 +233,16 @@ function Dashboard() {
                                             ''
                                         )}
                                     </Typography>
-                                    {systemChecks.length > 0 && (
-                                        <UpgradeChecksList checks={systemChecks} />
-                                    )}
+                                    <Button
+                                        component={RouterLink}
+                                        to="/systemHealth"
+                                        variant="outlined"
+                                        size="small"
+                                        startIcon={<HealthAndSafetyIcon />}
+                                        sx={{ mt: 2 }}
+                                    >
+                                        {getWord('view_system_health') || 'View System Health'}
+                                    </Button>
                                 </Box>
                             </Stack>
                         </CardContent>
