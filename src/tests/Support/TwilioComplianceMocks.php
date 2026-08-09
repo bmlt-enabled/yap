@@ -31,7 +31,7 @@ class TwilioComplianceMocks
             $profiles = [$approvedProfile];
         }
         $customerProfilesContext = mock('\Twilio\Rest\Trusthub\V1\CustomerProfilesList');
-        $customerProfilesContext->shouldReceive('read')->andReturn($profiles);
+        $customerProfilesContext->shouldReceive('read')->with([], 20)->andReturn($profiles);
         $twilioClient->trusthub = (object) ['v1' => (object) ['customerProfiles' => $customerProfilesContext]];
 
         $brands = $overrides['brands'] ?? null;
@@ -41,9 +41,15 @@ class TwilioComplianceMocks
             $brands = [$approvedBrand];
         }
         $brandRegistrationsContext = mock('\Twilio\Rest\Messaging\V1\BrandRegistrationsList');
-        $brandRegistrationsContext->shouldReceive('read')->andReturn($brands);
+        if (isset($overrides['brandRegistrationsReadThrows'])) {
+            $brandRegistrationsContext->shouldReceive('read')
+                ->with(20)
+                ->andThrow($overrides['brandRegistrationsReadThrows']);
+        } else {
+            $brandRegistrationsContext->shouldReceive('read')->with(20)->andReturn($brands);
+        }
         $tollfreeVerificationsContext = mock('\Twilio\Rest\Messaging\V1\TollfreeVerificationsList');
-        $tollfreeVerificationsContext->shouldReceive('read')->andReturn($overrides['tollfreeVerifications'] ?? []);
+        $tollfreeVerificationsContext->shouldReceive('read')->with([], 50)->andReturn($overrides['tollfreeVerifications'] ?? []);
         $twilioClient->messaging = (object) [
             'v1' => (object) [
                 'brandRegistrations' => $brandRegistrationsContext,

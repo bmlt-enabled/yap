@@ -145,6 +145,34 @@ test('preflight service reports missing users unique index', function () {
     expect($schemaCheck['remediation'])->toContain('username_unique');
 });
 
+test('preflight service passes php version at composer minimum', function () {
+    $result = app(PreflightService::class)->run();
+    $phpCheck = collect($result['checks'])->firstWhere('id', 'php_version');
+
+    expect($phpCheck['passed'])->toBeTrue();
+    expect($phpCheck['message'])->toContain('meets the minimum requirement');
+});
+
+test('preflight service passes when trusted proxies unset', function () {
+    config(['trustedproxy.proxies' => null]);
+
+    $result = app(PreflightService::class)->run();
+    $proxyCheck = collect($result['checks'])->firstWhere('id', 'trusted_proxies');
+
+    expect($proxyCheck['passed'])->toBeTrue();
+    expect($proxyCheck['message'])->toContain('not required for direct');
+});
+
+test('preflight service passes when trusted proxies configured', function () {
+    config(['trustedproxy.proxies' => '*']);
+
+    $result = app(PreflightService::class)->run();
+    $proxyCheck = collect($result['checks'])->firstWhere('id', 'trusted_proxies');
+
+    expect($proxyCheck['passed'])->toBeTrue();
+    expect($proxyCheck['message'])->toContain('TRUSTED_PROXIES is configured');
+});
+
 test('upgrade endpoint includes preflight checks', function () {
     insertLegacyPreflightUser(40, 'upgrade_check_user');
     setupUpgradeAdvisorMocks();

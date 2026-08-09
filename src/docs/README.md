@@ -27,3 +27,5 @@ This command starts a local development server and opens up a browser window. Mo
 ## Deployment
 
 The website is hosted as a GitHub page and is deployed upon merges to `main`.
+
+Search uses Algolia (`yapdocs` index in `docusaurus.config.js`). After publish, new pages—including upgrade guides—are included in the crawl on the next Algolia reindex tied to the docs deployment. Verify important pages appear in the site search bar after a merge to `main`.

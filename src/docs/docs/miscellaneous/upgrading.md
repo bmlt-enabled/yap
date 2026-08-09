@@ -20,7 +20,7 @@ Schema migrations run automatically on the first HTTP request against the new co
 https://your-staging-host/api/v1/upgrade
 ```
 
-Or log in to the admin portal and open **Dashboard** or **System Health** — both show the same `checks` list from the upgrade advisor.
+Or log in to the admin portal and open **System Health** for the full check list (the **Dashboard** shows a summary only).
 
 The upgrade advisor validates your database and environment over HTTP. It reports blocking issues and remediation guidance for each check.
 
@@ -30,7 +30,7 @@ Upgrade advisor checks include:
 - Duplicate or empty `users.username` values
 - `users` primary key and `username` unique index shape
 - `twilio_auth_token` is present (empty token rejects every IVR call with HTTP 403)
-- `TRUSTED_PROXIES` when behind a reverse proxy (warning when unset)
+- `TRUSTED_PROXIES` when behind a reverse proxy (not required for direct connections)
 - `SESSION_DRIVER` is not `database` (Yap's `sessions` table stores call PINs, not Laravel sessions)
 - Required PHP extensions (`fileinfo`, `pdo_mysql`, `curl`, etc.) — see [PHP requirements](../general/php-requirements)
 - `APP_ENV` value (several guards compare against the exact string `production`)
