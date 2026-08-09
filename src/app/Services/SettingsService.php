@@ -63,7 +63,7 @@ class SettingsService
         'service_body_config_id' => ['description' => '/general/configuration-precedence', 'default' => null, 'overridable' => true, 'hidden' => false],
         'sms_ask' => ['description' => '/meeting-search/post-call-options#making-sms-results-for-voice-calls-optional' , 'default' => false, 'overridable' => true, 'hidden' => false],
         'sms_disable' => ['description' => '/meeting-search/post-call-options#disable-meeting-results-sms' , 'default' => false, 'overridable' => true, 'hidden' => false],
-        'sms_bias_bypass' => ['description' => '' , 'default' => false, 'overridable' => true, 'hidden' => false],
+        'sms_bias_bypass' => ['description' => '/general/sms-bias-bypass' , 'default' => false, 'overridable' => true, 'hidden' => false],
         'sms_blackhole' => ['description' => '/meeting-search/sms-options#blackhole' , 'default' => '', 'overridable' => true, 'hidden' => false],
         'sms_combine' => ['description' => '/meeting-search/sms-options#combine-results' , 'default' => false, 'overridable' => true, 'hidden' => false],
         'sms_dialback_options' => ['description' => '/helpline/dialback' , 'default' => 0, 'overridable' => true, 'hidden' => false],
@@ -90,16 +90,16 @@ class SettingsService
         'twilio_api_key' => ['description' => '', 'default' => '', 'overridable' => false, 'hidden' => true],
         'twilio_api_secret' => ['description' => '', 'default' => '', 'overridable' => false, 'hidden' => true],
         'twilio_twiml_app_sid' => ['description' => '', 'default' => '', 'overridable' => false, 'hidden' => true],
-        'webrtc_allowed_origins' => ['description' => '', 'default' => '*', 'overridable' => false, 'hidden' => false],
-        'webrtc_token_rate_limit' => ['description' => '', 'default' => 5, 'overridable' => false, 'hidden' => false],
-        'webrtc_call_rate_limit' => ['description' => '', 'default' => 3, 'overridable' => false, 'hidden' => false],
+        'webrtc_allowed_origins' => ['description' => '/miscellaneous/experimental-web-widgets', 'default' => '*', 'overridable' => false, 'hidden' => false],
+        'webrtc_token_rate_limit' => ['description' => '/miscellaneous/experimental-web-widgets', 'default' => 5, 'overridable' => false, 'hidden' => false],
+        'webrtc_call_rate_limit' => ['description' => '/miscellaneous/experimental-web-widgets', 'default' => 3, 'overridable' => false, 'hidden' => false],
         'webchat_enabled' => ['description' => '/miscellaneous/experimental-web-widgets', 'default' => false, 'overridable' => false, 'hidden' => false],
-        'webchat_timeout_minutes' => ['description' => '', 'default' => 30, 'overridable' => false, 'hidden' => false],
-        'webchat_meeting_search_enabled' => ['description' => '', 'default' => true, 'overridable' => false, 'hidden' => false],
-        'webchat_no_coverage_message' => ['description' => '', 'default' => 'Sorry, there is no coverage for your location.', 'overridable' => true, 'hidden' => false],
-        'webchat_no_volunteers_message' => ['description' => '', 'default' => 'Sorry, no volunteers are available at this time. Please try again later.', 'overridable' => true, 'hidden' => false],
-        'webchat_volunteer_sms_prefix' => ['description' => '', 'default' => 'New web chat request', 'overridable' => true, 'hidden' => false],
-        'webchat_rate_limit' => ['description' => '', 'default' => 10, 'overridable' => false, 'hidden' => false]
+        'webchat_timeout_minutes' => ['description' => '/miscellaneous/experimental-web-widgets', 'default' => 30, 'overridable' => false, 'hidden' => false],
+        'webchat_meeting_search_enabled' => ['description' => '/miscellaneous/experimental-web-widgets', 'default' => true, 'overridable' => false, 'hidden' => false],
+        'webchat_no_coverage_message' => ['description' => '/miscellaneous/experimental-web-widgets', 'default' => 'Sorry, there is no coverage for your location.', 'overridable' => true, 'hidden' => false],
+        'webchat_no_volunteers_message' => ['description' => '/miscellaneous/experimental-web-widgets', 'default' => 'Sorry, no volunteers are available at this time. Please try again later.', 'overridable' => true, 'hidden' => false],
+        'webchat_volunteer_sms_prefix' => ['description' => '/miscellaneous/experimental-web-widgets', 'default' => 'New web chat request', 'overridable' => true, 'hidden' => false],
+        'webchat_rate_limit' => ['description' => '/miscellaneous/experimental-web-widgets', 'default' => 10, 'overridable' => false, 'hidden' => false]
     ];
 
     public static array $dateCalculationsMap =

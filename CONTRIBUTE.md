@@ -34,6 +34,8 @@ Use `$this->withoutExceptionHandling()` in your test classes to see the underlyi
 
 ### Docs
 
+Operator and developer documentation is published at [https://yap.bmlt.app](https://yap.bmlt.app). Editable pages live under `src/docs/docs/`; the lightweight [Contribute](https://yap.bmlt.app/miscellaneous/contribute/) page on the docs site covers ngrok-based Twilio testing.
+
 1. Go to `cd src/docs`
 2. Run `npm run start`
 

@@ -26,22 +26,25 @@ static $twilio_auth_token = "";
 6) Go to **Volunteers**, select your service body, and add volunteers with phone numbers and shift windows.
 7) Click **Enable** on each volunteer card, then **Save Volunteers**.
 8) Drag and drop volunteer cards to set dial order.
-9) Go to **Schedules** to preview the calendar for your service body.
-10) Place a test call to confirm routing.
+9) Use **Include Group** to add a [volunteer group](./volunteer-groups) card instead of duplicating members.
+10) Go to **Schedules** to preview the calendar for your service body.
+11) Place a test call to confirm routing.
 
 ## Call strategies
 
-Configure these under **Service Bodies → Configure → Call Handling**:
+Configure call strategies under **Service Bodies → Configure → Call Handling**. See [Call strategies](./call-strategies) for full detail on blasting, cycling, timeouts, and voicemail fallback.
 
-| Strategy | Behavior |
+| Strategy (summary) | Behavior |
 |---|---|
-| **Linear cycle** | Dial volunteers in order; try the next on no-answer until the list is exhausted. |
-| **Blasting** | Ring multiple volunteers at once; first to answer wins. |
-| **Random loop** | Shuffle order each cycle, then fall through to voicemail. |
-| **Responder** | Route to a single designated responder number. |
-| **Groups** | Dial members of a volunteer group (configure groups on the **Groups** tab). |
+| **Linear cycle** | Dial in order; linear strategies loop or stop at voicemail per setting. |
+| **Blasting** | Ring all active volunteers; first answer wins; may fall through to voicemail. |
+| **Random** | Random order each attempt or one shuffled pass, per setting. |
 
-Most strategies support a fallback to voicemail when no volunteer answers within the configured **Call Timeout**.
+[Volunteer groups](./volunteer-groups) expand to their on-shift members when a GROUP card is enabled on the list.
+
+## Volunteer responder
+
+**Responder** is a per-volunteer checkbox (not a call strategy). It marks who receives voicemail SMS links and similar notifications. See [Volunteer responder](./volunteer-responder).
 
 ## Redirect and overrides
 
@@ -49,4 +52,4 @@ Most strategies support a fallback to voicemail when no volunteer answers within
 * **Forced Caller Id**: Changes the outgoing display caller ID for volunteer outdials.
 * **Call Timeout**: Seconds before trying the next number (or next strategy step).
 
-See also [checking call routing](./checking-call-routing) and [helpline call routing](./helpline-call-routing).
+See also [checking call routing](./checking-call-routing), [helpline call routing](./helpline-call-routing), and the video [Call Blasting and other Call Strategies Explained](../videos/call-blasting-and-other-call-strategies-explained).
