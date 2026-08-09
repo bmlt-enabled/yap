@@ -146,6 +146,8 @@ The custom `AdminAuthenticator` and session-cookie admin API from 4.5.x are gone
 
 BMLT-based and database-local admin accounts both flow through this endpoint. Session cookies still back the browser UI, but API clients must use Sanctum tokens.
 
+For scripted access, token logout, and examples, see [Sanctum API access](./sanctum-api-access).
+
 ## 9. PHP and Laravel requirements
 
 | Component | Requirement |

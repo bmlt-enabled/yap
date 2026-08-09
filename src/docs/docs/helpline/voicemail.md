@@ -10,7 +10,7 @@ Recordings are now available in the admin portal under "Service Bodies > Call Re
 
 ### Voicemail Notifications to SMS
 
-You can set up any volunteer to receive voicemail notifications.  Within the volunteer setting, set the dropdown Responder to "Enabled".
+You can set up any volunteer to receive voicemail notifications. Enable the **Responder** checkbox on the volunteer card. See [Volunteer responder](./volunteer-responder) for details.
 
 If you specify a Primary Contact Number, it will SMS a link to the recording that person when a voicemail is left.  You can also comma separate the values if you want it to go to more than one person.
 
