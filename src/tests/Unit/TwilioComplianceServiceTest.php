@@ -109,3 +109,17 @@ test('twilio compliance warns on unverified toll-free numbers', function () {
     expect($tollFreeCheck->status)->toBe('warn');
     expect($tollFreeCheck->message)->toContain('+18885551212');
 });
+
+test('twilio compliance skips a2p brand check when read throws type error', function () {
+    $client = mockTwilioComplianceClient([
+        'brandRegistrationsReadThrows' => new \TypeError(
+            'Twilio\\Rest\\Messaging\\V1\\BrandRegistrationList::read(): Argument #1 ($limit) must be of type ?int, array given',
+        ),
+    ]);
+
+    $checks = $this->complianceService->run($client, $this->settings);
+    $brandCheck = collect($checks)->firstWhere('id', 'sms_a2p_brand');
+
+    expect($brandCheck->status)->toBe('skip');
+    expect($brandCheck->message)->toContain('Unable to verify A2P brand registration');
+});

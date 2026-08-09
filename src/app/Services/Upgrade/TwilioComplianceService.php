@@ -134,7 +134,7 @@ class TwilioComplianceService
         }
 
         try {
-            $brands = $client->messaging->v1->brandRegistrations->read([], 20);
+            $brands = $client->messaging->v1->brandRegistrations->read(20);
 
             foreach ($brands as $brand) {
                 if (strcasecmp((string) $brand->status, 'APPROVED') === 0) {
@@ -153,6 +153,12 @@ class TwilioComplianceService
                 self::A2P_CONSOLE_URL,
             );
         } catch (RestException $e) {
+            return UpgradeCheck::skip(
+                'sms_a2p_brand',
+                'SMS registration',
+                'Unable to verify A2P brand registration: ' . $e->getMessage(),
+            );
+        } catch (\Throwable $e) {
             return UpgradeCheck::skip(
                 'sms_a2p_brand',
                 'SMS registration',
