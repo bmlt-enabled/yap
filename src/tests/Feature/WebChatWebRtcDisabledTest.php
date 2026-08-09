@@ -108,6 +108,7 @@ test('featureEnabledAtBoot reports the flags as off and fails closed on an unkno
 
 test('webchat and webrtc settings do not advertise documentation pages that do not exist', function () {
     $allowlist = (new SettingsService())->allowlist();
+    $docsRoot = base_path('docs/docs');
 
     $widgetSettings = collect($allowlist)
         ->filter(fn($_, $name) => str_starts_with($name, 'webchat_')
@@ -118,7 +119,13 @@ test('webchat and webrtc settings do not advertise documentation pages that do n
     expect($widgetSettings)->not->toBeEmpty();
 
     foreach ($widgetSettings as $name => $definition) {
-        expect($definition['description'] ?? '')
-            ->toBe('', "Setting '{$name}' links to documentation that has not been written yet");
+        $description = $definition['description'] ?? '';
+        if ($description === '') {
+            continue;
+        }
+
+        $docPath = $docsRoot . $description . '.md';
+        expect(file_exists($docPath))
+            ->toBeTrue("Setting '{$name}' links to missing documentation at {$description}");
     }
 });

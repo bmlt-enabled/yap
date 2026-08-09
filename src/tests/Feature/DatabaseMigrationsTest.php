@@ -13,7 +13,7 @@ test('returns maintenance page when destructive migrations are pending', functio
     $response
         ->assertStatus(503)
         ->assertSee('Database Upgrade Required')
-        ->assertSee('php artisan migrate')
+        ->assertSee('server administrator')
         ->assertSee(DB_UUID_MIGRATION);
 });
 

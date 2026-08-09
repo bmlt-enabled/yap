@@ -8,6 +8,8 @@ use App\Services\TwilioService;
 use Tests\FakeHttp;
 use Tests\FakeTwilioHttpClient;
 
+use Tests\Support\TwilioComplianceMocks;
+
 beforeEach(function () {
     FakeHttp::install();
     $fakeHttpClient = new FakeTwilioHttpClient();
@@ -16,6 +18,7 @@ beforeEach(function () {
         "password" => "fake",
         "httpClient" => $fakeHttpClient
     ])->makePartial();
+    TwilioComplianceMocks::apply($this->twilioClient);
     $this->twilioService = mock(TwilioService::class)->makePartial();
 });
 
@@ -139,8 +142,10 @@ test('test with misconfigured phone number', function ($method) {
     $incomingPhoneNumberContext = mock('\Twilio\Rest\Api\V2010\Account\InstanceContext');
     $incomingPhoneNumberInstance= mock('\Twilio\Rest\Api\V2010\Account\IncomingPhoneNumberInstance');
     $incomingPhoneNumberInstance->voiceUrl = "http://localhost:3100/yap/index.php";
+    $incomingPhoneNumberInstance->phoneNumber = "+12125551212";
+    $incomingPhoneNumberInstance->sid = "PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     $incomingPhoneNumberContext->shouldReceive('read')->withNoArgs()
-        ->andReturn([$incomingPhoneNumberInstance])->once();
+        ->andReturn([$incomingPhoneNumberInstance])->zeroOrMoreTimes();
 
     // mocking TwilioRestClient->incomingPhoneNumbers->read();
     $this->twilioService->client()->incomingPhoneNumbers = $incomingPhoneNumberContext;
@@ -155,7 +160,7 @@ test('test with misconfigured phone number', function ($method) {
             [
                 "status"=>true,
                 "message"=>"Ready To Yap!",
-                "warnings"=>sprintf("%s is/are phone numbers that are missing Twilio Call Status Changes Callback status.php webhook. This will not allow call reporting to work correctly.  For more information review the documentation page https://github.com/bmlt-enabled/yap/wiki/Call-Detail-Records.", $misconfiguredNumber),
+                "warnings"=>sprintf("%s is/are phone numbers that are missing Twilio Call Status Changes Callback status.php webhook. This will not allow call reporting to work correctly.  For more information review the documentation page https://yap.bmlt.app/general/reports.", $misconfiguredNumber),
                 "version"=>$settingsService->version(),
                 "build"=>"local"
             ]
@@ -194,8 +199,10 @@ test('test with smtp settings missing', function ($method) {
     $incomingPhoneNumberContext = mock('\Twilio\Rest\Api\V2010\Account\InstanceContext');
     $incomingPhoneNumberInstance= mock('\Twilio\Rest\Api\V2010\Account\IncomingPhoneNumberInstance');
     $incomingPhoneNumberInstance->voiceUrl = "http://localhost:3100/yap/index.php";
+    $incomingPhoneNumberInstance->phoneNumber = "+12125551212";
+    $incomingPhoneNumberInstance->sid = "PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     $incomingPhoneNumberContext->shouldReceive('read')->withNoArgs()
-        ->andReturn([$incomingPhoneNumberInstance])->once();
+        ->andReturn([$incomingPhoneNumberInstance])->zeroOrMoreTimes();
 
     // mocking TwilioRestClient->incomingPhoneNumbers->read();
     $this->twilioService->client()->incomingPhoneNumbers = $incomingPhoneNumberContext;

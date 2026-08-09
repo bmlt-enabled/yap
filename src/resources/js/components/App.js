@@ -8,6 +8,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import Diversity1Icon from '@mui/icons-material/Diversity1';
+import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import {
     createBrowserRouter,
     Outlet, RouterProvider,
@@ -18,6 +19,7 @@ import Layout from "../layouts/Layout"
 import ServiceBodies from "../pages/ServiceBodies";
 import Schedules from "../pages/Schedules";
 import Dashboard from "../pages/Dashboard";
+import SystemHealth from "../pages/SystemHealth";
 import Reports from "../pages/Reports";
 import Volunteers from "../pages/Volunteers";
 import Groups from "../pages/Groups";
@@ -30,6 +32,7 @@ import ErrorBoundary from "./ErrorBoundary";
 import { LocalizationProvider, useLocalization } from "../contexts/LocalizationContext";
 import ChangePasswordDialog from "../dialogs/ChangePasswordDialog";
 import theme from "../theme/theme";
+import apiClient from "../services/api";
 
 // Inner component that can use localization context
 function AppContent({ session, authentication, router, showPasswordDialog, setShowPasswordDialog }) {
@@ -46,6 +49,11 @@ function AppContent({ session, authentication, router, showPasswordDialog, setSh
             segment: 'dashboard',
             title: getWord('dashboard') || 'Dashboard',
             icon: <DashboardIcon />
+        },
+        {
+            segment: 'systemHealth',
+            title: getWord('system_health') || 'System Health',
+            icon: <HealthAndSafetyIcon />
         },
         {
             segment: 'reports',
@@ -116,9 +124,14 @@ export default function App() {
         navigate('/login');
     }, [navigate]);
 
-    const signOut = React.useCallback(() => {
+    const signOut = React.useCallback(async () => {
+        try {
+            await apiClient.post('/api/v1/logout');
+        } catch (error) {
+            console.error('Error during logout:', error);
+        }
         setSession(null);
-        localStorage.removeItem('session')
+        localStorage.removeItem('session');
         navigate('/login');
     }, [navigate]);
 
@@ -173,6 +186,10 @@ if (document.getElementById('root')) {
                         {
                             path: 'dashboard',
                             Component: Dashboard,
+                        },
+                        {
+                            path: 'systemHealth',
+                            Component: SystemHealth,
                         },
                         {
                             path: 'reports',

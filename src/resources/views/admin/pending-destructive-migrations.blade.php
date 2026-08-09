@@ -35,14 +35,8 @@
             font-family: monospace;
             margin: 0.5rem 0;
         }
-        .command {
-            background: #e9ecef;
-            padding: 1rem;
-            border-radius: 4px;
-            font-family: monospace;
-            margin: 1rem 0;
-        }
         code { background: #e9ecef; padding: 0.2rem 0.4rem; border-radius: 3px; }
+        a { color: #1565c0; }
     </style>
 </head>
 <body>
@@ -60,11 +54,23 @@
             <li><?php echo htmlspecialchars($migration); ?></li>
         <?php endforeach; ?>
     </ul>
-    <p>Run the following command from a shell on the server:</p>
-    <div class="command">php artisan migrate</div>
+    <p>
+        <strong>What to do next:</strong> Contact your server administrator or hosting
+        provider and ask them to apply the pending database migration during a
+        maintenance window. Most Yap operators on shared hosting do not have shell
+        access — your host's support team or whoever manages the server can run the
+        migration for you.
+    </p>
     <p>
         After the migration completes successfully, reload this page. If the migration
-        fails, consult the <code>users_pre_uuid_backup</code> table for recovery data.
+        fails, consult the <code>users_pre_uuid_backup</code> table for recovery data
+        and restore from your own backup if needed.
+    </p>
+    <p>
+        For other configuration checks (PHP extensions, Twilio, database shape), open
+        <a href="/api/v1/upgrade">/api/v1/upgrade</a> once the site is reachable, or
+        see the
+        <a href="https://yap.bmlt.app/miscellaneous/upgrading-from-yap-4x-to-yap-5x">4.x → 5.x upgrade guide</a>.
     </p>
 </div>
 </body>

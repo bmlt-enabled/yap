@@ -20,9 +20,10 @@ import {
     CheckCircle as CheckIcon,
     Info as InfoIcon,
     Warning as WarningIcon,
-    Error as ErrorIcon
+    Error as ErrorIcon,
 } from "@mui/icons-material";
 import { useLocalization } from "../contexts/LocalizationContext";
+import UpgradeChecksList from "../components/UpgradeChecksList";
 
 function Dashboard() {
     const { getWord } = useLocalization();
@@ -33,6 +34,7 @@ function Dashboard() {
     const [latestVersion, setLatestVersion] = useState('');
     const [systemStatus, setSystemStatus] = useState('checking');
     const [systemMessage, setSystemMessage] = useState('');
+    const [systemChecks, setSystemChecks] = useState([]);
 
     const getUser = async () => {
         apiClient.get('/api/v1/user', {
@@ -76,26 +78,28 @@ function Dashboard() {
         try {
             const response = await apiClient.get('/api/v1/upgrade');
             if (response.data) {
-                // Check for error messages (status: false)
-                if (response.data.status === false && response.data.message) {
+                const checks = Array.isArray(response.data.checks) ? response.data.checks : [];
+                setSystemChecks(checks);
+
+                const hasFail = checks.some((check) => check.status === 'fail');
+                const hasWarn = checks.some((check) => check.status === 'warn');
+
+                if (response.data.status === false || hasFail) {
                     setSystemStatus('error');
-                    setSystemMessage(response.data.message);
-                }
-                // Check for warnings
-                else if (response.data.warnings) {
+                    setSystemMessage(response.data.message || '');
+                } else if (response.data.warnings || hasWarn) {
                     setSystemStatus('warning');
-                    setSystemMessage(response.data.warnings);
-                }
-                // All good
-                else if (response.data.status === true) {
+                    setSystemMessage(response.data.warnings || response.data.message || '');
+                } else if (response.data.status === true) {
                     setSystemStatus('healthy');
-                    setSystemMessage('');
+                    setSystemMessage(response.data.message || '');
                 }
             }
         } catch (error) {
             console.error('Error fetching upgrade advisor status:', error);
             setSystemStatus('error');
             setSystemMessage('');
+            setSystemChecks([]);
         }
     };
 
@@ -232,6 +236,9 @@ function Dashboard() {
                                             ''
                                         )}
                                     </Typography>
+                                    {systemChecks.length > 0 && (
+                                        <UpgradeChecksList checks={systemChecks} />
+                                    )}
                                 </Box>
                             </Stack>
                         </CardContent>

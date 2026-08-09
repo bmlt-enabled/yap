@@ -88,4 +88,13 @@ class AuthenticationService extends Service
         $this->session->setConfigForService($rights[0]);
         return $user;
     }
+
+    public function logout(): void
+    {
+        if (session()->get('auth_mechanism') === AuthMechanism::V1) {
+            $this->authenticationRepository->logoutV1();
+        }
+
+        session()->flush();
+    }
 }

@@ -3,7 +3,6 @@ namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\AuthenticationService;
-use App\Services\AuthorizationService;
 use App\Services\SettingsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,16 +19,13 @@ use Illuminate\Support\Facades\Log;
  */
 class AuthController extends Controller
 {
-    protected AuthorizationService $authz;
     protected AuthenticationService $authn;
     protected SettingsService $settings;
 
     public function __construct(
-        AuthorizationService  $authz,
         AuthenticationService $authn,
         SettingsService $settings,
     ) {
-        $this->authz = $authz;
         $this->authn = $authn;
         $this->settings = $settings;
     }
@@ -122,17 +118,30 @@ class AuthController extends Controller
         return response()->json($request->user());
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/logout",
+     *     tags={"Authentication"},
+     *     summary="Logout and revoke the current API token",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logged out successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Logged out successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
     public function logout(Request $request)
     {
         $this->authn->logout();
         $request->user()->tokens()->delete();
 
         return response()->json(['message' => 'Logged out successfully']);
-    }
-
-    public function rights()
-    {
-        $rights = $this->authz->getServiceBodyRights();
-        return $rights ?? response()->json(['error' => 'Unauthorized'], 403);
     }
 }

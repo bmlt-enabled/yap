@@ -12,7 +12,7 @@ It's possible to override most of the settings in several different ways.  There
 
 4) Config.php.  Any setting is controllable from within config.php.
 
-5) Factory defaults.  You can review them on your `/admin/settings.php` page.
+5) Factory defaults.  You can review them on the **Settings** page in the admin portal at `/admin`.
 
 You can completely override any `config.php` file setting as well with additional precedence.
 

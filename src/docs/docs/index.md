@@ -8,7 +8,7 @@ sidebar_position: 1
 
 Recommended to use PHP 8.2 or greater.
 
-Yap requires MySQL 5.7 or greater and an Apache-based webserver with `mod_rewrite` enabled.
+Yap requires MySQL 8.0+ or MariaDB 10.3+ and an Apache-based webserver with `mod_rewrite` enabled. See [PHP requirements](general/php-requirements) for the full list of PHP extensions that must be enabled on your host.
 
 
 The purposes of yap are :

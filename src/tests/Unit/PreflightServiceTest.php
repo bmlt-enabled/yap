@@ -16,6 +16,27 @@ test('preflight service fails when database is not configured', function () {
     expect(collect($result['checks'])->firstWhere('id', 'database')['passed'])->toBeFalse();
 });
 
+test('preflight service reports php extensions check', function () {
+    $settings = mock(SettingsService::class);
+    $settings->shouldReceive('minimalRequiredSettings')->andReturn(['twilio_auth_token']);
+    $settings->shouldReceive('get')->with('twilio_auth_token')->andReturn('token');
+    $settings->shouldReceive('get')->with('mysql_hostname')->andReturn('');
+    $settings->shouldReceive('get')->with('mysql_database')->andReturn('');
+
+    $result = (new PreflightService($settings))->run();
+    $extensionCheck = collect($result['checks'])->firstWhere('id', 'php_extensions');
+
+    expect($extensionCheck)->not->toBeNull();
+    expect($extensionCheck['label'])->toBe('PHP extensions');
+    expect($extensionCheck['passed'])->toBeTrue();
+});
+
+test('php extension requirements include fileinfo and pdo_mysql', function () {
+    expect(\App\Services\Preflight\PhpExtensionRequirements::REQUIRED)
+        ->toHaveKey('fileinfo')
+        ->toHaveKey('pdo_mysql');
+});
+
 test('preflight service warns when app env is not production', function () {
     config(['app.env' => 'staging']);
 
