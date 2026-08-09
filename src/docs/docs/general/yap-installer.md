@@ -22,7 +22,7 @@ The installer is implemented in `installer.blade.php` and is shown by the `Confi
 
 ## Complete installation
 
-1. Follow [Setup](./01-setup) to download Yap, create the database, and copy settings into `config.php`.
+1. Follow [Setup](./setup) to download Yap, create the database, and copy settings into `config.php`.
 2. Copy `src/.env.example` to `src/.env` and set Laravel values (`TRUSTED_PROXIES`, `SESSION_DRIVER`, and so on) as described in Setup.
 3. Once `config.php` exists, the installer no longer appears. Run `php artisan migrate` (or allow safe migrations on first request) and open `https://your-yap-instance/api/v1/upgrade` or the admin **System Health** page to confirm configuration.
 4. Log in at `/admin` and finish Twilio webhook configuration from Setup.
@@ -31,5 +31,5 @@ The installer page links to [https://yap.bmlt.app](https://yap.bmlt.app) for ful
 
 ## Related topics
 
-- [Setup](./01-setup) — step-by-step first install
+- [Setup](./setup) — step-by-step first install
 - [Upgrading from Yap 4.x to Yap 5.x](../miscellaneous/upgrading-from-yap-4x-to-yap-5x) — if you are upgrading an existing server instead of installing fresh
