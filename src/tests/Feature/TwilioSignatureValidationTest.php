@@ -2,6 +2,7 @@
 
 use App\Services\SettingsService;
 use Illuminate\Http\Middleware\TrustProxies as IlluminateTrustProxies;
+use Illuminate\Http\Request;
 use Tests\Support\TwilioSignatureTestHelper;
 use Twilio\Security\RequestValidator;
 
@@ -95,6 +96,58 @@ function callSignedTwilioRoute(
 
     return callTwilioRoute($method, $uri, $parameters, $server);
 }
+
+/**
+ * Issue #1627: Twilio appends params (e.g. StirVerstat) at the end of the query
+ * string; fullUrl() ksort()s them alphabetically and breaks GET validation.
+ *
+ * @return array{path: string, signingUrl: string, signature: string}
+ */
+function twilioGetWebhookWithRawQueryString(string $queryString): array
+{
+    $path = '/?' . $queryString;
+    $signingUrl = 'http://localhost' . $path;
+    $signature = (new RequestValidator(TWILIO_SIG_TOKEN))->computeSignature($signingUrl, []);
+
+    return compact('path', 'signingUrl', 'signature');
+}
+
+/**
+ * @param  array<string, string>  $server
+ */
+function callSignedTwilioGetWithRawQueryString(string $queryString, array $server = [])
+{
+    ['path' => $path, 'signature' => $signature] = twilioGetWebhookWithRawQueryString($queryString);
+
+    return callTwilioRoute('GET', $path, [], array_merge($server, [
+        'HTTP_X_TWILIO_SIGNATURE' => $signature,
+    ]));
+}
+
+test('allows a GET webhook when the query string preserves Twilio parameter order', function () {
+    // StirVerstat is appended last by Twilio; alphabetically it sits before To.
+    $queryString = 'CallSid=CA123&FromZip=94105&From=%2B15551234567&To=%2B15559876543&StirVerstat=TN-Validation-Passed-A';
+    ['path' => $path, 'signingUrl' => $signingUrl, 'signature' => $signature] =
+        twilioGetWebhookWithRawQueryString($queryString);
+
+    $request = Request::create($path, 'GET');
+    $fullUrl = $request->fullUrl();
+    $fixedUrl = $request->getSchemeAndHttpHost() . $request->getRequestUri();
+
+    expect($fullUrl)->not->toBe($signingUrl)
+        ->and(strpos($fullUrl, 'StirVerstat') < strpos($fullUrl, 'To='))->toBeTrue()
+        ->and($fixedUrl)->toBe($signingUrl)
+        ->and((new RequestValidator(TWILIO_SIG_TOKEN))->validate($signature, $fullUrl, []))->toBeFalse()
+        ->and((new RequestValidator(TWILIO_SIG_TOKEN))->validate($signature, $fixedUrl, []))->toBeTrue();
+
+    callSignedTwilioGetWithRawQueryString($queryString)->assertStatus(200);
+});
+
+test('allows a GET webhook with percent-encoded values and empty parameters', function () {
+    $queryString = 'CallSid=CA123&CalledCity=&CallerCity=San%20Francisco&From=%2B15551234567&To=%2B15559876543&StirVerstat=TN-Validation-Passed-A';
+
+    callSignedTwilioGetWithRawQueryString($queryString)->assertStatus(200);
+});
 
 test('rejects a Twilio route with a missing signature', function ($method) {
     $response = callTwilioRoute($method, '/');
@@ -267,7 +320,7 @@ test('per-service-body auth token is used on the first webhook when override_ser
     session()->put('override_twilio_auth_token', $serviceToken);
 
     $parameters = twilioWebhookParameters();
-    $signature = (new RequestValidator($serviceToken))->computeSignature('http://localhost', $parameters);
+    $signature = (new RequestValidator($serviceToken))->computeSignature('http://localhost/', $parameters);
 
     $response = callTwilioRoute('POST', '/', $parameters, [
         'HTTP_X_TWILIO_SIGNATURE' => $signature,

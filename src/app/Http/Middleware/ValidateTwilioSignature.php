@@ -58,8 +58,9 @@ class ValidateTwilioSignature
 
         // Validate against the URL the framework resolved (honoring the trusted
         // proxy configuration in TrustProxies), never raw client-supplied
-        // forwarding headers.
-        $url = $request->fullUrl();
+        // forwarding headers. Use getRequestUri() rather than fullUrl() so the
+        // query string is not re-sorted — Twilio signs the exact bytes it sent.
+        $url = $request->getSchemeAndHttpHost() . $request->getRequestUri();
 
         // Twilio signs POST requests using the POST body params only; for GET the
         // query string is already part of the URL.

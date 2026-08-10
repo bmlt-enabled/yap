@@ -7,7 +7,7 @@ use Twilio\Security\RequestValidator;
 
 /**
  * Build the URL and signature Twilio would send for a webhook request, mirroring
- * ValidateTwilioSignature (fullUrl + POST body params).
+ * ValidateTwilioSignature (getSchemeAndHttpHost + getRequestUri + POST body params).
  */
 class TwilioSignatureTestHelper
 {
@@ -37,7 +37,7 @@ class TwilioSignatureTestHelper
         $request = Request::create($uri, $method, $parameters, [], [], $server);
         self::applyTrustedProxies($request, $trustedProxies);
 
-        return $request->fullUrl();
+        return $request->getSchemeAndHttpHost() . $request->getRequestUri();
     }
 
     /**
