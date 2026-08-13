@@ -1,6 +1,7 @@
 # Release Notes
 
 ### 4.5.2 (UNRELEASED)
+* Fixed Twilio webhook signature validation rejecting every request whose URL carries a query string, which broke the IVR past the first prompt (`input-method.php`, `status.php`, and the helpline dialer callbacks all returned 403 "Forbidden"). The signature is now checked against the raw request URI instead of Laravel's normalized `fullUrl()`, which re-sorted the query parameters and re-encoded spaces. [#1573]
 * Added an authenticated media proxy so voicemail recording links in notification emails, SMS, and the admin portal keep working now that Twilio enforces HTTP Basic Auth on media URLs. Links are served through a signed YAP endpoint that streams the recording using the account credentials server-side. [#1573]
 * Enforce Twilio webhook signature validation on all inbound routes (IVR call flow, SMS gateway, voicemail, dialback, helpline routing, status callbacks, TwiML readings) so spoofed requests are rejected. [#1569]
 
