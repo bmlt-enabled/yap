@@ -43,7 +43,7 @@ test('fails closed when no auth token is configured', function ($method) {
 test('allows a genuinely signed Twilio request', function ($method) {
     $_SESSION["override_twilio_auth_token"] = "testtoken";
 
-    // The middleware validates against $request->fullUrl(); in the test harness
+    // The middleware validates against the request URL; in the test harness
     // (no forwarded headers) that is http://localhost for "/", with no params.
     $signature = (new RequestValidator("testtoken"))->computeSignature('http://localhost', []);
 
@@ -104,6 +104,66 @@ test('allows a genuinely signed Twilio POST that carries body params', function 
     $response = $this->call('POST', '/', $params, [], [], ['HTTP_X_TWILIO_SIGNATURE' => $signature]);
 
     $response->assertStatus(200);
+});
+
+// Regression coverage for #1573: every Gather action and status callback in the
+// IVR is a URL with a query string, and Twilio signs those bytes exactly as it
+// sends them. Validating against $request->fullUrl() re-sorted the parameters
+// alphabetically and re-encoded "+" as "%20", so the computed HMAC never matched
+// and the whole call flow past the first prompt 403'd.
+test('allows a genuinely signed GET whose query string is not normalized', function () {
+    $_SESSION["override_twilio_auth_token"] = "testtoken";
+
+    // Parameters in Twilio's order (action-URL params first, then Twilio's own)
+    // rather than alphabetical, and a space encoded as "+" — both of which
+    // fullUrl() rewrites.
+    $query = 'Retry=1&RetryMessage=Couldn%27t+find+that+location.&Digits=2&AccountSid=AC00000000000000000000000000000000';
+    $url = 'http://localhost/input-method.php?' . $query;
+
+    $signature = (new RequestValidator("testtoken"))->computeSignature($url, []);
+
+    $response = $this->call('GET', '/input-method.php?' . $query, [], [], [], [
+        'HTTP_X_TWILIO_SIGNATURE' => $signature,
+    ]);
+
+    $response->assertStatus(200);
+});
+
+test('allows a genuinely signed POST to a URL that carries a query string', function () {
+    $_SESSION["override_twilio_auth_token"] = "testtoken";
+
+    // Twilio signs the full URL (query string included) concatenated with the
+    // sorted POST body params, so both halves have to be reproduced verbatim.
+    $query = 'SearchType=1&Retry=1';
+    $url = 'http://localhost/input-method.php?' . $query;
+    $params = [
+        'Digits' => '2',
+        'From' => '+15555550123',
+        'To' => '+15555550100',
+    ];
+
+    $signature = (new RequestValidator("testtoken"))->computeSignature($url, $params);
+
+    $response = $this->call('POST', '/input-method.php?' . $query, $params, [], [], [
+        'HTTP_X_TWILIO_SIGNATURE' => $signature,
+    ]);
+
+    $response->assertStatus(200);
+});
+
+test('rejects a request signed for a different URL', function () {
+    $_SESSION["override_twilio_auth_token"] = "testtoken";
+
+    // The signature is valid, but for another path — accepting more than one
+    // candidate URL must not turn into accepting any URL.
+    $signature = (new RequestValidator("testtoken"))
+        ->computeSignature('http://localhost/somewhere-else.php?Digits=2', []);
+
+    $response = $this->call('GET', '/input-method.php?Digits=2', [], [], [], [
+        'HTTP_X_TWILIO_SIGNATURE' => $signature,
+    ]);
+
+    $response->assertStatus(403);
 });
 
 test('dev bypass skips validation for unsigned requests in non-production', function ($method) {

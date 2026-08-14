@@ -56,23 +56,60 @@ class ValidateTwilioSignature
         $validator = new RequestValidator($authToken);
         $signature = $request->header('X-Twilio-Signature', '');
 
-        // Validate against the URL the framework resolved (honoring the trusted
-        // proxy configuration in TrustProxies), never raw client-supplied
-        // forwarding headers.
-        $url = $request->fullUrl();
-
         // Twilio signs POST requests using the POST body params only; for GET the
         // query string is already part of the URL.
         $params = $request->isMethod('POST') ? $request->post() : [];
 
-        if (!$validator->validate($signature, $url, $params)) {
-            Log::warning('Invalid Twilio signature rejected', [
-                'url' => $url,
-                'ip' => $request->ip(),
-            ]);
-            return response('Forbidden', 403);
+        $urls = $this->candidateUrls($request);
+
+        foreach ($urls as $url) {
+            if ($validator->validate($signature, $url, $params)) {
+                return $next($request);
+            }
         }
 
-        return $next($request);
+        Log::warning('Invalid Twilio signature rejected', [
+            'method' => $request->method(),
+            'urls' => $urls,
+            'has_signature' => $signature !== '',
+            'ip' => $request->ip(),
+        ]);
+        return response('Forbidden', 403);
+    }
+
+    /**
+     * The URLs to validate the signature against, most faithful first.
+     *
+     * Twilio computes its signature over the exact URL it requested, so the
+     * query string has to be compared byte for byte. $request->fullUrl() cannot
+     * do that: it rebuilds the query string through Symfony's
+     * normalizeQueryString(), which sorts the parameters alphabetically and
+     * re-encodes them as RFC 3986 (a space becomes %20 rather than +). Every
+     * webhook URL that carries a query string — each Gather action and status
+     * callback in the IVR — therefore hashed differently than Twilio signed it
+     * and was rejected with a 403 (#1573).
+     *
+     * getRequestUri() is the raw, unmodified request target, so pairing it with
+     * the resolved scheme and host (honoring TrustProxies, never raw
+     * client-supplied forwarding headers) reproduces the signed URL exactly.
+     *
+     * @param Request $request
+     * @return string[]
+     */
+    protected function candidateUrls(Request $request): array
+    {
+        $urls = [$request->getSchemeAndHttpHost() . $request->getRequestUri()];
+
+        // Kept as a fallback for deployments where a rewrite leaves REQUEST_URI
+        // as something other than the URL Twilio called, and for the trailing
+        // slash fullUrl() strips. Trying a second server-derived URL does not
+        // weaken the check: a forged request still has to produce a valid HMAC
+        // over one of them, which is impossible without the auth token.
+        $fullUrl = $request->fullUrl();
+        if (!in_array($fullUrl, $urls, true)) {
+            $urls[] = $fullUrl;
+        }
+
+        return $urls;
     }
 }
