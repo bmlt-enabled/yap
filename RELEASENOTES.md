@@ -1,9 +1,10 @@
 # Release Notes
 
-### 4.5.2 (UNRELEASED)
+### 4.5.2 (August 15, 2026)
 * Fixed Twilio webhook signature validation rejecting every request whose URL carries a query string, which broke the IVR past the first prompt (`input-method.php`, `status.php`, and the helpline dialer callbacks all returned 403 "Forbidden"). The signature is now checked against the raw request URI instead of Laravel's normalized `fullUrl()`, which re-sorted the query parameters and re-encoded spaces. [#1573]
 * Added an authenticated media proxy so voicemail recording links in notification emails, SMS, and the admin portal keep working now that Twilio enforces HTTP Basic Auth on media URLs. Links are served through a signed YAP endpoint that streams the recording using the account credentials server-side. [#1573]
 * Enforce Twilio webhook signature validation on all inbound routes (IVR call flow, SMS gateway, voicemail, dialback, helpline routing, status callbacks, TwiML readings) so spoofed requests are rejected. [#1569]
+* Fix for stale conferences being matched during call blasting. Conference lookups now filter on `status=in-progress` so a completed conference with the same name is no longer returned. [#1563]
 
 ### 4.5.1 (May 14, 2026)
 * Added Twilio SHAKEN/STIR trusted calling support. CallToken is forwarded from inbound to outbound calls to maintain full attestation (Level A). StirVerstat is logged on inbound calls for observability. [#1560]
