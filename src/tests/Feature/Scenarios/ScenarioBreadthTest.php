@@ -416,8 +416,31 @@ test('conference eventual-consistency retry succeeds without slowing the suite',
     $scenario->joinConference();
 
     expect($scenario->twilio->conferenceReadsBeforeVisible)->toBe(1);
-    expect(ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRIES)->toBe(20);
+    expect(ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRIES)->toBe(8);
     expect($scenario->twilio)->toHaveDialed(BREADTH_V1);
+});
+
+test('conference cleanup callbacks skip conference lookup', function () {
+    breadthSeedCallHandling($this->serviceBodyId, CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL);
+    breadthSeedVolunteers();
+
+    $scenario = breadthStartScenario();
+    breadthNavigateToConference($scenario);
+    $scenario->joinConference();
+
+    $scenario->twilio->resetConferenceReadCount();
+    $scenario->conferenceCallback([
+        'StatusCallbackEvent' => 'conference-end',
+        'SequenceNumber' => '2',
+        'CallStatus' => '',
+    ]);
+    $scenario->conferenceCallback([
+        'StatusCallbackEvent' => 'conference-end',
+        'SequenceNumber' => '3',
+        'CallStatus' => '',
+    ]);
+
+    expect($scenario->twilio->conferenceReadCount())->toBe(0);
 });
 
 test('force number dials the requested number directly', function () {

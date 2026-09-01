@@ -266,10 +266,26 @@ class HelplineController extends Controller
                 ->header("Content-Type", "application/json");
         }
 
+        // Only volunteer-progression and participant-leave consume $conferences.
+        // Post-call cleanup callbacks (empty CallStatus, SequenceNumber 2/3) never
+        // match those branches, and their conference has already ended, so the
+        // lookup would exhaust every retry and hold a PHP worker for no reason.
+        $needsConference = ($request->has('SequenceNumber') && intval($request->get('SequenceNumber')) == 1)
+            || ($request->has('CallStatus') &&
+                ($request->get('CallStatus') == TwilioCallStatus::NOANSWER
+                    || $request->get('CallStatus') == TwilioCallStatus::COMPLETED
+                    || $request->get('CallStatus') == TwilioCallStatus::FAILED
+                    || $request->get('CallStatus') == TwilioCallStatus::BUSY))
+            || ($request->has('StatusCallbackEvent') && $request->get('StatusCallbackEvent') == 'participant-leave');
+
+        if (!$needsConference) {
+            return response([])->header("Content-Type", "application/json");
+        }
+
         // Sometime in August 2023, Twilio introduced a change in API Behavior. The conferences API
         // now seems to be eventually consistent. Sometimes we get the conference back on the first
         // try, and other times it takes a few tries. Retrying every half second seems to get the
-        // job done after no more than about 4 retries in the worst case. We try up to 10 times just
+        // job done after no more than about 4 retries in the worst case. We try up to 8 times just
         // to be safe.
         for ($i = 0; $i < ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRIES; $i++) {
             $conferences = $this->twilio->client()

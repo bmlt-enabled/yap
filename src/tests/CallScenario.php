@@ -270,13 +270,23 @@ class CallScenario extends TwilioCallTestBuilder
         $conference = $this->activeConference();
         $this->twilio->removeConferenceParticipant($conference['friendlyName'], $this->callSid);
 
+        return $this->conferenceCallback([
+            'StatusCallbackEvent' => 'participant-leave',
+        ]);
+    }
+
+    public function conferenceCallback(array $params): self
+    {
+        $conference = $this->activeConference();
         $this->lastResponse = $this->dispatchWebhook(
             $conference['statusCallback'],
-            [
-                'StatusCallbackEvent' => 'participant-leave',
-                'FriendlyName' => $conference['friendlyName'],
-                'CallSid' => $this->callSid,
-            ],
+            array_merge(
+                [
+                    'FriendlyName' => $conference['friendlyName'],
+                    'CallSid' => $this->callSid,
+                ],
+                $params,
+            ),
         );
         $this->lastResponse->assertStatus(200);
 
