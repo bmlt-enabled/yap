@@ -36,6 +36,11 @@ class FakeTwilioAccount
         $this->conferenceReadCount = 0;
     }
 
+    public function conferenceReadCount(): int
+    {
+        return $this->conferenceReadCount;
+    }
+
     public function recordConferenceRead(): bool
     {
         $this->conferenceReadCount++;
