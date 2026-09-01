@@ -3,6 +3,7 @@
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Sleep;
 use Tests\FakeTwilioHttpClient;
 use Tests\TestCase;
 use Tests\TwilioTestUtility;
@@ -11,7 +12,12 @@ uses(TestCase::class, RefreshDatabase::class)
     ->beforeEach(function () {
         env("ENVIRONMENT", "test");
         $_COOKIE["PHPSESSID"] = "fake";
+        // HelplineController::dial() waits 500ms between conference-list retries.
+        Sleep::fake();
         $this->artisan('migrate:fresh');
+    })
+    ->afterEach(function () {
+        Sleep::fake(false);
     })
     ->in('Feature');
 
