@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.5.3
+* Skip conference lookup on helpline cleanup callbacks. `HelplineController::dial()` no longer retries Twilio conference reads for status callbacks that never consume the result (empty `CallStatus`, SequenceNumber 2/3). Those lookups always exhausted the retry budget after the conference had already ended, holding PHP workers long enough to time out caller-facing webhooks such as voicemail TwiML. Lookup retries are also capped at 8 (worst case observed is ~4). [#1634]
+
 ### 4.5.2 (August 15, 2026)
 * Fixed Twilio webhook signature validation rejecting every request whose URL carries a query string, which broke the IVR past the first prompt (`input-method.php`, `status.php`, and the helpline dialer callbacks all returned 403 "Forbidden"). The signature is now checked against the raw request URI instead of Laravel's normalized `fullUrl()`, which re-sorted the query parameters and re-encoded spaces. [#1573]
 * Added an authenticated media proxy so voicemail recording links in notification emails, SMS, and the admin portal keep working now that Twilio enforces HTTP Basic Auth on media URLs. Links are served through a signed YAP endpoint that streams the recording using the account credentials server-side. [#1573]

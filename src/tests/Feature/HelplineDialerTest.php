@@ -155,13 +155,10 @@ test('do nothing', function ($method) {
         $serviceBodyCallHandlingData
     );
 
+    // No SequenceNumber, CallStatus, or participant-leave — this callback
+    // cannot consume $conferences, so the lookup must be skipped.
     $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
-    $conferenceListMock->shouldReceive("read")
-        ->with(['friendlyName' => $this->conferenceName, 'status' => 'in-progress'])
-        ->andReturn(json_decode(
-            '[{"status":"in-progress","sid":"'.$this->conferenceName.'"}]'
-        ))
-        ->once();
+    $conferenceListMock->shouldReceive("read")->never();
     $this->twilioClient->conferences = $conferenceListMock;
 
     $response = $this->call($method, '/helpline-dialer.php', [
@@ -1065,6 +1062,25 @@ test('volunteer leave the call', function ($method) {
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json");
 })->with(['GET', 'POST']);
+
+test('post-call cleanup callbacks skip conference lookup', function ($method, $sequenceNumber, $statusCallbackEvent) {
+    $_SESSION['override_service_body_id'] = $this->serviceBodyId;
+
+    $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
+    $conferenceListMock->shouldReceive("read")->never();
+    $this->twilioClient->conferences = $conferenceListMock;
+
+    $response = $this->call($method, '/helpline-dialer.php', [
+        'CallSid' => $this->callSid,
+        'FriendlyName' => $this->conferenceName,
+        'StatusCallbackEvent' => $statusCallbackEvent,
+        'SequenceNumber' => $sequenceNumber,
+        'CallStatus' => '',
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json");
+})->with(['GET', 'POST'], [2, 3], ['conference-end', 'participant-join']);
 
 test('conference list RestException does not 500 the helpline dialer', function ($method) {
     $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
