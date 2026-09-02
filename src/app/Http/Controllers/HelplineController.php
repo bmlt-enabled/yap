@@ -26,6 +26,7 @@ use App\Structures\VolunteerRoutingParameters;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Sleep;
 use Twilio\Exceptions\TwilioException;
 use Twilio\TwiML\VoiceResponse;
 
@@ -269,12 +270,19 @@ class HelplineController extends Controller
         // Sometime in August 2023, Twilio introduced a change in API Behavior. The conferences API
         // now seems to be eventually consistent. Sometimes we get the conference back on the first
         // try, and other times it takes a few tries. Retrying every half second seems to get the
-        // job done after no more than about 4 retries in the worst case. We try up to 10 times just
-        // to be safe.
+        // job done after no more than about 4 retries in the worst case. We try up to 20 times just
+        // to be safe. PHP's sleep() truncates floats, so the delay must be usleep(500000). Transient
+        // list errors are treated like an empty result so they cannot 500 the webhook mid-call.
+        $conferences = [];
         for ($i = 0; $i < ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRIES; $i++) {
-            $conferences = $this->twilio->client()
-                ->conferences
-                ->read(array("friendlyName" => $request->get('FriendlyName'), "status" => "in-progress"));
+            try {
+                $conferences = $this->twilio->client()
+                    ->conferences
+                    ->read(array("friendlyName" => $request->get('FriendlyName'), "status" => "in-progress"));
+            } catch (TwilioException $e) {
+                Log::warning("conferences list failed, retry $i: " . $e->getMessage());
+                $conferences = [];
+            }
 
             if ($i > 0) {
                 Log::debug("conferences eventual consistency issue, retry $i");
@@ -284,7 +292,7 @@ class HelplineController extends Controller
                 break;
             }
 
-            sleep(0.5);
+            Sleep::usleep(ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRY_DELAY_MICROSECONDS);
         }
 
         if (count($conferences) > 0) {

@@ -15,6 +15,7 @@ use App\Services\TwilioService;
 use App\Structures\ServiceBodyCallHandling;
 use App\Structures\VolunteerData;
 use Tests\FakeTwilioHttpClient;
+use Twilio\Exceptions\RestException;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -1059,6 +1060,39 @@ test('volunteer leave the call', function ($method) {
         'FriendlyName' => $this->conferenceName,
         'StatusCallbackEvent' => 'participant-leave',
         'SequenceNumber' => 2
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json");
+})->with(['GET', 'POST']);
+
+test('conference list RestException does not 500 the helpline dialer', function ($method) {
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
+
+    ConfigData::createServiceBodyCallHandling(
+        $this->serviceBodyId,
+        $serviceBodyCallHandlingData
+    );
+
+    $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
+    $conferenceListMock->shouldReceive("read")
+        ->with(['friendlyName' => $this->conferenceName, 'status' => 'in-progress'])
+        ->andThrow(new RestException('[HTTP 502] Unable to fetch page', 502, 502))
+        ->times(ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRIES);
+    $this->twilioClient->conferences = $conferenceListMock;
+
+    $response = $this->call($method, '/helpline-dialer.php', [
+        'CallSid'=>$this->callSid,
+        'SearchType' => "1",
+        'Called' => "+12125551212",
+        'Caller' => $this->caller,
+        'FriendlyName' => $this->conferenceName,
+        'StatusCallbackEvent' => 'participant-join',
+        'SequenceNumber' => 1
     ]);
     $response
         ->assertStatus(200)
