@@ -15,6 +15,8 @@ Route::get("/msr/{latitude}/{longitude}", ['uses' => 'App\Http\Controllers\Meeti
     ->where(['latitude' => '.*', 'longitude' => '.*']);
 Route::match(array('GET', 'POST'), "/ping{ext}", 'App\Http\Controllers\PingController@index')
     ->where('ext', $ext);
+Route::get("/whatsapp", 'App\Http\Controllers\WhatsAppHelplineController@index')
+    ->name("whatsappHelpline");
 
 // --- Twilio-facing inbound webhooks ---
 // Every route Twilio calls (IVR call flow, SMS gateway, voicemail, dialback,

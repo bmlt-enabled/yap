@@ -96,6 +96,7 @@ WebChat notifies on-shift volunteers via SMS (blasting). The first volunteer to 
 - Clear Laravel route cache after toggling flags if your host uses `php artisan route:cache`.
 - Test in staging with `widget-demo.html` before embedding on a live regional helpline.
 - For standard telephone helpline operation, leave both flags at their default (`false`).
+- Travelers who cannot dial a U.S. number over cellular can use the production [WhatsApp helpline](/helpline/whatsapp) instead of enabling these widgets.
 
 ## Related topics
 

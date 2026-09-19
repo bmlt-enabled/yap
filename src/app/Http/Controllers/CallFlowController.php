@@ -21,6 +21,7 @@ use App\Structures\CallRecord;
 use App\Structures\Coordinates;
 use App\Structures\RecordType;
 use App\Structures\VolunteerRoutingParameters;
+use App\Utilities\MessagingChannel;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
@@ -836,14 +837,16 @@ class CallFlowController extends Controller
 
     public function helplineSms(Request $request, $latitude, $longitude)
     {
-        try {
-            if ($request->has("OriginalCallerId")) {
-                $original_caller_id = $request->get("OriginalCallerId");
-            }
+        $original_caller_id = $request->get("OriginalCallerId") ?: $request->get("From");
 
+        try {
             $service_body = $this->meetingResults->getServiceBodyCoverage($latitude, $longitude);
             $serviceBodyCallHandling   = $this->config->getCallHandling($service_body->id);
             $tracker                   = $request->has("tracker") ? 0 : intval($request->get("tracker"));
+            $seekerIsWhatsApp = MessagingChannel::channelFromAddresses(
+                $original_caller_id,
+                $request->get('To')
+            ) === MessagingChannel::WHATSAPP;
 
             if ($serviceBodyCallHandling->sms_routing_enabled) {
                 $volunteer_routing_parameters = new VolunteerRoutingParameters();
@@ -873,14 +876,8 @@ class CallFlowController extends Controller
                         $this->twilio->client()->messages->create(
                             $phone_number,
                             array(
-                                "body" => sprintf(
-                                    "%s: %s %s %s",
-                                    $this->settings->word('helpline'),
-                                    $this->settings->word('someone_is_requesting_sms_help_from'),
-                                    $original_caller_id,
-                                    $this->settings->word('please_call_or_text_them_back')
-                                ),
-                                "from" => $request->get('To')
+                                "body" => $this->volunteerHelplineSmsBody($original_caller_id, $seekerIsWhatsApp),
+                                "from" => $this->volunteerSmsFrom($request, $serviceBodyCallHandling)
                             )
                         );
                     } else {
@@ -955,7 +952,9 @@ class CallFlowController extends Controller
         $callRecord->duration = 0;
         $callRecord->start_time = date("Y-m-d H:i:s");
         $callRecord->end_time = date("Y-m-d H:i:s");
-        $callRecord->type = RecordType::SMS;
+        $callRecord->type = MessagingChannel::channelFromAddresses($callRecord->from, $callRecord->to) === MessagingChannel::WHATSAPP
+            ? RecordType::WHATSAPP
+            : RecordType::SMS;
         $callRecord->payload = json_encode(request()->all());
 
         $this->call->insertCallRecord($callRecord);
@@ -1301,5 +1300,50 @@ class CallFlowController extends Controller
         }
 
         return $subject;
+    }
+
+    private function volunteerSmsFrom(Request $request, $serviceBodyCallHandling): string
+    {
+        $inboundTo = $request->get('To');
+        if (!MessagingChannel::isWhatsApp($inboundTo)) {
+            return $inboundTo;
+        }
+
+        $configured = $this->settings->get('whatsapp_sms_from');
+        if (is_string($configured) && strlen(trim($configured)) > 0) {
+            return MessagingChannel::e164($configured);
+        }
+
+        if ($serviceBodyCallHandling->forced_caller_id_enabled
+            && $serviceBodyCallHandling->forced_caller_id_number
+            && $serviceBodyCallHandling->forced_caller_id_number !== SpecialPhoneNumber::UNKNOWN) {
+            return MessagingChannel::e164($serviceBodyCallHandling->forced_caller_id_number);
+        }
+
+        return MessagingChannel::e164($inboundTo) ?? $inboundTo;
+    }
+
+    private function volunteerHelplineSmsBody(string $originalCallerId, bool $seekerIsWhatsApp): string
+    {
+        if (!$seekerIsWhatsApp) {
+            return sprintf(
+                "%s: %s %s %s",
+                $this->settings->word('helpline'),
+                $this->settings->word('someone_is_requesting_sms_help_from'),
+                $originalCallerId,
+                $this->settings->word('please_call_or_text_them_back')
+            );
+        }
+
+        $seekerNumber = MessagingChannel::e164($originalCallerId);
+
+        return sprintf(
+            "%s: %s %s %s %s",
+            $this->settings->word('helpline'),
+            $this->settings->word('someone_is_requesting_whatsapp_help_from'),
+            $seekerNumber,
+            $this->settings->word('please_message_them_on_whatsapp'),
+            MessagingChannel::clickToChatUrl($seekerNumber)
+        );
     }
 }
