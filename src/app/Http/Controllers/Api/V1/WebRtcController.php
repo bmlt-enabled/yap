@@ -133,7 +133,7 @@ class WebRtcController extends Controller
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="enabled", type="boolean", description="Whether WebRTC is enabled", example=true),
-     *             @OA\Property(property="title", type="string", description="Helpline title", example="Helpline"),
+     *             @OA\Property(property="title", type="string", description="Information line title", example="Information Line"),
      *             @OA\Property(property="language", type="string", description="Default language", example="en-US")
      *         )
      *     ),
@@ -160,7 +160,7 @@ class WebRtcController extends Controller
 
         return response()->json([
             'enabled' => true,
-            'title' => $this->settings->get('title') ?: 'Helpline',
+            'title' => $this->settings->get('title') ?: 'Information Line',
             'language' => $this->settings->get('language') ?: 'en-US',
         ]);
     }

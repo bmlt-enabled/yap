@@ -306,7 +306,7 @@ const formatDuration = (seconds) => {
 export default function DialWidget({
     apiUrl,
     serviceBodyId = null,
-    title = 'Helpline',
+    title = 'Information Line',
     showLocationInput = true,
     showSearchType = false,
     defaultSearchType = 'helpline',

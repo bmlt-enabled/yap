@@ -73,7 +73,7 @@ class WebChatController extends Controller
 
         return response()->json([
             'enabled' => true,
-            'title' => $this->settings->get('title') ?: 'Helpline',
+            'title' => $this->settings->get('title') ?: 'Information Line',
             'language' => $this->settings->get('language') ?: 'en-US',
             'timeout_minutes' => $this->settings->get('webchat_timeout_minutes') ?? 30,
             'meeting_search_enabled' => $this->settings->get('webchat_meeting_search_enabled') ?? true,

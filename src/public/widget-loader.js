@@ -25,7 +25,7 @@
  *        apiUrl: 'https://your-yap-server.com',
  *        type: 'combined', // 'call', 'chat', or 'combined'
  *        serviceBodyId: '123',
- *        title: 'NA Helpline'
+ *        title: 'NA Information Line'
  *      });
  *    </script>
  */

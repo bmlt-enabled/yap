@@ -46,6 +46,24 @@ test('initial call-in default', function ($method) {
     ], false);
 })->with(['GET', 'POST']);
 
+test('initial call-in speaks information line title override', function ($method) {
+    $response = $this->call($method, '/', ['override_title' => 'Information Line']);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Gather language="en-US" input="dtmf" numDigits="1" timeout="10" speechTimeout="auto" action="input-method.php" method="GET">',
+            '<Pause length="2"/>',
+            '<Say voice="alice" language="en-US">Information Line</Say>',
+            '<Say voice="alice" language="en-US">press one to find someone to talk to</Say>',
+            '<Say voice="alice" language="en-US">press two to search for meetings</Say>',
+            '</Gather>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
 test('initial call-in default with lengthier initial pause', function ($method) {
     session()->put("override_initial_pause", 5);
     $response = $this->call($method, '/');

@@ -52,7 +52,7 @@ test('session overridden settings', function () {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
-        ->assertJsonFragment(["key"=>"title", "docs"=>"", "value"=>"blah", "default"=>"", "source"=>"Session Override"]);
+        ->assertJsonFragment(["key"=>"title", "docs"=>"", "value"=>"blah", "default"=>"Information Line", "source"=>"Session Override"]);
 });
 
 test('querystring overridden settings', function () {
@@ -63,7 +63,7 @@ test('querystring overridden settings', function () {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
-        ->assertJsonFragment(["key"=>"title", "docs"=>"", "value"=>"son", "default"=>"", "source"=>"Transaction Override"]);
+        ->assertJsonFragment(["key"=>"title", "docs"=>"", "value"=>"son", "default"=>"Information Line", "source"=>"Transaction Override"]);
 });
 
 test('querystring based session key', function () {
@@ -81,7 +81,7 @@ test('querystring based session key', function () {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
-        ->assertJsonFragment(["key"=>"title", "docs"=>"", "value"=>$title, "default"=>"", "source"=>"Session Override"]);
+        ->assertJsonFragment(["key"=>"title", "docs"=>"", "value"=>$title, "default"=>"Information Line", "source"=>"Session Override"]);
 
     $ysk = getSessionCookieValue($response);
     $this->assertNotEmpty($ysk, "laravel_session cookie value is empty");
@@ -94,11 +94,17 @@ test('querystring based session key', function () {
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
-        ->assertJsonFragment(["key"=>"title", "docs"=>"", "value"=>"Test Helpline", "default"=>"", "source"=>"Factory Default"]);
+        ->assertJsonFragment(["key"=>"title", "docs"=>"", "value"=>"Test Helpline", "default"=>"Information Line", "source"=>"Factory Default"]);
 
     $response = $this->call('GET', '/api/v1/settings', ['ysk'=>$ysk]);
     $response
         ->assertStatus(200)
         ->assertHeader("Content-Type", "application/json")
-        ->assertJsonFragment(["key"=>"title", "docs"=>"", "value"=>$title, "default"=>"", "source"=>"Session Override"]);
+        ->assertJsonFragment(["key"=>"title", "docs"=>"", "value"=>$title, "default"=>"Information Line", "source"=>"Session Override"]);
+});
+
+test('title factory default is information line', function () {
+    $allowlist = (new SettingsService())->allowlist();
+
+    expect($allowlist['title']['default'])->toBe('Information Line');
 });

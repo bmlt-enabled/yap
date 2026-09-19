@@ -74,7 +74,7 @@ class SettingsService
         'suppress_voice_results' => ['description' => '/meeting-search/post-call-options#suppress-voice-results', 'default' => false, 'overridable' => true, 'hidden' => false],
         'time_format' => ['description' => '/meeting-search/venue-options', 'default' => 'g:i A', 'overridable' => true, 'hidden' => false],
         'timezone_default' => ['description' => '/general/location-lookup-bias', 'default' => null, 'overridable' => true, 'hidden' => false],
-        'title' => ['description' => '/general/voice-greeting' , 'default' => '', 'overridable' => true, 'hidden' => false],
+        'title' => ['description' => '/general/voice-greeting' , 'default' => 'Information Line', 'overridable' => true, 'hidden' => false],
         'toll_province_bias' => ['description' => '/general/tollfree-province-bias' , 'default' => null, 'overridable' => true, 'hidden' => false],
         'toll_free_province_bias' => ['description' => '/general/tollfree-province-bias' , 'default' => '', 'overridable' => true, 'hidden' => false],
         'tomato_helpline_routing' => ['description' => '/helpline/tomato-helpline-routing', 'default' => false, 'overridable' => true, 'hidden' => false],

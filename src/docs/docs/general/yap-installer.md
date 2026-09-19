@@ -8,7 +8,7 @@ On a fresh install, Yap has no `config.php` yet. Until that file exists, most HT
 
 Visiting your Yap URL (for example `https://example.com/index.php` or `https://example.com/admin`) displays a short page titled **Yap Installer**. It explains that you must create `config.php` in the Yap root and lists the required settings:
 
-- `title`
+- `title` (spoken line name; default **Information Line**)
 - `bmlt_root_server`
 - `google_maps_api_key`
 - `twilio_account_sid`

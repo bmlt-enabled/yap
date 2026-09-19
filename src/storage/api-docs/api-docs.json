@@ -2804,9 +2804,9 @@
                                             "example": true
                                         },
                                         "title": {
-                                            "description": "Helpline title",
+                                            "description": "Information line title",
                                             "type": "string",
-                                            "example": "Helpline"
+                                            "example": "Information Line"
                                         },
                                         "language": {
                                             "description": "Default language",

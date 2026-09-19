@@ -17,6 +17,7 @@
 
 #### Features and fixes
 
+* **Default spoken title is "Information Line".** The factory default for `$title` (the first phrase callers hear) is now "Information Line" instead of an empty string. Existing `config.php` values are unchanged. Set `$title` in `config.php` or override it per service body from **Service Bodies → Configure**. [#1636]
 * **Skip conference lookup on helpline cleanup callbacks.** `HelplineController::dial()` no longer retries Twilio conference reads for status callbacks that never consume the result (empty `CallStatus`, SequenceNumber 2/3). Those lookups always exhausted the retry budget after the conference had already ended, holding PHP workers long enough to time out caller-facing webhooks such as voicemail TwiML. Lookup retries are also capped at 8 (worst case observed is ~4). [#1631]
 * **Upgrade advisor Twilio compliance checks.** `/api/v1/upgrade` and the admin **Dashboard** / **System Health** pages now validate Twilio account type, US voice geo permissions, Trust Hub profile, A2P SMS brand registration, and toll-free verification — surfacing configuration issues that block volunteer outbound dialing or SMS meeting results before callers get stuck on hold. [#1615]
 * **Operator docs and admin UI use upgrade advisor instead of CLI.** Operator-facing documentation and the HTTP 503 migration page no longer instruct running `php artisan` commands. Preflight checks are surfaced on **Dashboard** and the new **System Health** page; `yap:preflight` remains documented for developers in `CONTRIBUTE.md`. [#1617]

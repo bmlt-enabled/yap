@@ -12,6 +12,12 @@ For example, say you wanted to still use English, but change the "city or county
 static $override_city_or_county = "city or suburb";
 ```
 
+The name callers hear at the start of the call is the `$title` setting (default **Information Line**), documented under [Voice Greeting](./voice-greeting). Volunteer SMS and voicemail notifications still use the `helpline` word; override that separately if you want those messages to match:
+
+```php
+static $override_helpline = "Information Line";
+```
+
 You can override by specific language as well.  This is required when using multiple languages.
 
 ```php
