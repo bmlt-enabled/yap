@@ -8,6 +8,8 @@
                                 $service_body = $rootServer->getServiceBody($_REQUEST['service_body_id']);
                                 echo sprintf("%s for %s", $settings->word('voicemail'), $service_body->name) ;?>
     </h3>
+    <p class="text-muted">Delete permanently removes the recording from Twilio. This cannot be undone.</p>
+    <button type="button" class="btn btn-danger mb-2" onclick="deleteSelectedVoicemails()">Delete selected</button>
     <div id="voicemail-table"></div>
 @include('admin.partials.footer')
     <script src="<?php echo url("/public/dist/js/yap-reports.min.js")?>"></script>
@@ -40,10 +42,14 @@
             paginationSize:20,
             movableColumns:true,
             resizableRows:true,
+            selectable:true,
             initialSort:[
                 {column:"event_time", dir:"desc"},
             ],
             columns:[
+                {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, width:40, cellClick:function(e, cell){
+                    cell.getRow().toggleSelect();
+                }},
                 {title:"Timestamp", field:"event_time", mutator: toCurrentTimezone},
                 {title:"CallSid", field:"callsid"},
                 {title:"From", field:"from_number"},
@@ -57,8 +63,12 @@
                         if (recordingUrl != null) {
                             actionString = "<button class=\"btn btn-sm btn-primary\" onclick=\"location.href='" + recordingUrl + "'\">Play</button> "
                         }
-                        actionString += "<button class=\"btn btn-sm btn-danger\" onclick=\"deleteVoicemail('" + callsid + "')\">Delete</button>";
+                        if (callsid) {
+                            actionString += "<button class=\"btn btn-sm btn-danger\" title=\"Permanently delete this recording from Twilio\" onclick=\"deleteVoicemail('" + callsid + "')\">Delete</button>";
+                        }
                         return actionString;
+                    }, cellClick:function(e) {
+                        e.stopPropagation();
                     }},
             ],
             rowFormatter:function(row) {

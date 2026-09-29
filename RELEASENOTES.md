@@ -1,5 +1,9 @@
 # Release Notes
 
+### 4.5.4
+* Voicemail Delete now removes the recording from Twilio, and voicemails that have no call record (timestamp only) can be deleted. The admin list can select multiple rows and delete them together. Delete permanently removes the audio from the Twilio account; a recording that is already gone is still removed from the Yap list. [#1641]
+* Added `php artisan yap:voicemail-undelete` to put voicemails back on the admin list when they were only hidden in Yap and the audio is still in Twilio, so they can be deleted for real. It clears `VOICEMAIL_DELETED` status rows for voicemail events only. Run it once after upgrading, then delete the recordings from the admin list. [#1641]
+
 ### 4.5.3
 * Skip conference lookup on helpline cleanup callbacks. `HelplineController::dial()` no longer retries Twilio conference reads for status callbacks that never consume the result (empty `CallStatus`, SequenceNumber 2/3). Those lookups always exhausted the retry budget after the conference had already ended, holding PHP workers long enough to time out caller-facing webhooks such as voicemail TwiML. Lookup retries are also capped at 8 (worst case observed is ~4). [#1634]
 

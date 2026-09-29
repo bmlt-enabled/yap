@@ -23,6 +23,9 @@ class AuthorizationService
     public function callsid($callsid, $event_id): bool
     {
         $recordEvent = RecordEvent::where('callsid', $callsid)->where('event_id', $event_id)->first();
+        if ($recordEvent === null || $this->serviceBodyRights === null) {
+            return false;
+        }
         $serviceBodyId = $recordEvent->service_body_id;
         return in_array($serviceBodyId, $this->serviceBodyRights);
     }
