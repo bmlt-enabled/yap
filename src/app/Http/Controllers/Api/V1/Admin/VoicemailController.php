@@ -220,6 +220,79 @@ class VoicemailController extends Controller
         ]);
     }
 
+    /**
+     * Delete multiple voicemails
+     *
+     * @OA\Post(
+     *     path="/api/v1/voicemail/delete",
+     *     summary="Delete selected voicemails",
+     *     description="Permanently deletes the Twilio recording for each selected voicemail, then hides it from the admin list",
+     *     operationId="deleteVoicemails",
+     *     tags={"Voicemails"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="serviceBodyId",
+     *         description="ID of the service body",
+     *         required=true,
+     *         in="query",
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"callsids"},
+     *             @OA\Property(
+     *                 property="callsids",
+     *                 type="array",
+     *                 @OA\Items(type="string", example="CA1234567890")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Bulk delete result",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="deleted", type="array", @OA\Items(type="string")),
+     *             @OA\Property(
+     *                 property="failed",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="callsid", type="string"),
+     *                     @OA\Property(property="message", type="string")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="No voicemails selected",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No voicemails selected")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Not authorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Not authorized")
+     *         )
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function destroyMany(Request $request): JsonResponse
     {
         $serviceBodyId = $request->query('serviceBodyId');
