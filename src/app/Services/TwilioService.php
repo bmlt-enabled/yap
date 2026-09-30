@@ -6,6 +6,7 @@ use App\Constants\TwilioCallStatus;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Twilio\Exceptions\ConfigurationException;
+use Twilio\Exceptions\RestException;
 use Twilio\Rest\Client;
 
 class TwilioService extends Service
@@ -35,6 +36,24 @@ class TwilioService extends Service
     public function hup($callSid): void
     {
         $this->client()->calls($callSid)->update(array('status' => TwilioCallStatus::COMPLETED));
+    }
+
+    /**
+     * Delete a recording from the Twilio account. A 404 means it is already gone.
+     */
+    public function deleteRecording(string $recordingSid): void
+    {
+        try {
+            $this->client()->recordings($recordingSid)->delete();
+        } catch (RestException $e) {
+            if ($e->getStatusCode() === 404) {
+                Log::info("Twilio recording {$recordingSid} was already deleted");
+                return;
+            }
+
+            Log::error("Failed to delete Twilio recording {$recordingSid}: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     public function sendSms($message, $from, $to): void

@@ -1365,9 +1365,27 @@ function openServiceBodyCallHandling(service_body_id)
     });
 }
 
+function showVoicemailDeleteError(message)
+{
+    spinnerDialog(false);
+    var alert = $("#voicemail-deleted-alert");
+    alert.removeClass("alert-success").addClass("alert-danger");
+    alert.text(message || "Error deleting voicemail");
+    alert.show();
+    alert.fadeOut(7000);
+}
+
 function deleteVoicemail(callsid)
 {
-    spinnerDialog(true, "Marking voicemail as deleted...", function () {
+    if (!callsid) {
+        return false;
+    }
+
+    if (!confirm("Permanently delete this voicemail recording from Twilio? This cannot be undone.")) {
+        return false;
+    }
+
+    spinnerDialog(true, "Deleting voicemail...", function () {
         $.ajax({
             async: false,
             type: "POST",
@@ -1378,16 +1396,69 @@ function deleteVoicemail(callsid)
                 "event_id": 4 // VOICEMAIL
             },
             complete: function (res) {
-                if (res['status'] === 403) {
-                    spinnerDialog(false);
-                    var alert = $("#voicemail-deleted-alert");
-                    alert.addClass("alert-danger");
-                    alert.html(res['responseJSON']['error']);
-                    alert.show();
-                    alert.fadeOut(7000);
-                } else {
+                if (res.status >= 200 && res.status < 300) {
                     location.reload();
+                    return;
                 }
+                var message = res.responseJSON && res.responseJSON.error;
+                showVoicemailDeleteError(message);
+            },
+            timeout: 60000
+        });
+    });
+
+    return false;
+}
+
+function deleteSelectedVoicemails()
+{
+    if (typeof table === "undefined" || !table.getSelectedData) {
+        return false;
+    }
+
+    var selected = table.getSelectedData().filter(function (row) {
+        return row.callsid;
+    });
+    if (selected.length === 0) {
+        showVoicemailDeleteError("Select at least one voicemail.");
+        return false;
+    }
+
+    var noun = selected.length === 1 ? "recording" : "recordings";
+    if (!confirm("Permanently delete " + selected.length + " voicemail " + noun + " from Twilio? This cannot be undone.")) {
+        return false;
+    }
+
+    spinnerDialog(true, "Deleting selected voicemails...", function () {
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "../api/v1/voicemail/delete",
+            data: {
+                "callsids": selected.map(function (row) {
+                    return row.callsid;
+                })
+            },
+            complete: function (res) {
+                if (res.status >= 200 && res.status < 300) {
+                    var failed = (res.responseJSON && res.responseJSON.failed) || [];
+                    if (failed.length === 0) {
+                        location.reload();
+                        return;
+                    }
+                    var deleted = (res.responseJSON && res.responseJSON.deleted) || [];
+                    showVoicemailDeleteError(
+                        "Deleted " + deleted.length + " voicemail(s). " + failed.length + " could not be deleted."
+                    );
+                    if (deleted.length > 0) {
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2500);
+                    }
+                    return;
+                }
+                var message = res.responseJSON && res.responseJSON.error;
+                showVoicemailDeleteError(message);
             },
             timeout: 60000
         });

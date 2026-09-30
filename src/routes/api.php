@@ -24,6 +24,7 @@ Route::group([
     Route::resource('reports/metrics', 'MetricController')->only(['index']);
     Route::resource('rootServer/servicebodies', 'RootServerServiceBodiesController')->only(['index']);
     Route::resource('events/status', 'EventStatusController')->only(['index', 'store']);
+    Route::post('voicemail/delete', 'VoicemailController@destroyMany');
     Route::resource('settings', 'SettingsController')->only(['index']);
 });
 
