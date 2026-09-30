@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Constants\TwilioCallStatus;
+use App\Utilities\MessagingChannel;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Twilio\Exceptions\ConfigurationException;
@@ -58,8 +59,24 @@ class TwilioService extends Service
 
     public function sendSms($message, $from, $to): void
     {
-        if (isset($from) && isset($to)
-            && str_replace("+", "", $from) != self::ANONYMOUS_NUMBER && $this->mobileCheck($from)) {
+        if (!isset($from) || !isset($to)) {
+            return;
+        }
+
+        $fromE164 = MessagingChannel::e164($from);
+        if (str_replace("+", "", (string) $fromE164) === self::ANONYMOUS_NUMBER) {
+            return;
+        }
+
+        // WhatsApp addresses already carry the channel prefix Twilio needs.
+        // Carrier lookup does not understand whatsapp:+E.164, and the seeker
+        // is messaging from an app, so skip the mobile check.
+        if (MessagingChannel::isWhatsApp($from) || MessagingChannel::isWhatsApp($to)) {
+            $this->client()->messages->create($from, array("from" => $to, "body" => $message));
+            return;
+        }
+
+        if ($this->mobileCheck($from)) {
             $this->client()->messages->create($from, array("from" => $to, "body" => $message));
         }
     }

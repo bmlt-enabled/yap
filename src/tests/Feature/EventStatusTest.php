@@ -49,3 +49,9 @@ test('test event ids', function () {
     $this->assertTrue(EventId::getEventById(EventId::CUSTOM_EXTENSION) == "Custom Extension");
     $this->assertTrue(EventId::getEventById(EventId::STIR_VERSTAT_RECEIVED) == "STIR/SHAKEN Verification Status Received");
 });
+
+test('record types include whatsapp', function () {
+    expect(\App\Structures\RecordType::getTypeById(\App\Structures\RecordType::PHONE))->toBe('CALL')
+        ->and(\App\Structures\RecordType::getTypeById(\App\Structures\RecordType::SMS))->toBe('SMS')
+        ->and(\App\Structures\RecordType::getTypeById(\App\Structures\RecordType::WHATSAPP))->toBe('WHATSAPP');
+});
