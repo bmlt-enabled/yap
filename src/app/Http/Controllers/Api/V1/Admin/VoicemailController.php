@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Repositories\VoicemailRepository;
 use App\Services\AuthorizationService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use RuntimeException;
+use Twilio\Exceptions\RestException;
 
 /**
  * @OA\Tag(
@@ -124,7 +127,7 @@ class VoicemailController extends Controller
      * @OA\Delete(
      *     path="/api/v1/voicemail/{voicemail}",
      *     summary="Delete a voicemail",
-     *     description="Deletes a specific voicemail by its call SID",
+     *     description="Permanently deletes the Twilio recording for a voicemail, then hides it from the admin list",
      *     operationId="deleteVoicemail",
      *     tags={"Voicemails"},
      *     security={{"sanctum":{}}},
@@ -151,7 +154,7 @@ class VoicemailController extends Controller
      *         response=200,
      *         description="Voicemail deleted successfully",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Voicemail deleted successfully")
+     *             @OA\Property(property="message", type="string", example="Voicemail recording permanently deleted from Twilio")
      *         )
      *     ),
      *     @OA\Response(
@@ -194,7 +197,17 @@ class VoicemailController extends Controller
             return response()->json(['message' => 'Not authorized'], 403);
         }
 
-        $deleted = $this->voicemailRepository->delete($serviceBodyId, $callSid);
+        try {
+            $deleted = $this->voicemailRepository->delete($serviceBodyId, $callSid);
+        } catch (RestException) {
+            return response()->json([
+                'message' => 'Could not delete the Twilio recording'
+            ], 502);
+        } catch (RuntimeException $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 422);
+        }
 
         if (!$deleted) {
             return response()->json([
@@ -203,7 +216,136 @@ class VoicemailController extends Controller
         }
 
         return response()->json([
-            'message' => 'Voicemail deleted successfully'
+            'message' => 'Voicemail recording permanently deleted from Twilio'
+        ]);
+    }
+
+    /**
+     * Delete multiple voicemails
+     *
+     * @OA\Post(
+     *     path="/api/v1/voicemail/delete",
+     *     summary="Delete selected voicemails",
+     *     description="Permanently deletes the Twilio recording for each selected voicemail, then hides it from the admin list",
+     *     operationId="deleteVoicemails",
+     *     tags={"Voicemails"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="serviceBodyId",
+     *         description="ID of the service body",
+     *         required=true,
+     *         in="query",
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"callsids"},
+     *             @OA\Property(
+     *                 property="callsids",
+     *                 type="array",
+     *                 @OA\Items(type="string", example="CA1234567890")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Bulk delete result",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="deleted", type="array", @OA\Items(type="string")),
+     *             @OA\Property(
+     *                 property="failed",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="callsid", type="string"),
+     *                     @OA\Property(property="message", type="string")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="No voicemails selected",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No voicemails selected")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Not authorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Not authorized")
+     *         )
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function destroyMany(Request $request): JsonResponse
+    {
+        $serviceBodyId = $request->query('serviceBodyId');
+
+        if (!$serviceBodyId) {
+            return response()->json([
+                'message' => 'Service body ID is required'
+            ], 400);
+        }
+
+        if (!is_numeric($serviceBodyId) || intval($serviceBodyId) <= 0) {
+            return response()->json(['message' => 'Invalid service body ID'], 400);
+        }
+        $serviceBodyId = intval($serviceBodyId);
+
+        if (!$this->authorizeServiceBody($serviceBodyId)) {
+            return response()->json(['message' => 'Not authorized'], 403);
+        }
+
+        $callsids = $request->input('callsids');
+        if (!is_array($callsids) || count($callsids) === 0) {
+            return response()->json(['message' => 'No voicemails selected'], 400);
+        }
+
+        $deleted = [];
+        $failed = [];
+        foreach ($callsids as $callsid) {
+            if (!is_string($callsid) || $callsid === '') {
+                $failed[] = ['callsid' => $callsid, 'message' => 'Invalid callsid'];
+                continue;
+            }
+
+            try {
+                $removed = $this->voicemailRepository->delete($serviceBodyId, $callsid);
+            } catch (RestException) {
+                $failed[] = ['callsid' => $callsid, 'message' => 'Could not delete the Twilio recording'];
+                continue;
+            } catch (RuntimeException $e) {
+                $failed[] = ['callsid' => $callsid, 'message' => $e->getMessage()];
+                continue;
+            }
+
+            if (!$removed) {
+                $failed[] = ['callsid' => $callsid, 'message' => 'Voicemail not found'];
+                continue;
+            }
+
+            $deleted[] = $callsid;
+        }
+
+        return response()->json([
+            'deleted' => $deleted,
+            'failed' => $failed,
         ]);
     }
 }
