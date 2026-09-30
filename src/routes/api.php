@@ -87,6 +87,7 @@ Route::group([
         Route::resource('events/status', 'EventStatusController')->only(['index', 'store']);
         Route::resource('session', 'SessionController')->only(['store']);
         Route::resource('cache', 'CacheController')->only(['store']);
+        Route::post('voicemail/delete', 'VoicemailController@destroyMany');
         Route::resource('voicemail', 'VoicemailController')->only(['index', 'destroy']);
         Route::controller(SettingsController::class)->group(function () {
             Route::get('settings', 'index');
