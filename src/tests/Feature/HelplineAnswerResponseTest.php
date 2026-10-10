@@ -1,7 +1,10 @@
 <?php
 
 use App\Constants\TwilioCallStatus;
+use App\Constants\EventId;
+use App\Models\RecordEvent;
 use App\Services\TwilioService;
+use Twilio\Exceptions\TwilioException;
 use Tests\FakeTwilioHttpClient;
 
 beforeEach(function () {
@@ -165,6 +168,64 @@ test('no volunteers opt to answer the call, caller hung up before being sent to 
         ->assertSeeInOrderExact([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
+            '<Hangup/>',
+            '</Response>'
+        ], false);
+})->with(['GET', 'POST']);
+
+test('caller hung up before the volunteer pressed 1, no in-progress conference', function ($method) {
+    $callSid = "volunteer-leg";
+    $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
+    $conferenceListMock->shouldReceive("read")->with(['friendlyName' => $this->conferenceName, 'status' => 'in-progress'])
+        ->andReturn([]);
+    $this->twilioClient->conferences = $conferenceListMock;
+    $this->twilioClient->shouldNotReceive("conferences");
+
+    $response = $this->call($method, '/helpline-answer-response.php', [
+        "Digits"=>"1",
+        "Called"=>"12125551212",
+        "CallSid"=>$callSid,
+        "conference_name"=>$this->conferenceName
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">',
+            'unfortunately the caller hung up before we could connect you.  Good bye.',
+            '</Say>',
+            '<Hangup/>',
+            '</Response>'
+        ], false);
+
+    $event = RecordEvent::where('callsid', $callSid)
+        ->where('event_id', EventId::VOLUNTEER_ANSWERED_BUT_CALLER_HUP)
+        ->first();
+    $this->assertNotNull($event);
+})->with(['GET', 'POST']);
+
+test('conference lookup fails with a Twilio error when the volunteer presses 1', function ($method) {
+    $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
+    $conferenceListMock->shouldReceive("read")->andThrow(new TwilioException("boom"));
+    $this->twilioClient->conferences = $conferenceListMock;
+
+    $response = $this->call($method, '/helpline-answer-response.php', [
+        "Digits"=>"1",
+        "Called"=>"12125551212",
+        "CallSid"=>"volunteer-leg",
+        "conference_name"=>$this->conferenceName
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "text/xml; charset=utf-8")
+        ->assertSeeInOrderExact([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say voice="alice" language="en-US">',
+            'unfortunately the caller hung up before we could connect you.  Good bye.',
+            '</Say>',
             '<Hangup/>',
             '</Response>'
         ], false);
