@@ -1,6 +1,7 @@
 # Release Notes
 
 ### 4.5.3 (UNRELEASED)
+* Fixed every page (including `/admin`) returning HTTP 500 after upgrading to 4.5.3-beta1. The new `yap:voicemail-undelete` console command made Laravel scan `app/Console/Commands`, which reads `composer.json`, and the release zip does not include that file. Commands are now registered explicitly, and CI boots the packaged app to catch this. [#1641]
 * Volunteers no longer hear "an application error has occurred" when the caller hangs up just before they press 1 (or just as they answer). `helpline-answer-response` and `helpline-outdial-response` now tell the volunteer the caller hung up, record `VOLUNTEER_ANSWERED_BUT_CALLER_HUP`, and hang up instead of returning HTTP 500. A Twilio API error on the conference lookup is handled the same way. [#1644]
 * Voicemail Delete now removes the recording from Twilio, and voicemails that have no call record (timestamp only) can be deleted. The admin list can select multiple rows and delete them together. Delete permanently removes the audio from the Twilio account; a recording that is already gone is still removed from the Yap list. [#1641]
 * Added `php artisan yap:voicemail-undelete` to put voicemails back on the admin list when they were only hidden in Yap and the audio is still in Twilio, so they can be deleted for real. It clears `VOICEMAIL_DELETED` status rows for voicemail events only. Run it once after upgrading, then delete the recordings from the admin list. [#1641]
