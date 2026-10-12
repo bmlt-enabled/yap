@@ -25,6 +25,7 @@ use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Twilio\Exceptions\TwilioException;
 use Twilio\TwiML\VoiceResponse;
 
 class CallFlowController extends Controller
@@ -737,11 +738,16 @@ class CallFlowController extends Controller
     {
         $twiml = new VoiceResponse();
         if ($request->get('Digits') == "1") {
-            $conferences = $this->twilio->client()->conferences
-                ->read(array ("friendlyName" => $request->get('conference_name'), "status" => "in-progress"));
-            $participants = $this->twilio->client()->conferences($conferences[0]->sid)->participants->read();
+            $participants = $this->getInProgressConferenceParticipants($request->get('conference_name'));
 
-            if (count($participants) == 2) {
+            if ($participants === null) {
+                $this->call->insertCallEventRecord(EventId::VOLUNTEER_ANSWERED_BUT_CALLER_HUP, (object)[
+                    'to_number' => $request->get('Called')]);
+                Log::debug("The caller hungup before the volunteer could join.");
+                $twiml->say($this->settings->word('the_caller_hungup'))
+                    ->setVoice($this->settings->voice())->setLanguage($this->settings->get('language'));
+                $twiml->hangup();
+            } elseif (count($participants) == 2) {
                 Log::debug("Enough volunteers have joined.  Hanging up this volunteer.");
                 $twiml->say($this->settings->word('volunteer_has_already_joined_the_call_goodbye'))
                     ->setVoice($this->settings->voice())->setLanguage($this->settings->get('language'));
@@ -777,9 +783,7 @@ class CallFlowController extends Controller
 
     public function helplineOutdialResponse(Request $request)
     {
-        $conferences = $this->twilio->client()->conferences
-            ->read(array ("friendlyName" => $request->get('conference_name'), "status" => "in-progress"));
-        $participants = $this->twilio->client()->conferences($conferences[0]->sid)->participants->read();
+        $participants = $this->getInProgressConferenceParticipants($request->get('conference_name')) ?? [];
 
         $twiml = new VoiceResponse();
         if (count($participants) == 2) {
@@ -832,6 +836,26 @@ class CallFlowController extends Controller
         }
 
         return response($twiml)->header("Content-Type", "text/xml; charset=utf-8");
+    }
+
+    /**
+     * Returns the participants of the in-progress conference with the given name, or null when no such
+     * conference exists (e.g. the caller hung up, which ends the conference) or the Twilio lookup fails.
+     */
+    private function getInProgressConferenceParticipants($conferenceName): ?array
+    {
+        try {
+            $conferences = $this->twilio->client()->conferences
+                ->read(array ("friendlyName" => $conferenceName, "status" => "in-progress"));
+            if (count($conferences) == 0) {
+                Log::debug(sprintf("No in-progress conference found for %s.", $conferenceName));
+                return null;
+            }
+            return $this->twilio->client()->conferences($conferences[0]->sid)->participants->read();
+        } catch (TwilioException $e) {
+            Log::critical($e);
+            return null;
+        }
     }
 
     public function helplineSms(Request $request, $latitude, $longitude)

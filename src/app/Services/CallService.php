@@ -9,6 +9,8 @@ use App\Repositories\ReportsRepository;
 use App\Repositories\VoicemailRepository;
 use App\Structures\RecordType;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
+use Twilio\Exceptions\TwilioException;
 
 class CallService extends Service
 {
@@ -97,9 +99,18 @@ class CallService extends Service
 
     public function setConferenceParticipant($friendlyname, $callsid, $role): void
     {
-        $conferences = $this->twilio->client()->conferences->read(array ("friendlyName" => $friendlyname, "status" => "in-progress"));
-        $conferencesid = $conferences[0]->sid;
-        $this->reports->setConferenceParticipant($friendlyname, $conferencesid, $callsid, $role);
+        try {
+            $conferences = $this->twilio->client()->conferences->read(array ("friendlyName" => $friendlyname, "status" => "in-progress"));
+        } catch (TwilioException $e) {
+            Log::critical($e);
+            return;
+        }
+        if (count($conferences) == 0) {
+            // The conference ends as soon as the caller hangs up, so there is nothing left to record against.
+            Log::debug(sprintf("No in-progress conference found for %s, not recording participant %s.", $friendlyname, $callsid));
+            return;
+        }
+        $this->reports->setConferenceParticipant($friendlyname, $conferences[0]->sid, $callsid, $role);
     }
 
     public function getConferenceParticipant($callsid)
