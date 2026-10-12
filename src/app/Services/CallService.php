@@ -8,6 +8,7 @@ use App\Models\Alert;
 use App\Repositories\ReportsRepository;
 use App\Repositories\VoicemailRepository;
 use App\Structures\RecordType;
+use App\Utilities\MessagingChannel;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Twilio\Exceptions\TwilioException;
@@ -75,7 +76,12 @@ class CallService extends Service
             $type = RecordType::PHONE;
         } elseif (request()->has('SmsSid')) {
             $callSid = request()->get('SmsSid');
-            $type = RecordType::SMS;
+            $type = MessagingChannel::channelFromAddresses(
+                request()->get('From'),
+                request()->get('To')
+            ) === MessagingChannel::WHATSAPP
+                ? RecordType::WHATSAPP
+                : RecordType::SMS;
         } else {
             return;
         }
