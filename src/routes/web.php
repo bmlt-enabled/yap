@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\FakeTwilio\FakeTwilioStore;
 use App\Services\SettingsService;
 use Illuminate\Support\Facades\Route;
 
@@ -101,5 +102,12 @@ Route::middleware('twilio.signature')->group(function () use ($ext) {
     // table was cached while the feature was on.
     if (SettingsService::featureEnabledAtBoot('webchat_enabled')) {
         Route::match(array('GET', 'POST'), "/webchat-sms", 'App\Http\Controllers\WebChatSmsController@handleSms');
+    }
+
+    // Fake Twilio control/inspection endpoints for the call/SMS simulator.
+    // DEVELOPMENT/CI ONLY: registered only when TWILIO_FAKE_MODE is on outside
+    // production. Signed like any other Twilio route.
+    if (FakeTwilioStore::enabled()) {
+        require __DIR__ . '/fake-twilio.php';
     }
 });
