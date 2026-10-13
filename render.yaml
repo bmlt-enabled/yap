@@ -1,0 +1,76 @@
+# Render Blueprint for a hosted yap demo / simulator target on Render's FREE tier.
+# Docs: src/docs/docs/miscellaneous/render-demo.md
+#
+# Free tier caveats, in short:
+#   - The service sleeps after 15 min idle; the first request then takes ~30-60s.
+#     Twilio gives up on a webhook after 15s, so this instance is for the
+#     fake-Twilio simulator (php artisan yap:simulate) and demos, NOT real calls.
+#   - No persistent disk: sessions live in the database (laravel_sessions), logs go
+#     to stderr, and config.php is rendered from env vars on every boot.
+#   - No free MySQL on Render: point MYSQL_* at an external MySQL-compatible DB
+#     (TiDB Cloud Serverless or Aiven free MySQL). TLS is on by default.
+services:
+  - type: web
+    name: yap
+    runtime: docker
+    plan: free
+    dockerfilePath: ./docker/Dockerfile.render
+    dockerContext: .
+    healthCheckPath: /ping
+    autoDeploy: true
+    envVars:
+      # --- Laravel ---
+      - key: APP_KEY
+        generateValue: true   # the entrypoint adds Laravel's "base64:" prefix
+      # Deliberately not "production": TWILIO_FAKE_MODE is ignored in production.
+      - key: APP_ENV
+        value: demo
+      - key: APP_DEBUG
+        value: "false"
+      - key: LOG_CHANNEL
+        value: stderr
+      # Yap's own "sessions" table holds call PINs, so Laravel sessions get their own.
+      - key: SESSION_DRIVER
+        value: database
+      - key: SESSION_TABLE
+        value: laravel_sessions
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      # Render terminates TLS in front of the container. Trust its X-Forwarded-*
+      # headers so URLs (and Twilio signatures) use https://<service>.onrender.com.
+      - key: TRUSTED_PROXIES
+        value: "*"
+      # APP_URL defaults to RENDER_EXTERNAL_URL in the entrypoint; set it to override.
+
+      # --- Fake Twilio (#1650) ---
+      - key: TWILIO_FAKE_MODE
+        value: "true"
+
+      # --- yap settings (rendered into config.php on boot) ---
+      - key: TITLE
+        value: Yap Demo Helpline
+      - key: BMLT_ROOT_SERVER
+        value: https://latest.aws.bmlt.app/main_server
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+
+      # --- External MySQL-compatible database (TiDB Cloud / Aiven) ---
+      - key: MYSQL_HOSTNAME
+        sync: false
+      - key: MYSQL_PORT
+        sync: false
+      - key: MYSQL_USERNAME
+        sync: false
+      - key: MYSQL_PASSWORD
+        sync: false
+      - key: MYSQL_DATABASE
+        sync: false
+      # TLS uses the system CA bundle by default, which covers TiDB Cloud. Aiven
+      # signs with its own CA: paste its ca.pem contents here. MYSQL_TLS=false
+      # turns TLS off entirely (not recommended).
+      - key: MYSQL_SSL_CA_PEM
+        sync: false

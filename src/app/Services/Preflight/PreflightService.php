@@ -261,7 +261,7 @@ class PreflightService
     {
         $driver = config('session.driver');
 
-        if ($driver !== 'database') {
+        if ($driver !== 'database' || config('session.table') !== 'sessions') {
             return PreflightCheck::pass(
                 'session_driver',
                 'Session driver',
@@ -273,7 +273,7 @@ class PreflightService
             'session_driver',
             'Session driver',
             'SESSION_DRIVER is set to "database".',
-            'Use file, redis, or another driver instead of database. config/session.php points at the sessions table, but Yap uses that table for call PINs (callsid, timestamp, pin), not Laravel sessions.',
+            'Use file, redis, or another driver, or set SESSION_TABLE=laravel_sessions. SESSION_TABLE defaults to the sessions table, but Yap uses that table for call PINs (callsid, timestamp, pin), not Laravel sessions.',
         );
     }
 

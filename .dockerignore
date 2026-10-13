@@ -1,0 +1,25 @@
+# Keeps local state out of the docker/Dockerfile.render build context.
+.git
+.github
+.claude
+.vscode
+docs
+src/node_modules
+src/vendor
+src/docs
+src/tests
+src/e2e
+src/.env
+src/config.php
+src/config.*.php
+src/storage/logs/*
+src/storage/framework/cache/data/*
+src/storage/framework/sessions/*
+src/storage/framework/views/*
+src/bootstrap/cache/*.php
+src/public/js
+src/public/css
+src/public/dist
+src/coverage.xml
+src/test-report.xml
+**/.DS_Store
