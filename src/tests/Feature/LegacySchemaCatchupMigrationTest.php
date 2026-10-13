@@ -25,6 +25,23 @@ function rollbackLegacySchemaMigrationRecord(): void
     }
 }
 
+/**
+ * A schema that predates the catch-up migration predates every later one too,
+ * so roll those back as well; otherwise the migration middleware sees the
+ * latest migration recorded and (correctly) skips running anything.
+ */
+function rollbackMigrationsAfterLegacySchema(): void
+{
+    foreach (glob(database_path('migrations/*.php')) as $file) {
+        if (basename($file, '.php') > LEGACY_SCHEMA_MIGRATION) {
+            Artisan::call('migrate:rollback', [
+                '--path' => 'database/migrations/' . basename($file),
+                '--force' => true,
+            ]);
+        }
+    }
+}
+
 function dropLegacyColumns(): void
 {
     foreach (LEGACY_COLUMNS as $table => $columns) {
@@ -104,6 +121,7 @@ test('legacy schema catch-up migration allows call event inserts with type colum
 });
 
 test('migration middleware auto-applies legacy schema catch-up on predated schema', function () {
+    rollbackMigrationsAfterLegacySchema();
     dropLegacyColumns();
     rollbackLegacySchemaMigrationRecord();
 

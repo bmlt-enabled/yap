@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Constants\TwilioCallStatus;
+use App\Services\FakeTwilio\FakeTwilioHttpClient;
+use App\Services\FakeTwilio\FakeTwilioStore;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Twilio\Exceptions\ConfigurationException;
@@ -18,9 +20,18 @@ class TwilioService extends Service
     {
         parent::__construct(App::make(SettingsService::class));
         try {
+            $httpClient = null;
+            if (FakeTwilioStore::enabled()) {
+                Log::warning('Twilio fake mode enabled: outbound Twilio API requests are recorded, not sent');
+                $httpClient = new FakeTwilioHttpClient(new FakeTwilioStore());
+            }
+
             $this->client = new Client(
                 $this->settings->get("twilio_account_sid"),
-                $this->settings->get("twilio_auth_token")
+                $this->settings->get("twilio_auth_token"),
+                null,
+                null,
+                $httpClient
             );
         } catch (ConfigurationException $e) {
             Log::critical("Missing Twilio Credentials");

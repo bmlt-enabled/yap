@@ -16,8 +16,10 @@ class TimeZoneService extends Service
 
     public function getTimeZoneForCoordinates($latitude, $longitude)
     {
+        // Cast so the setting also works as an array, e.g. an
+        // override_timezone_default[timeZoneId]=America/New_York query param.
         return $this->settings->has("timezone_default")
-            ? $this->settings->get("timezone_default")
+            ? (object) $this->settings->get("timezone_default")
             : json_decode($this->http->get(sprintf(
                 "%s&location=%s,%s&timestamp=%d",
                 $this->settings->timezoneApiUri(),

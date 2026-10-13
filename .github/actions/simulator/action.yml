@@ -1,0 +1,39 @@
+name: simulator
+description: "Run the fake-Twilio call/SMS simulator against php artisan serve"
+
+runs:
+  using: composite
+  steps:
+    - name: Start yap in fake Twilio mode
+      run: |
+        cd src
+        mv .env.pipeline .env
+        ENVIRONMENT=test php artisan migrate --force
+        ENVIRONMENT=test TWILIO_FAKE_MODE=true TWILIO_DISABLE_SIGNATURE_VALIDATION=false \
+          SESSION_DRIVER=file APP_URL=http://127.0.0.1:8000 \
+          php artisan serve --host=127.0.0.1 --port=8000 > server.log 2>&1 &
+        for i in $(seq 1 30); do
+          curl -sf http://127.0.0.1:8000/ping > /dev/null && exit 0
+          sleep 1
+        done
+        echo "yap did not start"; cat server.log; exit 1
+      shell: bash
+
+    - name: Simulate calls and SMS
+      run: |
+        cd src
+        export ENVIRONMENT=test
+        php artisan yap:simulate -v --base-url=http://127.0.0.1:8000
+        php artisan yap:simulate -v helpline-volunteer --base-url=http://127.0.0.1:8000 --service-body=1006 --seed
+        php artisan yap:simulate -v helpline-volunteer --base-url=http://127.0.0.1:8000 --service-body=1006 --seed --outcome=no-answer
+      shell: bash
+
+    - name: Upload logs
+      uses: actions/upload-artifact@v6
+      if: failure()
+      with:
+        name: simulator-logs
+        path: |
+          src/server.log
+          src/storage/logs/laravel.log
+        retention-days: 30
