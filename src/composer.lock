@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "29acb798df030dc32482f4610e0686f1",
+    "content-hash": "e3bc507a70bc7f37ed552770fff8ec81",
     "packages": [
         {
             "name": "bmlt-enabled/bmlt-root-server-php-client",
@@ -67,16 +67,16 @@
         },
         {
             "name": "bmlt/fetch-meditation",
-            "version": "1.2.4",
+            "version": "1.3.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bmlt-enabled/fetch-meditation.git",
-                "reference": "7597b5d96b07047856c16762cdcbd51a9a1988d0"
+                "reference": "3b674cca23cdd32e905cdbd9bb636e4e2250fbf5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bmlt-enabled/fetch-meditation/zipball/7597b5d96b07047856c16762cdcbd51a9a1988d0",
-                "reference": "7597b5d96b07047856c16762cdcbd51a9a1988d0",
+                "url": "https://api.github.com/repos/bmlt-enabled/fetch-meditation/zipball/3b674cca23cdd32e905cdbd9bb636e4e2250fbf5",
+                "reference": "3b674cca23cdd32e905cdbd9bb636e4e2250fbf5",
                 "shasum": ""
             },
             "require": {
@@ -114,9 +114,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bmlt-enabled/fetch-meditation/issues",
-                "source": "https://github.com/bmlt-enabled/fetch-meditation/tree/1.2.4"
+                "source": "https://github.com/bmlt-enabled/fetch-meditation/tree/1.3.7"
             },
-            "time": "2025-06-07T02:59:33+00:00"
+            "time": "2026-10-13T01:33:32+00:00"
         },
         {
             "name": "brick/math",
