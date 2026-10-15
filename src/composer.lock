@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0c9062967af5ed49feb1e0ec92d5d743",
+    "content-hash": "aa2a12fc00d7200b9b28696c80098b83",
     "packages": [
         {
             "name": "bmlt-enabled/bmlt-root-server-php-client",
@@ -67,16 +67,16 @@
         },
         {
             "name": "bmlt/fetch-meditation",
-            "version": "1.3.2",
+            "version": "1.3.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bmlt-enabled/fetch-meditation.git",
-                "reference": "a8d4c034e7a61e4a577c2c738175133bfabd84c0"
+                "reference": "3b674cca23cdd32e905cdbd9bb636e4e2250fbf5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bmlt-enabled/fetch-meditation/zipball/a8d4c034e7a61e4a577c2c738175133bfabd84c0",
-                "reference": "a8d4c034e7a61e4a577c2c738175133bfabd84c0",
+                "url": "https://api.github.com/repos/bmlt-enabled/fetch-meditation/zipball/3b674cca23cdd32e905cdbd9bb636e4e2250fbf5",
+                "reference": "3b674cca23cdd32e905cdbd9bb636e4e2250fbf5",
                 "shasum": ""
             },
             "require": {
@@ -114,9 +114,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bmlt-enabled/fetch-meditation/issues",
-                "source": "https://github.com/bmlt-enabled/fetch-meditation/tree/1.3.2"
+                "source": "https://github.com/bmlt-enabled/fetch-meditation/tree/1.3.7"
             },
-            "time": "2025-11-07T23:11:52+00:00"
+            "time": "2026-10-13T01:33:32+00:00"
         },
         {
             "name": "brick/math",
@@ -6545,12 +6545,12 @@
             "version": "v5.6.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/vlucas/phpdotenv.git",
+                "url": "https://github.com/phpdotenv/phpdotenv.git",
                 "reference": "24ac4c74f91ee2c193fa1aaa5c249cb0822809af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/24ac4c74f91ee2c193fa1aaa5c249cb0822809af",
+                "url": "https://api.github.com/repos/phpdotenv/phpdotenv/zipball/24ac4c74f91ee2c193fa1aaa5c249cb0822809af",
                 "reference": "24ac4c74f91ee2c193fa1aaa5c249cb0822809af",
                 "shasum": ""
             },
