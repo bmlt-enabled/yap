@@ -76,3 +76,47 @@ jobs:
 
       - name: E2E Tests
         uses: ./.github/actions/e2e-test
+
+  render-image:
+    # Builds docker/Dockerfile.render (the Render Blueprint image) and boots it
+    # against MySQL: config.php from env, migrations, caches, Apache on $PORT.
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: 'mysql/mysql-server:8.0'
+        env:
+          MYSQL_ROOT_PASSWORD: yap_root_password
+          MYSQL_DATABASE: yap
+          MYSQL_ROOT_HOST: '%'
+        ports:
+          - 3306:3306
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build image
+        run: docker build -f docker/Dockerfile.render -t yap-render .
+
+      - name: Boot and health check
+        run: |
+          docker run -d --name yap --network host \
+            -e APP_KEY="$(openssl rand -base64 32)" -e APP_ENV=demo -e LOG_CHANNEL=stderr \
+            -e SESSION_DRIVER=database -e SESSION_TABLE=laravel_sessions \
+            -e TWILIO_FAKE_MODE=true -e TITLE="Yap CI" \
+            -e BMLT_ROOT_SERVER=https://latest.aws.bmlt.app/main_server \
+            -e TWILIO_ACCOUNT_SID=AC00000000000000000000000000000000 -e TWILIO_AUTH_TOKEN=ci-token \
+            -e MYSQL_HOSTNAME=127.0.0.1 -e MYSQL_PORT=3306 -e MYSQL_USERNAME=root \
+            -e MYSQL_PASSWORD=yap_root_password -e MYSQL_DATABASE=yap -e MYSQL_TLS=false \
+            yap-render
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:10000/ping | grep -q PONG; then break; fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:10000/ping | grep -q PONG
+          curl -fsS -o /dev/null http://127.0.0.1:10000/admin
+          # Code and config must not be served directly.
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:10000/config.php)" = 403
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:10000/vendor/autoload.php)" = 403
+
+      - name: Container logs
+        if: always()
+        run: docker logs yap || true

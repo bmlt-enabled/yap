@@ -83,9 +83,14 @@ return [
     | should use to manage the sessions. Of course, a sensible default is
     | provided for you; however, you are free to change this as needed.
     |
+    | Yap's own "sessions" table holds call PINs, not Laravel sessions, so the
+    | database driver needs a different table. The laravel_sessions migration
+    | creates one; set SESSION_TABLE=laravel_sessions to use it (the Render
+    | Blueprint does, since its filesystem does not survive a restart).
+    |
     */
 
-    'table' => 'sessions',
+    'table' => env('SESSION_TABLE', 'sessions'),
 
     /*
     |--------------------------------------------------------------------------

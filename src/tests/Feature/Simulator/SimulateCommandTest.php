@@ -5,6 +5,7 @@ use App\Services\TwilioService;
 use App\Simulator\Transport;
 use App\Simulator\TwilioSimulator;
 use App\Services\SettingsService;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Tests\FakeHttp;
 use Tests\Support\KernelTransport;
@@ -16,7 +17,17 @@ use Tests\Support\KernelTransport;
  */
 
 beforeEach(function () {
-    FakeHttp::install();
+    // The scenarios search BMLT for meetings on today's weekday, by the real
+    // clock, and FakeHttp only records the scenario coordinates for weekdays
+    // 2-4. Serve the Tuesday fixture for the other days so the scenarios find
+    // meetings whatever day the suite runs; its meetings are never "today" on
+    // those days, so the time-of-day filter cannot empty the list.
+    $tuesday = Http::response(FakeHttp::fixture('bmlt/meeting-search-42.867970-day3.json'));
+    $overrides = [];
+    foreach ([1, 5, 6, 7] as $weekday) {
+        $overrides["*switcher=GetSearchResults*data_field_key=id_bigint*lat_val=42.867970*weekdays={$weekday}*"] = $tuesday;
+    }
+    FakeHttp::install($overrides);
     config([
         'twilio.fake_mode' => true,
         'twilio.disable_signature_validation' => false,

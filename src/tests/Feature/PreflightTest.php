@@ -133,6 +133,15 @@ test('yap:preflight fails when session driver is database', function () {
         ->expectsOutputToContain('[FAIL] Session driver');
 });
 
+test('preflight passes the database session driver on a dedicated table', function () {
+    config(['session.driver' => 'database', 'session.table' => 'laravel_sessions']);
+
+    $result = app(PreflightService::class)->run();
+    $sessionCheck = collect($result['checks'])->firstWhere('id', 'session_driver');
+
+    expect($sessionCheck['passed'])->toBeTrue();
+});
+
 test('preflight service reports missing users unique index', function () {
     DB::statement('ALTER TABLE users DROP INDEX username_unique');
     insertLegacyPreflightUser(30, 'solo_user');

@@ -1,0 +1,60 @@
+# Production image for the Render Blueprint (render.yaml). Unlike docker/Dockerfile,
+# this has no xdebug and bakes the code, vendor/ and built assets into the image.
+# Build context is the repository root:
+#   docker build -f docker/Dockerfile.render -t yap-render .
+
+ARG PHP_VERSION=8.5
+
+# --- Frontend assets (laravel-mix) ---
+FROM node:24-slim AS assets
+WORKDIR /app
+COPY src/package.json src/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY src/webpack.mix.js ./
+COPY src/resources ./resources
+COPY src/public ./public
+RUN npm run production \
+    && if [ -d node_modules/@bmlt-enabled/croutonjs/dist ]; then \
+         mkdir -p public/dist/croutonjs && cp -R node_modules/@bmlt-enabled/croutonjs/dist/. public/dist/croutonjs/; \
+       fi
+
+# --- PHP dependencies ---
+FROM php:${PHP_VERSION}-cli AS vendor
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+RUN apt-get update && apt-get install -y --no-install-recommends git unzip \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY src/composer.json src/composer.lock ./
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-progress --no-interaction
+COPY src/ ./
+RUN composer dump-autoload --no-dev --optimize --no-scripts
+
+# --- Runtime ---
+FROM php:${PHP_VERSION}-apache
+
+ENV PORT=10000 \
+    APACHE_DOCUMENT_ROOT=/var/www/html
+
+RUN docker-php-ext-install pdo_mysql \
+    && a2enmod rewrite expires headers \
+    && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
+COPY docker/render/php.ini $PHP_INI_DIR/conf.d/zz-yap.ini
+COPY docker/render/apache.conf /etc/apache2/sites-available/000-default.conf
+# Render routes traffic to $PORT (10000 by default), not 80.
+RUN sed -ri 's/^Listen 80$/Listen ${PORT}/' /etc/apache2/ports.conf \
+    && sed -ri '/Listen 443/d' /etc/apache2/ports.conf
+
+WORKDIR /var/www/html
+COPY --from=vendor --chown=www-data:www-data /app ./
+COPY --from=assets --chown=www-data:www-data /app/public ./public
+RUN rm -rf node_modules tests e2e docs .env .env.pipeline config.test.php \
+    && php artisan package:discover --ansi \
+    && chown -R www-data:www-data storage bootstrap/cache
+
+COPY docker/render/generate-config.php /usr/local/bin/yap-generate-config.php
+COPY docker/render/entrypoint.sh /usr/local/bin/yap-entrypoint
+RUN chmod +x /usr/local/bin/yap-entrypoint
+
+EXPOSE 10000
+CMD ["yap-entrypoint"]

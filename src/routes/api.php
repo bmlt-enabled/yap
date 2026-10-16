@@ -76,14 +76,16 @@ Route::group([
         Route::resource('callHandling/routingEnabled', 'VolunteerRoutingEnabledController')->only(['index']);
         Route::resource('users', 'UserController')->only(['index', 'show', 'store', 'destroy', 'update']);
         Route::resource('groups', 'GroupController')->only(['index', 'store', 'destroy', 'update']);
-        Route::resource('groups/volunteers', 'GroupVolunteerController')->only(['index', 'store']);
+        Route::resource('groups/volunteers', 'GroupVolunteerController')->only(['index', 'store'])
+            ->names('groups.volunteers');
         Route::resource('volunteers/schedule', 'VolunteerScheduleController')->only(['index']);
         Route::resource('volunteers/download', 'VolunteerDownloadController')->only(['index']);
         Route::resource('reports/cdr', 'CdrController')->only(['index']);
         Route::resource('reports/mapmetrics', 'MapMetricController')->only(['index']);
         Route::resource('reports/metrics', 'MetricController')->only(['index']);
         Route::resource('rootServer/serviceBodies', 'RootServerServiceBodiesController')->only(['index']);
-        Route::resource('rootServer/serviceBodies/user', 'RootServerServiceBodiesForUserController')->only(['index']);
+        Route::resource('rootServer/serviceBodies/user', 'RootServerServiceBodiesForUserController')->only(['index'])
+            ->names('rootServer.serviceBodies.user');
         Route::resource('events/status', 'EventStatusController')->only(['index', 'store']);
         Route::resource('session', 'SessionController')->only(['store']);
         Route::resource('cache', 'CacheController')->only(['store']);

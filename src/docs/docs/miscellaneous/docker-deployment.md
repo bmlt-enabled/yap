@@ -12,7 +12,9 @@ Yap ships a PHP 8.5-based Docker image for self-hosters who prefer containers ov
 1. Mount your `config.php` into the container (or bake it into your own image layer).
 2. Expose port 80 from the container to your reverse proxy.
 3. Set `TRUSTED_PROXIES` when the container sits behind nginx, Traefik, or another proxy — Twilio signature validation needs the public URL Twilio signed.
-4. Use `SESSION_DRIVER=file` (or `redis`). Do **not** set `SESSION_DRIVER=database`; Yap's `sessions` table stores call PINs, not Laravel sessions.
+4. Use `SESSION_DRIVER=file` (or `redis`). To keep sessions in MySQL, set `SESSION_DRIVER=database` **and** `SESSION_TABLE=laravel_sessions`; never use the database driver with the default table, because Yap's `sessions` table stores call PINs, not Laravel sessions.
+
+For a one-click hosted demo, see [Hosted Demo on Render](./render-demo).
 
 ## Environment variables
 
