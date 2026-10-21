@@ -1,6 +1,10 @@
 # Language Options
 
 ---
+**New to YAP?** [Click here for a step-by-step setup guide](./bilingual-helpline-guide.md) written for beginners.
+
+The instructions below are intended for advanced users.
+
 
 There is a concept of language resource files.  You will notice them in the `app/Structures/Localizations.php` file.  Please open a ticket if you would like to contribute to translating to another language.
 
