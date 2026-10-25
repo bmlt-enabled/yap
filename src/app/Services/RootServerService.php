@@ -321,7 +321,7 @@ class RootServerService extends Service
 
     public function logout()
     {
-        $endpoint = 'local_server/server_admin/xml.php?admin_action=logout';
+        $endpoint = '/local_server/server_admin/xml.php?admin_action=logout';
         $this->http->getWithAuth(sprintf("%s%s", $this->settings->getAdminBMLTRootServer(), $endpoint));
     }
 
