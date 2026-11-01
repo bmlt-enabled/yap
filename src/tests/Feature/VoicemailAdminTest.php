@@ -336,3 +336,40 @@ test('voicemail undelete prompts before restoring', function () {
 
     expect((new VoicemailRepository())->get(44))->toHaveCount(0);
 });
+
+function voicemailPageAdmin(): void
+{
+    $_SESSION['auth_mechanism'] = AuthMechanism::V2;
+    $_SESSION['auth_is_admin'] = true;
+    $_SESSION['username'] = 'admin';
+    app()->instance(\App\Services\RootServerService::class, (new \Tests\RootServerMocks())->getService());
+}
+
+test('voicemail page without a service body redirects to the service body list', function () {
+    voicemailPageAdmin();
+
+    $this->get('/admin/voicemail')
+        ->assertStatus(302)
+        ->assertHeader('Location', 'http://localhost/admin/service-bodies');
+});
+
+test('voicemail page with an empty service body redirects to the service body list', function () {
+    voicemailPageAdmin();
+
+    $this->get('/admin/voicemail?service_body_id=')
+        ->assertStatus(302)
+        ->assertHeader('Location', 'http://localhost/admin/service-bodies');
+});
+
+test('voicemail page lists voicemails for the requested service body', function () {
+    voicemailPageAdmin();
+    $callsid = 'CAeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1';
+    insertVoicemailEvent($callsid, 1053);
+    insertVoicemailEvent('CAeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee2', 44);
+
+    $this->get('/admin/voicemail?service_body_id=1053')
+        ->assertStatus(200)
+        ->assertSee('for Finger Lakes Area Service', false)
+        ->assertSee($callsid, false)
+        ->assertDontSee('CAeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee2', false);
+});

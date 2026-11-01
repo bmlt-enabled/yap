@@ -5,8 +5,9 @@
         Saved.
     </div>
     <h3 class="voicemail-title"><?php
-                                $service_body = $rootServer->getServiceBody($_REQUEST['service_body_id']);
-                                echo sprintf("%s for %s", $settings->word('voicemail'), $service_body->name) ;?>
+                                $serviceBodyId = request()->query('service_body_id');
+                                $service_body = $rootServer->getServiceBody($serviceBodyId);
+                                echo e(sprintf("%s for %s", $settings->word('voicemail'), $service_body->name ?? $serviceBodyId)) ;?>
     </h3>
     <p class="text-muted">Delete permanently removes the recording from Twilio. This cannot be undone.</p>
     <button type="button" class="btn btn-danger mb-2" onclick="deleteSelectedVoicemails()">Delete selected</button>
@@ -18,7 +19,7 @@
         var lightTheme = "<?php echo url("/public/dist/css/yap-tabulator-dark.min.css")?>";
         loadTabulatorTheme();
         <?php
-        $voicemailRows = $voicemail->get($_REQUEST['service_body_id']);
+        $voicemailRows = $voicemail->get($serviceBodyId);
         foreach ($voicemailRows as $voicemailRow) {
             $voicemailRow->recording_url = null;
             if (!empty($voicemailRow->meta)) {

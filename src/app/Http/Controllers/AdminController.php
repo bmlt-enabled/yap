@@ -60,6 +60,12 @@ class AdminController extends Controller
 
         $page = $request->route("page") == "" ? "index" : $request->route("page");
 
+        // The voicemail page is scoped to one service body. Without one there is
+        // nothing to show, so send the admin back to the service body list to pick one.
+        if ($page == "voicemail" && empty($request->query("service_body_id"))) {
+            return redirect("admin/service-bodies");
+        }
+
         $data = [
             "canManageUsers" => $this->authz->canManageUsers(),
             "isTopLevelAdmin" => $this->authz->isTopLevelAdmin(),
