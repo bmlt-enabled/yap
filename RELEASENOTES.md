@@ -1,6 +1,7 @@
 # Release Notes
 
-### 4.5.3 (UNRELEASED)
+### 4.5.3 (November 1, 2026)
+* Fixed `admin/voicemail` returning HTTP 500 (`Undefined array key "service_body_id"`) when opened without a `service_body_id`. It now redirects to the service body list. [#1661]
 * Fixed Just For Today readings, which stopped loading because the feed moved from `jftna.org` to `jft.na.org`. Updated `bmlt/fetch-meditation` to 1.3.7. [#1655]
 * Fixed every page (including `/admin`) returning HTTP 500 after upgrading to 4.5.3-beta1. The new `yap:voicemail-undelete` console command made Laravel scan `app/Console/Commands`, which reads `composer.json`, and the release zip does not include that file. Commands are now registered explicitly, and CI boots the packaged app to catch this. [#1641]
 * Volunteers no longer hear "an application error has occurred" when the caller hangs up just before they press 1 (or just as they answer). `helpline-answer-response` and `helpline-outdial-response` now tell the volunteer the caller hung up, record `VOLUNTEER_ANSWERED_BUT_CALLER_HUP`, and hang up instead of returning HTTP 500. A Twilio API error on the conference lookup is handled the same way. [#1644]
