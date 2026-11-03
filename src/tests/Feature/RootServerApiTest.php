@@ -1,6 +1,9 @@
 <?php
 
+use App\Services\RootServerService;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Tests\FakeHttp;
 
 beforeEach(function () {
@@ -65,4 +68,11 @@ test('get service bodies no auth', function () {
         ->assertHeader("Location", "http://localhost/api/v1/login")
         ->assertHeader("Content-Type", "text/html; charset=utf-8")
         ->assertStatus(302);
+});
+
+test('logout reaches the root server', function () {
+    app(RootServerService::class)->logout();
+
+    Http::assertSent(fn (Request $request) => $request->url()
+        === 'https://latest.aws.bmlt.app/main_server/local_server/server_admin/xml.php?admin_action=logout');
 });

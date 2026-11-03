@@ -267,7 +267,7 @@ class RootServerService extends Service
     {
         if (json_decode($this->settings->get('tomato_helpline_routing'))
             && !$this->isBMLTServerOwned($latitude, $longitude)) {
-            return $this->settings->get('tomato_url');
+            return $this->settings->getTomatoUrl();
         } else {
             return $this->settings->getAdminBMLTRootServer();
         }
@@ -283,7 +283,7 @@ class RootServerService extends Service
     {
         $bmlt_search_endpoint = sprintf(
             '%s/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri&sort_results_by_distance=1&lat_val=%s&long_val=%s&geo_width=%s',
-            $this->settings->get('tomato_url'),
+            $this->settings->getTomatoUrl(),
             $latitude,
             $longitude,
             $this->settings->get('helpline_search_radius')
@@ -321,7 +321,7 @@ class RootServerService extends Service
 
     public function logout()
     {
-        $endpoint = 'local_server/server_admin/xml.php?admin_action=logout';
+        $endpoint = '/local_server/server_admin/xml.php?admin_action=logout';
         $this->http->getWithAuth(sprintf("%s%s", $this->settings->getAdminBMLTRootServer(), $endpoint));
     }
 
