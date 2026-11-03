@@ -65,24 +65,17 @@ jobs:
       - name: Build package
         id: build-package
         run: |
-          cd src
           export ARTIFACT_FILE=yap-${GITHUB_RUN_NUMBER}-${GITHUB_SHA}
-          export ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip
-          echo "ARTIFACT_FILENAME=${ARTIFACT_FILENAME}" >> $GITHUB_ENV
-          git archive --format=zip --output=${ARTIFACT_FILENAME} --prefix=${ARTIFACT_FILE}/ HEAD
-          DISABLE_NOTIFIER=true make deploy
-          unzip ${ARTIFACT_FILENAME}
-          rm ${ARTIFACT_FILENAME}
-          echo ${GITHUB_SHA} > ${ARTIFACT_FILE}/storage/app/build.txt
-          cp -R vendor ${ARTIFACT_FILE}/
-          cp ../LICENSE .
-          cp ../RELEASENOTES.md .
-          mkdir -p ${ARTIFACT_FILE}/public && cp -R public/. ${ARTIFACT_FILE}/public
-          find ./${ARTIFACT_FILE} -type d | xargs chmod 755
-          find ./${ARTIFACT_FILE} -name '*.php' | xargs chmod 644
-          zip -r -9 ${ARTIFACT_FILENAME} ${ARTIFACT_FILE}
-          mkdir artifacts/
-          mv ${ARTIFACT_FILENAME} artifacts/
+          echo "ARTIFACT_FILENAME=${ARTIFACT_FILE}.zip" >> $GITHUB_ENV
+          .github/scripts/build-package.sh "${ARTIFACT_FILE}"
+
+      - name: Smoke test package
+        run: .github/scripts/smoke-package.sh "src/${ARTIFACT_FILENAME}"
+
+      - name: Stage artifact
+        run: |
+          mkdir src/artifacts/
+          mv "src/${ARTIFACT_FILENAME}" src/artifacts/
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v5
