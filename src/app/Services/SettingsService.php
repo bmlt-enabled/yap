@@ -402,19 +402,35 @@ class SettingsService
     public function getBMLTRootServer(): string
     {
         if (json_decode($this->get('tomato_meeting_search'))) {
-            return $this->get('tomato_url');
+            return $this->getTomatoUrl();
         } else {
-            return $this->get('bmlt_root_server');
+            return self::normalizeRootServerUrl($this->get('bmlt_root_server'));
         }
     }
 
     public function getAdminBMLTRootServer(): string
     {
         if ($this->has('helpline_bmlt_root_server')) {
-            return $this->get('helpline_bmlt_root_server');
+            return self::normalizeRootServerUrl($this->get('helpline_bmlt_root_server'));
         } else {
-            return $this->get('bmlt_root_server');
+            return self::normalizeRootServerUrl($this->get('bmlt_root_server'));
         }
+    }
+
+    public function getTomatoUrl(): string
+    {
+        return self::normalizeRootServerUrl($this->get('tomato_url'));
+    }
+
+    /**
+     * Root server settings are typed by operators, with or without a trailing
+     * slash. Every caller appends a path that starts with "/", so strip the
+     * trailing slash here: otherwise one form produces "//" in every URL and
+     * the other breaks any path written without a leading slash (#1659).
+     */
+    private static function normalizeRootServerUrl(?string $url): string
+    {
+        return rtrim(trim((string)$url), '/');
     }
 
     public function getInputType(): string
