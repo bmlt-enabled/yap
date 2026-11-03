@@ -4,6 +4,8 @@
 
 **Self-hosted operators: read the [4.x → 5.x upgrade guide](https://yap.bmlt.app/miscellaneous/upgrading-from-yap-4x-to-yap-5x) before deploying.** Back up your database before upgrading.
 
+5.0.0 includes every fix from 4.5.1, 4.5.2 and 4.5.3 that applies to 5.0 (see those sections below). Two 4.5.3 fixes don't apply to 5.0: the `admin/voicemail` page fix [#1661], because the React admin replaces that page, and the post-upgrade HTTP 500 fix [#1641], because 5.0 runs migrations without booting Artisan on web requests.
+
 #### Breaking changes
 
 * **Laravel 10 → 12, PHP 8.2+.** `composer.json` requires `^8.2`; the official Docker image uses PHP 8.5. PHP 8.1 is no longer supported. MySQL 8.0+ (or MariaDB 10.3+) is required.
@@ -39,6 +41,25 @@
 * Added enabled field to volunteer CSV and JSON exports, with download buttons on Volunteers page [#1411]
 * Root service body admins can now access meeting request logs that have no service_body_id assigned [#1399]
 * **Legacy schema catch-up for long-running installs.** Upgrades from pre-Laravel databases automatically add missing columns (including `records_events.type` and `records.type`) on the first HTTP request. Manual `ALTER TABLE` is no longer required. [#1613]
+
+### 4.5.3 (November 1, 2026)
+* Fixed `admin/voicemail` returning HTTP 500 (`Undefined array key "service_body_id"`) when opened without a `service_body_id`. It now redirects to the service body list. [#1661]
+* Fixed Just For Today readings, which stopped loading because the feed moved from `jftna.org` to `jft.na.org`. Updated `bmlt/fetch-meditation` to 1.3.7. [#1655]
+* Fixed every page (including `/admin`) returning HTTP 500 after upgrading to 4.5.3-beta1. The new `yap:voicemail-undelete` console command made Laravel scan `app/Console/Commands`, which reads `composer.json`, and the release zip does not include that file. Commands are now registered explicitly, and CI boots the packaged app to catch this. [#1641]
+* Volunteers no longer hear "an application error has occurred" when the caller hangs up just before they press 1 (or just as they answer). `helpline-answer-response` and `helpline-outdial-response` now tell the volunteer the caller hung up, record `VOLUNTEER_ANSWERED_BUT_CALLER_HUP`, and hang up instead of returning HTTP 500. A Twilio API error on the conference lookup is handled the same way. [#1644]
+* Voicemail Delete now removes the recording from Twilio, and voicemails that have no call record (timestamp only) can be deleted. The admin list can select multiple rows and delete them together. Delete permanently removes the audio from the Twilio account; a recording that is already gone is still removed from the Yap list. [#1641]
+* Added `php artisan yap:voicemail-undelete` to put voicemails back on the admin list when they were only hidden in Yap and the audio is still in Twilio, so they can be deleted for real. It clears `VOICEMAIL_DELETED` status rows for voicemail events only. Run it once after upgrading, then delete the recordings from the admin list. [#1641]
+* Skip conference lookup on helpline cleanup callbacks. `HelplineController::dial()` no longer retries Twilio conference reads for status callbacks that never consume the result (empty `CallStatus`, SequenceNumber 2/3). Those lookups always exhausted the retry budget after the conference had already ended, holding PHP workers long enough to time out caller-facing webhooks such as voicemail TwiML. Lookup retries are also capped at 8 (worst case observed is ~4). [#1634]
+* Fixed the helpline dialer's conference-lookup retry loop never waiting between attempts (`sleep(0.5)` truncates to `sleep(0)`), and a transient Twilio error on the lookup returning HTTP 500 mid-call. Retries are now 500ms apart, and a Twilio error is retried like an empty result. [#1630]
+
+### 4.5.2 (August 15, 2026)
+* Fixed Twilio webhook signature validation rejecting every request whose URL carries a query string, which broke the IVR past the first prompt (`input-method.php`, `status.php`, and the helpline dialer callbacks all returned 403 "Forbidden"). The signature is now checked against the raw request URI instead of Laravel's normalized `fullUrl()`, which re-sorted the query parameters and re-encoded spaces. [#1573]
+* Added an authenticated media proxy so voicemail recording links in notification emails, SMS, and the admin portal keep working now that Twilio enforces HTTP Basic Auth on media URLs. Links are served through a signed YAP endpoint that streams the recording using the account credentials server-side. [#1573]
+* Enforce Twilio webhook signature validation on all inbound routes (IVR call flow, SMS gateway, voicemail, dialback, helpline routing, status callbacks, TwiML readings) so spoofed requests are rejected. [#1569]
+* Fix for stale conferences being matched during call blasting. Conference lookups now filter on `status=in-progress` so a completed conference with the same name is no longer returned. [#1563]
+
+### 4.5.1 (May 14, 2026)
+* Added Twilio SHAKEN/STIR trusted calling support. CallToken is forwarded from inbound to outbound calls to maintain full attestation (Level A). StirVerstat is logged on inbound calls for observability. [#1560]
 
 ### 4.5.0 (July 11, 2025)
 * Added new feature that allow for creating a custom prompt for language selection feature. [#1228]
