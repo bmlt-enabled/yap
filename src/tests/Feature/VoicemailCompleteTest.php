@@ -8,9 +8,11 @@ use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
 use App\Constants\VolunteerRoutingType;
 use App\Constants\VolunteerType;
+use App\Http\Controllers\MediaController;
 use App\Models\ConfigData;
 use App\Models\Session;
 use App\Services\RootServerService;
+use App\Services\VoicemailService;
 use App\Structures\ServiceBodyCallHandling;
 use App\Structures\VolunteerData;
 use App\Structures\VolunteerRoutingParameters;
@@ -43,6 +45,8 @@ beforeEach(function () {
     $this->callSid = "abc123";
     $this->callerNumber = "+17325551212";
     $this->recordingUrl = "http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2";
+    // Notifications link to the signed /media proxy, not the raw recording URL.
+    $this->proxyUrl = MediaController::proxyUrl($this->recordingUrl);
 });
 
 test('voicemail complete send sms using primary contact', function ($method) {
@@ -63,9 +67,9 @@ test('voicemail complete send sms using primary contact', function ($method) {
         ->withArgs([$serviceBodyCallHandlingData->primary_contact, [
             "from" => $this->callerNumber,
             "body" => sprintf(
-                'You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: %s.mp3. ',
+                'You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: %s. ',
                 $this->callerNumber,
-                $this->recordingUrl
+                $this->proxyUrl
             ),
             ]])->times(1);
     $this->utility->client->messages = $messageListMock;
@@ -145,9 +149,9 @@ test('voicemail complete send sms using volunteer responder option', function ($
         ->withArgs([$volunteer->volunteer_phone_number, [
             "from" => $this->callerNumber,
             "body" => sprintf(
-                'You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: %s.mp3. ',
+                'You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: %s. ',
                 $this->callerNumber,
-                $this->recordingUrl
+                $this->proxyUrl
             ),
         ]])->times(1);
     $this->utility->client->messages = $messageListMock;
@@ -238,9 +242,9 @@ test('voicemail complete send sms using volunteer responder option and dialback 
         ->withArgs([$volunteer->volunteer_phone_number, [
             "from" => $this->callerNumber,
             "body" => sprintf(
-                'You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: %s.mp3. Tap to dialback: +17325551212,,,9,,,%s#.  PIN: %s',
+                'You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: %s. Tap to dialback: +17325551212,,,9,,,%s#.  PIN: %s',
                 $this->callerNumber,
-                $this->recordingUrl,
+                $this->proxyUrl,
                 $pin,
                 $pin
             ),
@@ -339,9 +343,9 @@ test('voicemail complete send sms using volunteer responder option and dialback 
         ->withArgs([$volunteer->volunteer_phone_number, [
             "from" => $this->callerNumber,
             "body" => sprintf(
-                'ouyay avehay ayay essagemay omfray ethay Finger Lakes Area Service elplinehay omfray ethay allercay %s. oicemailvay: %s.mp3. aptay ootay ialbackdray: +17325551212,,,2,,,9,,,%s#.  PIN: %s',
+                'ouyay avehay ayay essagemay omfray ethay Finger Lakes Area Service elplinehay omfray ethay allercay %s. oicemailvay: %s. aptay ootay ialbackdray: +17325551212,,,2,,,9,,,%s#.  PIN: %s',
                 $this->callerNumber,
-                $this->recordingUrl,
+                $this->proxyUrl,
                 $pin,
                 $pin
             ),
@@ -461,8 +465,8 @@ test('voicemail complete send email using primary contact with dialback disabled
     Assert::assertTrue($mailer->FromName == $smtp_from_name);
     Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
     Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
-    $htmlBody = sprintf("<!DOCTYPE html><html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"></head><body text=\"#000000\" bgcolor=\"#FFFFFF\"><p></p><h2> You have a message from the Finger Lakes Area Service helpline from the caller %s.<br> Voicemail: <a href=\"http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3\">Listen to message</a></h2></body></html> ", $this->callerNumber);
-    $altBody = sprintf("You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3. ", $this->callerNumber);
+    $htmlBody = sprintf("<!DOCTYPE html><html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"></head><body text=\"#000000\" bgcolor=\"#FFFFFF\"><p></p><h2> You have a message from the Finger Lakes Area Service helpline from the caller %s.<br> Voicemail: <a href=\"%s\">Listen to message</a></h2></body></html> ", $this->callerNumber, htmlspecialchars($this->proxyUrl, ENT_QUOTES));
+    $altBody = sprintf("You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: %s. ", $this->callerNumber, $this->proxyUrl);
     Assert::assertTrue($mailer->Body == $htmlBody);
     Assert::assertTrue($mailer->AltBody == $altBody);
     Assert::assertTrue($mailer->Subject == "Helpline Voicemail from Finger Lakes Area Service");
@@ -472,6 +476,13 @@ test('voicemail complete send email using primary contact with dialback disabled
     Assert::assertTrue($mailer->getAttachments()[0][4] == "audio/mpeg");
     Assert::assertTrue($mailer->getAttachments()[0][5]);
     Assert::assertTrue($mailer->getAttachments()[0][6] == "attachment");
+    // The recording is fetched with Twilio Basic Auth, so the attachment is
+    // the real audio rather than Twilio's 401 body.
+    Assert::assertTrue($mailer->getAttachments()[0][0] == "fake-recording-bytes");
+    Http::assertSent(function ($request) {
+        return $request->url() === $this->recordingUrl . ".mp3"
+            && str_starts_with($request->header("Authorization")[0] ?? "", "Basic ");
+    });
 
     if ($smtp_secure) {
         if ($smtp_secure == SmtpPorts::TLS) {
@@ -565,8 +576,8 @@ test('voicemail complete send email using primary contact with dialback enabled'
     Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
     Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
     $dialbackString = sprintf("Tap to dialback: %s,,,9,,,%s#.  PIN: %s", $this->callerNumber, $pin, $pin);
-    $htmlBody = sprintf("<!DOCTYPE html><html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"></head><body text=\"#000000\" bgcolor=\"#FFFFFF\"><p></p><h2> You have a message from the Finger Lakes Area Service helpline from the caller %s.<br> Voicemail: <a href=\"http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3\">Listen to message</a></h2></body></html> %s", $this->callerNumber, $dialbackString);
-    $altBody = sprintf("You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3. %s", $this->callerNumber, $dialbackString);
+    $htmlBody = sprintf("<!DOCTYPE html><html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"></head><body text=\"#000000\" bgcolor=\"#FFFFFF\"><p></p><h2> You have a message from the Finger Lakes Area Service helpline from the caller %s.<br> Voicemail: <a href=\"%s\">Listen to message</a></h2></body></html> %s", $this->callerNumber, htmlspecialchars($this->proxyUrl, ENT_QUOTES), $dialbackString);
+    $altBody = sprintf("You have a message from the Finger Lakes Area Service helpline from the caller %s. Voicemail: %s. %s", $this->callerNumber, $this->proxyUrl, $dialbackString);
     Assert::assertTrue($mailer->Body == $htmlBody);
     Assert::assertTrue($mailer->AltBody == $altBody);
     Assert::assertTrue($mailer->Subject == "Helpline Voicemail from Finger Lakes Area Service");
@@ -672,8 +683,8 @@ test('voicemail complete send email using primary contact with dialback enabled 
     Assert::assertTrue($mailer->getToAddresses()[0][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[0]);
     Assert::assertTrue($mailer->getToAddresses()[1][0] == explode(",", $serviceBodyCallHandlingData->primary_contact_email)[1]);
     $dialbackString = sprintf("aptay ootay ialbackdray: %s,,,2,,,9,,,%s#.  PIN: %s", $this->callerNumber, $pin, $pin);
-    $htmlBody = sprintf("<!DOCTYPE html><html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"></head><body text=\"#000000\" bgcolor=\"#FFFFFF\"><p></p><h2> ouyay avehay ayay essagemay omfray ethay Finger Lakes Area Service elplinehay omfray ethay allercay %s.<br> oicemailvay: <a href=\"http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3\">Iistenlay otay essagemay</a></h2></body></html> %s", $this->callerNumber, $dialbackString);
-    $altBody = sprintf("ouyay avehay ayay essagemay omfray ethay Finger Lakes Area Service elplinehay omfray ethay allercay %s. oicemailvay: http://demo.bmlt.app/wp-content/uploads/2025/08/file_example_MP3_700KB_trimmedv2.mp3. %s", $this->callerNumber, $dialbackString);
+    $htmlBody = sprintf("<!DOCTYPE html><html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"></head><body text=\"#000000\" bgcolor=\"#FFFFFF\"><p></p><h2> ouyay avehay ayay essagemay omfray ethay Finger Lakes Area Service elplinehay omfray ethay allercay %s.<br> oicemailvay: <a href=\"%s\">Iistenlay otay essagemay</a></h2></body></html> %s", $this->callerNumber, htmlspecialchars($this->proxyUrl, ENT_QUOTES), $dialbackString);
+    $altBody = sprintf("ouyay avehay ayay essagemay omfray ethay Finger Lakes Area Service elplinehay omfray ethay allercay %s. oicemailvay: %s. %s", $this->callerNumber, $this->proxyUrl, $dialbackString);
     Assert::assertTrue($mailer->Body == $htmlBody);
     Assert::assertTrue($mailer->AltBody == $altBody);
     // TODO: Need to translate the subject.
@@ -700,3 +711,30 @@ test('voicemail complete send email using primary contact with dialback enabled 
 
 // TODO: need the same test for the email with translations.
 // TODO: there are no email responders for email.
+
+test('voicemail email is still sent without an attachment when the recording fetch fails', function () {
+    $twilioRecordingUrl = "https://api.twilio.com/2010-04-01/Accounts/AC222a79bf52fdc8c3cf463b2846582b83/Recordings/RE123";
+    Http::fake([
+        "api.twilio.com/*" => Http::response("Unauthorized", 401),
+    ]);
+    $this->utility->settings->set("smtp_from_address", "son@my.com");
+    $this->utility->settings->set("smtp_from_name", "bro bro");
+
+    $mailer = Mockery::mock(PHPMailer::class)->makePartial();
+    $mailer->shouldReceive("send")->withNoArgs()->once();
+    app()->instance(PHPMailer::class, $mailer);
+
+    app(VoicemailService::class)->sendEmailForVoicemail(
+        $this->callSid,
+        $twilioRecordingUrl,
+        ["dude@bro.net"],
+        new ServiceBodyCallHandling(),
+        "Finger Lakes Area Service",
+        $this->callerNumber
+    );
+
+    // Twilio's error body must not be attached as an "mp3"; the signed link
+    // in the body still lets the recipient play the recording.
+    expect($mailer->getAttachments())->toBe([]);
+    expect($mailer->AltBody)->toContain(MediaController::proxyUrl($twilioRecordingUrl));
+});

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\MediaController;
 use App\Repositories\VoicemailRepository;
 use App\Services\AuthorizationService;
 use Illuminate\Http\JsonResponse;
@@ -70,7 +71,8 @@ class VoicemailController extends Controller
      *                     @OA\Property(property="from_number", type="string", example="+1234567890"),
      *                     @OA\Property(property="to_number", type="string", example="+1987654321"),
      *                     @OA\Property(property="event_time", type="string", format="date-time", example="2024-03-24T12:00:00Z"),
-     *                     @OA\Property(property="meta", type="object", example={"duration": "30", "url": "https://example.com/voicemail.mp3"})
+     *                     @OA\Property(property="meta", type="object", example={"duration": "30", "url": "https://example.com/voicemail.mp3"}),
+     *                     @OA\Property(property="recording_url", type="string", nullable=true, description="Signed /media proxy URL that streams the recording (Twilio media requires auth)", example="https://example.org/media?recording=...&signature=...")
      *                 )
      *             )
      *         )
@@ -114,7 +116,15 @@ class VoicemailController extends Controller
             return response()->json(['message' => 'Not authorized'], 403);
         }
 
-        $voicemails = $this->voicemailRepository->get($serviceBodyId);
+        $voicemails = array_map(function ($voicemail) {
+            // Twilio enforces HTTP Basic Auth on recordings, so the SPA plays
+            // them through the signed /media proxy rather than the raw URL.
+            $meta = is_string($voicemail['meta'] ?? null) ? json_decode($voicemail['meta']) : null;
+            $voicemail['recording_url'] = isset($meta->url) && is_string($meta->url)
+                ? MediaController::proxyUrl($meta->url)
+                : null;
+            return $voicemail;
+        }, $this->voicemailRepository->get($serviceBodyId));
 
         return response()->json([
             'data' => $voicemails

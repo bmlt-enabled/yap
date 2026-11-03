@@ -2,6 +2,7 @@
 
 use App\Constants\EventId;
 use App\Constants\EventStatusId;
+use App\Http\Controllers\MediaController;
 use App\Models\EventStatus;
 use App\Models\Record;
 use App\Models\RecordEvent;
@@ -91,6 +92,33 @@ test('voicemail list keeps caller fields when a call record exists', function ()
         ->assertJsonPath('data.0.callsid', $callsid)
         ->assertJsonPath('data.0.from_number', '+15551110000')
         ->assertJsonPath('data.0.to_number', '+15552220000');
+});
+
+test('voicemail list returns a signed media proxy url for playback', function () {
+    actAsVoicemailAdmin();
+    $callsid = 'CA33333333333333333333333333333333';
+    insertVoicemailEvent($callsid);
+    $twilioUrl = 'https://api.twilio.com/2010-04-01/Accounts/AC222a79bf52fdc8c3cf463b2846582b83/Recordings/RE0123456789abcdef0123456789abcdef';
+
+    $recordingUrl = $this->getJson('/api/v1/voicemail?serviceBodyId=44')
+        ->assertOk()
+        ->json('data.0.recording_url');
+
+    // Twilio media needs Basic Auth, so the SPA gets the /media proxy, never the raw URL.
+    expect($recordingUrl)->toBe(MediaController::proxyUrl($twilioUrl));
+    expect(parse_url($recordingUrl, PHP_URL_PATH))->toBe('/media');
+    parse_str(parse_url($recordingUrl, PHP_URL_QUERY), $query);
+    expect($query['recording'])->toBe($twilioUrl);
+    expect($query)->toHaveKey('signature');
+});
+
+test('voicemail list has no recording url when the meta has none', function () {
+    actAsVoicemailAdmin();
+    insertVoicemailEvent('CA44444444444444444444444444444444', 44, null);
+
+    $this->getJson('/api/v1/voicemail?serviceBodyId=44')
+        ->assertOk()
+        ->assertJsonPath('data.0.recording_url', null);
 });
 
 test('recording sid is taken from the voicemail meta url', function () {

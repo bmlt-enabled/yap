@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Constants\SearchType;
 use App\Constants\SpecialPhoneNumber;
+use App\Http\Controllers\MediaController;
 use App\Models\Alert;
 use App\Repositories\ReportsRepository;
 use App\Repositories\VoicemailRepository;
@@ -144,14 +145,14 @@ class CallService extends Service
     {
         $dialbackString = $this->getDialbackString($callerSid, $callerId, $smsDialbackOptions);
         return sprintf(
-            "<!DOCTYPE html><html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"></head><body text=\"#000000\" bgcolor=\"#FFFFFF\"><p></p><h2> %s %s %s %s %s.<br> %s: <a href=\"%s.mp3\">%s</a></h2></body></html> %s",
+            "<!DOCTYPE html><html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"></head><body text=\"#000000\" bgcolor=\"#FFFFFF\"><p></p><h2> %s %s %s %s %s.<br> %s: <a href=\"%s\">%s</a></h2></body></html> %s",
             $this->settings->word('you_have_a_message_from_the'),
             $serviceBodyName,
             strtolower($this->settings->word('helpline')),
             $this->settings->word('from_the_caller'),
             $callerNumber,
             $this->settings->word('voicemail'),
-            $recordingUrl,
+            htmlspecialchars(MediaController::proxyUrl($recordingUrl), ENT_QUOTES),
             $this->settings->word('listen_to_message'),
             $dialbackString
         );
@@ -161,14 +162,14 @@ class CallService extends Service
     {
         $dialbackString = $this->getDialbackString($callerSid, $callerId, $smsDialbackOptions);
         return sprintf(
-            "%s %s %s %s %s. %s: %s.mp3. %s",
+            "%s %s %s %s %s. %s: %s. %s",
             $this->settings->word('you_have_a_message_from_the'),
             $serviceBodyName,
             strtolower($this->settings->word('helpline')),
             $this->settings->word('from_the_caller'),
             $callerNumber,
             $this->settings->word('voicemail'),
-            $recordingUrl,
+            MediaController::proxyUrl($recordingUrl),
             $dialbackString
         );
     }
