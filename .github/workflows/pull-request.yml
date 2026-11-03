@@ -77,6 +77,30 @@ jobs:
       - name: E2E Tests
         uses: ./.github/actions/e2e-test
 
+  package-smoke:
+    # Builds the release zip and boots it (console + HTTP kernels) without the
+    # dev files the zip leaves out, e.g. composer.json (#1641, #1669).
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php:
+          - "8.2"
+    steps:
+      - uses: actions/checkout@v6
+        id: code-checkout
+
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-deps
+
+      - name: Build package
+        run: .github/scripts/build-package.sh yap-smoke
+
+      - name: Smoke test package
+        run: .github/scripts/smoke-package.sh src/yap-smoke.zip
+
   render-image:
     # Builds docker/Dockerfile.render (the Render Blueprint image) and boots it
     # against MySQL: config.php from env, migrations, caches, Apache on $PORT.

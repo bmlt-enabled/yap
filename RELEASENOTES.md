@@ -4,7 +4,7 @@
 
 **Self-hosted operators: read the [4.x → 5.x upgrade guide](https://yap.bmlt.app/miscellaneous/upgrading-from-yap-4x-to-yap-5x) before deploying.** Back up your database before upgrading.
 
-5.0.0 includes every fix from 4.5.1, 4.5.2 and 4.5.3 that applies to 5.0 (see those sections below). Two 4.5.3 fixes don't apply to 5.0: the `admin/voicemail` page fix [#1661], because the React admin replaces that page, and the post-upgrade HTTP 500 fix [#1641], because 5.0 runs migrations without booting Artisan on web requests.
+5.0.0 includes every fix from 4.5.1, 4.5.2 and 4.5.3 that applies to 5.0 (see those sections below). Two 4.5.3 fixes don't apply to 5.0: the `admin/voicemail` page fix [#1661], because the React admin replaces that page, and the post-upgrade HTTP 500 fix [#1641], because 5.0 runs migrations without booting Artisan on web requests. 5.0 still lists its console commands explicitly instead of discovering them (discovery reads `composer.json`, which the zip leaves out), and CI now boots the packaged zip, console and web, before it is published. [#1669]
 
 #### Breaking changes
 
