@@ -108,18 +108,10 @@ export function VoicemailDialog({ open, onClose, serviceBodyId, serviceBodyName 
         }
     };
 
-    const handlePlay = (meta) => {
-        try {
-            const voicemailUrl = JSON.parse(meta).url + '.mp3';
-            window.open(voicemailUrl, '_blank');
-        } catch (error) {
-            console.error('Error playing voicemail:', error);
-            setAlert({
-                show: true,
-                message: 'Error playing voicemail',
-                severity: 'error'
-            });
-        }
+    const handlePlay = (recordingUrl) => {
+        // recording_url is a signed /media proxy link: Twilio requires Basic
+        // Auth on recordings, so the server fetches the audio on our behalf.
+        window.open(recordingUrl, '_blank', 'noopener');
     };
 
     const toggleSelected = (callsid) => {
@@ -220,12 +212,12 @@ export function VoicemailDialog({ open, onClose, serviceBodyId, serviceBodyName 
                                         <TableCell>{voicemail.to_number}</TableCell>
                                         <TableCell>{voicemail.pin}</TableCell>
                                         <TableCell>
-                                            {voicemail.meta && (
+                                            {voicemail.recording_url && (
                                                 <Tooltip title="Play">
                                                     <IconButton
                                                         size="small"
                                                         color="primary"
-                                                        onClick={() => handlePlay(voicemail.meta)}
+                                                        onClick={() => handlePlay(voicemail.recording_url)}
                                                     >
                                                         <PlayArrowIcon />
                                                     </IconButton>

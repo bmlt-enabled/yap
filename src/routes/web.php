@@ -16,6 +16,11 @@ Route::get("/msr/{latitude}/{longitude}", ['uses' => 'App\Http\Controllers\Meeti
     ->where(['latitude' => '.*', 'longitude' => '.*']);
 Route::match(array('GET', 'POST'), "/ping{ext}", 'App\Http\Controllers\PingController@index')
     ->where('ext', $ext);
+// Signed proxy for Twilio-hosted recordings/voicemails. Public (voicemail
+// notification recipients are not logged in) but protected by a signed URL and
+// a Twilio host allowlist inside the controller. Not a Twilio-facing webhook,
+// so it must stay outside the twilio.signature group below.
+Route::get("/media", 'App\Http\Controllers\MediaController@stream')->name('media');
 
 // --- Twilio-facing inbound webhooks ---
 // Every route Twilio calls (IVR call flow, SMS gateway, voicemail, dialback,

@@ -75,8 +75,23 @@ class VoicemailService extends Service
                 $this->mailer->addAddress($recipient);
             }
             $recordingUrlWithExtension = sprintf("%s.mp3", $recordingUrl);
-            $recordingDataString = Http::get($recordingUrlWithExtension);
-            $this->mailer->addStringAttachment($recordingDataString, $recordingUrlWithExtension);
+            // Twilio enforces HTTP Basic Auth on stored media, so authenticate
+            // server-side with the account credentials before attaching.
+            $recording = Http::withBasicAuth(
+                $this->settings->get('twilio_account_sid'),
+                $this->settings->get('twilio_auth_token')
+            )->get($recordingUrlWithExtension);
+            if ($recording->successful()) {
+                $this->mailer->addStringAttachment($recording->body(), $recordingUrlWithExtension);
+            } else {
+                // Don't attach Twilio's error body as an "mp3"; the email
+                // still carries the signed /media link to the recording.
+                Log::error(sprintf(
+                    "Failed to fetch voicemail recording (%d) for %s; sending without attachment",
+                    $recording->status(),
+                    $recordingUrl
+                ));
+            }
             $caller_id = $this->call->getOutboundDialingCallerId($serviceBodyCallHandling);
             $body = $this->call->getVoicemailMessageHtml(
                 $callsid,
