@@ -48,3 +48,27 @@ jobs:
         uses: hmarr/auto-approve-action@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  package-smoke:
+    # Builds the release zip and boots it (console + HTTP kernels) without the
+    # dev files the zip leaves out, e.g. composer.json (#1641, #1669).
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php:
+          - "8.2"
+    steps:
+      - uses: actions/checkout@v4
+        id: code-checkout
+
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-deps
+
+      - name: Build package
+        run: .github/scripts/build-package.sh yap-smoke
+
+      - name: Smoke test package
+        run: .github/scripts/smoke-package.sh src/yap-smoke.zip
