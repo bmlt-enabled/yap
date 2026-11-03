@@ -4,7 +4,7 @@ sidebar_position: 2
 
 # PHP Requirements
 
-Yap 5.0 runs on **PHP 8.2 or newer** with **MySQL 8.0+** (or MariaDB 10.3+) and an Apache-based web server with `mod_rewrite` enabled.
+Yap 5.0 runs on **PHP 8.3 or newer** with **MySQL 8.0+** (or MariaDB 10.3+) and an Apache-based web server with `mod_rewrite` enabled.
 
 Most install problems on shared Linux hosting come from **disabled PHP extensions**, not from missing Yap files. The [upgrade advisor](https://yap.bmlt.app/miscellaneous/loggingdebugging#upgrade-advisor) checks that required extensions are loaded.
 
@@ -38,7 +38,7 @@ Most install problems on shared Linux hosting come from **disabled PHP extension
 Your provider controls which PHP extensions are enabled. Yap cannot enable them for you.
 
 1. Open your host's **PHP version / PHP extensions** panel (often “Select PHP Version”, “PHP Extensions”, or “MultiPHP INI Editor”).
-2. Select **PHP 8.2 or newer** for the domain or subdirectory where Yap is installed.
+2. Select **PHP 8.3 or newer** for the domain or subdirectory where Yap is installed.
 3. Enable every extension in the table above. On many hosts **`fileinfo` is off by default** — turn it on if you see `Class 'finfo' not found`.
 4. Enable **`pdo_mysql`** if database connections fail.
 5. Save and restart PHP-FPM or Apache if the panel offers that option.
@@ -49,11 +49,11 @@ If an extension is not listed, open a ticket with your host and ask them to enab
 
 Install the extension packages that match your PHP version, then restart PHP-FPM or Apache.
 
-**Debian / Ubuntu** (example for PHP 8.2):
+**Debian / Ubuntu** (example for PHP 8.3):
 
 ```bash
-sudo apt install php8.2-fpm php8.2-mysql php8.2-mbstring php8.2-xml php8.2-curl php8.2-fileinfo
-sudo systemctl restart php8.2-fpm
+sudo apt install php8.3-fpm php8.3-mysql php8.3-mbstring php8.3-xml php8.3-curl php8.3-fileinfo
+sudo systemctl restart php8.3-fpm
 ```
 
 **RHEL / Alma / Rocky** (example):

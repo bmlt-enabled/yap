@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         php:
-          - "8.2"
+          - "8.3"
 
     services:
       db-tests:
@@ -45,7 +45,7 @@ jobs:
     strategy:
       matrix:
         php:
-          - "8.2"
+          - "8.3"
     permissions:
       id-token: write
       contents: write

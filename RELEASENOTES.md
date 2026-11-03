@@ -8,7 +8,7 @@
 
 #### Breaking changes
 
-* **Laravel 10 → 12, PHP 8.2+.** `composer.json` requires `^8.2`; the official Docker image uses PHP 8.5. PHP 8.1 is no longer supported. MySQL 8.0+ (or MariaDB 10.3+) is required.
+* **Laravel 10 → 12, PHP 8.3+.** `composer.json` requires `^8.3`; the official Docker image uses PHP 8.5. PHP 8.1 and PHP 8.2 are no longer supported. MySQL 8.0+ (or MariaDB 10.3+) is required.
 * **Twilio signature validation on all inbound webhooks.** Yap 5.0 validates `X-Twilio-Signature` on every Twilio-facing route (full IVR, SMS, voicemail, dialback, status callbacks). Validation fails closed: an empty `twilio_auth_token` or a URL/proxy mismatch causes HTTP 403 on every inbound call. [#1589]
 * **Trusted proxies are opt-in.** `TrustProxies` no longer defaults to `*`. Set `TRUSTED_PROXIES` when behind ngrok, a load balancer, or another reverse proxy so signature validation sees the public URL Twilio signed. [#1589]
 * **Do not use `SESSION_DRIVER=database`.** Yap's `sessions` table stores call PINs, not Laravel sessions.
