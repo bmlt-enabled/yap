@@ -80,8 +80,13 @@ foreach (["yap:preflight", "yap:simulate", "yap:voicemail-undelete"] as $name) {
 }
 
 // Discovery resolves the app namespace from composer.json, which the zip
-// does not ship. List commands in Kernel::$commands instead (#1641).
-$loadedPaths = (new ReflectionProperty($kernel, "loadedPaths"))->getValue($kernel);
+// does not ship. List commands in Kernel::$commands instead (#1641). When
+// bootstrap/app.php presets the namespace, discovery works without
+// composer.json, so the boot above cannot catch it; check for it directly.
+// (Laravel 10 has no $loadedPaths; there discovery throws during the boot.)
+$loadedPaths = property_exists($kernel, "loadedPaths")
+    ? (new ReflectionProperty($kernel, "loadedPaths"))->getValue($kernel)
+    : [];
 if (!empty($loadedPaths)) {
     fwrite(STDERR, "Console kernel discovers commands with load(): " . implode(", ", $loadedPaths)
         . "\nList them in App\\Console\\Kernel::\$commands instead; discovery needs composer.json (#1641)\n");
@@ -104,6 +109,8 @@ require "vendor/autoload.php";
 $app = require "bootstrap/app.php";
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 $request = Illuminate\Http\Request::create("/ping", "GET");
+// A web SAPI fills $_SERVER; some middleware reads it directly.
+$_SERVER = array_merge($_SERVER, $request->server->all());
 $response = $kernel->handle($request);
 $status = $response->getStatusCode();
 $body = (string) $response->getContent();
