@@ -5,7 +5,7 @@ sidebar_position: 6
 
 **BACK UP YOUR DATABASE before upgrading.**
 
-Yap 5.0 is a major release for self-hosted operators. It upgrades Laravel 10 → 12, requires PHP 8.2+, replaces the legacy admin UI with a React SPA, and enforces Twilio webhook signature validation on every inbound call. Read this guide completely before you deploy.
+Yap 5.0 is a major release for self-hosted operators. It upgrades Laravel 10 → 12, requires PHP 8.3+, replaces the legacy admin UI with a React SPA, and enforces Twilio webhook signature validation on every inbound call. Read this guide completely before you deploy.
 
 ## 1. Back up your database
 
@@ -57,7 +57,7 @@ The upgrade advisor validates your environment and database over HTTP. It lists 
 | **Trusted proxies** | — | `TRUSTED_PROXIES` unset is fine for direct connections; required behind a reverse proxy (see section 4). |
 | **Session driver** | FAIL | `SESSION_DRIVER=database`. Conflicts with Yap's call-PIN `sessions` table (see section 6). |
 | **APP_ENV** | WARN | Not exactly `production`. Several security guards only apply strict behavior when `APP_ENV=production`. |
-| **PHP version** | FAIL | FAIL below PHP 8.2 (composer.json minimum). |
+| **PHP version** | FAIL | FAIL below PHP 8.3 (composer.json minimum). |
 | **Database connection** | FAIL | Cannot connect with your `config.php` MySQL settings. |
 | **MySQL version** | FAIL | Below MySQL 8.0 or MariaDB 10.3 (Laravel 12 requirement). |
 | **Duplicate usernames** | FAIL | Two or more `users` rows share a username. Resolve duplicates — usernames are the stable key for local admin accounts. |
@@ -152,11 +152,11 @@ For scripted access, token logout, and examples, see [Sanctum API access](./sanc
 
 | Component | Requirement |
 |---|---|
-| **PHP** | `^8.2` per `composer.json`; **PHP 8.5** in the official `docker/Dockerfile` image |
+| **PHP** | `^8.3` per `composer.json`; **PHP 8.5** in the official `docker/Dockerfile` image |
 | **Laravel** | 12.x |
 | **MySQL** | 8.0+ (or MariaDB 10.3+) |
 
-PHP 8.1 is no longer supported. If you run the official Docker image, you get PHP 8.5 on Apache. Bare-metal and shared-hosting installs must provide PHP 8.2+ with all [required PHP extensions](https://yap.bmlt.app/general/php-requirements) enabled — especially `pdo_mysql` and `fileinfo` (a missing `fileinfo` extension causes `Class 'finfo' not found`).
+PHP 8.1 and 8.2 are no longer supported. If you run the official Docker image, you get PHP 8.5 on Apache. Bare-metal and shared-hosting installs must provide PHP 8.3+ with all [required PHP extensions](https://yap.bmlt.app/general/php-requirements) enabled — especially `pdo_mysql` and `fileinfo` (a missing `fileinfo` extension causes `Class 'finfo' not found`).
 
 ## 10. The admin UI is a React SPA
 

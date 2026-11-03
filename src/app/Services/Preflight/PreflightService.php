@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
 
 class PreflightService
 {
-    private const PHP_MIN_VERSION = '8.2.0';
+    private const PHP_MIN_VERSION = '8.3.0';
     private const MYSQL_MIN_VERSION = '8.0.0';
     private const MARIADB_MIN_VERSION = '10.3.0';
 
@@ -306,9 +306,17 @@ class PreflightService
         );
     }
 
+    /**
+     * The running PHP version. Overridable so tests can pin the minimum-version boundary.
+     */
+    protected function phpVersion(): string
+    {
+        return PHP_VERSION;
+    }
+
     private function checkPhpVersion(): PreflightCheck
     {
-        $current = PHP_VERSION;
+        $current = $this->phpVersion();
 
         if (version_compare($current, self::PHP_MIN_VERSION, '<')) {
             return PreflightCheck::fail(

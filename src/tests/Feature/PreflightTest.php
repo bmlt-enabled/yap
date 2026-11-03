@@ -162,6 +162,38 @@ test('preflight service passes php version at composer minimum', function () {
     expect($phpCheck['message'])->toContain('meets the minimum requirement');
 });
 
+function preflightOnPhpVersion(string $version): array
+{
+    $service = new class (app(SettingsService::class), $version) extends PreflightService {
+        public function __construct(SettingsService $settings, private string $fakeVersion)
+        {
+            parent::__construct($settings);
+        }
+
+        protected function phpVersion(): string
+        {
+            return $this->fakeVersion;
+        }
+    };
+
+    return collect($service->run()['checks'])->firstWhere('id', 'php_version');
+}
+
+test('preflight service fails php version on 8.2', function () {
+    $phpCheck = preflightOnPhpVersion('8.2.29');
+
+    expect($phpCheck['passed'])->toBeFalse();
+    expect($phpCheck['blocking'])->toBeTrue();
+    expect($phpCheck['message'])->toContain('PHP 8.2.29 is below the minimum 8.3.0');
+});
+
+test('preflight service passes php version on 8.3.0', function () {
+    $phpCheck = preflightOnPhpVersion('8.3.0');
+
+    expect($phpCheck['passed'])->toBeTrue();
+    expect($phpCheck['message'])->toContain('meets the minimum requirement (8.3.0)');
+});
+
 test('preflight service passes when trusted proxies unset', function () {
     config(['trustedproxy.proxies' => null]);
 

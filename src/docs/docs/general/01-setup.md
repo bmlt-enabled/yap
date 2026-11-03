@@ -4,7 +4,7 @@
 
 **This will require that you have an SSL certificate installed on your webserver to transit a secure connection.  This is required by Twilio.**
 
-Before you begin, confirm your server meets the [PHP requirements](php-requirements): **PHP 8.2+**, the required PHP extensions (especially `fileinfo` and `pdo_mysql`), MySQL 8.0+ or MariaDB 10.3+, and Apache with `mod_rewrite`. On shared Linux hosting you enable extensions in your provider's control panel; on self-hosted Linux you install the matching `php-*` packages yourself.
+Before you begin, confirm your server meets the [PHP requirements](php-requirements): **PHP 8.3+**, the required PHP extensions (especially `fileinfo` and `pdo_mysql`), MySQL 8.0+ or MariaDB 10.3+, and Apache with `mod_rewrite`. On shared Linux hosting you enable extensions in your provider's control panel; on self-hosted Linux you install the matching `php-*` packages yourself.
 
 1. Create a new virtual application or add the yap code to an existing folder. If `config.php` does not exist yet, Yap shows the [first-run installer](./yap-installer) until you create that file.  You can always find the latest stable version here (be sure download the yap-x-x-x.zip file and not the source code): [https://github.com/bmlt-enabled/yap/releases/latest](https://github.com/bmlt-enabled/yap/releases/latest).  You can also try out or help test the latest bleeding edge features by installing one of the [unreleased versions](https://archives.bmlt.app/index.html#yap/).  The newest version would always be the highest numbered build.  
 
