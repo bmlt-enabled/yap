@@ -5,6 +5,7 @@ namespace Tests\Fakes;
 use App\Constants\TwilioCallStatus;
 use DateTime;
 use Illuminate\Support\Str;
+use Twilio\Exceptions\RestException;
 
 /**
  * Stateful in-memory Twilio account covering the REST surface the app touches.
@@ -29,6 +30,9 @@ class FakeTwilioAccount
 
     public int $conferenceReadsBeforeVisible = 0;
 
+    /** The first N conference-list reads throw a Twilio 5xx, like a transient API failure. */
+    public int $conferenceReadFailures = 0;
+
     private int $conferenceReadCount = 0;
 
     public function resetConferenceReadCount(): void
@@ -45,7 +49,11 @@ class FakeTwilioAccount
     {
         $this->conferenceReadCount++;
 
-        return $this->conferenceReadCount <= $this->conferenceReadsBeforeVisible;
+        if ($this->conferenceReadCount <= $this->conferenceReadFailures) {
+            throw new RestException('[HTTP 502] Unable to fetch page', 502, 502);
+        }
+
+        return $this->conferenceReadCount <= $this->conferenceReadFailures + $this->conferenceReadsBeforeVisible;
     }
 
     /** @return array<string, mixed> */

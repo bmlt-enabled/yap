@@ -9,6 +9,7 @@ use App\Models\ConfigData;
 use App\Services\ConferenceService;
 use App\Services\RootServerService;
 use App\Structures\ServiceBodyCallHandling;
+use Illuminate\Support\Sleep;
 use Tests\CallScenario;
 use Tests\FakeHttp;
 use Tests\RootServerMocks;
@@ -409,14 +410,33 @@ test('conference eventual-consistency retry succeeds without slowing the suite',
     $scenario = breadthStartScenario();
     breadthNavigateToConference($scenario);
 
-    // Production retries with sleep(0.5), but PHP sleep() truncates to an int — so it
-    // hot-spins at sleep(0). The fake's conferenceReadsBeforeVisible knob exercises the
-    // retry loop without any real delay.
+    // Production waits 500ms between conference reads; Sleep::fake() (tests/Pest.php)
+    // records the wait instead of taking it.
     $scenario->twilio->conferenceReadsBeforeVisible = 1;
     $scenario->joinConference();
 
-    expect($scenario->twilio->conferenceReadsBeforeVisible)->toBe(1);
+    // Two reads in the retry loop (empty, then visible), plus the one
+    // CallService::setConferenceParticipant() makes once the caller is in.
+    expect($scenario->twilio->conferenceReadCount())->toBe(3);
     expect(ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRIES)->toBe(8);
+    Sleep::assertSequence([Sleep::usleep(ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRY_DELAY_MICROSECONDS)]);
+    expect($scenario->twilio)->toHaveDialed(BREADTH_V1);
+});
+
+test('a transient conference list failure is retried and still dials the volunteer', function () {
+    breadthSeedCallHandling($this->serviceBodyId, CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL);
+    breadthSeedVolunteers();
+
+    $scenario = breadthStartScenario();
+    breadthNavigateToConference($scenario);
+
+    $scenario->twilio->conferenceReadFailures = 2;
+    $scenario->joinConference(); // asserts the webhook returned 200
+
+    // Two failed reads and one success in the retry loop, plus the read in
+    // CallService::setConferenceParticipant().
+    expect($scenario->twilio->conferenceReadCount())->toBe(4);
+    Sleep::assertSleptTimes(2);
     expect($scenario->twilio)->toHaveDialed(BREADTH_V1);
 });
 

@@ -6,6 +6,7 @@ use App\Services\TwilioService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Sleep;
 use Illuminate\Support\Str;
 use Tests\Fakes\FakeTwilioAccount;
 use Tests\FakeTwilioHttpClient;
@@ -39,9 +40,13 @@ uses(TestCase::class, RefreshDatabase::class)
             Http::preventStrayRequests();
         }
 
+        // HelplineController::dial() waits 500ms between conference-list retries.
+        Sleep::fake();
+
         $this->artisan('migrate:fresh');
     })
     ->afterEach(function () {
+        Sleep::fake(false);
         Carbon::setTestNow();
         date_default_timezone_set('UTC');
         expect(date_default_timezone_get())->toBe('UTC');

@@ -15,6 +15,8 @@ use App\Services\TwilioService;
 use App\Structures\ServiceBodyCallHandling;
 use App\Structures\VolunteerData;
 use Tests\FakeTwilioHttpClient;
+use Illuminate\Support\Sleep;
+use Twilio\Exceptions\RestException;
 
 beforeEach(function () {
     $fakeHttpClient = new FakeTwilioHttpClient();
@@ -1335,4 +1337,78 @@ test('random dial', function ($method) {
         ->assertHeader("Content-Type", "application/json");
 
     $this->assertNotNull(session()->get('ActiveVolunteer'));
+})->with(['GET', 'POST']);
+
+test('conference list RestException does not 500 the helpline dialer', function ($method) {
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    $serviceBodyCallHandlingData->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
+
+    ConfigData::createServiceBodyCallHandling(
+        $this->serviceBodyId,
+        $serviceBodyCallHandlingData
+    );
+
+    $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
+    $conferenceListMock->shouldReceive("read")
+        ->with(['friendlyName' => $this->conferenceName, 'status' => 'in-progress'])
+        ->andThrow(new RestException('[HTTP 502] Unable to fetch page', 502, 502))
+        ->times(ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRIES);
+    $this->twilioClient->conferences = $conferenceListMock;
+
+    $response = $this->call($method, '/helpline-dialer.php', [
+        'CallSid'=>$this->callSid,
+        'SearchType' => "1",
+        'Called' => "+12125551212",
+        'Caller' => $this->caller,
+        'FriendlyName' => $this->conferenceName,
+        'StatusCallbackEvent' => 'participant-join',
+        'SequenceNumber' => 1
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json");
+})->with(['GET', 'POST']);
+
+test('conference lookup retries are spaced 500ms apart', function ($method) {
+    $callsid = "CA460d1728a3e07606f36aaa8879a7fbd4";
+    session()->put('override_service_body_id', $this->serviceBodyId);
+    session()->put('master_callersid', $this->callSid);
+
+    $conferenceListMock = mock("\Twilio\Rest\Api\V2010\Account\ConferenceList");
+    $conferenceListMock->shouldReceive("read")
+        ->with(['friendlyName' => $this->conferenceName, 'status' => 'in-progress'])
+        ->andReturn([])
+        ->times(ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRIES);
+    $this->twilioClient->conferences = $conferenceListMock;
+
+    ConferenceParticipant::create([
+        "conferencesid"=>"abc123",
+        "callsid"=>$callsid,
+        "friendlyname"=>$this->conferenceName,
+        "role"=>CallRole::VOLUNTEER
+    ]);
+
+    $response = $this->call($method, '/helpline-dialer.php', [
+        'CallSid' => $callsid,
+        'SearchType' => "1",
+        'Called' => "+12125551212",
+        'Caller' => $this->caller,
+        'FriendlyName' => $this->conferenceName,
+        'StatusCallbackEvent' => 'participant-leave',
+        'SequenceNumber' => 2
+    ]);
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "application/json");
+
+    // No wait after the final attempt: 8 reads, 7 gaps, about 3.5s in total.
+    $expected = array_fill(
+        0,
+        ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRIES - 1,
+        Sleep::usleep(ConferenceSpecial::EVENTUAL_CONSISTENCY_RETRY_DELAY_MICROSECONDS)
+    );
+    Sleep::assertSequence($expected);
 })->with(['GET', 'POST']);
