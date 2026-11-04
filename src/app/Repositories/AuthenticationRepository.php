@@ -49,7 +49,9 @@ class AuthenticationRepository
     {
         $passwordHash = hash('sha256', $password);
 
+        // BMLT-backed rows have no yap password; their logins always go to BMLT.
         return User::where('username', $username)
+            ->where('auth_source', User::AUTH_SOURCE_LOCAL)
             ->where('password', $passwordHash)
             ->first();
     }

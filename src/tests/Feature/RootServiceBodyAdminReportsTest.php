@@ -1,6 +1,5 @@
 <?php
 
-use App\Constants\AuthMechanism;
 use App\Constants\EventId;
 use App\Models\RecordEvent;
 use App\Models\User;
@@ -65,10 +64,7 @@ test('root service body admin can access metrics for service_body_id=0', functio
 
     $user = User::factory()->create(['is_admin' => false]);
     Sanctum::actingAs($user);
-    session()->put('auth_mechanism', AuthMechanism::V2);
-    session()->put('auth_is_admin', false);
-    session()->put('auth_service_bodies', ["1000"]);
-    session()->put('auth_service_bodies_rights', ["1000"]);
+    $user->update(['service_bodies' => '1000']);
 
     $response = $this->call('GET', '/api/v1/reports/metrics', [
         "service_body_id" => 0,
@@ -92,10 +88,7 @@ test('non-root service body admin cannot access metrics for service_body_id=0', 
 
     $user = User::factory()->create(['is_admin' => false]);
     Sanctum::actingAs($user);
-    session()->put('auth_mechanism', AuthMechanism::V2);
-    session()->put('auth_is_admin', false);
-    session()->put('auth_service_bodies', ["1001"]);
-    session()->put('auth_service_bodies_rights', ["1001"]);
+    $user->update(['service_bodies' => '1001']);
 
     $response = $this->call('GET', '/api/v1/reports/metrics', [
         "service_body_id" => 0,
@@ -119,8 +112,6 @@ test('yap server admin can access metrics for service_body_id=0', function () {
 
     $admin = User::factory()->admin()->create();
     Sanctum::actingAs($admin);
-    session()->put('auth_mechanism', AuthMechanism::V2);
-    session()->put('auth_is_admin', true);
 
     $response = $this->call('GET', '/api/v1/reports/metrics', [
         "service_body_id" => 0,
@@ -143,10 +134,7 @@ test('root service body admin can access CDR for service_body_id=0', function ()
 
     $user = User::factory()->create(['is_admin' => false]);
     Sanctum::actingAs($user);
-    session()->put('auth_mechanism', AuthMechanism::V2);
-    session()->put('auth_is_admin', false);
-    session()->put('auth_service_bodies', ["1000"]);
-    session()->put('auth_service_bodies_rights', ["1000"]);
+    $user->update(['service_bodies' => '1000']);
 
     $response = $this->call('GET', '/api/v1/reports/cdr', [
         "service_body_id" => 0,
@@ -169,10 +157,7 @@ test('non-root service body admin cannot access CDR for service_body_id=0', func
 
     $user = User::factory()->create(['is_admin' => false]);
     Sanctum::actingAs($user);
-    session()->put('auth_mechanism', AuthMechanism::V2);
-    session()->put('auth_is_admin', false);
-    session()->put('auth_service_bodies', ["1001"]);
-    session()->put('auth_service_bodies_rights', ["1001"]);
+    $user->update(['service_bodies' => '1001']);
 
     $response = $this->call('GET', '/api/v1/reports/cdr', [
         "service_body_id" => 0,
@@ -196,10 +181,7 @@ test('root service body admin can access map metrics for service_body_id=0', fun
 
     $user = User::factory()->create(['is_admin' => false]);
     Sanctum::actingAs($user);
-    session()->put('auth_mechanism', AuthMechanism::V2);
-    session()->put('auth_is_admin', false);
-    session()->put('auth_service_bodies', ["1000"]);
-    session()->put('auth_service_bodies_rights', ["1000"]);
+    $user->update(['service_bodies' => '1000']);
 
     $response = $this->call('GET', '/api/v1/reports/mapmetrics', [
         "service_body_id" => 0,
@@ -222,10 +204,7 @@ test('non-root service body admin cannot access map metrics for service_body_id=
 
     $user = User::factory()->create(['is_admin' => false]);
     Sanctum::actingAs($user);
-    session()->put('auth_mechanism', AuthMechanism::V2);
-    session()->put('auth_is_admin', false);
-    session()->put('auth_service_bodies', ["1001"]);
-    session()->put('auth_service_bodies_rights', ["1001"]);
+    $user->update(['service_bodies' => '1001']);
 
     $response = $this->call('GET', '/api/v1/reports/mapmetrics', [
         "service_body_id" => 0,
@@ -259,10 +238,7 @@ test('root service body admin sees meeting request logs with null service_body_i
 
     $user = User::factory()->create(['is_admin' => false]);
     Sanctum::actingAs($user);
-    session()->put('auth_mechanism', AuthMechanism::V2);
-    session()->put('auth_is_admin', false);
-    session()->put('auth_service_bodies', ["1000"]);
-    session()->put('auth_service_bodies_rights', ["1000"]);
+    $user->update(['service_bodies' => '1000']);
 
     $response = $this->call('GET', '/api/v1/reports/metrics', [
         "service_body_id" => 0,
@@ -305,10 +281,7 @@ test('non-root service body admin does not see meeting request logs with null se
 
     $user = User::factory()->create(['is_admin' => false]);
     Sanctum::actingAs($user);
-    session()->put('auth_mechanism', AuthMechanism::V2);
-    session()->put('auth_is_admin', false);
-    session()->put('auth_service_bodies', ["1001"]);
-    session()->put('auth_service_bodies_rights', ["1001"]);
+    $user->update(['service_bodies' => '1001']);
 
     // Request with service_body_id=0 should fail with 403
     $response = $this->call('GET', '/api/v1/reports/metrics', [

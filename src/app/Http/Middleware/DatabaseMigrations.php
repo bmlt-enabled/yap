@@ -17,7 +17,7 @@ class DatabaseMigrations
      * Update this when adding a new migration so the middleware knows the schema
      * is current and can skip calling Artisan on every request.
      */
-    private const LATEST_MIGRATION = '2026_10_13_000000_create_fake_twilio_tables';
+    private const LATEST_MIGRATION = '2026_11_03_000000_add_auth_source_to_users_table';
 
     private const MIGRATION_LOCK_NAME = 'yap-db-migrations';
 

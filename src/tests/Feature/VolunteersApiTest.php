@@ -1,6 +1,5 @@
 <?php
 
-use App\Constants\AuthMechanism;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
 use App\Constants\VolunteerType;
@@ -21,12 +20,10 @@ beforeEach(function () {
     $this->id = "200";
     $this->serviceBodyId = "44";
     $this->parentServiceBodyId = "43";
-    // Set up admin session for authorization
-    session()->put('auth_is_admin', true);
 });
 
 test('get schedule for service body phone volunteer', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs(User::factory()->admin()->create());
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
     $shiftDay = 2;
@@ -78,7 +75,7 @@ test('get schedule for service body phone volunteer', function () {
 });
 
 test('get schedule for service body phone volunteer with timezone as blank string', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs(User::factory()->admin()->create());
     ;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
@@ -131,7 +128,7 @@ test('get schedule for service body phone volunteer with timezone as blank strin
 });
 
 test('get schedule for service body phone volunteer with timezone as null', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs(User::factory()->admin()->create());
     ;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
@@ -184,7 +181,7 @@ test('get schedule for service body phone volunteer with timezone as null', func
 });
 
 test('get schedule for service body sms volunteer', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs(User::factory()->admin()->create());
     ;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $shiftDay = 2;
@@ -238,7 +235,7 @@ test('get schedule for service body sms volunteer', function () {
 });
 
 test('return volunteers json', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs(User::factory()->admin()->create());
     ;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $volunteer_name = "Corey";
@@ -296,7 +293,7 @@ test('return volunteers json', function () {
 });
 
 test('return volunteers without notes json', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs(User::factory()->admin()->create());
 
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $volunteer_name = "Corey";
@@ -353,9 +350,6 @@ test('return volunteers without notes json', function () {
 
 test('return volunteers recursively json', function () {
     Sanctum::actingAs(User::factory()->admin()->create());
-    
-    session()->put('auth_mechanism', AuthMechanism::V2);
-    session()->put('auth_is_admin', true);
     $volunteer_name = "Corey";
     $volunteer_phone_number = "(555) 111-2222";
     $shiftDay = 1;
@@ -440,8 +434,6 @@ test('return volunteers recursively json', function () {
 
 test('return volunteers with groups recursively json', function () {
     Sanctum::actingAs(User::factory()->admin()->create());
-    session()->put('auth_mechanism', AuthMechanism::V2);
-    session()->put('auth_is_admin', true);
     $volunteer_name = "Corey";
     $volunteer_phone_number = "(555) 111-2222";
     $shiftDay = 1;
@@ -564,8 +556,6 @@ test('return volunteers with groups recursively json', function () {
 
 test('return volunteers recursively csv', function () {
     Sanctum::actingAs(User::factory()->admin()->create());
-    session()->put('auth_mechanism', AuthMechanism::V2);
-    session()->put('auth_is_admin', true);
 
     $volunteer_name = "Corey ";
     $volunteer_phone_number = "(555) 111-2222";
@@ -619,8 +609,6 @@ test('return volunteers recursively csv', function () {
 
 test('return volunteers csv', function () {
     Sanctum::actingAs(User::factory()->admin()->create());
-    session()->put('auth_mechanism', AuthMechanism::V2);
-    session()->put('auth_is_admin', true);
 
     $volunteer_name = "Corey ";
     $volunteer_phone_number = "(555) 111-2222";
@@ -665,7 +653,7 @@ test('return volunteers csv', function () {
 });
 
 test('return volunteers invalid service body id', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs(User::factory()->admin()->create());
     ;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = "999999";
@@ -682,7 +670,7 @@ test('return volunteers invalid service body id', function () {
 });
 
 test('return volunteers invalid format', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs(User::factory()->admin()->create());
     ;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = "44";
@@ -699,7 +687,7 @@ test('return volunteers invalid format', function () {
 });
 
 test('save volunteers', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs(User::factory()->admin()->create());
     ;
 
     $volunteerData = new VolunteerData();
@@ -722,7 +710,7 @@ test('save volunteers', function () {
 });
 
 test('get volunteers for a service body', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs(User::factory()->admin()->create());
     ;
 
     $volunteerData = new VolunteerData();
@@ -750,7 +738,7 @@ test('get volunteers for a service body', function () {
 });
 
 test('get volunteers for a service body that does not exist', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs(User::factory()->admin()->create());
     ;
 
     $response = $this->call(
@@ -765,7 +753,7 @@ test('get volunteers for a service body that does not exist', function () {
 });
 
 test('update call volunteers for a service body', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs(User::factory()->admin()->create());
     ;
 
     $volunteerData = new VolunteerData();

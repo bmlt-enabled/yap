@@ -2,6 +2,12 @@
 
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
+use Tests\FakeHttp;
+
+// Service body rights resolve against the BMLT service body list.
+beforeEach(function () {
+    FakeHttp::install();
+});
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
@@ -33,7 +39,6 @@ test('security: non-admin user cannot delete users', function () {
     // First create a user as admin
     $admin = User::factory()->create(['is_admin' => true]);
     Sanctum::actingAs($admin);
-    session()->put('auth_is_admin', true);
 
     $this->call('POST', '/api/v1/users', [
         'name' => 'Target',
@@ -50,7 +55,6 @@ test('security: non-admin user cannot delete users', function () {
     // Now switch to non-admin user
     $regularUser = User::factory()->create(['is_admin' => false, 'permissions' => 0]);
     Sanctum::actingAs($regularUser);
-    session()->put('auth_is_admin', false);
 
     $response = $this->call('DELETE', '/api/v1/users/target');
 
@@ -70,8 +74,6 @@ test('security: user cannot escalate own privileges via self-update', function (
         'username' => 'regularuser'
     ]);
     Sanctum::actingAs($regularUser);
-    session()->put('auth_is_admin', false);
-    session()->put('username', 'regularuser');
 
     // Attempt to set is_admin=true on self
     $response = $this->call('PUT', '/api/v1/users/regularuser', [
@@ -95,7 +97,6 @@ test('security: user cannot access another users details', function () {
     // Create target user as admin
     $admin = User::factory()->create(['is_admin' => true]);
     Sanctum::actingAs($admin);
-    session()->put('auth_is_admin', true);
 
     $this->call('POST', '/api/v1/users', [
         'name' => 'Victim',
@@ -108,8 +109,6 @@ test('security: user cannot access another users details', function () {
     // Now act as a different non-admin user
     $attacker = User::factory()->create(['is_admin' => false, 'permissions' => 0]);
     Sanctum::actingAs($attacker);
-    session()->put('auth_is_admin', false);
-    session()->put('username', 'attacker');
 
     $response = $this->call('GET', '/api/v1/users/victim');
 
@@ -127,9 +126,7 @@ test('security: user cannot access volunteers for unauthorized service body', fu
         'service_bodies' => '1059'
     ]);
     Sanctum::actingAs($limitedUser);
-    session()->put('auth_is_admin', false);
-    session()->put('auth_service_bodies', [1059]);
-    session()->put('auth_service_bodies_rights', [1059]);
+    $limitedUser->update(['service_bodies' => '1059']);
 
     // Try to access volunteers for a different service body (1060)
     $response = $this->call('GET', '/api/v1/volunteers', [
@@ -155,9 +152,7 @@ test('security: user cannot modify call handling for unauthorized service body',
         'service_bodies' => '1059'
     ]);
     Sanctum::actingAs($limitedUser);
-    session()->put('auth_is_admin', false);
-    session()->put('auth_service_bodies', [1059]);
-    session()->put('auth_service_bodies_rights', [1059]);
+    $limitedUser->update(['service_bodies' => '1059']);
 
     // Try to modify call handling for a different service body (1060)
     $response = $this->call('POST', '/api/v1/callHandling', [
@@ -178,9 +173,7 @@ test('security: user cannot delete voicemail from unauthorized service body', fu
         'service_bodies' => '1059'
     ]);
     Sanctum::actingAs($limitedUser);
-    session()->put('auth_is_admin', false);
-    session()->put('auth_service_bodies', [1059]);
-    session()->put('auth_service_bodies_rights', [1059]);
+    $limitedUser->update(['service_bodies' => '1059']);
 
     // Try to delete a voicemail using a fake call SID
     // The service body check should happen before we even look for the voicemail

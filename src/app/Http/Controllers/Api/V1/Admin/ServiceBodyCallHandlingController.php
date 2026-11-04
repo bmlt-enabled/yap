@@ -24,11 +24,7 @@ class ServiceBodyCallHandlingController extends Controller
 
     private function authorizeServiceBody($serviceBodyId): bool
     {
-        if ($this->authz->isTopLevelAdmin()) {
-            return true;
-        }
-        $rights = session()->get('auth_service_bodies_rights') ?? [];
-        return in_array($serviceBodyId, $rights);
+        return $this->authz->canAccessServiceBody($serviceBodyId);
     }
 
     /**

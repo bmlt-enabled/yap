@@ -12,7 +12,6 @@ beforeAll(function () {
 test('security: user response does not contain password hash', function () {
     $admin = User::factory()->create(['is_admin' => true]);
     Sanctum::actingAs($admin);
-    session()->put('auth_is_admin', true);
 
     // Create a user
     $this->call('POST', '/api/v1/users', [
@@ -47,8 +46,7 @@ test('security: user response does not contain password hash', function () {
 test('security: voicemail response does not expose PIN', function () {
     $admin = User::factory()->create(['is_admin' => true]);
     Sanctum::actingAs($admin);
-    session()->put('auth_is_admin', true);
-    session()->put('auth_service_bodies_rights', [1059]);
+    $admin->update(['service_bodies' => '1059']);
 
     // Create a test voicemail record with a PIN
     RecordEvent::create([
@@ -91,7 +89,6 @@ test('security: voicemail response does not expose PIN', function () {
 test('security: error responses do not leak SQL or stack traces', function () {
     $admin = User::factory()->create(['is_admin' => true]);
     Sanctum::actingAs($admin);
-    session()->put('auth_is_admin', true);
 
     // Trigger an error by requesting a non-existent user
     $response = $this->call('GET', '/api/v1/users/nonexistent_user_that_does_not_exist');

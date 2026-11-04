@@ -11,12 +11,10 @@ beforeEach(function () {
     $this->id = "200";
     $this->serviceBodyId = "44";
     $this->parentServiceBodyId = "43";
-    // Set up admin session for authorization
-    session()->put('auth_is_admin', true);
 });
 
 test('save call handling', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs(User::factory()->admin()->create());
     ;
     $callHandling = new ServiceBodyCallHandling();
     $callHandling->forced_caller_id_number = "123";
@@ -38,7 +36,7 @@ test('save call handling', function () {
 });
 
 test('get call handling for a service body', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs(User::factory()->admin()->create());
     ;
     $callHandling = new ServiceBodyCallHandling();
     $callHandling->forced_caller_id_number = "123";
@@ -64,7 +62,7 @@ test('get call handling for a service body', function () {
 });
 
 test('get call handling for a service body that does not exist', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs(User::factory()->admin()->create());
     ;
 
     $response = $this->call(
@@ -79,7 +77,7 @@ test('get call handling for a service body that does not exist', function () {
 });
 
 test('update call handling for a service body', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs(User::factory()->admin()->create());
     ;
     $callHandling = new ServiceBodyCallHandling();
     $callHandling->forced_caller_id_number = "123";

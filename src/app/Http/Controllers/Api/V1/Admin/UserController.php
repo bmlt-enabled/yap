@@ -47,10 +47,10 @@ class UserController extends Controller
      *     )
      * )
      */
-    public function show($username)
+    public function show(Request $request, $username)
     {
         // Allow viewing own profile or if user can manage users
-        if (session()->get('username') !== $username && !$this->authz->canManageUsers()) {
+        if ($request->user()?->username !== $username && !$this->authz->canManageUsers()) {
             return response()->json(['message' => 'Not found'], 404);
         }
         return User::getUser($username);
@@ -187,7 +187,7 @@ class UserController extends Controller
      */
     public function update(Request $request, string $username): JsonResponse
     {
-        if (session()->get('username') === $username) {
+        if ($request->user()?->username === $username) {
             $user = User::editUserForSelf(
                 $request->input('name'),
                 $username,

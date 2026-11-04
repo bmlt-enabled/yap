@@ -1,6 +1,5 @@
 <?php
 
-use App\Constants\AuthMechanism;
 use App\Constants\CallRole;
 use App\Constants\EventId;
 use App\Models\ConferenceParticipant;
@@ -420,8 +419,6 @@ test('validate sample metrics', function () {
 
 test('validate sample metrics for with recurse', function () {
     Sanctum::actingAs(User::factory()->admin()->create());
-    session()->put("auth_mechanism", AuthMechanism::V2);
-    session()->put("auth_is_admin", true);
     $parent_service_body_id = 1052;
     $service_body_id = 1053;
     $date_range_start = "2023-01-03 00:00:00";
