@@ -66,12 +66,9 @@ class CustomUserProvider implements UserProvider
      */
     public function validateCredentials(Authenticatable $user, array $credentials)
     {
-        $plainPassword = $credentials['password'];
-
-        $hashedPassword = hash('sha256', $plainPassword);
-
-        // Compare with the stored password
-        return hash_equals($user->getAuthPassword(), $hashedPassword);
+        return $user instanceof User
+            && !$user->isBmltUser()
+            && $user->checkPassword((string) ($credentials['password'] ?? ''));
     }
 
     public function rehashPasswordIfRequired(Authenticatable $user, array $credentials, bool $force = false)
