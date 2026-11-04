@@ -6,8 +6,7 @@ use Illuminate\Testing\Assert;
 use Laravel\Sanctum\Sanctum;
 
 test('create user', function () {
-    Sanctum::actingAs(User::factory()->create());
-    session()->put('auth_is_admin', true);
+    Sanctum::actingAs(User::factory()->admin()->create());
     $username = 'test';
     $password = 'test';
     $response = $this->call('POST', '/api/v1/users', [
@@ -26,8 +25,7 @@ test('create user', function () {
 });
 
 test('create user and then delete it', function () {
-    Sanctum::actingAs(User::factory()->create());
-    session()->put('auth_is_admin', true);
+    Sanctum::actingAs(User::factory()->admin()->create());
     $username = 'test';
     $password = 'test';
     $response = $this->call('POST', '/api/v1/users', [
@@ -68,8 +66,7 @@ test('delete user without permissions does not exist', function () {
 
 
 test('delete user that does not exist', function () {
-    Sanctum::actingAs(User::factory()->create());
-    session()->put('auth_is_admin', true);
+    Sanctum::actingAs(User::factory()->admin()->create());
 
     $username = 'bruh';
 
@@ -81,8 +78,7 @@ test('delete user that does not exist', function () {
 });
 
 test('get all users', function () {
-    Sanctum::actingAs(User::factory()->create());
-    session()->put('auth_is_admin', true);
+    Sanctum::actingAs(User::factory()->admin()->create());
 
     $response = $this->call('POST', '/api/v1/users', [
         'name'=>'test',
@@ -107,8 +103,7 @@ test('get all users', function () {
 });
 
 test('edit user name by self, non admin', function () {
-    Sanctum::actingAs(User::factory()->create());
-    session()->put('auth_is_admin', true);
+    Sanctum::actingAs(User::factory()->admin()->create());
 
     $username = 'test';
 
@@ -130,8 +125,7 @@ test('edit user name by self, non admin', function () {
             "service_bodies"=>"1059,1060"
         ]]);
 
-    session()->put('auth_is_admin', false);
-    session()->put('username', $username);
+    Sanctum::actingAs(User::where('username', $username)->first());
 
     $response = $this->call('PUT', sprintf('/api/v1/users/%s', $username), [
         'name'=>'test2',

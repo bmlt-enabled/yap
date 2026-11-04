@@ -73,6 +73,8 @@ class AuthController extends Controller
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
+        // New session id for the new login. The token is the credential; the
+        // session only carries per-login state such as BMLT cookies.
         $request->session()->regenerate();
 
         // Set session language if provided
@@ -139,7 +141,7 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $this->authn->logout();
+        $this->authn->logout($request->user());
         $request->user()->tokens()->delete();
 
         return response()->json(['message' => 'Logged out successfully']);

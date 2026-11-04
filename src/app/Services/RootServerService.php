@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Constants\AuthMechanism;
 use App\Utilities\Sort;
 use CurlException;
 use Exception;
@@ -42,7 +41,7 @@ class RootServerService extends Service
     {
         $service_bodies = $this->getServiceBodiesRights();
 
-        if (isset($service_bodies)) {
+        if (!empty($service_bodies)) {
             foreach ($service_bodies as $service_body) {
                 $parent_service_body = $this->getServiceBody($service_body->parent_id);
                 $service_body->parent_name = isset($parent_service_body) ? $parent_service_body->name : "None";
@@ -84,76 +83,68 @@ class RootServerService extends Service
         return $service_bodies_results;
     }
 
-    public function getServiceBodiesRights()
+    /**
+     * The service bodies the authenticated user may administer, read only from
+     * their users row: every service body for a yap admin, otherwise the ids in
+     * service_bodies. A BMLT user's row is refreshed from BMLT on every login
+     * (see getBmltServiceBodiesRightsIds), so nothing here reads the session.
+     */
+    public function getServiceBodiesRights(): array
     {
-        if (session()->has('auth_mechanism')) {
-            if (session()->get('auth_mechanism') == AuthMechanism::V1) {
-                $url = sprintf(
-                    '%s/local_server/server_admin/json.php?admin_action=get_permissions',
-                    $this->settings->getAdminBMLTRootServer()
-                );
-                $service_bodies_for_user = json_decode($this->http->getWithAuth($url));
-
-                if ($service_bodies_for_user == null) {
-                    return array();
-                }
-
-                if (!is_array($service_bodies_for_user->service_body)) {
-                    $service_bodies_for_user = array($service_bodies_for_user->service_body);
-                } elseif (isset($service_bodies_for_user->service_body)) {
-                    $service_bodies_for_user = $service_bodies_for_user->service_body;
-                } else {
-                    $service_bodies_for_user = array();
-                }
-
-                $service_bodies = $this->getServiceBodies();
-                $enriched_service_bodies_for_user = array();
-                foreach ($service_bodies_for_user as $service_body_for_user) {
-                    foreach ($service_bodies as $service_body) {
-                        if (intval($service_body->id) === $service_body_for_user->id) {
-                            $enriched_service_bodies_for_user[] = $service_body;
-                        }
-                    }
-                }
-
-                return $enriched_service_bodies_for_user;
-            } elseif (session()->get('auth_mechanism') == AuthMechanism::V2 && session()->get('auth_is_admin')) {
-                return $this->getServiceBodies();
-            } elseif (session()->get('auth_mechanism') == AuthMechanism::V2) {
-                $service_bodies = $this->getServiceBodies();
-                $service_body_rights = session()->get('auth_service_bodies');
-                $service_bodies_for_user = array();
-                foreach ($service_bodies as $service_body) {
-                    if (in_array($service_body->id, $service_body_rights)) {
-                        $service_bodies_for_user[] = $service_body;
-                    }
-                }
-
-                return $service_bodies_for_user;
-            }
-        }
-
-        // Fall back to checking authenticated user directly (for token-based auth)
         $user = auth()->user();
-        if ($user) {
-            if ($user->is_admin) {
-                return $this->getServiceBodies();
-            }
-            // Non-admin user with specific service bodies
-            if ($user->service_bodies) {
-                $service_bodies = $this->getServiceBodies();
-                $service_body_rights = explode(",", $user->service_bodies);
-                $service_bodies_for_user = array();
-                foreach ($service_bodies as $service_body) {
-                    if (in_array($service_body->id, $service_body_rights)) {
-                        $service_bodies_for_user[] = $service_body;
-                    }
-                }
-                return $service_bodies_for_user;
+        if (!$user) {
+            return [];
+        }
+
+        $service_bodies = $this->getServiceBodies() ?? [];
+        if ($user->is_admin) {
+            return $service_bodies;
+        }
+
+        $service_body_rights = array_filter(explode(",", (string) $user->service_bodies), 'strlen');
+        $service_bodies_for_user = [];
+        foreach ($service_bodies as $service_body) {
+            if (in_array($service_body->id, $service_body_rights)) {
+                $service_bodies_for_user[] = $service_body;
             }
         }
 
-        return null;
+        return $service_bodies_for_user;
+    }
+
+    /**
+     * Ask BMLT which service bodies the account that just logged in has rights
+     * to. Uses the BMLT cookies authenticate() stored in the session, so it is
+     * only meaningful during a BMLT login.
+     *
+     * @return int[]
+     */
+    public function getBmltServiceBodiesRightsIds(): array
+    {
+        $url = sprintf(
+            '%s/local_server/server_admin/json.php?admin_action=get_permissions',
+            $this->settings->getAdminBMLTRootServer()
+        );
+        $permissions = json_decode($this->http->getWithAuth($url));
+
+        if (!isset($permissions->service_body)) {
+            return [];
+        }
+
+        $service_bodies_for_user = is_array($permissions->service_body)
+            ? $permissions->service_body
+            : [$permissions->service_body];
+
+        $known_ids = array_map(fn ($service_body) => intval($service_body->id), $this->getServiceBodies() ?? []);
+        $ids = [];
+        foreach ($service_bodies_for_user as $service_body_for_user) {
+            $id = intval($service_body_for_user->id);
+            if (in_array($id, $known_ids, true)) {
+                $ids[] = $id;
+            }
+        }
+
+        return $ids;
     }
 
     public function getServiceBody($service_body_id)

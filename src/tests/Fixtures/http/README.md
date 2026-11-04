@@ -47,9 +47,9 @@ any other, so the failed-login cases still exercise their branch.
 the semantic-admin session cookie, so they cannot be fetched with a plain curl.
 `permissions.json` grants service body `1` (Greater New York Region), which is
 the body the `gnyr_admin` account the auth tests use administers, and whose id
-exists in `service-bodies.json`. Note the `id` must be a JSON **number**:
-`RootServerService::getServiceBodiesRights()` compares it with `===` against
-`intval()`, so a string silently matches nothing.
+exists in `service-bodies.json`. `RootServerService::getBmltServiceBodiesRightsIds()`
+reads it on every BMLT login and keeps only the ids that also appear in
+`service-bodies.json`.
 
 ## `google/` — hand-authored
 

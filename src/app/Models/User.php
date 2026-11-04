@@ -11,9 +11,47 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    /** A yap account whose password is checked against the users table. */
+    public const AUTH_SOURCE_LOCAL = 'local';
+
+    /**
+     * A BMLT root server account. Its row exists only so the admin API has a
+     * user to issue a token for: it has no usable password, gets its service
+     * bodies from BMLT on every login, and is never a yap admin.
+     */
+    public const AUTH_SOURCE_BMLT = 'bmlt';
+
     protected $primaryKey = "id";
     public $timestamps = false;
     protected $fillable = ["name", "username", "password", "permissions", "is_admin", "created_on", "service_bodies"];
+    protected $hidden = ["password", "remember_token"];
+    protected $attributes = ["auth_source" => self::AUTH_SOURCE_LOCAL];
+
+    public function isBmltUser(): bool
+    {
+        return $this->auth_source === self::AUTH_SOURCE_BMLT;
+    }
+
+    /**
+     * Create or refresh the row for a BMLT login. Everything except the
+     * display name is overwritten, so BMLT stays the source of truth.
+     */
+    public static function syncBmltUser(string $username, array $serviceBodyIds): self
+    {
+        $user = self::firstOrNew(['username' => $username]);
+        if (!$user->exists) {
+            $user->name = $username;
+        }
+        $user->forceFill([
+            'auth_source' => self::AUTH_SOURCE_BMLT,
+            'password' => '',
+            'is_admin' => 0,
+            'permissions' => 0,
+            'service_bodies' => implode(',', $serviceBodyIds),
+        ])->save();
+
+        return $user;
+    }
 
     public static function saveUser(
         string $name,
@@ -39,7 +77,8 @@ class User extends Authenticatable
     ) {
         $user = self::where('username', $username)->first();
         $user->name = $name;
-        if (strlen($password) > 0) {
+        // A BMLT user's password lives in BMLT; their row never gets one.
+        if (strlen($password) > 0 && !$user->isBmltUser()) {
             $user->password = hash('sha256', $password);
         }
 
@@ -60,7 +99,8 @@ class User extends Authenticatable
         $user->username = $username;
         $user->service_bodies = implode(",", $service_bodies);
 
-        if (strlen($password) > 0) {
+        // A BMLT user's password lives in BMLT; their row never gets one.
+        if (strlen($password) > 0 && !$user->isBmltUser()) {
             $user->password = hash('sha256', $password);
         }
 

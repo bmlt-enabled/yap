@@ -11,7 +11,13 @@ use App\Repositories\VoicemailRepository;
 use App\Services\TwilioService;
 use Carbon\Carbon;
 use Laravel\Sanctum\Sanctum;
+use Tests\FakeHttp;
 use Twilio\Exceptions\RestException;
+
+// Service body rights resolve against the BMLT service body list.
+beforeEach(function () {
+    FakeHttp::install();
+});
 
 function insertVoicemailEvent(
     string $callsid,

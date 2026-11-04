@@ -2,7 +2,9 @@
 
 ---
 
-Yap 5.x uses [Laravel Sanctum](https://laravel.com/docs/sanctum) for admin REST API authentication. The React admin SPA uses session cookies in the browser; scripts, CI jobs, and external tools should use bearer tokens.
+Yap 5.x uses [Laravel Sanctum](https://laravel.com/docs/sanctum) bearer tokens for admin REST API authentication. The React admin SPA, scripts, CI jobs and external tools all use the same token from `POST /api/v1/login`.
+
+Every permission check uses the token's user only: its `is_admin` flag, permissions and service bodies. The session cookie is not a credential and grants nothing. A request without a token is `401`, with or without a session cookie.
 
 For the high-level upgrade summary, see [Upgrading from Yap 4.x to Yap 5.x](./upgrading-from-yap-4x-to-yap-5x) section 8.
 
@@ -28,7 +30,13 @@ Successful response:
 }
 ```
 
-Works for BMLT-backed accounts and Yap-local database users. Optional `language` in the body sets the session language for localized API responses.
+Works for BMLT-backed accounts and Yap-local database users. Optional `language` in the body sets the session language for localized API responses. The response never includes the password hash.
+
+### BMLT accounts
+
+- Yap checks a BMLT account with the BMLT root server on **every** login and never stores its password. A changed or disabled BMLT password takes effect at the next login.
+- The account's service bodies are reloaded from BMLT at every login, and existing tokens pick up the change at that next login. A BMLT account is never a Yap admin.
+- A BMLT login is refused when a local Yap account has the same username. The local account still signs in with its local password.
 
 ## Use the token
 
@@ -75,13 +83,9 @@ The admin UI sign-out control clears browser storage but does not call this endp
 
 - Tokens are stored in `personal_access_tokens` and tied to the integer `users.id` primary key.
 - **Username** is the stable identifier for local admin accounts in scripts—not numeric user id.
-- Tokens do not expire by default unless you configure Sanctum expiration in Laravel.
+- Tokens expire `SESSION_LIFETIME` minutes (default 120) after login, whether or not they are used. After that, protected routes return `401` and you log in again.
 - Each login creates a new token (`API Token` name). Old tokens remain valid until logout or manual deletion.
 - Protect tokens like passwords; use HTTPS only on production hosts.
-
-## Stateful SPA domains
-
-Browser sessions for `/admin` require `SANCTUM_STATEFUL_DOMAINS` in `.env` to include your admin hostname. API-only clients ignore this and use bearer tokens only.
 
 ## Related topics
 

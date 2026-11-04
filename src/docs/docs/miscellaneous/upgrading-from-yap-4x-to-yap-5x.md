@@ -144,7 +144,7 @@ The custom `AdminAuthenticator` and session-cookie admin API from 4.5.x are gone
 2. Use the returned bearer token on subsequent requests: `Authorization: Bearer <token>`.
 3. Protected routes are under `/api/v1/*` with `auth:sanctum` middleware.
 
-BMLT-based and database-local admin accounts both flow through this endpoint. Session cookies still back the browser UI, but API clients must use Sanctum tokens.
+BMLT-based and database-local admin accounts both flow through this endpoint. The browser UI uses the same bearer token, and permissions come only from the token's user, not from the session cookie. Each BMLT login is checked with the BMLT root server, and a BMLT login whose username matches a local Yap account is refused.
 
 For scripted access, token logout, and examples, see [Sanctum API access](./sanctum-api-access).
 

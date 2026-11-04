@@ -5,15 +5,19 @@ use App\Services\AuthorizationService;
 use App\Services\HttpService;
 use App\Services\RootServerService;
 use Laravel\Sanctum\Sanctum;
+use Tests\FakeHttp;
 
 beforeAll(function () {
     putenv("ENVIRONMENT=test");
 });
 
+beforeEach(function () {
+    FakeHttp::install();
+});
+
 test('isRootServiceBodyAdmin returns true for top level admin', function () {
     $admin = User::factory()->admin()->create();
     Sanctum::actingAs($admin);
-    session()->put('auth_is_admin', true);
 
     $authorizationService = app(AuthorizationService::class);
 
@@ -33,12 +37,13 @@ test('isRootServiceBodyAdmin returns true for user with root service body', func
         ->with("1000")
         ->andReturn($rootServiceBody);
 
+    $rootServerService->shouldReceive("getServiceBodies")->andReturn([$rootServiceBody]);
+
     app()->instance(RootServerService::class, $rootServerService);
 
     $user = User::factory()->create(['is_admin' => false]);
     Sanctum::actingAs($user);
-    session()->put('auth_is_admin', false);
-    session()->put('auth_service_bodies_rights', ["1000"]);
+    $user->update(['service_bodies' => '1000']);
 
     $authorizationService = app(AuthorizationService::class);
 
@@ -58,12 +63,13 @@ test('isRootServiceBodyAdmin returns true for user with root service body (paren
         ->with("1000")
         ->andReturn($rootServiceBody);
 
+    $rootServerService->shouldReceive("getServiceBodies")->andReturn([$rootServiceBody]);
+
     app()->instance(RootServerService::class, $rootServerService);
 
     $user = User::factory()->create(['is_admin' => false]);
     Sanctum::actingAs($user);
-    session()->put('auth_is_admin', false);
-    session()->put('auth_service_bodies_rights', ["1000"]);
+    $user->update(['service_bodies' => '1000']);
 
     $authorizationService = app(AuthorizationService::class);
 
@@ -83,12 +89,13 @@ test('isRootServiceBodyAdmin returns true for user with root service body (paren
         ->with("1000")
         ->andReturn($rootServiceBody);
 
+    $rootServerService->shouldReceive("getServiceBodies")->andReturn([$rootServiceBody]);
+
     app()->instance(RootServerService::class, $rootServerService);
 
     $user = User::factory()->create(['is_admin' => false]);
     Sanctum::actingAs($user);
-    session()->put('auth_is_admin', false);
-    session()->put('auth_service_bodies_rights', ["1000"]);
+    $user->update(['service_bodies' => '1000']);
 
     $authorizationService = app(AuthorizationService::class);
 
@@ -108,12 +115,13 @@ test('isRootServiceBodyAdmin returns false for user with only child service body
         ->with("1001")
         ->andReturn($childServiceBody);
 
+    $rootServerService->shouldReceive("getServiceBodies")->andReturn([$childServiceBody]);
+
     app()->instance(RootServerService::class, $rootServerService);
 
     $user = User::factory()->create(['is_admin' => false]);
     Sanctum::actingAs($user);
-    session()->put('auth_is_admin', false);
-    session()->put('auth_service_bodies_rights', ["1001"]);
+    $user->update(['service_bodies' => '1001']);
 
     $authorizationService = app(AuthorizationService::class);
 
@@ -123,8 +131,7 @@ test('isRootServiceBodyAdmin returns false for user with only child service body
 test('isRootServiceBodyAdmin returns false for user with no service bodies', function () {
     $user = User::factory()->create(['is_admin' => false]);
     Sanctum::actingAs($user);
-    session()->put('auth_is_admin', false);
-    session()->put('auth_service_bodies_rights', []);
+    $user->update(['service_bodies' => '']);
 
     $authorizationService = app(AuthorizationService::class);
 
@@ -134,8 +141,6 @@ test('isRootServiceBodyAdmin returns false for user with no service bodies', fun
 test('isRootServiceBodyAdmin returns false when service body rights is null', function () {
     $user = User::factory()->create(['is_admin' => false]);
     Sanctum::actingAs($user);
-    session()->put('auth_is_admin', false);
-    session()->forget('auth_service_bodies_rights');
 
     $authorizationService = app(AuthorizationService::class);
 
@@ -165,13 +170,14 @@ test('isRootServiceBodyAdmin returns true when user has mixed service bodies inc
         ->with("1000")
         ->andReturn($rootServiceBody);
 
+    $rootServerService->shouldReceive("getServiceBodies")->andReturn([$rootServiceBody, $childServiceBody]);
+
     app()->instance(RootServerService::class, $rootServerService);
 
     $user = User::factory()->create(['is_admin' => false]);
     Sanctum::actingAs($user);
-    session()->put('auth_is_admin', false);
     // User has access to both a child service body and a root service body
-    session()->put('auth_service_bodies_rights', ["1001", "1000"]);
+    $user->update(['service_bodies' => '1001,1000']);
 
     $authorizationService = app(AuthorizationService::class);
 

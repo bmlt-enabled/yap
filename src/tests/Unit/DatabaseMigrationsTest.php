@@ -21,7 +21,7 @@ function makeDatabaseMigrationsMiddleware(
 function mockLatestMigrationExists(bool $exists): void
 {
     $query = mock(Builder::class);
-    $query->shouldReceive('where')->with('migration', '2026_10_13_000000_create_fake_twilio_tables')->andReturnSelf();
+    $query->shouldReceive('where')->with('migration', '2026_11_03_000000_add_auth_source_to_users_table')->andReturnSelf();
     $query->shouldReceive('exists')->andReturn($exists);
 
     DB::shouldReceive('table')->with('migrations_v2')->andReturn($query);

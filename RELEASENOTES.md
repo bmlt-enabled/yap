@@ -19,6 +19,13 @@
 
 #### Features and fixes
 
+* **Admin login fixes for BMLT users, username clashes, leftover sessions and password hashes.** The 5.0 betas checked permissions against both the bearer token and the session cookie, and stored BMLT logins as local users. [#1674]
+  * Permissions now come only from the bearer token's user. The session can no longer grant anything: logging in starts from an empty session, so a session left over in the browser doesn't carry admin rights into the next login.
+  * Every BMLT login is checked with BMLT. Yap no longer keeps a copy of BMLT passwords, so a changed or disabled BMLT password takes effect at the next login. Service-body rights are reloaded from BMLT at every login too.
+  * A BMLT login with the same username as a local yap account is refused. The local account still signs in with its local password. Before, the BMLT password got a token for the local account, admin rights included.
+  * Login and `/api/v1/user` responses no longer include the password hash.
+  * **Upgrade note for 5.0.0 beta users:** the upgrade revokes every API token, so everyone signs in again. Users rows created by BMLT logins lose their stored password. They are recognized as rows whose name equals the username, with no admin flag and no permissions. A local account that matches that pattern loses its password too: delete it in **Users** and create it again.
+
 * **Voicemail playback and email attachments work with Twilio media auth.** Twilio now requires HTTP Basic Auth on stored recordings, so raw `api.twilio.com` links returned 401. Voicemail links in SMS and email notifications, and **Play** in the admin voicemail list, now go through a signed `/media` endpoint that fetches the recording with the account credentials and streams it back. The endpoint rejects unsigned, tampered, or expired links and anything not hosted on `api.twilio.com`. Email attachments are fetched with Basic Auth too, so they contain the real audio; if the fetch fails, the email is still sent with the link. Ports the 4.5.2 fix to 5.0. [#1664]
 
 * **Fake-Twilio call/SMS simulator for development and CI.** With `TWILIO_FAKE_MODE=true` (ignored in production), Yap records outbound Twilio API requests in the database instead of sending them. `php artisan yap:simulate` then drives signed calls and SMS over real HTTP against a running instance, follows the TwiML, and asserts on what callers hear and on the captured Twilio requests. Scenarios cover meeting search by phone and SMS, and helpline volunteer routing (answer, or no-answer → voicemail). `timezone_default` can now also be given as an array. See the [simulator docs](https://yap.bmlt.app/miscellaneous/simulator). [#1650]

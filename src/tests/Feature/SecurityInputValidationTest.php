@@ -62,7 +62,6 @@ test('security: SQL injection in login password does not bypass auth', function 
 test('security: SQL injection in service body ID parameter is rejected', function () {
     $admin = User::factory()->create(['is_admin' => true]);
     Sanctum::actingAs($admin);
-    session()->put('auth_is_admin', true);
 
     $sqlInjectionPayloads = [
         "1 OR 1=1",
@@ -85,7 +84,6 @@ test('security: mass assignment does not allow setting is_admin when creating us
     // Create admin to make the API call
     $admin = User::factory()->create(['is_admin' => true]);
     Sanctum::actingAs($admin);
-    session()->put('auth_is_admin', true);
 
     // Create a new user, trying to inject is_admin=true
     // (The API should NOT allow setting is_admin directly via input)
