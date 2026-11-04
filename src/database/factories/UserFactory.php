@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class UserFactory extends Factory
@@ -15,6 +16,9 @@ class UserFactory extends Factory
      */
     protected $model = User::class;
 
+    /** Hashed once per process; bcrypt is deliberately slow. */
+    protected static ?string $password = null;
+
     /**
      * Define the model's default state.
      *
@@ -25,7 +29,7 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'username' => fake()->unique()->userName(), // Generate unique usernames
-            'password' =>  hash('sha256', 'password'), // Hash the password.  You can use a different default password if needed.
+            'password' => static::$password ??= Hash::make('password'),
             'permissions' => 0,
             'is_admin' => 0, // Or null, depending on your requirements
             'created_on' => now(),

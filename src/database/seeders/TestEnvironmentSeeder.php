@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class TestEnvironmentSeeder extends Seeder
@@ -12,8 +13,8 @@ class TestEnvironmentSeeder extends Seeder
         if (getenv("ENVIRONMENT") === "test") {
             DB::statement("
                 INSERT IGNORE INTO users (name, username, password, permissions, is_admin)
-                VALUES ('admin', 'admin', SHA2('admin', 256), 0, 1);
-            ");
+                VALUES ('admin', 'admin', ?, 0, 1);
+            ", [User::hashPassword('admin')]);
         }
     }
 }

@@ -6,7 +6,6 @@ use App\Models\User;
 use App\Services\HttpService;
 use App\Services\RootServerService;
 use App\Services\SettingsService;
-use Illuminate\Support\Facades\DB;
 
 class AuthenticationRepository
 {
@@ -47,13 +46,23 @@ class AuthenticationRepository
 
     public function authV2($username, $password): ?User
     {
-        $passwordHash = hash('sha256', $password);
-
         // BMLT-backed rows have no yap password; their logins always go to BMLT.
-        return User::where('username', $username)
+        $user = User::where('username', $username)
             ->where('auth_source', User::AUTH_SOURCE_LOCAL)
-            ->where('password', $passwordHash)
             ->first();
+
+        if (!$user || !$user->checkPassword($password)) {
+            return null;
+        }
+
+        // Move legacy unsalted SHA-256 hashes (and outdated bcrypt costs) to
+        // the current format while we have the plaintext.
+        if ($user->passwordNeedsRehash()) {
+            $user->password = User::hashPassword($password);
+            $user->save();
+        }
+
+        return $user;
     }
 
     public function getUserNameV1()
