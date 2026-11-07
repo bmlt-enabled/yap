@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Services\SettingsService;
 use App\Simulator\HttpTransport;
-use App\Simulator\Scenarios\HelplineVolunteerScenario;
 use App\Simulator\Scenarios\ScenarioOptions;
 use App\Simulator\Scenarios\ScenarioRegistry;
 use App\Simulator\SimulationFailed;
@@ -34,10 +33,10 @@ class SimulateCommand extends Command
         {--longitude=-76.985573 : Longitude the location resolves to}
         {--timezone=America/New_York : Time zone the location is in}
         {--real-geocoding : Use Google Maps geocoding/time zone APIs instead of pinning --latitude/--longitude/--timezone}
-        {--service-body= : Service body id for helpline-volunteer}
-        {--volunteer= : Volunteer number helpline-volunteer expects to be dialed}
+        {--service-body= : Service body id the helpline scenarios route to (and --seed configures)}
+        {--volunteer= : Volunteer number helpline-volunteer seeds and expects to be dialed}
         {--outcome=answer : helpline-volunteer outcome: answer or no-answer}
-        {--seed : Create volunteer routing for --service-body in this app\'s database first}
+        {--seed : Configure call handling and volunteers in this app\'s database before each scenario that needs them}
         {--no-reset : Keep previously captured fake Twilio requests}';
 
     protected $description = 'Simulate Twilio calls and SMS end to end against a yap instance running in fake Twilio mode';
@@ -48,7 +47,7 @@ class SimulateCommand extends Command
 
         if ($this->option('list')) {
             foreach ($registry as $name => $scenario) {
-                $this->line(sprintf('  %-20s %s', $name, $scenario->description()));
+                $this->line(sprintf('  %-30s %s', $name, $scenario->description()));
             }
 
             return self::SUCCESS;
@@ -63,7 +62,7 @@ class SimulateCommand extends Command
         }
 
         if ($this->option('seed') && app()->environment('production')) {
-            $this->error('--seed writes volunteer routing to the database and is refused in production.');
+            $this->error('--seed writes call handling and volunteers to the database and is refused in production.');
 
             return self::INVALID;
         }
@@ -108,9 +107,9 @@ class SimulateCommand extends Command
         foreach ($names as $name) {
             $scenario = $registry[$name];
 
-            if ($scenario instanceof HelplineVolunteerScenario && $options->serviceBodyId === null
-                && $this->argument('scenarios') === []) {
-                $this->line("<comment>SKIP</comment> {$name}: pass --service-body (and --seed locally) to run it");
+            $skip = $scenario->skipReason($options);
+            if ($skip !== null && $this->argument('scenarios') === []) {
+                $this->line("<comment>SKIP</comment> {$name}: {$skip}");
                 continue;
             }
 

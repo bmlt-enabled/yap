@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Auth\CustomUserProvider;
 use App\Listeners\RecordWebhookFailure;
 use App\Services\AuthenticationService;
+use App\Services\FakeTwilio\FakeTwilioMode;
+use App\Services\FakeTwilio\FakeTwilioStore;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
@@ -35,5 +37,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Surface Twilio webhook 5xx on System Health (bmlt-enabled/yap#1686).
         Event::listen(RequestHandled::class, RecordWebhookFailure::class);
+
+        // Development/CI only: keep simulated calls from emailing, downloading
+        // recordings or fetching the daily readings for real.
+        if (FakeTwilioStore::enabled()) {
+            FakeTwilioMode::install($this->app);
+        }
     }
 }

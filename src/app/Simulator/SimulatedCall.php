@@ -23,6 +23,8 @@ class SimulatedCall
 
     private ?string $conference = null;
 
+    private ?string $recordingUrl = null;
+
     /** @var list<string> every <Say> heard on this leg, in order */
     private array $transcript = [];
 
@@ -36,6 +38,7 @@ class SimulatedCall
         private string $answerMethod = 'POST',
         private ?string $statusCallback = null,
         private string $statusCallbackMethod = 'POST',
+        private array $everyWebhook = [],
     ) {
         $this->status = $direction === 'inbound' ? TwilioCallStatus::INPROGRESS : TwilioCallStatus::QUEUED;
     }
@@ -58,7 +61,7 @@ class SimulatedCall
             'Caller' => $this->from,
             'To' => $this->to,
             'Called' => $this->to,
-        ], $extra);
+        ], $this->everyWebhook, $extra);
     }
 
     /**
@@ -215,6 +218,54 @@ class SimulatedCall
         return $this;
     }
 
+    /**
+     * Leave a message at the current <Record>. On Twilio the caller talks, then
+     * hangs up (yap's prompt says to), and Twilio delivers the recording to the
+     * verb's recordingStatusCallback with only the recording parameters, not
+     * the usual call parameters. The caller's hang-up follows.
+     */
+    public function record(int $duration = 12): self
+    {
+        $record = $this->pending('Record');
+        $callback = $record->attr('recordingStatusCallback');
+        if ($callback === null) {
+            throw new SimulationFailed("The <Record> on {$this->currentUrl} has no recordingStatusCallback:\n{$this->twiml()->raw}");
+        }
+
+        $recordingSid = 'RE' . bin2hex(random_bytes(16));
+        $this->recordingUrl = sprintf(
+            'https://api.twilio.com/2010-04-01/Accounts/%s/Recordings/%s',
+            $this->simulator->accountSid(),
+            $recordingSid,
+        );
+        $this->simulator->log("  ⏺ leaves a {$duration}s message ({$recordingSid})");
+
+        $response = $this->simulator->webhook(
+            $record->attr('recordingStatusCallbackMethod', 'POST'),
+            $this->resolve($callback),
+            [
+                'AccountSid' => $this->simulator->accountSid(),
+                'CallSid' => $this->sid,
+                'RecordingSid' => $recordingSid,
+                'RecordingUrl' => $this->recordingUrl,
+                'RecordingStatus' => 'completed',
+                'RecordingDuration' => (string) $duration,
+                'RecordingChannels' => '1',
+                'RecordingSource' => 'RecordVerb',
+            ],
+            $this->sid,
+        );
+        $this->expectOk($response, 'recording status callback');
+
+        return $this->hangUp();
+    }
+
+    /** The RecordingUrl the last record() delivered, as Twilio would host it. */
+    public function recordingUrl(): ?string
+    {
+        return $this->recordingUrl;
+    }
+
     /** The person on this leg hangs up. */
     public function hangUp(): self
     {
@@ -316,6 +367,15 @@ class SimulatedCall
         return $this->isWaitingOn('Dial') ? $this->twiml()->first('Dial')->child('Conference')?->text : null;
     }
 
+    /** @return list<string> the <Number>s the pending <Dial> is calling */
+    public function dialedNumbers(): array
+    {
+        return array_values(array_map(
+            fn (TwimlVerb $noun) => $noun->text,
+            array_filter($this->pending('Dial')->children, fn (TwimlVerb $noun) => $noun->name === 'Number'),
+        ));
+    }
+
     public function isOver(): bool
     {
         return $this->status === TwilioCallStatus::COMPLETED;
@@ -327,20 +387,45 @@ class SimulatedCall
         return $this->transcript;
     }
 
-    /** Assert that something said on this leg so far contains $needle (case-insensitive). */
-    public function expectHeard(string $needle): self
+    /** Whether anything said on this leg since transcript line $since contains $needle (case-insensitive). */
+    public function heard(string $needle, int $since = 0): bool
     {
-        foreach ($this->transcript as $say) {
+        foreach (array_slice($this->transcript, $since) as $say) {
             if (stripos($say, $needle) !== false) {
-                return $this;
+                return true;
             }
+        }
+
+        return false;
+    }
+
+    /** Assert that something said on this leg since transcript line $since contains $needle (case-insensitive). */
+    public function expectHeard(string $needle, int $since = 0): self
+    {
+        if ($this->heard($needle, $since)) {
+            return $this;
         }
 
         throw new SimulationFailed(sprintf(
             "Expected call %s to hear \"%s\". It heard:\n  %s",
             $this->sid,
             $needle,
-            implode("\n  ", $this->transcript) ?: '(nothing)',
+            implode("\n  ", array_slice($this->transcript, $since)) ?: '(nothing)',
+        ));
+    }
+
+    /** Assert that nothing said on this leg contains $needle (case-insensitive). */
+    public function expectNotHeard(string $needle, int $since = 0): self
+    {
+        if (!$this->heard($needle, $since)) {
+            return $this;
+        }
+
+        throw new SimulationFailed(sprintf(
+            "Expected call %s not to hear \"%s\". It heard:\n  %s",
+            $this->sid,
+            $needle,
+            implode("\n  ", array_slice($this->transcript, $since)),
         ));
     }
 }
