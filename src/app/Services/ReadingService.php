@@ -3,23 +3,25 @@
 namespace App\Services;
 
 use App\Constants\ReadingType;
-use App\Utilities\Sms;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
+use FetchMeditation\JFTEntry;
 use FetchMeditation\JFTSettings;
 use FetchMeditation\JFTLanguage;
-use FetchMeditation\JFT;
+use FetchMeditation\SPADEntry;
 use FetchMeditation\SPADLanguage;
 use FetchMeditation\SPADSettings;
-use FetchMeditation\SPAD;
 
 class ReadingService extends Service
 {
     protected HttpService $http;
+    protected MeditationSource $source;
 
-    public function __construct(HttpService $http)
+    public function __construct(HttpService $http, MeditationSource $source)
     {
         parent::__construct(App::make(SettingsService::class));
         $this->http = $http;
+        $this->source = $source;
     }
 
     public function get($reading = ReadingType::JFT, $sms = false): array
@@ -42,22 +44,7 @@ class ReadingService extends Service
             default => throw new \InvalidArgumentException("Unsupported language: $wordLanguage")
         };
 
-        $jft = JFT::getInstance($settings);
-        $data = $jft->fetch();
-        $parts = collect([
-            $data->date,
-            $data->title,
-            $data->page,
-            $data->quote,
-            $data->source,
-            ...collect($data->content)->map(fn($p) => strip_tags(html_entity_decode($p))),
-            $data->thought,
-            $data->copyright
-        ])
-            ->filter(fn($part) => !empty(trim($part)))
-            ->values();
-
-        return $parts->toArray();
+        return $this->toParts('JFT', $this->source->jft($settings)->fetch());
     }
 
     protected function getSPAD($sms = false): array
@@ -71,9 +58,27 @@ class ReadingService extends Service
             default => throw new \InvalidArgumentException("Unsupported language: $wordLanguage")
         };
 
-        $spad = SPAD::getInstance($settings);
-        $data = $spad->fetch();
-        $parts = collect([
+        return $this->toParts('SPAD', $this->source->spad($settings)->fetch());
+    }
+
+    /**
+     * Flatten a reading into the lines that get spoken.
+     *
+     * When every source fails, the English fetchers return a JSON error string
+     * instead of an entry. Reading properties off that string used to throw, so
+     * a feed outage became a 500 mid-call. Return no lines instead and
+     * let the caller decide what an empty reading sounds like.
+     */
+    private function toParts(string $reading, mixed $data): array
+    {
+        if (!$data instanceof JFTEntry && !$data instanceof SPADEntry) {
+            Log::warning("Could not fetch the {$reading} reading", [
+                'response' => is_string($data) ? $data : get_debug_type($data),
+            ]);
+            return [];
+        }
+
+        return collect([
             $data->date,
             $data->title,
             $data->page,
@@ -84,8 +89,7 @@ class ReadingService extends Service
             $data->copyright
         ])
             ->filter(fn($part) => !empty(trim($part)))
-            ->values();
-
-        return $parts->toArray();
+            ->values()
+            ->toArray();
     }
 }
