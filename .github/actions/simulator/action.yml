@@ -33,7 +33,7 @@ runs:
       uses: actions/upload-artifact@v6
       if: failure()
       with:
-        name: simulator-logs
+        name: simulator-logs-${{ matrix.php }}-${{ matrix.db || 'mysql-8.0' }}
         path: |
           src/server.log
           src/storage/logs/laravel.log

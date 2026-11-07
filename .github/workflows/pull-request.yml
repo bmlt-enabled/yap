@@ -7,6 +7,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    name: test (${{ matrix.php }}, ${{ matrix.db }})
     strategy:
       fail-fast: false
       matrix:
@@ -14,10 +15,27 @@ jobs:
           - "8.3"
           - "8.4"
           - "8.5"
+        db:
+          - mysql-8.0
+        include:
+          - db: mysql-8.0
+            db-image: 'mysql/mysql-server:8.0'
+          # MariaDB (#1679): 10.3 is the documented minimum (PreflightService::
+          # MARIADB_MIN_VERSION), 10.6 the oldest LTS still common on shared
+          # hosting, 11.4 a current LTS.
+          - php: "8.3"
+            db: mariadb-10.3
+            db-image: 'mariadb:10.3'
+          - php: "8.3"
+            db: mariadb-10.6
+            db-image: 'mariadb:10.6'
+          - php: "8.5"
+            db: mariadb-11.4
+            db-image: 'mariadb:11.4'
 
     services:
       db-tests:
-        image: 'mysql/mysql-server:8.0'
+        image: ${{ matrix.db-image }}
         env:
           MYSQL_ROOT_PASSWORD: yap_root_password
           MYSQL_DATABASE: yap_test
@@ -37,6 +55,9 @@ jobs:
 
       - name: Lint
         uses: ./.github/actions/lint
+
+      - name: Wait for database
+        uses: ./.github/actions/wait-for-db
 
       - name: Test
         uses: ./.github/actions/test
@@ -82,13 +103,29 @@ jobs:
     # absolute TwiML callback URLs, session cookies across webhooks, and
     # signature validation. Uploads server.log/laravel.log on failure.
     runs-on: ubuntu-latest
+    name: simulator (${{ matrix.php }}, ${{ matrix.db }})
     strategy:
+      fail-fast: false
       matrix:
         php:
           - "8.3"
+        db:
+          - mysql-8.0
+          - mariadb-10.3
+          - mariadb-10.6
+          - mariadb-11.4
+        include:
+          - db: mysql-8.0
+            db-image: 'mysql/mysql-server:8.0'
+          - db: mariadb-10.3
+            db-image: 'mariadb:10.3'
+          - db: mariadb-10.6
+            db-image: 'mariadb:10.6'
+          - db: mariadb-11.4
+            db-image: 'mariadb:11.4'
     services:
       db-tests:
-        image: 'mysql/mysql-server:8.0'
+        image: ${{ matrix.db-image }}
         env:
           MYSQL_ROOT_PASSWORD: yap_root_password
           MYSQL_DATABASE: yap_test
@@ -105,6 +142,9 @@ jobs:
 
       - name: Install Dependencies
         uses: ./.github/actions/install-deps
+
+      - name: Wait for database
+        uses: ./.github/actions/wait-for-db
 
       - name: Simulate calls and SMS
         uses: ./.github/actions/simulator
