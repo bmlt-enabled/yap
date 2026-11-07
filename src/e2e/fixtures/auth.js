@@ -6,7 +6,24 @@ import {
   bootstrapAuthStorage,
   getAuthStorage,
   invalidateCachedAuth,
+  login,
 } from '../auth-storage.js';
+
+/**
+ * Log in as someone other than the cached `admin` session, through the login
+ * form, in a fresh browser context. The caller closes the returned context.
+ */
+export async function loginAs(browser, baseURL, username, password) {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await login(page, baseURL, username, password);
+  return { context, page };
+}
+
+/** The bearer token the SPA stored for the logged-in user. */
+export async function sessionToken(page) {
+  return page.evaluate(() => JSON.parse(localStorage.getItem('session') ?? 'null')?.token ?? null);
+}
 
 async function openAuthenticatedPage(context, baseURL) {
   const page = await context.newPage();

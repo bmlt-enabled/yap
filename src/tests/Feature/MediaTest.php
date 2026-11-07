@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MediaController;
+use App\Services\FakeTwilio\FakeTwilioStore;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\URL;
 
@@ -87,4 +88,29 @@ test('media proxy returns a bad gateway when the twilio fetch fails', function (
 test('media proxy builds an empty url when there is no recording', function () {
     expect(MediaController::proxyUrl(null))->toBe("");
     expect(MediaController::proxyUrl(""))->toBe("");
+});
+
+test('media proxy serves placeholder audio in fake twilio mode without calling twilio', function () {
+    config(['twilio.fake_mode' => true]);
+    Http::fake();
+
+    $response = $this->get(MediaController::proxyUrl($this->recordingUrl));
+
+    $response
+        ->assertStatus(200)
+        ->assertHeader("Content-Type", "audio/mpeg");
+    expect($response->getContent())->toBe(MediaController::FAKE_RECORDING_BODY);
+    Http::assertNothingSent();
+
+    $requests = (new FakeTwilioStore())->requests(0, "recordings.media");
+    expect($requests)->toHaveCount(1)
+        ->and($requests[0]['method'])->toBe("GET")
+        ->and($requests[0]['url'])->toBe($this->recordingUrl . ".mp3");
+});
+
+test('media proxy still checks the signature in fake twilio mode', function () {
+    config(['twilio.fake_mode' => true]);
+
+    $this->get("/media?recording=" . urlencode($this->recordingUrl))->assertStatus(403);
+    expect((new FakeTwilioStore())->requests(0, "recordings.media"))->toBeEmpty();
 });
