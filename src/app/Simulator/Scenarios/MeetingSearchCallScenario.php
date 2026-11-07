@@ -10,7 +10,7 @@ use App\Simulator\TwilioSimulator;
  * hears meeting results read back from the real BMLT root server; the same
  * results go out by SMS through the fake Twilio client.
  */
-class MeetingSearchCallScenario implements Scenario
+class MeetingSearchCallScenario extends BaseScenario
 {
     public function name(): string
     {

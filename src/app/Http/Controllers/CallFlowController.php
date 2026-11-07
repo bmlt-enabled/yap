@@ -860,12 +860,13 @@ class CallFlowController extends Controller
 
     public function helplineSms(Request $request, $latitude, $longitude)
     {
-        try {
-            if ($request->has("OriginalCallerId")) {
-                $original_caller_id = $request->get("OriginalCallerId");
-            }
+        // Twilio's SMS webhook carries the texter in From; nothing sends
+        // OriginalCallerId on this path, and without the fallback every "talk
+        // <location>" text was a 500 (found by yap:simulate sms-helpline).
+        $original_caller_id = $request->get("OriginalCallerId", $request->get("From"));
 
-            $service_body = $this->meetingResults->getServiceBodyCoverage($latitude, $longitude);
+        try {
+            $service_body =$this->meetingResults->getServiceBodyCoverage($latitude, $longitude);
             $serviceBodyCallHandling   = $this->config->getCallHandling($service_body->id);
             $tracker                   = $request->has("tracker") ? 0 : intval($request->get("tracker"));
 

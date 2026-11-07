@@ -149,6 +149,41 @@ class TwilioSimulator
         return $this->control('GET', 'requests', $params)['requests'];
     }
 
+    /**
+     * SMS the app sent since request id $after, optionally only those to $to.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function texts(int $after = 0, ?string $to = null): array
+    {
+        return array_values(array_filter(
+            $this->outbound('messages.create', $after),
+            fn (array $request) => $to === null || self::sameNumber((string) ($request['data']['To'] ?? ''), $to),
+        ));
+    }
+
+    /** Whether two phone numbers are the same once formatting is ignored. */
+    public static function sameNumber(string $a, string $b): bool
+    {
+        $digits = fn (string $number) => ltrim((string) preg_replace('/\D/', '', $number), '1');
+
+        return $digits($a) !== '' && $digits($a) === $digits($b);
+    }
+
+    /**
+     * Fetch a URL the way a browser or email client would: an unsigned GET,
+     * e.g. a link yap put in a notification.
+     */
+    public function fetch(string $url): SimulatorResponse
+    {
+        $url = $this->matchBaseScheme($url);
+        $this->log("→ GET {$url} (unsigned)");
+        $response = $this->transport->send('GET', $url, [], ['User-Agent' => 'yap simulator'], 'browser');
+        $this->log("← {$response->status}");
+
+        return $response;
+    }
+
     public function lastOutboundId(): int
     {
         $requests = $this->outbound();
@@ -163,15 +198,24 @@ class TwilioSimulator
      * @param array<string, scalar|array> $query extra query string for the first webhook,
      *                                           e.g. override_* settings for the call
      * @param array<string, scalar> $params extra webhook params, e.g. StirVerstat
+     * @param array<string, scalar> $everyWebhook params sent on every webhook of the call. Twilio
+     *                                            sends nothing like it; yap reads Timestamp to pin the
+     *                                            day a meeting search runs for, as MeetingSearchTest does
      */
-    public function startCall(string $from, string $to, array $query = [], array $params = [], string $path = 'index.php'): SimulatedCall
-    {
+    public function startCall(
+        string $from,
+        string $to,
+        array $query = [],
+        array $params = [],
+        string $path = 'index.php',
+        array $everyWebhook = [],
+    ): SimulatedCall {
         $sid = 'CA' . bin2hex(random_bytes(16));
         $this->control('POST', 'calls', ['sid' => $sid, 'from' => $from, 'to' => $to]);
         $this->log("☎ inbound call {$sid} {$from} → {$to}");
 
         // Twilio numbers pointed at yap send call progress to status.php.
-        $call = new SimulatedCall($this, $sid, $from, $to, 'inbound', statusCallback: $this->url('status.php'));
+        $call = new SimulatedCall($this, $sid, $from, $to, 'inbound', statusCallback: $this->url('status.php'), everyWebhook: $everyWebhook);
 
         return $call->request('POST', UrlResolver::withQuery($this->url($path), $query), $params);
     }

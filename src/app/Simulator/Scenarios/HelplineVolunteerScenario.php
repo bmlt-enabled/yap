@@ -2,15 +2,8 @@
 
 namespace App\Simulator\Scenarios;
 
-use App\Constants\CycleAlgorithm;
-use App\Constants\DataType;
-use App\Constants\VolunteerGender;
-use App\Constants\VolunteerRoutingType;
-use App\Models\ConfigData;
-use App\Simulator\SimulatedCall;
 use App\Simulator\SimulationFailed;
 use App\Simulator\TwilioSimulator;
-use App\Structures\ServiceBodyCallHandling;
 
 /**
  * Caller presses 1 for the helpline and is held in a conference while yap dials
@@ -23,9 +16,13 @@ use App\Structures\ServiceBodyCallHandling;
  * which is only the target's database when the simulator runs against itself
  * (local docker, CI).
  */
-class HelplineVolunteerScenario implements Scenario
+class HelplineVolunteerScenario extends BaseScenario
 {
+    use DrivesHelplineCalls;
+
     public const DEFAULT_SEED_VOLUNTEER = '+15555551234';
+
+    protected bool $needsServiceBody = true;
 
     public function name(): string
     {
@@ -47,21 +44,18 @@ class HelplineVolunteerScenario implements Scenario
         }
 
         if ($options->seed) {
-            $this->seed($options);
+            ScenarioSeeder::helpline($this->serviceBodyId($options), [], [
+                ScenarioSeeder::volunteer('Simulated Volunteer', $options->volunteer ?? self::DEFAULT_SEED_VOLUNTEER),
+            ]);
         }
 
         $mark = $simulator->lastOutboundId();
-        $caller = $simulator->startCall($options->from, $options->to, array_merge($options->locationOverrides(), [
-            'override_service_body_id' => $options->serviceBodyId,
-        ]))->press('1'); // digit_map_search_type: someone to talk to
-
+        $caller = $this->callHelpline($simulator, $options);
         $conference = $caller->dialedConference();
-        if ($conference === null) {
-            throw new SimulationFailed("Expected the caller to be dialed into a helpline conference:\n" . $caller->twiml()->raw);
+        $leg = $this->volunteerLegs($simulator, $mark)[0];
+        if ($options->volunteer !== null && !TwilioSimulator::sameNumber($leg->to, $options->volunteer)) {
+            throw new SimulationFailed("Expected volunteer {$options->volunteer} to be dialed, but yap dialed {$leg->to}.");
         }
-
-        $caller->joinConference();
-        $leg = $this->nextVolunteerLeg($simulator, $mark, $options);
         $verified = ["caller held in conference {$conference}", "volunteer {$leg->to} dialed"];
 
         if ($options->outcome === 'answer') {
@@ -78,103 +72,11 @@ class HelplineVolunteerScenario implements Scenario
             return $verified;
         }
 
-        $voicemail = $this->exhaustVolunteers($simulator, $leg, $mark, $options);
-        $caller->request($voicemail['data']['Method'] ?? 'POST', $voicemail['data']['Url']);
+        $this->followRedirect($caller, $this->exhaustVolunteers($simulator, $leg, $mark));
         $caller->pending('Record');
         $verified[] = 'no answer → caller redirected to voicemail and prompted to record';
         $caller->hangUp();
 
         return $verified;
-    }
-
-    private function nextVolunteerLeg(TwilioSimulator $simulator, int $after, ScenarioOptions $options): SimulatedCall
-    {
-        $legs = $simulator->outboundCalls($after);
-        if ($legs === []) {
-            throw new SimulationFailed(
-                "Expected yap to dial a volunteer after the caller joined the conference, but no call was placed. "
-                . "Is volunteer routing enabled for service body {$options->serviceBodyId} with a volunteer on shift right now? "
-                . "(--seed creates one when the simulator shares the instance's database.)"
-            );
-        }
-
-        $leg = $legs[0];
-        if ($options->volunteer !== null && self::digits($leg->to) !== self::digits($options->volunteer)) {
-            throw new SimulationFailed("Expected volunteer {$options->volunteer} to be dialed, but yap dialed {$leg->to}.");
-        }
-
-        return $leg;
-    }
-
-    /**
-     * Let every volunteer leg ring out until yap gives up and sends the caller to
-     * voicemail, which it does by updating the caller's live call with a new Url.
-     *
-     * @return array<string, mixed> the calls.update request carrying the voicemail Url
-     */
-    private function exhaustVolunteers(TwilioSimulator $simulator, SimulatedCall $leg, int $mark, ScenarioOptions $options): array
-    {
-        $answered = [];
-        for ($attempt = 0; $attempt < 10; $attempt++) {
-            $leg->noAnswer();
-            $answered[$leg->sid] = true;
-
-            foreach ($simulator->outbound('calls.update', $mark) as $update) {
-                if (str_contains((string) ($update['data']['Url'] ?? ''), 'voicemail')) {
-                    return $update;
-                }
-            }
-
-            $next = array_values(array_filter(
-                $simulator->outboundCalls($mark),
-                fn (SimulatedCall $candidate) => !isset($answered[$candidate->sid]),
-            ));
-            if ($next === []) {
-                break;
-            }
-            $leg = $next[0];
-        }
-
-        throw new SimulationFailed(
-            'Expected yap to redirect the caller to voicemail once no volunteer answered, but it never did. '
-            . "Service body {$options->serviceBodyId} needs a call strategy that ends in voicemail."
-        );
-    }
-
-    private function seed(ScenarioOptions $options): void
-    {
-        $serviceBodyId = (int) $options->serviceBodyId;
-
-        $callHandling = new ServiceBodyCallHandling();
-        $callHandling->service_body_id = $serviceBodyId;
-        $callHandling->volunteer_routing = VolunteerRoutingType::VOLUNTEERS;
-        $callHandling->volunteer_routing_enabled = true;
-        $callHandling->call_strategy = CycleAlgorithm::LINEAR_CYCLE_AND_VOICEMAIL;
-
-        $shifts = [];
-        foreach (range(1, 7) as $day) {
-            $shifts[] = ['day' => $day, 'tz' => 'UTC', 'start_time' => '12:00 AM', 'end_time' => '11:59 PM'];
-        }
-
-        // Replace only this service body's call handling and volunteers; leave
-        // any other configuration it has alone.
-        ConfigData::where('service_body_id', $serviceBodyId)
-            ->whereIn('data_type', [DataType::YAP_CALL_HANDLING_V2, DataType::YAP_VOLUNTEERS_V2])
-            ->delete();
-        ConfigData::createServiceBodyCallHandling($serviceBodyId, $callHandling);
-        ConfigData::createVolunteers($serviceBodyId, [[
-            'volunteer_name' => 'Simulated Volunteer',
-            'volunteer_phone_number' => $options->volunteer ?? self::DEFAULT_SEED_VOLUNTEER,
-            'volunteer_gender' => VolunteerGender::UNSPECIFIED,
-            'volunteer_responder' => 0,
-            'volunteer_notes' => 'Seeded by php artisan yap:simulate',
-            'volunteer_enabled' => true,
-            'volunteer_shift_schedule' => base64_encode(json_encode($shifts)),
-        ]]);
-    }
-
-    private static function digits(string $number): string
-    {
-        return ltrim(preg_replace('/\D/', '', $number), '1');
     }
 }
