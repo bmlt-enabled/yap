@@ -76,6 +76,39 @@ jobs:
       - name: E2E Tests
         uses: ./.github/actions/e2e-test
 
+  simulator:
+    # Boots yap under php artisan serve in fake-Twilio mode and drives real
+    # calls and SMS through it with yap:simulate (#1650, #1678): routing,
+    # absolute TwiML callback URLs, session cookies across webhooks, and
+    # signature validation. Uploads server.log/laravel.log on failure.
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php:
+          - "8.3"
+    services:
+      db-tests:
+        image: 'mysql/mysql-server:8.0'
+        env:
+          MYSQL_ROOT_PASSWORD: yap_root_password
+          MYSQL_DATABASE: yap_test
+          MYSQL_ROOT_HOST: '%'
+        ports:
+          - 3106:3306
+
+    steps:
+      - uses: actions/checkout@v6
+        id: code-checkout
+
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-deps
+
+      - name: Simulate calls and SMS
+        uses: ./.github/actions/simulator
+
   package-smoke:
     # Builds the release zip and boots it (console + HTTP kernels) without the
     # dev files the zip leaves out, e.g. composer.json (#1641, #1669).

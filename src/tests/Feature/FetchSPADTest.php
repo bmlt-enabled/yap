@@ -12,10 +12,8 @@ test('get a SPAD in English', function ($method) {
     $settingsService->set("word_language", "en-US");
     app()->instance(SettingsService::class, $settingsService);
 
-    // ReadingService reaches na.org through bmlt/fetch-meditation, which builds
-    // its own Guzzle client rather than using the Http facade - so
-    // Http::preventStrayRequests() cannot see it and cannot fake it. Mock the
-    // service instead, the way FetchJFTTest already does.
+    // The controller only, with ReadingService mocked. ReadingServiceTest runs
+    // the service itself against recorded pages.
     $readingService = Mockery::mock(ReadingService::class);
     $readingService->shouldReceive('get')->andReturn([
         'Spiritual Principle a Day',
