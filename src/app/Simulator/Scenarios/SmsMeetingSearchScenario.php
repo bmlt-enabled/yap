@@ -9,7 +9,7 @@ use App\Simulator\TwilioSimulator;
  * A texter sends their zip code to the SMS gateway and gets meeting results
  * back as outbound SMS, captured by the fake Twilio client.
  */
-class SmsMeetingSearchScenario implements Scenario
+class SmsMeetingSearchScenario extends BaseScenario
 {
     public function name(): string
     {

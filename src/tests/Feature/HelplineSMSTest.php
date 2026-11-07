@@ -274,3 +274,33 @@ test('initial sms helpline gateway with a volunteer with a different keyword', f
         ->and($record->type)->toBe(\App\Structures\RecordType::SMS)
         ->and($record->duration)->toBe(0);
 })->with(['GET', 'POST']);
+
+test('the texter is answered from From when the webhook has no OriginalCallerId', function ($method) {
+    // Twilio's SMS webhook never sends OriginalCallerId. helplineSms() used to
+    // read the texter only from it, so every real "talk <location>" was a 500.
+    $results[] = (object)["service_body_bigint"=>$this->serviceBodyId];
+    $this->rootServerMocks->getService()
+        ->shouldReceive("helplineSearch")
+        ->withAnyArgs()->andReturn($results);
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+
+    $messageListMock = mock('\Twilio\Rest\Api\V2010\Account\MessageList');
+    $messageListMock->shouldReceive('create')
+        ->withArgs([$this->to, [
+            "body" => 'Thank you and your request has been received.  A volunteer should be responding to you shortly.',
+            "from" => $this->from]])->times(1);
+    $this->utility->client->messages = $messageListMock;
+
+    $serviceBodyCallHandlingData = new ServiceBodyCallHandling();
+    $serviceBodyCallHandlingData->volunteer_routing = VolunteerRoutingType::VOLUNTEERS_AND_SMS;
+    $serviceBodyCallHandlingData->service_body_id = $this->serviceBodyId;
+    $serviceBodyCallHandlingData->volunteer_routing_enabled = true;
+    ConfigData::createServiceBodyCallHandling($this->serviceBodyId, $serviceBodyCallHandlingData);
+
+    $this->call($method, '/sms-gateway.php', [
+        "SmsSid" => $this->smsSid,
+        "From" => $this->to,
+        "To" => $this->from,
+        "Body" => "talk blah",
+    ])->assertStatus(200);
+})->with(['GET', 'POST']);

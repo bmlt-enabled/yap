@@ -22,3 +22,17 @@ static $twilio_auth_token = "92433fddb38394db9bb63c5cee66b5d9";
 # wins, since SettingsService::get() prefers env("GOOGLE_MAPS_API_KEY").
 static $google_maps_api_key = "not-a-real-key";
 static $override_en_US_city_or_county = "city or suburb";
+# Only for a server started with TWILIO_FAKE_MODE=true (the yap:simulate CI job,
+# the local simulator and the Playwright e2e server). voicemail-complete only
+# emails when smtp_host is set, and in fake mode the email is captured in
+# fake_twilio_requests instead of sent, so this host is never contacted. The
+# Pest suite sets fake mode through config(), not the environment, so its own
+# SMTP tests are unaffected.
+if (getenv("TWILIO_FAKE_MODE") === "true") {
+    $smtp_host = "smtp.fake-twilio.invalid";
+    $smtp_username = "yap";
+    $smtp_password = "not-a-real-password";
+    $smtp_secure = "tls";
+    $smtp_from_address = "helpline@fake-twilio.invalid";
+    $smtp_from_name = "Test Helpline";
+}

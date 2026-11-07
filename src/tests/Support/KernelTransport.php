@@ -22,6 +22,13 @@ class KernelTransport implements Transport
             $server['HTTP_' . strtoupper(str_replace('-', '_', $name))] = $value;
         }
 
+        // The test app keeps one session store for every request, and starting a
+        // session merges what the handler holds for the cookie's id into the
+        // attributes already there. Left alone, a new call would inherit the
+        // last call's session (its Gender, its override_service_body_id). Empty
+        // it so each request sees only its own call's session, as on a server.
+        app('session.store')->flush();
+
         $response = test()->call($method, $url, $params, $this->jars[$jar] ?? [], [], $server);
 
         foreach ($response->headers->getCookies() as $cookie) {

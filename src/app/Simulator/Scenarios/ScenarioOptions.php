@@ -31,9 +31,12 @@ class ScenarioOptions
      * request runs CallSession, which copies override_* params into the call's
      * session, so they only need to ride on the first webhook.
      *
+     * $location is what the caller enters or says, when it is not --location
+     * (e.g. "Geneva, NY" from a spoken city and province).
+     *
      * @return array<string, mixed>
      */
-    public function locationOverrides(): array
+    public function locationOverrides(?string $location = null): array
     {
         if ($this->realGeocoding) {
             return [];
@@ -41,7 +44,7 @@ class ScenarioOptions
 
         return [
             'override_custom_geocoding' => [[
-                'location' => $this->location,
+                'location' => $location ?? $this->location,
                 'latitude' => $this->latitude,
                 'longitude' => $this->longitude,
             ]],

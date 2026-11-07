@@ -23,8 +23,9 @@ runs:
       run: |
         cd src
         export ENVIRONMENT=test
-        php artisan yap:simulate -v --base-url=http://127.0.0.1:8000
-        php artisan yap:simulate -v helpline-volunteer --base-url=http://127.0.0.1:8000 --service-body=1006 --seed
+        # Every scenario (yap:simulate --list). --seed configures call handling
+        # and volunteers for each helpline scenario in the shared database.
+        php artisan yap:simulate -v --base-url=http://127.0.0.1:8000 --service-body=1006 --seed
         php artisan yap:simulate -v helpline-volunteer --base-url=http://127.0.0.1:8000 --service-body=1006 --seed --outcome=no-answer
       shell: bash
 
