@@ -34,7 +34,10 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'E2E_TESTING=1 ENVIRONMENT=test php artisan migrate --force && E2E_TESTING=1 ENVIRONMENT=test php artisan db:seed --class=TestEnvironmentSeeder --force && E2E_TESTING=1 ENVIRONMENT=test php -S 127.0.0.1:8000 -t . server.php 2>/dev/null',
+    // TWILIO_FAKE_MODE records Twilio API calls (voicemail recording deletes,
+    // /media fetches) in the database instead of sending them, and serves
+    // /fake-twilio/requests so specs can assert on them.
+    command: 'E2E_TESTING=1 ENVIRONMENT=test php artisan migrate --force && E2E_TESTING=1 ENVIRONMENT=test php artisan db:seed --class=TestEnvironmentSeeder --force && E2E_TESTING=1 ENVIRONMENT=test TWILIO_FAKE_MODE=true php -S 127.0.0.1:8000 -t . server.php 2>/dev/null',
     url: 'http://127.0.0.1:8000',
     reuseExistingServer: false,
     timeout: 120 * 1000,

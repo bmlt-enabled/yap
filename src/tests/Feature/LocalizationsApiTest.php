@@ -226,3 +226,14 @@ test('get localizations respects session language changes', function () {
     $this->assertEquals('Volunteers', $data1['volunteers']);
     $this->assertEquals('voluntários', $data2['volunteers']);
 });
+
+test('get localizations falls back to english for a language yap does not have', function () {
+    $response = $this->call('GET', '/api/v1/settings/localizations', ['language' => 'xx-XX']);
+
+    $response
+        ->assertStatus(200)
+        ->assertJson([
+            'language_title' => 'english',
+            'volunteers' => 'Volunteers',
+        ]);
+});

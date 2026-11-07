@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\AuthorizationService;
 use App\Services\SettingsService;
 use App\Models\ConfigData;
 use App\Constants\DataType;
 use App\Structures\Settings;
 use App\Utilities\VolunteerScheduleHelpers;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Structures\Localizations;
 
@@ -20,10 +22,66 @@ use App\Structures\Localizations;
 class SettingsController extends Controller
 {
     protected SettingsService $settingsService;
+    protected AuthorizationService $authz;
 
-    public function __construct(SettingsService $settingsService)
+    public function __construct(SettingsService $settingsService, AuthorizationService $authz)
     {
         $this->settingsService = $settingsService;
+        $this->authz = $authz;
+    }
+
+    /**
+     * The service body in the route, or the error response to return when it
+     * is malformed or belongs to someone else. Per-service-body settings drive
+     * that service body's call routing, so only its admins (or a top-level
+     * admin) may read or change them - the same rule as call handling.
+     */
+    private function authorizedServiceBodyId(Request $request): int|JsonResponse
+    {
+        $serviceBodyId = (string)$request->route('serviceBodyId');
+        if (!ctype_digit($serviceBodyId) || intval($serviceBodyId) <= 0) {
+            return response()->json(['message' => 'Invalid service body ID'], 400);
+        }
+
+        $serviceBodyId = intval($serviceBodyId);
+        if (!$this->authz->canAccessServiceBody($serviceBodyId)) {
+            return response()->json(['message' => 'Not authorized'], 403);
+        }
+
+        return $serviceBodyId;
+    }
+
+    /**
+     * The submitted fields as setting => value, or a list of what is wrong with
+     * them. Only allowlisted settings are accepted: SessionService ignores
+     * anything else when it applies the overrides to a call, so storing it
+     * would only look like it worked.
+     *
+     * @return array{0: array<string, mixed>, 1: list<string>}
+     */
+    private function validatedFields(mixed $decodedData): array
+    {
+        if (!is_object($decodedData) || !isset($decodedData->fields) || !is_array($decodedData->fields)) {
+            return [[], ['Expected a JSON object with a "fields" array.']];
+        }
+
+        $allowlist = $this->settingsService->allowlist();
+        $fields = [];
+        $errors = [];
+        foreach ($decodedData->fields as $index => $field) {
+            if (!is_object($field) || !isset($field->setting) || !is_string($field->setting)
+                || !property_exists($field, 'value')) {
+                $errors[] = "fields[$index] must have a string \"setting\" and a \"value\".";
+            } elseif (!array_key_exists($field->setting, $allowlist)) {
+                $errors[] = "fields[$index]: \"{$field->setting}\" is not a setting.";
+            } elseif (!is_scalar($field->value) && !is_null($field->value)) {
+                $errors[] = "fields[$index]: the value of \"{$field->setting}\" must be a string, number, boolean or null.";
+            } else {
+                $fields[$field->setting] = $field->value;
+            }
+        }
+
+        return [$fields, $errors];
     }
 
     /**
@@ -112,23 +170,26 @@ class SettingsController extends Controller
      *                 )
      *             )
      *         )
-     *     )
+     *     ),
+     *     @OA\Response(response=400, description="The service body ID is not a positive integer"),
+     *     @OA\Response(response=403, description="The user does not administer this service body"),
+     *     @OA\Response(response=422, description="The body is not a fields array of allowlisted settings")
      * )
      */
     public function saveServiceBodyConfiguration(Request $request)
     {
-        $decodedData = json_decode($request->getContent());
-        $serviceBodyId = $request->route('serviceBodyId');
-
-        // Convert array of fields to flat object structure
-        $configObject = new \stdClass();
-        if (isset($decodedData->fields) && is_array($decodedData->fields)) {
-            foreach ($decodedData->fields as $field) {
-                $configObject->{$field->setting} = $field->value;
-            }
+        $serviceBodyId = $this->authorizedServiceBodyId($request);
+        if ($serviceBodyId instanceof JsonResponse) {
+            return $serviceBodyId;
         }
 
-        $config = new Settings($configObject);
+        [$fields, $errors] = $this->validatedFields(json_decode($request->getContent()));
+        if (!empty($errors)) {
+            return response()->json(['message' => 'Invalid settings', 'errors' => $errors], 422);
+        }
+
+        // Convert array of fields to flat object structure
+        $config = new Settings((object)$fields);
 
         $existingRecord = ConfigData::where('service_body_id', $serviceBodyId)
             ->where('data_type', DataType::YAP_CONFIG_V2)
@@ -222,12 +283,18 @@ class SettingsController extends Controller
      *                 @OA\Property(property="default", type="string")
      *             )
      *         )
-     *     )
+     *     ),
+     *     @OA\Response(response=400, description="The service body ID is not a positive integer"),
+     *     @OA\Response(response=403, description="The user does not administer this service body")
      * )
      */
     public function getServiceBodyConfiguration(Request $request)
     {
-        $serviceBodyId = $request->route('serviceBodyId');
+        $serviceBodyId = $this->authorizedServiceBodyId($request);
+        if ($serviceBodyId instanceof JsonResponse) {
+            return $serviceBodyId;
+        }
+
         $config = ConfigData::where('service_body_id', $serviceBodyId)
             ->where('data_type', DataType::YAP_CONFIG_V2)
             ->first();

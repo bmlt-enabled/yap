@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Services\MeditationSource;
 use App\Services\SettingsService;
 use App\Services\TwilioService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -8,6 +9,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Sleep;
 use Illuminate\Support\Str;
+use Tests\Fakes\FakeMeditationSource;
 use Tests\Fakes\FakeTwilioAccount;
 use Tests\FakeTwilioHttpClient;
 use Tests\FakeTwilioUnauthorizedHttpClient;
@@ -39,6 +41,10 @@ uses(TestCase::class, RefreshDatabase::class)
         if (!getenv("YAP_ALLOW_STRAY_HTTP")) {
             Http::preventStrayRequests();
         }
+
+        // fetch-meditation has its own Guzzle client, which the line above
+        // cannot see. Serve the daily readings from recorded pages instead.
+        app()->instance(MeditationSource::class, new FakeMeditationSource());
 
         // HelplineController::dial() waits 500ms between conference-list retries.
         Sleep::fake();
