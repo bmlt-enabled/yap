@@ -25,6 +25,7 @@ import {
 } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 import { useLocalization } from "../contexts/LocalizationContext";
+import WebhookFailuresCard from "../components/WebhookFailuresCard";
 
 function Dashboard() {
     const { getWord } = useLocalization();
@@ -313,6 +314,11 @@ function Dashboard() {
                     </Card>
                 </Grid>
             </Grid>
+
+            {/* Twilio webhook 5xx (#1686); renders nothing for non-admins */}
+            <Box sx={{ mt: 4 }}>
+                <WebhookFailuresCard compact />
+            </Box>
 
             {/* Quick Start Guide */}
             <Card sx={{ mt: 4 }}>

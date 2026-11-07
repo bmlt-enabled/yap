@@ -18,6 +18,7 @@ import {
 } from "@mui/icons-material";
 import apiClient from "../services/api";
 import UpgradeChecksList from "../components/UpgradeChecksList";
+import WebhookFailuresCard from "../components/WebhookFailuresCard";
 import { useLocalization } from "../contexts/LocalizationContext";
 
 function deriveStatus(responseData, checks) {
@@ -42,6 +43,7 @@ export default function SystemHealth() {
     const [systemStatus, setSystemStatus] = useState('checking');
     const [systemMessage, setSystemMessage] = useState('');
     const [systemChecks, setSystemChecks] = useState([]);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     const loadUpgradeAdvisor = useCallback(async () => {
         setLoading(true);
@@ -98,12 +100,17 @@ export default function SystemHealth() {
                 <Button
                     variant="outlined"
                     startIcon={loading ? <CircularProgress size={16} /> : <RefreshIcon />}
-                    onClick={loadUpgradeAdvisor}
+                    onClick={() => {
+                        loadUpgradeAdvisor();
+                        setRefreshKey((key) => key + 1);
+                    }}
                     disabled={loading}
                 >
                     {getWord('refresh') || 'Refresh'}
                 </Button>
             </Stack>
+
+            <WebhookFailuresCard refreshKey={refreshKey} />
 
             <Card sx={{ mb: 3 }}>
                 <CardContent>

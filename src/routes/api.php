@@ -86,6 +86,7 @@ Route::group([
         Route::resource('rootServer/serviceBodies', 'RootServerServiceBodiesController')->only(['index']);
         Route::resource('rootServer/serviceBodies/user', 'RootServerServiceBodiesForUserController')->only(['index'])
             ->names('rootServer.serviceBodies.user');
+        Route::get('webhookFailures', 'WebhookFailuresController@index');
         Route::resource('events/status', 'EventStatusController')->only(['index', 'store']);
         Route::resource('session', 'SessionController')->only(['store']);
         Route::resource('cache', 'CacheController')->only(['store']);
