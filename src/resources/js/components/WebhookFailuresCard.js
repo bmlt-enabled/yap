@@ -120,7 +120,8 @@ function FailureRow({ failure, getWord }) {
  * admin only, so the card renders nothing for anyone else.
  *
  * compact: counts and the last failure, with a link to System Health
- * (Dashboard). Otherwise the full list with each call's events.
+ * (Dashboard). The link has its own label: the Dashboard already has a
+ * "View System Health" link, and two links with one name are ambiguous. Otherwise the full list with each call's events.
  */
 export default function WebhookFailuresCard({ compact = false, refreshKey = 0 }) {
     const { getWord } = useLocalization();
@@ -210,7 +211,7 @@ export default function WebhookFailuresCard({ compact = false, refreshKey = 0 })
                         startIcon={<HealthAndSafetyIcon />}
                         sx={{ mt: 2 }}
                     >
-                        {getWord('view_system_health')}
+                        {getWord('webhook_failures_view')}
                     </Button>
                 </CardContent>
             </Card>

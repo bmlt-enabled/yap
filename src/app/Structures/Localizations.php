@@ -205,6 +205,7 @@ class Localizations
         'webhook_failures_location' => "Location",
         'webhook_failures_call_events' => "Call events",
         'webhook_failures_no_call_events' => "No events were recorded for this call.",
+        'webhook_failures_view' => "View webhook failures",
     ];
     public $enAU = [
         'language_title' => "english",
@@ -407,6 +408,7 @@ class Localizations
         'webhook_failures_location' => "Location",
         'webhook_failures_call_events' => "Call events",
         'webhook_failures_no_call_events' => "No events were recorded for this call.",
+        'webhook_failures_view' => "View webhook failures",
     ];
     public $esUS = [
         'language_title' => "español",
@@ -609,6 +611,7 @@ class Localizations
         'webhook_failures_location' => "Ubicación",
         'webhook_failures_call_events' => "Eventos de la llamada",
         'webhook_failures_no_call_events' => "No se registraron eventos para esta llamada.",
+        'webhook_failures_view' => "Ver fallos de webhooks",
     ];
     public $piglatin = [
         'language_title' => "igpay atinlay",
@@ -803,6 +806,7 @@ class Localizations
         'webhook_failures_location' => "Ocationlay",
         'webhook_failures_call_events' => "Allcay eventsway",
         'webhook_failures_no_call_events' => "Onay eventsway ereway ecordedray orfay isthay allcay.",
+        'webhook_failures_view' => "Iewvay ebhookway ailuresfay",
     ];
     public $ptBR = [
         'language_title' => "português",
@@ -1005,6 +1009,7 @@ class Localizations
         'webhook_failures_location' => "Local",
         'webhook_failures_call_events' => "Eventos da chamada",
         'webhook_failures_no_call_events' => "Nenhum evento foi registrado para esta chamada.",
+        'webhook_failures_view' => "Ver falhas de webhooks",
     ];
     public $frCA = [
         'language_title' => "français",
@@ -1207,6 +1212,7 @@ class Localizations
         'webhook_failures_location' => "Emplacement",
         'webhook_failures_call_events' => "Événements de l'appel",
         'webhook_failures_no_call_events' => "Aucun événement n'a été enregistré pour cet appel.",
+        'webhook_failures_view' => "Voir les échecs des webhooks",
     ];
     public $itIT = [
         'language_title' => "italiano",
@@ -1409,6 +1415,7 @@ class Localizations
         'webhook_failures_location' => "Posizione",
         'webhook_failures_call_events' => "Eventi della chiamata",
         'webhook_failures_no_call_events' => "Nessun evento registrato per questa chiamata.",
+        'webhook_failures_view' => "Vedi gli errori dei webhook",
     ];
 
     public function setLocalization($language, $localization): void
