@@ -19,6 +19,8 @@
 
 #### Features and fixes
 
+* **Twilio webhook failures show on System Health.** Every HTTP 5xx a Twilio webhook returns is recorded with the route, time, CallSid and exception, and shown to top-level admins on **System Health** (the last 25, with each call's events) and the **Dashboard** (counts for the last 24 hours and 7 days). Before, a caller hearing "an application error has occurred" was the only signal. Records are kept 30 days and never include the caller's number or input. [#1686]
+
 * **Admin login fixes for BMLT users, username clashes, leftover sessions and password hashes.** The 5.0 betas checked permissions against both the bearer token and the session cookie, and stored BMLT logins as local users. [#1674]
   * Permissions now come only from the bearer token's user. The session can no longer grant anything: logging in starts from an empty session, so a session left over in the browser doesn't carry admin rights into the next login.
   * Every BMLT login is checked with BMLT. Yap no longer keeps a copy of BMLT passwords, so a changed or disabled BMLT password takes effect at the next login. Service-body rights are reloaded from BMLT at every login too.

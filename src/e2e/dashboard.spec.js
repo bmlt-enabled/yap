@@ -43,6 +43,17 @@ test.describe('Dashboard and System Health', () => {
     await expect(page.getByRole('heading', { name: 'System Health' })).toBeVisible();
   });
 
+  // bmlt-enabled/yap#1686: no webhook has failed on a fresh database.
+  test('dashboard shows Twilio webhook failures and links to them', async ({ authenticatedPage: page }) => {
+    await expect(page.getByText('Twilio Webhook Failures')).toBeVisible();
+    await expect(page.locator('.MuiChip-root', { hasText: 'Last 24 hours: 0' })).toBeVisible();
+    await expect(page.locator('.MuiChip-root', { hasText: 'Last 7 days: 0' })).toBeVisible();
+
+    await page.getByRole('link', { name: 'View webhook failures' }).click();
+    await page.waitForURL('**/systemHealth');
+    await expect(page.getByRole('alert').filter({ hasText: 'No webhook failures recorded.' })).toBeVisible();
+  });
+
   test('system health lists upgrade advisor and Twilio compliance checks', async ({ authenticatedPage: page }) => {
     await page.getByRole('link', { name: 'System Health', exact: true }).click();
     await page.waitForURL('**/systemHealth');
