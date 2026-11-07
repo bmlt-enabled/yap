@@ -82,18 +82,34 @@ curl "https://maps.googleapis.com/maps/api/geocode/json?key=$GOOGLE_MAPS_API_KEY
   -o google/geocode-raleigh-nc.json
 ```
 
+## `readings/` — recorded live
+
+`jft-en.html` and `spad-en.html` are the English Just for Today and Spiritual
+Principle a Day pages, recorded from `https://jft.na.org` and
+`https://spad.na.org` on 2026-11-07. `Tests\Fakes\FakeMeditationSource` serves
+them to `bmlt/fetch-meditation`'s own parser (see below). To refresh them:
+
+```bash
+UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+curl -A "$UA" https://jft.na.org  -o readings/jft-en.html
+curl -A "$UA" https://spad.na.org -o readings/spad-en.html
+```
+
+`ReadingServiceTest` asserts on the date and text in these files, so update it
+alongside.
+
 ## Transports `preventStrayRequests()` cannot see
 
 `Http::preventStrayRequests()` only guards the `Http` facade. That covers all of
 `App\Services\HttpService` (and so every BMLT and Google call), but two
 dependencies build their own clients and are invisible to it. Both are stubbed
-by hand instead, and a test that reaches either will make a real request without
-failing — so if you add a test that touches one, stub it explicitly:
+by hand instead. A test that reaches the Twilio SDK without stubbing it will
+make a real request without failing:
 
 | Transport | Reached via | Stub with |
 |---|---|---|
 | Twilio SDK (`Twilio\Rest\Client`) | `TwilioService` | `setupTwilioService()`, or `useUnauthorizedTwilioClient()` to assert on a 401 |
-| `bmlt/fetch-meditation` (its own Guzzle client) | `ReadingService` | `Mockery::mock(ReadingService::class)` — see `FetchJFTTest` |
+| `bmlt/fetch-meditation` (its own Guzzle client) | `ReadingService`, through `App\Services\MeditationSource` | nothing to do: `tests/Pest.php` binds `Tests\Fakes\FakeMeditationSource` for every Feature test, which serves `readings/`. Use `failAll()` / `respond()` on it to simulate an outage |
 
 There is also a raw cURL call to api.github.com in
 `UpgradeAdvisorController::getVersionInfo()`. No test reaches it today because

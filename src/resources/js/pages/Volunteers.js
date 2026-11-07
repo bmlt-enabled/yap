@@ -116,7 +116,7 @@ import SortableVolunteer from "../components/SortableVolunteer";
         const fetchPhoneValidation = async () => {
             try {
                 const response = await apiClient.get('/api/v1/settings');
-                const phoneValidation = response.data.settings?.find(s => s.name === 'phone_number_validation');
+                const phoneValidation = response.data.settings?.find(s => s.key === 'phone_number_validation');
                 if (phoneValidation?.value) {
                     setPhoneValidationCountry(phoneValidation.value);
                 }
