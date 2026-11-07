@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Schema;
 class PreflightService
 {
     private const PHP_MIN_VERSION = '8.3.0';
+    // Keep these in step with the docs (general/php-requirements.md) and the
+    // oldest MySQL/MariaDB images in the CI database matrix (pull-request.yml,
+    // release.yml), which run the suite against each minimum.
     private const MYSQL_MIN_VERSION = '8.0.0';
     private const MARIADB_MIN_VERSION = '10.3.0';
 

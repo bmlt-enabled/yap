@@ -1,0 +1,21 @@
+name: wait-for-db
+description: "Wait until the db-tests service on 127.0.0.1:3106 accepts connections, and log its version"
+
+# mysql/mysql-server declares a Docker HEALTHCHECK, so the runner holds the job
+# until it is healthy. The official mariadb images declare none, so without this
+# step the first migration can race the server's init restart. Connecting over
+# TCP with PDO works for every image in the matrix (mariadb:11+ ships no
+# mysqladmin, and mariadb:10.3 predates healthcheck.sh).
+runs:
+  using: composite
+  steps:
+    - name: Wait for database
+      run: |
+        for i in $(seq 1 90); do
+          if php -r 'try { $pdo = new PDO("mysql:host=127.0.0.1;port=3106;dbname=yap_test", "root", "yap_root_password"); echo "Database ready: ", $pdo->query("SELECT VERSION()")->fetchColumn(), PHP_EOL; exit(0); } catch (Throwable $e) { exit(1); }'; then
+            exit 0
+          fi
+          sleep 2
+        done
+        echo "Database on 127.0.0.1:3106 did not accept connections"; exit 1
+      shell: bash
