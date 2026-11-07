@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\FakeTwilio\FakeTwilioStore;
 use App\Services\SettingsService;
+use GuzzleHttp\Psr7\Response as Psr7Response;
+use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -33,6 +36,8 @@ class MediaController extends Controller
     // webhook callbacks look like:
     //   https://api.twilio.com/2010-04-01/Accounts/AC.../Recordings/RE...
     private const TWILIO_MEDIA_HOST = "api.twilio.com";
+
+    public const FAKE_RECORDING_BODY = "FAKE-TWILIO-RECORDING";
 
     protected SettingsService $settings;
 
@@ -70,10 +75,13 @@ class MediaController extends Controller
             abort(403, "Unsupported media host.");
         }
 
-        $response = Http::withBasicAuth(
-            $this->settings->get("twilio_account_sid"),
-            $this->settings->get("twilio_auth_token")
-        )->get(sprintf("%s.mp3", $recordingUrl));
+        $mediaUrl = sprintf("%s.mp3", $recordingUrl);
+        $response = FakeTwilioStore::enabled()
+            ? $this->fakeRecording($mediaUrl)
+            : Http::withBasicAuth(
+                $this->settings->get("twilio_account_sid"),
+                $this->settings->get("twilio_auth_token")
+            )->get($mediaUrl);
 
         if (!$response->successful()) {
             Log::error(sprintf(
@@ -88,5 +96,17 @@ class MediaController extends Controller
             ->header("Content-Type", "audio/mpeg")
             ->header("Content-Disposition", 'inline; filename="recording.mp3"')
             ->header("Cache-Control", "private, max-age=3600");
+    }
+
+    /**
+     * Fake Twilio mode (development/CI only): record the fetch alongside the
+     * fake REST client's requests and answer with placeholder audio, so the
+     * admin UI's Play button works without a Twilio account.
+     */
+    private function fakeRecording(string $mediaUrl): Response
+    {
+        (new FakeTwilioStore())->recordRequest("GET", $mediaUrl, "recordings.media", [], [], 200, null);
+
+        return new Response(new Psr7Response(200, ["Content-Type" => "audio/mpeg"], self::FAKE_RECORDING_BODY));
     }
 }
