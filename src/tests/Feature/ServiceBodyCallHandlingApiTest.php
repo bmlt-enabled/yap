@@ -1,6 +1,7 @@
 <?php
 
 use App\Constants\AuthMechanism;
+use App\Constants\DataType;
 use App\Models\ConfigData;
 use App\Models\User;
 use App\Structures\Group;
@@ -25,9 +26,10 @@ test('save call handling', function () {
         ['serviceBodyId' => $this->serviceBodyId],
         content: json_encode($callHandling)
     );
+    $id = ConfigData::where('data_type', DataType::YAP_CALL_HANDLING_V2)->sole()->id;
 
     $response->assertJson([
-        "id"=>1,
+        "id"=>$id,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$callHandling->toArray()]])
@@ -45,6 +47,7 @@ test('get call handling for a service body', function () {
         $this->serviceBodyId,
         $callHandling
     );
+    $id = ConfigData::where('data_type', DataType::YAP_CALL_HANDLING_V2)->sole()->id;
 
     $response = $this->call(
         'GET',
@@ -53,7 +56,7 @@ test('get call handling for a service body', function () {
     );
 
     $response->assertJson([
-        "id"=>1,
+        "id"=>$id,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$callHandling->toArray()]])
@@ -88,9 +91,10 @@ test('update call handling for a service body', function () {
         ['serviceBodyId' => $this->serviceBodyId],
         content: json_encode($callHandling)
     );
+    $id = ConfigData::where('data_type', DataType::YAP_CALL_HANDLING_V2)->sole()->id;
 
     $response->assertJson([
-        "id"=>1,
+        "id"=>$id,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$callHandling->toArray()]])
@@ -107,9 +111,11 @@ test('update call handling for a service body', function () {
         ['serviceBodyId' => $this->serviceBodyId],
         content: json_encode($callHandling)
     );
+    // The second POST updates the existing row rather than adding another.
+    expect(ConfigData::where('data_type', DataType::YAP_CALL_HANDLING_V2)->sole()->id)->toBe($id);
 
     $response->assertJson([
-        "id"=>1,
+        "id"=>$id,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$callHandling->toArray()]])

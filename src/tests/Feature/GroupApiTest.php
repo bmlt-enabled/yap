@@ -1,6 +1,7 @@
 <?php
 
 use App\Constants\AuthMechanism;
+use App\Constants\DataType;
 use App\Models\ConfigData;
 use App\Models\User;
 use App\Structures\Group;
@@ -25,9 +26,10 @@ test('save group', function () {
         ['serviceBodyId' => $this->serviceBodyId],
         content: json_encode($groupData)
     );
+    $groupId = ConfigData::where('data_type', DataType::YAP_GROUPS_V2)->sole()->id;
 
     $response->assertJson([[
-        "id"=>1,
+        "id"=>$groupId,
         "parent_id"=>null,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$groupData->toArray()]]])
@@ -108,9 +110,10 @@ test('update group', function () {
         ['serviceBodyId' => $this->serviceBodyId],
         content: json_encode($groupData)
     );
+    $groupId = ConfigData::where('data_type', DataType::YAP_GROUPS_V2)->sole()->id;
 
     $response->assertJson([[
-        "id"=>1,
+        "id"=>$groupId,
         "parent_id"=>null,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$groupData->toArray()]]])
@@ -123,12 +126,13 @@ test('update group', function () {
 
     $response = $this->call(
         'PUT',
-        sprintf('/api/v1/groups/%s', 1),
+        sprintf('/api/v1/groups/%s', $groupId),
         content: json_encode($updatedGroupData)
     );
+    expect(ConfigData::where('data_type', DataType::YAP_GROUPS_V2)->sole()->id)->toBe($groupId);
 
     $response->assertJson([[
-        "id"=>1,
+        "id"=>$groupId,
         "parent_id"=>null,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$updatedGroupData->toArray()]]])
@@ -162,9 +166,10 @@ test('save group volunteers', function () {
         ['groupId' => $groupId, 'serviceBodyId' => $this->serviceBodyId],
         content: json_encode([$volunteerData])
     );
+    $volunteersId = ConfigData::where('data_type', DataType::YAP_GROUP_VOLUNTEERS_V2)->sole()->id;
 
     $response->assertJson([
-        "id"=>2,
+        "id"=>$volunteersId,
         "parent_id"=>$groupId,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$volunteerData->toArray()]])
@@ -197,9 +202,10 @@ test('update group volunteers', function () {
         ['groupId' => $groupId, 'serviceBodyId' => $this->serviceBodyId],
         content: json_encode([$volunteerData])
     );
+    $volunteersId = ConfigData::where('data_type', DataType::YAP_GROUP_VOLUNTEERS_V2)->sole()->id;
 
     $response->assertJson([
-        "id"=>2,
+        "id"=>$volunteersId,
         "parent_id"=>$groupId,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$volunteerData->toArray()]])
@@ -216,9 +222,11 @@ test('update group volunteers', function () {
         ['groupId' => $groupId],
         content: json_encode([$volunteerData])
     );
+    // The second POST updates the existing row rather than adding another.
+    expect(ConfigData::where('data_type', DataType::YAP_GROUP_VOLUNTEERS_V2)->sole()->id)->toBe($volunteersId);
 
     $response->assertJson([
-        "id"=>2,
+        "id"=>$volunteersId,
         "parent_id"=>$groupId,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$volunteerData->toArray()]])

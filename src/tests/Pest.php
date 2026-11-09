@@ -18,6 +18,17 @@ use Tests\TestCase;
 use Tests\TwilioTestUtility;
 use Twilio\Rest\Client;
 
+// RefreshDatabase migrates once per process, then wraps each test in a
+// transaction it rolls back. Two consequences for Feature tests:
+//
+// - Auto-increment counters are not rolled back, so never assert a hard-coded
+//   id. Read it back from the row the test created.
+// - Tests that change the schema (the migration tests, PreflightTest's ALTER
+//   TABLEs) commit the transaction early: MySQL and MariaDB commit on any DDL.
+//   RefreshDatabase notices the lost transaction at teardown and re-runs
+//   migrate:fresh before the next test, so those tests need no cleanup of
+//   their own. Don't add a global migrate:fresh here; it costs ~0.4s per test
+//   (bmlt-enabled/yap#1694).
 uses(TestCase::class, RefreshDatabase::class)
     ->beforeAll(function () {
         putenv("ENVIRONMENT=test");
@@ -48,8 +59,6 @@ uses(TestCase::class, RefreshDatabase::class)
 
         // HelplineController::dial() waits 500ms between conference-list retries.
         Sleep::fake();
-
-        $this->artisan('migrate:fresh');
     })
     ->afterEach(function () {
         Sleep::fake(false);
