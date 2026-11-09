@@ -137,8 +137,8 @@ class ReportsService extends Service
         );
         $event_id = intval($eventId);
         foreach ($metrics as $metric) {
-            $coordinates = json_decode($metric->meta)->coordinates;
-            if ($coordinates->location != null) {
+            $coordinates = $this->mapCoordinates($metric->meta);
+            if ($coordinates !== null) {
                 $data .= sprintf(
                     "%s,%s,\"%s\",\"%s\"\n",
                     $coordinates->latitude,
@@ -161,13 +161,28 @@ class ReportsService extends Service
             $date_range_end
         );
         foreach ($metrics as $metric) {
-            $coordinates = json_decode($metric->meta)->coordinates;
-            if ($coordinates->location != null) {
+            if ($this->mapCoordinates($metric->meta) !== null) {
                 $results[] = $metric;
             }
         }
 
         return $results;
+    }
+
+    /**
+     * The geocoded location in a VOLUNTEER_SEARCH / MEETING_SEARCH_LOCATION_GATHERED
+     * event, or null when there is none to map. HelplineController stores
+     * "coordinates": null when it has none for the gathered address, as 4.5.x
+     * did, so live and upgraded databases hold such events (bmlt-enabled/yap#1684).
+     */
+    private function mapCoordinates(?string $meta): ?object
+    {
+        $coordinates = json_decode((string) $meta)->coordinates ?? null;
+        if (!is_object($coordinates) || ($coordinates->location ?? null) == null) {
+            return null;
+        }
+
+        return $coordinates;
     }
 
     public function getCallDetailRecords($serviceBodyId, $date_range_start, $date_range_end, $recurse = false): array
