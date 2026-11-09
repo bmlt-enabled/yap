@@ -173,6 +173,86 @@ jobs:
       - name: Smoke test package
         run: .github/scripts/smoke-package.sh src/yap-smoke.zip
 
+      - name: Upload package
+        uses: actions/upload-artifact@v6
+        with:
+          name: yap-package
+          path: src/yap-smoke.zip
+          retention-days: 7
+
+  upgrade:
+    # Upgrades a 4.5.3 database (src/tests/Fixtures/upgrade/) with the release
+    # zip from package-smoke and checks the data survives (#1684): first
+    # request runs the migrations, local users log in with their 4.5.3
+    # passwords, BMLT-shaped rows are converted, volunteers / settings /
+    # reports read back unchanged, then the simulator runs against it.
+    needs: [ package-smoke ]
+    runs-on: ubuntu-latest
+    name: upgrade 4.5.3 (${{ matrix.php }}, ${{ matrix.db }})
+    strategy:
+      fail-fast: false
+      matrix:
+        php:
+          - "8.3"
+        db:
+          - mysql-8.0
+          - mariadb-10.3
+          - mariadb-10.6
+          - mariadb-11.4
+        include:
+          - db: mysql-8.0
+            db-image: 'mysql/mysql-server:8.0'
+          - db: mariadb-10.3
+            db-image: 'mariadb:10.3'
+          - db: mariadb-10.6
+            db-image: 'mariadb:10.6'
+          - db: mariadb-11.4
+            db-image: 'mariadb:11.4'
+    services:
+      db-tests:
+        image: ${{ matrix.db-image }}
+        env:
+          MYSQL_ROOT_PASSWORD: yap_root_password
+          MYSQL_DATABASE: yap_test
+          MYSQL_ROOT_HOST: '%'
+        ports:
+          - 3106:3306
+
+    steps:
+      - uses: actions/checkout@v6
+        id: code-checkout
+
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-deps
+
+      - name: Download package
+        uses: actions/download-artifact@v6
+        with:
+          name: yap-package
+          path: src
+
+      - name: Wait for database
+        uses: ./.github/actions/wait-for-db
+
+      - name: Upgrade 4.5.3 database with the package
+        env:
+          UPGRADE_WORK_DIR: ${{ runner.temp }}/yap-upgrade
+        run: .github/scripts/upgrade-test.sh src/yap-smoke.zip
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v6
+        if: failure()
+        with:
+          name: upgrade-logs-${{ matrix.php }}-${{ matrix.db }}
+          path: |
+            ${{ runner.temp }}/yap-upgrade/server.log
+            ${{ runner.temp }}/yap-upgrade/before.json
+            ${{ runner.temp }}/yap-upgrade/package*/**/storage/logs/laravel.log
+          retention-days: 30
+
   render-image:
     # Builds docker/Dockerfile.render (the Render Blueprint image) and boots it
     # against MySQL: config.php from env, migrations, caches, Apache on $PORT.

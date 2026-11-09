@@ -324,6 +324,58 @@ test('validate sample map metrics poi csv', function () {
         ->assertStatus(200);
 });
 
+test('map metrics skip events without coordinates', function (?string $format) {
+    // HelplineController (and 4.5.x before it) stores "coordinates": null when
+    // it has none for the gathered address; those events have nothing to map
+    // and must not turn the whole report into a 500 (#1684).
+    Sanctum::actingAs(User::factory()->create());
+    app()->instance(RootServerService::class, $this->rootServerMocks->getService());
+    $service_body_id = "44";
+    $date_range_start = $this->settings->getCurrentTime();
+    $date_range_end = date('Y-m-d H:i:s', strtotime($this->settings->getCurrentTime() . ' + 30 seconds'));
+    $located = [
+        "gather" => "Raleigh, NC",
+        "coordinates" => ["location" => "Raleigh, NC, USA", "latitude" => 35.7795897, "longitude" => -78.638178],
+    ];
+    foreach ([
+        $located,
+        ["gather" => "somewhere", "coordinates" => null],
+        ["gather" => "somewhere else"],
+        ["gather" => "nowhere", "coordinates" => ["location" => null]],
+    ] as $i => $meta) {
+        RecordEvent::generate(
+            "map-$i",
+            EventId::VOLUNTEER_SEARCH,
+            gmdate("Y-m-d H:i:s"),
+            $service_body_id,
+            json_encode($meta),
+            RecordType::PHONE
+        );
+    }
+
+    $response = $this->call('GET', '/api/v1/reports/mapmetrics', array_filter([
+        "service_body_id" => $service_body_id,
+        "date_range_start" => $date_range_start,
+        "date_range_end" => $date_range_end,
+        "format" => $format,
+        "event_id" => EventId::VOLUNTEER_SEARCH,
+    ]));
+
+    $response->assertStatus(200);
+    if ($format === 'csv') {
+        $response->assertContent(sprintf(
+            "lat,lon,name,desc\n%s,%s,\"%s\",\"%s\"\n",
+            $located['coordinates']['latitude'],
+            $located['coordinates']['longitude'],
+            $located['coordinates']['location'],
+            EventId::VOLUNTEER_SEARCH
+        ));
+    } else {
+        expect($response->json())->toHaveCount(1)
+            ->and(json_decode($response->json('0.meta'), true))->toBe($located);
+    }
+})->with(['json' => [null], 'csv' => ['csv']]);
+
 test('validate sample metrics', function () {
     Sanctum::actingAs(User::factory()->create());
     ;
