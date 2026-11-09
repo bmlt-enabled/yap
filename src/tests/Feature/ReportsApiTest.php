@@ -41,7 +41,6 @@ test('validate sample cdr phone', function () {
     ;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
 
-    $id = 1;
     $callSid = "abc123";
     $service_body_id = 44;
     $date_range_start = "2023-01-01T00:00:00";
@@ -62,6 +61,7 @@ test('validate sample cdr phone', function () {
         RecordType::PHONE
     );
     Record::generate($callSid, $start_time, $end_time, $from_number, $to_number, "", $duration, RecordType::PHONE);
+    $id = Record::where('callsid', $callSid)->sole()->id;
 
     $response = $this->call('GET', '/api/v1/reports/cdr', [
         "service_body_id" => $service_body_id,
@@ -105,7 +105,6 @@ test('validate sample cdr sms', function () {
     ;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = 44;
-    $id = 1;
     $date_range_start = "2023-01-01 000:00:00";
     $date_range_end = "2023-01-07 23:59:59";
     $start_time = "2023-01-01 20:43:56";
@@ -133,6 +132,7 @@ test('validate sample cdr sms', function () {
         RecordType::SMS
     );
     Record::generate($callSid, $start_time, $end_time, $from_number, $to_number, "", $duration, RecordType::SMS);
+    $id = Record::where('callsid', $callSid)->sole()->id;
 
     $response = $this->call('GET', '/api/v1/reports/cdr', [
         "service_body_id" => $service_body_id,
@@ -168,7 +168,6 @@ test('validate sample cdr sms with caller consent event', function () {
     ;
     app()->instance(RootServerService::class, $this->rootServerMocks->getService());
     $service_body_id = 44;
-    $id = 1;
     $date_range_start = "2023-01-01 000:00:00";
     $date_range_end = "2023-01-07 23:59:59";
     $start_time = "2023-01-01 20:43:56";
@@ -202,6 +201,7 @@ test('validate sample cdr sms with caller consent event', function () {
         RecordType::SMS
     );
     Record::generate($callSid, $start_time, $end_time, $from_number, $to_number, "", $duration, RecordType::SMS);
+    $id = Record::where('callsid', $callSid)->sole()->id;
 
     $response = $this->call('GET', '/api/v1/reports/cdr', [
         "service_body_id" => $service_body_id,

@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\DataType;
 use App\Constants\VolunteerGender;
 use App\Constants\VolunteerResponderOption;
 use App\Constants\VolunteerType;
@@ -699,9 +700,10 @@ test('save volunteers', function () {
         ['serviceBodyId' => $this->serviceBodyId],
         content: json_encode([$volunteerData])
     );
+    $id = ConfigData::where('data_type', DataType::YAP_VOLUNTEERS_V2)->sole()->id;
 
     $response->assertJson([
-        "id"=>1,
+        "id"=>$id,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$volunteerData->toArray()]])
@@ -727,9 +729,10 @@ test('get volunteers for a service body', function () {
         ['serviceBodyId' => $this->serviceBodyId],
         content: json_encode([$volunteerData])
     );
+    $id = ConfigData::where('data_type', DataType::YAP_VOLUNTEERS_V2)->sole()->id;
 
     $response->assertJson([
-        "id"=>1,
+        "id"=>$id,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$volunteerData->toArray()]])
@@ -765,9 +768,10 @@ test('update call volunteers for a service body', function () {
         ['serviceBodyId' => $this->serviceBodyId],
         content: json_encode([$volunteerData])
     );
+    $id = ConfigData::where('data_type', DataType::YAP_VOLUNTEERS_V2)->sole()->id;
 
     $response->assertJson([
-        "id"=>1,
+        "id"=>$id,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$volunteerData->toArray()]])
@@ -784,9 +788,11 @@ test('update call volunteers for a service body', function () {
         ['serviceBodyId' => $this->serviceBodyId],
         content: json_encode([$volunteerData])
     );
+    // The second POST updates the existing row rather than adding another.
+    expect(ConfigData::where('data_type', DataType::YAP_VOLUNTEERS_V2)->sole()->id)->toBe($id);
 
     $response->assertJson([
-        "id"=>1,
+        "id"=>$id,
         "parent_id"=>0,
         "service_body_id"=>intval($this->serviceBodyId),
         "data"=>[$volunteerData->toArray()]])
