@@ -74,6 +74,24 @@ test('local accounts keep their password', function () {
     }
 });
 
+test('a local account whose name differs from its username only in case keeps its password', function () {
+    rollbackAuthSourceMigration();
+
+    // The beta wrote name = username byte-for-byte. users.name and username
+    // use a case-insensitive collation, so a plain SQL comparison would also
+    // call these equal and convert a real local account.
+    insertBetaUser('Jane', 'jane', 'jane-password', 0, 0);
+    insertBetaUser('BOB', 'bob', 'bob-password', 0, 0);
+
+    runAuthSourceMigration();
+
+    foreach (['jane' => 'jane-password', 'bob' => 'bob-password'] as $username => $password) {
+        $row = DB::table('users')->where('username', $username)->first();
+        expect($row->auth_source)->toBe(User::AUTH_SOURCE_LOCAL);
+        expect($row->password)->toBe(hash('sha256', $password));
+    }
+});
+
 test('existing tokens are revoked', function () {
     $user = User::factory()->admin()->create();
     $token = $user->createToken('API Token')->plainTextToken;
