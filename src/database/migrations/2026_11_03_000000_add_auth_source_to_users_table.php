@@ -19,6 +19,10 @@ use Illuminate\Support\Facades\Schema;
  * permissions. A local account that happens to look the same loses its
  * password; an admin can delete and recreate it.
  *
+ * "Equal" means byte-for-byte: the beta copied the username into name. The
+ * columns' collation is case-insensitive, so a plain comparison would also
+ * convert a local account named "Jane" with username "jane".
+ *
  * Every Sanctum token is also revoked, so nobody keeps a token issued under
  * the old rules (including one issued for a local admin to a same-named BMLT
  * login). Everyone signs in again after the upgrade.
@@ -33,7 +37,7 @@ return new class extends Migration
 
         DB::table('users')
             ->where('auth_source', 'local')
-            ->whereColumn('name', 'username')
+            ->whereRaw('CAST(`name` AS BINARY) = CAST(`username` AS BINARY)')
             ->where(function ($query) {
                 $query->whereNull('is_admin')->orWhere('is_admin', 0);
             })
