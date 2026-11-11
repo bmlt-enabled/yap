@@ -12,20 +12,24 @@
  *
  * What it does, keeping every table, row count and row shape:
  *   - users: username -> user<id>, name -> "User <id>" (or the new username
- *     when name equalled username, so BMLT-shaped rows keep that shape),
+ *     when name equalled username, so BMLT-shaped rows keep that shape, and
+ *     "User<id>" when they were equal but for case),
  *     and every non-empty password -> SHA-256 of a known password
  *     ("yap-upgrade-<new username>"), so the checks can log in as 4.5.3 did.
  *   - phone numbers -> fake numbers, emails -> @example.invalid, Twilio SIDs
  *     -> fake SIDs. Each value maps to the same fake everywhere in the run,
  *     so callsids still join records, records_events, conference_participants
  *     and sessions, and a volunteer's number still matches their calls.
- *   - names (volunteer_name, group_name, caller names, ...), free-text notes,
- *     voicemail transcriptions, caller city / zip -> placeholders.
+ *   - names (volunteer_name, group_name, caller names, ...), helpline titles,
+ *     free-text notes, voicemail transcriptions, caller city / zip -> placeholders.
+ *   - URLs on any host but Twilio's -> https://example.invalid/sanitized.<ext>
+ *     (a custom greeting hosted on the install's own site names the install).
  *   - credentials in service body settings (tokens, passwords, keys) ->
  *     "redacted"; caller coordinates are rounded to 1 decimal (~10 km).
  *   - cache is emptied (it can hold geocoded caller addresses).
  * Then it scans every text column for anything that still looks like a phone
- * number or an email and fails if it finds one.
+ * number, an email or a non-Twilio URL and fails if it finds one, naming the
+ * column and a masked shape (never the value).
  *
  * The mapping key is random per run and never stored, so fake values cannot
  * be reversed by hashing candidate phone numbers.
@@ -42,7 +46,7 @@ final class Sanitizer
     /** JSON keys whose string values are personal names or free text. */
     private const NAME_KEYS = '/^(volunteer_name|group_name|name|friendlyname|caller_?name|callername|'
         . 'from_?name|to_?name|contact_?name|primary_contact_name|notes?|volunteer_notes|'
-        . 'transcription(_?text)?|transcript|body|message|speechresult)$/i';
+        . 'transcription(_?text)?|transcript|body|message|speechresult|title)$/i';
 
     /** JSON keys whose values are credentials. */
     private const SECRET_KEYS = '/(token|password|passwd|secret|api_?key|private_?key)$/i';
@@ -61,6 +65,13 @@ final class Sanitizer
 
     private const SID_PATTERN = '/\b(AC|CA|CF|RE|SM|MM|PN|QU|TR|TK|SK|AP|MG|WS|FN|CL)([0-9a-fA-F]{32})\b/';
     private const EMAIL_PATTERN = '/[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}/';
+    /**
+     * Any http(s) URL. A custom greeting or hold music is often hosted on the
+     * install's own site, which identifies it; Twilio's own URLs (recordings)
+     * carry nothing but SIDs, which are faked separately.
+     */
+    private const URL_PATTERN = '#\bhttps?://([A-Za-z0-9.\-]+)(:\d+)?([^\s"\'<>,]*)#i';
+    private const KEPT_URL_HOSTS = '/(^|\.)(twilio\.com|example\.(invalid|com|org))$/i';
     // E.164 (Twilio's format, also URL-encoded), then common NANP spellings.
     private const PHONE_PATTERNS = [
         '/(?<![\w%])\+\d{8,15}\b/',
@@ -121,7 +132,15 @@ final class Sanitizer
         $update = $this->pdo->prepare('UPDATE users SET name = ?, username = ?, password = ? WHERE id = ?');
         foreach ($rows as $row) {
             $username = 'user' . $row['id'];
-            $name = $row['name'] === $row['username'] ? $username : 'User ' . $row['id'];
+            // Keep how name compares to username, both byte-for-byte and under
+            // the column's case-insensitive collation (5.0's auth_source
+            // migration compares them in SQL): equal stays equal, equal but
+            // for case stays that way ("Admin" / "admin" -> "User1" / "user1").
+            $name = match (true) {
+                $row['name'] === $row['username'] => $username,
+                mb_strtolower($row['name']) === mb_strtolower($row['username']) => ucfirst($username),
+                default => 'User ' . $row['id'],
+            };
             $password = (string) $row['password'] === '' ? '' : hash('sha256', self::knownPassword($username));
             $update->execute([$name, $username, $password, $row['id']]);
         }
@@ -257,10 +276,11 @@ final class Sanitizer
         return $this->scrubText($value);
     }
 
-    /** Free text: replace anything that looks like a SID, email or phone number. */
+    /** Free text: replace anything that looks like a SID, URL, email or phone number. */
     public function scrubText(string $value): string
     {
         $value = preg_replace_callback(self::SID_PATTERN, fn ($m) => $this->fakeSid($m[1], $m[2]), $value);
+        $value = preg_replace_callback(self::URL_PATTERN, fn ($m) => $this->fakeUrl($m[0], $m[1], $m[3]), $value);
         $value = preg_replace_callback(self::EMAIL_PATTERN, fn ($m) => $this->fakeEmail($m[0]), $value);
         foreach (self::PHONE_PATTERNS as $pattern) {
             $value = preg_replace_callback($pattern, fn ($m) => $this->fakePhone($m[0]), $value);
@@ -319,6 +339,22 @@ final class Sanitizer
         return $prefix . $out;
     }
 
+    /**
+     * A URL on the install's own (or any third-party) host becomes one on
+     * example.invalid, keeping the file extension so an audio URL still looks
+     * like one: "https://region.org/x/greeting.mp3" -> "https://example.invalid/sanitized.mp3".
+     */
+    private function fakeUrl(string $url, string $host, string $rest): string
+    {
+        if (preg_match(self::KEPT_URL_HOSTS, $host)) {
+            return $url;
+        }
+        $path = (string) parse_url('http://h' . $rest, PHP_URL_PATH);
+        $ext = preg_match('/\.([A-Za-z0-9]{1,5})$/', $path, $m) ? '.' . strtolower($m[1]) : '';
+        $this->stats['URLs replaced'] = ($this->stats['URLs replaced'] ?? 0) + 1;
+        return (stripos($url, 'https') === 0 ? 'https' : 'http') . '://example.invalid/sanitized' . $ext;
+    }
+
     private function fakeEmail(string $email): string
     {
         $lower = strtolower($email);
@@ -337,6 +373,7 @@ final class Sanitizer
             str_contains($k, 'transcri') => 'Transcription',
             in_array($k, ['body', 'message', 'speechresult'], true) => 'Message',
             str_contains($k, 'friendlyname') => 'Participant',
+            $k === 'title' => 'Helpline',
             default => 'Person',
         };
         if (in_array($label, ['Notes', 'Transcription', 'Message'], true)) {
@@ -379,7 +416,11 @@ final class Sanitizer
         return array_column($stmt->fetchAll(), 'c');
     }
 
-    /** Anything left that looks like a real phone number or email. */
+    /**
+     * Anything left that looks like a real phone number, email or install URL.
+     * Reported as table.column plus a masked shape, never the value itself:
+     * this runs against real data and its output lands in terminals and logs.
+     */
     private function scanForLeaks(): array
     {
         $leaks = [];
@@ -394,7 +435,14 @@ final class Sanitizer
                     if (preg_match_all(self::EMAIL_PATTERN, $v, $m)) {
                         foreach ($m[0] as $email) {
                             if (!preg_match('/@example\.(invalid|com)$/i', $email)) {
-                                $leaks[] = "$table.$column: email $email";
+                                $leaks[] = "$table.$column: email " . self::mask($email);
+                            }
+                        }
+                    }
+                    if (preg_match_all(self::URL_PATTERN, $v, $m)) {
+                        foreach ($m[1] as $host) {
+                            if (!preg_match(self::KEPT_URL_HOSTS, $host)) {
+                                $leaks[] = "$table.$column: url on host " . self::mask($host);
                             }
                         }
                     }
@@ -404,7 +452,7 @@ final class Sanitizer
                             $digits = preg_replace('/\D/', '', preg_replace('/^%2B/i', '', $phone));
                             $core = (strlen($digits) === 11 && $digits[0] === '1') ? substr($digits, 1) : $digits;
                             if (!str_starts_with($core, '555') && !$this->isKnownFake($core)) {
-                                $leaks[] = "$table.$column: number $phone";
+                                $leaks[] = "$table.$column: number " . self::mask($phone);
                             }
                         }
                     }
@@ -412,6 +460,12 @@ final class Sanitizer
             }
         }
         return array_slice(array_unique($leaks), 0, 50);
+    }
+
+    /** "+12125551234" -> "+99999999999", "a.b@c.org" -> "a.a@a.aaa": the shape, not the value. */
+    public static function mask(string $value): string
+    {
+        return preg_replace(['/\d/', '/[^\W\d_]/u'], ['9', 'a'], $value);
     }
 
     private function isKnownFake(string $core): bool
