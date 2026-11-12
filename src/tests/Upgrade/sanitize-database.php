@@ -68,10 +68,12 @@ final class Sanitizer
     /**
      * Any http(s) URL. A custom greeting or hold music is often hosted on the
      * install's own site, which identifies it; Twilio's own URLs (recordings)
-     * carry nothing but SIDs, which are faked separately.
+     * carry nothing but SIDs, which are faked separately. twimlets.com is
+     * Twilio's too: it serves the default hold music every service body
+     * starts with, so faking it would rewrite nearly every install's moh.
      */
     private const URL_PATTERN = '#\bhttps?://([A-Za-z0-9.\-]+)(:\d+)?([^\s"\'<>,]*)#i';
-    private const KEPT_URL_HOSTS = '/(^|\.)(twilio\.com|example\.(invalid|com|org))$/i';
+    private const KEPT_URL_HOSTS = '/(^|\.)(twilio\.com|twimlets\.com|example\.(invalid|com|org))$/i';
     // E.164 (Twilio's format, also URL-encoded), then common NANP spellings.
     private const PHONE_PATTERNS = [
         '/(?<![\w%])\+\d{8,15}\b/',
