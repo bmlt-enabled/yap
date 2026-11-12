@@ -98,7 +98,7 @@ shape, and changes:
 | Twilio SIDs (`AC…`, `CA…`, `RE…`, …) | Fake SIDs, mapped consistently, so callsids still join `records`, `records_events`, `conference_participants`, `sessions` and `event_status`. |
 | Volunteer, group, caller and participant names | `Person <n>`, `Group <n>`, … |
 | Helpline titles (`title` in service body settings) | `Helpline <n>` |
-| URLs on any host but Twilio's (a custom greeting or hold music on the install's own site) | `https://example.invalid/sanitized.<ext>`, keeping the file extension |
+| URLs on any host but Twilio's (a custom greeting or hold music on the install's own site). `twilio.com` and `twimlets.com` (the default hold music) are kept. | `https://example.invalid/sanitized.<ext>`, keeping the file extension |
 | Volunteer notes, SMS bodies, transcriptions | `Sanitized Notes` / `Sanitized Message` / … |
 | Caller city / address / gathered location, zip | `Anytown`, `00000` |
 | Coordinates | Rounded to 1 decimal place (~10 km) |
