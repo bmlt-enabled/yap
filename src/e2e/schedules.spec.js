@@ -15,6 +15,15 @@ async function selectServiceBody(page, optionName) {
 }
 
 test.describe('Schedules', () => {
+  // The seeded shifts are in America/New_York, and the schedule endpoint
+  // returns their times without an offset, so the browser reads them in its
+  // own timezone. The week view also starts on the browser's "today". On a
+  // UTC browser between 00:00 and 05:00 UTC, New York is still on the
+  // previous day, so that day's shift falls before the visible week and the
+  // count drops to 6. Running the browser in the shifts' timezone keeps both
+  // on the same day.
+  test.use({ timezoneId: 'America/New_York' });
+
   test.beforeAll(() => {
     resetDatabase();
   });
