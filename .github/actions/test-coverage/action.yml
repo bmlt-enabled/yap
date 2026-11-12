@@ -13,6 +13,6 @@ runs:
 
     - name: Send coverage data to codecov.io
       if: matrix.php == '8.3'
-      uses: codecov/codecov-action@v5.5.2
+      uses: codecov/codecov-action@v7.1.1
       with:
         files: src/coverage.xml
