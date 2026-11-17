@@ -6,9 +6,10 @@
 # on 4.5.3-beta1 console command discovery read composer.json and every page
 # returned HTTP 500 (#1641). This checks the packaged app, not the checkout:
 #
-#   1. The console kernel boots, every class in app/Console/Commands is
+#   1. vendor/ holds no require-dev packages (#1702).
+#   2. The console kernel boots, every class in app/Console/Commands is
 #      registered, and no command directory is discovered via load().
-#   2. Requests through the HTTP kernel do not return a 500: once as a fresh
+#   3. Requests through the HTTP kernel do not return a 500: once as a fresh
 #      install (no config.php, the installer page) and once with a minimal
 #      config.php so the request reaches the router and a controller.
 #
@@ -44,6 +45,26 @@ if [[ -e config.php ]]; then
     echo "smoke-package.sh: the package ships a config.php" >&2
     exit 1
 fi
+
+echo "== vendor has no dev packages"
+# The zip ships only composer.json's "require" packages (#1702); phpcs's test
+# fixtures in vendor/squizlabs tripped a malware scanner.
+php -d display_errors=stderr -r '
+$installed = json_decode(file_get_contents("vendor/composer/installed.json"), true);
+$dev = $installed["dev-package-names"] ?? [];
+if (($installed["dev"] ?? true) !== false || $dev !== []) {
+    fwrite(STDERR, "vendor/ was installed with dev packages: " . implode(", ", $dev)
+        . "\nbuild-package.sh must run composer install --no-dev on the package (#1702)\n");
+    exit(1);
+}
+foreach (["squizlabs", "phpunit", "pestphp", "mockery", "fakerphp"] as $vendor) {
+    if (is_dir("vendor/{$vendor}")) {
+        fwrite(STDERR, "vendor/{$vendor} is in the package (#1702)\n");
+        exit(1);
+    }
+}
+echo "vendor/ is production-only (" . count($installed["packages"]) . " packages)\n";
+'
 
 echo "== console kernel"
 php -d display_errors=stderr -r '
